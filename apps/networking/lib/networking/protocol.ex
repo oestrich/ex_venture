@@ -9,10 +9,11 @@ defmodule Networking.Protocol do
   end
 
   def init(ref, socket, transport) do
-    IO.puts "Starting protocol"
+    IO.puts "Player connecting"
 
     :ok = :ranch.accept_ack(ref)
     :ok = transport.setopts(socket, [{:active, true}])
+    GenServer.cast(self(), :start_session)
     :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport})
   end
 
@@ -20,9 +21,18 @@ defmodule Networking.Protocol do
     transport.send(socket, message)
     {:noreply, state}
   end
+  def handle_cast(:start_session, state) do
+    {:ok, pid} = Game.Session.start(self())
+    {:noreply, Map.merge(state, %{session: pid})}
+  end
 
   def handle_info({:tcp, socket, data}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, data)
+    case state do
+      %{session: pid} ->
+        Game.Session.recv(pid, data)
+      _ ->
+        transport.send(socket, data)
+    end
     {:noreply, state}
   end
   def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
