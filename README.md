@@ -1,4 +1,3 @@
 # ExMud
 
-**TODO: Add description**
-
+A MUD implementation in Elixir.
