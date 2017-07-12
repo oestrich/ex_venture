@@ -29,7 +29,7 @@ defmodule Networking.Protocol do
   def handle_info({:tcp, socket, data}, state = %{socket: socket, transport: transport}) do
     case state do
       %{session: pid} ->
-        Game.Session.recv(pid, data)
+        Game.Session.recv(pid, data |> String.trim)
       _ ->
         transport.send(socket, data)
     end
