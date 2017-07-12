@@ -37,6 +37,11 @@ defmodule Networking.Protocol do
   end
   def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
     IO.puts "Closing"
+    case state do
+      %{session: pid} ->
+        Game.Session.disconnect(pid)
+      _ -> nil
+    end
     transport.close(socket)
     {:stop, :normal, state}
   end

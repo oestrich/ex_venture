@@ -6,7 +6,7 @@ defmodule Game.Session.Supervisor do
   end
 
   def start_child(pid) do
-    child_spec = worker(Game.Session, [pid], [id: pid])
+    child_spec = worker(Game.Session, [pid], [id: pid, restart: :transient])
     Supervisor.start_child(__MODULE__, child_spec)
   end
 

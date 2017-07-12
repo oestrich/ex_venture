@@ -1,15 +1,21 @@
 defmodule Game.Session do
   use GenServer
 
+  alias Game.Session
+
   def start(pid) do
     GenServer.cast(pid, {:echo, "Welcome to ExMud\n"})
     GenServer.cast(pid, {:echo, "What is your player name? "})
 
-    Game.Session.Supervisor.start_child(pid)
+    Session.Supervisor.start_child(pid)
   end
 
   def start_link(pid) do
     GenServer.start_link(__MODULE__, pid)
+  end
+
+  def disconnect(pid) do
+    GenServer.cast(pid, :disconnect)
   end
 
   def recv(pid, message) do
@@ -17,7 +23,13 @@ defmodule Game.Session do
   end
 
   def init(pid) do
+    Registry.register(Session.Registry, "player", :connected)
     {:ok, %{socket: pid, name: nil}}
+  end
+
+  def handle_cast(:disconnect, state) do
+    Registry.unregister(Session.Registry, "player")
+    {:stop, :normal, state}
   end
 
   # forward the echo the socket pid
@@ -30,10 +42,12 @@ defmodule Game.Session do
     {:noreply, Map.merge(state, %{name: name})}
   end
   def handle_cast({:recv, message}, state = %{name: name}) do
-    Supervisor.which_children(Game.Session.Supervisor)
-    |> Enum.each(fn ({_, pid, _, _}) ->
+    Session.Registry
+    |> Registry.lookup("player")
+    |> Enum.each(fn ({pid, _}) ->
       GenServer.cast(pid, {:echo, "#{name}: #{message}\n"})
     end)
+
     {:noreply, state}
   end
 end

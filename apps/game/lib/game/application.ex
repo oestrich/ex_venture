@@ -11,6 +11,7 @@ defmodule Game.Application do
     # Define workers and child supervisors to be supervised
     children = [
       supervisor(Game.Session.Supervisor, []),
+      supervisor(Registry, [:duplicate, Game.Session.Registry]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
