@@ -45,4 +45,13 @@ defmodule Networking.Protocol do
     transport.close(socket)
     {:stop, :normal, state}
   end
+  def handle_info({:tcp_error, _socket, :etimedout}, state) do
+    IO.puts "Timeout"
+    case state do
+      %{session: pid} ->
+        Game.Session.disconnect(pid)
+      _ -> nil
+    end
+    {:stop, :normal, state}
+  end
 end
