@@ -2,14 +2,23 @@ defmodule Game.Session do
   use GenServer
   require Logger
 
+  alias Game.Color
   alias Game.Session
+
+  @socket Application.get_env(:game, :networking)[:socket_module]
 
   @timeout_check 5000
   @timeout_seconds 5 * 60 * -1
+  @registry_key "player"
 
+  @doc """
+  Start a new session
+
+  Creates a session pointing at a socket
+  """
   def start(socket) do
-    GenServer.cast(socket, {:echo, "Welcome to ExMud"})
-    GenServer.cast(socket, {:echo, "What is your player name? ", :prompt})
+    socket |> @socket.echo("Welcome to ExMud")
+    socket |> @socket.prompt("What is your player name? ")
 
     Session.Supervisor.start_child(socket)
   end
@@ -34,35 +43,39 @@ defmodule Game.Session do
     GenServer.cast(pid, {:recv, message})
   end
 
+  #
+  # GenServer callbacks
+  #
+
   def init(socket) do
-    Registry.register(Session.Registry, "player", :connected)
+    Registry.register(Session.Registry, @registry_key, :connected)
     self() |> schedule_inactive_check()
     {:ok, %{socket: socket, name: nil, last_recv: Timex.now()}}
   end
 
   # On a disconnect unregister the PID and stop the server
   def handle_cast(:disconnect, state) do
-    Registry.unregister(Session.Registry, "player")
+    Registry.unregister(Session.Registry, @registry_key)
     {:stop, :normal, state}
   end
 
   # forward the echo the socket pid
   def handle_cast({:echo, message}, state = %{socket: socket}) do
-    GenServer.cast(socket, {:echo, message})
+    socket |> @socket.echo(message)
     {:noreply, state}
   end
 
   # The first receive should ask for the name
   def handle_cast({:recv, name}, state = %{socket: socket, name: nil}) do
-    GenServer.cast(socket, {:echo, "Welcome #{name}"})
+    socket |> @socket.echo("Welcome #{name}")
     {:noreply, Map.merge(state, %{name: name, last_recv: Timex.now()})}
   end
   # Receives afterwards should forward the message to the other clients
   def handle_cast({:recv, message}, state = %{name: name}) do
     Session.Registry
-    |> Registry.lookup("player")
+    |> Registry.lookup(@registry_key)
     |> Enum.each(fn ({pid, _}) ->
-      GenServer.cast(pid, {:echo, "#{name}: #{message}"})
+      GenServer.cast(pid, {:echo, Color.format("{blue}#{name}{/blue}: #{message}")})
     end)
 
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
@@ -83,7 +96,7 @@ defmodule Game.Session do
     case Timex.diff(last_recv, Timex.now, :seconds) do
       time when time < @timeout_seconds ->
         Logger.info "Disconnecting player"
-        GenServer.cast(socket, :disconnect)
+        socket |> @socket.disconnect()
       _ ->
         self() |> schedule_inactive_check()
     end

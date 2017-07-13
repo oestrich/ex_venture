@@ -9,6 +9,36 @@ defmodule Networking.Protocol do
     {:ok, pid}
   end
 
+  @doc """
+  Echo a line to the client
+
+  This includes a new line at the end of the message
+  """
+  @spec echo(socket :: pid, message :: String.t) :: :ok
+  def echo(socket, message) do
+    GenServer.cast(socket, {:echo, message})
+  end
+
+  @doc """
+  Echo a prompt to the client
+
+  This does not include a new line at the end of the message
+  """
+  @spec prompt(socket :: pid, message :: String.t) :: :ok
+  def prompt(socket, message) do
+    GenServer.cast(socket, {:echo, message, :prompt})
+  end
+
+  @doc """
+  Disconnect the socket
+
+  Will terminate the socket and the session
+  """
+  @spec disconnect(socket :: pid) :: :ok
+  def disconnect(socket) do
+    GenServer.cast(socket, :disconnect)
+  end
+
   def init(ref, socket, transport) do
     Logger.info "Player connecting"
 
@@ -39,7 +69,7 @@ defmodule Networking.Protocol do
   def handle_info({:tcp, socket, data}, state = %{socket: socket, transport: transport}) do
     case state do
       %{session: pid} ->
-        Game.Session.recv(pid, data |> String.trim)
+        pid |> Game.Session.recv(data |> String.trim)
       _ ->
         transport.send(socket, data)
     end
@@ -50,19 +80,16 @@ defmodule Networking.Protocol do
     disconnect(transport, socket, state)
     {:stop, :normal, state}
   end
-  def handle_info({:tcp_error, _socket, :etimedout}, state) do
+  def handle_info({:tcp_error, _socket, :etimedout}, state = %{socket: socket, transport: transport}) do
     Logger.info "Timeout"
-    case state do
-      %{session: pid} -> Game.Session.disconnect(pid)
-      _ -> nil
-    end
+    disconnect(transport, socket, state)
     {:stop, :normal, state}
   end
 
   # Disconnect the socket and optionally the session
   defp disconnect(transport, socket, state) do
     case state do
-      %{session: pid} -> Game.Session.disconnect(pid)
+      %{session: pid} -> pid |> Game.Session.disconnect()
       _ -> nil
     end
     transport.close(socket)
