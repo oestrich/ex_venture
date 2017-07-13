@@ -1,5 +1,6 @@
 defmodule Networking.Protocol do
   use GenServer
+  require Logger
 
   @behaviour :ranch_protocol
 
@@ -9,7 +10,7 @@ defmodule Networking.Protocol do
   end
 
   def init(ref, socket, transport) do
-    IO.puts "Player connecting"
+    Logger.info "Player connecting"
 
     :ok = :ranch.accept_ack(ref)
     :ok = transport.setopts(socket, [{:active, true}])
@@ -18,12 +19,21 @@ defmodule Networking.Protocol do
   end
 
   def handle_cast({:echo, message}, state = %{socket: socket, transport: transport}) do
+    transport.send(socket, "#{message}\n")
+    {:noreply, state}
+  end
+  def handle_cast({:echo, message, :prompt}, state = %{socket: socket, transport: transport}) do
     transport.send(socket, message)
     {:noreply, state}
   end
   def handle_cast(:start_session, state) do
     {:ok, pid} = Game.Session.start(self())
     {:noreply, Map.merge(state, %{session: pid})}
+  end
+  # close the socket and terminate the server
+  def handle_cast(:disconnect, state = %{socket: socket, transport: transport}) do
+    disconnect(transport, socket, state)
+    {:stop, :normal, state}
   end
 
   def handle_info({:tcp, socket, data}, state = %{socket: socket, transport: transport}) do
@@ -36,22 +46,25 @@ defmodule Networking.Protocol do
     {:noreply, state}
   end
   def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
-    IO.puts "Closing"
-    case state do
-      %{session: pid} ->
-        Game.Session.disconnect(pid)
-      _ -> nil
-    end
-    transport.close(socket)
+    Logger.info "Closing"
+    disconnect(transport, socket, state)
     {:stop, :normal, state}
   end
   def handle_info({:tcp_error, _socket, :etimedout}, state) do
-    IO.puts "Timeout"
+    Logger.info "Timeout"
     case state do
-      %{session: pid} ->
-        Game.Session.disconnect(pid)
+      %{session: pid} -> Game.Session.disconnect(pid)
       _ -> nil
     end
     {:stop, :normal, state}
+  end
+
+  # Disconnect the socket and optionally the session
+  defp disconnect(transport, socket, state) do
+    case state do
+      %{session: pid} -> Game.Session.disconnect(pid)
+      _ -> nil
+    end
+    transport.close(socket)
   end
 end
