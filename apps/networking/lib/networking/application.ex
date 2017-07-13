@@ -8,7 +8,6 @@ defmodule Networking.Application do
   use Application
 
   def start(_type, _args) do
-
     children = [listener()]
     |> Enum.reject(fn child -> is_nil(child) end)
 
