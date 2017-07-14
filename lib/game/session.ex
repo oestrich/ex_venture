@@ -23,6 +23,7 @@ defmodule Game.Session do
     Session.Supervisor.start_child(socket)
   end
 
+  @doc false
   def start_link(socket) do
     GenServer.start_link(__MODULE__, socket)
   end

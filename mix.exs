@@ -39,6 +39,7 @@ defmodule Game.Mixfile do
   defp deps do
     [
       {:distillery, "~> 1.4", runtime: false},
+      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},
     ]
