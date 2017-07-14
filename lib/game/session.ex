@@ -52,7 +52,7 @@ defmodule Game.Session do
 
     Registry.register(Session.Registry, @registry_key, :connected)
     self() |> schedule_inactive_check()
-    {:ok, %{socket: socket, active: false, name: nil, last_recv: Timex.now()}}
+    {:ok, %{socket: socket, active: false, login: nil, last_recv: Timex.now()}}
   end
 
   # On a disconnect unregister the PID and stop the server
@@ -68,27 +68,34 @@ defmodule Game.Session do
   end
 
   # The first receive should ask for the name
-  def handle_cast({:recv, name}, state = %{socket: socket, name: nil}) do
+  def handle_cast({:recv, name}, state = %{socket: socket, active: false, login: nil}) do
     socket |> @socket.prompt("Password: ")
-    {:noreply, Map.merge(state, %{name: name, last_recv: Timex.now()})}
+    {:noreply, Map.merge(state, %{login: %{username: name}, last_recv: Timex.now()})}
   end
-  def handle_cast({:recv, password}, state = %{socket: socket, name: name, active: false}) do
-    case Authentication.find_and_validate(name, password) do
+  def handle_cast({:recv, password}, state = %{socket: socket, active: false, login: %{username: username}}) do
+    case Authentication.find_and_validate(username, password) do
       {:error, :invalid} ->
         socket |> @socket.echo("Invalid password")
         socket |> @socket.disconnect()
         {:noreply, state}
       user ->
         socket |> @socket.echo("Welcome, #{user.username}")
-        {:noreply, Map.merge(state, %{user: user, active: true})}
+
+        state = state
+        |> Map.delete(:login)
+        |> Map.put(:user, user)
+        |> Map.put(:active, true)
+
+        {:noreply, state}
     end
   end
+
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{active: true, name: name}) do
+  def handle_cast({:recv, message}, state = %{active: true, user: user}) do
     Session.Registry
     |> Registry.lookup(@registry_key)
     |> Enum.each(fn ({pid, _}) ->
-      GenServer.cast(pid, {:echo, Color.format("{blue}#{name}{/blue}: #{message}")})
+      GenServer.cast(pid, {:echo, Color.format("{blue}#{user.username}{/blue}: #{message}")})
     end)
 
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
