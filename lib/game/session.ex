@@ -5,7 +5,7 @@ defmodule Game.Session do
   alias Game.Color
   alias Game.Session
 
-  @socket Application.get_env(:game, :networking)[:socket_module]
+  @socket Application.get_env(:ex_mud, :networking)[:socket_module]
 
   @timeout_check 5000
   @timeout_seconds 5 * 60 * -1

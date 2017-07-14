@@ -1,9 +1,9 @@
-defmodule Game.Application do
+defmodule ExMud.Application do
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
 
-  @server Application.get_env(:game, :networking)[:server]
+  @server Application.get_env(:ex_mud, :networking)[:server]
 
   use Application
 
@@ -19,7 +19,7 @@ defmodule Game.Application do
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Game.Supervisor]
+    opts = [strategy: :one_for_one, name: ExMud.Supervisor]
     Supervisor.start_link(children, opts)
   end
 

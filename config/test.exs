@@ -1,5 +1,5 @@
 use Mix.Config
 
-config :game, :networking,
+config :ex_mud, :networking,
   server: false,
   socket_module: Test.Networking.Socket
