@@ -12,6 +12,7 @@ defmodule ExMud.Application do
 
     # Define workers and child supervisors to be supervised
     children = [
+      supervisor(Data.Repo, []),
       supervisor(Game.Session.Supervisor, []),
       supervisor(Registry, [:duplicate, Game.Session.Registry]),
       listener(),

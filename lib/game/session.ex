@@ -2,6 +2,7 @@ defmodule Game.Session do
   use GenServer
   require Logger
 
+  alias Game.Authentication
   alias Game.Color
   alias Game.Session
 
@@ -17,9 +18,6 @@ defmodule Game.Session do
   Creates a session pointing at a socket
   """
   def start(socket) do
-    socket |> @socket.echo("Welcome to ExMud")
-    socket |> @socket.prompt("What is your player name? ")
-
     Session.Supervisor.start_child(socket)
   end
 
@@ -49,9 +47,12 @@ defmodule Game.Session do
   #
 
   def init(socket) do
+    socket |> @socket.echo("Welcome to ExMud")
+    socket |> @socket.prompt("What is your player name? ")
+
     Registry.register(Session.Registry, @registry_key, :connected)
     self() |> schedule_inactive_check()
-    {:ok, %{socket: socket, name: nil, last_recv: Timex.now()}}
+    {:ok, %{socket: socket, active: false, name: nil, last_recv: Timex.now()}}
   end
 
   # On a disconnect unregister the PID and stop the server
@@ -68,11 +69,22 @@ defmodule Game.Session do
 
   # The first receive should ask for the name
   def handle_cast({:recv, name}, state = %{socket: socket, name: nil}) do
-    socket |> @socket.echo("Welcome #{name}")
+    socket |> @socket.prompt("Password: ")
     {:noreply, Map.merge(state, %{name: name, last_recv: Timex.now()})}
   end
+  def handle_cast({:recv, password}, state = %{socket: socket, name: name, active: false}) do
+    case Authentication.find_and_validate(name, password) do
+      {:error, :invalid} ->
+        socket |> @socket.echo("Invalid password")
+        socket |> @socket.disconnect()
+        {:noreply, state}
+      user ->
+        socket |> @socket.echo("Welcome, #{user.username}")
+        {:noreply, Map.merge(state, %{user: user, active: true})}
+    end
+  end
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{name: name}) do
+  def handle_cast({:recv, message}, state = %{active: true, name: name}) do
     Session.Registry
     |> Registry.lookup(@registry_key)
     |> Enum.each(fn ({pid, _}) ->

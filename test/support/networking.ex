@@ -24,7 +24,18 @@ defmodule Test.Networking.Socket do
     Agent.get(__MODULE__, fn state -> Map.get(state, :echo, []) end)
   end
 
-  def prompt(_socket, _message), do: :ok
+  def prompt(socket, message) do
+    start_link()
+    Agent.update(__MODULE__, fn state ->
+      prompts = Map.get(state, :prompt, [])
+      Map.put(state, :prompt, prompts ++ [{socket, message}])
+    end)
+    :ok
+  end
+
+  def get_prompts() do
+    Agent.get(__MODULE__, fn state -> Map.get(state, :prompt, []) end)
+  end
 
   def disconnect(socket) do
     start_link()

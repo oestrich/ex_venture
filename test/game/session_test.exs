@@ -1,5 +1,6 @@
 defmodule Game.SessionTest do
   use GenServerCase
+  use Data.ModelCase
 
   alias Game.Session
 
@@ -20,14 +21,16 @@ defmodule Game.SessionTest do
   test "recv'ing messages - the first", %{socket: socket} do
     {:noreply, state} = Session.handle_cast({:recv, "name"}, %{socket: socket, name: nil})
 
-    assert @socket.get_echos() == [{socket, "Welcome name"}]
+    assert @socket.get_prompts() == [{socket, "Password: "}]
+    assert state.name == "name"
     assert state.last_recv
   end
 
   test "recv'ing messages - afterwards", %{socket: socket} do
     {:ok, other_pid} = Session.start_link(socket)
+    @socket.clear_messages
 
-    {:noreply, state} = Session.handle_cast({:recv, "hi everyone"}, %{socket: socket, name: "name"})
+    {:noreply, state} = Session.handle_cast({:recv, "hi everyone"}, %{socket: socket, active: true, name: "name"})
     wait_cast(other_pid)
 
     assert @socket.get_echos() == [{socket, "\e[34mname\e[0m: hi everyone"}]
@@ -57,5 +60,25 @@ defmodule Game.SessionTest do
 
     {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{})
     assert Registry.lookup(Session.Registry, "player") == []
+  end
+
+  test "verifies the user's username and password", %{socket: socket} do
+    user = create_user(%{username: "user", password: "password"})
+
+    {:noreply, state} = Session.handle_cast({:recv, "password"}, %{socket: socket, name: "user", active: false})
+
+    assert state.user.id == user.id
+    assert state.active == true
+    assert @socket.get_echos() == [{socket, "Welcome, user"}]
+  end
+
+  test "verifies the user's username and password - failure", %{socket: socket} do
+    create_user(%{username: "user", password: "password"})
+
+    {:noreply, state} = Session.handle_cast({:recv, "p@ssword"}, %{socket: socket, name: "user", active: false})
+
+    assert Map.has_key?(state, :user) == false
+    assert @socket.get_echos() == [{socket, "Invalid password"}]
+    assert @socket.get_disconnects() == [socket]
   end
 end

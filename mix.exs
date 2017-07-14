@@ -38,8 +38,11 @@ defmodule Game.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
+      {:comeonin, "~> 3.2"},
       {:distillery, "~> 1.4", runtime: false},
+      {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:postgrex, ">= 0.0.0"},
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},
     ]

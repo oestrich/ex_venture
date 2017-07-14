@@ -1,0 +1,35 @@
+defmodule Game.SessionIntegrationTest do
+  use GenServerCase
+  use Data.ModelCase
+
+  alias Game.Session
+
+  @socket Test.Networking.Socket
+
+  setup do
+    socket = :socket
+    @socket.clear_messages
+    {:ok, %{socket: socket}}
+  end
+
+  test "when started asks for login information", %{socket: socket} do
+    create_user(%{username: "user", password: "password"})
+
+    {:ok, pid} = Session.start_link(socket)
+
+    assert @socket.get_echos() == [{socket, "Welcome to ExMud"}]
+    assert @socket.get_prompts() == [{socket, "What is your player name? "}]
+    @socket.clear_messages
+
+    Session.recv(pid, "user")
+    wait_cast(pid)
+
+    assert @socket.get_prompts() == [{socket, "Password: "}]
+    @socket.clear_messages
+
+    Session.recv(pid, "password")
+    wait_cast(pid)
+
+    assert @socket.get_echos() == [{socket, "Welcome, user"}]
+  end
+end
