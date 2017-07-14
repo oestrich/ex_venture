@@ -3,6 +3,7 @@ defmodule Networking.Protocol do
   require Logger
 
   @behaviour :ranch_protocol
+  @behaviour Networking.Socket
 
   def start_link(ref, socket, transport, _opts) do
     pid = :proc_lib.spawn_link(__MODULE__, :init, [ref, socket, transport])
