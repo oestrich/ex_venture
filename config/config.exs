@@ -31,3 +31,6 @@ config :ex_mud,
 # here (which is why it is important to import them last).
 #
 import_config "#{Mix.env}.exs"
+
+config :distillery,
+  no_warn_missing: [:elixir_make]

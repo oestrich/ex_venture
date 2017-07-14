@@ -43,5 +43,8 @@ release :ex_mud do
   set applications: [
     :runtime_tools
   ]
-end
 
+  set commands: [
+    "migrate": "rel/commands/migrate.sh"
+  ]
+end
