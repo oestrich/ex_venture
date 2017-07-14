@@ -38,6 +38,7 @@ defmodule Game.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
+      {:distillery, "~> 1.4", runtime: false},
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},
     ]
