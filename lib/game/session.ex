@@ -3,14 +3,13 @@ defmodule Game.Session do
   require Logger
 
   alias Game.Authentication
-  alias Game.Color
+  alias Game.Command
   alias Game.Session
 
   @socket Application.get_env(:ex_mud, :networking)[:socket_module]
 
   @timeout_check 5000
   @timeout_seconds 5 * 60 * -1
-  @registry_key "player"
 
   @doc """
   Start a new session
@@ -50,14 +49,13 @@ defmodule Game.Session do
     socket |> @socket.echo("Welcome to ExMud")
     socket |> @socket.prompt("What is your player name? ")
 
-    Registry.register(Session.Registry, @registry_key, :connected)
     self() |> schedule_inactive_check()
     {:ok, %{socket: socket, active: false, login: nil, last_recv: Timex.now()}}
   end
 
   # On a disconnect unregister the PID and stop the server
   def handle_cast(:disconnect, state) do
-    Registry.unregister(Session.Registry, @registry_key)
+    Session.Registry.unregister()
     {:stop, :normal, state}
   end
 
@@ -79,6 +77,8 @@ defmodule Game.Session do
         socket |> @socket.disconnect()
         {:noreply, state}
       user ->
+        Session.Registry.register(user)
+
         socket |> @socket.echo("Welcome, #{user.username}")
 
         state = state
@@ -91,12 +91,10 @@ defmodule Game.Session do
   end
 
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{active: true, user: user}) do
-    Session.Registry
-    |> Registry.lookup(@registry_key)
-    |> Enum.each(fn ({pid, _}) ->
-      GenServer.cast(pid, {:echo, Color.format("{blue}#{user.username}{/blue}: #{message}")})
-    end)
+  def handle_cast({:recv, message}, state = %{active: true}) do
+    message
+    |> Command.parse
+    |> Command.run(state)
 
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
