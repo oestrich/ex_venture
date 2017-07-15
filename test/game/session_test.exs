@@ -19,25 +19,16 @@ defmodule Game.SessionTest do
   end
 
   test "recv'ing messages - the first", %{socket: socket} do
-    {:noreply, state} = Session.handle_cast({:recv, "name"}, %{socket: socket, state: "login", login: nil})
+    {:noreply, state} = Session.handle_cast({:recv, "name"}, %{socket: socket, state: "login"})
 
     assert @socket.get_prompts() == [{socket, "Password: "}]
-    assert state.login.username == "name"
     assert state.last_recv
   end
 
-  test "recv'ing messages - afterwards", %{socket: socket} do
-    create_user(%{username: "user", password: "password"})
-    {:ok, other_pid} = Session.start_link(socket)
-    GenServer.cast(other_pid, {:recv, "user"})
-    GenServer.cast(other_pid, {:recv, "password"})
-    wait_cast(other_pid)
-    @socket.clear_messages
+  test "recv'ing messages - after login processes commands", %{socket: socket} do
+    {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active"})
 
-    {:noreply, state} = Session.handle_cast({:recv, "say hi everyone"}, %{socket: socket, state: "active", user: %{username: "name"}})
-    wait_cast(other_pid)
-
-    assert @socket.get_echos() == [{socket, "\e[34mname\e[0m: hi everyone"}]
+    assert @socket.get_echos() == [{socket, "Good bye."}]
     assert state.last_recv
   end
 
@@ -58,25 +49,5 @@ defmodule Game.SessionTest do
 
     {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{})
     assert Registry.lookup(Session.Registry, "player") == []
-  end
-
-  test "verifies the user's username and password", %{socket: socket} do
-    user = create_user(%{username: "user", password: "password"})
-
-    {:noreply, state} = Session.handle_cast({:recv, "password"}, %{socket: socket, login: %{username: "user"}, state: "login"})
-
-    assert state.user.id == user.id
-    assert state.state == "active"
-    assert @socket.get_echos() == [{socket, "Welcome, user"}]
-  end
-
-  test "verifies the user's username and password - failure", %{socket: socket} do
-    create_user(%{username: "user", password: "password"})
-
-    {:noreply, state} = Session.handle_cast({:recv, "p@ssword"}, %{socket: socket, login: %{username: "user"}, state: "login"})
-
-    assert Map.has_key?(state, :user) == false
-    assert @socket.get_echos() == [{socket, "Invalid password"}]
-    assert @socket.get_disconnects() == [socket]
   end
 end
