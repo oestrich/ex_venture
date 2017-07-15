@@ -45,8 +45,7 @@ defmodule Game.Session do
   #
 
   def init(socket) do
-    socket |> @socket.echo("Welcome to ExMud")
-    socket |> @socket.prompt("What is your player name? ")
+    socket |> Session.Login.start()
 
     self() |> schedule_inactive_check()
     {:ok, %{socket: socket, state: "login", login: nil, last_recv: Timex.now()}}
@@ -67,6 +66,12 @@ defmodule Game.Session do
   # Handle logging in
   def handle_cast({:recv, name}, state = %{state: "login"}) do
     state = Session.Login.process(name, state)
+    {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
+  end
+
+  # Handle creating an account
+  def handle_cast({:recv, name}, state = %{state: "create"}) do
+    state = Session.CreateAccount.process(name, state)
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 

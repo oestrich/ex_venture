@@ -12,7 +12,7 @@ defmodule Game.Help do
   def base() do
     commands = Agent.get(__MODULE__, &(&1["commands"]))
     |> Enum.map(fn ({key, %{"short" => short}}) ->
-      "\t#{key |> String.upcase}: #{short}\n"
+      "\t{white}#{key |> String.upcase}{/white}: #{short}\n"
     end)
     |> Enum.join("")
 
@@ -20,7 +20,9 @@ defmodule Game.Help do
   end
 
   def topic(topic) do
-    command = Agent.get(__MODULE__, &(Map.get(&1["commands"], topic)))
-    command["full"]
+    case Agent.get(__MODULE__, &(Map.get(&1["commands"], topic, nil))) do
+      %{"full" => full} -> full
+      nil -> "Unknown topic"
+    end
   end
 end

@@ -9,6 +9,6 @@ defmodule Game.Color do
     |> String.replace("{magenta}", "\e[35m")
     |> String.replace("{cyan}", "\e[36m")
     |> String.replace("{white}", "\e[37m")
-    |> String.replace(~r/{\/.+}/, "\e[0m")
+    |> String.replace(~r/{\/\w+}/, "\e[0m")
   end
 end

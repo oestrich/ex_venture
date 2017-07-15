@@ -3,6 +3,10 @@ defmodule Game.ColorTest do
 
   import Game.Color, only: [format: 1]
 
+  test "replaces multiple colors" do
+    assert format("{black}word{/black} {blue}word{/blue}") == "\e[30mword\e[0m \e[34mword\e[0m"
+  end
+
   test "replaces black" do
     assert format("{black}word{/black}") == "\e[30mword\e[0m"
   end

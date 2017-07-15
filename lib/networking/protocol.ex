@@ -2,6 +2,8 @@ defmodule Networking.Protocol do
   use GenServer
   require Logger
 
+  alias Game.Color
+
   @behaviour :ranch_protocol
   @behaviour Networking.Socket
 
@@ -17,7 +19,7 @@ defmodule Networking.Protocol do
   """
   @spec echo(socket :: pid, message :: String.t) :: :ok
   def echo(socket, message) do
-    GenServer.cast(socket, {:echo, message})
+    GenServer.cast(socket, {:echo, message |> Color.format})
   end
 
   @doc """
@@ -27,7 +29,7 @@ defmodule Networking.Protocol do
   """
   @spec prompt(socket :: pid, message :: String.t) :: :ok
   def prompt(socket, message) do
-    GenServer.cast(socket, {:echo, message, :prompt})
+    GenServer.cast(socket, {:echo, message |> Color.format, :prompt})
   end
 
   @doc """
@@ -77,12 +79,12 @@ defmodule Networking.Protocol do
     {:noreply, state}
   end
   def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
-    Logger.info "Closing"
+    Logger.info "Connection Closed"
     disconnect(transport, socket, state)
     {:stop, :normal, state}
   end
   def handle_info({:tcp_error, _socket, :etimedout}, state = %{socket: socket, transport: transport}) do
-    Logger.info "Timeout"
+    Logger.info "Connection Timeout"
     disconnect(transport, socket, state)
     {:stop, :normal, state}
   end
@@ -90,7 +92,9 @@ defmodule Networking.Protocol do
   # Disconnect the socket and optionally the session
   defp disconnect(transport, socket, state) do
     case state do
-      %{session: pid} -> pid |> Game.Session.disconnect()
+      %{session: pid} ->
+        Logger.info "Disconnecting player"
+        pid |> Game.Session.disconnect()
       _ -> nil
     end
     transport.close(socket)

@@ -1,7 +1,6 @@
 defmodule Game.Command do
   use Networking.Socket
 
-  alias Game.Color
   alias Game.Help
   alias Game.Session
 
@@ -11,7 +10,7 @@ defmodule Game.Command do
       "who" <> _extra -> {:who}
       "quit" -> {:quit}
       "help" -> {:help}
-      "help " <> topic -> {:help, topic}
+      "help " <> topic -> {:help, topic |> String.downcase}
       _ -> {:error, :bad_parse}
     end
   end
@@ -19,15 +18,18 @@ defmodule Game.Command do
   def run({:say, message}, %{user: user}) do
     Session.Registry.connected_players()
     |> Enum.each(fn ({pid, _}) ->
-      GenServer.cast(pid, {:echo, Color.format("{blue}#{user.username}{/blue}: #{message}")})
+      GenServer.cast(pid, {:echo, "{blue}#{user.username}{/blue}: #{message}"})
     end)
   end
 
   def run({:who}, %{socket: socket}) do
-    Session.Registry.connected_players()
-    |> Enum.each(fn ({_pid, user}) ->
-      socket |> @socket.echo(user.username)
+    usernames = Session.Registry.connected_players()
+    |> Enum.map(fn ({_pid, user}) ->
+      "  - {blue}#{user.username}{/blue}\n"
     end)
+    |> Enum.join("")
+
+    socket |> @socket.echo("Players online:\n#{usernames}")
   end
 
   def run({:quit}, %{socket: socket}) do

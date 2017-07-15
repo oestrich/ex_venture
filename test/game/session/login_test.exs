@@ -38,4 +38,11 @@ defmodule Game.Session.LoginTest do
     assert @socket.get_echos() == [{socket, "Invalid password"}]
     assert @socket.get_disconnects() == [socket]
   end
+
+  test "entering the username as 'create' will make a new account", %{socket: socket} do
+    state = Login.process("create", %{socket: socket})
+
+    assert state.state == "create"
+    assert @socket.get_prompts() == [{socket, "Username: "}]
+  end
 end
