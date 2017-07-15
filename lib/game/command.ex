@@ -1,5 +1,6 @@
 defmodule Game.Command do
   alias Game.Color
+  alias Game.Help
   alias Game.Session
 
   @socket Application.get_env(:ex_mud, :networking)[:socket_module]
@@ -9,6 +10,8 @@ defmodule Game.Command do
       "say " <> message -> {:say, message}
       "who" <> _extra -> {:who}
       "quit" -> {:quit}
+      "help" -> {:help}
+      "help " <> topic -> {:help, topic}
       _ -> {:error, :bad_parse}
     end
   end
@@ -25,6 +28,19 @@ defmodule Game.Command do
     |> Enum.each(fn ({_pid, user}) ->
       socket |> @socket.echo(user.username)
     end)
+  end
+
+  def run({:quit}, %{socket: socket}) do
+    socket |> @socket.echo("Good bye.")
+    socket |> @socket.disconnect
+  end
+
+  def run({:help}, %{socket: socket}) do
+    socket |> @socket.echo(Help.base)
+  end
+
+  def run({:help, topic}, %{socket: socket}) do
+    socket |> @socket.echo(Help.topic(topic))
   end
 
   def run({:error, :bad_parse}, %{socket: socket}) do

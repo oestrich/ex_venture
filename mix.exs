@@ -3,7 +3,7 @@ defmodule Game.Mixfile do
 
   def project do
     [app: :ex_mud,
-     version: "0.1.0",
+     version: "0.2.0",
      elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      build_embedded: Mix.env == :prod,
@@ -45,6 +45,7 @@ defmodule Game.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},
+      {:yaml_elixir, "~> 1.3"},
     ]
   end
 end
