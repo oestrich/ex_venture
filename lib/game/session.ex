@@ -2,7 +2,6 @@ defmodule Game.Session do
   use GenServer
   require Logger
 
-  alias Game.Authentication
   alias Game.Command
   alias Game.Session
 
@@ -50,7 +49,7 @@ defmodule Game.Session do
     socket |> @socket.prompt("What is your player name? ")
 
     self() |> schedule_inactive_check()
-    {:ok, %{socket: socket, active: false, login: nil, last_recv: Timex.now()}}
+    {:ok, %{socket: socket, state: "login", login: nil, last_recv: Timex.now()}}
   end
 
   # On a disconnect unregister the PID and stop the server
@@ -65,33 +64,14 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
-  # The first receive should ask for the name
-  def handle_cast({:recv, name}, state = %{socket: socket, active: false, login: nil}) do
-    socket |> @socket.prompt("Password: ")
-    {:noreply, Map.merge(state, %{login: %{username: name}, last_recv: Timex.now()})}
-  end
-  def handle_cast({:recv, password}, state = %{socket: socket, active: false, login: %{username: username}}) do
-    case Authentication.find_and_validate(username, password) do
-      {:error, :invalid} ->
-        socket |> @socket.echo("Invalid password")
-        socket |> @socket.disconnect()
-        {:noreply, state}
-      user ->
-        Session.Registry.register(user)
-
-        socket |> @socket.echo("Welcome, #{user.username}")
-
-        state = state
-        |> Map.delete(:login)
-        |> Map.put(:user, user)
-        |> Map.put(:active, true)
-
-        {:noreply, state}
-    end
+  # Handle logging in
+  def handle_cast({:recv, name}, state = %{state: "login"}) do
+    state = Session.Login.process(name, state)
+    {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{active: true}) do
+  def handle_cast({:recv, message}, state = %{state: "active"}) do
     message
     |> Command.parse
     |> Command.run(state)

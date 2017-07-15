@@ -19,7 +19,7 @@ defmodule Game.SessionTest do
   end
 
   test "recv'ing messages - the first", %{socket: socket} do
-    {:noreply, state} = Session.handle_cast({:recv, "name"}, %{socket: socket, active: false, login: nil})
+    {:noreply, state} = Session.handle_cast({:recv, "name"}, %{socket: socket, state: "login", login: nil})
 
     assert @socket.get_prompts() == [{socket, "Password: "}]
     assert state.login.username == "name"
@@ -34,7 +34,7 @@ defmodule Game.SessionTest do
     wait_cast(other_pid)
     @socket.clear_messages
 
-    {:noreply, state} = Session.handle_cast({:recv, "say hi everyone"}, %{socket: socket, active: true, user: %{username: "name"}})
+    {:noreply, state} = Session.handle_cast({:recv, "say hi everyone"}, %{socket: socket, state: "active", user: %{username: "name"}})
     wait_cast(other_pid)
 
     assert @socket.get_echos() == [{socket, "\e[34mname\e[0m: hi everyone"}]
@@ -63,17 +63,17 @@ defmodule Game.SessionTest do
   test "verifies the user's username and password", %{socket: socket} do
     user = create_user(%{username: "user", password: "password"})
 
-    {:noreply, state} = Session.handle_cast({:recv, "password"}, %{socket: socket, login: %{username: "user"}, active: false})
+    {:noreply, state} = Session.handle_cast({:recv, "password"}, %{socket: socket, login: %{username: "user"}, state: "login"})
 
     assert state.user.id == user.id
-    assert state.active == true
+    assert state.state == "active"
     assert @socket.get_echos() == [{socket, "Welcome, user"}]
   end
 
   test "verifies the user's username and password - failure", %{socket: socket} do
     create_user(%{username: "user", password: "password"})
 
-    {:noreply, state} = Session.handle_cast({:recv, "p@ssword"}, %{socket: socket, login: %{username: "user"}, active: false})
+    {:noreply, state} = Session.handle_cast({:recv, "p@ssword"}, %{socket: socket, login: %{username: "user"}, state: "login"})
 
     assert Map.has_key?(state, :user) == false
     assert @socket.get_echos() == [{socket, "Invalid password"}]
