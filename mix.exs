@@ -3,7 +3,7 @@ defmodule Game.Mixfile do
 
   def project do
     [app: :ex_mud,
-     version: "0.2.0",
+     version: "0.3.0",
      elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      build_embedded: Mix.env == :prod,
