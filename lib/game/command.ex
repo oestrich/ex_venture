@@ -1,9 +1,9 @@
 defmodule Game.Command do
+  use Networking.Socket
+
   alias Game.Color
   alias Game.Help
   alias Game.Session
-
-  @socket Application.get_env(:ex_mud, :networking)[:socket_module]
 
   def parse(command) do
     case command do
