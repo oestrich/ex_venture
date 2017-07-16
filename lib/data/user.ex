@@ -5,13 +5,14 @@ defmodule Data.User do
     field :username, :string
     field :password, :string, virtual: true
     field :password_hash, :string
+    field :save, Data.Save
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:username, :password])
+    |> cast(params, [:username, :password, :save])
     |> validate_required([:username])
     |> hash_password
     |> validate_required([:password_hash])

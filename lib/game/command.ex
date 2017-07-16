@@ -3,6 +3,7 @@ defmodule Game.Command do
   use Game.Room
 
   alias Data.Room
+  alias Game.Account
   alias Game.Help
   alias Game.Session
 
@@ -26,7 +27,7 @@ defmodule Game.Command do
     end
   end
 
-  def run({:east}, state = %{room_id: room_id}) do
+  def run({:east}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{east_id: nil} -> :ok
@@ -43,7 +44,7 @@ defmodule Game.Command do
     :ok
   end
 
-  def run({:look}, %{socket: socket, room_id: room_id}) do
+  def run({:look}, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     exits = Room.exits(room)
     |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
@@ -52,7 +53,7 @@ defmodule Game.Command do
     :ok
   end
 
-  def run({:north}, state = %{room_id: room_id}) do
+  def run({:north}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{north_id: nil} -> :ok
@@ -60,9 +61,12 @@ defmodule Game.Command do
     end
   end
 
-  def run({:quit}, %{socket: socket}) do
+  def run({:quit}, %{socket: socket, user: user, save: save}) do
     socket |> @socket.echo("Good bye.")
     socket |> @socket.disconnect
+
+    user |> Account.save(save)
+
     :ok
   end
 
@@ -73,7 +77,7 @@ defmodule Game.Command do
     end)
     :ok
   end
-  def run({:south}, state = %{room_id: room_id}) do
+  def run({:south}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{south_id: nil} -> :ok
@@ -81,7 +85,7 @@ defmodule Game.Command do
     end
   end
 
-  def run({:west}, state = %{room_id: room_id}) do
+  def run({:west}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{west_id: nil} -> :ok
@@ -105,8 +109,11 @@ defmodule Game.Command do
     :ok
   end
 
-  defp move_to(state, room_id) do
-    run({:look}, %{state | room_id: room_id})
-    {:update, Map.merge(state, %{room_id: room_id})}
+  defp move_to(state = %{save: save}, room_id) do
+    save = %{save | room_id: room_id}
+    state = %{state | save: save}
+
+    run({:look}, state)
+    {:update, state}
   end
 end

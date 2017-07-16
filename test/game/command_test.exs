@@ -1,5 +1,5 @@
 defmodule Game.CommandTest do
-  use ExUnit.Case
+  use Data.ModelCase
 
   alias Game.Command
 
@@ -62,10 +62,15 @@ defmodule Game.CommandTest do
 
   describe "quitting" do
     test "quit command", %{socket: socket} do
-      Command.run({:quit}, %{socket: socket})
+      user = create_user(%{username: "user", password: "password"})
+
+      :ok = Command.run({:quit}, %{socket: socket, user: user, save: %{room_id: 5}})
 
       assert @socket.get_echos() == [{socket, "Good bye."}]
       assert @socket.get_disconnects() == [socket]
+
+      user = Data.User |> Repo.get(user.id)
+      assert user.save.room_id == 5
     end
   end
 
@@ -91,7 +96,7 @@ defmodule Game.CommandTest do
     end
 
     test "view room information", %{socket: socket} do
-      Command.run({:look}, %{socket: socket, room_id: 1})
+      Command.run({:look}, %{socket: socket, save: %{room_id: 1}})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Hallway), look)
@@ -102,46 +107,46 @@ defmodule Game.CommandTest do
   describe "moving" do
     test "north", %{socket: socket} do
       @room.set_room(%Data.Room{north_id: 2})
-      {:update, state} = Command.run({:north}, %{socket: socket, room_id: 1})
-      assert state.room_id == 2
+      {:update, state} = Command.run({:north}, %{socket: socket, save: %{room_id: 1}})
+      assert state.save.room_id == 2
     end
 
     test "north - not found", %{socket: socket} do
       @room.set_room(%Data.Room{north_id: nil})
-      :ok = Command.run({:north}, %{socket: socket, room_id: 1})
+      :ok = Command.run({:north}, %{socket: socket, save: %{room_id: 1}})
     end
 
     test "east", %{socket: socket} do
       @room.set_room(%Data.Room{east_id: 2})
-      {:update, state} = Command.run({:east}, %{socket: socket, room_id: 1})
-      assert state.room_id == 2
+      {:update, state} = Command.run({:east}, %{socket: socket, save: %{room_id: 1}})
+      assert state.save.room_id == 2
     end
 
     test "east - not found", %{socket: socket} do
       @room.set_room(%Data.Room{east_id: nil})
-      :ok = Command.run({:east}, %{socket: socket, room_id: 1})
+      :ok = Command.run({:east}, %{socket: socket, save: %{room_id: 1}})
     end
 
     test "south", %{socket: socket} do
       @room.set_room(%Data.Room{south_id: 2})
-      {:update, state} = Command.run({:south}, %{socket: socket, room_id: 1})
-      assert state.room_id == 2
+      {:update, state} = Command.run({:south}, %{socket: socket, save: %{room_id: 1}})
+      assert state.save.room_id == 2
     end
 
     test "south - not found", %{socket: socket} do
       @room.set_room(%Data.Room{south_id: nil})
-      :ok = Command.run({:south}, %{socket: socket, room_id: 1})
+      :ok = Command.run({:south}, %{socket: socket, save: %{room_id: 1}})
     end
 
     test "west", %{socket: socket} do
       @room.set_room(%Data.Room{west_id: 2})
-      {:update, state} = Command.run({:west}, %{socket: socket, room_id: 1})
-      assert state.room_id == 2
+      {:update, state} = Command.run({:west}, %{socket: socket, save: %{room_id: 1}})
+      assert state.save.room_id == 2
     end
 
     test "west - not found", %{socket: socket} do
       @room.set_room(%Data.Room{west_id: nil})
-      :ok = Command.run({:west}, %{socket: socket, room_id: 1})
+      :ok = Command.run({:west}, %{socket: socket, save: %{room_id: 1}})
     end
   end
 end

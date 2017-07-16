@@ -24,6 +24,13 @@ defmodule Game.Room do
     Room |> Repo.all
   end
 
+  @doc """
+  Load the starting room.
+  """
+  def starting() do
+    Room |> Repo.one
+  end
+
   def look(id) do
     GenServer.call(pid(id), :look)
   end

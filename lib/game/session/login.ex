@@ -27,6 +27,7 @@ defmodule Game.Session.Login do
 
     state
     |> Map.put(:user, user)
+    |> Map.put(:save, user.save)
     |> Map.put(:state, "active")
   end
 

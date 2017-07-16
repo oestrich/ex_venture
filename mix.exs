@@ -45,6 +45,7 @@ defmodule Game.Mixfile do
       {:distillery, "~> 1.4", runtime: false},
       {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:poison, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},
