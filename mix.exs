@@ -2,13 +2,16 @@ defmodule Game.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :ex_mud,
-     version: "0.4.0",
-     elixir: "~> 1.4",
-     elixirc_paths: elixirc_paths(Mix.env),
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :ex_mud,
+      version: "0.4.0",
+      elixir: "~> 1.4",
+      elixirc_paths: elixirc_paths(Mix.env),
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      deps: deps(),
+      aliases: aliases(),
+    ]
   end
 
   # Configuration for the OTP application
@@ -46,6 +49,13 @@ defmodule Game.Mixfile do
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},
       {:yaml_elixir, "~> 1.3"},
+    ]
+  end
+
+  defp aliases do
+    [
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
     ]
   end
 end

@@ -16,6 +16,7 @@ defmodule ExMud.Application do
       supervisor(Game.Session.Supervisor, []),
       supervisor(Registry, [:duplicate, Game.Session.Registry]),
       worker(Game.Help, []),
+      supervisor(Game.Zone, []),
       listener(),
     ] |> Enum.reject(fn child -> is_nil(child) end)
 

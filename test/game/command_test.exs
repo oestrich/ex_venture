@@ -30,6 +30,10 @@ defmodule Game.CommandTest do
       assert Command.parse("help topic") == {:help, "topic"}
     end
 
+    test "looking" do
+      assert Command.parse("look") == {:look}
+    end
+
     test "command not found" do
       assert Command.parse("does not exist") == {:error, :bad_parse}
     end
@@ -60,6 +64,16 @@ defmodule Game.CommandTest do
 
       [{^socket, help}] = @socket.get_echos()
       assert Regex.match?(~r(say), help)
+    end
+  end
+
+  describe "looking" do
+    test "view room information", %{socket: socket} do
+      Command.run({:look}, %{socket: socket, room_id: 1})
+
+      [{^socket, look}] = @socket.get_echos()
+      assert Regex.match?(~r(Hallway), look)
+      assert Regex.match?(~r(Exits), look)
     end
   end
 end

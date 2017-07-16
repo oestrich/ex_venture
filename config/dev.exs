@@ -9,3 +9,6 @@ config :ex_mud, Data.Repo,
 config :ex_mud, :networking,
   server: true,
   socket_module: Networking.Protocol
+
+config :ex_mud, :game,
+  room: Game.Room

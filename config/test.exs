@@ -13,5 +13,8 @@ config :ex_mud, :networking,
   server: false,
   socket_module: Test.Networking.Socket
 
+config :ex_mud, :game,
+  room: Test.Game.Room
+
 config :comeonin, :bcrypt_log_rounds, 4
 config :comeonin, :pbkdf2_rounds, 1
