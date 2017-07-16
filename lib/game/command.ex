@@ -46,10 +46,7 @@ defmodule Game.Command do
 
   def run({:look}, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    exits = Room.exits(room)
-    |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
-    |> Enum.join(" ")
-    socket |> @socket.echo("{green}#{room.name}{/green}\n#{room.description}\nExits: #{exits}")
+    socket |> @socket.echo("{green}#{room.name}{/green}\n#{room.description}\nExits: #{exits(room)}\nPlayers: #{players(room)}")
     :ok
   end
 
@@ -109,11 +106,27 @@ defmodule Game.Command do
     :ok
   end
 
-  defp move_to(state = %{save: save}, room_id) do
+  defp move_to(state = %{save: save, user: user}, room_id) do
+    @room.leave(save.room_id, user)
+
     save = %{save | room_id: room_id}
     state = %{state | save: save}
 
+    @room.enter(room_id, user)
+
     run({:look}, state)
     {:update, state}
+  end
+
+  defp exits(room) do
+    Room.exits(room)
+    |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
+    |> Enum.join(" ")
+  end
+
+  def players(%{players: players}) do
+    players
+    |> Enum.map(fn (player) -> "{blue}#{player.username}{/blue}" end)
+    |> Enum.join(", ")
   end
 end

@@ -1,5 +1,6 @@
 defmodule Game.Session.Login do
   use Networking.Socket
+  use Game.Room
 
   alias Game.Authentication
   alias Game.Command
@@ -24,6 +25,8 @@ defmodule Game.Session.Login do
     Session.Registry.register(user)
 
     socket |> @socket.echo("\nWelcome, #{user.username}!\n")
+
+    @room.enter(user.save.room_id, user)
 
     state
     |> Map.put(:user, user)

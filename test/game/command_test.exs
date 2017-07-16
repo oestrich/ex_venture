@@ -105,9 +105,13 @@ defmodule Game.CommandTest do
   end
 
   describe "moving" do
-    test "north", %{socket: socket} do
-      @room.set_room(%Data.Room{north_id: 2})
-      {:update, state} = Command.run({:north}, %{socket: socket, save: %{room_id: 1}})
+    setup do
+      %{user: %{}}
+    end
+
+    test "north", %{socket: socket, user: user} do
+      @room.set_room(%Data.Room{north_id: 2, players: []})
+      {:update, state} = Command.run({:north}, %{socket: socket, user: user, save: %{room_id: 1}})
       assert state.save.room_id == 2
     end
 
@@ -116,9 +120,9 @@ defmodule Game.CommandTest do
       :ok = Command.run({:north}, %{socket: socket, save: %{room_id: 1}})
     end
 
-    test "east", %{socket: socket} do
-      @room.set_room(%Data.Room{east_id: 2})
-      {:update, state} = Command.run({:east}, %{socket: socket, save: %{room_id: 1}})
+    test "east", %{socket: socket, user: user} do
+      @room.set_room(%Data.Room{east_id: 2, players: []})
+      {:update, state} = Command.run({:east}, %{socket: socket, user: user, save: %{room_id: 1}})
       assert state.save.room_id == 2
     end
 
@@ -127,9 +131,9 @@ defmodule Game.CommandTest do
       :ok = Command.run({:east}, %{socket: socket, save: %{room_id: 1}})
     end
 
-    test "south", %{socket: socket} do
-      @room.set_room(%Data.Room{south_id: 2})
-      {:update, state} = Command.run({:south}, %{socket: socket, save: %{room_id: 1}})
+    test "south", %{socket: socket, user: user} do
+      @room.set_room(%Data.Room{south_id: 2, players: []})
+      {:update, state} = Command.run({:south}, %{socket: socket, user: user, save: %{room_id: 1}})
       assert state.save.room_id == 2
     end
 
@@ -138,9 +142,9 @@ defmodule Game.CommandTest do
       :ok = Command.run({:south}, %{socket: socket, save: %{room_id: 1}})
     end
 
-    test "west", %{socket: socket} do
-      @room.set_room(%Data.Room{west_id: 2})
-      {:update, state} = Command.run({:west}, %{socket: socket, save: %{room_id: 1}})
+    test "west", %{socket: socket, user: user} do
+      @room.set_room(%Data.Room{west_id: 2, players: []})
+      {:update, state} = Command.run({:west}, %{socket: socket, user: user, save: %{room_id: 1}})
       assert state.save.room_id == 2
     end
 

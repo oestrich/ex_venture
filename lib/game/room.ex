@@ -31,15 +31,44 @@ defmodule Game.Room do
     Room |> Repo.one
   end
 
+  @doc """
+  Look around the room
+
+  Fetches current room
+  """
   def look(id) do
     GenServer.call(pid(id), :look)
   end
 
-  def init(room) do
-    {:ok, %{room: room}}
+  @doc """
+  Enter a room
+  """
+  @spec enter(id :: Integer.t, user :: Map.t) :: :ok
+  def enter(id, user) do
+    GenServer.cast(pid(id), {:enter, user})
   end
 
-  def handle_call(:look, _from, state = %{room: room}) do
-    {:reply, room, state}
+  @doc """
+  Leave a room
+  """
+  @spec leave(id :: Integer.t, user :: Map.t) :: :ok
+  def leave(id, user) do
+    GenServer.cast(pid(id), {:leave, user})
+  end
+
+  def init(room) do
+    {:ok, %{room: room, players: []}}
+  end
+
+  def handle_call(:look, _from, state = %{room: room, players: players}) do
+    {:reply, Map.put(room, :players, players), state}
+  end
+
+  def handle_cast({:enter, user}, state = %{players: players}) do
+    {:noreply, Map.put(state, :players, [user | players])}
+  end
+  def handle_cast({:leave, user}, state = %{players: players}) do
+    players = List.delete(players, user)
+    {:noreply, Map.put(state, :players, players)}
   end
 end
