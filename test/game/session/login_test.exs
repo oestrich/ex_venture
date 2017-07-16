@@ -22,11 +22,11 @@ defmodule Game.Session.LoginTest do
   test "verifies the user's username and password", %{socket: socket} do
     user = create_user(%{username: "user", password: "password"})
 
-    state = Login.process("password", %{socket: socket, login: %{username: "user"}})
+    state = Login.process("password", %{socket: socket, room_id: 1, login: %{username: "user"}})
 
     assert state.user.id == user.id
     assert state.state == "active"
-    assert @socket.get_echos() == [{socket, "Welcome, user"}]
+    [{^socket, "\nWelcome, user!\n"} | _] = @socket.get_echos()
   end
 
   test "verifies the user's username and password - failure", %{socket: socket} do

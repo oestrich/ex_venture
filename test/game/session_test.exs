@@ -28,7 +28,7 @@ defmodule Game.SessionTest do
   test "recv'ing messages - after login processes commands", %{socket: socket} do
     {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active"})
 
-    assert @socket.get_echos() == [{socket, "Good bye."}]
+    assert @socket.get_echos() == [{socket, ""}, {socket, "Good bye."}]
     assert state.last_recv
   end
 

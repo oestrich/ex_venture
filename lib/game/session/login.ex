@@ -2,6 +2,7 @@ defmodule Game.Session.Login do
   use Networking.Socket
 
   alias Game.Authentication
+  alias Game.Command
   alias Game.Session
 
   @doc """
@@ -22,7 +23,7 @@ defmodule Game.Session.Login do
   def login(user, socket, state) do
     Session.Registry.register(user)
 
-    socket |> @socket.echo("Welcome, #{user.username}")
+    socket |> @socket.echo("\nWelcome, #{user.username}!\n")
 
     state
     |> Map.put(:user, user)
@@ -40,7 +41,9 @@ defmodule Game.Session.Login do
         socket |> @socket.disconnect()
         state
       user ->
-        user |> login(socket, state |> Map.delete(:login))
+        state = user |> login(socket, state |> Map.delete(:login))
+        Command.run({:look}, state)
+        state
     end
   end
   def process(message, state = %{socket: socket}) do

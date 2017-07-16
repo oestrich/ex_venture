@@ -76,12 +76,16 @@ defmodule Game.Session do
   end
 
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{state: "active"}) do
-    message
-    |> Command.parse
-    |> Command.run(state)
+  def handle_cast({:recv, message}, state = %{socket: socket, state: "active"}) do
+    socket |> @socket.echo("")
 
-    {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
+    state = Map.merge(state, %{last_recv: Timex.now()})
+    case message |> Command.parse |> Command.run(state) do
+      :ok ->
+        {:noreply, state}
+      {:update, state} ->
+        {:noreply, state}
+    end
   end
 
   def handle_info(:inactive_check, state) do

@@ -4,6 +4,7 @@ defmodule Game.CommandTest do
   alias Game.Command
 
   @socket Test.Networking.Socket
+  @room Test.Game.Room
 
   setup do
     socket = :socket
@@ -12,6 +13,10 @@ defmodule Game.CommandTest do
   end
 
   describe "parsing commands" do
+    test "command not found" do
+      assert Command.parse("does not exist") == {:error, :bad_parse}
+    end
+
     test "parsing say" do
       assert Command.parse("say hello") == {:say, "hello"}
     end
@@ -34,12 +39,25 @@ defmodule Game.CommandTest do
       assert Command.parse("look") == {:look}
     end
 
-    test "command not found" do
-      assert Command.parse("does not exist") == {:error, :bad_parse}
+    test "north" do
+      assert Command.parse("north") == {:north}
+      assert Command.parse("n") == {:north}
     end
-  end
 
-  describe "find out who is online" do
+    test "east" do
+      assert Command.parse("east") == {:east}
+      assert Command.parse("e") == {:east}
+    end
+
+    test "south" do
+      assert Command.parse("south") == {:south}
+      assert Command.parse("s") == {:south}
+    end
+
+    test "west" do
+      assert Command.parse("west") == {:west}
+      assert Command.parse("w") == {:west}
+    end
   end
 
   describe "quitting" do
@@ -68,12 +86,62 @@ defmodule Game.CommandTest do
   end
 
   describe "looking" do
+    setup do
+      @room.set_room(@room._room())
+    end
+
     test "view room information", %{socket: socket} do
       Command.run({:look}, %{socket: socket, room_id: 1})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Hallway), look)
       assert Regex.match?(~r(Exits), look)
+    end
+  end
+
+  describe "moving" do
+    test "north", %{socket: socket} do
+      @room.set_room(%Data.Room{north_id: 2})
+      {:update, state} = Command.run({:north}, %{socket: socket, room_id: 1})
+      assert state.room_id == 2
+    end
+
+    test "north - not found", %{socket: socket} do
+      @room.set_room(%Data.Room{north_id: nil})
+      :ok = Command.run({:north}, %{socket: socket, room_id: 1})
+    end
+
+    test "east", %{socket: socket} do
+      @room.set_room(%Data.Room{east_id: 2})
+      {:update, state} = Command.run({:east}, %{socket: socket, room_id: 1})
+      assert state.room_id == 2
+    end
+
+    test "east - not found", %{socket: socket} do
+      @room.set_room(%Data.Room{east_id: nil})
+      :ok = Command.run({:east}, %{socket: socket, room_id: 1})
+    end
+
+    test "south", %{socket: socket} do
+      @room.set_room(%Data.Room{south_id: 2})
+      {:update, state} = Command.run({:south}, %{socket: socket, room_id: 1})
+      assert state.room_id == 2
+    end
+
+    test "south - not found", %{socket: socket} do
+      @room.set_room(%Data.Room{south_id: nil})
+      :ok = Command.run({:south}, %{socket: socket, room_id: 1})
+    end
+
+    test "west", %{socket: socket} do
+      @room.set_room(%Data.Room{west_id: 2})
+      {:update, state} = Command.run({:west}, %{socket: socket, room_id: 1})
+      assert state.room_id == 2
+    end
+
+    test "west - not found", %{socket: socket} do
+      @room.set_room(%Data.Room{west_id: nil})
+      :ok = Command.run({:west}, %{socket: socket, room_id: 1})
     end
   end
 end
