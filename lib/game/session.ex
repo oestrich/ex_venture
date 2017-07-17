@@ -65,13 +65,13 @@ defmodule Game.Session do
 
   # Handle logging in
   def handle_cast({:recv, name}, state = %{state: "login"}) do
-    state = Session.Login.process(name, state)
+    state = Session.Login.process(name, self(), state)
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
   # Handle creating an account
   def handle_cast({:recv, name}, state = %{state: "create"}) do
-    state = Session.CreateAccount.process(name, state)
+    state = Session.CreateAccount.process(name, self(), state)
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
@@ -80,7 +80,7 @@ defmodule Game.Session do
     socket |> @socket.echo("")
 
     state = Map.merge(state, %{last_recv: Timex.now()})
-    case message |> Command.parse |> Command.run(state) do
+    case message |> Command.parse |> Command.run(self(), state) do
       :ok ->
         {:noreply, state}
       {:update, state} ->

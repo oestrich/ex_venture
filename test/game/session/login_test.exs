@@ -13,7 +13,7 @@ defmodule Game.Session.LoginTest do
   end
 
   test "start signing in", %{socket: socket} do
-    state = Login.process("username", %{socket: socket})
+    state = Login.process("username", :session, %{socket: socket})
 
     assert state.login.username == "username"
     assert @socket.get_prompts() == [{socket, "Password: "}]
@@ -22,7 +22,7 @@ defmodule Game.Session.LoginTest do
   test "verifies the user's username and password", %{socket: socket} do
     user = create_user(%{username: "user", password: "password"})
 
-    state = Login.process("password", %{socket: socket, room_id: 1, login: %{username: "user"}})
+    state = Login.process("password", :session, %{socket: socket, room_id: 1, login: %{username: "user"}})
 
     assert state.user.id == user.id
     assert state.state == "active"
@@ -32,7 +32,7 @@ defmodule Game.Session.LoginTest do
   test "verifies the user's username and password - failure", %{socket: socket} do
     create_user(%{username: "user", password: "password"})
 
-    state = Login.process("p@ssword", %{socket: socket, login: %{username: "user"}})
+    state = Login.process("p@ssword", :session, %{socket: socket, login: %{username: "user"}})
 
     assert Map.has_key?(state, :user) == false
     assert @socket.get_echos() == [{socket, "Invalid password"}]
@@ -40,7 +40,7 @@ defmodule Game.Session.LoginTest do
   end
 
   test "entering the username as 'create' will make a new account", %{socket: socket} do
-    state = Login.process("create", %{socket: socket})
+    state = Login.process("create", :session, %{socket: socket})
 
     assert state.state == "create"
     assert @socket.get_prompts() == [{socket, "Username: "}]

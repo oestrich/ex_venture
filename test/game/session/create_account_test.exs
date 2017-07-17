@@ -6,21 +6,21 @@ defmodule Game.Session.CreateAccountTest do
   alias Game.Session.CreateAccount
 
   test "start creating an account", %{socket: socket} do
-    state = CreateAccount.process("user", %{socket: socket})
+    state = CreateAccount.process("user", :session, %{socket: socket})
 
     assert state.create.username == "user"
     assert @socket.get_prompts() == [{socket, "Password: "}]
   end
 
   test "create the account after password is entered", %{socket: socket} do
-    state = CreateAccount.process("password", %{socket: socket, create: %{username: "user"}})
+    state = CreateAccount.process("password", :session, %{socket: socket, create: %{username: "user"}})
 
     refute Map.has_key?(state, :create)
     assert @socket.get_echos() == [{socket, "\nWelcome, user!\n"}]
   end
 
   test "failure creating the account after entering the password", %{socket: socket} do
-    state = CreateAccount.process("", %{socket: socket, create: %{username: "user"}})
+    state = CreateAccount.process("", :session, %{socket: socket, create: %{username: "user"}})
 
     refute Map.has_key?(state, :create)
     assert @socket.get_echos() == [{socket, "There was a problem creating your account.\nPlease start over."}]

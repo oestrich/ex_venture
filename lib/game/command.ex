@@ -27,38 +27,38 @@ defmodule Game.Command do
     end
   end
 
-  def run({:east}, state = %{save: %{room_id: room_id}}) do
+  def run({:east}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{east_id: nil} -> :ok
-      %{east_id: id} -> state |> move_to(id)
+      %{east_id: id} -> session |> move_to(state, id)
     end
   end
 
-  def run({:help}, %{socket: socket}) do
+  def run({:help}, _session, %{socket: socket}) do
     socket |> @socket.echo(Help.base)
     :ok
   end
-  def run({:help, topic}, %{socket: socket}) do
+  def run({:help, topic}, _session, %{socket: socket}) do
     socket |> @socket.echo(Help.topic(topic))
     :ok
   end
 
-  def run({:look}, %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:look}, _session, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     socket |> @socket.echo("{green}#{room.name}{/green}\n#{room.description}\nExits: #{exits(room)}\nPlayers: #{players(room)}")
     :ok
   end
 
-  def run({:north}, state = %{save: %{room_id: room_id}}) do
+  def run({:north}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{north_id: nil} -> :ok
-      %{north_id: id} -> state |> move_to(id)
+      %{north_id: id} -> session |> move_to(state, id)
     end
   end
 
-  def run({:quit}, %{socket: socket, user: user, save: save}) do
+  def run({:quit}, _session, %{socket: socket, user: user, save: save}) do
     socket |> @socket.echo("Good bye.")
     socket |> @socket.disconnect
 
@@ -67,30 +67,30 @@ defmodule Game.Command do
     :ok
   end
 
-  def run({:say, message}, %{user: user}) do
+  def run({:say, message}, _session, %{user: user}) do
     Session.Registry.connected_players()
     |> Enum.each(fn ({pid, _}) ->
       GenServer.cast(pid, {:echo, "{blue}#{user.username}{/blue}: #{message}"})
     end)
     :ok
   end
-  def run({:south}, state = %{save: %{room_id: room_id}}) do
+  def run({:south}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{south_id: nil} -> :ok
-      %{south_id: id} -> state |> move_to(id)
+      %{south_id: id} -> session |> move_to(state, id)
     end
   end
 
-  def run({:west}, state = %{save: %{room_id: room_id}}) do
+  def run({:west}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do
       %{west_id: nil} -> :ok
-      %{west_id: id} -> state |> move_to(id)
+      %{west_id: id} -> session |> move_to(state, id)
     end
   end
 
-  def run({:who}, %{socket: socket}) do
+  def run({:who}, _session, %{socket: socket}) do
     usernames = Session.Registry.connected_players()
     |> Enum.map(fn ({_pid, user}) ->
       "  - {blue}#{user.username}{/blue}\n"
@@ -101,20 +101,20 @@ defmodule Game.Command do
     :ok
   end
 
-  def run({:error, :bad_parse}, %{socket: socket}) do
+  def run({:error, :bad_parse}, _session, %{socket: socket}) do
     socket |> @socket.echo("Unknown command")
     :ok
   end
 
-  defp move_to(state = %{save: save, user: user}, room_id) do
-    @room.leave(save.room_id, user)
+  defp move_to(session, state = %{save: save, user: user}, room_id) do
+    @room.leave(save.room_id, {session, user})
 
     save = %{save | room_id: room_id}
     state = %{state | save: save}
 
-    @room.enter(room_id, user)
+    @room.enter(room_id, {session, user})
 
-    run({:look}, state)
+    run({:look}, session, state)
     {:update, state}
   end
 

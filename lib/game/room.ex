@@ -43,7 +43,7 @@ defmodule Game.Room do
   @doc """
   Enter a room
   """
-  @spec enter(id :: Integer.t, user :: Map.t) :: :ok
+  @spec enter(id :: Integer.t, user :: {pid, Map.t}) :: :ok
   def enter(id, user) do
     GenServer.cast(pid(id), {:enter, user})
   end
@@ -61,6 +61,7 @@ defmodule Game.Room do
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players}) do
+    players = Enum.map(players, &(elem(&1, 1)))
     {:reply, Map.put(room, :players, players), state}
   end
 

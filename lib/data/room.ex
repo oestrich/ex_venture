@@ -5,7 +5,7 @@ defmodule Data.Room do
     field :name, :string
     field :description, :string
 
-    field :players, {:array, :map}, virtual: true
+    field :players, {:array, :tuple}, virtual: true
 
     belongs_to :north, __MODULE__
     belongs_to :east, __MODULE__

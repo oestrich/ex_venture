@@ -15,17 +15,17 @@ defmodule Game.Session.CreateAccount do
     socket |> @socket.prompt("Username: ")
   end
 
-  def process(password, state = %{socket: socket, create: %{username: username}}) do
+  def process(password, session, state = %{socket: socket, create: %{username: username}}) do
     case Account.create(%{username: username, password: password}) do
       {:ok, user} ->
-        user |> Login.login(socket, state |> Map.delete(:create))
+        user |> Login.login(session, socket, state |> Map.delete(:create))
       {:error, _changeset} ->
         socket |> @socket.echo("There was a problem creating your account.\nPlease start over.")
         state
         |> Map.delete(:create)
     end
   end
-  def process(username, state = %{socket: socket}) do
+  def process(username, _session, state = %{socket: socket}) do
     socket |> @socket.prompt("Password: ")
     Map.merge(state, %{create: %{username: username}})
   end
