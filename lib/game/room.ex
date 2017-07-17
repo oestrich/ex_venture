@@ -1,8 +1,11 @@
 defmodule Game.Room do
   use GenServer
+  import Ecto.Query
 
   alias Data.Room
   alias Data.Repo
+
+  alias Game.Session
 
   defmacro __using__(_opts) do
     quote do
@@ -28,7 +31,7 @@ defmodule Game.Room do
   Load the starting room.
   """
   def starting() do
-    Room |> Repo.one
+    Room |> limit(1) |> Repo.one
   end
 
   @doc """
@@ -56,6 +59,14 @@ defmodule Game.Room do
     GenServer.cast(pid(id), {:leave, user})
   end
 
+  @doc """
+  Say to the players in the room
+  """
+  @spec say(id :: Integer.t, message :: String.t) :: :ok
+  def say(id, message) do
+    GenServer.cast(pid(id), {:say, message})
+  end
+
   def init(room) do
     {:ok, %{room: room, players: []}}
   end
@@ -71,5 +82,12 @@ defmodule Game.Room do
   def handle_cast({:leave, user}, state = %{players: players}) do
     players = List.delete(players, user)
     {:noreply, Map.put(state, :players, players)}
+  end
+
+  def handle_cast({:say, message}, state = %{players: players}) do
+    Enum.each(players, fn ({session, _user}) ->
+      Session.echo(session, message)
+    end)
+    {:noreply, state}
   end
 end

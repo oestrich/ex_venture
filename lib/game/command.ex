@@ -67,13 +67,11 @@ defmodule Game.Command do
     :ok
   end
 
-  def run({:say, message}, _session, %{user: user}) do
-    Session.Registry.connected_players()
-    |> Enum.each(fn ({pid, _}) ->
-      GenServer.cast(pid, {:echo, "{blue}#{user.username}{/blue}: #{message}"})
-    end)
+  def run({:say, message}, _session, %{user: user, save: %{room_id: room_id}}) do
+    @room.say(room_id, "{blue}#{user.username}{/blue}: #{message}")
     :ok
   end
+
   def run({:south}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room do

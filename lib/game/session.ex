@@ -40,6 +40,14 @@ defmodule Game.Session do
     GenServer.cast(pid, {:recv, message})
   end
 
+  @doc """
+  Echo to the socket
+  """
+  @spec recv(pid, message :: String.t) :: :ok
+  def echo(pid, message) do
+    GenServer.cast(pid, {:echo, message})
+  end
+
   #
   # GenServer callbacks
   #
