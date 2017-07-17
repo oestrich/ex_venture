@@ -76,18 +76,24 @@ defmodule Game.Room do
     {:reply, Map.put(room, :players, players), state}
   end
 
-  def handle_cast({:enter, user}, state = %{players: players}) do
-    {:noreply, Map.put(state, :players, [user | players])}
+  def handle_cast({:enter, player = {_, user}}, state = %{players: players}) do
+    players |> echo_to_players("{blue}#{user.username}{/blue} enters")
+    {:noreply, Map.put(state, :players, [player | players])}
   end
-  def handle_cast({:leave, user}, state = %{players: players}) do
-    players = List.delete(players, user)
+  def handle_cast({:leave, player = {_, user}}, state = %{players: players}) do
+    players = List.delete(players, player)
+    players |> echo_to_players("{blue}#{user.username}{/blue} leaves")
     {:noreply, Map.put(state, :players, players)}
   end
 
   def handle_cast({:say, message}, state = %{players: players}) do
+    players |> echo_to_players(message)
+    {:noreply, state}
+  end
+
+  defp echo_to_players(players, message) do
     Enum.each(players, fn ({session, _user}) ->
       Session.echo(session, message)
     end)
-    {:noreply, state}
   end
 end
