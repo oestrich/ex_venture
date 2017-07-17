@@ -108,7 +108,7 @@ defmodule Game.CommandTest do
     test "says to the room", %{session: session, socket: socket} do
       Command.run({:say, "hi"}, session, %{socket: socket, user: %{username: "user"}, save: %{room_id: 1}})
 
-      assert @room.get_says() == [{1, "{blue}user{/blue}: hi"}]
+      assert @room.get_says() == [{1, ~s({blue}user{/blue} says, {green}"hi"{/green})}]
     end
   end
 

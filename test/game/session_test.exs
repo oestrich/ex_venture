@@ -28,7 +28,7 @@ defmodule Game.SessionTest do
   test "recv'ing messages - after login processes commands", %{socket: socket} do
     user = create_user(%{username: "user", password: "password"})
 
-    {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active", user: user, save: %{}})
+    {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active", user: user, save: %{room_id: 1}})
 
     assert @socket.get_echos() == [{socket, ""}, {socket, "Good bye."}]
     assert state.last_recv
@@ -49,7 +49,7 @@ defmodule Game.SessionTest do
   test "unregisters the pid when disconnected" do
     Registry.register(Session.Registry, "player", :connected)
 
-    {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{})
+    {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{user: %Data.User{username: "user"}, save: %{room_id: 1}})
     assert Registry.lookup(Session.Registry, "player") == []
   end
 end
