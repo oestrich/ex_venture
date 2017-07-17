@@ -58,17 +58,18 @@ defmodule Game.Command do
     end
   end
 
-  def run({:quit}, _session, %{socket: socket, user: user, save: save}) do
+  def run({:quit}, session, %{socket: socket, user: user, save: save}) do
     socket |> @socket.echo("Good bye.")
     socket |> @socket.disconnect
 
+    @room.leave(save.room_id, {session, user})
     user |> Account.save(save)
 
     :ok
   end
 
   def run({:say, message}, _session, %{user: user, save: %{room_id: room_id}}) do
-    @room.say(room_id, "{blue}#{user.username}{/blue}: #{message}")
+    @room.say(room_id, ~s[{blue}#{user.username}{/blue} says, {green}"#{message}"{/green}])
     :ok
   end
 
