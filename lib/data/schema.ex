@@ -6,6 +6,8 @@ defmodule Data.Schema do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+
+      alias Data.Repo
     end
   end
 end
