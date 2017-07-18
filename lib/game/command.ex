@@ -38,10 +38,13 @@ defmodule Game.Command do
     end)
   end
 
-  def run({:global, message}, _session, %{user: user}) do
+  def run({:global, message}, session, %{socket: socket, user: user}) do
     message = ~s({red}[global]{/red} {blue}#{user.username}{/blue} says, {green}"#{message}"{/green})
 
+    socket |> @socket.echo(message)
+
     Session.Registry.connected_players()
+    |> Enum.reject(&(elem(&1, 0) == session)) # don't send to your own
     |> Enum.map(fn ({session, _user}) ->
       Session.echo(session, message)
     end)
@@ -84,8 +87,9 @@ defmodule Game.Command do
     :ok
   end
 
-  def run({:say, message}, _session, %{user: user, save: %{room_id: room_id}}) do
-    @room.say(room_id, Format.say(user, message))
+  def run({:say, message}, session, %{socket: socket, user: user, save: %{room_id: room_id}}) do
+    socket |> @socket.echo(Format.say(user, message))
+    room_id |> @room.say(session, Format.say(user, message))
     :ok
   end
 

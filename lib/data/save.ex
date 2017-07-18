@@ -3,6 +3,10 @@ defmodule Data.Save do
   User save data.
   """
 
+  @type t :: %{
+    room_id: Integer.t,
+  }
+
   defstruct [:room_id]
 
   @behaviour Ecto.Type

@@ -5,6 +5,7 @@ defmodule Game.Session.Login do
   alias Data.Config
   alias Game.Authentication
   alias Game.Command
+  alias Game.Format
   alias Game.Session
 
   @doc """
@@ -56,6 +57,7 @@ defmodule Game.Session.Login do
       user ->
         state = user |> login(session, socket, state |> Map.delete(:login))
         Command.run({:look}, session, state)
+        socket |> @socket.prompt(Format.prompt(user, user.save))
         state
     end
   end

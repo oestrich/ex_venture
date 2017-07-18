@@ -62,9 +62,9 @@ defmodule Game.Room do
   @doc """
   Say to the players in the room
   """
-  @spec say(id :: Integer.t, message :: String.t) :: :ok
-  def say(id, message) do
-    GenServer.cast(pid(id), {:say, message})
+  @spec say(id :: Integer.t, sender :: pid, message :: String.t) :: :ok
+  def say(id, sender,  message) do
+    GenServer.cast(pid(id), {:say, sender, message})
   end
 
   def init(room) do
@@ -86,8 +86,11 @@ defmodule Game.Room do
     {:noreply, Map.put(state, :players, players)}
   end
 
-  def handle_cast({:say, message}, state = %{players: players}) do
-    players |> echo_to_players(message)
+  def handle_cast({:say, sender, message}, state = %{players: players}) do
+    players
+    |> Enum.reject(&(elem(&1, 0) == sender)) # don't send to the sender
+    |> echo_to_players(message)
+
     {:noreply, state}
   end
 

@@ -7,6 +7,7 @@ defmodule Game.Session do
 
   alias Game.Account
   alias Game.Command
+  alias Game.Format
   alias Game.Session
 
   @timeout_check 5000
@@ -101,14 +102,16 @@ defmodule Game.Session do
   end
 
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{socket: socket, state: "active"}) do
+  def handle_cast({:recv, message}, state = %{socket: socket, state: "active", user: user, save: save}) do
     socket |> @socket.echo("")
 
     state = Map.merge(state, %{last_recv: Timex.now()})
     case message |> Command.parse |> Command.run(self(), state) do
       :ok ->
+        socket |> @socket.prompt(Format.prompt(user, save))
         {:noreply, state}
       {:update, state} ->
+        socket |> @socket.prompt(Format.prompt(user, save))
         {:noreply, state}
     end
   end
