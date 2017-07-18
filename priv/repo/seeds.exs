@@ -10,30 +10,39 @@ defmodule Helpers do
     |> Config.changeset(%{name: name, value: value})
     |> Repo.insert
   end
+
+  def create_room(attributes) do
+    %Room{}
+    |> Room.changeset(attributes)
+    |> Repo.insert!
+  end
+
+  def update_room(room, attributes) do
+    room
+    |> Room.changeset(attributes)
+    |> Repo.update!
+  end
+
+  def create_user(attributes) do
+    %User{}
+    |> User.changeset(attributes)
+    |> Repo.insert!
+  end
 end
 
 defmodule Seeds do
   import Helpers
 
   def run do
-    {:ok, hallway} = %Room{}
-    |> Room.changeset(%{name: "Hallway", description: "An empty hallway"})
-    |> Repo.insert
+    hallway = create_room(%{name: "Hallway", description: "An empty hallway"})
+    ante_chamber = create_room(%{name: "Ante Chamber", description: "The Ante-Chamber", south_id: hallway.id})
 
-    {:ok, ante_chamber} = %Room{}
-    |> Room.changeset(%{name: "Ante Chamber", description: "The Ante-Chamber", south_id: hallway.id})
-    |> Repo.insert
-
-    {:ok, hallway} = hallway
-    |> Room.changeset(%{north_id: ante_chamber.id})
-    |> Repo.update
+    hallway = update_room(hallway, %{north_id: ante_chamber.id})
 
     {:ok, _starting_save} = create_config("starting_save", %{room_id: hallway.id} |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
 
-    {:ok, _} = %User{}
-    |> User.changeset(%{username: "eric", password: "password", save: Config.starting_save()})
-    |> Repo.insert
+    create_user(%{username: "eric", password: "password", save: Config.starting_save()})
   end
 end
 
