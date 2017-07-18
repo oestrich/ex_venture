@@ -2,8 +2,8 @@ defmodule Game.Command do
   use Networking.Socket
   use Game.Room
 
-  alias Data.Room
   alias Game.Account
+  alias Game.Format
   alias Game.Help
   alias Game.Session
 
@@ -60,7 +60,7 @@ defmodule Game.Command do
 
   def run({:look}, _session, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    socket |> @socket.echo("{green}#{room.name}{/green}\n#{room.description}\nExits: #{exits(room)}\nPlayers: #{players(room)}")
+    socket |> @socket.echo(Format.room(room))
     :ok
   end
 
@@ -85,7 +85,7 @@ defmodule Game.Command do
   end
 
   def run({:say, message}, _session, %{user: user, save: %{room_id: room_id}}) do
-    @room.say(room_id, ~s[{blue}#{user.username}{/blue} says, {green}"#{message}"{/green}])
+    @room.say(room_id, Format.say(user, message))
     :ok
   end
 
@@ -145,17 +145,5 @@ defmodule Game.Command do
 
     run({:look}, session, state)
     {:update, state}
-  end
-
-  defp exits(room) do
-    Room.exits(room)
-    |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
-    |> Enum.join(" ")
-  end
-
-  def players(%{players: players}) do
-    players
-    |> Enum.map(fn (player) -> "{blue}#{player.username}{/blue}" end)
-    |> Enum.join(", ")
   end
 end
