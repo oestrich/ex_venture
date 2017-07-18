@@ -2,6 +2,7 @@ defmodule Game.CommandTest do
   use Data.ModelCase
 
   alias Game.Command
+  alias Game.Session
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -18,6 +19,10 @@ defmodule Game.CommandTest do
 
     test "parsing say" do
       assert Command.parse("say hello") == {:say, "hello"}
+    end
+
+    test "parsing global" do
+      assert Command.parse("global hello") == {:global, "hello"}
     end
 
     test "parsing who is online" do
@@ -109,6 +114,20 @@ defmodule Game.CommandTest do
       Command.run({:say, "hi"}, session, %{socket: socket, user: %{username: "user"}, save: %{room_id: 1}})
 
       assert @room.get_says() == [{1, ~s({blue}user{/blue} says, {green}"hi"{/green})}]
+    end
+  end
+
+  describe "global" do
+    setup do
+      Session.Registry.register({self(), :user})
+      on_exit fn() ->
+        Session.Registry.unregister()
+      end
+    end
+
+    test "talk on the global channel", %{session: session, socket: socket} do
+      Command.run({:global, "hi"}, session, %{socket: socket, user: %{username: "user"}})
+      assert_received {:"$gen_cast", {:echo, ~s({red}[global]{/red} {blue}user{/blue} says, {green}"hi"{/green})}}
     end
   end
 

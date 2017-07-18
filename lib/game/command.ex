@@ -11,6 +11,7 @@ defmodule Game.Command do
     case command do
       "e" -> {:east}
       "east" -> {:east}
+      "global " <> message -> {:global, message}
       "help " <> topic -> {:help, topic |> String.downcase}
       "help" -> {:help}
       "look" -> {:look}
@@ -35,6 +36,17 @@ defmodule Game.Command do
         %{east_id: id} -> session |> move_to(state, id)
       end
     end)
+  end
+
+  def run({:global, message}, _session, %{user: user}) do
+    message = ~s({red}[global]{/red} {blue}#{user.username}{/blue} says, {green}"#{message}"{/green})
+
+    Session.Registry.connected_players()
+    |> Enum.map(fn ({session, _user}) ->
+      Session.echo(session, message)
+    end)
+
+    :ok
   end
 
   def run({:help}, _session, %{socket: socket}) do
