@@ -16,6 +16,13 @@ defmodule Data.Config do
     |> validate_required([:name, :value])
   end
 
+  def motd() do
+    __MODULE__
+    |> where([c], c.name == "motd")
+    |> select([c], c.value)
+    |> Repo.one
+  end
+
   def starting_save() do
     save = __MODULE__
     |> where([c], c.name == "starting_save")
@@ -24,7 +31,9 @@ defmodule Data.Config do
 
     case save do
       nil -> nil
-      save -> struct(Save, Poison.decode!(save))
+      save ->
+        {:ok, save} = Save.load(Poison.decode!(save))
+        save
     end
   end
 end

@@ -4,22 +4,37 @@ alias Data.Config
 alias Data.Room
 alias Data.User
 
-{:ok, hallway} = %Room{}
-|> Room.changeset(%{name: "Hallway", description: "An empty hallway"})
-|> Repo.insert
+defmodule Helpers do
+  def create_config(name, value) do
+    %Config{}
+    |> Config.changeset(%{name: name, value: value})
+    |> Repo.insert
+  end
+end
 
-{:ok, ante_chamber} = %Room{}
-|> Room.changeset(%{name: "Ante Chamber", description: "The Ante-Chamber", south_id: hallway.id})
-|> Repo.insert
+defmodule Seeds do
+  import Helpers
 
-{:ok, hallway} = hallway
-|> Room.changeset(%{north_id: ante_chamber.id})
-|> Repo.update
+  def run do
+    {:ok, hallway} = %Room{}
+    |> Room.changeset(%{name: "Hallway", description: "An empty hallway"})
+    |> Repo.insert
 
-{:ok, starting_save} = %Config{}
-|> Config.changeset(%{name: "starting_save", value: %{room_id: hallway.id} |> Poison.encode!})
-|> Repo.insert
+    {:ok, ante_chamber} = %Room{}
+    |> Room.changeset(%{name: "Ante Chamber", description: "The Ante-Chamber", south_id: hallway.id})
+    |> Repo.insert
 
-{:ok, _} = %User{}
-|> User.changeset(%{username: "eric", password: "password", save: Config.starting_save()})
-|> Repo.insert
+    {:ok, hallway} = hallway
+    |> Room.changeset(%{north_id: ante_chamber.id})
+    |> Repo.update
+
+    {:ok, _starting_save} = create_config("starting_save", %{room_id: hallway.id} |> Poison.encode!)
+    {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
+
+    {:ok, _} = %User{}
+    |> User.changeset(%{username: "eric", password: "password", save: Config.starting_save()})
+    |> Repo.insert
+  end
+end
+
+Seeds.run

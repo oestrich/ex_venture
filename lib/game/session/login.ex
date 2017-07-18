@@ -2,6 +2,7 @@ defmodule Game.Session.Login do
   use Networking.Socket
   use Game.Room
 
+  alias Data.Config
   alias Game.Authentication
   alias Game.Command
   alias Game.Session
@@ -11,8 +12,15 @@ defmodule Game.Session.Login do
   """
   @spec start(socket :: pid) :: nil
   def start(socket) do
-    socket |> @socket.echo("Welcome to ExMud.\n\nEnter {white}create{/white} to create a new account.\n")
+    socket |> @socket.echo("#{motd()}\n\nEnter {white}create{/white} to create a new account.\n")
     socket |> @socket.prompt("What is your player name? ")
+  end
+
+  defp motd() do
+    case Config.motd() do
+      nil -> "Welcome to ExMud."
+      motd -> motd
+    end
   end
 
   @doc """
