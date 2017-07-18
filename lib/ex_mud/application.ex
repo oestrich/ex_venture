@@ -12,11 +12,12 @@ defmodule ExMud.Application do
 
     # Define workers and child supervisors to be supervised
     children = [
+      worker(Game.Server, []),
       supervisor(Data.Repo, []),
-      supervisor(Game.Session.Supervisor, []),
       supervisor(Registry, [:duplicate, Game.Session.Registry]),
-      worker(Game.Help, []),
+      supervisor(Game.Session.Supervisor, []),
       supervisor(Game.Zone, []),
+      worker(Game.Help, []),
       listener(),
     ] |> Enum.reject(fn child -> is_nil(child) end)
 

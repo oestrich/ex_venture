@@ -50,15 +50,23 @@ defmodule Game.Session do
     GenServer.cast(pid, {:echo, message})
   end
 
+  @doc """
+  Send a tick to the session
+  """
+  @spec tick(pid, time :: Timex.t) :: :ok
+  def tick(pid, time) do
+    GenServer.cast(pid, {:tick, time})
+  end
+
   #
   # GenServer callbacks
   #
 
   def init(socket) do
     socket |> Session.Login.start()
-
     self() |> schedule_inactive_check()
-    {:ok, %{socket: socket, state: "login", last_recv: Timex.now()}}
+    last_tick = Timex.now() |> Timex.shift(minutes: -2)
+    {:ok, %{socket: socket, state: "login", last_move: Timex.now(), last_recv: Timex.now(), last_tick: last_tick}}
   end
 
   # On a disconnect unregister the PID and stop the server
@@ -73,6 +81,11 @@ defmodule Game.Session do
   def handle_cast({:echo, message}, state = %{socket: socket}) do
     socket |> @socket.echo(message)
     {:noreply, state}
+  end
+
+  # Update the tick timestamp
+  def handle_cast({:tick, time}, state) do
+    {:noreply, Map.put(state, :last_tick, time)}
   end
 
   # Handle logging in
