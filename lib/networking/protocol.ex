@@ -32,6 +32,13 @@ defmodule Networking.Protocol do
     GenServer.cast(socket, {:echo, message |> Color.format, :prompt})
   end
 
+  def tcp_option(socket, :echo, true) do
+    GenServer.cast(socket, {:command, [255, 252, 1]})
+  end
+  def tcp_option(socket, :echo, false) do
+    GenServer.cast(socket, {:command, [255, 251, 1]})
+  end
+
   @doc """
   Disconnect the socket
 
@@ -51,6 +58,10 @@ defmodule Networking.Protocol do
     :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport})
   end
 
+  def handle_cast({:command, message}, state = %{socket: socket, transport: transport}) do
+    transport.send(socket, message)
+    {:noreply, state}
+  end
   def handle_cast({:echo, message}, state = %{socket: socket, transport: transport}) do
     transport.send(socket, "#{message}\n")
     {:noreply, state}
@@ -70,12 +81,14 @@ defmodule Networking.Protocol do
   end
 
   def handle_info({:tcp, socket, data}, state = %{socket: socket, transport: transport}) do
-    case state do
-      %{session: pid} ->
-        pid |> Game.Session.recv(data |> String.trim)
-      _ ->
-        transport.send(socket, data)
-    end
+    handle_options(data, fn() ->
+      case state do
+        %{session: pid} ->
+          pid |> Game.Session.recv(data |> String.trim)
+        _ ->
+          transport.send(socket, data)
+      end
+    end)
     {:noreply, state}
   end
   def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
@@ -98,5 +111,12 @@ defmodule Networking.Protocol do
       _ -> nil
     end
     transport.close(socket)
+  end
+
+  defp handle_options(data, fun) do
+    case data do
+      << iac :: size(8), _data :: binary >> when iac == 255 -> nil
+      _ -> fun.()
+    end
   end
 end

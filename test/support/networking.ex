@@ -49,4 +49,6 @@ defmodule Test.Networking.Socket do
   def get_disconnects() do
     Agent.get(__MODULE__, fn state -> Map.get(state, :disconnect, []) end)
   end
+
+  def tcp_option(_socket, _option, _enabled), do: :ok
 end
