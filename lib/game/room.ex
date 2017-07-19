@@ -9,7 +9,7 @@ defmodule Game.Room do
 
   defmacro __using__(_opts) do
     quote do
-      @room Application.get_env(:ex_mud, :game)[:room]
+      @room Application.get_env(:ex_venture, :game)[:room]
     end
   end
 

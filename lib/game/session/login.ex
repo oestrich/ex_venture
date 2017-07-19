@@ -19,7 +19,7 @@ defmodule Game.Session.Login do
 
   defp motd() do
     case Config.motd() do
-      nil -> "Welcome to ExMud."
+      nil -> "Welcome to ExVenture."
       motd -> motd
     end
   end

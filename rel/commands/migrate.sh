@@ -1,3 +1,3 @@
 #!/bin/sh
 
-bin/ex_mud command Elixir.ExMud.ReleaseTasks migrate
+bin/ex_venture command Elixir.ExVenture.ReleaseTasks migrate

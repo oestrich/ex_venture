@@ -4,7 +4,7 @@ defmodule Game.Help do
   end
 
   defp load_help() do
-    :code.priv_dir(:ex_mud)
+    :code.priv_dir(:ex_venture)
     |> Path.join("game/help.yml")
     |> YamlElixir.read_from_file()
   end

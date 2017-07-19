@@ -11,7 +11,7 @@ defmodule Game.Session.CreateAccount do
   """
   @spec start(socket :: pid) :: nil
   def start(socket) do
-    socket |> @socket.echo("\n\nWelcome to ExMud.\nThank you for joining!\nWe need a username and password for you to sign up.\n")
+    socket |> @socket.echo("\n\nWelcome to ExVenture.\nThank you for joining!\nWe need a username and password for you to sign up.\n")
     socket |> @socket.prompt("Username: ")
   end
 

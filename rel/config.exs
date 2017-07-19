@@ -38,8 +38,8 @@ end
 # when running `mix release`, the first release in the file
 # will be used by default
 
-release :ex_mud do
-  set version: current_version(:ex_mud)
+release :ex_venture do
+  set version: current_version(:ex_venture)
   set applications: [
     :runtime_tools
   ]

@@ -6,7 +6,7 @@ defmodule Networking.Socket do
 
   defmacro __using__(_opts) do
     quote do
-      @socket Application.get_env(:ex_mud, :networking)[:socket_module]
+      @socket Application.get_env(:ex_venture, :networking)[:socket_module]
     end
   end
 end

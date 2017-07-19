@@ -1,9 +1,9 @@
-defmodule Game.Mixfile do
+defmodule ExVenture.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :ex_mud,
+      app: :ex_venture,
       version: "0.8.0",
       elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env),
@@ -20,7 +20,7 @@ defmodule Game.Mixfile do
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
     [extra_applications: [:logger],
-     mod: {ExMud.Application, []}]
+     mod: {ExVenture.Application, []}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]

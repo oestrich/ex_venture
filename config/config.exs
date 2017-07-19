@@ -2,7 +2,7 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :ex_mud,
+config :ex_venture,
   ecto_repos: [Data.Repo]
 
 # This configuration is loaded before any dependency and is restricted

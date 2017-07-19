@@ -1,12 +1,12 @@
 # From https://github.com/bitwalker/distillery/blob/master/docs/Running%20Migrations.md
-defmodule ExMud.ReleaseTasks do
+defmodule ExVenture.ReleaseTasks do
   @start_apps [
     :postgrex,
     :ecto
   ]
 
   @apps [
-    :ex_mud
+    :ex_venture
   ]
 
   @repos [
@@ -14,15 +14,15 @@ defmodule ExMud.ReleaseTasks do
   ]
 
   def migrate do
-    IO.puts "Loading ex_mud..."
-    # Load the code for ex_mud, but don't start it
-    :ok = Application.load(:ex_mud)
+    IO.puts "Loading ex_venture..."
+    # Load the code for ex_venture, but don't start it
+    :ok = Application.load(:ex_venture)
 
     IO.puts "Starting dependencies.."
     # Start apps necessary for executing migrations
     Enum.each(@start_apps, &Application.ensure_all_started/1)
 
-    # Start the Repo(s) for ex_mud
+    # Start the Repo(s) for ex_venture
     IO.puts "Starting repos.."
     Enum.each(@repos, &(&1.start_link(pool_size: 1)))
 
