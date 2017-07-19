@@ -31,7 +31,7 @@ defmodule Test.Game.Room do
   def leave(_id, _user) do
   end
 
-  def say(id, message) do
+  def say(id, _session, message) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
       says = Map.get(state, :say, [])
