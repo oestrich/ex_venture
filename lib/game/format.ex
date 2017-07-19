@@ -23,11 +23,27 @@ defmodule Game.Format do
   def room(room) do
     """
 {green}#{room.name}{/green}
-#{room.description}
+#{underline(room.name)}
+#{room.description |> String.split() |> wrap() |> String.strip()}\n
 Exits: #{exits(room)}
 Players: #{players(room)}
     """
     |> String.strip
+  end
+
+  defp underline(string) do
+    (1..(String.length(string) + 4))
+    |> Enum.map(fn (_) -> "-" end)
+    |> Enum.join("")
+  end
+
+  defp wrap(words, line \\ "", string \\ "")
+  defp wrap([], line, string), do: "#{string}\n#{line}"
+  defp wrap([word | left], line, string) do
+    case String.length("#{line} #{word}") do
+      len when len < 80 -> wrap(left, "#{line} #{word}", string)
+      _ -> wrap(left, word, "#{string}\n#{line}")
+    end
   end
 
   defp exits(room) do
