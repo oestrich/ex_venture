@@ -25,8 +25,7 @@ defmodule Game.Format do
 {green}#{room.name}{/green}
 #{underline(room.name)}
 #{room.description |> wrap()}\n
-#{npcs(room)}
-#{players(room)}
+#{who_is_here(room)}
 Exits: #{exits(room)}
     """
     |> String.strip
@@ -72,6 +71,12 @@ Exits: #{exits(room)}
   defp exits(room) do
     Room.exits(room)
     |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
+    |> Enum.join(" ")
+  end
+
+  def who_is_here(room) do
+    [players(room), npcs(room)]
+    |> Enum.reject(fn (line) -> line == "" end)
     |> Enum.join(" ")
   end
 
