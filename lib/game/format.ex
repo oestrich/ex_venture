@@ -24,26 +24,48 @@ defmodule Game.Format do
     """
 {green}#{room.name}{/green}
 #{underline(room.name)}
-#{room.description |> String.split() |> wrap() |> String.strip()}\n
+#{room.description |> wrap()}\n
 Exits: #{exits(room)}
 Players: #{players(room)}
     """
     |> String.strip
   end
 
-  defp underline(string) do
+  @doc """
+  Create an 'underline'
+
+  Example:
+
+      iex> Game.Format.underline("Room Name")
+      "-------------"
+  """
+  def underline(string) do
     (1..(String.length(string) + 4))
     |> Enum.map(fn (_) -> "-" end)
     |> Enum.join("")
   end
 
-  defp wrap(words, line \\ "", string \\ "")
-  defp wrap([], line, string), do: "#{string}\n#{line}"
-  defp wrap([word | left], line, string) do
+  @doc """
+  Wraps lines of text
+  """
+  @spec wrap(string :: String.t) :: String.t
+  def wrap(string) do
+    string
+    |> String.split()
+    |> _wrap()
+  end
+
+  defp _wrap(words, line \\ "", string \\ "")
+  defp _wrap([], line, string), do: join(string, line, "\n")
+  defp _wrap([word | left], line, string) do
     case String.length("#{line} #{word}") do
-      len when len < 80 -> wrap(left, "#{line} #{word}", string)
-      _ -> wrap(left, word, "#{string}\n#{line}")
+      len when len < 80 -> _wrap(left, join(line, word, " "), string)
+      _ -> _wrap(left, word, join(string, line, "\n"))
     end
+  end
+
+  defp join(str1, str2, joiner) do
+    Enum.join([str1, str2] |> Enum.reject(&(&1 == "")), joiner)
   end
 
   defp exits(room) do

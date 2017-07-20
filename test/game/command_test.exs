@@ -144,7 +144,7 @@ defmodule Game.CommandTest do
     end
 
     test "north", %{session: session, state: state} do
-      @room.set_room(%Data.Room{north_id: 2, players: []})
+      @room.set_room(%Data.Room{name: "", description: "", north_id: 2, players: []})
       {:update, state} = Command.run({:north}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
@@ -160,7 +160,7 @@ defmodule Game.CommandTest do
     end
 
     test "east", %{session: session, state: state} do
-      @room.set_room(%Data.Room{east_id: 2, players: []})
+      @room.set_room(%Data.Room{name: "", description: "", east_id: 2, players: []})
       {:update, state} = Command.run({:east}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
@@ -176,7 +176,7 @@ defmodule Game.CommandTest do
     end
 
     test "south", %{session: session, state: state} do
-      @room.set_room(%Data.Room{south_id: 2, players: []})
+      @room.set_room(%Data.Room{name: "", description: "", south_id: 2, players: []})
       {:update, state} = Command.run({:south}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
@@ -192,7 +192,7 @@ defmodule Game.CommandTest do
     end
 
     test "west", %{session: session, state: state} do
-      @room.set_room(%Data.Room{west_id: 2, players: []})
+      @room.set_room(%Data.Room{name: "", description: "", west_id: 2, players: []})
       {:update, state} = Command.run({:west}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
