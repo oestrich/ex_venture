@@ -25,7 +25,7 @@ defmodule Test.Game.Room do
     Agent.get(__MODULE__, &(&1.room))
   end
 
-  def enter(_id, _user) do
+  def enter(_id, {:user, _session, _user}) do
   end
 
   def leave(_id, _user) do

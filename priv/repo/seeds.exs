@@ -1,6 +1,7 @@
 alias Data.Repo
 
 alias Data.Config
+alias Data.NPC
 alias Data.Room
 alias Data.User
 
@@ -8,6 +9,12 @@ defmodule Helpers do
   def create_config(name, value) do
     %Config{}
     |> Config.changeset(%{name: name, value: value})
+    |> Repo.insert
+  end
+
+  def create_npc(room, attributes) do
+    %NPC{}
+    |> NPC.changeset(Map.merge(attributes, %{room_id: room.id}))
     |> Repo.insert
   end
 
@@ -38,6 +45,8 @@ defmodule Seeds do
     ante_chamber = create_room(%{name: "Ante Chamber", description: "The Ante-Chamber", south_id: hallway.id})
 
     hallway = update_room(hallway, %{north_id: ante_chamber.id})
+
+    hallway |> create_npc(%{name: "Morfen"})
 
     {:ok, _starting_save} = create_config("starting_save", %{room_id: hallway.id} |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")

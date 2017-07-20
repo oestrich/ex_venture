@@ -81,7 +81,7 @@ defmodule Game.Command do
     socket |> @socket.echo("Good bye.")
     socket |> @socket.disconnect
 
-    @room.leave(save.room_id, {session, user})
+    @room.leave(save.room_id, {:user, session, user})
     user |> Account.save(save)
 
     :ok
@@ -140,12 +140,12 @@ defmodule Game.Command do
   end
 
   defp move_to(session, state = %{save: save, user: user}, room_id) do
-    @room.leave(save.room_id, {session, user})
+    @room.leave(save.room_id, {:user, session, user})
 
     save = %{save | room_id: room_id}
     state = %{state | save: save, last_move: Timex.now()}
 
-    @room.enter(room_id, {session, user})
+    @room.enter(room_id, {:user, session, user})
 
     run({:look}, session, state)
     {:update, state}

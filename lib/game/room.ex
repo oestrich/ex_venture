@@ -47,16 +47,19 @@ defmodule Game.Room do
   Enter a room
   """
   @spec enter(id :: Integer.t, user :: {pid, Map.t}) :: :ok
-  def enter(id, user) do
-    GenServer.cast(pid(id), {:enter, user})
+  def enter(id, {:user, session, user}) do
+    GenServer.cast(pid(id), {:enter, {:user, session, user}})
+  end
+  def enter(id, {:npc, npc}) do
+    GenServer.cast(pid(id), {:enter, {:npc, npc}})
   end
 
   @doc """
   Leave a room
   """
   @spec leave(id :: Integer.t, user :: Map.t) :: :ok
-  def leave(id, user) do
-    GenServer.cast(pid(id), {:leave, user})
+  def leave(id, {:user, session, user}) do
+    GenServer.cast(pid(id), {:leave, {:user, session, user}})
   end
 
   @doc """
@@ -68,19 +71,23 @@ defmodule Game.Room do
   end
 
   def init(room) do
-    {:ok, %{room: room, players: []}}
+    {:ok, %{room: room, players: [], npcs: []}}
   end
 
-  def handle_call(:look, _from, state = %{room: room, players: players}) do
-    players = Enum.map(players, &(elem(&1, 1)))
-    {:reply, Map.put(room, :players, players), state}
+  def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
+    players = Enum.map(players, &(elem(&1, 2)))
+    {:reply, Map.merge(room, %{players: players, npcs: npcs}), state}
   end
 
-  def handle_cast({:enter, player = {_, user}}, state = %{players: players}) do
+  def handle_cast({:enter, player = {:user, _, user}}, state = %{players: players}) do
     players |> echo_to_players("{blue}#{user.username}{/blue} enters")
     {:noreply, Map.put(state, :players, [player | players])}
   end
-  def handle_cast({:leave, player = {_, user}}, state = %{players: players}) do
+  def handle_cast({:enter, {:npc, npc}}, state = %{npcs: npcs}) do
+    {:noreply, Map.put(state, :npcs, [npc | npcs])}
+  end
+
+  def handle_cast({:leave, player = {:user, _, user}}, state = %{players: players}) do
     players = List.delete(players, player)
     players |> echo_to_players("{blue}#{user.username}{/blue} leaves")
     {:noreply, Map.put(state, :players, players)}

@@ -35,7 +35,7 @@ defmodule Game.Session.Login do
 
     socket |> @socket.echo("\nWelcome, #{user.username}!\n")
 
-    @room.enter(user.save.room_id, {session, user})
+    @room.enter(user.save.room_id, {:user, session, user})
 
     state
     |> Map.put(:user, user)

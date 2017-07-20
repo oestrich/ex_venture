@@ -25,8 +25,9 @@ defmodule Game.Format do
 {green}#{room.name}{/green}
 #{underline(room.name)}
 #{room.description |> wrap()}\n
+#{npcs(room)}
+#{players(room)}
 Exits: #{exits(room)}
-Players: #{players(room)}
     """
     |> String.strip
   end
@@ -76,7 +77,15 @@ Players: #{players(room)}
 
   def players(%{players: players}) do
     players
-    |> Enum.map(fn (player) -> "{blue}#{player.username}{/blue}" end)
-    |> Enum.join(", ")
+    |> Enum.map(fn (player) -> "{blue}#{player.username}{/blue} is here." end)
+    |> Enum.join(" ")
   end
+  def players(_), do: ""
+
+  def npcs(%{npcs: npcs}) do
+    npcs
+    |> Enum.map(fn (npc) -> "{yellow}#{npc.name}{/yellow} is here." end)
+    |> Enum.join(" ")
+  end
+  def npcs(_), do: ""
 end

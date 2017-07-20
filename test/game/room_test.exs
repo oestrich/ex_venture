@@ -8,12 +8,12 @@ defmodule Game.RoomTest do
   end
 
   test "entering a room", %{user: user} do
-    {:noreply, state} = Room.handle_cast({:enter, {:session, user}}, %{players: []})
-    assert state.players == [{:session, user}]
+    {:noreply, state} = Room.handle_cast({:enter, {:user, :session, user}}, %{players: []})
+    assert state.players == [{:user, :session, user}]
   end
 
   test "leaving a room", %{user: user} do
-    {:noreply, state} = Room.handle_cast({:leave, {:session, user}}, %{players: [{:session, user}]})
+    {:noreply, state} = Room.handle_cast({:leave, {:user, :session, user}}, %{players: [{:user, :session, user}]})
     assert state.players == []
   end
 end

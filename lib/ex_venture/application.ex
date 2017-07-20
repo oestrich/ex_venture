@@ -17,6 +17,7 @@ defmodule ExVenture.Application do
       supervisor(Registry, [:duplicate, Game.Session.Registry]),
       supervisor(Game.Session.Supervisor, []),
       supervisor(Game.Zone, []),
+      supervisor(Game.NPCSupervisor, []),
       worker(Game.Help, []),
       listener(),
     ] |> Enum.reject(fn child -> is_nil(child) end)
