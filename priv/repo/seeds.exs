@@ -41,14 +41,30 @@ defmodule Seeds do
   import Helpers
 
   def run do
-    hallway = create_room(%{name: "Hallway", description: "An empty hallway"})
-    ante_chamber = create_room(%{name: "Ante Chamber", description: "The Ante-Chamber", south_id: hallway.id})
+    entrance = create_room(%{name: "Entrance", description: "A large square room with rough hewn walls."})
 
-    hallway = update_room(hallway, %{north_id: ante_chamber.id})
+    hallway = create_room(%{name: "Hallway", description: "As you go further west, the hallway descends downward.", east_id: entrance.id})
+    entrance = update_room(entrance, %{west_id: hallway.id})
 
-    hallway |> create_npc(%{name: "Morfen"})
+    hallway_turn = create_room(%{name: "Hallway", description: "The hallway bends south, continuing sloping down.", east_id: hallway.id})
+    hallway = update_room(hallway, %{west_id: hallway_turn.id})
 
-    {:ok, _starting_save} = create_config("starting_save", %{room_id: hallway.id} |> Poison.encode!)
+    hallway_south = create_room(%{name: "Hallway", description: "The south end of the hall has a wooden door embedded in the rock wall.", north_id: hallway_turn.id})
+    hallway_turn = update_room(hallway_turn, %{south_id: hallway_south.id})
+
+    great_room = create_room(%{name: "Great Room", description: "The great room of the bandit hideout. There are several tables along the walls with chairs pulled up. Cards are on the table along with mugs.", north_id: hallway_south.id})
+    hallway_south = update_room(hallway_south, %{south_id: great_room.id})
+
+    dorm = create_room(%{name: "Bedroom", description: "There is a bed in the corner with a dirty blanket on top. A chair sits in the corner by a small fire pit.", east_id: great_room.id})
+    great_room = update_room(great_room, %{west_id: dorm.id})
+
+    kitchen = create_room(%{name: "Kitchen", description: "A large cooking fire is at this end of the great room. A pot boils away at over the flame.", west_id: great_room.id})
+    great_room = update_room(great_room, %{east_id: kitchen.id})
+
+    entrance |> create_npc(%{name: "Bran"})
+    great_room |> create_npc(%{name: "Bandit"})
+
+    {:ok, _starting_save} = create_config("starting_save", %{room_id: entrance.id} |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
 
     create_user(%{username: "eric", password: "password", save: Config.starting_save()})
