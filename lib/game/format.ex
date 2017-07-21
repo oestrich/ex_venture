@@ -1,6 +1,9 @@
 defmodule Game.Format do
-  alias Data.Room
+  @moduledoc """
+  Format data into strings to send to the connected player
+  """
 
+  alias Data.Room
   alias Data.User
   alias Data.Save
 
@@ -49,6 +52,10 @@ defmodule Game.Format do
     ~s[{blue}#{username}{/blue} says, {green}"#{message}"{/green}]
   end
 
+  @doc """
+  Format full text for a room
+  """
+  @spec room(room :: Room.t) :: String.t
   def room(room) do
     """
 {green}#{room.name}{/green}

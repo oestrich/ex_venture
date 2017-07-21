@@ -1,5 +1,7 @@
 # From https://github.com/bitwalker/distillery/blob/master/docs/Running%20Migrations.md
 defmodule ExVenture.ReleaseTasks do
+  @moduledoc false
+
   @start_apps [
     :postgrex,
     :ecto
