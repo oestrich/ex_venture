@@ -19,7 +19,7 @@ defmodule Game.CommandTest do
     end
 
     test "parsing say" do
-      assert Command.parse("say hello") == {:say, "hello"}
+      assert Command.parse("say hello") == {Game.Command.Say, ["hello"]}
     end
 
     test "parsing global" do
@@ -112,7 +112,7 @@ defmodule Game.CommandTest do
 
   describe "say" do
     test "says to the room", %{session: session, socket: socket} do
-      Command.run({:say, "hi"}, session, %{socket: socket, user: %{username: "user"}, save: %{room_id: 1}})
+      Command.run({Game.Command.Say, ["hi"]}, session, %{socket: socket, user: %{username: "user"}, save: %{room_id: 1}})
 
       assert @room.get_says() == [{1, Message.new(%{username: "user"}, "hi")}]
     end

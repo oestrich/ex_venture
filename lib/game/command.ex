@@ -3,13 +3,34 @@ defmodule Game.Command do
   Parses and runs commands from players
   """
 
+  @typedoc """
+  A tuple with the first element being the command to run
+
+  Example:
+
+      {Game.Command.Run, "Hi there"}
+  """
+  @type t :: {module :: Atom.t, args :: List.t}
+
+  @doc """
+  Run a command
+
+  Returns `:ok` or `{:update, new_state}` and the Session server will accept the new state.
+  """
+  @callback run(args :: list, session :: pid, state :: Map.t) :: :ok | {:update, state :: Map.t}
+
+  defmacro __using__(_opts) do
+    quote do
+      @behaviour Game.Command
+    end
+  end
+
   use Networking.Socket
   use Game.Room
 
   alias Game.Account
   alias Game.Format
   alias Game.Help
-  alias Game.Message
   alias Game.Session
 
   def parse(command) do
@@ -24,7 +45,7 @@ defmodule Game.Command do
       "north" -> {:north}
       "quit" -> {:quit}
       "s" -> {:south}
-      "say " <> message -> {:say, message}
+      "say " <> message -> {Game.Command.Say, [message]}
       "south" -> {:south}
       "w" -> {:west}
       "west" -> {:west}
@@ -92,10 +113,8 @@ defmodule Game.Command do
     :ok
   end
 
-  def run({:say, message}, session, %{socket: socket, user: user, save: %{room_id: room_id}}) do
-    socket |> @socket.echo(Format.say(user, message))
-    room_id |> @room.say(session, Message.new(user, message))
-    :ok
+  def run({Game.Command.Say, args}, session, state) do
+    Game.Command.Say.run(args, session, state)
   end
 
   def run({:south}, session, state = %{save: %{room_id: room_id}}) do

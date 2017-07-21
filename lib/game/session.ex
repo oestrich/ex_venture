@@ -5,6 +5,8 @@ defmodule Game.Session do
   Holds knowledge if the user is logged in, who they are, what they're save is.
   """
 
+  @type t :: pid
+
   use GenServer
   use Networking.Socket
   use Game.Room
