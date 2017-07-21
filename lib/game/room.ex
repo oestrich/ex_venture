@@ -1,4 +1,8 @@
 defmodule Game.Room do
+  @moduledoc """
+  GenServer for each Room
+  """
+
   use GenServer
   import Ecto.Query
 

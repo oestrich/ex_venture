@@ -1,4 +1,8 @@
 defmodule Game.Zone do
+  @moduledoc """
+  Supervisor for Rooms
+  """
+
   use Supervisor
 
   alias Game.Room

@@ -1,4 +1,14 @@
 defmodule Game.Color do
+  @moduledoc """
+  Format colors
+
+  Replaces "{black}{/black}" with ANSII escape codes for the color
+  """
+
+  @doc """
+  Format a string for colors
+  """
+  @spec format(string :: String.t) :: String.t
   def format(string) do
     string
     |> String.replace("{black}", "\e[30m")

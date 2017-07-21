@@ -1,4 +1,8 @@
 defmodule Game.Message do
+  @moduledoc """
+  Player or NPC message, something said
+  """
+
   defstruct [:type, :sender, :message, :formatted]
 
   alias Game.Format

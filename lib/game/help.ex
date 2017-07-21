@@ -1,4 +1,9 @@
 defmodule Game.Help do
+  @moduledoc """
+  Find help about a topic
+  """
+
+  @doc false
   def start_link() do
     Agent.start_link(fn -> load_help() end, name: __MODULE__)
   end
@@ -9,6 +14,17 @@ defmodule Game.Help do
     |> YamlElixir.read_from_file()
   end
 
+  @doc """
+  Basic help information
+
+  Which commands can be run.
+
+  Example:
+
+      iex> Game.Help.start_link()
+      iex> Regex.match?(~r(^The commands you can run are:), Game.Help.base())
+      true
+  """
   def base() do
     commands = Agent.get(__MODULE__, &(&1["commands"]))
     |> Enum.map(fn ({key, %{"short" => short}}) ->

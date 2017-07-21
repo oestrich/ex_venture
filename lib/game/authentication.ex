@@ -1,9 +1,16 @@
 defmodule Game.Authentication do
+  @moduledoc """
+  Find and validate a user
+  """
   import Ecto.Query
 
   alias Data.Repo
   alias Data.User
 
+  @doc """
+  Attempt to find a user and validate their password
+  """
+  @spec find_and_validate(username :: String.t, password :: String.t) :: {:error, :invalid} | User.t
   def find_and_validate(username, password) do
     user = User |> where([u], u.username == ^username) |> Repo.one
     _find_and_validate(user, password)

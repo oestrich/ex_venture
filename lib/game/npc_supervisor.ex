@@ -1,4 +1,8 @@
 defmodule Game.NPCSupervisor do
+  @moduledoc """
+  Supervisor for NPCs
+  """
+
   use Supervisor
 
   alias Game.NPC

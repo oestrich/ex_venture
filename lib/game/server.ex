@@ -1,16 +1,26 @@
 defmodule Game.Server do
+  @moduledoc """
+  Handles tick information
+  """
+
   use GenServer
 
   alias Game.Session
 
   @tick_interval 2000
 
+  @doc """
+  How often the server will send a :tick
+  """
+  @spec tick_interval() :: Integer.t
   def tick_interval(), do: @tick_interval
 
+  @doc false
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  @doc false
   def init(_) do
     :timer.send_interval(@tick_interval, :tick)
     {:ok, nil}

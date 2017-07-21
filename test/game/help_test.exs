@@ -1,5 +1,6 @@
 defmodule Game.HelpTest do
   use ExUnit.Case
+  doctest Game.Help
 
   alias Game.Help
 

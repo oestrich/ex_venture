@@ -1,4 +1,10 @@
 defmodule Game.Session do
+  @moduledoc """
+  GenServer connected to the socket
+
+  Holds knowledge if the user is logged in, who they are, what they're save is.
+  """
+
   use GenServer
   use Networking.Socket
   use Game.Room

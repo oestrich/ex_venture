@@ -1,4 +1,8 @@
 defmodule Game.Command do
+  @moduledoc """
+  Parses and runs commands from players
+  """
+
   use Networking.Socket
   use Game.Room
 

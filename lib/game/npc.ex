@@ -1,4 +1,8 @@
 defmodule Game.NPC do
+  @moduledoc """
+  Server for an NPC
+  """
+
   use GenServer
   use Game.Room
 
@@ -7,10 +11,19 @@ defmodule Game.NPC do
 
   alias Game.Message
 
+  @doc """
+  Starts a new NPC server
+
+  Will have a registered name with the return from `Game.NPC.pid/1`.
+  """
   def start_link(npc) do
     GenServer.start_link(__MODULE__, npc, name: pid(npc.id))
   end
 
+  @doc """
+  Helper for determining an NPCs registered process name
+  """
+  @spec pid(id :: Integer.id) :: String.t
   def pid(id), do: :"Game.NPC.npc_#{id}"
 
   @doc """
