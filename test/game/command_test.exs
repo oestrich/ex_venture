@@ -23,45 +23,45 @@ defmodule Game.CommandTest do
     end
 
     test "parsing global" do
-      assert Command.parse("global hello") == {:global, "hello"}
+      assert Command.parse("global hello") == {Game.Command.Global, ["hello"]}
     end
 
     test "parsing who is online" do
-      assert Command.parse("who is online") == {:who}
-      assert Command.parse("who") == {:who}
+      assert Command.parse("who is online") == {Game.Command.Who, []}
+      assert Command.parse("who") == {Game.Command.Who, []}
     end
 
     test "quitting" do
-      assert Command.parse("quit") == {:quit}
+      assert Command.parse("quit") == {Game.Command.Quit, []}
     end
 
     test "getting help" do
-      assert Command.parse("help") == {:help}
-      assert Command.parse("help topic") == {:help, "topic"}
+      assert Command.parse("help") == {Game.Command.Help, []}
+      assert Command.parse("help topic") == {Game.Command.Help, ["topic"]}
     end
 
     test "looking" do
-      assert Command.parse("look") == {:look}
+      assert Command.parse("look") == {Game.Command.Look, []}
     end
 
     test "north" do
-      assert Command.parse("north") == {:north}
-      assert Command.parse("n") == {:north}
+      assert Command.parse("north") == {Game.Command.Move, [:north]}
+      assert Command.parse("n") == {Game.Command.Move, [:north]}
     end
 
     test "east" do
-      assert Command.parse("east") == {:east}
-      assert Command.parse("e") == {:east}
+      assert Command.parse("east") == {Game.Command.Move, [:east]}
+      assert Command.parse("e") == {Game.Command.Move, [:east]}
     end
 
     test "south" do
-      assert Command.parse("south") == {:south}
-      assert Command.parse("s") == {:south}
+      assert Command.parse("south") == {Game.Command.Move, [:south]}
+      assert Command.parse("s") == {Game.Command.Move, [:south]}
     end
 
     test "west" do
-      assert Command.parse("west") == {:west}
-      assert Command.parse("w") == {:west}
+      assert Command.parse("west") == {Game.Command.Move, [:west]}
+      assert Command.parse("w") == {Game.Command.Move, [:west]}
     end
   end
 
@@ -69,7 +69,7 @@ defmodule Game.CommandTest do
     test "quit command", %{session: session, socket: socket} do
       user = create_user(%{username: "user", password: "password"})
 
-      :ok = Command.run({:quit}, session, %{socket: socket, user: user, save: %{room_id: 5}})
+      :ok = Command.run({Game.Command.Quit, []}, session, %{socket: socket, user: user, save: %{room_id: 5}})
 
       assert @socket.get_echos() == [{socket, "Good bye."}]
       assert @socket.get_disconnects() == [socket]
@@ -81,14 +81,14 @@ defmodule Game.CommandTest do
 
   describe "getting help" do
     test "base help command", %{session: session, socket: socket} do
-      Command.run({:help}, session, %{socket: socket})
+      Command.run({Game.Command.Help, []}, session, %{socket: socket})
 
       [{^socket, help}] = @socket.get_echos()
       assert Regex.match?(~r(The commands you can), help)
     end
 
     test "loading command help", %{session: session, socket: socket} do
-      Command.run({:help, "say"}, session, %{socket: socket})
+      Command.run({Game.Command.Help, ["say"]}, session, %{socket: socket})
 
       [{^socket, help}] = @socket.get_echos()
       assert Regex.match?(~r(say), help)
@@ -102,7 +102,7 @@ defmodule Game.CommandTest do
     end
 
     test "view room information", %{session: session, socket: socket} do
-      Command.run({:look}, session, %{socket: socket, save: %{room_id: 1}})
+      Command.run({Game.Command.Look, []}, session, %{socket: socket, save: %{room_id: 1}})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Hallway), look)
@@ -127,7 +127,7 @@ defmodule Game.CommandTest do
     end
 
     test "talk on the global channel", %{session: session, socket: socket} do
-      Command.run({:global, "hi"}, session, %{socket: socket, user: %{username: "user"}})
+      Command.run({Game.Command.Global, ["hi"]}, session, %{socket: socket, user: %{username: "user"}})
       assert_received {:"$gen_cast", {:echo, ~s({red}[global]{/red} {blue}user{/blue} says, {green}"hi"{/green})}}
     end
   end
@@ -146,66 +146,66 @@ defmodule Game.CommandTest do
 
     test "north", %{session: session, state: state} do
       @room.set_room(%Data.Room{name: "", description: "", north_id: 2, players: []})
-      {:update, state} = Command.run({:north}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:update, state} = Command.run({Game.Command.Move, [:north]}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
 
     test "cannot move north faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({:north}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
+      :ok = Command.run({Game.Command.Move, [:north]}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
       assert @socket.get_echos() == [{socket, "Slow down."}]
     end
 
     test "north - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{north_id: nil})
-      :ok = Command.run({:north}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      :ok = Command.run({Game.Command.Move, [:north]}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "east", %{session: session, state: state} do
       @room.set_room(%Data.Room{name: "", description: "", east_id: 2, players: []})
-      {:update, state} = Command.run({:east}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:update, state} = Command.run({Game.Command.Move, [:east]}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
 
     test "cannot move east faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({:east}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
+      :ok = Command.run({Game.Command.Move, [:east]}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
       assert @socket.get_echos() == [{socket, "Slow down."}]
     end
 
     test "east - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{east_id: nil})
-      :ok = Command.run({:east}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      :ok = Command.run({Game.Command.Move, [:east]}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "south", %{session: session, state: state} do
       @room.set_room(%Data.Room{name: "", description: "", south_id: 2, players: []})
-      {:update, state} = Command.run({:south}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:update, state} = Command.run({Game.Command.Move, [:south]}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
 
     test "cannot move south faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({:south}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
+      :ok = Command.run({Game.Command.Move, [:south]}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
       assert @socket.get_echos() == [{socket, "Slow down."}]
     end
 
     test "south - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{south_id: nil})
-      :ok = Command.run({:south}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      :ok = Command.run({Game.Command.Move, [:south]}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "west", %{session: session, state: state} do
       @room.set_room(%Data.Room{name: "", description: "", west_id: 2, players: []})
-      {:update, state} = Command.run({:west}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:update, state} = Command.run({Game.Command.Move, [:west]}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
 
     test "cannot move west faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({:west}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
+      :ok = Command.run({Game.Command.Move, [:west]}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
       assert @socket.get_echos() == [{socket, "Slow down."}]
     end
 
     test "west - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{west_id: nil})
-      :ok = Command.run({:west}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      :ok = Command.run({Game.Command.Move, [:west]}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
   end
 end

@@ -4,12 +4,6 @@ defmodule Game.Command.Say do
   """
 
   use Game.Command
-  use Networking.Socket
-  use Game.Room
-
-  alias Game.Format
-  alias Game.Message
-  alias Game.Session
 
   @doc """
   Says to the current room the player is in
