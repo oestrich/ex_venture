@@ -63,11 +63,11 @@ defmodule Networking.Protocol do
     {:noreply, state}
   end
   def handle_cast({:echo, message}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, "#{message}\n")
+    transport.send(socket, "\n#{message}\n")
     {:noreply, state}
   end
   def handle_cast({:echo, message, :prompt}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, message)
+    transport.send(socket, "\n#{message}")
     {:noreply, state}
   end
   def handle_cast(:start_session, state) do

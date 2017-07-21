@@ -9,13 +9,19 @@ defmodule Game.SessionTest do
   setup do
     socket = :socket
     @socket.clear_messages
-    {:ok, %{socket: socket}}
+    user = %{username: "user"}
+    {:ok, %{socket: socket, user: user, save: %{}}}
   end
 
-  test "echoing messages", %{socket: socket} do
-    {:noreply, _state} = Session.handle_cast({:echo, "a message"}, %{socket: socket})
+  test "echoing messages", state = %{socket: socket} do
+    {:noreply, ^state} = Session.handle_cast({:echo, "a message"}, state)
 
     assert @socket.get_echos() == [{socket, "a message"}]
+    assert @socket.get_prompts() == [{socket, "[user] > "}]
+  end
+
+  test "ticking", state do
+    {:noreply, %{last_tick: :time}} = Session.handle_cast({:tick, :time}, state)
   end
 
   test "recv'ing messages - the first", %{socket: socket} do
@@ -30,7 +36,7 @@ defmodule Game.SessionTest do
 
     {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active", user: user, save: %{room_id: 1}})
 
-    assert @socket.get_echos() == [{socket, ""}, {socket, "Good bye."}]
+    assert @socket.get_echos() == [{socket, "Good bye."}]
     assert state.last_recv
   end
 

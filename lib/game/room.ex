@@ -5,7 +5,11 @@ defmodule Game.Room do
   alias Data.Room
   alias Data.Repo
 
+  alias Game.Message
+  alias Game.NPC
   alias Game.Session
+
+  @type t :: Map.t
 
   defmacro __using__(_opts) do
     quote do
@@ -65,8 +69,8 @@ defmodule Game.Room do
   @doc """
   Say to the players in the room
   """
-  @spec say(id :: Integer.t, sender :: pid, message :: String.t) :: :ok
-  def say(id, sender,  message) do
+  @spec say(id :: Integer.t, sender :: pid, message :: Message.t) :: :ok
+  def say(id, sender, message) do
     GenServer.cast(pid(id), {:say, sender, message})
   end
 
@@ -93,17 +97,26 @@ defmodule Game.Room do
     {:noreply, Map.put(state, :players, players)}
   end
 
-  def handle_cast({:say, sender, message}, state = %{players: players}) do
+  def handle_cast({:say, sender, message}, state = %{players: players, npcs: npcs}) do
     players
-    |> Enum.reject(&(elem(&1, 0) == sender)) # don't send to the sender
-    |> echo_to_players(message)
+    |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
+    |> echo_to_players(message.formatted)
+
+    npcs |> echo_to_npcs(message)
 
     {:noreply, state}
   end
 
   defp echo_to_players(players, message) do
-    Enum.each(players, fn ({session, _user}) ->
+    Enum.each(players, fn ({:user, session, _user}) ->
       Session.echo(session, message)
+    end)
+  end
+
+  @spec echo_to_npcs(npcs :: List.t, Message.t) :: :ok
+  defp echo_to_npcs(npcs, message) do
+    Enum.each(npcs, fn (npc) ->
+      NPC.heard(npc.id, message)
     end)
   end
 end

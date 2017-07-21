@@ -5,6 +5,7 @@ defmodule Game.Command do
   alias Game.Account
   alias Game.Format
   alias Game.Help
+  alias Game.Message
   alias Game.Session
 
   def parse(command) do
@@ -89,7 +90,7 @@ defmodule Game.Command do
 
   def run({:say, message}, session, %{socket: socket, user: user, save: %{room_id: room_id}}) do
     socket |> @socket.echo(Format.say(user, message))
-    room_id |> @room.say(session, Format.say(user, message))
+    room_id |> @room.say(session, Message.new(user, message))
     :ok
   end
 
