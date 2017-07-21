@@ -12,7 +12,7 @@ defmodule Game.Server do
   @doc """
   How often the server will send a :tick
   """
-  @spec tick_interval() :: Integer.t
+  @spec tick_interval() :: integer
   def tick_interval(), do: @tick_interval
 
   @doc false

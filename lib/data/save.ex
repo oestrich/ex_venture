@@ -4,7 +4,7 @@ defmodule Data.Save do
   """
 
   @type t :: %{
-    room_id: Integer.t,
+    room_id: integer,
   }
 
   defstruct [:room_id]

@@ -8,7 +8,7 @@ defmodule Game.Command.Who do
   @doc """
   Echo the currently connected players
   """
-  @spec run([], session :: Session.t, state :: Map.t) :: :ok
+  @spec run([], session :: Session.t, state :: map) :: :ok
   def run([], _session, %{socket: socket}) do
     usernames = Session.Registry.connected_players()
     |> Enum.map(fn ({_pid, user}) ->

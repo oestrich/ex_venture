@@ -13,7 +13,7 @@ defmodule Game.Room do
   alias Game.NPC
   alias Game.Session
 
-  @type t :: Map.t
+  @type t :: map
 
   defmacro __using__(_opts) do
     quote do
@@ -30,7 +30,7 @@ defmodule Game.Room do
   @doc """
   Load all rooms in the database
   """
-  @spec all() :: [Map.t]
+  @spec all() :: [map]
   def all() do
     Room |> Repo.all
   end
@@ -54,7 +54,8 @@ defmodule Game.Room do
   @doc """
   Enter a room
   """
-  @spec enter(id :: Integer.t, user :: {pid, Map.t}) :: :ok
+  @spec enter(id :: integer, {:user, session :: pid, user :: map}) :: :ok
+  @spec enter(id :: integer, {:npc, npc :: map}) :: :ok
   def enter(id, {:user, session, user}) do
     GenServer.cast(pid(id), {:enter, {:user, session, user}})
   end
@@ -65,7 +66,7 @@ defmodule Game.Room do
   @doc """
   Leave a room
   """
-  @spec leave(id :: Integer.t, user :: Map.t) :: :ok
+  @spec leave(id :: integer, user :: {:user, session :: pid, user :: map}) :: :ok
   def leave(id, {:user, session, user}) do
     GenServer.cast(pid(id), {:leave, {:user, session, user}})
   end
@@ -73,7 +74,7 @@ defmodule Game.Room do
   @doc """
   Say to the players in the room
   """
-  @spec say(id :: Integer.t, sender :: pid, message :: Message.t) :: :ok
+  @spec say(id :: integer, sender :: pid, message :: Message.t) :: :ok
   def say(id, sender, message) do
     GenServer.cast(pid(id), {:say, sender, message})
   end
@@ -117,7 +118,7 @@ defmodule Game.Room do
     end)
   end
 
-  @spec echo_to_npcs(npcs :: List.t, Message.t) :: :ok
+  @spec echo_to_npcs(npcs :: list, Message.t) :: :ok
   defp echo_to_npcs(npcs, message) do
     Enum.each(npcs, fn (npc) ->
       NPC.heard(npc.id, message)

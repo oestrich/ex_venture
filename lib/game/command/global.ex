@@ -8,7 +8,7 @@ defmodule Game.Command.Global do
   @doc """
   Send to all connected players
   """
-  @spec run([message :: String.t], session :: Session.t, state :: Map.t) :: :ok
+  @spec run([message :: String.t], session :: Session.t, state :: map) :: :ok
   def run([message], session, %{socket: socket, user: user}) do
     message = ~s({red}[global]{/red} {blue}#{user.username}{/blue} says, {green}"#{message}"{/green})
 

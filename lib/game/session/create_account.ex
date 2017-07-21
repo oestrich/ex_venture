@@ -9,7 +9,7 @@ defmodule Game.Session.CreateAccount do
 
   This echos to the socket and ends with asking for the first field.
   """
-  @spec start(socket :: pid) :: nil
+  @spec start(socket :: pid) :: :ok
   def start(socket) do
     socket |> @socket.echo("\n\nWelcome to ExVenture.\nThank you for joining!\nWe need a username and password for you to sign up.\n")
     socket |> @socket.prompt("Username: ")

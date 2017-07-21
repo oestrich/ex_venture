@@ -15,7 +15,7 @@ defmodule Game.Format do
       iex> Game.Format.global_say(%{name: "NPC"}, "Hello")
       ~s({red}[global]{/red} {yellow}NPC{/yellow} says, {green}"Hello"{/green})
   """
-  @spec global_say(sender :: Map.t, message :: String.t) :: String.t
+  @spec global_say(sender :: map, message :: String.t) :: String.t
   def global_say(sender, message) do
     ~s({red}[global]{/red} #{say(sender, message)})
   end
@@ -44,7 +44,7 @@ defmodule Game.Format do
       iex> Game.Format.say(%{username: "Player"}, "Hello")
       ~s[{blue}Player{/blue} says, {green}"Hello"{/green}]
   """
-  @spec say(sender :: Map.t, message :: String.t) :: String.t
+  @spec say(sender :: map, message :: String.t) :: String.t
   def say(%{name: name}, message) do
     ~s[{yellow}#{name}{/yellow} says, {green}"#{message}"{/green}]
   end
@@ -55,7 +55,7 @@ defmodule Game.Format do
   @doc """
   Format full text for a room
   """
-  @spec room(room :: Room.t) :: String.t
+  @spec room(room :: Game.Room.t) :: String.t
   def room(room) do
     """
 {green}#{room.name}{/green}
@@ -88,10 +88,9 @@ Exits: #{exits(room)}
   def wrap(string) do
     string
     |> String.split()
-    |> _wrap()
+    |> _wrap("", "")
   end
 
-  defp _wrap(words, line \\ "", string \\ "")
   defp _wrap([], line, string), do: join(string, line, "\n")
   defp _wrap([word | left], line, string) do
     case String.length("#{line} #{word}") do
@@ -132,7 +131,7 @@ Exits: #{exits(room)}
       iex> Game.Format.players(%{players: [%{username: "Mordred"}, %{username: "Arthur"}]})
       "{blue}Mordred{/blue} is here. {blue}Arthur{/blue} is here."
   """
-  @spec npcs(room :: Game.Room.t) :: String.t
+  @spec players(room :: Game.Room.t) :: String.t
   def players(%{players: players}) do
     players
     |> Enum.map(fn (player) -> "{blue}#{player.username}{/blue} is here." end)

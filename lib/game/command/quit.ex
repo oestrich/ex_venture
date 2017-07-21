@@ -10,7 +10,7 @@ defmodule Game.Command.Quit do
   @doc """
   Save and quit the game
   """
-  @spec run([], session :: Session.t, state :: Map.t) :: :ok
+  @spec run([], session :: Session.t, state :: map) :: :ok
   def run([], session, %{socket: socket, user: user, save: save}) do
     socket |> @socket.echo("Good bye.")
     socket |> @socket.disconnect

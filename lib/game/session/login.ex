@@ -11,7 +11,7 @@ defmodule Game.Session.Login do
   @doc """
   Start text for logging in
   """
-  @spec start(socket :: pid) :: nil
+  @spec start(socket :: pid) :: :ok
   def start(socket) do
     socket |> @socket.echo("#{motd()}\n\nEnter {white}create{/white} to create a new account.\n")
     socket |> @socket.prompt("What is your player name? ")
@@ -29,7 +29,7 @@ defmodule Game.Session.Login do
 
   Edit the state to be signed in and active
   """
-  @spec login(user :: Map.t, session :: pid, socket :: pid, state :: Map.t) :: Map.t
+  @spec login(user :: map, session :: pid, socket :: pid, state :: map) :: map
   def login(user, session, socket, state) do
     Session.Registry.register(user)
 

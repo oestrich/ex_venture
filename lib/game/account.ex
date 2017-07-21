@@ -6,11 +6,12 @@ defmodule Game.Account do
   alias Data.Repo
   alias Data.Config
   alias Data.User
+  alias Data.Save
 
   @doc """
   Create a new user from attributes
   """
-  @spec create(attributes :: Map.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
+  @spec create(attributes :: map) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
   def create(attributes) do
     attributes = attributes
     |> Map.put(:save, Config.starting_save())
@@ -23,7 +24,7 @@ defmodule Game.Account do
   @doc """
   Update the user's save
   """
-  @spec save(user :: User.t, save :: Save.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
+  @spec save(User.t, Save.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
   def save(user, save) do
     user
     |> User.changeset(%{save: save})

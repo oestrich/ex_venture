@@ -8,7 +8,7 @@ defmodule Game.Command.Move do
   @doc """
   Move in the direction provided
   """
-  @spec run([direction :: Atom.t], session :: Session.t, state :: Map.t) :: :ok
+  @spec run([direction :: atom()], session :: Session.t, state :: map()) :: :ok
   def run([:east], session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)

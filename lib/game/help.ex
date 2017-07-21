@@ -5,7 +5,7 @@ defmodule Game.Help do
 
   @doc false
   def start_link() do
-    Agent.start_link(fn -> load_help() end, name: __MODULE__)
+    Agent.start_link(&load_help/0, name: __MODULE__)
   end
 
   defp load_help() do

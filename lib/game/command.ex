@@ -10,14 +10,14 @@ defmodule Game.Command do
 
       {Game.Command.Run, "Hi there"}
   """
-  @type t :: {module :: Atom.t, args :: List.t}
+  @type t :: {module :: atom(), args :: []}
 
   @doc """
   Run a command
 
   Returns `:ok` or `{:update, new_state}` and the Session server will accept the new state.
   """
-  @callback run(args :: list, session :: pid, state :: Map.t) :: :ok | {:update, state :: Map.t}
+  @callback run(args :: list, session :: pid, state :: map) :: :ok | {:update, state :: map}
 
   defmacro __using__(_opts) do
     quote do

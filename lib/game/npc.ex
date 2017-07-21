@@ -23,13 +23,13 @@ defmodule Game.NPC do
   @doc """
   Helper for determining an NPCs registered process name
   """
-  @spec pid(id :: Integer.id) :: String.t
+  @spec pid(id :: integer()) :: atom
   def pid(id), do: :"Game.NPC.npc_#{id}"
 
   @doc """
   Load all NPCs in the database
   """
-  @spec all() :: [Map.t]
+  @spec all() :: [map]
   def all() do
     NPC |> Repo.all
   end
@@ -39,7 +39,7 @@ defmodule Game.NPC do
 
   Hook to respond to echos
   """
-  @spec heard(id :: Integer.t, message :: Message.t) :: :ok
+  @spec heard(id :: integer, message :: Message.t) :: :ok
   def heard(id, message) do
     GenServer.cast(pid(id), {:heard, message})
   end

@@ -10,8 +10,7 @@ defmodule Game.Command.Help do
   @doc """
   View help
   """
-  @spec run([topic :: String.t], session :: Session.t, state :: Map.t) :: :ok
-  @spec run([], session :: Session.t, state :: Map.t) :: :ok
+  @spec run([topic :: String.t], session :: Session.t, state :: map) :: :ok
   def run([], _session, %{socket: socket}) do
     socket |> @socket.echo(Help.base)
     :ok

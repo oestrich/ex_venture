@@ -42,6 +42,7 @@ defmodule ExVenture.Mixfile do
   defp deps do
     [
       {:comeonin, "~> 3.2"},
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:distillery, "~> 1.4", runtime: false},
       {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},

@@ -54,7 +54,7 @@ defmodule Game.Session do
   @doc """
   Echo to the socket
   """
-  @spec recv(pid, message :: String.t) :: :ok
+  @spec echo(pid, message :: String.t) :: :ok
   def echo(pid, message) do
     GenServer.cast(pid, {:echo, message})
   end
@@ -62,7 +62,7 @@ defmodule Game.Session do
   @doc """
   Send a tick to the session
   """
-  @spec tick(pid, time :: Timex.t) :: :ok
+  @spec tick(pid, time :: DateTime.t) :: :ok
   def tick(pid, time) do
     GenServer.cast(pid, {:tick, time})
   end

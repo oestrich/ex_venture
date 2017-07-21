@@ -5,7 +5,7 @@ defmodule Data.User do
 
   @type t :: %{
     username: String.t,
-    save: Save.t
+    save: Save.t,
   }
 
   schema "users" do

@@ -5,6 +5,7 @@ defmodule Game.Message do
 
   defstruct [:type, :sender, :message, :formatted]
 
+  alias Data.User
   alias Game.Format
 
   @type t :: %{
