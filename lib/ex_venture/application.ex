@@ -16,6 +16,7 @@ defmodule ExVenture.Application do
       supervisor(Data.Repo, []),
       supervisor(Registry, [:duplicate, Game.Session.Registry]),
       supervisor(Game.Session.Supervisor, []),
+      worker(Game.Items, []),
       supervisor(Game.Zone, []),
       supervisor(Game.NPC.Supervisor, []),
       worker(Game.Help, []),

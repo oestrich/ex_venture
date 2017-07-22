@@ -4,8 +4,11 @@ defmodule Data.Room do
   schema "rooms" do
     field :name, :string
     field :description, :string
+    field :item_ids, {:array, :integer}
 
     field :players, {:array, :tuple}, virtual: true
+
+    has_many :room_items, Data.RoomItem
 
     belongs_to :north, __MODULE__
     belongs_to :east, __MODULE__
@@ -17,7 +20,8 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :north_id, :east_id, :south_id, :west_id])
+    |> cast(params, [:name, :description, :north_id, :east_id, :south_id, :west_id, :item_ids])
+    |> ensure_item_ids
     |> validate_required([:name, :description])
   end
 
@@ -26,5 +30,13 @@ defmodule Data.Room do
     |> Enum.filter(fn (direction) ->
       Map.get(room, :"#{direction}_id") != nil
     end)
+  end
+
+  defp ensure_item_ids(changeset) do
+    case changeset do
+      %{changeset: %{item_ids: _ids}} -> changeset
+      %{data: %{item_ids: ids}} when ids != nil -> changeset
+      _ -> put_change(changeset, :item_ids, [])
+    end
   end
 end

@@ -4,7 +4,6 @@ defmodule Game.Room do
   """
 
   use GenServer
-  import Ecto.Query
 
   alias Data.Room
   alias Data.Repo
@@ -33,13 +32,6 @@ defmodule Game.Room do
   @spec all() :: [map]
   def all() do
     Room |> Repo.all
-  end
-
-  @doc """
-  Load the starting room.
-  """
-  def starting() do
-    Room |> limit(1) |> Repo.one
   end
 
   @doc """
@@ -85,7 +77,8 @@ defmodule Game.Room do
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
     players = Enum.map(players, &(elem(&1, 2)))
-    {:reply, Map.merge(room, %{players: players, npcs: npcs}), state}
+    items = Game.Items.items(room.item_ids)
+    {:reply, Map.merge(room, %{players: players, npcs: npcs, items: items}), state}
   end
 
   def handle_cast({:enter, player = {:user, _, user}}, state = %{players: players}) do

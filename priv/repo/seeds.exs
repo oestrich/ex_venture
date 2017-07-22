@@ -1,21 +1,39 @@
 alias Data.Repo
 
 alias Data.Config
+alias Data.Item
 alias Data.NPC
 alias Data.Room
+alias Data.RoomItem
 alias Data.User
 
 defmodule Helpers do
+  def add_item_to_room(room, item, attributes) do
+    changeset = %RoomItem{} |> RoomItem.changeset(Map.merge(attributes, %{room_id: room.id, item_id: item.id}))
+    case changeset |> Repo.insert do
+      {:ok, _room_item} ->
+        room |> update_room(%{item_ids: [item.id | room.item_ids]})
+      _ ->
+        raise "Error creating room item"
+    end
+  end
+
   def create_config(name, value) do
     %Config{}
     |> Config.changeset(%{name: name, value: value})
     |> Repo.insert
   end
 
+  def create_item(attributes) do
+    %Item{}
+    |> Item.changeset(attributes)
+    |> Repo.insert!
+  end
+
   def create_npc(room, attributes) do
     %NPC{}
     |> NPC.changeset(Map.merge(attributes, %{room_id: room.id}))
-    |> Repo.insert
+    |> Repo.insert!
   end
 
   def create_room(attributes) do
@@ -63,6 +81,9 @@ defmodule Seeds do
 
     entrance |> create_npc(%{name: "Bran", hostile: false})
     great_room |> create_npc(%{name: "Bandit", hostile: true})
+
+    sword = create_item(%{name: "Short Sword", description: "A simple blade", keywords: ["sword"]})
+    entrance = entrance |> add_item_to_room(sword, %{spawn: true, interval: 15})
 
     {:ok, _starting_save} = create_config("starting_save", %{room_id: entrance.id} |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")

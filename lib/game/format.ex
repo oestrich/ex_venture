@@ -63,6 +63,7 @@ defmodule Game.Format do
 #{room.description |> wrap()}\n
 #{who_is_here(room)}
 Exits: #{exits(room)}
+Items: #{items(room)}
     """
     |> String.strip
   end
@@ -154,4 +155,11 @@ Exits: #{exits(room)}
     |> Enum.join(" ")
   end
   def npcs(_), do: ""
+
+  def items(%{items: items}) when is_list(items) do
+    items
+    |> Enum.map(fn (item) -> "{cyan}#{item.name}{/cyan}" end)
+    |> Enum.join(", ")
+  end
+  def items(_), do: ""
 end
