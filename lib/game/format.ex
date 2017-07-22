@@ -70,6 +70,19 @@ Items: #{items(room)}
   end
 
   @doc """
+  Peak at a room from the room you're in
+
+  Example:
+
+    iex> Game.Format.peak_room(%{name: "Hallway"}, "north")
+    "{green}Hallway{/green} is north."
+  """
+  @spec peak_room(room :: Game.Room.t, direction :: String.t) :: String.t
+  def peak_room(room, direction) do
+    "{green}#{room.name}{/green} is #{direction}."
+  end
+
+  @doc """
   Create an 'underline'
 
   Example:
