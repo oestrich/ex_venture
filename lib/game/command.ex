@@ -47,6 +47,7 @@ defmodule Game.Command do
       "help " <> topic -> {Game.Command.Help, [topic |> String.downcase]}
       "help" -> {Game.Command.Help, []}
       "look" -> {Game.Command.Look, []}
+      "look " <> object -> {Game.Command.Look, [object]}
       "n" -> {Game.Command.Move, [:north]}
       "north" -> {Game.Command.Move, [:north]}
       "quit" -> {Game.Command.Quit, []}

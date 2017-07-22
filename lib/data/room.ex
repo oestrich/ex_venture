@@ -7,6 +7,7 @@ defmodule Data.Room do
     field :item_ids, {:array, :integer}
 
     field :players, {:array, :tuple}, virtual: true
+    field :items, {:array, :map}, virtual: true
 
     has_many :room_items, Data.RoomItem
 

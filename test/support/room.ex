@@ -12,6 +12,7 @@ defmodule Test.Game.Room do
       north_id: 10,
       west_id: 11,
       players: [],
+      items: [%Data.Item{name: "Short Sword", description: "A simple blade", keywords: []}],
     }
   end
 

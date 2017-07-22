@@ -3,6 +3,7 @@ defmodule Game.Format do
   Format data into strings to send to the connected player
   """
 
+  alias Data.Item
   alias Data.Room
   alias Data.User
   alias Data.Save
@@ -162,4 +163,22 @@ Items: #{items(room)}
     |> Enum.join(", ")
   end
   def items(_), do: ""
+
+  @doc """
+  Display an item
+
+  Example:
+
+      iex> string = Game.Format.item(%{name: "Short Sword", description: "A simple blade"})
+      iex> Regex.match?(~r(Short Sword), string)
+      true
+  """
+  @spec item(item :: Item.t) :: String.t
+  def item(item) do
+    """
+    {cyan}#{item.name}{/cyan}
+    #{item.name |> underline}
+    #{item.description}
+    """
+  end
 end

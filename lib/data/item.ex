@@ -17,6 +17,15 @@ defmodule Data.Item do
   def changeset(struct, params) do
     struct
     |> cast(params, [:name, :description, :keywords])
+    |> ensure_keywords
     |> validate_required([:name, :description, :keywords])
+  end
+
+  defp ensure_keywords(changeset) do
+    case changeset do
+      %{changeset: %{keywords: _keywords}} -> changeset
+      %{data: %{keywords: keywords}} when keywords != nil -> changeset
+      _ -> put_change(changeset, :keywords, [])
+    end
   end
 end

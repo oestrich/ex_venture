@@ -42,6 +42,7 @@ defmodule Game.CommandTest do
 
     test "looking" do
       assert Command.parse("look") == {Game.Command.Look, []}
+      assert Command.parse("look item") == {Game.Command.Look, ["item"]}
     end
 
     test "north" do
@@ -92,21 +93,6 @@ defmodule Game.CommandTest do
 
       [{^socket, help}] = @socket.get_echos()
       assert Regex.match?(~r(say), help)
-    end
-  end
-
-  describe "looking" do
-    setup do
-      @room.set_room(@room._room())
-      :ok
-    end
-
-    test "view room information", %{session: session, socket: socket} do
-      Command.run({Game.Command.Look, []}, session, %{socket: socket, save: %{room_id: 1}})
-
-      [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Hallway), look)
-      assert Regex.match?(~r(Exits), look)
     end
   end
 
