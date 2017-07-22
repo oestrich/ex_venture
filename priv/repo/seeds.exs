@@ -61,8 +61,8 @@ defmodule Seeds do
     kitchen = create_room(%{name: "Kitchen", description: "A large cooking fire is at this end of the great room. A pot boils away at over the flame.", west_id: great_room.id})
     great_room = update_room(great_room, %{east_id: kitchen.id})
 
-    entrance |> create_npc(%{name: "Bran"})
-    great_room |> create_npc(%{name: "Bandit"})
+    entrance |> create_npc(%{name: "Bran", hostile: false})
+    great_room |> create_npc(%{name: "Bandit", hostile: true})
 
     {:ok, _starting_save} = create_config("starting_save", %{room_id: entrance.id} |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")

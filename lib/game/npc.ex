@@ -56,9 +56,12 @@ defmodule Game.NPC do
   def handle_cast({:heard, message}, state = %{npc: npc}) do
     case message.message do
       "Hello" <> _ ->
-        npc.room_id |> @room.say(npc, Message.npc(npc, "How are you?"))
+        npc.room_id |> @room.say(npc, Message.npc(npc, npc |> message))
       _ -> nil
     end
     {:noreply, state}
   end
+
+  defp message(%{hostile: true}), do: "Die!"
+  defp message(%{hostile: false}), do: "How are you?"
 end
