@@ -1,4 +1,4 @@
-defmodule Game.NPCSupervisor do
+defmodule Game.NPC.Supervisor do
   @moduledoc """
   Supervisor for NPCs
   """
