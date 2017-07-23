@@ -3,6 +3,7 @@ defmodule TestHelpers do
   alias Data.Config
   alias Data.Item
   alias Data.Room
+  alias Data.RoomItem
   alias Data.User
 
   def create_user(attributes) do
@@ -42,5 +43,11 @@ defmodule TestHelpers do
       description: "A slender sword",
       type: "weapon",
     }, attributes)
+  end
+
+  def create_room_item(room, item, attributes) do
+    %RoomItem{}
+    |> RoomItem.changeset(Map.merge(attributes, %{room_id: room.id, item_id: item.id}))
+    |> Repo.insert
   end
 end

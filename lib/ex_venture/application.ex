@@ -14,7 +14,8 @@ defmodule ExVenture.Application do
     children = [
       worker(Game.Server, []),
       supervisor(Data.Repo, []),
-      supervisor(Registry, [:duplicate, Game.Session.Registry]),
+      supervisor(Registry, [:duplicate, Game.Session.Registry], [id: Game.Session.Registry]),
+      supervisor(Registry, [:duplicate, Game.Room.Registry], [id: Game.Room.Registry]),
       supervisor(Game.Session.Supervisor, []),
       worker(Game.Items, []),
       supervisor(Game.Zone, []),

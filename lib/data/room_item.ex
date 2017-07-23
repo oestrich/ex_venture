@@ -5,7 +5,6 @@ defmodule Data.RoomItem do
     belongs_to :room, Data.Room
     belongs_to :item, Data.Item
 
-    field :spawn, :boolean
     field :interval, :integer
 
     timestamps()
@@ -13,7 +12,7 @@ defmodule Data.RoomItem do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:room_id, :item_id, :spawn, :interval])
-    |> validate_required([:room_id, :item_id, :spawn])
+    |> cast(params, [:room_id, :item_id, :interval])
+    |> validate_required([:room_id, :item_id])
   end
 end

@@ -5,10 +5,11 @@ defmodule Game.Room do
 
   use GenServer
 
-  alias Data.Room
   alias Data.Repo
 
   alias Game.Room.Actions
+  alias Game.Room.Registry
+  alias Game.Room.Repo
   alias Game.Message
   alias Game.NPC
   alias Game.Session
@@ -32,7 +33,7 @@ defmodule Game.Room do
   """
   @spec all() :: [map]
   def all() do
-    Room |> Repo.all
+    Repo.all
   end
 
   @doc """
@@ -80,8 +81,17 @@ defmodule Game.Room do
     GenServer.call(pid(id), {:pick_up, item})
   end
 
+  @doc """
+  Send a tick to the room
+  """
+  @spec tick(id :: pid) :: :ok
+  def tick(pid) do
+    GenServer.cast(pid, :tick)
+  end
+
   def init(room) do
-    {:ok, %{room: room, players: [], npcs: []}}
+    Registry.register()
+    {:ok, %{room: room, players: [], npcs: [], respawn: %{}}}
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
@@ -92,6 +102,13 @@ defmodule Game.Room do
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do
     {room, return} = Actions.pick_up(room, item)
     {:reply, return, Map.put(state, :room, room)}
+  end
+
+  def handle_cast(:tick, state) do
+    case Actions.tick(state) do
+      :ok -> {:noreply, state}
+      {:update, state} -> {:noreply, state}
+    end
   end
 
   def handle_cast({:enter, player = {:user, _, user}}, state = %{players: players}) do
