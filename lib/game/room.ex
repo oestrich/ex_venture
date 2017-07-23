@@ -8,6 +8,7 @@ defmodule Game.Room do
   alias Data.Room
   alias Data.Repo
 
+  alias Game.Room.Actions
   alias Game.Message
   alias Game.NPC
   alias Game.Session
@@ -71,6 +72,14 @@ defmodule Game.Room do
     GenServer.cast(pid(id), {:say, sender, message})
   end
 
+  @doc """
+  Pick up the item
+  """
+  @spec pick_up(id :: integer, item :: Item.t) :: :ok
+  def pick_up(id, item) do
+    GenServer.call(pid(id), {:pick_up, item})
+  end
+
   def init(room) do
     {:ok, %{room: room, players: [], npcs: []}}
   end
@@ -79,6 +88,10 @@ defmodule Game.Room do
     players = Enum.map(players, &(elem(&1, 2)))
     items = Game.Items.items(room.item_ids)
     {:reply, Map.merge(room, %{players: players, npcs: npcs, items: items}), state}
+  end
+  def handle_call({:pick_up, item}, _from, state = %{room: room}) do
+    {room, return} = Actions.pick_up(room, item)
+    {:reply, return, Map.put(state, :room, room)}
   end
 
   def handle_cast({:enter, player = {:user, _, user}}, state = %{players: players}) do

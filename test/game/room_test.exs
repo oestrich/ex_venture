@@ -1,5 +1,5 @@
 defmodule Game.RoomTest do
-  use ExUnit.Case
+  use Data.ModelCase
 
   alias Game.Room
 

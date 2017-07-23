@@ -30,8 +30,8 @@ defmodule Game.Command.Look do
     room = @room.look(room_id)
 
     case Enum.find(room.items, &(Game.Item.matches_lookup?(&1, item_name))) do
-       nil -> nil
-       item -> socket |> @socket.echo(Format.item(item))
+      nil -> nil
+      item -> socket |> @socket.echo(Format.item(item))
     end
 
     :ok

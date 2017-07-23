@@ -35,30 +35,34 @@ defmodule Game.Command do
   use Networking.Socket
   use Game.Room
 
+  alias Game.Command
+
   @doc """
   Parse a string to turn into a command tuple
   """
   @spec parse(command :: String.t) :: t
   def parse(command) do
     case command do
-      "e" -> {Game.Command.Move, [:east]}
-      "east" -> {Game.Command.Move, [:east]}
-      "global " <> message -> {Game.Command.Global, [message]}
-      "help " <> topic -> {Game.Command.Help, [topic |> String.downcase]}
-      "help" -> {Game.Command.Help, []}
-      "inventory" -> {Game.Command.Inventory, []}
-      "inv" -> {Game.Command.Inventory, []}
-      "look" -> {Game.Command.Look, []}
-      "look " <> object -> {Game.Command.Look, [object]}
-      "n" -> {Game.Command.Move, [:north]}
-      "north" -> {Game.Command.Move, [:north]}
-      "quit" -> {Game.Command.Quit, []}
-      "s" -> {Game.Command.Move, [:south]}
-      "say " <> message -> {Game.Command.Say, [message]}
-      "south" -> {Game.Command.Move, [:south]}
-      "w" -> {Game.Command.Move, [:west]}
-      "west" -> {Game.Command.Move, [:west]}
-      "who" <> _extra -> {Game.Command.Who, []}
+      "e" -> {Command.Move, [:east]}
+      "east" -> {Command.Move, [:east]}
+      "global " <> message -> {Command.Global, [message]}
+      "help " <> topic -> {Command.Help, [topic |> String.downcase]}
+      "help" -> {Command.Help, []}
+      "inventory" -> {Command.Inventory, []}
+      "inv" -> {Command.Inventory, []}
+      "look" -> {Command.Look, []}
+      "look at " <> object -> {Command.Look, [object]}
+      "look " <> object -> {Command.Look, [object]}
+      "n" -> {Command.Move, [:north]}
+      "north" -> {Command.Move, [:north]}
+      "pick up " <> item -> {Command.PickUp, [item]}
+      "quit" -> {Command.Quit, []}
+      "s" -> {Command.Move, [:south]}
+      "say " <> message -> {Command.Say, [message]}
+      "south" -> {Command.Move, [:south]}
+      "w" -> {Command.Move, [:west]}
+      "west" -> {Command.Move, [:west]}
+      "who" <> _extra -> {Command.Who, []}
       _ -> {:error, :bad_parse}
     end
   end

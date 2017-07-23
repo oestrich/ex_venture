@@ -12,7 +12,7 @@ defmodule Test.Game.Room do
       north_id: 10,
       west_id: 11,
       players: [],
-      items: [%Data.Item{name: "Short Sword", description: "A simple blade", keywords: []}],
+      items: [%Data.Item{id: 15, name: "Short Sword", description: "A simple blade", keywords: ["sword"]}],
     }
   end
 
@@ -43,5 +43,15 @@ defmodule Test.Game.Room do
   def get_says() do
     start_link()
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :say, []) end)
+  end
+
+  def set_pick_up(response) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up, response) end)
+  end
+
+  def pick_up(_id, item) do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :pick_up, {:ok, item}) end)
   end
 end

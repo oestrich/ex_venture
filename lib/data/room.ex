@@ -35,7 +35,7 @@ defmodule Data.Room do
 
   defp ensure_item_ids(changeset) do
     case changeset do
-      %{changeset: %{item_ids: _ids}} -> changeset
+      %{changes: %{item_ids: _ids}} -> changeset
       %{data: %{item_ids: ids}} when ids != nil -> changeset
       _ -> put_change(changeset, :item_ids, [])
     end
