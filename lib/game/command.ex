@@ -46,6 +46,8 @@ defmodule Game.Command do
       "global " <> message -> {Game.Command.Global, [message]}
       "help " <> topic -> {Game.Command.Help, [topic |> String.downcase]}
       "help" -> {Game.Command.Help, []}
+      "inventory" -> {Game.Command.Inventory, []}
+      "inv" -> {Game.Command.Inventory, []}
       "look" -> {Game.Command.Look, []}
       "look " <> object -> {Game.Command.Look, [object]}
       "n" -> {Game.Command.Move, [:north]}

@@ -64,6 +64,11 @@ defmodule Game.CommandTest do
       assert Command.parse("west") == {Game.Command.Move, [:west]}
       assert Command.parse("w") == {Game.Command.Move, [:west]}
     end
+
+    test "inventory" do
+      assert Command.parse("inventory") == {Game.Command.Inventory, []}
+      assert Command.parse("inv") == {Game.Command.Inventory, []}
+    end
   end
 
   describe "quitting" do

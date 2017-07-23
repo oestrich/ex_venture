@@ -82,10 +82,10 @@ defmodule Seeds do
     entrance |> create_npc(%{name: "Bran", hostile: false})
     great_room |> create_npc(%{name: "Bandit", hostile: true})
 
-    sword = create_item(%{name: "Short Sword", description: "A simple blade", keywords: ["sword"]})
+    sword = create_item(%{name: "Short Sword", description: "A simple blade", type: "weapon", keywords: ["sword"]})
     entrance = entrance |> add_item_to_room(sword, %{spawn: true, interval: 15})
 
-    {:ok, _starting_save} = create_config("starting_save", %{room_id: entrance.id} |> Poison.encode!)
+    {:ok, _starting_save} = create_config("starting_save", %{room_id: entrance.id, item_ids: [sword.id]} |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
 
     create_user(%{username: "eric", password: "password", save: Config.starting_save()})

@@ -4,11 +4,15 @@ defmodule Data.Item do
   @type t :: %{
     name: String.t,
     description: String.t,
+    type: String.t,
   }
+
+  @types ["basic", "weapon", "armor"]
 
   schema "items" do
     field :name, :string
     field :description, :string
+    field :type, :string
     field :keywords, {:array, :string}
 
     timestamps()
@@ -16,9 +20,10 @@ defmodule Data.Item do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :keywords])
+    |> cast(params, [:name, :description, :type, :keywords])
     |> ensure_keywords
-    |> validate_required([:name, :description, :keywords])
+    |> validate_required([:name, :description, :type, :keywords])
+    |> validate_inclusion(:type, @types)
   end
 
   defp ensure_keywords(changeset) do

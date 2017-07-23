@@ -5,9 +5,10 @@ defmodule Data.Save do
 
   @type t :: %{
     room_id: integer,
+    item_ids: [integer],
   }
 
-  defstruct [:room_id]
+  defstruct [:room_id, :item_ids]
 
   @behaviour Ecto.Type
 

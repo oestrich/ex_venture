@@ -194,4 +194,19 @@ Items: #{items(room)}
     #{item.description}
     """
   end
+
+  @doc """
+  Format your inventory
+
+  Example:
+
+      iex> Game.Format.inventory([%{name: "Short Sword"}, %{name: "Shield"}])
+      "  - {cyan}Short Sword{/cyan}\\n  - {cyan}Shield{/cyan}"
+  """
+  @spec inventory(items :: [Item.t]) :: String.t
+  def inventory(items) do
+    items
+    |> Enum.map(fn (item) -> "  - {cyan}#{item.name}{/cyan}" end)
+    |> Enum.join("\n")
+  end
 end
