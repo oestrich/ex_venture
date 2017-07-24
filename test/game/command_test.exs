@@ -82,7 +82,7 @@ defmodule CommandTest do
 
   describe "quitting" do
     test "quit command", %{session: session, socket: socket} do
-      user = create_user(%{username: "user", password: "password"})
+      user = create_user(%{name: "user", password: "password"})
 
       :ok = Command.run({Command.Quit, []}, session, %{socket: socket, user: user, save: %{room_id: 5}})
 
@@ -112,9 +112,9 @@ defmodule CommandTest do
 
   describe "say" do
     test "says to the room", %{session: session, socket: socket} do
-      Command.run({Command.Say, ["hi"]}, session, %{socket: socket, user: %{username: "user"}, save: %{room_id: 1}})
+      Command.run({Command.Say, ["hi"]}, session, %{socket: socket, user: %{name: "user"}, save: %{room_id: 1}})
 
-      assert @room.get_says() == [{1, Message.new(%{username: "user"}, "hi")}]
+      assert @room.get_says() == [{1, Message.new(%{name: "user"}, "hi")}]
     end
   end
 
@@ -127,7 +127,7 @@ defmodule CommandTest do
     end
 
     test "talk on the global channel", %{session: session, socket: socket} do
-      Command.run({Command.Global, ["hi"]}, session, %{socket: socket, user: %{username: "user"}})
+      Command.run({Command.Global, ["hi"]}, session, %{socket: socket, user: %{name: "user"}})
       assert_received {:"$gen_cast", {:echo, ~s({red}[global]{/red} {blue}user{/blue} says, {green}"hi"{/green})}}
     end
   end

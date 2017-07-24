@@ -10,7 +10,7 @@ defmodule Game.Command.Global do
   """
   @spec run([message :: String.t], session :: Session.t, state :: map) :: :ok
   def run([message], session, %{socket: socket, user: user}) do
-    message = ~s({red}[global]{/red} {blue}#{user.username}{/blue} says, {green}"#{message}"{/green})
+    message = ~s({red}[global]{/red} {blue}#{user.name}{/blue} says, {green}"#{message}"{/green})
 
     socket |> @socket.echo(message)
 

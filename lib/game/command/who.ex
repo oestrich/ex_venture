@@ -10,13 +10,13 @@ defmodule Game.Command.Who do
   """
   @spec run([], session :: Session.t, state :: map) :: :ok
   def run([], _session, %{socket: socket}) do
-    usernames = Session.Registry.connected_players()
+    names = Session.Registry.connected_players()
     |> Enum.map(fn ({_pid, user}) ->
-      "  - {blue}#{user.username}{/blue}\n"
+      "  - {blue}#{user.name}{/blue}\n"
     end)
     |> Enum.join("")
 
-    socket |> @socket.echo("Players online:\n#{usernames}")
+    socket |> @socket.echo("Players online:\n#{names}")
     :ok
   end
 end

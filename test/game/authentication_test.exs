@@ -4,7 +4,7 @@ defmodule Game.AuthenticationTest do
   alias Game.Authentication
 
   setup do
-    user = create_user(%{username: "user", password: "password"})
+    user = create_user(%{name: "user", password: "password"})
     {:ok, %{user: user}}
   end
 
@@ -16,7 +16,7 @@ defmodule Game.AuthenticationTest do
     assert Authentication.find_and_validate("user", "p@ssword") == {:error, :invalid}
   end
 
-  test "username is wrong" do
+  test "name is wrong" do
     assert Authentication.find_and_validate("user", "p@ssword") == {:error, :invalid}
   end
 end

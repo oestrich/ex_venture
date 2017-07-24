@@ -9,7 +9,7 @@ defmodule Game.SessionTest do
   setup do
     socket = :socket
     @socket.clear_messages
-    user = %{username: "user"}
+    user = %{name: "user"}
     {:ok, %{socket: socket, user: user, save: %{}}}
   end
 
@@ -32,7 +32,7 @@ defmodule Game.SessionTest do
   end
 
   test "recv'ing messages - after login processes commands", %{socket: socket} do
-    user = create_user(%{username: "user", password: "password"})
+    user = create_user(%{name: "user", password: "password"})
 
     {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active", user: user, save: %{room_id: 1}})
 
@@ -55,7 +55,7 @@ defmodule Game.SessionTest do
   test "unregisters the pid when disconnected" do
     Registry.register(Session.Registry, "player", :connected)
 
-    {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{user: %Data.User{username: "user"}, save: %{room_id: 1}})
+    {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{user: %Data.User{name: "user"}, save: %{room_id: 1}})
     assert Registry.lookup(Session.Registry, "player") == []
   end
 end

@@ -20,7 +20,7 @@ defmodule Game.Message do
       type: :user,
       sender: user,
       message: message,
-      formatted: Format.say(user, message),
+      formatted: Format.say({:user, user}, message),
     }
   end
 
@@ -29,7 +29,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: Format.say(npc, message),
+      formatted: Format.say({:npc, npc}, message),
     }
   end
 end

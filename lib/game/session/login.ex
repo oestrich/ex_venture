@@ -33,7 +33,7 @@ defmodule Game.Session.Login do
   def login(user, session, socket, state) do
     Session.Registry.register(user)
 
-    socket |> @socket.echo("\nWelcome, #{user.username}!\n")
+    socket |> @socket.echo("\nWelcome, #{user.name}!\n")
 
     @room.enter(user.save.room_id, {:user, session, user})
 
@@ -47,9 +47,9 @@ defmodule Game.Session.Login do
     socket |> Session.CreateAccount.start()
     state |> Map.put(:state, "create")
   end
-  def process(password, session, state = %{socket: socket, login: %{username: username}}) do
+  def process(password, session, state = %{socket: socket, login: %{name: name}}) do
     socket |> @socket.tcp_option(:echo, true)
-    case Authentication.find_and_validate(username, password) do
+    case Authentication.find_and_validate(name, password) do
       {:error, :invalid} ->
         socket |> @socket.echo("Invalid password")
         socket |> @socket.disconnect()
@@ -64,6 +64,6 @@ defmodule Game.Session.Login do
   def process(message, _session, state = %{socket: socket}) do
     socket |> @socket.prompt("Password: ")
     socket |> @socket.tcp_option(:echo, false)
-    Map.merge(state, %{login: %{username: message}})
+    Map.merge(state, %{login: %{name: message}})
   end
 end

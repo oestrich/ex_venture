@@ -13,7 +13,7 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.global_say(%{name: "NPC"}, "Hello")
+      iex> Game.Format.global_say({:npc, %{name: "NPC"}}, "Hello")
       ~s({red}[global]{/red} {yellow}NPC{/yellow} says, {green}"Hello"{/green})
   """
   @spec global_say(sender :: map, message :: String.t) :: String.t
@@ -26,12 +26,12 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.prompt(%{username: "user"}, %{})
+      iex> Game.Format.prompt(%{name: "user"}, %{})
       "[user] > "
   """
   @spec prompt(user :: User.t, save :: Save.t) :: String.t
   def prompt(user, _save) do
-    "[#{user.username}] > "
+    "[#{user.name}] > "
   end
 
   @doc """
@@ -39,18 +39,18 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.say(%{name: "NPC"}, "Hello")
+      iex> Game.Format.say({:npc, %{name: "NPC"}}, "Hello")
       ~s[{yellow}NPC{/yellow} says, {green}"Hello"{/green}]
 
-      iex> Game.Format.say(%{username: "Player"}, "Hello")
+      iex> Game.Format.say({:user, %{name: "Player"}}, "Hello")
       ~s[{blue}Player{/blue} says, {green}"Hello"{/green}]
   """
   @spec say(sender :: map, message :: String.t) :: String.t
-  def say(%{name: name}, message) do
+  def say({:npc, %{name: name}}, message) do
     ~s[{yellow}#{name}{/yellow} says, {green}"#{message}"{/green}]
   end
-  def say(%{username: username}, message) do
-    ~s[{blue}#{username}{/blue} says, {green}"#{message}"{/green}]
+  def say({:user, %{name: name}}, message) do
+    ~s[{blue}#{name}{/blue} says, {green}"#{message}"{/green}]
   end
 
   @doc """
@@ -129,7 +129,7 @@ Items: #{items(room)}
 
   Example:
 
-      iex> Game.Format.who_is_here(%{players: [%{username: "Mordred"}], npcs: [%{name: "Arthur"}]})
+      iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur"}]})
       "{blue}Mordred{/blue} is here. {yellow}Arthur{/yellow} is here."
   """
   def who_is_here(room) do
@@ -143,13 +143,13 @@ Items: #{items(room)}
 
   Example:
 
-      iex> Game.Format.players(%{players: [%{username: "Mordred"}, %{username: "Arthur"}]})
+      iex> Game.Format.players(%{players: [%{name: "Mordred"}, %{name: "Arthur"}]})
       "{blue}Mordred{/blue} is here. {blue}Arthur{/blue} is here."
   """
   @spec players(room :: Game.Room.t) :: String.t
   def players(%{players: players}) do
     players
-    |> Enum.map(fn (player) -> "{blue}#{player.username}{/blue} is here." end)
+    |> Enum.map(fn (player) -> "{blue}#{player.name}{/blue} is here." end)
     |> Enum.join(" ")
   end
   def players(_), do: ""
@@ -215,14 +215,14 @@ Items: #{items(room)}
 
   Example:
 
-      iex> Game.Format.info(%{username: "hero"})
+      iex> Game.Format.info(%{name: "hero"})
       "hero\\n--------\\n"
   """
   @spec info(user :: User.t) :: String.t
   def info(user) do
     """
-    #{user.username}
-    #{underline(user.username)}
+    #{user.name}
+    #{underline(user.name)}
     """
   end
 end

@@ -112,7 +112,7 @@ defmodule Game.Room do
   end
 
   def handle_cast({:enter, player = {:user, _, user}}, state = %{players: players}) do
-    players |> echo_to_players("{blue}#{user.username}{/blue} enters")
+    players |> echo_to_players("{blue}#{user.name}{/blue} enters")
     {:noreply, Map.put(state, :players, [player | players])}
   end
   def handle_cast({:enter, {:npc, npc}}, state = %{npcs: npcs}) do
@@ -121,7 +121,7 @@ defmodule Game.Room do
 
   def handle_cast({:leave, player = {:user, _, user}}, state = %{players: players}) do
     players = List.delete(players, player)
-    players |> echo_to_players("{blue}#{user.username}{/blue} leaves")
+    players |> echo_to_players("{blue}#{user.name}{/blue} leaves")
     {:noreply, Map.put(state, :players, players)}
   end
 

@@ -88,7 +88,7 @@ defmodule Seeds do
     {:ok, _starting_save} = create_config("starting_save", %{room_id: entrance.id, item_ids: [sword.id]} |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
 
-    create_user(%{username: "eric", password: "password", save: Config.starting_save()})
+    create_user(%{name: "eric", password: "password", save: Config.starting_save()})
   end
 end
 

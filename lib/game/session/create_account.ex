@@ -11,12 +11,12 @@ defmodule Game.Session.CreateAccount do
   """
   @spec start(socket :: pid) :: :ok
   def start(socket) do
-    socket |> @socket.echo("\n\nWelcome to ExVenture.\nThank you for joining!\nWe need a username and password for you to sign up.\n")
+    socket |> @socket.echo("\n\nWelcome to ExVenture.\nThank you for joining!\nWe need a name and password for you to sign up.\n")
     socket |> @socket.prompt("Username: ")
   end
 
-  def process(password, session, state = %{socket: socket, create: %{username: username}}) do
-    case Account.create(%{username: username, password: password}) do
+  def process(password, session, state = %{socket: socket, create: %{name: name}}) do
+    case Account.create(%{name: name, password: password}) do
       {:ok, user} ->
         user |> Login.login(session, socket, state |> Map.delete(:create))
       {:error, _changeset} ->
@@ -25,8 +25,8 @@ defmodule Game.Session.CreateAccount do
         |> Map.delete(:create)
     end
   end
-  def process(username, _session, state = %{socket: socket}) do
+  def process(name, _session, state = %{socket: socket}) do
     socket |> @socket.prompt("Password: ")
-    Map.merge(state, %{create: %{username: username}})
+    Map.merge(state, %{create: %{name: name}})
   end
 end

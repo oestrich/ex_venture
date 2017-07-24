@@ -4,7 +4,7 @@ defmodule Game.RoomTest do
   alias Game.Room
 
   setup do
-    {:ok, user: %{username: "user"}}
+    {:ok, user: %{name: "user"}}
   end
 
   test "entering a room", %{user: user} do
