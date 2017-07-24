@@ -209,4 +209,20 @@ Items: #{items(room)}
     |> Enum.map(fn (item) -> "  - {cyan}#{item.name}{/cyan}" end)
     |> Enum.join("\n")
   end
+
+  @doc """
+  Format your info sheet
+
+  Example:
+
+      iex> Game.Format.info(%{username: "hero"})
+      "hero\\n--------\\n"
+  """
+  @spec info(user :: User.t) :: String.t
+  def info(user) do
+    """
+    #{user.username}
+    #{underline(user.username)}
+    """
+  end
 end
