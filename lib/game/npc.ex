@@ -24,7 +24,9 @@ defmodule Game.NPC do
   Helper for determining an NPCs registered process name
   """
   @spec pid(id :: integer()) :: atom
-  def pid(id), do: :"Game.NPC.npc_#{id}"
+  def pid(id) do
+    {:via, Registry, {Game.NPC.Registry, id}}
+  end
 
   @doc """
   Load all NPCs in the database

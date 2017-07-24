@@ -7,6 +7,7 @@ defmodule Game.Server do
 
   alias Game.Session
   alias Game.Room
+  alias Game.Zone
 
   @tick_interval 2000
 
@@ -35,8 +36,8 @@ defmodule Game.Server do
       session |> Session.tick(time)
     end)
 
-    Room.Registry.connected_rooms
-    |> Enum.map(fn ({id, _}) ->
+    Zone.rooms
+    |> Enum.map(fn (id) ->
       id |> Room.tick
     end)
 

@@ -11,6 +11,15 @@ defmodule Game.Zone do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  @doc """
+  Return all rooms that are currently online
+  """
+  @spec rooms() :: [pid]
+  def rooms() do
+    Supervisor.which_children(Game.Zone)
+    |> Enum.map(&(elem(&1, 1)))
+  end
+
   def init(_) do
     children = Room.all |> Enum.map(fn (room) ->
       worker(Room, [room], id: room.id, restart: :permanent)

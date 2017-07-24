@@ -8,7 +8,6 @@ defmodule Game.Room do
   alias Data.Repo
 
   alias Game.Room.Actions
-  alias Game.Room.Registry
   alias Game.Room.Repo
   alias Game.Message
   alias Game.NPC
@@ -26,7 +25,9 @@ defmodule Game.Room do
     GenServer.start_link(__MODULE__, room, name: pid(room.id))
   end
 
-  def pid(id), do: :"Game.Room.room_#{id}"
+  def pid(id) do
+    {:via, Registry, {Game.Room.Registry, id}}
+  end
 
   @doc """
   Load all rooms in the database
@@ -90,7 +91,6 @@ defmodule Game.Room do
   end
 
   def init(room) do
-    Registry.register()
     {:ok, %{room: room, players: [], npcs: [], respawn: %{}}}
   end
 
