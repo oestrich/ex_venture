@@ -66,7 +66,7 @@ defmodule Game.Format do
 Exits: #{exits(room)}
 Items: #{items(room)}
     """
-    |> String.strip
+    |> String.trim
   end
 
   @doc """
