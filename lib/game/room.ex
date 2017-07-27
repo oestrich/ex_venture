@@ -38,6 +38,14 @@ defmodule Game.Room do
   end
 
   @doc """
+  Load all rooms for a zone
+  """
+  @spec for_zone(zone_id :: integer) :: [map]
+  def for_zone(zone_id) do
+    Repo.for_zone(zone_id)
+  end
+
+  @doc """
   Look around the room
 
   Fetches current room

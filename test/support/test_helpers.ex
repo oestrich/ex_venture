@@ -5,6 +5,7 @@ defmodule TestHelpers do
   alias Data.Room
   alias Data.RoomItem
   alias Data.User
+  alias Data.Zone
 
   def create_user(attributes) do
     %User{}
@@ -49,5 +50,11 @@ defmodule TestHelpers do
     %RoomItem{}
     |> RoomItem.changeset(Map.merge(attributes, %{room_id: room.id, item_id: item.id}))
     |> Repo.insert
+  end
+
+  def create_zone(attributes) do
+    %Zone{}
+    |> Zone.changeset(room_attributes(attributes))
+    |> Repo.insert!
   end
 end

@@ -6,6 +6,7 @@ alias Data.NPC
 alias Data.Room
 alias Data.RoomItem
 alias Data.User
+alias Data.Zone
 
 defmodule Helpers do
   def add_item_to_room(room, item, attributes) do
@@ -36,9 +37,9 @@ defmodule Helpers do
     |> Repo.insert!
   end
 
-  def create_room(attributes) do
+  def create_room(zone, attributes) do
     %Room{}
-    |> Room.changeset(attributes)
+    |> Room.changeset(Map.merge(attributes, %{zone_id: zone.id}))
     |> Repo.insert!
   end
 
@@ -53,31 +54,81 @@ defmodule Helpers do
     |> User.changeset(attributes)
     |> Repo.insert!
   end
+
+  def create_zone(attributes) do
+    %Zone{}
+    |> Zone.changeset(attributes)
+    |> Repo.insert!
+  end
 end
 
 defmodule Seeds do
   import Helpers
 
   def run do
-    entrance = create_room(%{name: "Entrance", description: "A large square room with rough hewn walls."})
+    bandit_hideout = create_zone(%{name: "Bandit Hideout"})
+    village = create_zone(%{name: "Village"})
 
-    hallway = create_room(%{name: "Hallway", description: "As you go further west, the hallway descends downward.", east_id: entrance.id})
+    entrance = create_room(bandit_hideout, %{
+      name: "Entrance",
+      description: "A large square room with rough hewn walls.",
+    })
+
+    hallway = create_room(bandit_hideout, %{
+      name: "Hallway",
+      description: "As you go further west, the hallway descends downward.",
+      east_id: entrance.id,
+    })
     entrance = update_room(entrance, %{west_id: hallway.id})
 
-    hallway_turn = create_room(%{name: "Hallway", description: "The hallway bends south, continuing sloping down.", east_id: hallway.id})
+    hallway_turn = create_room(bandit_hideout, %{
+      name: "Hallway",
+      description: "The hallway bends south, continuing sloping down.",
+      east_id: hallway.id,
+    })
     hallway = update_room(hallway, %{west_id: hallway_turn.id})
 
-    hallway_south = create_room(%{name: "Hallway", description: "The south end of the hall has a wooden door embedded in the rock wall.", north_id: hallway_turn.id})
+    hallway_south = create_room(bandit_hideout, %{
+      name: "Hallway",
+      description: "The south end of the hall has a wooden door embedded in the rock wall.",
+      north_id: hallway_turn.id,
+    })
     hallway_turn = update_room(hallway_turn, %{south_id: hallway_south.id})
 
-    great_room = create_room(%{name: "Great Room", description: "The great room of the bandit hideout. There are several tables along the walls with chairs pulled up. Cards are on the table along with mugs.", north_id: hallway_south.id})
+    great_room = create_room(bandit_hideout, %{
+      name: "Great Room",
+      description: "The great room of the bandit hideout. There are several tables along the walls with chairs pulled up. Cards are on the table along with mugs.",
+      north_id: hallway_south.id,
+    })
     hallway_south = update_room(hallway_south, %{south_id: great_room.id})
 
-    dorm = create_room(%{name: "Bedroom", description: "There is a bed in the corner with a dirty blanket on top. A chair sits in the corner by a small fire pit.", east_id: great_room.id})
+    dorm = create_room(bandit_hideout, %{
+      name: "Bedroom",
+      description: "There is a bed in the corner with a dirty blanket on top. A chair sits in the corner by a small fire pit.",
+      east_id: great_room.id,
+    })
     great_room = update_room(great_room, %{west_id: dorm.id})
 
-    kitchen = create_room(%{name: "Kitchen", description: "A large cooking fire is at this end of the great room. A pot boils away at over the flame.", west_id: great_room.id})
+    kitchen = create_room(bandit_hideout, %{
+      name: "Kitchen",
+      description: "A large cooking fire is at this end of the great room. A pot boils away at over the flame.",
+      west_id: great_room.id,
+    })
     great_room = update_room(great_room, %{east_id: kitchen.id})
+
+    shack = create_room(village, %{
+      name: "Shack",
+      description: "A small shack built against the rock walls of a small cliff.",
+      west_id: entrance.id,
+    })
+    entrance = update_room(entrance, %{east_id: shack.id})
+
+    forest_path = create_room(village, %{
+      name: "Forest Path",
+      description: "A small path that leads away from the village to the mountain",
+      west_id: shack.id,
+    })
+    shack = update_room(shack, %{east_id: forest_path.id})
 
     entrance |> create_npc(%{name: "Bran", hostile: false})
     great_room |> create_npc(%{name: "Bandit", hostile: true})

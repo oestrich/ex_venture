@@ -9,7 +9,7 @@ defmodule Game.Supervisor do
     children = [
       worker(Game.Server, []),
       supervisor(Game.Session.Supervisor, []),
-      supervisor(Game.Zone, []),
+      supervisor(Game.Zone.Supervisor, []),
       supervisor(Game.NPC.Supervisor, []),
       worker(Game.Items, []),
       worker(Game.Help, []),

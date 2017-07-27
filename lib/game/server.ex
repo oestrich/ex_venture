@@ -6,7 +6,6 @@ defmodule Game.Server do
   use GenServer
 
   alias Game.Session
-  alias Game.Room
   alias Game.Zone
 
   @tick_interval 2000
@@ -36,10 +35,7 @@ defmodule Game.Server do
       session |> Session.tick(time)
     end)
 
-    Zone.rooms
-    |> Enum.map(fn (id) ->
-      id |> Room.tick
-    end)
+    Zone.Supervisor.zones |> Enum.map(&Zone.tick/1)
 
     {:noreply, state}
   end

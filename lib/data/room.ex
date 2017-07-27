@@ -11,6 +11,7 @@ defmodule Data.Room do
 
     has_many :room_items, Data.RoomItem
 
+    belongs_to :zone, Zone
     belongs_to :north, __MODULE__
     belongs_to :east, __MODULE__
     belongs_to :south, __MODULE__
@@ -21,9 +22,9 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :north_id, :east_id, :south_id, :west_id, :item_ids])
+    |> cast(params, [:zone_id, :name, :description, :north_id, :east_id, :south_id, :west_id, :item_ids])
     |> ensure_item_ids
-    |> validate_required([:name, :description])
+    |> validate_required([:zone_id, :name, :description])
   end
 
   def exits(room) do
