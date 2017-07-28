@@ -201,13 +201,15 @@ Items: #{items(room)}
   Example:
 
       iex> Game.Format.inventory([%{name: "Short Sword"}, %{name: "Shield"}])
-      "  - {cyan}Short Sword{/cyan}\\n  - {cyan}Shield{/cyan}"
+      "You are holding:\\n  - {cyan}Short Sword{/cyan}\\n  - {cyan}Shield{/cyan}"
   """
   @spec inventory(items :: [Item.t]) :: String.t
   def inventory(items) do
-    items
+    items = items
     |> Enum.map(fn (item) -> "  - {cyan}#{item.name}{/cyan}" end)
     |> Enum.join("\n")
+
+    "You are holding:\n#{items}"
   end
 
   @doc """
