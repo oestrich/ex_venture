@@ -26,7 +26,7 @@ defmodule Game.Session.LoginTest do
 
     assert state.user.id == user.id
     assert state.state == "active"
-    [{^socket, "\nWelcome, user!\n"} | _] = @socket.get_echos()
+    [{^socket, "Welcome, user!"} | _] = @socket.get_echos()
   end
 
   test "verifies the user's name and password - failure", %{socket: socket} do

@@ -32,6 +32,6 @@ defmodule Game.SessionIntegrationTest do
     wait_cast(pid)
 
     assert [{^pid, _user}] = Registry.lookup(Session.Registry, "player")
-    [{^socket, "\nWelcome, user!\n"} | _] = @socket.get_echos()
+    [{^socket, "Welcome, user!"} | _] = @socket.get_echos()
   end
 end
