@@ -4,7 +4,7 @@ defmodule ExVenture.Mixfile do
   def project do
     [
       app: :ex_venture,
-      version: "0.8.0",
+      version: "0.9.0",
       elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env),
       build_embedded: Mix.env == :prod,
