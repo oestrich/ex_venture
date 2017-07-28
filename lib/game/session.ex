@@ -79,6 +79,12 @@ defmodule Game.Session do
   end
 
   # On a disconnect unregister the PID and stop the server
+  def handle_cast(:disconnect, state = %{state: "login"}) do
+    {:stop, :normal, state}
+  end
+  def handle_cast(:disconnect, state = %{state: "create"}) do
+    {:stop, :normal, state}
+  end
   def handle_cast(:disconnect, state = %{user: user, save: save}) do
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, self(), user})
