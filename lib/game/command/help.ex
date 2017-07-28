@@ -5,6 +5,8 @@ defmodule Game.Command.Help do
 
   use Game.Command
 
+  @commands ["help"]
+
   alias Game.Help
 
   @doc """

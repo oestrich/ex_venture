@@ -29,6 +29,28 @@ defmodule Game.Command do
       alias Game.Session
 
       @behaviour Game.Command
+      @before_compile Game.Command
+
+      @short_help ""
+      @full_help ""
+
+      @commands []
+      @aliases []
+    end
+  end
+
+  @doc false
+  defmacro __before_compile__(_env) do
+    quote do
+      def commands(), do: @commands
+      def aliases(), do: @aliases
+
+      def help() do
+        %{
+          short: @short_help,
+          full: @full_help,
+        }
+      end
     end
   end
 
@@ -36,6 +58,17 @@ defmodule Game.Command do
   use Game.Room
 
   alias Game.Command
+
+  @commands [
+    Command.Global, Command.Help, Command.Info, Command.Inventory, Command.Look,
+    Command.Move, Command.PickUp, Command.Quit, Command.Say, Command.Who,
+  ]
+
+  @doc """
+  Get all commands that `use Command`
+  """
+  @spec commands() :: [atom]
+  def commands(), do: @commands
 
   @doc """
   Parse a string to turn into a command tuple

@@ -5,6 +5,15 @@ defmodule Game.Command.Global do
 
   use Game.Command
 
+  @commands ["global"]
+
+  @short_help "Talk to other players"
+  @full_help """
+  Example: say Hello, everyone!
+
+  This chats to every player connected
+  """
+
   @doc """
   Send to all connected players
   """

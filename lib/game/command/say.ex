@@ -5,6 +5,15 @@ defmodule Game.Command.Say do
 
   use Game.Command
 
+  @commands ["say"]
+
+  @short_help "Talk to other players"
+  @full_help """
+  Example: say Hello, everyone!
+
+  This is the same room only.
+  """
+
   @doc """
   Says to the current room the player is in
   """

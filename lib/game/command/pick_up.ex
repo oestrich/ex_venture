@@ -5,6 +5,13 @@ defmodule Game.Command.PickUp do
 
   use Game.Command
 
+  @commands ["pick up"]
+
+  @short_help "Pick up an item in the same room"
+  @full_help """
+  Example: pick up sword
+  """
+
   @doc """
   Pick up an item from a room
   """

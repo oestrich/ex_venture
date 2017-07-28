@@ -5,6 +5,14 @@ defmodule Game.Command.Move do
 
   use Game.Command
 
+  @commands ["north", "east", "south", "west"]
+  @aliases ["n", "e", "s", "w"]
+
+  @short_help "Move in a direction"
+  @full_help """
+  Move around rooms.
+  """
+
   @doc """
   Move in the direction provided
   """

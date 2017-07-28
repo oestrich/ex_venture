@@ -5,6 +5,13 @@ defmodule Game.Command.Who do
 
   use Game.Command
 
+  @commands ["who"]
+
+  @short_help "See who is online"
+  @full_help """
+  Example: who
+  """
+
   @doc """
   Echo the currently connected players
   """

@@ -5,6 +5,13 @@ defmodule Game.Command.Quit do
 
   use Game.Command
 
+  @commands ["quit"]
+
+  @short_help "Leave the game"
+  @full_help """
+  Example: quit
+  """
+
   alias Game.Account
 
   @doc """

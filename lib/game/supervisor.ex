@@ -12,7 +12,6 @@ defmodule Game.Supervisor do
       supervisor(Game.Zone.Supervisor, []),
       supervisor(Game.NPC.Supervisor, []),
       worker(Game.Items, []),
-      worker(Game.Help, []),
     ]
 
     supervise(children, strategy: :one_for_one)

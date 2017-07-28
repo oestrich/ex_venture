@@ -3,17 +3,6 @@ defmodule Game.Help do
   Find help about a topic
   """
 
-  @doc false
-  def start_link() do
-    Agent.start_link(&load_help/0, name: __MODULE__)
-  end
-
-  defp load_help() do
-    :code.priv_dir(:ex_venture)
-    |> Path.join("game/help.yml")
-    |> YamlElixir.read_from_file()
-  end
-
   @doc """
   Basic help information
 
@@ -21,24 +10,39 @@ defmodule Game.Help do
 
   Example:
 
-      iex> Game.Help.start_link()
       iex> Regex.match?(~r(^The commands you can run are:), Game.Help.base())
       true
   """
   def base() do
-    commands = Agent.get(__MODULE__, &(&1["commands"]))
-    |> Enum.map(fn ({key, %{"short" => short}}) ->
-      "\t{white}#{key |> String.upcase}{/white}: #{short}\n"
+    commands = Game.Command.commands
+    |> Enum.map(fn (command) ->
+      key = command |> command_topic_key()
+      "\t{white}#{key}{/white}: #{command.help[:short]}\n"
     end)
     |> Enum.join("")
 
     "The commands you can run are:\n#{commands}"
   end
 
+  @spec topic(topic :: String.t) :: String.t
   def topic(topic) do
-    case Agent.get(__MODULE__, &(Map.get(&1["commands"], topic, nil))) do
-      %{"full" => full} -> full
+    command = Game.Command.commands
+    |> Enum.find(fn (command) ->
+      command |> command_topic_key == topic |> String.upcase
+    end)
+
+    case command do
       nil -> "Unknown topic"
+      command ->
+        """
+        #{command.help.full}
+        Commands: #{command.commands |> Enum.join(", ")}
+        Aliases: #{command.aliases |> Enum.join(", ")}
+        """
     end
+  end
+
+  defp command_topic_key(command) do
+    command |> to_string |> String.split(".") |> List.last |> String.upcase
   end
 end

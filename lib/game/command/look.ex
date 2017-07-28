@@ -5,6 +5,13 @@ defmodule Game.Command.Look do
 
   use Game.Command
 
+  @commands ["look", "look at"]
+
+  @short_help "Look around the room"
+  @full_help """
+  Example: look
+  """
+
   @doc """
   Look around the current room
   """
