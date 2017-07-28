@@ -13,7 +13,7 @@ defmodule Game.Session.Login do
   """
   @spec start(socket :: pid) :: :ok
   def start(socket) do
-    socket |> @socket.echo("#{motd()}\n\nEnter {white}create{/white} to create a new account.\n")
+    socket |> @socket.echo("#{motd()}\nEnter {white}create{/white} to create a new account.")
     socket |> @socket.prompt("What is your player name? ")
   end
 
@@ -33,7 +33,7 @@ defmodule Game.Session.Login do
   def login(user, session, socket, state) do
     Session.Registry.register(user)
 
-    socket |> @socket.echo("\nWelcome, #{user.name}!\n")
+    socket |> @socket.echo("Welcome, #{user.name}!")
 
     @room.enter(user.save.room_id, {:user, session, user})
 
