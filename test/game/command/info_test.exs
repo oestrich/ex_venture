@@ -11,7 +11,8 @@ defmodule Game.Command.InfoTest do
   end
 
   test "view room information", %{session: session, socket: socket} do
-    Command.Info.run([], session, %{socket: socket, user: %{name: "hero"}})
+    user = %{name: "hero", save: %Data.Save{class: Game.Class.Fighter}}
+    Command.Info.run([], session, %{socket: socket, user: user})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(hero), look)
