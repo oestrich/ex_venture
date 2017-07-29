@@ -30,8 +30,8 @@ defmodule Game.Command.Move do
   @doc """
   Move in the direction provided
   """
-  @spec run(args :: [atom()], command :: String.t, session :: Session.t, state :: map()) :: :ok
-  def run([:east], _command, session, state = %{save: %{room_id: room_id}}) do
+  @spec run(args :: [atom()], session :: Session.t, state :: map()) :: :ok
+  def run([:east], session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
       case room do
@@ -40,7 +40,7 @@ defmodule Game.Command.Move do
       end
     end)
   end
-  def run([:north], _command, session, state = %{save: %{room_id: room_id}}) do
+  def run([:north], session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn () ->
       room = @room.look(room_id)
       case room do
@@ -49,7 +49,7 @@ defmodule Game.Command.Move do
       end
     end)
   end
-  def run([:south], _command, session, state = %{save: %{room_id: room_id}}) do
+  def run([:south], session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
       case room do
@@ -58,7 +58,7 @@ defmodule Game.Command.Move do
       end
     end)
   end
-  def run([:west], _command, session, state = %{save: %{room_id: room_id}}) do
+  def run([:west], session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
       case room do
@@ -86,7 +86,7 @@ defmodule Game.Command.Move do
 
     @room.enter(room_id, {:user, session, user})
 
-    Game.Command.run({Game.Command.Look, [], ""}, session, state)
+    Game.Command.run({Game.Command.Look, []}, session, state)
     {:update, state}
   end
 end

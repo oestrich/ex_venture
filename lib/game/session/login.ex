@@ -56,7 +56,7 @@ defmodule Game.Session.Login do
         state
       user ->
         state = user |> login(session, socket, state |> Map.delete(:login))
-        Command.run({Command.Look, [], ""}, session, state)
+        Command.run({Command.Look, []}, session, state)
         socket |> @socket.prompt(Format.prompt(user, user.save))
         state
     end

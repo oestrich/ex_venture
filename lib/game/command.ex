@@ -17,7 +17,7 @@ defmodule Game.Command do
 
   Returns `:ok` or `{:update, new_state}` and the Session server will accept the new state.
   """
-  @callback run(args :: list, command :: String.t, session :: pid, state :: map) :: :ok | {:update, state :: map}
+  @callback run(args :: list, session :: pid, state :: map) :: :ok | {:update, state :: map}
 
   defmacro __using__(_opts) do
     quote do
@@ -61,7 +61,7 @@ defmodule Game.Command do
         Game.Command.parse_command(__MODULE__, command)
       end
 
-      def run(_, _, _, %{socket: socket}) do
+      def run(_, _, %{socket: socket}) do
         socket |> @socket.echo("Unknown command")
         :ok
       end
@@ -123,14 +123,14 @@ defmodule Game.Command do
   defp _parse(nil, _), do: {:error, :bad_parse}
   defp _parse(module, command) do
     arguments = module.parse(command)
-    {module, arguments, command}
+    {module, arguments}
   end
 
   def run({:error, :bad_parse}, _session, %{socket: socket}) do
     socket |> @socket.echo("Unknown command")
     :ok
   end
-  def run({module, args, command}, session, state) do
-    module.run(args, command, session, state)
+  def run({module, args}, session, state) do
+    module.run(args, session, state)
   end
 end

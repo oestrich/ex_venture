@@ -15,8 +15,8 @@ defmodule Game.Command.Info do
   @doc """
   Look at your info sheet
   """
-  @spec run(args :: [], command :: String.t, session :: Session.t, state :: map) :: :ok
-  def run([], _command, _session, %{socket: socket, user: user}) do
+  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
+  def run([], _session, %{socket: socket, user: user}) do
     socket |> @socket.echo(Format.info(user))
     :ok
   end

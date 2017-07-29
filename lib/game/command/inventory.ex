@@ -19,8 +19,8 @@ defmodule Game.Command.Inventory do
   @doc """
   Look at your inventory
   """
-  @spec run(args :: [], command :: String.t, session :: Session.t, state :: map) :: :ok
-  def run([], _command, _session, %{socket: socket, save: %{item_ids: item_ids}}) do
+  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
+  def run([], _session, %{socket: socket, save: %{item_ids: item_ids}}) do
     items = Items.items(item_ids)
     socket |> @socket.echo(Format.inventory(items))
     :ok

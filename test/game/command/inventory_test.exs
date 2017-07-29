@@ -14,7 +14,7 @@ defmodule Game.Command.InventoryTest do
   end
 
   test "view room information", %{session: session, socket: socket} do
-    Game.Command.Inventory.run([], "inv", session, %{socket: socket, save: %{item_ids: [1]}})
+    Game.Command.Inventory.run([], session, %{socket: socket, save: %{item_ids: [1]}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Sword), look)

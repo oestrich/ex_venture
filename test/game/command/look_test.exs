@@ -11,7 +11,7 @@ defmodule Game.Command.LookTest do
   end
 
   test "view room information", %{session: session, socket: socket} do
-    Game.Command.Look.run([], "look", session, %{socket: socket, save: %{room_id: 1}})
+    Game.Command.Look.run([], session, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Hallway), look)
@@ -20,14 +20,14 @@ defmodule Game.Command.LookTest do
   end
 
   test "looking at an item", %{session: session, socket: socket} do
-    Game.Command.Look.run(["short sword"], "look short sword", session, %{socket: socket, save: %{room_id: 1}})
+    Game.Command.Look.run(["short sword"], session, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(A simple blade), look)
   end
 
   test "looking in a direction", %{session: session, socket: socket} do
-    Game.Command.Look.run(["north"], "look north", session, %{socket: socket, save: %{room_id: 1}})
+    Game.Command.Look.run(["north"], session, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Hallway), look)
