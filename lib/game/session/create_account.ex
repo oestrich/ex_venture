@@ -2,6 +2,7 @@ defmodule Game.Session.CreateAccount do
   use Networking.Socket
 
   alias Game.Account
+  alias Game.Class
   alias Game.Session.Login
 
   @doc """
@@ -15,8 +16,8 @@ defmodule Game.Session.CreateAccount do
     socket |> @socket.prompt("Username: ")
   end
 
-  def process(password, session, state = %{socket: socket, create: %{name: name}}) do
-    case Account.create(%{name: name, password: password}) do
+  def process(password, session, state = %{socket: socket, create: %{name: name, class: class}}) do
+    case Account.create(%{name: name, password: password}, %{class: class}) do
       {:ok, user} ->
         user |> Login.login(session, socket, state |> Map.delete(:create))
       {:error, _changeset} ->
@@ -25,8 +26,30 @@ defmodule Game.Session.CreateAccount do
         |> Map.delete(:create)
     end
   end
+  def process(class, _session, state = %{socket: socket, create: %{name: name}}) do
+    class = Class.classes
+    |> Enum.find(fn (cls) -> String.downcase(cls.name) == String.downcase(class) end)
+
+    case class do
+      nil ->
+        socket |> class_prompt
+        state
+      class ->
+        socket |> @socket.prompt("Password: ")
+        Map.merge(state, %{create: %{name: name, class: class}})
+    end
+  end
   def process(name, _session, state = %{socket: socket}) do
-    socket |> @socket.prompt("Password: ")
+    socket |> class_prompt
     Map.merge(state, %{create: %{name: name}})
+  end
+
+  defp class_prompt(socket) do
+    classes = Class.classes
+    |> Enum.map(fn (class) -> "\t- #{class.name()}" end)
+    |> Enum.join("\n")
+
+    socket |> @socket.echo("Now to pick a class. Your options are:\n#{classes}")
+    socket |> @socket.prompt("Class: ")
   end
 end

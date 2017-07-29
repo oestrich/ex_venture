@@ -4,7 +4,6 @@ defmodule Game.Session.Login do
 
   alias Data.Config
   alias Game.Authentication
-  alias Game.Command
   alias Game.Format
   alias Game.Session
 
@@ -36,6 +35,7 @@ defmodule Game.Session.Login do
     socket |> @socket.echo("Welcome, #{user.name}!")
 
     @room.enter(user.save.room_id, {:user, session, user})
+    session |> Session.recv("look")
 
     state
     |> Map.put(:user, user)
@@ -56,7 +56,6 @@ defmodule Game.Session.Login do
         state
       user ->
         state = user |> login(session, socket, state |> Map.delete(:login))
-        Command.run({Command.Look, []}, session, state)
         socket |> @socket.prompt(Format.prompt(user, user.save))
         state
     end
