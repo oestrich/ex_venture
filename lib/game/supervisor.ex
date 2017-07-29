@@ -1,4 +1,9 @@
 defmodule Game.Supervisor do
+  @moduledoc """
+  Game Supervisor
+
+  Loads the main server and all other supervisors required
+  """
   use Supervisor
 
   def start_link() do
