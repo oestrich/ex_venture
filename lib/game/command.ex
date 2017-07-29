@@ -108,6 +108,18 @@ defmodule Game.Command do
     |> _parse(command)
   end
 
+  @doc """
+  Parse a command
+
+  Uses the module's commands and aliases to find the arguments
+
+      iex> Game.Command.parse_command(Game.Command.Who, "who")
+      []
+
+      iex> Game.Command.parse_command(Game.Command.Say, "say hi")
+      ["hi"]
+  """
+  @spec parse_command(module :: atom, command :: String.t) :: [String.t]
   def parse_command(module, command) do
     argument = (module.commands ++ module.aliases)
     |> Enum.reduce(command, fn (cmd, command) ->

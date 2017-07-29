@@ -1,5 +1,6 @@
 defmodule CommandTest do
   use Data.ModelCase
+  doctest Game.Command
 
   alias Game.Command
   alias Game.Message
