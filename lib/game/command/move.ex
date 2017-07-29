@@ -13,6 +13,10 @@ defmodule Game.Command.Move do
   Move around rooms.
   """
 
+  @doc """
+  Parse the command into arguments
+  """
+  @spec parse(command :: String.t) :: [atom]
   def parse(command) do
     case command do
       "north" -> [:north]
