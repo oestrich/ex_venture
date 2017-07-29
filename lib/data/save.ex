@@ -7,9 +7,14 @@ defmodule Data.Save do
     room_id: integer,
     class: atom,
     item_ids: [integer],
+    wielding: %{
+      right: integer,
+      left: integer,
+      both: integer,
+    },
   }
 
-  defstruct [:room_id, :class, :item_ids]
+  defstruct [:room_id, :class, :item_ids, :wielding]
 
   @behaviour Ecto.Type
 

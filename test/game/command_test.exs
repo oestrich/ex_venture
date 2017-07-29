@@ -78,6 +78,10 @@ defmodule CommandTest do
     test "info sheet" do
       assert Command.parse("info") == {Command.Info, []}
     end
+
+    test "wield" do
+      assert Command.parse("wield sword") == {Command.Wield, ["sword"]}
+    end
   end
 
   describe "quitting" do

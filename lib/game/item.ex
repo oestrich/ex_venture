@@ -27,4 +27,23 @@ defmodule Game.Item do
     |> Enum.map(&String.downcase/1)
     |> Enum.any?(&(&1 == lookup))
   end
+
+  @doc """
+  Find an item in a list of items
+
+  Example:
+
+      iex> Game.Item.find_item([%{name: "Short sword", keywords: ["sword"]}], "sword")
+      %{name: "Short sword", keywords: ["sword"]}
+
+      iex> Game.Item.find_item([%{name: "Sword", keywords: []}, %{name: "Shield", keywords: []}], "shield")
+      %{name: "Shield", keywords: []}
+
+      iex> Game.Item.find_item([%{name: "Sword", keywords: []}], "shield")
+      nil
+  """
+  @spec find_item(items :: [Item.t], item_name :: String.t) :: Item.t | nil
+  def find_item(items, item_name) do
+    Enum.find(items, &(Game.Item.matches_lookup?(&1, item_name)))
+  end
 end

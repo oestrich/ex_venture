@@ -28,7 +28,7 @@ defmodule Data.Item do
 
   defp ensure_keywords(changeset) do
     case changeset do
-      %{changeset: %{keywords: _keywords}} -> changeset
+      %{changes: %{keywords: _keywords}} -> changeset
       %{data: %{keywords: keywords}} when keywords != nil -> changeset
       _ -> put_change(changeset, :keywords, [])
     end

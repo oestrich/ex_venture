@@ -134,12 +134,14 @@ defmodule Seeds do
     great_room |> create_npc(%{name: "Bandit", hostile: true})
 
     sword = create_item(%{name: "Short Sword", description: "A simple blade", type: "weapon", keywords: ["sword"]})
+    |> IO.inspect
     entrance = entrance |> add_item_to_room(sword, %{interval: 15})
 
     save =  %{
       room_id: entrance.id,
       class: Game.Class.Fighter,
       item_ids: [sword.id],
+      wielding: %{},
     }
     {:ok, _starting_save} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")

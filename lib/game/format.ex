@@ -200,16 +200,24 @@ Items: #{items(room)}
 
   Example:
 
-      iex> Game.Format.inventory([%{name: "Short Sword"}, %{name: "Shield"}])
-      "You are holding:\\n  - {cyan}Short Sword{/cyan}\\n  - {cyan}Shield{/cyan}"
+      iex> wielding = %{right: %{name: "Short Sword"}, left: %{name: "Shield"}}
+      iex> items = [%{name: "Potion"}, %{name: "Dagger"}]
+      iex> Game.Format.inventory(wielding, items)
+      "You are wielding:\\n  - a {cyan}Shield{/cyan} in your left hand\\n  - a {cyan}Short Sword{/cyan} in your right hand\\nYou are holding:\\n  - {cyan}Potion{/cyan}\\n  - {cyan}Dagger{/cyan}"
   """
-  @spec inventory(items :: [Item.t]) :: String.t
-  def inventory(items) do
+  @spec inventory(wielding :: map, items :: [Item.t]) :: String.t
+  def inventory(wielding, items) do
+    wielding = wielding
+    |> Map.to_list
+    |> Enum.sort_by(&(elem(&1, 0)))
+    |> Enum.map(fn ({hand, item}) -> "  - a {cyan}#{item.name}{/cyan} in your #{hand} hand" end)
+    |> Enum.join("\n")
+
     items = items
     |> Enum.map(fn (item) -> "  - {cyan}#{item.name}{/cyan}" end)
     |> Enum.join("\n")
 
-    "You are holding:\n#{items}"
+    "You are wielding:\n#{wielding}\nYou are holding:\n#{items}"
   end
 
   @doc """
