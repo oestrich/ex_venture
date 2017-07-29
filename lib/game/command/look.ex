@@ -5,7 +5,7 @@ defmodule Game.Command.Look do
 
   use Game.Command
 
-  @commands ["look", "look at"]
+  @commands ["look at", "look"]
 
   @short_help "Look around the room"
   @full_help """
@@ -15,13 +15,13 @@ defmodule Game.Command.Look do
   @doc """
   Look around the current room
   """
-  @spec run([], session :: Session.t, state :: map) :: :ok
-  def run([], _session, %{socket: socket, save: %{room_id: room_id}}) do
+  @spec run(args :: [], command :: String.t, session :: Session.t, state :: map) :: :ok
+  def run([], _command, _session, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     socket |> @socket.echo(Format.room(room))
     :ok
   end
-  def run([direction], _session, %{socket: socket, save: %{room_id: room_id}}) when direction in ["north", "east", "south", "west"] do
+  def run([direction], _, _, %{socket: socket, save: %{room_id: room_id}}) when direction in ["north", "east", "south", "west"] do
     room = @room.look(room_id)
 
     case Map.get(room, :"#{direction}_id") do
@@ -33,7 +33,7 @@ defmodule Game.Command.Look do
 
     :ok
   end
-  def run([item_name], _session, %{socket: socket, save: %{room_id: room_id}}) do
+  def run([item_name], _command, _session, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
     case Enum.find(room.items, &(Game.Item.matches_lookup?(&1, item_name))) do

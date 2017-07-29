@@ -17,7 +17,7 @@ defmodule Game.Command do
 
   Returns `:ok` or `{:update, new_state}` and the Session server will accept the new state.
   """
-  @callback run(args :: list, session :: pid, state :: map) :: :ok | {:update, state :: map}
+  @callback run(args :: list, command :: String.t, session :: pid, state :: map) :: :ok | {:update, state :: map}
 
   defmacro __using__(_opts) do
     quote do
@@ -42,14 +42,28 @@ defmodule Game.Command do
   @doc false
   defmacro __before_compile__(_env) do
     quote do
+      @doc false
       def commands(), do: @commands
+
+      @doc false
       def aliases(), do: @aliases
 
+      @doc false
       def help() do
         %{
           short: @short_help,
           full: @full_help,
         }
+      end
+
+      @doc false
+      def parse(command) do
+        Game.Command.parse_command(__MODULE__, command)
+      end
+
+      def run(_, _, _, %{socket: socket}) do
+        socket |> @socket.echo("Unknown command")
+        :ok
       end
     end
   end
@@ -75,37 +89,48 @@ defmodule Game.Command do
   """
   @spec parse(command :: String.t) :: t
   def parse(command) do
-    case command do
-      "e" -> {Command.Move, [:east]}
-      "east" -> {Command.Move, [:east]}
-      "global " <> message -> {Command.Global, [message]}
-      "help " <> topic -> {Command.Help, [topic |> String.downcase]}
-      "help" -> {Command.Help, []}
-      "info" -> {Command.Info, []}
-      "inventory" -> {Command.Inventory, []}
-      "inv" -> {Command.Inventory, []}
-      "look" -> {Command.Look, []}
-      "look at " <> object -> {Command.Look, [object]}
-      "look " <> object -> {Command.Look, [object]}
-      "n" -> {Command.Move, [:north]}
-      "north" -> {Command.Move, [:north]}
-      "pick up " <> item -> {Command.PickUp, [item]}
-      "quit" -> {Command.Quit, []}
-      "s" -> {Command.Move, [:south]}
-      "say " <> message -> {Command.Say, [message]}
-      "south" -> {Command.Move, [:south]}
-      "w" -> {Command.Move, [:west]}
-      "west" -> {Command.Move, [:west]}
-      "who" <> _extra -> {Command.Who, []}
-      _ -> {:error, :bad_parse}
+    commands()
+    |> Enum.find(fn (module) ->
+      alias_found = module.aliases
+      |> Enum.any?(fn (alias_cmd) ->
+        # match an alias only if it's by itself or it won't match another similar command
+        # eg 'w' matching for 'west'
+        Regex.match?(~r(^#{alias_cmd}$), command) || Regex.match?(~r(^#{alias_cmd}[^\w]), command)
+      end)
+
+      command_found = module.commands
+      |> Enum.any?(fn (cmd) ->
+        Regex.match?(~r(^#{cmd}), command)
+      end)
+
+      command_found || alias_found
+    end)
+    |> _parse(command)
+  end
+
+  def parse_command(module, command) do
+    argument = (module.commands ++ module.aliases)
+    |> Enum.reduce(command, fn (cmd, command) ->
+      String.replace_prefix(command, cmd, "") |> String.trim
+    end)
+
+    case argument do
+      "" -> []
+      argument -> [argument]
     end
+  end
+
+  defp _parse(nil, _), do: {:error, :bad_parse}
+  defp _parse(module, command) do
+    arguments = module.parse(command)
+    {module, arguments, command}
   end
 
   def run({:error, :bad_parse}, _session, %{socket: socket}) do
     socket |> @socket.echo("Unknown command")
     :ok
   end
-  def run({module, args}, session, state) do
-    module.run(args, session, state)
+  def run({module, args, command}, session, state) do
+    module.run(args, command, session, state)
   end
 end
