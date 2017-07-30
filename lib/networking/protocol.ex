@@ -1,4 +1,8 @@
 defmodule Networking.Protocol do
+  @moduledoc """
+  Ranch protocol implementation, socket genserver
+  """
+
   use GenServer
   require Logger
 

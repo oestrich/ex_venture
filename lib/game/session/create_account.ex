@@ -1,4 +1,10 @@
 defmodule Game.Session.CreateAccount do
+  @moduledoc """
+  Creating an account workflow
+
+  Asks for basic information to create an account.
+  """
+
   use Networking.Socket
 
   alias Game.Account

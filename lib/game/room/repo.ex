@@ -1,4 +1,8 @@
 defmodule Game.Room.Repo do
+  @moduledoc """
+  Repo helper for the Room modules
+  """
+
   import Ecto.Query
 
   alias Data.Room

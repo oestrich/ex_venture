@@ -1,4 +1,8 @@
 defmodule Game.Items do
+  @moduledoc """
+  Agent for keeping track of items in the system
+  """
+
   alias Data.Item
   alias Data.Repo
 

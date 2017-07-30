@@ -1,15 +1,25 @@
 defmodule Game.Session.Supervisor do
+  @moduledoc """
+  Supervisor for sessions
+  """
+
   use Supervisor
 
+  @doc false
   def start_link do
     Supervisor.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
-  def start_child(pid) do
-    child_spec = worker(Game.Session, [pid], [id: pid, restart: :transient])
+  @doc """
+  Start a new session for a socket
+  """
+  @spec start_child(socket_pid :: pid) :: {:ok, pid}
+  def start_child(socket_pid) do
+    child_spec = worker(Game.Session, [socket_pid], [id: socket_pid, restart: :transient])
     Supervisor.start_child(__MODULE__, child_spec)
   end
 
+  @doc false
   def init(_) do
     children = []
     supervise(children, strategy: :one_for_one)

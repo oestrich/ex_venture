@@ -1,4 +1,11 @@
 defmodule Game.Session.Login do
+  @moduledoc """
+  Login workflow
+
+  Displays the MOTD and asks for a login, then password. Will push off to
+  creating an account if that is asked for.
+  """
+
   use Networking.Socket
   use Game.Room
 

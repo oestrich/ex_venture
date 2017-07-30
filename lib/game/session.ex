@@ -26,6 +26,7 @@ defmodule Game.Session do
 
   Creates a session pointing at a socket
   """
+  @spec start(socket_pid :: pid) :: {:ok, pid}
   def start(socket) do
     Session.Supervisor.start_child(socket)
   end

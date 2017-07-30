@@ -1,4 +1,8 @@
 defmodule Game.Zone.Repo do
+  @moduledoc """
+  Repo helper for the Zone modules
+  """
+
   alias Data.Repo
   alias Data.Zone
 

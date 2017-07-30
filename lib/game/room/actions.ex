@@ -1,4 +1,8 @@
 defmodule Game.Room.Actions do
+  @moduledoc """
+  Actions that can happen in a room; pick up, tick, etc.
+  """
+
   alias Game.Room.Repo
 
   def pick_up(room, item) do

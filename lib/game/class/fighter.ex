@@ -1,4 +1,8 @@
 defmodule Game.Class.Fighter do
+  @moduledoc """
+  Fighter class
+  """
+
   use Game.Class
 
   def name(), do: "Fighter"

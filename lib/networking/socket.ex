@@ -1,4 +1,10 @@
 defmodule Networking.Socket do
+  @moduledoc """
+  Socket behaviour
+
+  Expected functions for a socket to use.
+  """
+
   @callback echo(socket :: pid, message :: String.t) :: :ok
   @callback prompt(socket :: pid, message :: String.t) :: :ok
   @callback disconnect(socket :: pid) :: :ok
