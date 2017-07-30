@@ -57,16 +57,6 @@ defmodule Game.Command.Wield do
     end
   end
 
-  defp run_unwield(hand, state) do
-    %{save: save, socket: socket} = state
-    %{item_ids: item_ids} = save
-
-    {wielding, item_ids} =  unwield(hand, save.wielding, item_ids)
-    save = %{save | item_ids: item_ids, wielding: wielding}
-    socket |> @socket.echo(~s(Your #{hand} hand is now empty.))
-    {:update, Map.put(state, :save, save)}
-  end
-
   defp item_not_found(socket, item_name) do
     socket |> @socket.echo(~s("#{item_name}" could not be found."))
     :ok
@@ -74,7 +64,7 @@ defmodule Game.Command.Wield do
 
   # Unwield the current item in your hand, adding to inventory
   # Wield the new item, removing from inventory
-  defp item_found(socket, hand, item, state) do
+  defp item_found(socket, hand, item = %{type: "weapon"}, state) do
     %{save: save} = state
     %{item_ids: item_ids} = save
 
@@ -83,6 +73,20 @@ defmodule Game.Command.Wield do
     save = %{save | item_ids: List.delete(item_ids, item.id), wielding: wielding}
 
     socket |> @socket.echo(~s(#{item.name} is now in your #{hand} hand.))
+    {:update, Map.put(state, :save, save)}
+  end
+  defp item_found(socket, _, item, _state) do
+    socket |> @socket.echo(~s(#{item.name} cannot be wielded))
+    :ok
+  end
+
+  defp run_unwield(hand, state) do
+    %{save: save, socket: socket} = state
+    %{item_ids: item_ids} = save
+
+    {wielding, item_ids} =  unwield(hand, save.wielding, item_ids)
+    save = %{save | item_ids: item_ids, wielding: wielding}
+    socket |> @socket.echo(~s(Your #{hand} hand is now empty.))
     {:update, Map.put(state, :save, save)}
   end
 

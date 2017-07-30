@@ -12,8 +12,9 @@ defmodule Game.Command.WieldTest do
     Items.start_link
     Agent.update(Items, fn (_) ->
       %{
-        1 => %{id: 1, name: "Sword", keywords: []},
-        2 => %{id: 2, name: "Shield", keywords: []},
+        1 => %{id: 1, name: "Sword", keywords: [], type: "weapon"},
+        2 => %{id: 2, name: "Axe", keywords: [], type: "weapon"},
+        3 => %{id: 2, name: "Potion", keywords: [], type: "basic"},
       }
     end)
 
@@ -33,15 +34,23 @@ defmodule Game.Command.WieldTest do
       assert Regex.match?(~r(Sword is now in your right hand), look)
     end
 
+    test "can only wield a weapon", %{session: session, socket: socket} do
+      save = %Save{item_ids: [3]}
+      :ok = Command.Wield.run({:wield, "potion"}, session, %{socket: socket, save: save})
+
+      [{^socket, look}] = @socket.get_echos()
+      assert Regex.match?(~r(Potion cannot be wielded), look)
+    end
+
     test "wield an item - puts current item back in inventory", %{session: session, socket: socket} do
       save = %Save{wielding: %{right: 1}, item_ids: [2]}
-      {:update, state} = Command.Wield.run({:wield, "shield"}, session, %{socket: socket, save: save})
+      {:update, state} = Command.Wield.run({:wield, "axe"}, session, %{socket: socket, save: save})
 
       assert state.save.wielding == %{right: 2}
       assert state.save.item_ids == [1]
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Shield is now in your right hand), look)
+      assert Regex.match?(~r(Axe is now in your right hand), look)
     end
 
     test "item not found", %{session: session, socket: socket} do
