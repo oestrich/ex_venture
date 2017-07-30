@@ -1,5 +1,6 @@
 defmodule Game.Command.WieldTest do
   use Data.ModelCase
+  doctest Game.Command.Wield
 
   alias Data.Save
   alias Game.Command
