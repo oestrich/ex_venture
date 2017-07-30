@@ -14,7 +14,7 @@ defmodule Game.Command.Wear do
   @short_help "Put on a piece of armor"
   @full_help """
   wear item
-  remove item
+  remove slot
 
   Example: wear chest
   """
