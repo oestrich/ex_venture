@@ -26,10 +26,16 @@ defmodule Game.Command.Wield do
         socket |> @socket.echo(~s("#{item_name}" could not be found."))
         :ok
       item ->
-        socket |> @socket.echo(~s(#{item.name} is now in your right hand.))
         %{save: save} = state
+
+        item_ids = save.wielding |> unwield(item_ids)
         save = %{save | item_ids: List.delete(item_ids, item.id), wielding: %{right: item.id}}
+
+        socket |> @socket.echo(~s(#{item.name} is now in your right hand.))
         {:update, Map.put(state, :save, save)}
     end
   end
+
+  defp unwield(%{right: id}, item_ids), do: [id | item_ids]
+  defp unwield(_, item_ids), do: item_ids
 end
