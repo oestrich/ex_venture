@@ -12,7 +12,12 @@ defmodule Game.Command.Wield do
 
   @short_help "Put an item in your hands"
   @full_help """
-  Example: wield
+  wield [left|right] item
+
+  Put an item from your inventory into your left or right hand.
+  The default hand is your right hand.
+
+  Example: wield right sword
   """
 
   @doc """
