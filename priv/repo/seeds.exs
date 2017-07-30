@@ -133,14 +133,29 @@ defmodule Seeds do
     entrance |> create_npc(%{name: "Bran", hostile: false})
     great_room |> create_npc(%{name: "Bandit", hostile: true})
 
-    sword = create_item(%{name: "Short Sword", description: "A simple blade", type: "weapon", keywords: ["sword"]})
-    |> IO.inspect
+    sword = create_item(%{
+      name: "Short Sword",
+      description: "A simple blade",
+      type: "weapon",
+      stats: %{damage: :slashing},
+      keywords: ["sword"],
+    })
     entrance = entrance |> add_item_to_room(sword, %{interval: 15})
+
+    leather_armor = create_item(%{
+      name: "Leather Armor",
+      description: "A simple chestpiece made out of leather",
+      type: "armor",
+      stats: %{slot: :chest},
+      keywords: ["leather"],
+    })
+    entrance = entrance |> add_item_to_room(leather_armor, %{interval: 15})
 
     save =  %{
       room_id: entrance.id,
       class: Game.Class.Fighter,
       item_ids: [sword.id],
+      wearing: %{},
       wielding: %{},
     }
     {:ok, _starting_save} = create_config("starting_save", save |> Poison.encode!)

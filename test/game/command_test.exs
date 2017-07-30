@@ -86,6 +86,14 @@ defmodule CommandTest do
     test "unwield" do
       assert Command.parse("unwield sword") == {Command.Wield, {:unwield, "sword"}}
     end
+
+    test "wear" do
+      assert Command.parse("wear chest") == {Command.Wear, {:wear, "chest"}}
+    end
+
+    test "remove" do
+      assert Command.parse("remove chest") == {Command.Wear, {:remove, "chest"}}
+    end
   end
 
   describe "quitting" do

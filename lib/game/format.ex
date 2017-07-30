@@ -200,13 +200,20 @@ Items: #{items(room)}
 
   Example:
 
+      iex> wearing = %{chest: %{name: "Leather Armor"}}
       iex> wielding = %{right: %{name: "Short Sword"}, left: %{name: "Shield"}}
       iex> items = [%{name: "Potion"}, %{name: "Dagger"}]
-      iex> Game.Format.inventory(wielding, items)
-      "You are wielding:\\n  - a {cyan}Shield{/cyan} in your left hand\\n  - a {cyan}Short Sword{/cyan} in your right hand\\nYou are holding:\\n  - {cyan}Potion{/cyan}\\n  - {cyan}Dagger{/cyan}"
+      iex> Game.Format.inventory(wearing, wielding, items)
+      "You are wearing:\\n  - {cyan}Leather Armor{/cyan} on your chest\\nYou are wielding:\\n  - a {cyan}Shield{/cyan} in your left hand\\n  - a {cyan}Short Sword{/cyan} in your right hand\\nYou are holding:\\n  - {cyan}Potion{/cyan}\\n  - {cyan}Dagger{/cyan}"
   """
-  @spec inventory(wielding :: map, items :: [Item.t]) :: String.t
-  def inventory(wielding, items) do
+  @spec inventory(wearing :: map, wielding :: map, items :: [Item.t]) :: String.t
+  def inventory(wearing, wielding, items) do
+    wearing = wearing
+    |> Map.to_list
+    |> Enum.sort_by(&(elem(&1, 0)))
+    |> Enum.map(fn ({part, item}) -> "  - {cyan}#{item.name}{/cyan} on your #{part}" end)
+    |> Enum.join("\n")
+
     wielding = wielding
     |> Map.to_list
     |> Enum.sort_by(&(elem(&1, 0)))
@@ -217,7 +224,7 @@ Items: #{items(room)}
     |> Enum.map(fn (item) -> "  - {cyan}#{item.name}{/cyan}" end)
     |> Enum.join("\n")
 
-    "You are wielding:\n#{wielding}\nYou are holding:\n#{items}"
+    "You are wearing:\n#{wearing}\nYou are wielding:\n#{wielding}\nYou are holding:\n#{items}"
   end
 
   @doc """
