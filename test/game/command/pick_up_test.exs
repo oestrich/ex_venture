@@ -13,7 +13,7 @@ defmodule Game.Command.PickUpTest do
   end
 
   test "pick up an item from a room", %{session: session, socket: socket} do
-    {:update, state} = Game.Command.PickUp.run(["sword"], session, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
+    {:update, state} = Game.Command.PickUp.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
 
     assert state.save.item_ids |> length == 1
 
@@ -22,7 +22,7 @@ defmodule Game.Command.PickUpTest do
   end
 
   test "item does not exist in the room", %{session: session, socket: socket} do
-    :ok = Game.Command.PickUp.run(["shield"], session, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
+    :ok = Game.Command.PickUp.run({"shield"}, session, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r("shield" could not be found), look)

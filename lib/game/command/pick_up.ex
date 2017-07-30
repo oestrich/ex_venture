@@ -16,7 +16,8 @@ defmodule Game.Command.PickUp do
   Pick up an item from a room
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
-  def run([item_name], _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run(command, session, state)
+  def run({item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
     case Enum.find(room.items, &(Game.Item.matches_lookup?(&1, item_name))) do

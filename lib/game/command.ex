@@ -36,6 +36,8 @@ defmodule Game.Command do
 
       @commands []
       @aliases []
+
+      @custom_parse false
     end
   end
 
@@ -49,15 +51,14 @@ defmodule Game.Command do
       def aliases(), do: @aliases
 
       @doc false
+      def custom_parse?(), do: @custom_parse
+
+      @doc false
       def help() do
         %{
           short: @short_help,
           full: @full_help,
         }
-      end
-
-      def parse(command) do
-        Game.Command.parse_command(__MODULE__, command)
       end
 
       def run(_, _, %{socket: socket}) do
@@ -113,10 +114,10 @@ defmodule Game.Command do
   Uses the module's commands and aliases to find the arguments
 
       iex> Game.Command.parse_command(Game.Command.Who, "who")
-      []
+      {}
 
       iex> Game.Command.parse_command(Game.Command.Say, "say hi")
-      ["hi"]
+      {"hi"}
   """
   @spec parse_command(module :: atom, command :: String.t) :: [String.t]
   def parse_command(module, command) do
@@ -126,15 +127,21 @@ defmodule Game.Command do
     end)
 
     case argument do
-      "" -> []
-      argument -> [argument]
+      "" -> {}
+      argument -> {argument}
     end
   end
 
   defp _parse(nil, _), do: {:error, :bad_parse}
   defp _parse(module, command) do
-    arguments = module.parse(command)
-    {module, arguments}
+    case module.custom_parse? do
+      true ->
+        arguments = module.parse(command)
+        {module, arguments}
+      false ->
+        arguments = parse_command(module, command)
+        {module, arguments}
+    end
   end
 
   def run({:error, :bad_parse}, _session, %{socket: socket}) do

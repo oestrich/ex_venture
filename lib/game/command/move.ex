@@ -5,6 +5,7 @@ defmodule Game.Command.Move do
 
   use Game.Command
 
+  @custom_parse true
   @commands ["north", "east", "south", "west"]
   @aliases ["n", "e", "s", "w"]
 
@@ -16,18 +17,18 @@ defmodule Game.Command.Move do
   @doc """
   Parse the command into arguments
   """
-  @spec parse(command :: String.t) :: [atom]
+  @spec parse(command :: String.t) :: {atom}
   def parse(command) do
     case command do
-      "north" -> [:north]
-      "n" -> [:north]
-      "east" -> [:east]
-      "e" -> [:east]
-      "south" -> [:south]
-      "s" -> [:south]
-      "west" -> [:west]
-      "w" -> [:west]
-      _ -> [:unknown]
+      "north" -> {:north}
+      "n" -> {:north}
+      "east" -> {:east}
+      "e" -> {:east}
+      "south" -> {:south}
+      "s" -> {:south}
+      "west" -> {:west}
+      "w" -> {:west}
+      _ -> {:unknown}
     end
   end
 
@@ -35,7 +36,8 @@ defmodule Game.Command.Move do
   Move in the direction provided
   """
   @spec run(args :: [atom()], session :: Session.t, state :: map()) :: :ok
-  def run([:east], session, state = %{save: %{room_id: room_id}}) do
+  def run(command, session, state)
+  def run({:east}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
       case room do
@@ -44,7 +46,7 @@ defmodule Game.Command.Move do
       end
     end)
   end
-  def run([:north], session, state = %{save: %{room_id: room_id}}) do
+  def run({:north}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn () ->
       room = @room.look(room_id)
       case room do
@@ -53,7 +55,7 @@ defmodule Game.Command.Move do
       end
     end)
   end
-  def run([:south], session, state = %{save: %{room_id: room_id}}) do
+  def run({:south}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
       case room do
@@ -62,7 +64,7 @@ defmodule Game.Command.Move do
       end
     end)
   end
-  def run([:west], session, state = %{save: %{room_id: room_id}}) do
+  def run({:west}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
       case room do

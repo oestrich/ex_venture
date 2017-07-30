@@ -18,7 +18,8 @@ defmodule Game.Command.Quit do
   Save and quit the game
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run([], session, %{socket: socket, user: user, save: save}) do
+  def run(command, session, state)
+  def run({}, session, %{socket: socket, user: user, save: save}) do
     socket |> @socket.echo("Good bye.")
     socket |> @socket.disconnect
 

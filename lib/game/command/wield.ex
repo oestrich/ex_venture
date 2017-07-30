@@ -8,6 +8,7 @@ defmodule Game.Command.Wield do
   alias Game.Item
   alias Game.Items
 
+  @custom_parse true
   @commands ["wield", "unwield"]
 
   @short_help "Put an item in your hands"
@@ -38,6 +39,7 @@ defmodule Game.Command.Wield do
   Put an item in your hands
   """
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
+  def run(command, session, state)
   def run({:wield, item_name}, _session, state = %{socket: socket, save: %{item_ids: item_ids}}) do
     {hand, item_name} = pick_hand(item_name)
 
@@ -140,6 +142,7 @@ defmodule Game.Command.Wield do
       {%{}, []}
   """
   @spec unwield(hand :: atom, wielding :: map, item_ids :: [integer]) :: {wielding :: map, inventory :: [integer]}
+  def unwield(hand, wielding, item_ids)
   def unwield(:right, wielding = %{right: id}, item_ids) do
     wielding = Map.delete(wielding, :right)
     {wielding, [id | item_ids]}

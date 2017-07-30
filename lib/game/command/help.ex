@@ -13,11 +13,12 @@ defmodule Game.Command.Help do
   View help
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run([], _session, %{socket: socket}) do
+  def run(command, session, state)
+  def run({}, _session, %{socket: socket}) do
     socket |> @socket.echo(Help.base)
     :ok
   end
-  def run([topic], _session, %{socket: socket}) do
+  def run({topic}, _session, %{socket: socket}) do
     socket |> @socket.echo(Help.topic(topic))
     :ok
   end

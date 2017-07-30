@@ -20,7 +20,8 @@ defmodule Game.Command.Inventory do
   Look at your inventory
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run([], _session, %{socket: socket, save: %{wielding: wielding, item_ids: item_ids}}) do
+  def run(command, session, state)
+  def run({}, _session, %{socket: socket, save: %{wielding: wielding, item_ids: item_ids}}) do
     wielding = wielding
     |> Enum.reduce(%{}, fn ({hand, item_id}, wielding) ->
       Map.put(wielding, hand, Items.item(item_id))
