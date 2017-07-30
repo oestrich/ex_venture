@@ -56,7 +56,6 @@ defmodule Game.Command do
         }
       end
 
-      @doc false
       def parse(command) do
         Game.Command.parse_command(__MODULE__, command)
       end

@@ -8,11 +8,12 @@ defmodule Game.Command.Wield do
   alias Game.Item
   alias Game.Items
 
-  @commands ["wield"]
+  @commands ["wield", "unwield"]
 
   @short_help "Put an item in your hands"
   @full_help """
   wield [left|right] item
+  unwield [left|right]
 
   Put an item from your inventory into your left or right hand.
   The default hand is your right hand.
@@ -21,10 +22,23 @@ defmodule Game.Command.Wield do
   """
 
   @doc """
+  Parse the command to determine wield or unwield
+
+      iex> Game.Command.Wield.parse("wield right sword")
+      {:wield, "right sword"}
+
+      iex> Game.Command.Wield.parse("unwield right sword")
+      {:unwield, "right sword"}
+  """
+  @spec parse(command :: String.t) :: []
+  def parse("wield " <> command), do: {:wield, command}
+  def parse("unwield " <> command), do: {:unwield, command}
+
+  @doc """
   Put an item in your hands
   """
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run([item_name], _session, state = %{socket: socket, save: %{item_ids: item_ids}}) do
+  @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
+  def run({:wield, item_name}, _session, state = %{socket: socket, save: %{item_ids: item_ids}}) do
     {hand, item_name} = pick_hand(item_name)
 
     items = Items.items(item_ids)
@@ -32,6 +46,25 @@ defmodule Game.Command.Wield do
       nil -> socket |> item_not_found(item_name)
       item -> socket |> item_found(hand, item, state)
     end
+  end
+  def run({:unwield, hand}, _session, state = %{socket: socket}) do
+    case hand do
+      "right" -> run_unwield(:right, state)
+      "left" -> run_unwield(:left, state)
+      _ ->
+        socket |> @socket.echo("Unknown hand")
+        :ok
+    end
+  end
+
+  defp run_unwield(hand, state) do
+    %{save: save, socket: socket} = state
+    %{item_ids: item_ids} = save
+
+    {wielding, item_ids} =  unwield(hand, save.wielding, item_ids)
+    save = %{save | item_ids: item_ids, wielding: wielding}
+    socket |> @socket.echo(~s(Your #{hand} hand is now empty.))
+    {:update, Map.put(state, :save, save)}
   end
 
   defp item_not_found(socket, item_name) do
@@ -49,7 +82,7 @@ defmodule Game.Command.Wield do
     wielding = Map.put(wielding, hand, item.id)
     save = %{save | item_ids: List.delete(item_ids, item.id), wielding: wielding}
 
-    socket |> @socket.echo(~s(#{item.name} is now in your right hand.))
+    socket |> @socket.echo(~s(#{item.name} is now in your #{hand} hand.))
     {:update, Map.put(state, :save, save)}
   end
 

@@ -80,7 +80,11 @@ defmodule CommandTest do
     end
 
     test "wield" do
-      assert Command.parse("wield sword") == {Command.Wield, ["sword"]}
+      assert Command.parse("wield sword") == {Command.Wield, {:wield, "sword"}}
+    end
+
+    test "unwield" do
+      assert Command.parse("unwield sword") == {Command.Wield, {:unwield, "sword"}}
     end
   end
 
