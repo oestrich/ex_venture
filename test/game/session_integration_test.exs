@@ -18,7 +18,7 @@ defmodule Game.SessionIntegrationTest do
     {:ok, pid} = Session.start_link(socket)
 
     [{^socket, welcome_text}] = @socket.get_echos()
-    assert String.starts_with?(welcome_text, "Welcome")
+    assert Regex.match?(~r(Welcome), welcome_text)
     assert @socket.get_prompts() == [{socket, "What is your player name? "}]
     @socket.clear_messages
 
