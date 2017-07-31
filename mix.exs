@@ -11,6 +11,11 @@ defmodule ExVenture.Mixfile do
       start_permanent: Mix.env == :prod,
       deps: deps(),
       aliases: aliases(),
+      source_url: "https://github.com/oestrich/ex_venture",
+      docs: [
+        main: "readme",
+        extras: ["README.md"],
+      ],
     ]
   end
 
