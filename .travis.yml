@@ -9,6 +9,8 @@ otp_release:
   - 20.0
 env:
   - MIX_ENV=test
+cache:
+  - _build/test
 install:
   - mix local.rebar --force
   - mix local.hex --force
