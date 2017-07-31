@@ -64,6 +64,7 @@ defmodule ExVenture.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "ecto.migrate.reset": ["ecto.drop", "ecto.create", "ecto.migrate"],
     ]
   end
 end
