@@ -25,7 +25,7 @@ defmodule Game.Command.Global do
 
     Session.Registry.connected_players()
     |> Enum.reject(&(elem(&1, 0) == session)) # don't send to your own
-    |> Enum.map(fn ({session, _user}) ->
+    |> Enum.each(fn ({session, _user}) ->
       Session.echo(session, message)
     end)
 

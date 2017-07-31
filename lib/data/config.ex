@@ -1,4 +1,8 @@
 defmodule Data.Config do
+  @moduledoc """
+  Config Schema
+  """
+
   use Data.Schema
 
   alias Data.Save

@@ -124,7 +124,9 @@ defmodule Game.Command do
   def parse_command(module, command) do
     argument = (module.commands ++ module.aliases)
     |> Enum.reduce(command, fn (cmd, command) ->
-      String.replace_prefix(command, cmd, "") |> String.trim
+      command
+      |> String.replace_prefix(cmd, "")
+      |> String.trim
     end)
 
     case argument do

@@ -16,7 +16,8 @@ defmodule Game.Zone.Supervisor do
   """
   @spec zones() :: [pid]
   def zones() do
-    Supervisor.which_children(__MODULE__)
+    __MODULE__
+    |> Supervisor.which_children()
     |> Enum.map(&(elem(&1, 1)))
   end
 

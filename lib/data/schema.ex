@@ -1,4 +1,8 @@
 defmodule Data.Schema do
+  @moduledoc """
+  Helper for setting up Ecto
+  """
+
   defmacro __using__(_opts) do
     quote do
       use Ecto.Schema

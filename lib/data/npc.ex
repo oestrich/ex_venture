@@ -1,4 +1,8 @@
 defmodule Data.NPC do
+  @moduledoc """
+  NPC Schema
+  """
+
   use Data.Schema
 
   schema "npcs" do

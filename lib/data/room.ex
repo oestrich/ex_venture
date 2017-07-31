@@ -1,4 +1,8 @@
 defmodule Data.Room do
+  @moduledoc """
+  Room Schema
+  """
+
   use Data.Schema
 
   schema "rooms" do

@@ -1,4 +1,8 @@
 defmodule Data.Zone do
+  @moduledoc """
+  Zone schema
+  """
+
   use Data.Schema
 
   schema "zones" do

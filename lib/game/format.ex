@@ -119,7 +119,8 @@ Items: #{items(room)}
   end
 
   defp exits(room) do
-    Room.exits(room)
+    room
+    |> Room.exits()
     |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
     |> Enum.join(" ")
   end

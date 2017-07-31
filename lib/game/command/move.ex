@@ -18,19 +18,16 @@ defmodule Game.Command.Move do
   Parse the command into arguments
   """
   @spec parse(command :: String.t) :: {atom}
-  def parse(command) do
-    case command do
-      "north" -> {:north}
-      "n" -> {:north}
-      "east" -> {:east}
-      "e" -> {:east}
-      "south" -> {:south}
-      "s" -> {:south}
-      "west" -> {:west}
-      "w" -> {:west}
-      _ -> {:unknown}
-    end
-  end
+  def parse(commnd)
+  def parse("north"), do: {:north}
+  def parse("n"), do: {:north}
+  def parse("east"), do: {:east}
+  def parse("e"), do: {:east}
+  def parse("south"), do: {:south}
+  def parse("s"), do: {:south}
+  def parse("west"), do: {:west}
+  def parse("w"), do: {:west}
+  def parse(_), do: {:unknown}
 
   @doc """
   Move in the direction provided

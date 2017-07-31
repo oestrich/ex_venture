@@ -33,16 +33,19 @@ defmodule Game.Zone do
   """
   @spec rooms(pid :: pid) :: [pid]
   def rooms(pid) do
-    Supervisor.which_children(pid)
+    pid
+    |> Supervisor.which_children()
     |> Enum.map(&(elem(&1, 1)))
   end
 
   def tick(pid) do
-    rooms(pid) |> Enum.map(&Room.tick/1)
+    pid |> rooms() |> Enum.map(&Room.tick/1)
   end
 
   def init(zone) do
-    children = Room.for_zone(zone.id) |> Enum.map(fn (room) ->
+    children = zone.id
+    |> Room.for_zone()
+    |> Enum.map(fn (room) ->
       worker(Room, [room], id: room.id, restart: :permanent)
     end)
 

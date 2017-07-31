@@ -1,4 +1,8 @@
 defmodule Data.User do
+  @moduledoc """
+  User schema
+  """
+
   use Data.Schema
 
   alias Data.Save

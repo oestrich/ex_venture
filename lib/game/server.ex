@@ -31,11 +31,11 @@ defmodule Game.Server do
     time = Timex.now()
 
     Session.Registry.connected_players
-    |> Enum.map(fn ({session, _}) ->
+    |> Enum.each(fn ({session, _}) ->
       session |> Session.tick(time)
     end)
 
-    Zone.Supervisor.zones |> Enum.map(&Zone.tick/1)
+    Zone.Supervisor.zones |> Enum.each(&Zone.tick/1)
 
     {:noreply, state}
   end
