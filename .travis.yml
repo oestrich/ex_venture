@@ -1,0 +1,13 @@
+language: elixir
+services:
+  - postgresql
+addons:
+    postgresql: "9.6"
+elixir:
+  - 1.5.0
+otp_release:
+  - 20.0
+install:
+  - mix local.rebar --force
+  - mix local.hex --force
+  - mix deps.get
