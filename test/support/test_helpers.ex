@@ -7,9 +7,25 @@ defmodule TestHelpers do
   alias Data.User
   alias Data.Zone
 
+  def base_save() do
+    %Data.Save{
+      room_id: 1,
+      item_ids: [],
+      class: Game.Class.Fighter,
+      wearing: %{},
+      wielding: %{},
+    }
+  end
+
+  defp user_attributes(attributes) do
+    Map.merge(%{
+      save: base_save(),
+    }, attributes)
+  end
+
   def create_user(attributes) do
     %User{}
-    |> User.changeset(attributes)
+    |> User.changeset(user_attributes(attributes))
     |> Repo.insert!
   end
 

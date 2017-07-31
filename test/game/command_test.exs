@@ -99,8 +99,9 @@ defmodule CommandTest do
   describe "quitting" do
     test "quit command", %{session: session, socket: socket} do
       user = create_user(%{name: "user", password: "password"})
+      save = %{user.save | room_id: 5}
 
-      :ok = Command.run({Command.Quit, {}}, session, %{socket: socket, user: user, save: %{room_id: 5}})
+      :ok = Command.run({Command.Quit, {}}, session, %{socket: socket, user: user, save: save})
 
       assert @socket.get_echos() == [{socket, "Good bye."}]
       assert @socket.get_disconnects() == [socket]

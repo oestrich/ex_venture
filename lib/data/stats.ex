@@ -3,6 +3,8 @@ defmodule Data.Stats do
   Item statistics
   """
 
+  import Data.Type
+
   @type t :: %{
     slot: :atom,
     damage: :atom,
@@ -34,6 +36,12 @@ defmodule Data.Stats do
 
   def dump(stats) when is_map(stats), do: {:ok, Map.delete(stats, :__struct__)}
   def dump(_), do: :error
+
+  @doc """
+  Slots on a character
+  """
+  @spec slots() :: [atom]
+  def slots(), do: [:chest]
 
   @doc """
   Validate an item stats based on type
@@ -70,13 +78,6 @@ defmodule Data.Stats do
   end
   def valid?(_, _), do: false
 
-  defp keys(stats) do
-    stats
-    |> Map.delete(:__struct__)
-    |> Enum.reject(fn ({_key, val}) -> is_nil(val) end)
-    |> Enum.map(&(elem(&1, 0)))
-  end
-
   @doc """
   Validate if the slot is right
 
@@ -88,7 +89,7 @@ defmodule Data.Stats do
   @spec valid_slot?(stats :: Stats.t) :: boolean
   def valid_slot?(stats)
   def valid_slot?(%{slot: slot}) do
-    slot in [:chest]
+    slot in slots()
   end
 
   @doc """

@@ -24,7 +24,8 @@ defmodule Data.User do
   def changeset(struct, params) do
     struct
     |> cast(params, [:name, :password, :save])
-    |> validate_required([:name])
+    |> validate_required([:name, :save])
+    |> validate_save()
     |> hash_password
     |> validate_required([:password_hash])
     |> unique_constraint(:name)
@@ -36,6 +37,21 @@ defmodule Data.User do
         put_change(changeset, :password_hash, Comeonin.Bcrypt.hashpwsalt(password))
       _ ->
         changeset
+    end
+  end
+
+  defp validate_save(changeset) do
+    case changeset do
+      %{changes: %{save: save}} when save != nil ->
+        _validate_save(changeset)
+      _ -> changeset
+    end
+  end
+
+  defp _validate_save(changeset = %{changes: %{save: save}}) do
+    case Save.valid?(save) do
+      true -> changeset
+      false -> add_error(changeset, :save, "is invalid")
     end
   end
 end

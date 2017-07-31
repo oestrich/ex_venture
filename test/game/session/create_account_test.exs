@@ -27,7 +27,7 @@ defmodule Game.Session.CreateAccountTest do
   end
 
   test "create the account after password is entered", %{socket: socket} do
-    create_config(:starting_save, %{room_id: 1} |> Poison.encode!)
+    create_config(:starting_save, base_save() |> Poison.encode!)
 
     state = CreateAccount.process("password", :session, %{socket: socket, create: %{name: "user", class: Game.Class.Fighter}})
 
