@@ -7,8 +7,14 @@ elixir:
   - 1.5.0
 otp_release:
   - 20.0
+env:
+  - MIX_ENV=test
 install:
   - mix local.rebar --force
   - mix local.hex --force
   - mix deps.get
-  - MIX_ENV=test mix do ecto.create, ecto.migrate
+  - mix compile
+  - mix do ecto.create, ecto.migrate
+script:
+  - mix credo
+  - mix test
