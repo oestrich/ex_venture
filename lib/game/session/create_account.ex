@@ -19,7 +19,7 @@ defmodule Game.Session.CreateAccount do
   @spec start(socket :: pid) :: :ok
   def start(socket) do
     socket |> @socket.echo("\n\nWelcome to ExVenture.\nThank you for joining!\nWe need a name and password for you to sign up.\n")
-    socket |> @socket.prompt("Username: ")
+    socket |> @socket.prompt("Name: ")
   end
 
   def process(password, session, state = %{socket: socket, create: %{name: name, class: class}}) do

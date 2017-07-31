@@ -43,6 +43,6 @@ defmodule Game.Session.LoginTest do
     state = Login.process("create", :session, %{socket: socket})
 
     assert state.state == "create"
-    assert @socket.get_prompts() == [{socket, "Username: "}]
+    assert @socket.get_prompts() == [{socket, "Name: "}]
   end
 end
