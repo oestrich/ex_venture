@@ -5,12 +5,12 @@ defmodule Data.Stats do
 
   import Data.Type
 
-  @type t :: %{
+  @type armor :: %{
     slot: :atom,
-    damage: :atom,
   }
-
-  defstruct [:slot, :damage]
+  @type weapon :: %{
+    damage_type: :atom,
+  }
 
   @behaviour Ecto.Type
 
@@ -46,23 +46,23 @@ defmodule Data.Stats do
   @doc """
   Validate an item stats based on type
 
-      iex> Data.Stats.valid?("armor", %Data.Stats{slot: :chest})
+      iex> Data.Stats.valid?("armor", %{slot: :chest})
       true
-      iex> Data.Stats.valid?("armor", %Data.Stats{slot: :finger})
+      iex> Data.Stats.valid?("armor", %{slot: :finger})
       false
-      iex> Data.Stats.valid?("armor", %Data.Stats{})
+      iex> Data.Stats.valid?("armor", %{})
       false
 
-      iex> Data.Stats.valid?("weapon", %Data.Stats{damage: :slashing})
+      iex> Data.Stats.valid?("weapon", %{damage_type: :slashing, damage: 10})
       true
-      iex> Data.Stats.valid?("weapon", %Data.Stats{damage: :finger})
+      iex> Data.Stats.valid?("weapon", %{damage_type: :finger})
       false
-      iex> Data.Stats.valid?("weapon", %Data.Stats{})
+      iex> Data.Stats.valid?("weapon", %{})
       false
 
-      iex> Data.Stats.valid?("basic", %Data.Stats{})
+      iex> Data.Stats.valid?("basic", %{})
       true
-      iex> Data.Stats.valid?("basic", %Data.Stats{slot: :chest})
+      iex> Data.Stats.valid?("basic", %{slot: :chest})
       false
   """
   @spec valid?(type :: String.t, stats :: Stats.t) :: boolean
@@ -71,7 +71,7 @@ defmodule Data.Stats do
     keys(stats) == [:slot] && valid_slot?(stats)
   end
   def valid?("weapon", stats) do
-    keys(stats) == [:damage] && valid_damage?(stats)
+    keys(stats) == [:damage, :damage_type] && valid_damage?(stats)
   end
   def valid?("basic", stats) do
     keys(stats) == []
@@ -95,14 +95,17 @@ defmodule Data.Stats do
   @doc """
   Validate if the damage is right
 
-      iex> Data.Stats.valid_damage?(%{damage: :slashing})
+      iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: 10})
       true
-      iex> Data.Stats.valid_damage?(%{damage: :finger})
+      iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: nil})
+      false
+      iex> Data.Stats.valid_damage?(%{damage_type: :finger})
       false
   """
   @spec valid_damage?(stats :: Stats.t) :: boolean
   def valid_damage?(stats)
-  def valid_damage?(%{damage: damage}) do
-    damage in [:slashing, :piercing, :bludgeoning]
+  def valid_damage?(%{damage_type: damage_type, damage: damage}) do
+    damage_type in [:slashing, :piercing, :bludgeoning] && is_integer(damage)
   end
+  def valid_damage?(_), do: false
 end

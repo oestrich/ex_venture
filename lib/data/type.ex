@@ -9,7 +9,7 @@ defmodule Data.Type do
       iex> Data.Type.keys(%{key: 1, nil: nil})
       [:key]
 
-      iex> Data.Type.keys(%Data.Stats{slot: :chest})
+      iex> Data.Type.keys(%{slot: :chest})
       [:slot]
   """
   @spec keys(struct) :: [String.t]

@@ -11,6 +11,7 @@ defmodule Data.Item do
     name: String.t,
     description: String.t,
     type: String.t,
+    stats: Stats.weapon | Stats.armor,
   }
 
   @types ["basic", "weapon", "armor"]
