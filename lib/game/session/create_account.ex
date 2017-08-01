@@ -23,6 +23,8 @@ defmodule Game.Session.CreateAccount do
   end
 
   def process(password, session, state = %{socket: socket, create: %{name: name, class: class}}) do
+    socket |> @socket.tcp_option(:echo, true)
+
     case Account.create(%{name: name, password: password}, %{class: class}) do
       {:ok, user} ->
         user |> Login.login(session, socket, state |> Map.delete(:create))
@@ -42,6 +44,7 @@ defmodule Game.Session.CreateAccount do
         state
       class ->
         socket |> @socket.prompt("Password: ")
+        socket |> @socket.tcp_option(:echo, false)
         Map.merge(state, %{create: %{name: name, class: class}})
     end
   end
