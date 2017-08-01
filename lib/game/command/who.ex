@@ -18,13 +18,15 @@ defmodule Game.Command.Who do
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, %{socket: socket}) do
-    names = Session.Registry.connected_players()
-    |> Enum.map(fn ({_pid, user}) ->
-      "  - {blue}#{user.name}{/blue}\n"
-    end)
-    |> Enum.join("")
+    players = Session.Registry.connected_players()
 
-    socket |> @socket.echo("Players online:\n#{names}")
+    names = players
+    |> Enum.map(fn ({_pid, user}) ->
+      "  - {blue}#{user.name}{/blue}"
+    end)
+    |> Enum.join("\n")
+
+    socket |> @socket.echo("There are #{players |> length} players online:\n#{names}")
     :ok
   end
 end
