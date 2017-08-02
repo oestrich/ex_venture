@@ -136,7 +136,7 @@ defmodule Data.Save do
   @spec valid_stats?(save :: Save.t) :: boolean
   def valid_stats?(save)
   def valid_stats?(%{stats: stats}) do
-    is_map(stats) && Stats.valid?("character", stats)
+    is_map(stats) && Stats.valid_character?(stats)
   end
 
   @doc """

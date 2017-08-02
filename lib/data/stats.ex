@@ -49,49 +49,77 @@ defmodule Data.Stats do
   def slots(), do: [:chest]
 
   @doc """
-  Validate an item stats based on type
+  Validate a character's stats
 
-      iex> Data.Stats.valid?("armor", %{slot: :chest})
+      iex> Data.Stats.valid_character?(%{health: 50, strength: 10, dexterity: 10})
       true
-      iex> Data.Stats.valid?("armor", %{slot: :finger})
-      false
-      iex> Data.Stats.valid?("armor", %{})
-      false
 
-      iex> Data.Stats.valid?("weapon", %{damage_type: :slashing, damage: 10})
-      true
-      iex> Data.Stats.valid?("weapon", %{damage_type: :finger})
-      false
-      iex> Data.Stats.valid?("weapon", %{})
+      iex> Data.Stats.valid_character?(%{health: 50, strength: 10, dexterity: :atom})
       false
 
-      iex> Data.Stats.valid?("basic", %{})
-      true
-      iex> Data.Stats.valid?("basic", %{slot: :chest})
+      iex> Data.Stats.valid_character?(%{health: 50, strength: 10})
       false
 
-      iex> Data.Stats.valid?("character", %{health: 50, strength: 10, dexterity: 10})
-      true
-      iex> Data.Stats.valid?("character", %{health: 50, strength: 10, dexterity: :atom})
-      false
-      iex> Data.Stats.valid?("character", %{health: 50, strength: 10})
-      false
-      iex> Data.Stats.valid?("character", %{})
+      iex> Data.Stats.valid_character?(%{})
       false
   """
-  @spec valid?(type :: String.t, stats :: Stats.t) :: boolean
-  def valid?(type, stats)
-  def valid?("character", stats) do
+  @spec valid_character?(stats :: Stats.character) :: boolean
+  def valid_character?(stats) do
     keys(stats) == [:dexterity, :health, :strength]
       && is_integer(stats.dexterity)
       && is_integer(stats.health)
       && is_integer(stats.strength)
   end
-  def valid?("armor", stats) do
+
+  @doc """
+  Validate an armor item
+
+      iex> Data.Stats.valid_armor?(%{slot: :chest})
+      true
+
+      iex> Data.Stats.valid_armor?(%{slot: :finger})
+      false
+
+      iex> Data.Stats.valid_armor?(%{})
+      false
+  """
+  @spec valid_armor?(stats :: Stats.armor) :: boolean
+  def valid_armor?(stats) do
     keys(stats) == [:slot] && valid_slot?(stats)
   end
-  def valid?("weapon", stats) do
+
+  @doc """
+  Validate a weapon item
+
+      iex> Data.Stats.valid_weapon?(%{damage_type: :slashing, damage: 10})
+      true
+
+      iex> Data.Stats.valid_weapon?(%{damage_type: :finger})
+      false
+
+      iex> Data.Stats.valid_weapon?(%{})
+      false
+  """
+  @spec valid_weapon?(stats :: Stats.weapon) :: boolean
+  def valid_weapon?(stats) do
     keys(stats) == [:damage, :damage_type] && valid_damage?(stats)
+  end
+
+  @doc """
+  Validate an item stats based on type
+
+      iex> Data.Stats.valid?("basic", %{})
+      true
+      iex> Data.Stats.valid?("basic", %{slot: :chest})
+      false
+  """
+  @spec valid?(type :: String.t, stats :: Stats.t) :: boolean
+  def valid?(type, stats)
+  def valid?("armor", stats) do
+    valid_armor?(stats)
+  end
+  def valid?("weapon", stats) do
+    valid_weapon?(stats)
   end
   def valid?("basic", stats) do
     keys(stats) == []
