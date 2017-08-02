@@ -5,6 +5,11 @@ defmodule Data.Stats do
 
   import Data.Type
 
+  @type character :: %{
+    health: integer,
+    strength: integer,
+    dexterity: integer,
+  }
   @type armor :: %{
     slot: :atom,
   }
@@ -64,9 +69,24 @@ defmodule Data.Stats do
       true
       iex> Data.Stats.valid?("basic", %{slot: :chest})
       false
+
+      iex> Data.Stats.valid?("character", %{health: 50, strength: 10, dexterity: 10})
+      true
+      iex> Data.Stats.valid?("character", %{health: 50, strength: 10, dexterity: :atom})
+      false
+      iex> Data.Stats.valid?("character", %{health: 50, strength: 10})
+      false
+      iex> Data.Stats.valid?("character", %{})
+      false
   """
   @spec valid?(type :: String.t, stats :: Stats.t) :: boolean
   def valid?(type, stats)
+  def valid?("character", stats) do
+    keys(stats) == [:dexterity, :health, :strength]
+      && is_integer(stats.dexterity)
+      && is_integer(stats.health)
+      && is_integer(stats.strength)
+  end
   def valid?("armor", stats) do
     keys(stats) == [:slot] && valid_slot?(stats)
   end

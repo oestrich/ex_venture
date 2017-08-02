@@ -5,9 +5,12 @@ defmodule Data.Save do
 
   import Data.Type
 
+  alias Data.Stats
+
   @type t :: %{
     room_id: integer,
     class: atom,
+    stats: map,
     item_ids: [integer],
     wearing: %{
       chest: integer,
@@ -18,7 +21,7 @@ defmodule Data.Save do
     },
   }
 
-  defstruct [:room_id, :class, :item_ids, :wearing, :wielding]
+  defstruct [:room_id, :class, :stats, :item_ids, :wearing, :wielding]
 
   @behaviour Ecto.Type
 
@@ -27,9 +30,30 @@ defmodule Data.Save do
   def cast(save) when is_map(save), do: {:ok, save}
   def cast(_), do: :error
 
+
+  @doc """
+  Load a save from the database
+
+      iex> Data.Save.load(%{"room_id" => 1})
+      {:ok, %Data.Save{room_id: 1}}
+
+      iex> Data.Save.load(%{"class" => "Elixir.Game.Class.Fighter"})
+      {:ok, %Data.Save{class: Game.Class.Fighter}}
+
+      iex> Data.Save.load(%{"stats" => %{"health" => 50, "strength" => 10, "dexterity" => 10}})
+      {:ok, %Data.Save{stats: %{health: 50, strength: 10, dexterity: 10}}}
+
+      iex> Data.Save.load(%{"wearing" => %{"chest" => 1}})
+      {:ok, %Data.Save{wearing: %{chest: 1}}}
+
+      iex> Data.Save.load(%{"wielding" => %{"right" => 1}})
+      {:ok, %Data.Save{wielding: %{right: 1}}}
+  """
+  @spec load(save :: map) :: {:ok, Data.Save.t}
   def load(save) do
     save = for {key, val} <- save, into: %{}, do: {String.to_atom(key), val}
     save = atomize_class(save)
+    save = atomize_stats(save)
     save = atomize_wearing(save)
     save = atomize_wielding(save)
     {:ok, struct(__MODULE__, save)}
@@ -39,6 +63,12 @@ defmodule Data.Save do
     %{save | class: String.to_atom(class)}
   end
   defp atomize_class(save), do: save
+
+  defp atomize_stats(save = %{stats: stats}) when stats != nil do
+    stats = for {key, val} <- stats, into: %{}, do: {String.to_atom(key), val}
+    %{save | stats: stats}
+  end
+  defp atomize_stats(save), do: save
 
   defp atomize_wearing(save = %{wearing: wearing}) when wearing != nil do
     wearing = for {key, val} <- wearing, into: %{}, do: {String.to_atom(key), val}
@@ -58,7 +88,8 @@ defmodule Data.Save do
   @doc """
   Validate a save struct
 
-      iex> Data.Save.valid?(%Data.Save{room_id: 1, class: Game.Class.Fighter, item_ids: [], wearing: %{}, wielding: %{}})
+      iex> stats = %{health: 50, strength: 10, dexterity: 10}
+      iex> Data.Save.valid?(%Data.Save{room_id: 1, class: Game.Class.Fighter, item_ids: [], wearing: %{}, wielding: %{}, stats: stats})
       true
 
       iex> Data.Save.valid?(%Data.Save{room_id: 1, class: "fighter", item_ids: [], wearing: %{}, wielding: %{}})
@@ -69,8 +100,9 @@ defmodule Data.Save do
   """
   @spec valid?(save :: Save.t) :: boolean
   def valid?(save) do
-    keys(save) == [:class, :item_ids, :room_id, :wearing, :wielding]
+    keys(save) == [:class, :item_ids, :room_id, :stats, :wearing, :wielding]
       && valid_class?(save)
+      && valid_stats?(save)
       && valid_item_ids?(save)
       && valid_room_id?(save)
       && valid_wearing?(save)
@@ -90,6 +122,21 @@ defmodule Data.Save do
   def valid_class?(save)
   def valid_class?(%{class: class}) do
     class in Game.Class.classes()
+  end
+
+  @doc """
+  Validate stats are correct
+
+      iex> Data.Save.valid_stats?(%{stats: %{health: 50, strength: 10, dexterity: 10}})
+      true
+
+      iex> Data.Save.valid_stats?(%{stats: :anything})
+      false
+  """
+  @spec valid_stats?(save :: Save.t) :: boolean
+  def valid_stats?(save)
+  def valid_stats?(%{stats: stats}) do
+    is_map(stats) && Stats.valid?("character", stats)
   end
 
   @doc """

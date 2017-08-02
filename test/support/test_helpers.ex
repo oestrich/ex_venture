@@ -12,6 +12,7 @@ defmodule TestHelpers do
       room_id: 1,
       item_ids: [],
       class: Game.Class.Fighter,
+      stats: %{health: 50, strength: 10, dexterity: 10},
       wearing: %{},
       wielding: %{},
     }

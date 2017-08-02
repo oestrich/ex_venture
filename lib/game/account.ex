@@ -12,8 +12,10 @@ defmodule Game.Account do
   Create a new user from attributes
   """
   @spec create(attributes :: map, save_attributes :: map) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
-  def create(attributes, save) do
-    save = Map.merge(Config.starting_save(), save)
+  def create(attributes, save = %{class: class}) do
+    save = Config.starting_save()
+    |> Map.merge(save)
+    |> Map.put(:stats, class.starting_stats())
 
     attributes = attributes
     |> Map.put(:save, save)

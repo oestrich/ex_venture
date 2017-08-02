@@ -3,6 +3,8 @@ defmodule Game.Class do
   A behaviour for classes.
   """
 
+  alias Data.Stats
+
   @doc """
   Name of the class
   """
@@ -12,6 +14,11 @@ defmodule Game.Class do
   A description of the class
   """
   @callback description() :: String.t
+
+  @doc """
+  Starting stats that will be copied into the user
+  """
+  @callback starting_stats() :: Stats.character
 
   defmacro __using__(_opts) do
     quote do

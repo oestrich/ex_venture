@@ -20,8 +20,7 @@ defmodule Data.UserTest do
     changeset = %User{} |> User.changeset(%{save: %{}})
     assert changeset.errors[:save]
 
-    save = %Data.Save{room_id: 1, item_ids: [], class: Game.Class.Fighter, wearing: %{}, wielding: %{}}
-    changeset = %User{} |> User.changeset(%{save: save})
+    changeset = %User{} |> User.changeset(%{save: base_save()})
     refute changeset.errors[:save]
   end
 end

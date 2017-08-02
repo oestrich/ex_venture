@@ -153,7 +153,6 @@ defmodule Seeds do
 
     save =  %{
       room_id: entrance.id,
-      class: Game.Class.Fighter,
       item_ids: [sword.id],
       wearing: %{},
       wielding: %{},
@@ -161,7 +160,10 @@ defmodule Seeds do
     {:ok, _starting_save} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
 
-    create_user(%{name: "eric", password: "password", save: Config.starting_save()})
+    save = Config.starting_save()
+    |> Map.merge(%{class: Game.Class.Fighter})
+    |> Map.put(:stats, Game.Class.Fighter.starting_stats())
+    create_user(%{name: "eric", password: "password", save: save})
   end
 end
 
