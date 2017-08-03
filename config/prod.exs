@@ -6,6 +6,12 @@ config :ex_venture, Data.Repo,
   hostname: "localhost",
   pool_size: 10
 
+config :ex_venture, Web.Endpoint,
+  http: [port: 4000],
+  url: [host: {:system, "HOST"}, port: 4000],
+  server: true,
+  cache_static_manifest: "priv/static/cache_manifest.json"
+
 config :ex_venture, :networking,
   server: true,
   socket_module: Networking.Protocol
