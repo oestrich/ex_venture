@@ -1,4 +1,5 @@
 import {Socket} from "phoenix"
+import format from "./color"
 
 let socket = new Socket("/socket", {})
 socket.connect()
@@ -18,12 +19,19 @@ channel.join()
   .receive("error", resp => { console.log("Unable to join", resp) })
 
 channel.on("prompt", payload => {
-  document.getElementById("terminal").append(payload.message)
+  let message = format(payload.message)
+  let html = document.createElement('span');
+  html.innerHTML = message;
+
+  document.getElementById("terminal").append(html)
   window.scrollTo(0, document.body.scrollHeight);
 })
 channel.on("echo", payload => {
-  document.getElementById("terminal").append(payload.message)
-  document.getElementById("terminal").append("\n")
+  let message = format(payload.message)
+  let html = document.createElement('span');
+  html.innerHTML = message;
+
+  document.getElementById("terminal").append(html)
   window.scrollTo(0, document.body.scrollHeight);
 })
 channel.on("disconnect", payload => {

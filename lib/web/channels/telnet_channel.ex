@@ -93,11 +93,11 @@ defmodule Web.TelnetChannel do
       {:noreply, state}
     end
     def handle_cast({:echo, message}, state) do
-      send(state.socket.channel_pid, {:echo, message |> Color.strip_color})
+      send(state.socket.channel_pid, {:echo, message})
       {:noreply, state}
     end
     def handle_cast({:echo, message, :prompt}, state) do
-      send(state.socket.channel_pid, {:echo, message |> Color.strip_color, :prompt})
+      send(state.socket.channel_pid, {:echo, message, :prompt})
       {:noreply, state}
     end
     def handle_cast(:start_session, state) do

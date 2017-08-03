@@ -2,8 +2,8 @@
 
 body {
   margin: 0;
-  background-color: black;
-  color: white;
+  background-color: #073642;
+  color: #eee8d5;
 }
 
 .panel {
@@ -18,4 +18,44 @@ input {
   font-size: 18px;
   width: 98%;
   margin: 10px;
+}
+
+.black {
+  color: #003541;
+  font-weight: bold;
+}
+
+.red {
+  color: #dc322f;
+  font-weight: bold;
+}
+
+.green {
+  color: #859901;
+  font-weight: bold;
+}
+
+.yellow {
+  color: #b58901;
+  font-weight: bold;
+}
+
+.blue {
+  color: #268bd2;
+  font-weight: bold;
+}
+
+.magenta {
+  color: #d33682;
+  font-weight: bold;
+}
+
+.cyan {
+  color: #2aa198;
+  font-weight: bold;
+}
+
+.white {
+  color: #eee8d5;
+  font-weight: bold;
 }
