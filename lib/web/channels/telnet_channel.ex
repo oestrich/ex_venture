@@ -1,7 +1,22 @@
 defmodule Web.TelnetChannel do
+  @moduledoc """
+  Telnet Channel
+
+  Websockets channel that starts a GenServer that talks to the game session.
+  """
+
   use Phoenix.Channel
 
   defmodule Monitor do
+    @moduledoc """
+    TelnetChannel monitor
+
+    When a telnet channel starts up it will start a genserver to connect
+    to the session. The genserver will monitor itself via this module. When
+    the telnet channel dies because of a disconnect, this module will receive
+    an EXIT and disconnect the session.
+    """
+
     use GenServer
 
     def monitor(channel_pid, session_pid) do
@@ -56,6 +71,10 @@ defmodule Web.TelnetChannel do
   end
 
   defmodule Server do
+    @moduledoc """
+    A GenServer that proxies between TelnetChannel and Session
+    """
+
     use GenServer
 
     alias Game.Color
