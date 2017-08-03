@@ -23,7 +23,7 @@ defmodule Networking.Protocol do
   """
   @spec echo(socket :: pid, message :: String.t) :: :ok
   def echo(socket, message) do
-    GenServer.cast(socket, {:echo, message |> Color.format})
+    GenServer.cast(socket, {:echo, message})
   end
 
   @doc """
@@ -33,7 +33,7 @@ defmodule Networking.Protocol do
   """
   @spec prompt(socket :: pid, message :: String.t) :: :ok
   def prompt(socket, message) do
-    GenServer.cast(socket, {:echo, message |> Color.format, :prompt})
+    GenServer.cast(socket, {:echo, message, :prompt})
   end
 
   def tcp_option(socket, :echo, true) do
@@ -67,11 +67,11 @@ defmodule Networking.Protocol do
     {:noreply, state}
   end
   def handle_cast({:echo, message}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, "\n#{message}\n")
+    transport.send(socket, "\n#{message |> Color.format}\n")
     {:noreply, state}
   end
   def handle_cast({:echo, message, :prompt}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, "\n#{message}")
+    transport.send(socket, "\n#{message |> Color.format}")
     {:noreply, state}
   end
   def handle_cast(:start_session, state) do

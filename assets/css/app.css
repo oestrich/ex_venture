@@ -1,0 +1,21 @@
+/* This file is for your main application css. */
+
+body {
+  margin: 0;
+  background-color: black;
+  color: white;
+}
+
+.panel {
+  width: 100%;
+}
+
+pre {
+  font-size: 18px;
+}
+
+input {
+  font-size: 18px;
+  width: 98%;
+  margin: 10px;
+}

@@ -21,4 +21,23 @@ defmodule Game.Color do
     |> String.replace("{white}", "\e[37m")
     |> String.replace(~r/{\/\w+}/, "\e[0m")
   end
+
+  @doc """
+  Strip color information from a string
+
+      iex> Game.Color.strip_color("{blue}Item{/blue}")
+      "Item"
+  """
+  def strip_color(string) do
+    string
+    |> String.replace("{black}", "")
+    |> String.replace("{red}", "")
+    |> String.replace("{green}", "")
+    |> String.replace("{yellow}", "")
+    |> String.replace("{blue}", "")
+    |> String.replace("{magenta}", "")
+    |> String.replace("{cyan}", "")
+    |> String.replace("{white}", "")
+    |> String.replace(~r/{\/\w+}/, "")
+  end
 end

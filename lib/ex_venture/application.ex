@@ -15,6 +15,7 @@ defmodule ExVenture.Application do
       supervisor(Data.Repo, []),
       supervisor(Game.Registries, []),
       supervisor(Game.Supervisor, []),
+      supervisor(Web.Supervisor, []),
       listener(),
     ] |> Enum.reject(fn child -> is_nil(child) end)
 

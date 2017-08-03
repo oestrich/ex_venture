@@ -1,5 +1,6 @@
 defmodule Game.ColorTest do
   use ExUnit.Case
+  doctest Game.Color
 
   import Game.Color, only: [format: 1]
 

@@ -9,6 +9,7 @@ defmodule ExVenture.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env),
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
+      compilers: [:phoenix] ++ Mix.compilers,
       deps: deps(),
       aliases: aliases(),
       source_url: "https://github.com/oestrich/ex_venture",
@@ -47,11 +48,14 @@ defmodule ExVenture.Mixfile do
   defp deps do
     [
       {:comeonin, "~> 3.2"},
+      {:cowboy, "~> 1.0"},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:distillery, "~> 1.4", runtime: false},
       {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:phoenix, "~> 1.3.0"},
+      {:phoenix_html, "~> 2.10"},
       {:poison, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},
       {:ranch, "~> 1.4"},
