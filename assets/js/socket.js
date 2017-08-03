@@ -15,6 +15,7 @@ function guid() {
 let options = {
   echo: true,
 };
+let commandHistory = [];
 
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("telnet:" + guid(), {})
@@ -61,11 +62,42 @@ channel.on("disconnect", payload => {
   socket.disconnect()
 })
 
+document.getElementById("command").addEventListener("keydown", e => {
+  let command = document.getElementById("command")
+  let cmdIndex = commandHistory.indexOf(command.value)
+
+  switch (e.keyCode) {
+    case 38:
+      if (cmdIndex > 0) {
+        command.value = commandHistory[cmdIndex - 1]
+      } else if (cmdIndex == 0) {
+        // do nothing at the end of the list
+      } else {
+        command.value = commandHistory[commandHistory.length - 1]
+      }
+      break;
+
+    case 40:
+      if (cmdIndex >= 0) {
+        if (commandHistory[cmdIndex + 1] != undefined) {
+          command.value = commandHistory[cmdIndex + 1]
+        } else {
+          command.value = ""
+        }
+      }
+      break;
+  }
+})
 document.getElementById("command").addEventListener("keypress", e => {
   if (e.keyCode == 13) {
     var command = document.getElementById("command").value
 
     if (options.echo) {
+      commandHistory.push(command)
+      if (commandHistory.length > 10) {
+        commandHistory.shift()
+      }
+
       let html = document.createElement('span');
       html.innerHTML = command + "<br/>";
       document.getElementById("terminal").append(html)
