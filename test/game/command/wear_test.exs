@@ -24,7 +24,7 @@ defmodule Game.Command.WearTest do
 
   describe "wearing" do
     test "wearing armor", %{session: session, socket: socket} do
-      save = %Save{item_ids: [1]}
+      save = %Save{item_ids: [1], wearing: %{}}
       {:update, state} = Command.Wear.run({:wear, "chest"}, session, %{socket: socket, save: save})
 
       assert state.save.wearing == %{chest: 1}

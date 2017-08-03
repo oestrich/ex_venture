@@ -24,7 +24,7 @@ defmodule Game.Command.WieldTest do
 
   describe "wielding" do
     test "wield an item", %{session: session, socket: socket} do
-      save = %Save{item_ids: [1]}
+      save = %Save{item_ids: [1], wielding: %{}}
       {:update, state} = Command.Wield.run({:wield, "sword"}, session, %{socket: socket, save: save})
 
       assert state.save.wielding == %{right: 1}

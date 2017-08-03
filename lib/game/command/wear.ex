@@ -104,7 +104,11 @@ defmodule Game.Command.Wear do
   def remove(slot, wearing, item_ids)
   def remove(_slot, nil, item_ids), do: {%{}, item_ids}
   def remove(slot, wearing, item_ids) do
-    item_id = wearing[slot]
-    {Map.delete(wearing, slot), [item_id | item_ids]}
+    case wearing[slot] do
+      nil ->
+        {Map.delete(wearing, slot), item_ids}
+      item_id ->
+        {Map.delete(wearing, slot), [item_id | item_ids]}
+    end
   end
 end
