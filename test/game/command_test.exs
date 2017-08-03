@@ -105,9 +105,6 @@ defmodule CommandTest do
 
       assert @socket.get_echos() == [{socket, "Good bye."}]
       assert @socket.get_disconnects() == [socket]
-
-      user = Data.User |> Repo.get(user.id)
-      assert user.save.room_id == 5
     end
   end
 

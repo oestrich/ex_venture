@@ -12,8 +12,6 @@ defmodule Game.Command.Quit do
   Example: quit
   """
 
-  alias Game.Account
-
   @doc """
   Save and quit the game
   """
@@ -24,7 +22,6 @@ defmodule Game.Command.Quit do
     socket |> @socket.disconnect
 
     @room.leave(save.room_id, {:user, session, user})
-    user |> Account.save(save)
 
     :ok
   end
