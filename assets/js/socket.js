@@ -24,16 +24,16 @@ channel.join()
   .receive("error", resp => { console.log("Unable to join", resp) })
 
 channel.on("option", payload => {
-  var prompt = document.getElementById("command")
+  let commandPrompt = document.getElementById("prompt")
 
   switch (payload.type) {
     case "echo":
       options.echo = payload.echo
 
       if (payload.echo) {
-        prompt.type = "text"
+        commandPrompt.type = "text"
       } else {
-        prompt.type = "password"
+        commandPrompt.type = "password"
       }
 
       break;
@@ -62,35 +62,35 @@ channel.on("disconnect", payload => {
   socket.disconnect()
 })
 
-document.getElementById("command").addEventListener("keydown", e => {
-  let command = document.getElementById("command")
-  let cmdIndex = commandHistory.indexOf(command.value)
+document.getElementById("prompt").addEventListener("keydown", e => {
+  let commandPrompt = document.getElementById("prompt")
+  let cmdIndex = commandHistory.indexOf(commandPrompt.value)
 
   switch (e.keyCode) {
     case 38:
       if (cmdIndex > 0) {
-        command.value = commandHistory[cmdIndex - 1]
+        commandPrompt.value = commandHistory[cmdIndex - 1]
       } else if (cmdIndex == 0) {
         // do nothing at the end of the list
       } else {
-        command.value = commandHistory[commandHistory.length - 1]
+        commandPrompt.value = commandHistory[commandHistory.length - 1]
       }
       break;
 
     case 40:
       if (cmdIndex >= 0) {
         if (commandHistory[cmdIndex + 1] != undefined) {
-          command.value = commandHistory[cmdIndex + 1]
+          commandPrompt.value = commandHistory[cmdIndex + 1]
         } else {
-          command.value = ""
+          commandPrompt.value = ""
         }
       }
       break;
   }
 })
-document.getElementById("command").addEventListener("keypress", e => {
+document.getElementById("prompt").addEventListener("keypress", e => {
   if (e.keyCode == 13) {
-    var command = document.getElementById("command").value
+    var command = document.getElementById("prompt").value
 
     if (options.echo) {
       commandHistory.push(command)
@@ -103,7 +103,7 @@ document.getElementById("command").addEventListener("keypress", e => {
       document.getElementById("terminal").append(html)
     }
 
-    document.getElementById("command").value = ""
+    document.getElementById("prompt").value = ""
     channel.push("recv", {message: command})
   }
 })
