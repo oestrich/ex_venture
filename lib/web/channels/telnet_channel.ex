@@ -77,7 +77,6 @@ defmodule Web.TelnetChannel do
 
     use GenServer
 
-    alias Game.Color
     alias Web.TelnetChannel.Monitor
 
     def start_link(socket) do
@@ -89,7 +88,13 @@ defmodule Web.TelnetChannel do
       {:ok, %{socket: socket}}
     end
 
-    def handle_cast({:command, _message}, state) do
+    def handle_cast({:command, _, command}, state) do
+      case command do
+        {:echo, true} ->
+          send(state.socket.channel_pid, {:option, :echo, true})
+        {:echo, false} ->
+          send(state.socket.channel_pid, {:option, :echo, false})
+      end
       {:noreply, state}
     end
     def handle_cast({:echo, message}, state) do
@@ -141,6 +146,10 @@ defmodule Web.TelnetChannel do
     {:noreply, socket}
   end
 
+  def handle_info({:option, :echo, flag}, socket) do
+    push socket, "option", %{type: "echo", echo: flag}
+    {:noreply, socket}
+  end
   def handle_info({:echo, message}, socket) do
     push socket, "echo", %{message: "\n#{message}\n"}
     {:noreply, socket}

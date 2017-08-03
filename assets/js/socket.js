@@ -12,12 +12,34 @@ function guid() {
     s4() + '-' + s4() + s4() + s4();
 }
 
+let options = {
+  echo: true,
+};
+
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("telnet:" + guid(), {})
 channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
 
+channel.on("option", payload => {
+  var prompt = document.getElementById("command")
+
+  switch (payload.type) {
+    case "echo":
+      options.echo = payload.echo
+
+      if (payload.echo) {
+        prompt.type = "text"
+      } else {
+        prompt.type = "password"
+      }
+
+      break;
+    default:
+      console.log("No option found")
+  }
+})
 channel.on("prompt", payload => {
   let message = format(payload.message)
   let html = document.createElement('span');
@@ -42,7 +64,13 @@ channel.on("disconnect", payload => {
 document.getElementById("command").addEventListener("keypress", e => {
   if (e.keyCode == 13) {
     var command = document.getElementById("command").value
-    document.getElementById("terminal").append(command + "\n")
+
+    if (options.echo) {
+      let html = document.createElement('span');
+      html.innerHTML = command + "<br/>";
+      document.getElementById("terminal").append(html)
+    }
+
     document.getElementById("command").value = ""
     channel.push("recv", {message: command})
   }

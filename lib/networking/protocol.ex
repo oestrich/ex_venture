@@ -36,11 +36,15 @@ defmodule Networking.Protocol do
     GenServer.cast(socket, {:echo, message, :prompt})
   end
 
+  @doc """
+  Toggle telnet options
+  """
+  @spec tcp_option(socket :: pid, command :: atom, toggle :: boolean) :: :ok
   def tcp_option(socket, :echo, true) do
-    GenServer.cast(socket, {:command, [255, 252, 1]})
+    GenServer.cast(socket, {:command, [255, 252, 1], {:echo, true}})
   end
   def tcp_option(socket, :echo, false) do
-    GenServer.cast(socket, {:command, [255, 251, 1]})
+    GenServer.cast(socket, {:command, [255, 251, 1], {:echo, false}})
   end
 
   @doc """
@@ -62,7 +66,7 @@ defmodule Networking.Protocol do
     :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport})
   end
 
-  def handle_cast({:command, message}, state = %{socket: socket, transport: transport}) do
+  def handle_cast({:command, message, _}, state = %{socket: socket, transport: transport}) do
     transport.send(socket, message)
     {:noreply, state}
   end
