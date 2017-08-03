@@ -8,7 +8,7 @@ defmodule Game.Command.Inventory do
   alias Game.Items
 
   @commands ["inventory"]
-  @aliases ["inv"]
+  @aliases ["inv", "i"]
 
   @short_help "View your character's inventory"
   @full_help """
