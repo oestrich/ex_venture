@@ -10,6 +10,7 @@ config :ex_venture, Web.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   check_origin: false,
+  server: true,
   watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin", cd: Path.expand("../assets", __DIR__)]]
 
 config :ex_venture, :networking,
