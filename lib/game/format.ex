@@ -26,13 +26,15 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.prompt(%{name: "user"}, %{})
-      "[user] > "
+      iex> Game.Format.prompt(%{name: "user"}, %{stats: %{health: 50}})
+      "[50 hp] > "
   """
   @spec prompt(user :: User.t, save :: Save.t) :: String.t
-  def prompt(user, _save) do
-    "[#{user.name}] > "
+  def prompt(user, save)
+  def prompt(_user, %{stats: stats}) do
+    "[#{stats.health} hp] > "
   end
+  def prompt(_user, _save), do: "> "
 
   @doc """
   Format a say message

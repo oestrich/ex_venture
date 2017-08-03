@@ -17,7 +17,7 @@ defmodule Game.SessionTest do
     {:noreply, ^state} = Session.handle_cast({:echo, "a message"}, state)
 
     assert @socket.get_echos() == [{socket, "a message"}]
-    assert @socket.get_prompts() == [{socket, "[user] > "}]
+    assert @socket.get_prompts() == [{socket, "> "}]
   end
 
   test "ticking", state do
