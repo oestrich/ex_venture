@@ -6,6 +6,7 @@ defmodule Data.Item do
   use Data.Schema
 
   alias Data.Stats
+  alias Data.Effect
 
   @type t :: %{
     name: String.t,
@@ -22,17 +23,19 @@ defmodule Data.Item do
     field :type, :string
     field :keywords, {:array, :string}
     field :stats, Data.Stats
+    field :effects, {:array, Data.Effect}
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :type, :keywords, :stats])
+    |> cast(params, [:name, :description, :type, :keywords, :stats, :effects])
     |> ensure_keywords
-    |> validate_required([:name, :description, :type, :keywords, :stats])
+    |> validate_required([:name, :description, :type, :keywords, :stats, :effects])
     |> validate_inclusion(:type, @types)
     |> validate_stats()
+    |> validate_effects()
   end
 
   defp ensure_keywords(changeset) do
@@ -61,4 +64,19 @@ defmodule Data.Item do
 
   defp type_from_changeset(%{changes: %{type: type}}) when type != nil, do: type
   defp type_from_changeset(%{data: %{type: type}}), do: type
+
+  defp validate_effects(changeset) do
+    case changeset do
+      %{changes: %{effects: effects}} when effects != nil ->
+        _validate_effects(changeset)
+      _ -> changeset
+    end
+  end
+
+  defp _validate_effects(changeset = %{changes: %{effects: effects}}) do
+    case effects |> Enum.all?(&Effect.valid?/1) do
+      true -> changeset
+      false -> add_error(changeset, :effects, "are invalid")
+    end
+  end
 end

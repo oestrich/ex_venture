@@ -60,7 +60,8 @@ defmodule TestHelpers do
       name: "Short Sword",
       description: "A slender sword",
       type: "weapon",
-      stats: %{damage_type: :slashing, damage: 10},
+      stats: %{},
+      effects: [],
     }, attributes)
   end
 

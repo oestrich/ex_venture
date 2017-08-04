@@ -91,18 +91,15 @@ defmodule Data.Stats do
   @doc """
   Validate a weapon item
 
-      iex> Data.Stats.valid_weapon?(%{damage_type: :slashing, damage: 10})
+      iex> Data.Stats.valid_weapon?(%{})
       true
 
-      iex> Data.Stats.valid_weapon?(%{damage_type: :finger})
-      false
-
-      iex> Data.Stats.valid_weapon?(%{})
+      iex> Data.Stats.valid_weapon?(%{anything: true})
       false
   """
   @spec valid_weapon?(stats :: Stats.weapon) :: boolean
   def valid_weapon?(stats) do
-    keys(stats) == [:damage, :damage_type] && valid_damage?(stats)
+    keys(stats) == []
   end
 
   @doc """

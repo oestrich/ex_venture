@@ -21,4 +21,26 @@ defmodule Data.ItemTest do
     changeset = %Item{} |> Item.changeset(%{type: "armor", stats: %{slot: :chest}})
     refute changeset.errors[:stats]
   end
+
+  describe "validates item effects" do
+    test "required" do
+      changeset = %Item{} |> Item.changeset(%{})
+      assert changeset.errors[:effects]
+    end
+
+    test "can be an empty array" do
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: []})
+      refute changeset.errors[:effects]
+    end
+
+    test "valid if all effects are valid" do
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}]})
+      refute changeset.errors[:effects]
+    end
+
+    test "invalid if any are invalid" do
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}, %{kind: :damage}]})
+      assert changeset.errors[:effects]
+    end
+  end
 end

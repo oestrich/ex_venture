@@ -202,9 +202,6 @@ Items: #{items(room)}
   @doc """
   Format an items stats
 
-      iex> Game.Format.item_stats(%{type: "weapon", stats: %{damage_type: :slashing, damage: 10}})
-      "Damage: 10 slashing"
-
       iex> Game.Format.item_stats(%{type: "armor", stats: %{slot: :chest}})
       "Slot: chest"
 
@@ -215,9 +212,6 @@ Items: #{items(room)}
   def item_stats(item)
   def item_stats(%{type: "armor", stats: stats}) do
     "Slot: #{stats.slot}"
-  end
-  def item_stats(%{type: "weapon", stats: stats}) do
-    "Damage: #{stats.damage} #{stats.damage_type}"
   end
   def item_stats(_), do: ""
 

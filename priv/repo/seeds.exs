@@ -137,7 +137,8 @@ defmodule Seeds do
       name: "Short Sword",
       description: "A simple blade",
       type: "weapon",
-      stats: %{damage_type: :slashing, damage: 10},
+      stats: %{},
+      effects: [%{kind: "damage", type: :slashing, amount: 10}],
       keywords: ["sword"],
     })
     entrance = entrance |> add_item_to_room(sword, %{interval: 15})
@@ -147,6 +148,7 @@ defmodule Seeds do
       description: "A simple chestpiece made out of leather",
       type: "armor",
       stats: %{slot: :chest},
+      effects: [],
       keywords: ["leather"],
     })
     entrance = entrance |> add_item_to_room(leather_armor, %{interval: 15})
