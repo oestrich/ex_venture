@@ -18,4 +18,8 @@ defmodule Web.Router do
 
     get "/", PageController, :index
   end
+
+  scope "/admin", Web.Admin do
+    get "/", DashboardController, :index
+  end
 end

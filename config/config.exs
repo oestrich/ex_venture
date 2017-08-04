@@ -3,7 +3,8 @@
 use Mix.Config
 
 config :ex_venture,
-  ecto_repos: [Data.Repo]
+  ecto_repos: [Data.Repo],
+  namespace: Web
 
 # Configures the endpoint
 config :ex_venture, Web.Endpoint,

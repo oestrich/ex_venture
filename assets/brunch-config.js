@@ -1,10 +1,25 @@
 exports.config = {
   files: {
     javascripts: {
-      joinTo: "js/app.js"
+      joinTo: {
+        "js/app.js": /(app\/js)|(priv\/static\/phoenix*)/,
+        "js/admin.js": /(admin\/js)/,
+      },
+      order: {
+        before: [
+          "admin/js/vendor/jquery-3.2.1.js",
+          "admin/js/vendor/bootstrap.js",
+        ],
+        after: [
+          "admin/js/app.js"
+        ],
+      },
     },
     stylesheets: {
-      joinTo: "css/app.css"
+      joinTo: {
+        "css/app.css": /(app\/css)/,
+        "css/admin.css": /(admin\/css)/,
+      },
     },
     templates: {
       joinTo: "js/app.js"
@@ -21,7 +36,7 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "css", "js", "vendor"],
+    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "vendor"],
     // Where to compile files to
     public: "../priv/static"
   },
