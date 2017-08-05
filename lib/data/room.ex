@@ -5,6 +5,8 @@ defmodule Data.Room do
 
   use Data.Schema
 
+  alias Data.Zone
+
   schema "rooms" do
     field :name, :string
     field :description, :string
@@ -14,6 +16,7 @@ defmodule Data.Room do
     field :items, {:array, :map}, virtual: true
 
     has_many :room_items, Data.RoomItem
+    has_many :npcs, Data.NPC
 
     belongs_to :zone, Zone
     belongs_to :north, __MODULE__

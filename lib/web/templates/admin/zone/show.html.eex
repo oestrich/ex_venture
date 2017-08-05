@@ -17,6 +17,7 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <td>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -24,6 +25,9 @@
                 <tr>
                   <td><%= room.id %></td>
                   <td><%= room.name %></td>
+                  <td>
+                    <%= link("View", to: room_path(@conn, :show, room.id)) %>
+                  </td>
                 </tr>
               <% end %>
             </tbody>

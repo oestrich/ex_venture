@@ -22,6 +22,8 @@ defmodule Web.Router do
   scope "/admin", Web.Admin do
     get "/", DashboardController, :index
 
+    resources "/rooms", RoomController, only: [:show]
+
     resources "/zones", ZoneController, only: [:index, :show]
   end
 end

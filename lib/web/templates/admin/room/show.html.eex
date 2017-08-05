@@ -1,0 +1,75 @@
+<section class="content-header">
+  <h1>
+    <%= @room.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Zone</th>
+                <td><%= @room.zone.name %></td>
+              </tr>
+              <tr>
+                <th>Name</th>
+                <td><%= @room.name %></td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><%= @room.description %></td>
+              </tr>
+              <tr>
+                <th>Items</th>
+                <td>
+                  <ul>
+                    <%= Enum.map @room.item_ids |> Game.Items.items(), fn (item) -> %>
+                      <li><%= item.name %></li>
+                    <% end %>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <th>Exits</th>
+                <td>
+                  <%= if @room.north_id != nil do %>
+                    <%= link("North (#{@room.north.name})", to: room_path(@conn, :show, @room.north_id)) %>
+                    <br />
+                  <% end %>
+                  <%= if @room.east_id != nil do %>
+                    <%= link("East (#{@room.east.name})", to: room_path(@conn, :show, @room.east_id)) %>
+                    <br />
+                  <% end %>
+                  <%= if @room.south_id != nil do %>
+                    <%= link("South (#{@room.south.name})", to: room_path(@conn, :show, @room.south_id)) %>
+                    <br />
+                  <% end %>
+                  <%= if @room.west_id != nil do %>
+                    <%= link("West (#{@room.west.name})", to: room_path(@conn, :show, @room.west_id)) %>
+                  <% end %>
+                </td>
+              </tr>
+              <tr>
+                <th>NPCs</th>
+                <td>
+                  <ul>
+                    <%= Enum.map @room.npcs, fn (npc) -> %>
+                      <li><%= npc.name %></li>
+                    <% end %>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
