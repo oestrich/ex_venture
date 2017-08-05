@@ -23,4 +23,9 @@ defmodule Data.UserTest do
     changeset = %User{} |> User.changeset(%{save: base_save()})
     refute changeset.errors[:save]
   end
+
+  test "ensures flags exist" do
+    changeset = %User{} |> User.changeset(%{})
+    assert changeset.changes.flags == []
+  end
 end

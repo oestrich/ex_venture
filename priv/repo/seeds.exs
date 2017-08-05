@@ -165,7 +165,8 @@ defmodule Seeds do
     save = Config.starting_save()
     |> Map.merge(%{class: Game.Class.Fighter})
     |> Map.put(:stats, Game.Class.Fighter.starting_stats())
-    create_user(%{name: "eric", password: "password", save: save})
+
+    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"]})
   end
 end
 

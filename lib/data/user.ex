@@ -17,15 +17,17 @@ defmodule Data.User do
     field :password, :string, virtual: true
     field :password_hash, :string
     field :save, Data.Save
+    field :flags, {:array, :string}
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :password, :save])
+    |> cast(params, [:name, :password, :save, :flags])
     |> validate_required([:name, :save])
     |> validate_save()
+    |> ensure_flags()
     |> hash_password
     |> validate_required([:password_hash])
     |> unique_constraint(:name)
@@ -52,6 +54,14 @@ defmodule Data.User do
     case Save.valid?(save) do
       true -> changeset
       false -> add_error(changeset, :save, "is invalid")
+    end
+  end
+
+  defp ensure_flags(changeset) do
+    case changeset do
+      %{changes: %{flags: _ids}} -> changeset
+      %{data: %{flags: ids}} when ids != nil -> changeset
+      _ -> put_change(changeset, :flags, [])
     end
   end
 end
