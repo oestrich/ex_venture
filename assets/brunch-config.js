@@ -9,6 +9,7 @@ exports.config = {
         before: [
           "admin/js/vendor/jquery-3.2.1.js",
           "admin/js/vendor/bootstrap.js",
+          "admin/js/vendor/adminlte.js",
         ],
         after: [
           "admin/js/app.js"
