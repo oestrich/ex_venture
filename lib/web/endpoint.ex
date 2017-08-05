@@ -11,6 +11,10 @@ defmodule Web.Endpoint do
     at: "/", from: :ex_venture, gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
+  if code_reloading? do
+    plug Phoenix.CodeReloader
+  end
+
   plug Plug.RequestId
   plug Plug.Logger
 
