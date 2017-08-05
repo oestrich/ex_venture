@@ -23,7 +23,22 @@
         </nav>
       </header>
 
-      <%= render @view_module, @view_template, assigns %>
+      <aside class="main-sidebar">
+        <section class="sidebar">
+          <ul class="sidebar-menu" data-widget="tree">
+            <li class="header">MAIN NAVIGATION</li>
+            <li>
+              <%= link(to: zone_path(@conn, :index)) do %>
+                <i class="fa fa-flag"></i> Zones
+              <% end %>
+            </li>
+          </ul>
+        </section>
+      </aside>
+
+      <div class="content-wrapper">
+        <%= render @view_module, @view_template, assigns %>
+      </div>
       <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
     </div>
   </body>

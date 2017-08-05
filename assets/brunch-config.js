@@ -20,6 +20,17 @@ exports.config = {
         "css/app.css": /(app\/css)/,
         "css/admin.css": /(admin\/css)/,
       },
+      order: {
+        before: [
+          "admin/css/vendor/bootstrap.css",
+          "admin/css/vendor/AdminLTE.css",
+          "admin/css/vendor/skin-black.css",
+          "admin/css/vendor/skin-black-light.css",
+        ],
+        after: [
+          "admin/css/app.css",
+        ],
+      },
     },
     templates: {
       joinTo: "js/app.js"

@@ -8,6 +8,8 @@ defmodule Data.Zone do
   schema "zones" do
     field :name, :string
 
+    has_many :rooms, Data.Room
+
     timestamps()
   end
 
