@@ -60,7 +60,7 @@
                 <th>NPCs</th>
                 <td>
                   <ul>
-                    <%= Enum.map @room.npcs, fn (npc) -> %>
+                    <%= Enum.map @npcs, fn (npc) -> %>
                       <li><%= npc.name %></li>
                     <% end %>
                   </ul>

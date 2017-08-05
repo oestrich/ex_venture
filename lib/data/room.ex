@@ -16,7 +16,6 @@ defmodule Data.Room do
     field :items, {:array, :map}, virtual: true
 
     has_many :room_items, Data.RoomItem
-    has_many :npcs, Data.NPC
 
     belongs_to :zone, Zone
     belongs_to :north, __MODULE__

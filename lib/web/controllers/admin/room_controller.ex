@@ -7,6 +7,7 @@ defmodule Web.Admin.RoomController do
 
   def show(conn, %{"id" => id}) do
     room = Room.get(id)
-    conn |> render("show.html", room: room)
+    npcs = Room.npcs(room.id)
+    conn |> render("show.html", room: room, npcs: npcs)
   end
 end
