@@ -20,13 +20,15 @@ defmodule Data.User do
     field :flags, {:array, :string}
     field :token, Ecto.UUID
 
+    belongs_to :class, Data.Class
+
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :password, :save, :flags])
-    |> validate_required([:name, :save])
+    |> cast(params, [:name, :password, :save, :flags, :class_id])
+    |> validate_required([:name, :save, :class_id])
     |> validate_save()
     |> ensure_flags()
     |> ensure_token()

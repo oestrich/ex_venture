@@ -4,12 +4,12 @@ defmodule Data.UserTest do
   alias Data.User
 
   test "valid changeset" do
-    changeset = User.changeset(%User{}, %{name: "user", password: "password", save: base_save()})
+    changeset = User.changeset(%User{}, %{name: "user", password: "password", save: base_save(), class_id: 10})
     assert changeset.valid?
   end
 
   test "hashes the password" do
-    changeset = User.changeset(%User{}, %{name: "user", password: "password", save: base_save()})
+    changeset = User.changeset(%User{}, %{name: "user", password: "password", save: base_save(), class_id: 10})
     assert changeset.changes[:password_hash]
   end
 

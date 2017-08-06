@@ -4,7 +4,8 @@ defmodule Game.AuthenticationTest do
   alias Game.Authentication
 
   setup do
-    user = create_user(%{name: "user", password: "password"})
+    fighter = create_class()
+    user = create_user(%{name: "user", password: "password", class_id: fighter.id})
     {:ok, %{user: user}}
   end
 

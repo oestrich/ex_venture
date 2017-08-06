@@ -5,6 +5,11 @@ defmodule Game.Session.CreateAccountTest do
 
   alias Game.Session.CreateAccount
 
+  setup do
+    fighter = create_class()
+    %{class: fighter}
+  end
+
   test "start creating an account", %{socket: socket} do
     state = CreateAccount.process("user", :session, %{socket: socket})
 
@@ -12,10 +17,10 @@ defmodule Game.Session.CreateAccountTest do
     assert @socket.get_prompts() == [{socket, "Class: "}]
   end
 
-  test "pick a class", %{socket: socket} do
+  test "pick a class", %{socket: socket, class: fighter} do
     state = CreateAccount.process("fighter", :session, %{socket: socket, create: %{name: "user"}})
 
-    assert state.create.class == Game.Class.Fighter
+    assert state.create.class == fighter
     assert @socket.get_prompts() == [{socket, "Password: "}]
   end
 
@@ -26,18 +31,18 @@ defmodule Game.Session.CreateAccountTest do
     assert @socket.get_prompts() == [{socket, "Class: "}]
   end
 
-  test "create the account after password is entered", %{socket: socket} do
+  test "create the account after password is entered", %{socket: socket, class: fighter} do
     create_config(:starting_save, base_save() |> Poison.encode!)
 
-    state = CreateAccount.process("password", :session, %{socket: socket, create: %{name: "user", class: Game.Class.Fighter}})
+    state = CreateAccount.process("password", :session, %{socket: socket, create: %{name: "user", class: fighter}})
 
     refute Map.has_key?(state, :create)
     assert @socket.get_echos() == [{socket, "Welcome, user!"}]
   end
 
-  test "failure creating the account after entering the password", %{socket: socket} do
+  test "failure creating the account after entering the password", %{socket: socket, class: fighter} do
     create_config(:starting_save, %{} |> Poison.encode!)
-    state = CreateAccount.process("", :session, %{socket: socket, create: %{name: "user", class: Game.Class.Fighter}})
+    state = CreateAccount.process("", :session, %{socket: socket, create: %{name: "user", class: fighter}})
 
     refute Map.has_key?(state, :create)
     assert @socket.get_echos() == [{socket, "There was a problem creating your account.\nPlease start over."}]

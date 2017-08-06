@@ -20,7 +20,7 @@ defmodule Game.Session.LoginTest do
   end
 
   test "verifies the user's name and password", %{socket: socket} do
-    user = create_user(%{name: "user", password: "password"})
+    user = create_user(%{name: "user", password: "password", class_id: create_class().id})
 
     state = Login.process("password", :session, %{socket: socket, room_id: 1, login: %{name: "user"}})
 
@@ -30,7 +30,7 @@ defmodule Game.Session.LoginTest do
   end
 
   test "verifies the user's name and password - failure", %{socket: socket} do
-    create_user(%{name: "user", password: "password"})
+    create_user(%{name: "user", password: "password", class_id: create_class().id})
 
     state = Login.process("p@ssword", :session, %{socket: socket, login: %{name: "user"}})
 

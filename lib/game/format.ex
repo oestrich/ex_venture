@@ -253,7 +253,7 @@ Items: #{items(room)}
   Example:
 
       iex> stats = %{health: 50, strength: 10, dexterity: 10}
-      iex> Game.Format.info(%{name: "hero", save: %Data.Save{class: Game.Class.Fighter, stats: stats}})
+      iex> Game.Format.info(%{name: "hero", save: %Data.Save{stats: stats}, class: %{name: "Fighter"}})
       "hero\\n--------\\nFighter\\n\\nHealth: 50\\nStrength: 10\\nDexterity: 10"
   """
   @spec info(user :: User.t) :: String.t
@@ -263,7 +263,7 @@ Items: #{items(room)}
     """
     #{user.name}
     #{underline(user.name)}
-    #{save.class.name}
+    #{user.class.name}
 
     Health: #{stats.health}
     Strength: #{stats.strength}

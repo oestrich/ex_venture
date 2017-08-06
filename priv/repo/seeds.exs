@@ -1,5 +1,6 @@
 alias Data.Repo
 
+alias Data.Class
 alias Data.Config
 alias Data.Item
 alias Data.NPC
@@ -58,6 +59,12 @@ defmodule Helpers do
   def create_zone(attributes) do
     %Zone{}
     |> Zone.changeset(attributes)
+    |> Repo.insert!
+  end
+
+  def create_class(attributes) do
+    %Class{}
+    |> Class.changeset(attributes)
     |> Repo.insert!
   end
 end
@@ -162,11 +169,30 @@ defmodule Seeds do
     {:ok, _starting_save} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
 
-    save = Config.starting_save()
-    |> Map.merge(%{class: Game.Class.Fighter})
-    |> Map.put(:stats, Game.Class.Fighter.starting_stats())
+    fighter = create_class(%{
+      name: "Fighter",
+      description: "Uses strength and swords to overcome.",
+      starting_stats: %{
+        health: 25,
+        strength: 13,
+        dexterity: 10,
+      },
+    })
 
-    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"]})
+    _mage = create_class(%{
+      name: "Mage",
+      description: "Uses intelligence and magic to overcome.",
+      starting_stats: %{
+        health: 25,
+        strength: 10,
+        dexterity: 12,
+      },
+    })
+
+    save = Config.starting_save()
+    |> Map.put(:stats, fighter.starting_stats())
+
+    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"], class_id: fighter.id})
   end
 end
 

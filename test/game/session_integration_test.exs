@@ -13,7 +13,7 @@ defmodule Game.SessionIntegrationTest do
   end
 
   test "when started asks for login information", %{socket: socket} do
-    create_user(%{name: "user", password: "password"})
+    create_user(%{name: "user", password: "password", class_id: create_class().id})
 
     {:ok, pid} = Session.start_link(socket)
 

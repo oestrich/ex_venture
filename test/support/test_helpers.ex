@@ -1,5 +1,6 @@
 defmodule TestHelpers do
   alias Data.Repo
+  alias Data.Class
   alias Data.Config
   alias Data.Item
   alias Data.Room
@@ -11,7 +12,6 @@ defmodule TestHelpers do
     %Data.Save{
       room_id: 1,
       item_ids: [],
-      class: Game.Class.Fighter,
       stats: %{health: 50, strength: 10, dexterity: 10},
       wearing: %{},
       wielding: %{},
@@ -21,6 +21,7 @@ defmodule TestHelpers do
   defp user_attributes(attributes) do
     Map.merge(%{
       save: base_save(),
+      class_id: create_class().id,
     }, attributes)
   end
 
@@ -74,6 +75,24 @@ defmodule TestHelpers do
   def create_zone(attributes) do
     %Zone{}
     |> Zone.changeset(room_attributes(attributes))
+    |> Repo.insert!
+  end
+
+  def class_attributes(attributes) do
+    Map.merge(%{
+      name: "Fighter",
+      description: "A fighter",
+      starting_stats: %{
+        health: 25,
+        strength: 10,
+        dexterity: 10,
+      },
+    }, attributes)
+  end
+
+  def create_class(attributes \\ %{}) do
+    %Class{}
+    |> Class.changeset(class_attributes(attributes))
     |> Repo.insert!
   end
 end

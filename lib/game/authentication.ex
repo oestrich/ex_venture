@@ -12,7 +12,10 @@ defmodule Game.Authentication do
   """
   @spec find_and_validate(name :: String.t, password :: String.t) :: {:error, :invalid} | User.t
   def find_and_validate(name, password) do
-    user = User |> where([u], u.name == ^name) |> Repo.one
+    user = User
+    |> where([u], u.name == ^name)
+    |> preload([:class])
+    |> Repo.one
     _find_and_validate(user, password)
   end
 

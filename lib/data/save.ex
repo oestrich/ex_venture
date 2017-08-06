@@ -37,9 +37,6 @@ defmodule Data.Save do
       iex> Data.Save.load(%{"room_id" => 1})
       {:ok, %Data.Save{room_id: 1}}
 
-      iex> Data.Save.load(%{"class" => "Elixir.Game.Class.Fighter"})
-      {:ok, %Data.Save{class: Game.Class.Fighter}}
-
       iex> Data.Save.load(%{"stats" => %{"health" => 50, "strength" => 10, "dexterity" => 10}})
       {:ok, %Data.Save{stats: %{health: 50, strength: 10, dexterity: 10}}}
 
@@ -52,17 +49,11 @@ defmodule Data.Save do
   @spec load(save :: map) :: {:ok, Data.Save.t}
   def load(save) do
     save = for {key, val} <- save, into: %{}, do: {String.to_atom(key), val}
-    save = atomize_class(save)
     save = atomize_stats(save)
     save = atomize_wearing(save)
     save = atomize_wielding(save)
     {:ok, struct(__MODULE__, save)}
   end
-
-  defp atomize_class(save = %{class: class}) do
-    %{save | class: String.to_atom(class)}
-  end
-  defp atomize_class(save), do: save
 
   defp atomize_stats(save = %{stats: stats}) when stats != nil do
     stats = for {key, val} <- stats, into: %{}, do: {String.to_atom(key), val}
@@ -89,7 +80,7 @@ defmodule Data.Save do
   Validate a save struct
 
       iex> stats = %{health: 50, strength: 10, dexterity: 10}
-      iex> Data.Save.valid?(%Data.Save{room_id: 1, class: Game.Class.Fighter, item_ids: [], wearing: %{}, wielding: %{}, stats: stats})
+      iex> Data.Save.valid?(%Data.Save{room_id: 1, item_ids: [], wearing: %{}, wielding: %{}, stats: stats})
       true
 
       iex> Data.Save.valid?(%Data.Save{room_id: 1, class: "fighter", item_ids: [], wearing: %{}, wielding: %{}})
@@ -100,28 +91,12 @@ defmodule Data.Save do
   """
   @spec valid?(save :: Save.t) :: boolean
   def valid?(save) do
-    keys(save) == [:class, :item_ids, :room_id, :stats, :wearing, :wielding]
-      && valid_class?(save)
+    keys(save) == [:item_ids, :room_id, :stats, :wearing, :wielding]
       && valid_stats?(save)
       && valid_item_ids?(save)
       && valid_room_id?(save)
       && valid_wearing?(save)
       && valid_wielding?(save)
-  end
-
-  @doc """
-  Validate class is correct
-
-      iex> Data.Save.valid_class?(%{class: Game.Class.Fighter})
-      true
-
-      iex> Data.Save.valid_class?(%{class: :anything})
-      false
-  """
-  @spec valid_class?(save :: Save.t) :: boolean
-  def valid_class?(save)
-  def valid_class?(%{class: class}) do
-    class in Game.Class.classes()
   end
 
   @doc """

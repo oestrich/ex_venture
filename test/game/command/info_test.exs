@@ -11,7 +11,7 @@ defmodule Game.Command.InfoTest do
   end
 
   test "view room information", %{session: session, socket: socket} do
-    user = %{name: "hero", save: base_save()}
+    user = %{name: "hero", save: base_save(), class: %{name: "Fighter"}}
     Command.Info.run({}, session, %{socket: socket, user: user})
 
     [{^socket, look}] = @socket.get_echos()
