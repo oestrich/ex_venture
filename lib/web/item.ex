@@ -3,8 +3,6 @@ defmodule Web.Item do
   Bounded context for the Phoenix app talking to the data layer
   """
 
-  import Ecto.Query
-
   alias Data.Item
   alias Data.Repo
 
