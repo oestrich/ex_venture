@@ -1,4 +1,8 @@
 defmodule Data.Class do
+  @moduledoc """
+  Class schema
+  """
+
   use Data.Schema
 
   alias Data.Stats
