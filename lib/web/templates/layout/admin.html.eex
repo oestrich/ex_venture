@@ -38,6 +38,11 @@
                 <i class="fa fa-flag"></i> Zones
               <% end %>
             </li>
+            <li>
+              <%= link(to: item_path(@conn, :index)) do %>
+                <i class="fa fa-archive"></i> Items
+              <% end %>
+            </li>
           </ul>
         </section>
       </aside>
