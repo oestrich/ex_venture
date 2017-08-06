@@ -1,7 +1,5 @@
 defmodule Web.Admin.ZoneController do
-  use Web, :controller
-
-  plug :put_layout, "admin.html"
+  use Web.AdminController
 
   alias Web.Zone
 

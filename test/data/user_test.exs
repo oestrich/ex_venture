@@ -28,4 +28,9 @@ defmodule Data.UserTest do
     changeset = %User{} |> User.changeset(%{})
     assert changeset.changes.flags == []
   end
+
+  test "ensures token exists" do
+    changeset = %User{} |> User.changeset(%{})
+    refute is_nil(changeset.changes.token)
+  end
 end

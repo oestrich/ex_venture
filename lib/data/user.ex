@@ -18,6 +18,7 @@ defmodule Data.User do
     field :password_hash, :string
     field :save, Data.Save
     field :flags, {:array, :string}
+    field :token, Ecto.UUID
 
     timestamps()
   end
@@ -28,6 +29,7 @@ defmodule Data.User do
     |> validate_required([:name, :save])
     |> validate_save()
     |> ensure_flags()
+    |> ensure_token()
     |> hash_password
     |> validate_required([:password_hash])
     |> unique_constraint(:name)
@@ -62,6 +64,14 @@ defmodule Data.User do
       %{changes: %{flags: _ids}} -> changeset
       %{data: %{flags: ids}} when ids != nil -> changeset
       _ -> put_change(changeset, :flags, [])
+    end
+  end
+
+  defp ensure_token(changeset) do
+    case changeset do
+      %{changes: %{token: _token}} -> changeset
+      %{data: %{token: token}} when token != nil -> changeset
+      _ -> put_change(changeset, :token, UUID.uuid4())
     end
   end
 end

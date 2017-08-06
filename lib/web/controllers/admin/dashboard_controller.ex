@@ -1,7 +1,5 @@
 defmodule Web.Admin.DashboardController do
-  use Web, :controller
-
-  plug :put_layout, "admin.html"
+  use Web.AdminController
 
   def index(conn, _params) do
     conn |> render("index.html")

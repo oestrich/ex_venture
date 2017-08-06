@@ -60,6 +60,7 @@ defmodule ExVenture.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},
+      {:uuid, "~> 1.1"},
       {:yaml_elixir, "~> 1.3"},
     ]
   end
