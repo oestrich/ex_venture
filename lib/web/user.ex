@@ -1,4 +1,8 @@
 defmodule Web.User do
+  @moduledoc """
+  Bounded context for the Phoenix app talking to the data layer
+  """
+
   import Ecto.Query
 
   alias Data.User
