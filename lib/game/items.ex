@@ -30,4 +30,20 @@ defmodule Game.Items do
       |> Enum.reject(&is_nil/1)
     end)
   end
+
+  @doc """
+  Insert a new item into the loaded data
+  """
+  @spec insert(item :: Item.t) :: :ok
+  def insert(item) do
+    Agent.update(__MODULE__, fn (items) ->
+      Map.put(items, item.id, item)
+    end)
+  end
+
+  @doc """
+  Trigger an item reload
+  """
+  @spec reload(item :: Item.t) :: :ok
+  def reload(item), do: insert(item)
 end
