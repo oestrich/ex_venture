@@ -22,7 +22,9 @@ defmodule Web.Admin.ItemController do
   def update(conn, %{"id" => id, "item" => params}) do
     case Item.update(id, params) do
       {:ok, item} -> conn |> redirect(to: item_path(conn, :show, item.id))
-      {:error, changeset} -> conn |> render("edit.html", changeset: changeset)
+      {:error, changeset} ->
+        item = Item.get(id)
+        conn |> render("edit.html", item: item, changeset: changeset)
     end
   end
 
