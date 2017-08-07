@@ -55,6 +55,7 @@ defmodule ExVenture.Mixfile do
       {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:phoenix, "~> 1.3.0"},
+      {:phoenix_ecto, "~> 3.0"},
       {:phoenix_html, "~> 2.10"},
       {:poison, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},

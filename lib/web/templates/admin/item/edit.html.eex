@@ -1,0 +1,39 @@
+<section class="content-header">
+  <h1>
+    <%= @item.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Edit</h3>
+        </div>
+        <%= form_for @changeset, item_path(@conn, :update, @item.id), fn (f) -> %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label f, :name %>
+              <%= text_input f, :name, class: "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <%= label f, :description %>
+              <%= textarea f, :description, class: "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <%= label f, :keywords %>
+              <%= text_input f, :keywords, value: @item.keywords |> keywords(), class: "form-control" %>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Update", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
