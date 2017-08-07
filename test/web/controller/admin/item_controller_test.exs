@@ -8,6 +8,19 @@ defmodule Web.Admin.ItemControllerTest do
     %{item: item}
   end
 
+  test "create an item", %{conn: conn} do
+    item = %{
+      type: "armor",
+      name: "Helmet",
+      description: "A helmet",
+      stats: ~s({"slot":"head"}),
+      keywords: "helmet",
+    }
+
+    conn = post conn, item_path(conn, :create), item: item
+    assert html_response(conn, 302)
+  end
+
   test "update an item", %{conn: conn, item: item} do
     conn = put conn, item_path(conn, :update, item.id), item: %{name: "Short Sword", keywords: "sword, short"}
     assert redirected_to(conn) == item_path(conn, :show, item.id)

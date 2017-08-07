@@ -46,7 +46,7 @@ defmodule Data.Stats do
   Slots on a character
   """
   @spec slots() :: [atom]
-  def slots(), do: [:chest]
+  def slots(), do: [:chest, :head]
 
   @doc """
   Validate a character's stats

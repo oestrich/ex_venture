@@ -27,7 +27,7 @@
               </tr>
               <tr>
                 <th>Keywords</th>
-                <td><%= @item.keywords |> keywords() %></td>
+                <td><%= @item |> keywords() %></td>
               </tr>
               <tr>
                 <th>Effects</th>

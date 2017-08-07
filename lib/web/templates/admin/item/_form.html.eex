@@ -1,0 +1,39 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label f, :type %>
+        <%= select f, :type, types(), class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :name %>
+        <%= text_input f, :name, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :description %>
+        <%= textarea f, :description, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :keywords %>
+        <%= text_input f, :keywords, value: @changeset.data |> keywords(), class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :stats %>
+        <%= textarea f, :stats, value: @changeset.data |> stats(), class: "form-control" %>
+        <span class="help-block">Enter in valid JSON</span>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

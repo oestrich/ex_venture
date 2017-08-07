@@ -28,6 +28,12 @@ defmodule Data.Item do
     timestamps()
   end
 
+  @doc """
+  List out item types
+  """
+  @spec types() :: [String.t]
+  def types(), do: @types
+
   def changeset(struct, params) do
     struct
     |> cast(params, [:name, :description, :type, :keywords, :stats, :effects])

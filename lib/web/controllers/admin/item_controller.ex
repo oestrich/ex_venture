@@ -25,4 +25,16 @@ defmodule Web.Admin.ItemController do
       {:error, changeset} -> conn |> render("edit.html", changeset: changeset)
     end
   end
+
+  def new(conn, _params) do
+    changeset = Item.new()
+    conn |> render("new.html", changeset: changeset)
+  end
+
+  def create(conn, %{"item" => params}) do
+    case Item.create(params) do
+      {:ok, item} -> conn |> redirect(to: item_path(conn, :show, item.id))
+      {:error, changeset} -> conn |> render("new.html", changeset: changeset)
+    end
+  end
 end

@@ -24,7 +24,7 @@ defmodule Web.Router do
 
     get "/", DashboardController, :index
 
-    resources "/items", ItemController, only: [:index, :show, :edit, :update]
+    resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create]
 
     resources "/rooms", RoomController, only: [:show]
 
