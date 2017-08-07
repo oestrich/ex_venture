@@ -30,6 +30,10 @@
                 <td><%= @item |> keywords() %></td>
               </tr>
               <tr>
+                <th>Stats</th>
+                <td><%= @item |> stats() %></td>
+              </tr>
+              <tr>
                 <th>Effects</th>
                 <td>
                   <ul>
