@@ -6,6 +6,7 @@ alias Data.Item
 alias Data.NPC
 alias Data.Room
 alias Data.RoomItem
+alias Data.Skill
 alias Data.User
 alias Data.Zone
 
@@ -65,7 +66,13 @@ defmodule Helpers do
   def create_class(attributes) do
     %Class{}
     |> Class.changeset(attributes)
-    |> Repo.insert!
+    |> Repo.insert
+  end
+
+  def create_skill(class, attributes) do
+    %Skill{}
+    |> Skill.changeset(Map.merge(attributes, %{class_id: class.id}))
+    |> Repo.insert
   end
 end
 
@@ -169,7 +176,7 @@ defmodule Seeds do
     {:ok, _starting_save} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
 
-    fighter = create_class(%{
+    {:ok, fighter} = create_class(%{
       name: "Fighter",
       description: "Uses strength and swords to overcome.",
       starting_stats: %{
@@ -178,6 +185,8 @@ defmodule Seeds do
         dexterity: 10,
       },
     })
+    fighter
+    |> create_skill(%{name: "Slash", description: "You slash at your {target}", command: "slash", effects: []})
 
     _mage = create_class(%{
       name: "Mage",
