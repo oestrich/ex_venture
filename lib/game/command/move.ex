@@ -85,7 +85,10 @@ defmodule Game.Command.Move do
     @room.leave(save.room_id, {:user, session, user})
 
     save = %{save | room_id: room_id}
-    state = %{state | save: save, last_move: Timex.now()}
+    state = state
+    |> Map.put(:save, save)
+    |> Map.put(:last_move, Timex.now())
+    |> Map.put(:target, nil)
 
     @room.enter(room_id, {:user, session, user})
 

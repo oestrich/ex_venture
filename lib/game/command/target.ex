@@ -22,7 +22,7 @@ defmodule Game.Command.Target do
     room = @room.look(room_id)
     case find_target(target, room.players, room.npcs) do
       nil ->
-        socket |> @socket.echo(~s(Could not find target "#{target}"))
+        socket |> @socket.echo(~s(Could not find target "#{target}".))
         :ok
       {:npc, %{id: id, name: name}} ->
         socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
@@ -44,7 +44,7 @@ defmodule Game.Command.Target do
   @spec display_target(socket :: pid, target :: {atom, map}, room :: map) :: :ok
   def display_target(socket, target, room)
   def display_target(socket, nil, _room) do
-    socket |> @socket.echo("You don't have a target")
+    socket |> @socket.echo("You don't have a target.")
   end
   def display_target(socket, {:npc, npc_id}, room) do
     case Enum.find(room.npcs, &(&1.id == npc_id)) do

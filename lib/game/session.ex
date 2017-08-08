@@ -76,7 +76,7 @@ defmodule Game.Session do
     socket |> Session.Login.start()
     self() |> schedule_inactive_check()
     last_tick = Timex.now() |> Timex.shift(minutes: -2)
-    {:ok, %{socket: socket, state: "login", last_move: Timex.now(), last_recv: Timex.now(), last_tick: last_tick}}
+    {:ok, %{socket: socket, state: "login", last_move: Timex.now(), last_recv: Timex.now(), last_tick: last_tick, target: nil}}
   end
 
   # On a disconnect unregister the PID and stop the server

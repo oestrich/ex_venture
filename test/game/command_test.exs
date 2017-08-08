@@ -226,5 +226,11 @@ defmodule CommandTest do
       @room.set_room(%Data.Room{west_id: nil})
       :ok = Command.run({Command.Move, {:west}}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
+
+    test "clears the target after moving", %{session: session, state: state} do
+      @room.set_room(%Data.Room{name: "", description: "", north_id: 2, players: []})
+      {:update, state} = Command.run({Command.Move, {:north}}, session, Map.merge(state, %{save: %{room_id: 1}, target: {:user, 1}}))
+      assert state.target == nil
+    end
   end
 end
