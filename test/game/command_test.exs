@@ -94,6 +94,11 @@ defmodule CommandTest do
     test "remove" do
       assert Command.parse("remove chest") == {Command.Wear, {:remove, "chest"}}
     end
+
+    test "target" do
+      assert Command.parse("target mob") == {Command.Target, {"mob"}}
+      assert Command.parse("target") == {Command.Target, {}}
+    end
   end
 
   describe "quitting" do
