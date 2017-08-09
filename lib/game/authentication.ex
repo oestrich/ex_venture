@@ -14,7 +14,7 @@ defmodule Game.Authentication do
   def find_and_validate(name, password) do
     user = User
     |> where([u], u.name == ^name)
-    |> preload([:class])
+    |> preload([class: [:skills]])
     |> Repo.one
     _find_and_validate(user, password)
   end

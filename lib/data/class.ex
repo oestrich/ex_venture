@@ -11,6 +11,8 @@ defmodule Data.Class do
     field :name, :string
     field :description, :string
     field :starting_stats, Stats
+
+    has_many :skills, Data.Skill
   end
 
   def changeset(struct, params) do
