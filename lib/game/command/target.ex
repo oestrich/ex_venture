@@ -5,6 +5,8 @@ defmodule Game.Command.Target do
 
   use Game.Command
 
+  alias Game.Character
+
   @commands ["target"]
 
   @short_help "Target an enemy"
@@ -18,16 +20,18 @@ defmodule Game.Command.Target do
   Target an enemy
   """
   def run(command, _session, state)
-  def run({target}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({target}, _session, state = %{socket: socket, user: user, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_target(target, room.players, room.npcs) do
       nil ->
         socket |> @socket.echo(~s(Could not find target "#{target}".))
         :ok
       {:npc, %{id: id, name: name}} ->
+        Character.being_targeted({:npc, id}, user)
         socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
         {:update, Map.put(state, :target, {:npc, id})}
       {:user, %{id: id, name: name}} ->
+        Character.being_targeted({:user, id}, user)
         socket |> @socket.echo("You are now targeting {blue}#{name}{/blue}.")
         {:update, Map.put(state, :target, {:user, id})}
     end

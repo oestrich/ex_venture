@@ -14,27 +14,28 @@ defmodule Game.Command.TargetTest do
 
     @room.set_room(room)
     @socket.clear_messages
-    {:ok, %{session: :session, socket: :socket}}
+
+    {:ok, %{session: :session, socket: :socket, user: :user}}
   end
 
-  test "set your target from someone in the room", %{session: session, socket: socket} do
-    {:update, state} = Game.Command.Target.run({"bandit"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "set your target from someone in the room", %{session: session, socket: socket, user: user} do
+    {:update, state} = Game.Command.Target.run({"bandit"}, session, %{socket: socket, user: user, save: %{room_id: 1}})
 
     assert state.target == {:npc, 1}
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look) 
   end
 
-  test "targeting another player", %{session: session, socket: socket} do
-    {:update, state} = Game.Command.Target.run({"player"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "targeting another player", %{session: session, socket: socket, user: user} do
+    {:update, state} = Game.Command.Target.run({"player"}, session, %{socket: socket, user: user, save: %{room_id: 1}})
 
     assert state.target == {:user, 2}
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look) 
   end
 
-  test "target not found", %{session: session, socket: socket} do
-    :ok = Game.Command.Target.run({"unknown"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "target not found", %{session: session, socket: socket, user: user} do
+    :ok = Game.Command.Target.run({"unknown"}, session, %{socket: socket, user: user, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(not find), look) 

@@ -63,6 +63,10 @@ defmodule Game.NPC do
     end
     {:noreply, state}
   end
+  def handle_cast({:targeted, player}, state = %{npc: npc}) do
+    npc.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
+    {:noreply, state}
+  end
 
   defp message(%{hostile: true}), do: "Die!"
   defp message(%{hostile: false}), do: "How are you?"

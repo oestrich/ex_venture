@@ -130,6 +130,15 @@ defmodule Game.Session do
     end
   end
 
+  #
+  # Character callbacks
+  #
+
+  def handle_cast({:targeted, player}, state) do
+    echo(self(), "You are being targeted by {blue}#{player.name}{/blue}.")
+    {:noreply, state}
+  end
+
   def handle_info(:inactive_check, state) do
     state |> check_for_inactive()
     {:noreply, state}
