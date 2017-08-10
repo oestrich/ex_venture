@@ -3,6 +3,7 @@ defmodule Game.Format do
   Format data into strings to send to the connected player
   """
 
+  alias Data.Class
   alias Data.Item
   alias Data.Room
   alias Data.User
@@ -269,5 +270,24 @@ Items: #{items(room)}
     Strength: #{stats.strength}
     Dexterity: #{stats.dexterity}
     """ |> String.trim
+  end
+
+  @doc """
+  Format skills
+
+      iex> skills = [%{name: "Slash", command: "slash", description: "Fight your foe"}]
+      iex> Game.Format.skills(%{name: "Fighter", skills: skills})
+      "Fighter\\nSlash (slash): Fight your foe\\n"
+  """
+  @spec skills(class :: Class.t) :: String.t
+  def skills(class)
+  def skills(%{name: name, skills: skills}) do
+    skills = skills
+    |> Enum.map(fn (skill) -> "#{skill.name} (#{skill.command}): #{skill.description}" end)
+
+    """
+    #{name}
+    #{skills}
+    """
   end
 end
