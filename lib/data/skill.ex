@@ -10,13 +10,16 @@ defmodule Data.Skill do
     field :description, :string
     field :command, :string
     field :effects, {:array, :string}
+    field :module_name, :string
+    field :code, :string
 
     belongs_to :class, Data.Class
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :command, :effects, :class_id])
-    |> validate_required([:name, :description, :command, :effects, :class_id])
+    |> cast(params, [:name, :description, :command, :effects, :class_id, :module_name, :code])
+    |> validate_required([:name, :description, :command, :effects, :class_id, :module_name, :code])
+    |> unique_constraint(:module_name, name: :skills_class_id_module_name_index)
   end
 end

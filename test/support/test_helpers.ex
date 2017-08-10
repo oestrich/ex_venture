@@ -87,6 +87,7 @@ defmodule TestHelpers do
         strength: 10,
         dexterity: 10,
       },
+      module_name: "Fighter#{UUID.uuid4}",
     }, attributes)
   end
 

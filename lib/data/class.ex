@@ -11,15 +11,17 @@ defmodule Data.Class do
     field :name, :string
     field :description, :string
     field :starting_stats, Stats
+    field :module_name, :string
 
     has_many :skills, Data.Skill
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :starting_stats])
-    |> validate_required([:name, :description, :starting_stats])
+    |> cast(params, [:name, :description, :starting_stats, :module_name])
+    |> validate_required([:name, :description, :starting_stats, :module_name])
     |> validate_stats()
+    |> unique_constraint(:module_name)
   end
 
   defp validate_stats(changeset) do

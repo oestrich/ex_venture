@@ -5,6 +5,7 @@ defmodule Game.Server do
 
   use GenServer
 
+  alias Game.Class
   alias Game.Session
   alias Game.Zone
 
@@ -24,6 +25,7 @@ defmodule Game.Server do
   @doc false
   def init(_) do
     :timer.send_interval(@tick_interval, :tick)
+    Class.compile_classes()
     {:ok, nil}
   end
 
