@@ -21,3 +21,4 @@ erl_crash.dump
 
 assets/node_modules/
 priv/static/
+.tool-versions
