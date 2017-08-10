@@ -184,17 +184,9 @@ defmodule Seeds do
         strength: 13,
         dexterity: 10,
       },
-      module_name: "Fighter",
     })
-
-    fighter |> create_skill(%{
-      name: "Slash",
-      description: "You slash at your {target}",
-      command: "slash",
-      effects: [],
-      module_name: "Slash",
-      code: "def run do\n\nend",
-    })
+    fighter
+    |> create_skill(%{name: "Slash", description: "You slash at your {target}", command: "slash", effects: []})
 
     _mage = create_class(%{
       name: "Mage",
@@ -204,7 +196,6 @@ defmodule Seeds do
         strength: 10,
         dexterity: 12,
       },
-      module_name: "Mage",
     })
 
     save = Config.starting_save()

@@ -20,7 +20,7 @@ defmodule Game.Session.CreateAccountTest do
   test "pick a class", %{socket: socket, class: fighter} do
     state = CreateAccount.process("fighter", :session, %{socket: socket, create: %{name: "user"}})
 
-    assert state.create.class == %{fighter | skills: []}
+    assert state.create.class == fighter
     assert @socket.get_prompts() == [{socket, "Password: "}]
   end
 
