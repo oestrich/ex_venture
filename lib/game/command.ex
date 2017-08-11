@@ -71,6 +71,7 @@ defmodule Game.Command do
   use Networking.Socket
   use Game.Room
 
+  alias Data.User
   alias Game.Command
 
   @commands [
@@ -88,25 +89,27 @@ defmodule Game.Command do
   @doc """
   Parse a string to turn into a command tuple
   """
-  @spec parse(command :: String.t) :: t
-  def parse(command) do
+  @spec parse(command :: String.t, user :: User.t) :: t
+  def parse(command, _user) do
     commands()
-    |> Enum.find(fn (module) ->
-      alias_found = module.aliases
-      |> Enum.any?(fn (alias_cmd) ->
-        # match an alias only if it's by itself or it won't match another similar command
-        # eg 'w' matching for 'west'
-        Regex.match?(~r(^#{alias_cmd}$), command) || Regex.match?(~r(^#{alias_cmd}[^\w]), command)
-      end)
-
-      command_found = module.commands
-      |> Enum.any?(fn (cmd) ->
-        Regex.match?(~r(^#{cmd}), command)
-      end)
-
-      command_found || alias_found
-    end)
+    |> Enum.find(&(module_parse_command(&1, command)))
     |> _parse(command)
+  end
+
+  defp module_parse_command(module, command) do
+    alias_found = module.aliases
+    |> Enum.any?(fn (alias_cmd) ->
+      # match an alias only if it's by itself or it won't match another similar command
+      # eg 'w' matching for 'west'
+      Regex.match?(~r(^#{alias_cmd}$), command) || Regex.match?(~r(^#{alias_cmd}[^\w]), command)
+    end)
+
+    command_found = module.commands
+    |> Enum.any?(fn (cmd) ->
+      Regex.match?(~r(^#{cmd}), command)
+    end)
+
+    command_found || alias_found
   end
 
   @doc """

@@ -15,89 +15,93 @@ defmodule CommandTest do
   end
 
   describe "parsing commands" do
-    test "command not found" do
-      assert Command.parse("does not exist") == {:error, :bad_parse}
+    setup do
+      %{user: :user}
     end
 
-    test "parsing say" do
-      assert Command.parse("say hello") == {Command.Say, {"hello"}}
+    test "command not found", %{user: user} do
+      assert Command.parse("does not exist", user) == {:error, :bad_parse}
     end
 
-    test "parsing global" do
-      assert Command.parse("global hello") == {Command.Global, {"hello"}}
+    test "parsing say", %{user: user} do
+      assert Command.parse("say hello", user) == {Command.Say, {"hello"}}
     end
 
-    test "parsing who is online" do
-      assert Command.parse("who") == {Command.Who, {}}
+    test "parsing global", %{user: user} do
+      assert Command.parse("global hello", user) == {Command.Global, {"hello"}}
     end
 
-    test "quitting" do
-      assert Command.parse("quit") == {Command.Quit, {}}
+    test "parsing who is online", %{user: user} do
+      assert Command.parse("who", user) == {Command.Who, {}}
     end
 
-    test "getting help" do
-      assert Command.parse("help") == {Command.Help, {}}
-      assert Command.parse("help topic") == {Command.Help, {"topic"}}
+    test "quitting", %{user: user} do
+      assert Command.parse("quit", user) == {Command.Quit, {}}
     end
 
-    test "looking" do
-      assert Command.parse("look") == {Command.Look, {}}
-      assert Command.parse("look at item") == {Command.Look, {"item"}}
-      assert Command.parse("look item") == {Command.Look, {"item"}}
+    test "getting help", %{user: user} do
+      assert Command.parse("help", user) == {Command.Help, {}}
+      assert Command.parse("help topic", user) == {Command.Help, {"topic"}}
     end
 
-    test "north" do
-      assert Command.parse("north") == {Command.Move, {:north}}
-      assert Command.parse("n") == {Command.Move, {:north}}
+    test "looking", %{user: user} do
+      assert Command.parse("look", user) == {Command.Look, {}}
+      assert Command.parse("look at item", user) == {Command.Look, {"item"}}
+      assert Command.parse("look item", user) == {Command.Look, {"item"}}
     end
 
-    test "east" do
-      assert Command.parse("east") == {Command.Move, {:east}}
-      assert Command.parse("e") == {Command.Move, {:east}}
+    test "north", %{user: user} do
+      assert Command.parse("north", user) == {Command.Move, {:north}}
+      assert Command.parse("n", user) == {Command.Move, {:north}}
     end
 
-    test "south" do
-      assert Command.parse("south") == {Command.Move, {:south}}
-      assert Command.parse("s") == {Command.Move, {:south}}
+    test "east", %{user: user} do
+      assert Command.parse("east", user) == {Command.Move, {:east}}
+      assert Command.parse("e", user) == {Command.Move, {:east}}
     end
 
-    test "west" do
-      assert Command.parse("west") == {Command.Move, {:west}}
-      assert Command.parse("w") == {Command.Move, {:west}}
+    test "south", %{user: user} do
+      assert Command.parse("south", user) == {Command.Move, {:south}}
+      assert Command.parse("s", user) == {Command.Move, {:south}}
     end
 
-    test "inventory" do
-      assert Command.parse("inventory") == {Command.Inventory, {}}
-      assert Command.parse("inv") == {Command.Inventory, {}}
+    test "west", %{user: user} do
+      assert Command.parse("west", user) == {Command.Move, {:west}}
+      assert Command.parse("w", user) == {Command.Move, {:west}}
     end
 
-    test "pick up something" do
-      assert Command.parse("pick up sword") == {Command.PickUp, {"sword"}}
+    test "inventory", %{user: user} do
+      assert Command.parse("inventory", user) == {Command.Inventory, {}}
+      assert Command.parse("inv", user) == {Command.Inventory, {}}
     end
 
-    test "info sheet" do
-      assert Command.parse("info") == {Command.Info, {}}
+    test "pick up something", %{user: user} do
+      assert Command.parse("pick up sword", user) == {Command.PickUp, {"sword"}}
     end
 
-    test "wield" do
-      assert Command.parse("wield sword") == {Command.Wield, {:wield, "sword"}}
+    test "info sheet", %{user: user} do
+      assert Command.parse("info", user) == {Command.Info, {}}
     end
 
-    test "unwield" do
-      assert Command.parse("unwield sword") == {Command.Wield, {:unwield, "sword"}}
+    test "wield", %{user: user} do
+      assert Command.parse("wield sword", user) == {Command.Wield, {:wield, "sword"}}
     end
 
-    test "wear" do
-      assert Command.parse("wear chest") == {Command.Wear, {:wear, "chest"}}
+    test "unwield", %{user: user} do
+      assert Command.parse("unwield sword", user) == {Command.Wield, {:unwield, "sword"}}
     end
 
-    test "remove" do
-      assert Command.parse("remove chest") == {Command.Wear, {:remove, "chest"}}
+    test "wear", %{user: user} do
+      assert Command.parse("wear chest", user) == {Command.Wear, {:wear, "chest"}}
     end
 
-    test "target" do
-      assert Command.parse("target mob") == {Command.Target, {"mob"}}
-      assert Command.parse("target") == {Command.Target, {}}
+    test "remove", %{user: user} do
+      assert Command.parse("remove chest", user) == {Command.Wear, {:remove, "chest"}}
+    end
+
+    test "target", %{user: user} do
+      assert Command.parse("target mob", user) == {Command.Target, {"mob"}}
+      assert Command.parse("target", user) == {Command.Target, {}}
     end
   end
 

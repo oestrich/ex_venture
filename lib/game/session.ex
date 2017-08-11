@@ -120,7 +120,7 @@ defmodule Game.Session do
   # Receives afterwards should forward the message to the other clients
   def handle_cast({:recv, message}, state = %{socket: socket, state: "active", user: user, save: save}) do
     state = Map.merge(state, %{last_recv: Timex.now()})
-    case message |> Command.parse |> Command.run(self(), state) do
+    case message |> Command.parse(user) |> Command.run(self(), state) do
       :ok ->
         socket |> @socket.prompt(Format.prompt(user, save))
         {:noreply, state}
