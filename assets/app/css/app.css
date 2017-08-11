@@ -21,6 +21,16 @@ input {
   margin: 10px;
 }
 
+@media only screen and (max-width: 500px) {
+  input {
+    width: 90%;
+  }
+
+  pre {
+    white-space: pre-wrap;
+  }
+}
+
 .black {
   color: #003541;
   font-weight: bold;
