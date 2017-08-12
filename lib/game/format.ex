@@ -290,4 +290,36 @@ Items: #{items(room)}
     #{skills}
     """
   end
+
+  @doc """
+  Format a skills description
+
+      iex> Game.Format.skill(%{description: "Slash away"}, {:npc, %{name: "Bandit"}})
+      "Slash away"
+
+      iex> Game.Format.skill(%{description: "You slash away at {target}"}, {:npc, %{name: "Bandit"}})
+      "You slash away at {yellow}Bandit{/yellow}"
+  """
+  def skill(skill, target)
+  def skill(%{description: description}, target) do
+    description
+    |> String.replace("{target}", target_name(target))
+  end
+
+  @doc """
+  Format a target name, blue for user, yellow for npc
+
+    iex> Game.Format.target_name({:user, %{name: "Player"}})
+    "{blue}Player{/blue}"
+
+    iex> Game.Format.target_name({:npc, %{name: "Bandit"}})
+    "{yellow}Bandit{/yellow}"
+  """
+  @spec target_name({atom, map}) :: String.t
+  def target_name({:npc, npc}) do
+    "{yellow}#{npc.name}{/yellow}"
+  end
+  def target_name({:user, user}) do
+    "{blue}#{user.name}{/blue}"
+  end
 end

@@ -16,7 +16,7 @@ defmodule CommandTest do
 
   describe "parsing commands" do
     setup do
-      %{user: :user}
+      %{user: %{class: %{skills: []}}}
     end
 
     test "command not found", %{user: user} do
@@ -102,6 +102,13 @@ defmodule CommandTest do
     test "target", %{user: user} do
       assert Command.parse("target mob", user) == {Command.Target, {"mob"}}
       assert Command.parse("target", user) == {Command.Target, {}}
+    end
+
+    test "parsing class skills", %{user: user} do
+      slash = %{command: "slash"}
+      user = %{user | class: %{skills: [slash]}}
+
+      assert Command.parse("slash", user) == {Command.Skills, {slash, "slash"}}
     end
   end
 

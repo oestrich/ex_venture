@@ -90,10 +90,20 @@ defmodule Game.Command do
   Parse a string to turn into a command tuple
   """
   @spec parse(command :: String.t, user :: User.t) :: t
-  def parse(command, _user) do
-    commands()
-    |> Enum.find(&(module_parse_command(&1, command)))
-    |> _parse(command)
+  def parse(command, user)
+  def parse(command, %{class: class}) do
+    class_skill = class.skills |> Enum.find(&(class_parse_command(&1, command)))
+    builtin = commands() |> Enum.find(&(module_parse_command(&1, command)))
+    case class_skill do
+      nil ->
+        builtin |> _parse(command)
+      _ ->
+        {Game.Command.Skills, {class_skill, command}}
+    end
+  end
+
+  defp class_parse_command(skill, command) do
+    Regex.match?(~r(^#{skill.command}), command)
   end
 
   defp module_parse_command(module, command) do

@@ -186,7 +186,7 @@ defmodule Seeds do
       },
     })
     fighter
-    |> create_skill(%{name: "Slash", description: "You slash at your {target}", command: "slash", effects: []})
+    |> create_skill(%{name: "Slash", description: "You slash at {target}.", command: "slash", effects: []})
 
     _mage = create_class(%{
       name: "Mage",

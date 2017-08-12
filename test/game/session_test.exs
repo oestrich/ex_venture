@@ -33,6 +33,7 @@ defmodule Game.SessionTest do
 
   test "recv'ing messages - after login processes commands", %{socket: socket} do
     user = create_user(%{name: "user", password: "password"})
+    |> Repo.preload([class: [:skills]])
 
     {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active", user: user, save: %{room_id: 1}})
 
