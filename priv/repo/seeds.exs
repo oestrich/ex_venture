@@ -152,7 +152,7 @@ defmodule Seeds do
       description: "A simple blade",
       type: "weapon",
       stats: %{},
-      effects: [%{kind: "damage", type: :slashing, amount: 10}],
+      effects: [],
       keywords: ["sword"],
     })
     entrance = entrance |> add_item_to_room(sword, %{interval: 15})
@@ -186,7 +186,12 @@ defmodule Seeds do
       },
     })
     fighter
-    |> create_skill(%{name: "Slash", description: "You slash at {target}.", command: "slash", effects: []})
+    |> create_skill(%{
+      name: "Slash",
+      description: "You slash at {target}.",
+      command: "slash",
+      effects: [%{kind: "damage", type: :slashing, amount: 10}],
+    })
 
     _mage = create_class(%{
       name: "Mage",

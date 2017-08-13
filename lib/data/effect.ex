@@ -1,6 +1,10 @@
 defmodule Data.Effect do
   @moduledoc """
   In game effects such as damage
+
+  Valid kinds of effects:
+
+  - "damage": Does an amount of damage
   """
 
   import Data.Type
