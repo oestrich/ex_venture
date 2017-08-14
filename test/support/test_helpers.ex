@@ -12,7 +12,12 @@ defmodule TestHelpers do
     %Data.Save{
       room_id: 1,
       item_ids: [],
-      stats: %{health: 50, strength: 10, dexterity: 10},
+      stats: %{
+        health: 50,
+        max_health: 50,
+        strength: 10,
+        dexterity: 10,
+      },
       wearing: %{},
       wielding: %{},
     }
@@ -84,6 +89,7 @@ defmodule TestHelpers do
       description: "A fighter",
       starting_stats: %{
         health: 25,
+        max_health: 25,
         strength: 10,
         dexterity: 10,
       },

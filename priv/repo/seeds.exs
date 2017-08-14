@@ -181,6 +181,7 @@ defmodule Seeds do
       description: "Uses strength and swords to overcome.",
       starting_stats: %{
         health: 25,
+        max_health: 25,
         strength: 13,
         dexterity: 10,
       },
@@ -198,6 +199,7 @@ defmodule Seeds do
       description: "Uses intelligence and magic to overcome.",
       starting_stats: %{
         health: 25,
+        max_health: 25,
         strength: 10,
         dexterity: 12,
       },

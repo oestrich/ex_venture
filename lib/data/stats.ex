@@ -7,6 +7,7 @@ defmodule Data.Stats do
 
   @type character :: %{
     health: integer,
+    max_health: integer,
     strength: integer,
     dexterity: integer,
   }
@@ -52,15 +53,15 @@ defmodule Data.Stats do
   Fields in the statistics map
   """
   @spec fields() :: [atom]
-  def fields(), do: [:dexterity, :health, :strength]
+  def fields(), do: [:dexterity, :health, :max_health, :strength]
 
   @doc """
   Validate a character's stats
 
-      iex> Data.Stats.valid_character?(%{health: 50, strength: 10, dexterity: 10})
+      iex> Data.Stats.valid_character?(%{health: 50, max_health: 50, strength: 10, dexterity: 10})
       true
 
-      iex> Data.Stats.valid_character?(%{health: 50, strength: 10, dexterity: :atom})
+      iex> Data.Stats.valid_character?(%{health: 50, max_health: 50, strength: 10, dexterity: :atom})
       false
 
       iex> Data.Stats.valid_character?(%{health: 50, strength: 10})

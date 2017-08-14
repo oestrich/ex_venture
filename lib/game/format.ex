@@ -27,13 +27,13 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.prompt(%{name: "user"}, %{stats: %{health: 50}})
-      "[50 hp] > "
+      iex> Game.Format.prompt(%{name: "user"}, %{stats: %{health: 50, max_health: 75}})
+      "[50/75 hp] > "
   """
   @spec prompt(user :: User.t, save :: Save.t) :: String.t
   def prompt(user, save)
   def prompt(_user, %{stats: stats}) do
-    "[#{stats.health} hp] > "
+    "[#{stats.health}/#{stats.max_health} hp] > "
   end
   def prompt(_user, _save), do: "> "
 
