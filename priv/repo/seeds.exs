@@ -161,7 +161,7 @@ defmodule Seeds do
       name: "Leather Armor",
       description: "A simple chestpiece made out of leather",
       type: "armor",
-      stats: %{slot: :chest},
+      stats: %{slot: :chest, armor: 5},
       effects: [],
       keywords: ["leather"],
     })

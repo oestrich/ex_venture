@@ -13,7 +13,7 @@ defmodule Web.Admin.ItemControllerTest do
       type: "armor",
       name: "Helmet",
       description: "A helmet",
-      stats: ~s({"slot":"head"}),
+      stats: ~s({"slot":"head","armor":10}),
       keywords: "helmet",
     }
 

@@ -80,10 +80,13 @@ defmodule Data.Stats do
   @doc """
   Validate an armor item
 
-      iex> Data.Stats.valid_armor?(%{slot: :chest})
+      iex> Data.Stats.valid_armor?(%{slot: :chest, armor: 10})
       true
 
-      iex> Data.Stats.valid_armor?(%{slot: :finger})
+      iex> Data.Stats.valid_armor?(%{slot: :chest, armor: :none})
+      false
+
+      iex> Data.Stats.valid_armor?(%{slot: :finger, armor: 10})
       false
 
       iex> Data.Stats.valid_armor?(%{})
@@ -91,7 +94,7 @@ defmodule Data.Stats do
   """
   @spec valid_armor?(stats :: Stats.armor) :: boolean
   def valid_armor?(stats) do
-    keys(stats) == [:slot] && valid_slot?(stats)
+    keys(stats) == [:armor, :slot] && valid_slot?(stats) && is_integer(stats.armor)
   end
 
   @doc """
