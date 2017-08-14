@@ -9,7 +9,9 @@ defmodule Game.Effect do
   @doc """
   Calculate effects based on the user
 
-      iex> Game.Effect.calculate(%{}, %{})
+  Filters out stat boosting effects, then deals with damage
+
+      iex> Game.Effect.calculate(%{}, [])
       []
 
       iex> Game.Effect.calculate(%{strength: 10}, [%{kind: "damage", type: :slashing, amount: 10}])
@@ -17,8 +19,13 @@ defmodule Game.Effect do
   """
   @spec calculate(stats :: Stats.t, effects :: [Effect.t]) :: [map]
   def calculate(stats, effects) do
-    effects
-    |> order_effects()
+    stat_effects = effects |> Enum.filter(&(&1.kind == "stats"))
+    other_effects = effects |> Enum.reject(&(&1.kind == "stats"))
+
+    stats = stat_effects
+    |> Enum.reduce(stats, fn (effect, stats) -> process_stats(effect, stats) end)
+
+    other_effects
     |> Enum.map(&(calculate_effect(&1, stats)))
   end
 
@@ -35,18 +42,19 @@ defmodule Game.Effect do
   def calculate_effect(effect = %{kind: "damage"}, stats) do
     strength_modifier = 1 + (stats.strength / 100.0)
     modified_amount = round(Float.ceil(effect.amount * strength_modifier))
-    effect
-    |> Map.put(:amount, modified_amount)
+    effect |> Map.put(:amount, modified_amount)
   end
 
-  @doc """
-  Order effects
 
-      iex> Game.Effect.order_effects([%{kind: "damage"}])
-      [%{kind: "damage"}]
+  @doc """
+  Process stats effects
+
+      iex> Game.Effect.process_stats(%{field: :strength, amount: 10}, %{strength: 10})
+      %{strength: 20}
   """
-  @spec order_effects(effects :: [Effect.t]) :: [Effect.t]
-  def order_effects(effects) do
-    effects
+  @spec process_stats(effect :: Effect.t, stats :: Stats.t) :: Stats.t
+  def process_stats(effect, stats)
+  def process_stats(%{field: field, amount: amount}, stats) do
+    stats |> Map.put(field, stats[field] + amount)
   end
 end

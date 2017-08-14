@@ -49,6 +49,12 @@ defmodule Data.Stats do
   def slots(), do: [:chest, :head]
 
   @doc """
+  Fields in the statistics map
+  """
+  @spec fields() :: [atom]
+  def fields(), do: [:dexterity, :health, :strength]
+
+  @doc """
   Validate a character's stats
 
       iex> Data.Stats.valid_character?(%{health: 50, strength: 10, dexterity: 10})
@@ -65,7 +71,7 @@ defmodule Data.Stats do
   """
   @spec valid_character?(stats :: Stats.character) :: boolean
   def valid_character?(stats) do
-    keys(stats) == [:dexterity, :health, :strength]
+    keys(stats) == fields()
       && is_integer(stats.dexterity)
       && is_integer(stats.health)
       && is_integer(stats.strength)
