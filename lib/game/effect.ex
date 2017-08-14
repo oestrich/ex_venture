@@ -19,13 +19,9 @@ defmodule Game.Effect do
   """
   @spec calculate(stats :: Stats.t, effects :: [Effect.t]) :: [map]
   def calculate(stats, effects) do
-    stat_effects = effects |> Enum.filter(&(&1.kind == "stats"))
-    other_effects = effects |> Enum.reject(&(&1.kind == "stats"))
-
+    {stat_effects, other_effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
     stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
-
-    other_effects
-    |> Enum.map(&(calculate_effect(&1, stats)))
+    other_effects |> Enum.map(&(calculate_effect(&1, stats)))
   end
 
   @doc """
