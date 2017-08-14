@@ -22,8 +22,7 @@ defmodule Game.Effect do
     stat_effects = effects |> Enum.filter(&(&1.kind == "stats"))
     other_effects = effects |> Enum.reject(&(&1.kind == "stats"))
 
-    stats = stat_effects
-    |> Enum.reduce(stats, fn (effect, stats) -> process_stats(effect, stats) end)
+    stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
 
     other_effects
     |> Enum.map(&(calculate_effect(&1, stats)))
