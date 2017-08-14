@@ -5,11 +5,13 @@ defmodule Data.Skill do
 
   use Data.Schema
 
+  import Data.Effect, only: [validate_effects: 1]
+
   schema "skills" do
     field :name, :string
     field :description, :string
     field :command, :string
-    field :effects, {:array, :string}
+    field :effects, {:array, Data.Effect}
 
     belongs_to :class, Data.Class
   end
@@ -18,5 +20,6 @@ defmodule Data.Skill do
     struct
     |> cast(params, [:name, :description, :command, :effects, :class_id])
     |> validate_required([:name, :description, :command, :effects, :class_id])
+    |> validate_effects()
   end
 end

@@ -5,8 +5,9 @@ defmodule Data.Item do
 
   use Data.Schema
 
+  import Data.Effect, only: [validate_effects: 1]
+
   alias Data.Stats
-  alias Data.Effect
 
   @type t :: %{
     name: String.t,
@@ -70,19 +71,4 @@ defmodule Data.Item do
 
   defp type_from_changeset(%{changes: %{type: type}}) when type != nil, do: type
   defp type_from_changeset(%{data: %{type: type}}), do: type
-
-  defp validate_effects(changeset) do
-    case changeset do
-      %{changes: %{effects: effects}} when effects != nil ->
-        _validate_effects(changeset)
-      _ -> changeset
-    end
-  end
-
-  defp _validate_effects(changeset = %{changes: %{effects: effects}}) do
-    case effects |> Enum.all?(&Effect.valid?/1) do
-      true -> changeset
-      false -> add_error(changeset, :effects, "are invalid")
-    end
-  end
 end

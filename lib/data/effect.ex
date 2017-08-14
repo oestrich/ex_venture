@@ -9,6 +9,9 @@ defmodule Data.Effect do
   """
 
   import Data.Type
+  import Ecto.Changeset
+
+  alias Data.Effect
 
   @type t :: map
 
@@ -114,4 +117,19 @@ defmodule Data.Effect do
     field in [:strength, :dexterity] && is_integer(amount)
   end
   def valid_stats?(_), do: false
+
+  def validate_effects(changeset) do
+    case changeset do
+      %{changes: %{effects: effects}} when effects != nil ->
+        _validate_effects(changeset)
+      _ -> changeset
+    end
+  end
+
+  defp _validate_effects(changeset = %{changes: %{effects: effects}}) do
+    case effects |> Enum.all?(&Effect.valid?/1) do
+      true -> changeset
+      false -> add_error(changeset, :effects, "are invalid")
+    end
+  end
 end
