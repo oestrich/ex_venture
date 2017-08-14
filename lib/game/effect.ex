@@ -40,7 +40,6 @@ defmodule Game.Effect do
     effect |> Map.put(:amount, modified_amount)
   end
 
-
   @doc """
   Process stats effects
 
@@ -52,4 +51,31 @@ defmodule Game.Effect do
   def process_stats(%{field: field, amount: amount}, stats) do
     stats |> Map.put(field, stats[field] + amount)
   end
+
+  @doc """
+  Apply effects to stats
+
+      iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
+      iex> Game.Effect.apply(effects, %{health: 25})
+      %{health: 15}
+  """
+  @spec apply(effects :: [Effect.t], stats :: Stats.t) :: Stats.t
+  def apply(effects, stats) do
+    effects |> Enum.reduce(stats, &apply_effect/2)
+  end
+
+  @doc """
+  Apply an effect to stats
+
+      iex> effect = %{kind: "damage", type: :slashing, amount: 10}
+      iex> Game.Effect.apply_effect(effect, %{health: 25})
+      %{health: 15}
+  """
+  @spec apply_effect(effect :: Effect.t, stats :: Stats.t) :: Stats.t
+  def apply_effect(effect, stats)
+  def apply_effect(effect = %{kind: "damage"}, stats) do
+    %{health: health} = stats
+    Map.put(stats, :health, health - effect.amount)
+  end
+  def apply_effect(_effect, stats), do: stats
 end
