@@ -68,14 +68,30 @@ defmodule Game.Session.Login do
         socket |> @socket.disconnect()
         state
       user ->
-        state = user |> login(session, socket, state |> Map.delete(:login))
-        socket |> @socket.prompt(Format.prompt(user, user.save))
-        state
+        user |> process_login(session, state)
     end
   end
   def process(message, _session, state = %{socket: socket}) do
     socket |> @socket.prompt("Password: ")
     socket |> @socket.tcp_option(:echo, false)
     Map.merge(state, %{login: %{name: message}})
+  end
+
+  defp process_login(user, session, state = %{socket: socket}) do
+    case already_signed_in?(user) do
+      true ->
+        socket |> @socket.echo("Sorry, this player is already logged in.")
+        socket |> @socket.disconnect()
+        state
+      false ->
+        state = user |> login(session, socket, state |> Map.delete(:login))
+        socket |> @socket.prompt(Format.prompt(user, user.save))
+        state
+    end
+  end
+
+  defp already_signed_in?(user) do
+    Session.Registry.connected_players()
+    |> Enum.any?(&(elem(&1, 1).id == user.id))
   end
 end

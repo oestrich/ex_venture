@@ -3,6 +3,7 @@ defmodule Game.Session.LoginTest do
   use Data.ModelCase
 
   alias Game.Session.Login
+  alias Game.Session.Registry
 
   @socket Test.Networking.Socket
 
@@ -44,5 +45,18 @@ defmodule Game.Session.LoginTest do
 
     assert state.state == "create"
     assert @socket.get_prompts() == [{socket, "Name: "}]
+  end
+
+  test "a session already exists", %{socket: socket} do
+    user = create_user(%{name: "user", password: "password", class_id: create_class().id})
+    Registry.register(user)
+
+    state = Login.process("password", :session, %{socket: socket, login: %{name: "user"}})
+
+    assert Map.has_key?(state, :user) == false
+    assert @socket.get_echos() == [{socket, "Sorry, this player is already logged in."}]
+    assert @socket.get_disconnects() == [socket]
+
+    Registry.unregister()
   end
 end
