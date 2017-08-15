@@ -4,6 +4,8 @@ defmodule Game.Command.Skills do
   """
 
   use Game.Command
+  alias Game.Effect
+  alias Game.Character
 
   @commands ["skills"]
 
@@ -25,13 +27,15 @@ defmodule Game.Command.Skills do
     socket |> @socket.echo("You don't have a target.")
     :ok
   end
-  def run({skill, _command}, _session, %{socket: socket, save: %{room_id: room_id}, target: target}) do
+  def run({skill, _command}, _session, %{socket: socket, user: user, save: %{room_id: room_id, stats: stats}, target: target}) do
     room = @room.look(room_id)
 
     case find_target(room, target) do
       nil ->
         socket |> @socket.echo("Your target could not be found.")
       target ->
+        effects = stats |> Effect.calculate(skill.effects)
+        Character.apply_effects(target, effects, {:user, user})
         socket |> @socket.echo(Format.skill(skill, target))
     end
 
@@ -47,10 +51,10 @@ defmodule Game.Command.Skills do
       iex> Game.Command.Skills.find_target(%{npcs: [%{id: 1, name: "Bandit"}]}, {:npc, 1})
       {:npc, %{id: 1, name: "Bandit"}}
 
-      iex> Game.Command.Skills.find_target(%{users: []}, {:user, 1})
+      iex> Game.Command.Skills.find_target(%{players: []}, {:user, 1})
       nil
 
-      iex> Game.Command.Skills.find_target(%{users: [%{id: 1, name: "Bandit"}]}, {:user, 1})
+      iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}]}, {:user, 1})
       {:user, %{id: 1, name: "Bandit"}}
   """
   @spec find_target(room :: Room.t, target :: {atom, integer}) :: {:npc, map} | {:user, map}
@@ -61,7 +65,7 @@ defmodule Game.Command.Skills do
       npc -> {:npc, npc}
     end
   end
-  def find_target(%{users: users}, {:user, id}) do
+  def find_target(%{players: users}, {:user, id}) do
     case Enum.find(users, &(&1.id == id)) do
       nil -> nil
       user -> {:user, user}

@@ -6,13 +6,26 @@ defmodule Game.Character do
   handle the following casts:
   
   - `{:targeted, player}`
+  - `{:apply_effects, effects, player}`
   """
 
   alias Data.User
   alias Game.Character.Via
 
   @spec being_targeted(who :: tuple, player :: User.t) :: :ok
-  def being_targeted(who, player) do
-    GenServer.cast({:via, Via, who}, {:targeted, player})
+  def being_targeted(target, player) do
+    GenServer.cast({:via, Via, who(target)}, {:targeted, player})
   end
+
+  @doc """
+  """
+  @spec apply_effects(who :: tuple, effects :: [Effect.t], from :: {atom, map}) :: :ok
+  def apply_effects(target, effects, from) do
+    GenServer.cast({:via, Via, who(target)}, {:apply_effects, effects, from})
+  end
+
+  defp who({:npc, id}) when is_integer(id), do: {:npc, id}
+  defp who({:npc, npc}), do: {:npc, npc.id}
+  defp who({:user, id}) when is_integer(id), do: {:user, id}
+  defp who({:user, user}), do: {:user, user.id}
 end

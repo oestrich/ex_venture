@@ -15,6 +15,7 @@ defmodule Game.Session do
 
   alias Game.Account
   alias Game.Command
+  alias Game.Effect
   alias Game.Format
   alias Game.Session
 
@@ -137,6 +138,13 @@ defmodule Game.Session do
   def handle_cast({:targeted, player}, state) do
     echo(self(), "You are being targeted by {blue}#{player.name}{/blue}.")
     {:noreply, state}
+  end
+
+  def handle_cast({:apply_effects, effects, from}, state = %{state: "active", save: save}) do
+    stats = effects |> Effect.apply(save.stats)
+    save = %{save | stats: stats}
+    echo(self(), "You were dealt damage from #{Format.target_name(from)}")
+    {:noreply, Map.put(state, :save, save)}
   end
 
   def handle_info(:inactive_check, state) do

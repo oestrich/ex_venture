@@ -59,4 +59,13 @@ defmodule Game.SessionTest do
     {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{user: %Data.User{name: "user"}, save: %{room_id: 1}})
     assert Registry.lookup(Session.Registry, "player") == []
   end
+
+  test "applying effects", %{socket: socket} do
+    effect = %{kind: "damage", type: :slashing, amount: 10}
+    stats = %{health: 25}
+    user = %{name: "user"}
+
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}}, %{socket: socket, state: "active", user: user, save: %{stats: stats}})
+    assert state.save.stats.health == 15
+  end
 end

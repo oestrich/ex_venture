@@ -144,8 +144,15 @@ defmodule Seeds do
     })
     shack = update_room(shack, %{east_id: forest_path.id})
 
-    entrance |> create_npc(%{name: "Bran", hostile: false})
-    great_room |> create_npc(%{name: "Bandit", hostile: true})
+    stats = %{
+      health: 25,
+      max_health: 25,
+      strength: 13,
+      dexterity: 10,
+    }
+
+    entrance |> create_npc(%{name: "Bran", hostile: false, stats: stats})
+    great_room |> create_npc(%{name: "Bandit", hostile: true, stats: stats})
 
     sword = create_item(%{
       name: "Short Sword",

@@ -9,6 +9,7 @@ defmodule Game.NPC do
   alias Data.Repo
   alias Data.NPC
 
+  alias Game.Effect
   alias Game.Message
 
   @doc """
@@ -66,6 +67,16 @@ defmodule Game.NPC do
   def handle_cast({:targeted, player}, state = %{npc: npc}) do
     npc.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
     {:noreply, state}
+  end
+  def handle_cast({:apply_effects, effects, _from}, state = %{npc: npc}) do
+    stats = effects |> Effect.apply(npc.stats)
+    case stats do
+      %{health: health} when health < 1 ->
+        npc.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
+      _ -> nil
+    end
+    npc = %{npc | stats: stats}
+    {:noreply, Map.put(state, :npc, npc)}
   end
 
   defp message(%{hostile: true}), do: "Die!"

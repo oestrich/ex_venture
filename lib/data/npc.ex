@@ -8,6 +8,7 @@ defmodule Data.NPC do
   schema "npcs" do
     field :name, :string
     field :hostile, :boolean
+    field :stats, Data.Stats
     
     belongs_to :room, Data.Room
 
@@ -16,7 +17,7 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :room_id, :hostile])
-    |> validate_required([:name, :room_id, :hostile])
+    |> cast(params, [:name, :room_id, :hostile, :stats])
+    |> validate_required([:name, :room_id, :hostile, :stats])
   end
 end
