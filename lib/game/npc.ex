@@ -68,7 +68,7 @@ defmodule Game.NPC do
     npc.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
     {:noreply, state}
   end
-  def handle_cast({:apply_effects, effects, _from}, state = %{npc: npc}) do
+  def handle_cast({:apply_effects, effects, _from, _description}, state = %{npc: npc}) do
     stats = effects |> Effect.apply(npc.stats)
     case stats do
       %{health: health} when health < 1 ->

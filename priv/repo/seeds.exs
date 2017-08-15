@@ -196,7 +196,9 @@ defmodule Seeds do
     fighter
     |> create_skill(%{
       name: "Slash",
-      description: "You slash at {target}.",
+      description: "Use your weapon to slash at your target",
+      user_text: "You slash at {target}.",
+      usee_text: "You were slashed at by {user}.",
       command: "slash",
       effects: [%{kind: "damage", type: :slashing, amount: 10}],
     })

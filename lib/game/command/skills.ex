@@ -35,8 +35,8 @@ defmodule Game.Command.Skills do
         socket |> @socket.echo("Your target could not be found.")
       target ->
         effects = stats |> Effect.calculate(skill.effects)
-        Character.apply_effects(target, effects, {:user, user})
-        socket |> @socket.echo(Format.skill(skill, target))
+        Character.apply_effects(target, effects, {:user, user}, Format.skill_usee(skill, {:user, user}))
+        socket |> @socket.echo(Format.skill_user(skill, target))
     end
 
     :ok

@@ -292,18 +292,31 @@ Items: #{items(room)}
   end
 
   @doc """
-  Format a skills description
+  Format a skill, from perspective of the user
 
-      iex> Game.Format.skill(%{description: "Slash away"}, {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_user(%{user_text: "Slash away"}, {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> Game.Format.skill(%{description: "You slash away at {target}"}, {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_user(%{user_text: "You slash away at {target}"}, {:npc, %{name: "Bandit"}})
       "You slash away at {yellow}Bandit{/yellow}"
   """
-  def skill(skill, target)
-  def skill(%{description: description}, target) do
-    description
-    |> String.replace("{target}", target_name(target))
+  def skill_user(skill, target)
+  def skill_user(%{user_text: user_text}, target) do
+    user_text |> String.replace("{target}", target_name(target))
+  end
+
+  @doc """
+  Format a skill, from the perspective of a usee
+
+      iex> Game.Format.skill_usee(%{usee_text: "Slash away"}, {:npc, %{name: "Bandit"}})
+      "Slash away"
+
+      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by {user}"}, {:npc, %{name: "Bandit"}})
+      "You were slashed at by {yellow}Bandit{/yellow}"
+  """
+  def skill_usee(skill, skill_user)
+  def skill_usee(%{usee_text: usee_text}, skill_user) do
+    usee_text |> String.replace("{user}", target_name(skill_user))
   end
 
   @doc """

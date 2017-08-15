@@ -65,7 +65,7 @@ defmodule Game.SessionTest do
     stats = %{health: 25}
     user = %{name: "user"}
 
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}}, %{socket: socket, state: "active", user: user, save: %{stats: stats}})
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, %{socket: socket, state: "active", user: user, save: %{stats: stats}})
     assert state.save.stats.health == 15
   end
 end

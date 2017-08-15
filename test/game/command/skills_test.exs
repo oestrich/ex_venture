@@ -16,8 +16,8 @@ defmodule Game.Command.SkillsTest do
     @room.set_room(room)
     @socket.clear_messages
 
-    slash = %{name: "Slash", command: "slash", description: "Slash at your {target}", effects: []}
-    user = %{id: 10, class: %{name: "Fighter", skills: [slash]}}
+    slash = %{name: "Slash", command: "slash", description: "Slash", user_text: "Slash at your {target}", usee_text: "You were slashed at", effects: []}
+    user = %{id: 10, name: "Player", class: %{name: "Fighter", skills: [slash]}}
     save = %{stats: %{strength: 10}}
     {:ok, %{session: :session, socket: :socket, user: user, save: save, slash: slash}}
   end

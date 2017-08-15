@@ -19,9 +19,9 @@ defmodule Game.Character do
 
   @doc """
   """
-  @spec apply_effects(who :: tuple, effects :: [Effect.t], from :: {atom, map}) :: :ok
-  def apply_effects(target, effects, from) do
-    GenServer.cast({:via, Via, who(target)}, {:apply_effects, effects, from})
+  @spec apply_effects(who :: tuple, effects :: [Effect.t], from :: {atom, map}, description :: String.t) :: :ok
+  def apply_effects(target, effects, from, description) do
+    GenServer.cast({:via, Via, who(target)}, {:apply_effects, effects, from, description})
   end
 
   defp who({:npc, id}) when is_integer(id), do: {:npc, id}

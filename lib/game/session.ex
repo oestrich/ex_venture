@@ -140,12 +140,16 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
-  def handle_cast({:apply_effects, effects, from}, state = %{state: "active", save: save}) do
+  def handle_cast({:apply_effects, effects, _from, description}, state = %{state: "active", save: save}) do
     stats = effects |> Effect.apply(save.stats)
     save = %{save | stats: stats}
-    echo(self(), "You were dealt damage from #{Format.target_name(from)}")
+    echo(self(), description)
     {:noreply, Map.put(state, :save, save)}
   end
+
+  #
+  # General callback
+  #
 
   def handle_info(:inactive_check, state) do
     state |> check_for_inactive()
