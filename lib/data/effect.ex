@@ -5,6 +5,7 @@ defmodule Data.Effect do
   Valid kinds of effects:
 
   - "damage": Does an amount of damage
+  - "damage/type": Halves damage if the type does not align
   - "stats": Modify base stats for the player
   """
 
@@ -12,12 +13,17 @@ defmodule Data.Effect do
   import Ecto.Changeset
 
   alias Data.Effect
+  alias Data.Stats
 
   @type t :: map
 
   @type damage :: %{
     type: atom,
     amount: integer,
+  }
+
+  @type damage_type :: %{
+    types: [atom],
   }
 
   @type stats :: %{
@@ -39,6 +45,9 @@ defmodule Data.Effect do
 
       iex> Data.Effect.load(%{"kind" => "damage", "type" => "slashing", "amount" => 10})
       {:ok, %{kind: "damage", type: :slashing, amount: 10}}
+
+      iex> Data.Effect.load(%{"kind" => "damage/type", "types" => ["slashing"]})
+      {:ok, %{kind: "damage/type", types: [:slashing]}}
   """
   def load(effect) do
     effect = for {key, val} <- effect, into: %{}, do: {String.to_atom(key), val}
@@ -48,6 +57,10 @@ defmodule Data.Effect do
 
   defp cast_vals("damage", effect) do
     effect |> Map.put(:type, String.to_atom(effect.type))
+  end
+  defp cast_vals("damage/type", effect) do
+    types = Enum.map(effect.types, &String.to_atom/1)
+    effect |> Map.put(:types, types)
   end
   defp cast_vals(_type, effect), do: effect
 
@@ -62,6 +75,11 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "damage", type: :slashing, amount: :invalid})
       false
 
+      iex> Data.Effect.valid?(%{kind: "damage/type", types: [:slashing]})
+      true
+      iex> Data.Effect.valid?(%{kind: "damage/type", types: [:something]})
+      false
+
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: 10})
       true
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: :invalid})
@@ -72,13 +90,16 @@ defmodule Data.Effect do
   def valid?(effect = %{kind: "damage"}) do
     keys(effect) == [:amount, :kind, :type] && valid_damage?(effect)
   end
+  def valid?(effect = %{kind: "damage/type"}) do
+    keys(effect) == [:kind, :types] && valid_damage_type?(effect)
+  end
   def valid?(effect = %{kind: "stats"}) do
     keys(effect) == [:amount, :field, :kind] && valid_stats?(effect)
   end
   def valid?(_), do: false
 
   @doc """
-  Validate if the damage type is right
+  Validate if damage is right
 
       iex> Data.Effect.valid_damage?(%{type: :slashing, amount: 10})
       true
@@ -95,6 +116,25 @@ defmodule Data.Effect do
     type in [:slashing, :piercing, :bludgeoning] && is_integer(amount)
   end
   def valid_damage?(_), do: false
+
+  @doc """
+  Validate if damage/type is right
+
+      iex> Data.Effect.valid_damage_type?(%{types: [:slashing]})
+      true
+
+      iex> Data.Effect.valid_damage_type?(%{types: [:anything]})
+      false
+
+      iex> Data.Effect.valid_damage_type?(%{types: :slashing})
+      false
+  """
+  @spec valid_damage_type?(effect :: Effect.t) :: boolean
+  def valid_damage_type?(effect)
+  def valid_damage_type?(%{types: types}) when is_list(types) do
+    Enum.all?(types, &(&1 in Stats.damage_types()))
+  end
+  def valid_damage_type?(_), do: false
 
   @doc """
   Validate if the stats type is right

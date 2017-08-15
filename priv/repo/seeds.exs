@@ -200,7 +200,10 @@ defmodule Seeds do
       user_text: "You slash at {target}.",
       usee_text: "You were slashed at by {user}.",
       command: "slash",
-      effects: [%{kind: "damage", type: :slashing, amount: 10}],
+      effects: [
+        %{kind: "damage", type: :slashing, amount: 10},
+        %{kind: "damage/type", types: [:slashing]},
+      ],
     })
 
     _mage = create_class(%{

@@ -19,25 +19,13 @@ defmodule Game.Effect do
   """
   @spec calculate(stats :: Stats.t, effects :: [Effect.t]) :: [map]
   def calculate(stats, effects) do
-    {stat_effects, other_effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
+    {stat_effects, effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
+    {damage_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage"))
+    {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
+
     stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
-    other_effects |> Enum.map(&(calculate_effect(&1, stats)))
-  end
-
-  @doc """
-  Calculate an effect
-
-  Damage:
-      iex> effect = %{kind: "damage", amount: 10, type: :slashing}
-      iex> Game.Effect.calculate_effect(effect, %{strength: 10})
-      %{kind: "damage", amount: 11, type: :slashing}
-  """
-  @spec calculate_effect(effect :: Effect.t, stats :: Stats.t) :: map
-  def calculate_effect(effect, stats)
-  def calculate_effect(effect = %{kind: "damage"}, stats) do
-    strength_modifier = 1 + (stats.strength / 100.0)
-    modified_amount = round(Float.ceil(effect.amount * strength_modifier))
-    effect |> Map.put(:amount, modified_amount)
+    damage = damage_effects |> Enum.map(&(calculate_damage(&1, stats)))
+    damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
   end
 
   @doc """
@@ -50,6 +38,44 @@ defmodule Game.Effect do
   def process_stats(effect, stats)
   def process_stats(%{field: field, amount: amount}, stats) do
     stats |> Map.put(field, stats[field] + amount)
+  end
+
+  @doc """
+  Calculate damage
+
+  Damage:
+      iex> effect = %{kind: "damage", amount: 10, type: :slashing}
+      iex> Game.Effect.calculate_damage(effect, %{strength: 10})
+      %{kind: "damage", amount: 11, type: :slashing}
+  """
+  @spec calculate_damage(effect :: Effect.t, stats :: Stats.t) :: map
+  def calculate_damage(effect, stats) do
+    strength_modifier = 1 + (stats.strength / 100.0)
+    modified_amount = round(Float.ceil(effect.amount * strength_modifier))
+    effect |> Map.put(:amount, modified_amount)
+  end
+
+  @doc """
+  Calculate damage type effects
+
+  Damage:
+      iex> effect = %{kind: "damage/type", types: [:slashing]}
+      iex> damage = %{kind: "damage", amount: 10, type: :bludgeoning}
+      iex> Game.Effect.calculate_damage_type(effect, [damage])
+      [%{kind: "damage", amount: 5, type: :bludgeoning}]
+  """
+  @spec calculate_damage_type(effect :: Effect.t, stats :: Stats.t) :: map
+  def calculate_damage_type(effect, damages) do
+    damages
+    |> Enum.map(fn (damage) ->
+      case damage.type in effect.types do
+        true ->
+          damage
+        false ->
+          amount = round(Float.ceil(damage.amount / 2.0))
+          %{damage | amount: amount}
+      end
+    end)
   end
 
   @doc """
