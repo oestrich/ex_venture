@@ -206,7 +206,7 @@ defmodule Seeds do
       ],
     })
 
-    _mage = create_class(%{
+    {:ok, mage} = create_class(%{
       name: "Mage",
       description: "Uses intelligence and magic to overcome.",
       starting_stats: %{
@@ -215,6 +215,18 @@ defmodule Seeds do
         strength: 10,
         dexterity: 12,
       },
+    })
+    mage
+    |> create_skill(%{
+      name: "Magic Missle",
+      description: "You shoot a bolt of arcane energy out of your hand",
+      user_text: "You shoot a bolt of arcane energy at {target}.",
+      usee_text: "{user} shoots a bolt of arcane energy at you.",
+      command: "magic missle",
+      effects: [
+        %{kind: "damage", type: :arcane, amount: 10},
+        %{kind: "damage/type", types: [:arcane]},
+      ],
     })
 
     save = Config.starting_save()

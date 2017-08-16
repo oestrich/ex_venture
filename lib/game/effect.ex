@@ -5,6 +5,7 @@ defmodule Game.Effect do
 
   alias Data.Effect
   alias Data.Stats
+  alias Data.Stats.Damage
 
   @doc """
   Calculate effects based on the user
@@ -43,16 +44,26 @@ defmodule Game.Effect do
   @doc """
   Calculate damage
 
-  Damage:
+  Physical:
       iex> effect = %{kind: "damage", amount: 10, type: :slashing}
       iex> Game.Effect.calculate_damage(effect, %{strength: 10})
       %{kind: "damage", amount: 11, type: :slashing}
+
+  Magical:
+      iex> effect = %{kind: "damage", amount: 10, type: :arcane}
+      iex> Game.Effect.calculate_damage(effect, %{strength: 10})
+      %{kind: "damage", amount: 10, type: :arcane}
   """
   @spec calculate_damage(effect :: Effect.t, stats :: Stats.t) :: map
   def calculate_damage(effect, stats) do
-    strength_modifier = 1 + (stats.strength / 100.0)
-    modified_amount = round(Float.ceil(effect.amount * strength_modifier))
-    effect |> Map.put(:amount, modified_amount)
+    case Damage.physical?(effect.type) do
+      true ->
+        strength_modifier = 1 + (stats.strength / 100.0)
+        modified_amount = round(Float.ceil(effect.amount * strength_modifier))
+        effect |> Map.put(:amount, modified_amount)
+      false ->
+        effect
+    end
   end
 
   @doc """

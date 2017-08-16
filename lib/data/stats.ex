@@ -5,6 +5,8 @@ defmodule Data.Stats do
 
   import Data.Type
 
+  alias Data.Stats.Damage
+
   @type character :: %{
     health: integer,
     max_health: integer,
@@ -54,12 +56,6 @@ defmodule Data.Stats do
   """
   @spec fields() :: [atom]
   def fields(), do: [:dexterity, :health, :max_health, :strength]
-
-  @doc """
-  Damage types
-  """
-  @spec damage_types() :: [atom]
-  def damage_types(), do: [:slashing, :piercing, :bludgeoning]
 
   @doc """
   Validate a character's stats
@@ -166,7 +162,7 @@ defmodule Data.Stats do
   @spec valid_damage?(stats :: Stats.t) :: boolean
   def valid_damage?(stats)
   def valid_damage?(%{damage_type: damage_type, damage: damage}) do
-    damage_type in damage_types() && is_integer(damage)
+    damage_type in Damage.types() && is_integer(damage)
   end
   def valid_damage?(_), do: false
 end

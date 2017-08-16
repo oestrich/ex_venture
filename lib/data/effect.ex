@@ -14,6 +14,7 @@ defmodule Data.Effect do
 
   alias Data.Effect
   alias Data.Stats
+  alias Data.Stats.Damage
 
   @type t :: map
 
@@ -113,7 +114,7 @@ defmodule Data.Effect do
   @spec valid_damage?(effect :: Effect.t) :: boolean
   def valid_damage?(effect)
   def valid_damage?(%{type: type, amount: amount}) do
-    type in [:slashing, :piercing, :bludgeoning] && is_integer(amount)
+    type in Damage.types() && is_integer(amount)
   end
   def valid_damage?(_), do: false
 
@@ -132,7 +133,7 @@ defmodule Data.Effect do
   @spec valid_damage_type?(effect :: Effect.t) :: boolean
   def valid_damage_type?(effect)
   def valid_damage_type?(%{types: types}) when is_list(types) do
-    Enum.all?(types, &(&1 in Stats.damage_types()))
+    Enum.all?(types, &(&1 in Damage.types()))
   end
   def valid_damage_type?(_), do: false
 
