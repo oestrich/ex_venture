@@ -49,6 +49,9 @@ defmodule Data.Effect do
 
       iex> Data.Effect.load(%{"kind" => "damage/type", "types" => ["slashing"]})
       {:ok, %{kind: "damage/type", types: [:slashing]}}
+
+      iex> Data.Effect.load(%{"kind" => "stats", "field" => "dexterity"})
+      {:ok, %{kind: "stats", field: :dexterity}}
   """
   def load(effect) do
     effect = for {key, val} <- effect, into: %{}, do: {String.to_atom(key), val}
@@ -62,6 +65,9 @@ defmodule Data.Effect do
   defp cast_vals("damage/type", effect) do
     types = Enum.map(effect.types, &String.to_atom/1)
     effect |> Map.put(:types, types)
+  end
+  defp cast_vals("stats", effect) do
+    effect |> Map.put(:field, String.to_atom(effect.field))
   end
   defp cast_vals(_type, effect), do: effect
 

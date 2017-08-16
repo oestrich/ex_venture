@@ -4,8 +4,10 @@ defmodule Game.Command.Skills do
   """
 
   use Game.Command
-  alias Game.Effect
+
   alias Game.Character
+  alias Game.Effect
+  alias Game.Item
 
   @commands ["skills"]
 
@@ -27,14 +29,17 @@ defmodule Game.Command.Skills do
     socket |> @socket.echo("You don't have a target.")
     :ok
   end
-  def run({skill, _command}, _session, %{socket: socket, user: user, save: %{room_id: room_id, stats: stats}, target: target}) do
+  def run({skill, _command}, _session, state = %{socket: socket, user: user, save: %{room_id: room_id, stats: stats}, target: target}) do
+    %{save: save} = state
+
     room = @room.look(room_id)
 
     case find_target(room, target) do
       nil ->
         socket |> @socket.echo("Your target could not be found.")
       target ->
-        effects = stats |> Effect.calculate(skill.effects)
+        wearing_effects = save |> Item.effects_from_wearing()
+        effects = stats |> Effect.calculate(wearing_effects ++ skill.effects)
         Character.apply_effects(target, effects, {:user, user}, Format.skill_usee(skill, {:user, user}))
         socket |> @socket.echo(Format.skill_user(skill, target))
     end

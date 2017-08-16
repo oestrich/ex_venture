@@ -18,7 +18,7 @@ defmodule Game.Command.SkillsTest do
 
     slash = %{name: "Slash", command: "slash", description: "Slash", user_text: "Slash at your {target}", usee_text: "You were slashed at", effects: []}
     user = %{id: 10, name: "Player", class: %{name: "Fighter", skills: [slash]}}
-    save = %{stats: %{strength: 10}}
+    save = %{stats: %{strength: 10}, wearing: %{}}
     {:ok, %{session: :session, socket: :socket, user: user, save: save, slash: slash}}
   end
 

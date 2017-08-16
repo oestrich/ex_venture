@@ -4,6 +4,7 @@ defmodule Game.Item do
   """
 
   alias Data.Item
+  alias Game.Items
 
   @doc """
   Determine if a lookup string matches the item
@@ -46,4 +47,13 @@ defmodule Game.Item do
   def find_item(items, item_name) do
     Enum.find(items, &(Game.Item.matches_lookup?(&1, item_name)))
   end
+
+  @doc """
+  Find all effects from what the player is wearing
+  """
+  @spec effects_from_wearing(save :: Save.t) :: [Effect.t]
+  def effects_from_wearing(%{wearing: wearing}) do
+    wearing |> Enum.flat_map(fn ({_slot, item_id}) -> Items.item(item_id).effects end)
+  end
+  def effects_from_wearing(_), do: []
 end

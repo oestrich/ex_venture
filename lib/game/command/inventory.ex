@@ -23,8 +23,8 @@ defmodule Game.Command.Inventory do
   def run(command, session, state)
   def run({}, _session, %{socket: socket, save: %{wearing: wearing, wielding: wielding, item_ids: item_ids}}) do
     wearing = wearing
-    |> Enum.reduce(%{}, fn ({hand, item_id}, wearing) ->
-      Map.put(wearing, hand, Items.item(item_id))
+    |> Enum.reduce(%{}, fn ({slot, item_id}, wearing) ->
+      Map.put(wearing, slot, Items.item(item_id))
     end)
 
     wielding = wielding
