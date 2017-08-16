@@ -5,8 +5,7 @@ defmodule Data.Item do
 
   use Data.Schema
 
-  import Data.Effect, only: [validate_effects: 1]
-
+  alias Data.Effect
   alias Data.Stats
 
   @type t :: %{
@@ -42,6 +41,7 @@ defmodule Data.Item do
     |> validate_required([:name, :description, :type, :keywords, :stats, :effects])
     |> validate_inclusion(:type, @types)
     |> validate_stats()
+    |> Effect.validate_effects()
     |> validate_effects()
   end
 
@@ -71,4 +71,19 @@ defmodule Data.Item do
 
   defp type_from_changeset(%{changes: %{type: type}}) when type != nil, do: type
   defp type_from_changeset(%{data: %{type: type}}), do: type
+
+  defp validate_effects(changeset) do
+    case changeset do
+      %{changes: %{effects: effects}} when effects != nil ->
+        _validate_effects(changeset)
+      _ -> changeset
+    end
+  end
+
+  defp _validate_effects(changeset = %{changes: %{effects: effects}}) do
+    case effects |> Enum.all?(&(&1.kind in ["damage", "stats"])) do
+      true -> changeset
+      false -> add_error(changeset, :effects, "can only include damage or stats effects")
+    end
+  end
 end

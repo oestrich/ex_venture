@@ -42,5 +42,16 @@ defmodule Data.ItemTest do
       changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}, %{kind: :damage}]})
       assert changeset.errors[:effects]
     end
+
+    test "must be a damage type" do
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}]})
+      refute changeset.errors[:effects]
+
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "stats", field: :strength, amount: 10}]})
+      refute changeset.errors[:effects]
+
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage/type", types: [:slashing]}]})
+      assert changeset.errors[:effects]
+    end
   end
 end
