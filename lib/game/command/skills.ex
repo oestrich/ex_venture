@@ -40,8 +40,8 @@ defmodule Game.Command.Skills do
       target ->
         wearing_effects = save |> Item.effects_from_wearing()
         effects = stats |> Effect.calculate(wearing_effects ++ skill.effects)
-        Character.apply_effects(target, effects, {:user, user}, Format.skill_usee(skill, {:user, user}))
-        socket |> @socket.echo(Format.skill_user(skill, target))
+        Character.apply_effects(target, effects, {:user, user}, skill.usee_text)
+        socket |> @socket.echo(Format.skill_user(skill, effects, target))
     end
 
     :ok

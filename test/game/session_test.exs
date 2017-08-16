@@ -67,5 +67,7 @@ defmodule Game.SessionTest do
 
     {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, %{socket: socket, state: "active", user: user, save: %{stats: stats}})
     assert state.save.stats.health == 15
+
+    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
   end
 end

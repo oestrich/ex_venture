@@ -228,11 +228,11 @@ defmodule Seeds do
     })
     mage
     |> create_skill(%{
-      name: "Magic Missle",
+      name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
       user_text: "You shoot a bolt of arcane energy at {target}.",
       usee_text: "{user} shoots a bolt of arcane energy at you.",
-      command: "magic missle",
+      command: "magic missile",
       effects: [
         %{kind: "damage", type: :arcane, amount: 10},
         %{kind: "damage/type", types: [:arcane]},

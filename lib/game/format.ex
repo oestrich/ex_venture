@@ -294,29 +294,36 @@ Items: #{items(room)}
   @doc """
   Format a skill, from perspective of the user
 
-      iex> Game.Format.skill_user(%{user_text: "Slash away"}, {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_user(%{user_text: "Slash away"}, [], {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> Game.Format.skill_user(%{user_text: "You slash away at {target}"}, {:npc, %{name: "Bandit"}})
-      "You slash away at {yellow}Bandit{/yellow}"
+      iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
+      iex> Game.Format.skill_user(%{user_text: "You slash away at {target}"}, effects, {:npc, %{name: "Bandit"}})
+      "You slash away at {yellow}Bandit{/yellow}\\n10 slashing damage is dealt."
   """
-  def skill_user(skill, target)
-  def skill_user(%{user_text: user_text}, target) do
-    user_text |> String.replace("{target}", target_name(target))
+  def skill_user(skill, effects, target)
+  def skill_user(%{user_text: user_text}, skill_effects, target) do
+    user_text = user_text |> String.replace("{target}", target_name(target))
+    [user_text | effects(skill_effects)] |> Enum.join("\n")
   end
 
   @doc """
   Format a skill, from the perspective of a usee
 
-      iex> Game.Format.skill_usee(%{usee_text: "Slash away"}, {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_usee(%{usee_text: "Slash away"}, [], {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by {user}"}, {:npc, %{name: "Bandit"}})
-      "You were slashed at by {yellow}Bandit{/yellow}"
+      iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
+      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by {user}"}, effects, {:npc, %{name: "Bandit"}})
+      "You were slashed at by {yellow}Bandit{/yellow}\\n10 slashing damage is dealt."
   """
-  def skill_usee(skill, skill_user)
-  def skill_usee(%{usee_text: usee_text}, skill_user) do
-    usee_text |> String.replace("{user}", target_name(skill_user))
+  def skill_usee(skill, skill_effects, skill_user)
+  def skill_usee(%{usee_text: usee_text}, skill_effects, skill_user) do
+    skill_usee(usee_text, skill_effects, skill_user)
+  end
+  def skill_usee(usee_text, skill_effects, skill_user) do
+    usee_text = usee_text |> String.replace("{user}", target_name(skill_user))
+    [usee_text | effects(skill_effects)] |> Enum.join("\n")
   end
 
   @doc """
@@ -334,5 +341,17 @@ Items: #{items(room)}
   end
   def target_name({:user, user}) do
     "{blue}#{user.name}{/blue}"
+  end
+
+  @doc """
+  Format effects for display.
+  """
+  def effects([]), do: []
+  def effects([effect | remaining]) do
+    case effect do
+      %{kind: "damage"} ->
+        ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
+      _ -> effects(remaining)
+    end
   end
 end

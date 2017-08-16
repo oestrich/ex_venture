@@ -140,10 +140,10 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
-  def handle_cast({:apply_effects, effects, _from, description}, state = %{state: "active", save: save}) do
+  def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active", save: save}) do
     stats = effects |> Effect.apply(save.stats)
     save = %{save | stats: stats}
-    echo(self(), description)
+    echo(self(), Format.skill_usee(description, effects, from))
     {:noreply, Map.put(state, :save, save)}
   end
 

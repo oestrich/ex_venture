@@ -7,7 +7,7 @@ defmodule Data.Stats.Damage do
   Damage types
   """
   @spec types() :: [atom]
-  def types(), do: [:slashing, :piercing, :bludgeoning]
+  def types(), do: [:arcane, :slashing, :piercing, :bludgeoning]
 
   @doc """
   Return true if type is physical in nature

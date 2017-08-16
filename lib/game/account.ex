@@ -21,7 +21,7 @@ defmodule Game.Account do
     |> Map.put(:save, save)
 
     case create_account(attributes) do
-      {:ok, user} -> {:ok, user |> Repo.preload([:class])}
+      {:ok, user} -> {:ok, user |> Repo.preload([class: :skills])}
       anything -> anything
     end
   end
