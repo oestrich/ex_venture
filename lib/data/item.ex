@@ -17,6 +17,12 @@ defmodule Data.Item do
 
   @types ["basic", "weapon", "armor"]
 
+  @valid_effects %{
+    "basic" => [],
+    "weapon" => ["damage", "stats"],
+    "armor" => ["stats"],
+  }
+
   schema "items" do
     field :name, :string
     field :description, :string
@@ -81,7 +87,8 @@ defmodule Data.Item do
   end
 
   defp _validate_effects(changeset = %{changes: %{effects: effects}}) do
-    case effects |> Enum.all?(&(&1.kind in ["damage", "stats"])) do
+    type = type_from_changeset(changeset)
+    case effects |> Enum.all?(&(&1.kind in @valid_effects[type])) do
       true -> changeset
       false -> add_error(changeset, :effects, "can only include damage or stats effects")
     end

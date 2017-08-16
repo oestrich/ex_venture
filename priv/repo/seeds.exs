@@ -174,6 +174,16 @@ defmodule Seeds do
     })
     entrance = entrance |> add_item_to_room(leather_armor, %{interval: 15})
 
+    elven_armor = create_item(%{
+      name: "Elven armor",
+      description: "An elven chest piece.",
+      type: "armor",
+      stats: %{slot: :chest, armor: 10},
+      effects: [%{kind: "stats", field: :dexterity, amount: 5}],
+      keywords: ["elven"],
+    })
+    entrance = entrance |> add_item_to_room(elven_armor, %{interval: 15})
+
     save =  %{
       room_id: entrance.id,
       item_ids: [sword.id],
