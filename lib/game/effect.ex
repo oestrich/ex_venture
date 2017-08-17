@@ -20,13 +20,28 @@ defmodule Game.Effect do
   """
   @spec calculate(stats :: Stats.t, effects :: [Effect.t]) :: [map]
   def calculate(stats, effects) do
-    {stat_effects, effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
-    {damage_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage"))
-    {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
+    {stats, effects} = stats |> calculate_stats(effects)
 
-    stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
+    {damage_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage"))
     damage = damage_effects |> Enum.map(&(calculate_damage(&1, stats)))
+
+    {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
     damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
+  end
+
+  @doc """
+  Calculate stats and return any effects that were not processed
+
+    iex> stats = %{strength: 10}
+    iex> effects = [%{kind: "stats", field: :strength, amount: 10}, %{kind: "damage"}]
+    iex> Game.Effect.calculate_stats(stats, effects)
+    {%{strength: 20}, [%{kind: "damage"}]}
+  """
+  @spec calculate_stats(stats :: Stats.t, effects :: [Effect.t]) :: Stats.t
+  def calculate_stats(stats, effects) do
+    {stat_effects, effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
+    stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
+    {stats, effects}
   end
 
   @doc """
