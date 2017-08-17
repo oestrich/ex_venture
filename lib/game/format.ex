@@ -8,6 +8,7 @@ defmodule Game.Format do
   alias Data.Room
   alias Data.User
   alias Data.Save
+  alias Data.Skill
 
   @doc """
   Format a global channel message
@@ -27,13 +28,14 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.prompt(%{name: "user"}, %{stats: %{health: 50, max_health: 75}})
-      "[50/75 hp] > "
+      iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10}
+      iex> Game.Format.prompt(%{name: "user"}, %{stats: stats})
+      "[50/75hp 9/10sp] > "
   """
   @spec prompt(user :: User.t, save :: Save.t) :: String.t
   def prompt(user, save)
   def prompt(_user, %{stats: stats}) do
-    "[#{stats.health}/#{stats.max_health} hp] > "
+    "[#{stats.health}/#{stats.max_health}hp #{stats.skill_points}/#{stats.max_skill_points}sp] > "
   end
   def prompt(_user, _save), do: "> "
 
@@ -275,20 +277,31 @@ Items: #{items(room)}
   @doc """
   Format skills
 
-      iex> skills = [%{name: "Slash", command: "slash", description: "Fight your foe"}]
+      iex> skills = [%{name: "Slash", points: 2, command: "slash", description: "Fight your foe"}]
       iex> Game.Format.skills(%{name: "Fighter", skills: skills})
-      "Fighter\\nSlash (slash): Fight your foe\\n"
+      "Fighter\\nSlash (slash) - 2SP - Fight your foe\\n"
   """
   @spec skills(class :: Class.t) :: String.t
   def skills(class)
   def skills(%{name: name, skills: skills}) do
-    skills = skills
-    |> Enum.map(fn (skill) -> "#{skill.name} (#{skill.command}): #{skill.description}" end)
+    skills = skills |> Enum.map(&skill/1)
 
     """
     #{name}
     #{skills}
     """
+  end
+
+  @doc """
+  Format a skill
+
+      iex> skill = %{name: "Slash", points: 2, command: "slash", description: "Fight your foe"}
+      iex> Game.Format.skill(skill)
+      "Slash (slash) - 2SP - Fight your foe"
+  """
+  @spec skill(skill :: Skill.t) :: String.t
+  def skill(skill) do
+    "#{skill.name} (#{skill.command}) - #{skill.points}SP - #{skill.description}"
   end
 
   @doc """

@@ -15,6 +15,8 @@ defmodule TestHelpers do
       stats: %{
         health: 50,
         max_health: 50,
+        skill_points: 50,
+        max_skill_points: 50,
         strength: 10,
         dexterity: 10,
       },
@@ -92,6 +94,8 @@ defmodule TestHelpers do
         max_health: 25,
         strength: 10,
         dexterity: 10,
+        skill_points: 10,
+        max_skill_points: 10,
       },
     }, attributes)
   end

@@ -16,17 +16,27 @@ defmodule Game.Command.SkillsTest do
     @room.set_room(room)
     @socket.clear_messages
 
-    slash = %{name: "Slash", command: "slash", description: "Slash", user_text: "Slash at your {target}", usee_text: "You were slashed at", effects: []}
+    slash = %{
+      name: "Slash",
+      points: 2,
+      command: "slash",
+      description: "Slash",
+      user_text: "Slash at your {target}",
+      usee_text: "You were slashed at",
+      effects: [],
+    }
+
     user = %{id: 10, name: "Player", class: %{name: "Fighter", skills: [slash]}}
     save = %{stats: %{strength: 10}, wearing: %{}}
     {:ok, %{session: :session, socket: :socket, user: user, save: save, slash: slash}}
   end
 
-  test "view room information", %{session: session, socket: socket, user: user} do
+  test "view skill information", %{session: session, socket: socket, user: user} do
     Command.Skills.run({}, session, %{socket: socket, user: user})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(slash), look)
+    assert Regex.match?(~r(2SP), look)
   end
 
   test "using a skill", %{session: session, socket: socket, user: user, save: save, slash: slash} do

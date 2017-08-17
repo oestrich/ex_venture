@@ -100,21 +100,21 @@ defmodule Seeds do
       description: "The hallway bends south, continuing sloping down.",
       east_id: hallway.id,
     })
-    hallway = update_room(hallway, %{west_id: hallway_turn.id})
+    _hallway = update_room(hallway, %{west_id: hallway_turn.id})
 
     hallway_south = create_room(bandit_hideout, %{
       name: "Hallway",
       description: "The south end of the hall has a wooden door embedded in the rock wall.",
       north_id: hallway_turn.id,
     })
-    hallway_turn = update_room(hallway_turn, %{south_id: hallway_south.id})
+    _hallway_turn = update_room(hallway_turn, %{south_id: hallway_south.id})
 
     great_room = create_room(bandit_hideout, %{
       name: "Great Room",
       description: "The great room of the bandit hideout. There are several tables along the walls with chairs pulled up. Cards are on the table along with mugs.",
       north_id: hallway_south.id,
     })
-    hallway_south = update_room(hallway_south, %{south_id: great_room.id})
+    _hallway_south = update_room(hallway_south, %{south_id: great_room.id})
 
     dorm = create_room(bandit_hideout, %{
       name: "Bedroom",
@@ -142,7 +142,7 @@ defmodule Seeds do
       description: "A small path that leads away from the village to the mountain",
       west_id: shack.id,
     })
-    shack = update_room(shack, %{east_id: forest_path.id})
+    _shack = update_room(shack, %{east_id: forest_path.id})
 
     stats = %{
       health: 25,
@@ -201,12 +201,15 @@ defmodule Seeds do
         max_health: 25,
         strength: 13,
         dexterity: 10,
+        skill_points: 10,
+        max_skill_points: 10,
       },
     })
     fighter
     |> create_skill(%{
       name: "Slash",
       description: "Use your weapon to slash at your target",
+      points: 1,
       user_text: "You slash at {target}.",
       usee_text: "You were slashed at by {user}.",
       command: "slash",
@@ -224,12 +227,15 @@ defmodule Seeds do
         max_health: 25,
         strength: 10,
         dexterity: 12,
+        skill_points: 10,
+        max_skill_points: 10,
       },
     })
     mage
     |> create_skill(%{
       name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
+      points: 1,
       user_text: "You shoot a bolt of arcane energy at {target}.",
       usee_text: "{user} shoots a bolt of arcane energy at you.",
       command: "magic missile",

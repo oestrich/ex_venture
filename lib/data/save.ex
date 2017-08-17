@@ -79,7 +79,7 @@ defmodule Data.Save do
   @doc """
   Validate a save struct
 
-      iex> stats = %{health: 50, max_health: 50, strength: 10, dexterity: 10}
+      iex> stats = %{health: 50, max_health: 50, strength: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
       iex> Data.Save.valid?(%Data.Save{room_id: 1, item_ids: [], wearing: %{}, wielding: %{}, stats: stats})
       true
 
@@ -102,7 +102,8 @@ defmodule Data.Save do
   @doc """
   Validate stats are correct
 
-      iex> Data.Save.valid_stats?(%{stats: %{health: 50, max_health: 50, strength: 10, dexterity: 10}})
+      iex> stats = %{health: 50, max_health: 50, strength: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
+      iex> Data.Save.valid_stats?(%{stats: stats})
       true
 
       iex> Data.Save.valid_stats?(%{stats: :anything})
