@@ -21,7 +21,10 @@ This will start a server on port 5555 that you can connect with using the `local
 Distillery is used to generate releases. Once a release is generated you can copy the tar file to the server and start it up.
 
 ```bash
+cd assets && node node_modules/brunch/bin/brunch build && cd ..
 MIX_ENV=prod mix compile
 MIX_ENV=prod mix phx.digest
 MIX_ENV=prod mix release
 ```
+
+The `release.sh` script will also do the same.
