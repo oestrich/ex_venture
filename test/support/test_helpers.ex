@@ -89,6 +89,8 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "Fighter",
       description: "A fighter",
+      points_name: "Skill Points",
+      points_abbreviation: "SP",
       starting_stats: %{
         health: 25,
         max_health: 25,

@@ -10,6 +10,8 @@ defmodule Data.Class do
   schema "classes" do
     field :name, :string
     field :description, :string
+    field :points_name, :string
+    field :points_abbreviation, :string
     field :starting_stats, Stats
 
     has_many :skills, Data.Skill
@@ -17,8 +19,8 @@ defmodule Data.Class do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :starting_stats])
-    |> validate_required([:name, :description, :starting_stats])
+    |> cast(params, [:name, :description, :points_name, :points_abbreviation, :starting_stats])
+    |> validate_required([:name, :description, :points_name, :points_abbreviation, :starting_stats])
     |> validate_stats()
   end
 

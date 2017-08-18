@@ -196,6 +196,8 @@ defmodule Seeds do
     {:ok, fighter} = create_class(%{
       name: "Fighter",
       description: "Uses strength and swords to overcome.",
+      points_name: "Skill Points",
+      points_abbreviation: "SP",
       starting_stats: %{
         health: 25,
         max_health: 25,
@@ -222,6 +224,8 @@ defmodule Seeds do
     {:ok, mage} = create_class(%{
       name: "Mage",
       description: "Uses intelligence and magic to overcome.",
+      points_name: "Mana",
+      points_abbreviation: "MP",
       starting_stats: %{
         health: 25,
         max_health: 25,
@@ -246,9 +250,9 @@ defmodule Seeds do
     })
 
     save = Config.starting_save()
-    |> Map.put(:stats, fighter.starting_stats())
+    |> Map.put(:stats, mage.starting_stats())
 
-    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"], class_id: fighter.id})
+    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"], class_id: mage.id})
   end
 end
 

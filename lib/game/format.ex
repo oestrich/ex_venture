@@ -28,14 +28,16 @@ defmodule Game.Format do
 
   Example:
 
+      iex> class = %{points_abbreviation: "SP"}
       iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10}
-      iex> Game.Format.prompt(%{name: "user"}, %{stats: stats})
+      iex> Game.Format.prompt(%{name: "user", class: class}, %{stats: stats})
       "[50/75hp 9/10sp] > "
   """
   @spec prompt(user :: User.t, save :: Save.t) :: String.t
   def prompt(user, save)
-  def prompt(_user, %{stats: stats}) do
-    "[#{stats.health}/#{stats.max_health}hp #{stats.skill_points}/#{stats.max_skill_points}sp] > "
+  def prompt(%{class: class}, %{stats: stats}) do
+    sp = class.points_abbreviation |> String.downcase
+    "[#{stats.health}/#{stats.max_health}hp #{stats.skill_points}/#{stats.max_skill_points}#{sp}] > "
   end
   def prompt(_user, _save), do: "> "
 
@@ -278,13 +280,13 @@ Items: #{items(room)}
   Format skills
 
       iex> skills = [%{name: "Slash", points: 2, command: "slash", description: "Fight your foe"}]
-      iex> Game.Format.skills(%{name: "Fighter", skills: skills})
-      "Fighter\\nSlash (slash) - 2SP - Fight your foe\\n"
+      iex> Game.Format.skills(%{name: "Fighter", points_abbreviation: "PP", skills: skills})
+      "Fighter\\nSlash (slash) - 2PP - Fight your foe\\n"
   """
   @spec skills(class :: Class.t) :: String.t
   def skills(class)
-  def skills(%{name: name, skills: skills}) do
-    skills = skills |> Enum.map(&skill/1)
+  def skills(%{name: name, points_abbreviation: points_abbreviation, skills: skills}) do
+    skills = skills |> Enum.map(&(skill(&1, points_abbreviation)))
 
     """
     #{name}
@@ -296,12 +298,12 @@ Items: #{items(room)}
   Format a skill
 
       iex> skill = %{name: "Slash", points: 2, command: "slash", description: "Fight your foe"}
-      iex> Game.Format.skill(skill)
-      "Slash (slash) - 2SP - Fight your foe"
+      iex> Game.Format.skill(skill, "PP")
+      "Slash (slash) - 2PP - Fight your foe"
   """
-  @spec skill(skill :: Skill.t) :: String.t
-  def skill(skill) do
-    "#{skill.name} (#{skill.command}) - #{skill.points}SP - #{skill.description}"
+  @spec skill(skill :: Skill.t, sp_name :: String.t) :: String.t
+  def skill(skill, sp_name) do
+    "#{skill.name} (#{skill.command}) - #{skill.points}#{sp_name} - #{skill.description}"
   end
 
   @doc """
