@@ -80,7 +80,7 @@ defmodule Game.Session do
     self() |> schedule_inactive_check()
     last_tick = Timex.now() |> Timex.shift(minutes: -2)
 
-    state =%{
+    state = %{
       socket: socket,
       state: "login",
       last_move: Timex.now(),

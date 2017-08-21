@@ -9,7 +9,10 @@ defmodule Game.SessionTest do
   setup do
     socket = :socket
     @socket.clear_messages
+
+    Game.Config.start_link()
     Agent.update(Game.Config, fn (_) -> %{} end)
+
     user = %{name: "user"}
     {:ok, %{socket: socket, user: user, save: %{}}}
   end
