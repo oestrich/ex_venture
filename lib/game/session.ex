@@ -79,7 +79,18 @@ defmodule Game.Session do
     socket |> Session.Login.start()
     self() |> schedule_inactive_check()
     last_tick = Timex.now() |> Timex.shift(minutes: -2)
-    {:ok, %{socket: socket, state: "login", last_move: Timex.now(), last_recv: Timex.now(), last_tick: last_tick, target: nil}}
+
+    state =%{
+      socket: socket,
+      state: "login",
+      last_move: Timex.now(),
+      last_recv: Timex.now(),
+      last_tick: last_tick,
+      target: nil,
+      regen: %{count: 0},
+    }
+
+    {:ok, state}
   end
 
   # On a disconnect unregister the PID and stop the server
@@ -174,7 +185,13 @@ defmodule Game.Session do
     end
   end
 
-  defp handle_tick(time, state = %{save: save}) do
+  defp handle_tick(time, state) do
+    state
+    |> handle_regen()
+    |> Map.put(:last_tick, time)
+  end
+
+  defp handle_regen(state = %{regen: %{count: 5}, save: save}) do
     stats = Stats.regen(:health, save.stats, Config.regen_health(1))
     stats = Stats.regen(:skill_points, stats, Config.regen_skill_points(1))
 
@@ -192,7 +209,11 @@ defmodule Game.Session do
     end
 
     state
-    |> Map.put(:last_tick, time)
     |> Map.put(:save, Map.put(save, :stats, stats))
+    |> Map.put(:regen, %{count: 0})
+  end
+  defp handle_regen(state = %{regen: %{count: count}}) do
+    state
+    |> Map.put(:regen, %{count: count + 1})
   end
 end

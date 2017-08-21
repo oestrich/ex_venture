@@ -24,7 +24,7 @@ defmodule Game.SessionTest do
   describe "ticking" do
     setup do
       stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12}
-      %{save: %{stats: stats}}
+      %{save: %{stats: stats}, regen: %{count: 5}}
     end
 
     test "updates last tick", state do
@@ -32,7 +32,7 @@ defmodule Game.SessionTest do
     end
 
     test "regens stats", state do
-      {:noreply, %{save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, state)
+      {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, state)
 
       assert stats.health == 11
       assert stats.skill_points == 10
@@ -49,6 +49,13 @@ defmodule Game.SessionTest do
       assert stats.skill_points == 12
 
       refute_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
+    end
+
+    test "does not regen, only increments count if not high enough", state do
+      {:noreply, %{regen: %{count: 2}, save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, %{state | regen: %{count: 1}})
+
+      assert stats.health == 10
+      assert stats.skill_points == 9
     end
   end
 
