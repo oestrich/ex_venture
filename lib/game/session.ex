@@ -126,7 +126,7 @@ defmodule Game.Session do
         socket |> @socket.prompt(Format.prompt(user, save))
         {:noreply, state}
       {:update, state} ->
-        socket |> @socket.prompt(Format.prompt(user, save))
+        socket |> @socket.prompt(Format.prompt(state.user, state.save))
         {:noreply, state}
     end
   end

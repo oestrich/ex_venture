@@ -27,12 +27,12 @@ defmodule Game.Command.SkillsTest do
     }
 
     user = %{id: 10, name: "Player", class: %{name: "Fighter", points_abbreviation: "PP", skills: [slash]}}
-    save = %{stats: %{strength: 10}, wearing: %{}}
+    save = %{stats: %{strength: 10, skill_points: 10}, wearing: %{}}
     {:ok, %{session: :session, socket: :socket, user: user, save: save, slash: slash}}
   end
 
   test "view skill information", %{session: session, socket: socket, user: user} do
-    Command.Skills.run({}, session, %{socket: socket, user: user})
+    :ok = Command.Skills.run({}, session, %{socket: socket, user: user})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(slash), look)
@@ -40,21 +40,35 @@ defmodule Game.Command.SkillsTest do
   end
 
   test "using a skill", %{session: session, socket: socket, user: user, save: save, slash: slash} do
-    Command.Skills.run({slash, "slash"}, session, %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}})
+    state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
+
+    {:update, state} = Command.Skills.run({slash, "slash"}, session, state)
+    assert state.save.stats.skill_points == 8
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Slash), look)
   end
 
   test "using a skill - target not found", %{session: session, socket: socket, user: user, save: save, slash: slash} do
-    Command.Skills.run({slash, "slash"}, session, %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: {:npc, 2}})
+    state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: {:npc, 2}}
+    :ok = Command.Skills.run({slash, "slash"}, session, state)
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Your target could not), look)
   end
 
   test "using a skill - with no target", %{session: session, socket: socket, user: user, slash: slash} do
-    Command.Skills.run({slash, "slash"}, session, %{socket: socket, user: user, save: %{room_id: 1}, target: nil})
+    :ok = Command.Skills.run({slash, "slash"}, session, %{socket: socket, user: user, save: %{room_id: 1}, target: nil})
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(You don't have), look)
+  end
+
+  test "using a skill - not enough skill points", %{session: session, socket: socket, user: user, save: save, slash: slash} do
+    stats = %{save.stats | skill_points: 1}
+    state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1, stats: stats}), target: {:npc, 1}}
+
+    :ok = Command.Skills.run({slash, "slash"}, session, state)
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You don't have), look)

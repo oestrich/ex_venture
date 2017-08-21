@@ -10,6 +10,8 @@ defmodule Data.Stats do
   @type character :: %{
     health: integer,
     max_health: integer,
+    skill_points: integer,
+    max_skill_points: integer,
     strength: integer,
     dexterity: integer,
   }

@@ -8,6 +8,7 @@ defmodule Game.Command.Skills do
   alias Game.Character
   alias Game.Effect
   alias Game.Item
+  alias Game.Skill
 
   @commands ["skills"]
 
@@ -29,22 +30,34 @@ defmodule Game.Command.Skills do
     socket |> @socket.echo("You don't have a target.")
     :ok
   end
-  def run({skill, _command}, _session, state = %{socket: socket, user: user, save: %{room_id: room_id, stats: stats}, target: target}) do
-    %{save: save} = state
-
+  def run({skill, _command}, _session, state = %{socket: socket, save: %{room_id: room_id}, target: target}) do
     room = @room.look(room_id)
-
     case find_target(room, target) do
       nil ->
         socket |> @socket.echo("Your target could not be found.")
+        :ok
       target ->
+        skill |> use_skill(target, state)
+    end
+  end
+
+  defp use_skill(skill, target, state = %{socket: socket, user: user, save: %{stats: stats}}) do
+    %{save: save} = state
+
+    case stats |> Skill.pay(skill) do
+      {:ok, stats} ->
+        save = %{save | stats: stats}
+
         wearing_effects = save |> Item.effects_from_wearing()
         effects = stats |> Effect.calculate(wearing_effects ++ skill.effects)
         Character.apply_effects(target, effects, {:user, user}, skill.usee_text)
         socket |> @socket.echo(Format.skill_user(skill, effects, target))
-    end
 
-    :ok
+        {:update, %{state | save: save}}
+      {:error, _} ->
+        socket |> @socket.echo(~s(You don't have enough skill points to use "#{skill.command}"))
+        :ok
+    end
   end
 
   @doc """

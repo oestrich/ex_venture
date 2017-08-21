@@ -4,7 +4,7 @@ defmodule Game.Character do
 
   A character is a player (session genserver) or an NPC (genserver). They should
   handle the following casts:
-  
+
   - `{:targeted, player}`
   - `{:apply_effects, effects, player}`
   """
