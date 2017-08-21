@@ -28,3 +28,7 @@ MIX_ENV=prod mix release
 ```
 
 The `release.sh` script will also do the same.
+
+## Documentation
+
+You can get elixir docs by running `mix docs` and open `doc/index.html`. The code base has a lot of doctests to help give examples of how to use the functions.
