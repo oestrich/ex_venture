@@ -24,7 +24,7 @@ defmodule Game.SessionTest do
   describe "ticking" do
     setup do
       stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12}
-      %{save: %{stats: stats}, regen: %{count: 5}}
+      %{user: %{class: %{points_name: "Skill Points"}}, save: %{stats: stats}, regen: %{count: 5}}
     end
 
     test "updates last tick", state do

@@ -191,7 +191,7 @@ defmodule Game.Session do
     |> Map.put(:last_tick, time)
   end
 
-  defp handle_regen(state = %{regen: %{count: 5}, save: save}) do
+  defp handle_regen(state = %{regen: %{count: 5}, user: %{class: class}, save: save}) do
     stats = Stats.regen(:health, save.stats, Config.regen_health(1))
     stats = Stats.regen(:skill_points, stats, Config.regen_skill_points(1))
 
@@ -201,11 +201,11 @@ defmodule Game.Session do
       %{health: ^starting_hp, skill_points: ^starting_sp} ->
         nil
       %{health: ^starting_hp} ->
-        echo(self(), "You regenerated some skill points.")
+        echo(self(), "You regenerated some #{class.points_name |> String.downcase}.")
       %{skill_points: ^starting_sp} -> nil
         echo(self(), "You regenerated some health.")
       _ ->
-        echo(self(), "You regenerated some health and skill points.")
+        echo(self(), "You regenerated some health and #{class.points_name |> String.downcase}.")
     end
 
     state
