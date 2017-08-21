@@ -40,4 +40,11 @@ defmodule Data.Config do
         save
     end
   end
+
+  def find_config(name) do
+    __MODULE__
+    |> where([c], c.name == ^name)
+    |> select([c], c.value)
+    |> Repo.one
+  end
 end

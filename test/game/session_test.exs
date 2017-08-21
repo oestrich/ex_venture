@@ -9,6 +9,7 @@ defmodule Game.SessionTest do
   setup do
     socket = :socket
     @socket.clear_messages
+    Agent.update(Game.Config, fn (_) -> %{} end)
     user = %{name: "user"}
     {:ok, %{socket: socket, user: user, save: %{}}}
   end
@@ -20,8 +21,35 @@ defmodule Game.SessionTest do
     assert @socket.get_prompts() == [{socket, "> "}]
   end
 
-  test "ticking", state do
-    {:noreply, %{last_tick: :time}} = Session.handle_cast({:tick, :time}, state)
+  describe "ticking" do
+    setup do
+      stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12}
+      %{save: %{stats: stats}}
+    end
+
+    test "updates last tick", state do
+      {:noreply, %{last_tick: :time}} = Session.handle_cast({:tick, :time}, state)
+    end
+
+    test "regens stats", state do
+      {:noreply, %{save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, state)
+
+      assert stats.health == 11
+      assert stats.skill_points == 10
+
+      assert_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
+    end
+
+    test "does not echo if stats did not change", state do
+      stats = %{health: 15, max_health: 15, skill_points: 12, max_skill_points: 12}
+
+      {:noreply, %{save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, %{state | save: %{stats: stats}})
+
+      assert stats.health == 15
+      assert stats.skill_points == 12
+
+      refute_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
+    end
   end
 
   test "recv'ing messages - the first", %{socket: socket} do

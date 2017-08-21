@@ -15,9 +15,11 @@ defmodule Game.Session do
 
   alias Game.Account
   alias Game.Command
+  alias Game.Config
   alias Game.Effect
   alias Game.Format
   alias Game.Session
+  alias Game.Stats
 
   @timeout_check 5000
   @timeout_seconds 5 * 60 * -1
@@ -102,8 +104,8 @@ defmodule Game.Session do
   end
 
   # Update the tick timestamp
-  def handle_cast({:tick, time}, state) do
-    {:noreply, Map.put(state, :last_tick, time)}
+  def handle_cast({:tick, time}, state = %{save: _save}) do
+    {:noreply, handle_tick(time, state)}
   end
 
   # Handle logging in
@@ -170,5 +172,27 @@ defmodule Game.Session do
       _ ->
         self() |> schedule_inactive_check()
     end
+  end
+
+  defp handle_tick(time, state = %{save: save}) do
+    stats = Stats.regen(:health, save.stats, Config.regen_health(1))
+    stats = Stats.regen(:skill_points, stats, Config.regen_skill_points(1))
+
+    starting_hp = save.stats.health
+    starting_sp = save.stats.skill_points
+    case stats do
+      %{health: ^starting_hp, skill_points: ^starting_sp} ->
+        nil
+      %{health: ^starting_hp} ->
+        echo(self(), "You regenerated some skill points.")
+      %{skill_points: ^starting_sp} -> nil
+        echo(self(), "You regenerated some health.")
+      _ ->
+        echo(self(), "You regenerated some health and skill points.")
+    end
+
+    state
+    |> Map.put(:last_tick, time)
+    |> Map.put(:save, Map.put(save, :stats, stats))
   end
 end

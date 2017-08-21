@@ -190,8 +190,11 @@ defmodule Seeds do
       wearing: %{},
       wielding: %{},
     }
+
     {:ok, _starting_save} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _motd} = create_config("motd", "Welcome to the {white}MUD{/white}")
+    {:ok, _regen_hp} = create_config("regen_health", "1")
+    {:ok, _regen_sp} = create_config("regen_skill_points", "1")
 
     {:ok, fighter} = create_class(%{
       name: "Fighter",
