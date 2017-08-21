@@ -20,6 +20,9 @@ defmodule Data.ModelCase do
       Ecto.Adapters.SQL.Sandbox.mode(Data.Repo, {:shared, self()})
     end
 
+    Game.Config.start_link()
+    Agent.update(Game.Config, fn (_) -> %{} end)
+
     :ok
   end
 end

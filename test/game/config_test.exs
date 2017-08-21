@@ -3,12 +3,6 @@ defmodule Game.ConfigTest do
 
   alias Game.Config
 
-  setup do
-    Config.start_link
-    Agent.update(Config, fn (_) -> %{} end)
-    :ok
-  end
-
   describe "regen health" do
     test "finding the config value" do
       create_config("regen_health", "10")
