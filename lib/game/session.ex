@@ -191,7 +191,11 @@ defmodule Game.Session do
     |> Map.put(:last_tick, time)
   end
 
-  defp handle_regen(state = %{regen: %{count: 5}, user: %{class: class}, save: save}) do
+  defp handle_regen(state) do
+    _handle_regen(Config.regen_tick_count(5), state)
+  end
+
+  defp _handle_regen(count, state = %{regen: %{count: count}, user: %{class: class}, save: save}) do
     stats = Stats.regen(:health, save.stats, Config.regen_health(1))
     stats = Stats.regen(:skill_points, stats, Config.regen_skill_points(1))
 
@@ -212,7 +216,7 @@ defmodule Game.Session do
     |> Map.put(:save, Map.put(save, :stats, stats))
     |> Map.put(:regen, %{count: 0})
   end
-  defp handle_regen(state = %{regen: %{count: count}}) do
+  defp _handle_regen(_count, state = %{regen: %{count: count}}) do
     state
     |> Map.put(:regen, %{count: count + 1})
   end

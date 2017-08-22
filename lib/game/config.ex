@@ -11,14 +11,21 @@ defmodule Game.Config do
   end
 
   def find_config(name) do
-    Agent.get_and_update(__MODULE__, fn (config) ->
-      case Map.get(config, name, nil) do
-        nil ->
-          value = Config.find_config(name)
-          {value, Map.put(config, name, value)}
-        value -> {value, config}
-      end
-    end)
+    case Agent.get(__MODULE__, &(Map.get(&1, name, nil))) do
+      nil ->
+        value = Config.find_config(name)
+        Agent.update(__MODULE__, &(Map.put(&1, name, value)))
+        value
+      value ->
+        value
+    end
+  end
+
+  def regen_tick_count(default) do
+    case find_config("regen_tick_count") do
+      nil -> default
+      regen_tick_count -> regen_tick_count |> Integer.parse() |> elem(0)
+    end
   end
 
   def regen_health(default) do
