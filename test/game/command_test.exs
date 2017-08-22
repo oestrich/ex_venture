@@ -5,6 +5,7 @@ defmodule CommandTest do
   alias Game.Command
   alias Game.Message
   alias Game.Session
+  alias Game.Session.Registry
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -170,7 +171,7 @@ defmodule CommandTest do
 
   describe "moving" do
     setup %{socket: socket} do
-      user = %{}
+      user = %{id: 10}
       state = %{
         socket: socket,
         user: user,
@@ -244,10 +245,17 @@ defmodule CommandTest do
       :ok = Command.run({Command.Move, {:west}}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
-    test "clears the target after moving", %{session: session, state: state} do
+    test "clears the target after moving", %{session: session, state: state, user: user} do
       @room.set_room(%Data.Room{name: "", description: "", north_id: 2, players: []})
-      {:update, state} = Command.run({Command.Move, {:north}}, session, Map.merge(state, %{save: %{room_id: 1}, target: {:user, 1}}))
+      Registry.register(user)
+
+      state = Map.merge(state, %{user: user, save: %{room_id: 1}, target: {:user, 10}})
+      {:update, state} = Command.run({Command.Move, {:north}}, session, state)
+
       assert state.target == nil
+      assert_received {:"$gen_cast", {:remove_target, {:user, ^user}}}
+
+      Registry.unregister()
     end
   end
 end

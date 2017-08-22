@@ -6,15 +6,27 @@ defmodule Game.Character do
   handle the following casts:
 
   - `{:targeted, player}`
+  - `{:remove_target, player}`
   - `{:apply_effects, effects, player}`
   """
 
   alias Data.User
   alias Game.Character.Via
 
-  @spec being_targeted(who :: tuple, player :: User.t) :: :ok
+  @doc """
+  Let the target know they are being targeted
+  """
+  @spec being_targeted(target :: tuple, player :: {atom, User.t}) :: :ok
   def being_targeted(target, player) do
     GenServer.cast({:via, Via, who(target)}, {:targeted, player})
+  end
+
+  @doc """
+  When a player stops targetting a character, let them know
+  """
+  @spec remove_target(target :: tuple, player :: {atom, User.t}) :: :ok
+  def remove_target(target, player) do
+    GenServer.cast({:via, Via, who(target)}, {:remove_target, player})
   end
 
   @doc """
@@ -24,8 +36,11 @@ defmodule Game.Character do
     GenServer.cast({:via, Via, who(target)}, {:apply_effects, effects, from, description})
   end
 
-  defp who({:npc, id}) when is_integer(id), do: {:npc, id}
-  defp who({:npc, npc}), do: {:npc, npc.id}
-  defp who({:user, id}) when is_integer(id), do: {:user, id}
-  defp who({:user, user}), do: {:user, user.id}
+  @doc """
+  Converts a tuple with a struct to a tuple with an id
+  """
+  def who({:npc, id}) when is_integer(id), do: {:npc, id}
+  def who({:npc, npc}), do: {:npc, npc.id}
+  def who({:user, id}) when is_integer(id), do: {:user, id}
+  def who({:user, user}), do: {:user, user.id}
 end

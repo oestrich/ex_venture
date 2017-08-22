@@ -87,6 +87,7 @@ defmodule Game.Session do
       last_recv: Timex.now(),
       last_tick: last_tick,
       target: nil,
+      is_targeting: MapSet.new,
       regen: %{count: 0},
     }
 
@@ -148,8 +149,15 @@ defmodule Game.Session do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, player}, state) do
+  def handle_cast({:targeted, {_, player}}, state) do
     echo(self(), "You are being targeted by {blue}#{player.name}{/blue}.")
+    state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, {:user, player.id}))
+    {:noreply, state}
+  end
+
+  def handle_cast({:remove_target, player}, state) do
+    echo(self(), "You are no longer being targeted by {blue}#{elem(player, 1).name}{/blue}.")
+    state = Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Game.Character.who(player)))
     {:noreply, state}
   end
 

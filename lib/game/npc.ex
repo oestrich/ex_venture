@@ -49,7 +49,7 @@ defmodule Game.NPC do
 
   def init(npc) do
     GenServer.cast(self(), :enter)
-    {:ok, %{npc: npc}}
+    {:ok, %{npc: npc, is_targeting: MapSet.new()}}
   end
 
   def handle_cast(:enter, state = %{npc: npc}) do
@@ -64,8 +64,13 @@ defmodule Game.NPC do
     end
     {:noreply, state}
   end
-  def handle_cast({:targeted, player}, state = %{npc: npc}) do
+  def handle_cast({:targeted, {_, player}}, state = %{npc: npc}) do
     npc.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
+    state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, {:user, player.id}))
+    {:noreply, state}
+  end
+  def handle_cast({:remove_target, player}, state) do
+    state = Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Game.Character.who(player)))
     {:noreply, state}
   end
   def handle_cast({:apply_effects, effects, _from, _description}, state = %{npc: npc}) do

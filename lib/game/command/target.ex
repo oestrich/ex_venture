@@ -28,11 +28,11 @@ defmodule Game.Command.Target do
         socket |> @socket.echo(~s(Could not find target "#{target}".))
         :ok
       {:npc, %{id: id, name: name}} ->
-        Character.being_targeted({:npc, id}, user)
+        Character.being_targeted({:npc, id}, {:user, user})
         socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
         {:update, Map.put(state, :target, {:npc, id})}
       {:user, %{id: id, name: name}} ->
-        Character.being_targeted({:user, id}, user)
+        Character.being_targeted({:user, id}, {:user, user})
         socket |> @socket.echo("You are now targeting {blue}#{name}{/blue}.")
         {:update, Map.put(state, :target, {:user, id})}
     end

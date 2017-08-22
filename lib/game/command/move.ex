@@ -5,6 +5,8 @@ defmodule Game.Command.Move do
 
   use Game.Command
 
+  import Game.Character.Target, only: [clear_target: 2]
+
   @custom_parse true
   @commands ["north", "east", "south", "west"]
   @aliases ["n", "e", "s", "w"]
@@ -84,6 +86,8 @@ defmodule Game.Command.Move do
 
   defp move_to(session, state = %{save: save, user: user}, room_id) do
     @room.leave(save.room_id, {:user, session, user})
+
+    clear_target(state, {:user, user})
 
     save = %{save | room_id: room_id}
     state = state

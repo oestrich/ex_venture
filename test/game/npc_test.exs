@@ -6,10 +6,25 @@ defmodule Game.NPCTest do
   alias Game.NPC
 
   test "being targeted makes the npc say something" do
-    {:noreply, _state} = NPC.handle_cast({:targeted, %{name: "Player"}}, %{npc: %{name: "NPC", room_id: 1}})
+    targeter = {:user, %{id: 10, name: "Player"}}
+
+    {:noreply, state} = NPC.handle_cast({:targeted, targeter}, %{npc: %{name: "NPC", room_id: 1}, is_targeting: MapSet.new})
 
     [{_, message}] = @room.get_says()
     assert message.message == "Why are you targeting me, Player?"
+
+    assert state.is_targeting |> MapSet.size() == 1
+    assert state.is_targeting |> MapSet.member?({:user, 10})
+  end
+
+  test "a player removing a target stops tracking them" do
+    targeter = {:user, %{id: 10, name: "Player"}}
+    is_targeting = MapSet.new() |> MapSet.put({:user, 10})
+
+    {:noreply, state} = NPC.handle_cast({:remove_target, targeter}, %{is_targeting: is_targeting})
+
+    assert state.is_targeting |> MapSet.size() == 0
+    refute state.is_targeting |> MapSet.member?({:user, 10})
   end
 
   test "applying effects" do

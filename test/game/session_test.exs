@@ -105,4 +105,23 @@ defmodule Game.SessionTest do
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
   end
+
+  test "being targeted tracks the targeter", %{socket: socket} do
+    targeter = {:user, %{id: 10, name: "Player"}}
+
+    {:noreply, state} = Session.handle_cast({:targeted, targeter}, %{socket: socket, is_targeting: MapSet.new})
+
+    assert state.is_targeting |> MapSet.size() == 1
+    assert state.is_targeting |> MapSet.member?({:user, 10})
+  end
+
+  test "a player removing a target stops tracking them", %{socket: socket} do
+    targeter = {:user, %{id: 10, name: "Player"}}
+    is_targeting = MapSet.new() |> MapSet.put({:user, 10})
+
+    {:noreply, state} = Session.handle_cast({:remove_target, targeter}, %{socket: socket, is_targeting: is_targeting})
+
+    assert state.is_targeting |> MapSet.size() == 0
+    refute state.is_targeting |> MapSet.member?({:user, 10})
+  end
 end
