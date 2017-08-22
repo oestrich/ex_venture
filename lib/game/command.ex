@@ -38,6 +38,8 @@ defmodule Game.Command do
       @aliases []
 
       @custom_parse false
+
+      @must_be_alive false
     end
   end
 
@@ -52,6 +54,9 @@ defmodule Game.Command do
 
       @doc false
       def custom_parse?(), do: @custom_parse
+
+      @doc false
+      def must_be_alive?(), do: @must_be_alive
 
       @doc false
       def help() do
@@ -164,7 +169,18 @@ defmodule Game.Command do
     socket |> @socket.echo("Unknown command")
     :ok
   end
-  def run({module, args}, session, state) do
-    module.run(args, session, state)
+  def run({module, args}, session, state = %{socket: socket}) do
+    case module.must_be_alive? do
+      true ->
+        case state do
+          %{save: %{stats: %{health: health}}} when health <= 0 ->
+            socket |> @socket.echo("You are passed out and cannot perform this action.")
+            :ok
+          _ ->
+            module.run(args, session, state)
+        end
+      false ->
+        module.run(args, session, state)
+    end
   end
 end

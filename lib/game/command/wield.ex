@@ -10,6 +10,7 @@ defmodule Game.Command.Wield do
 
   @custom_parse true
   @commands ["wield", "unwield"]
+  @must_be_alive true
 
   @short_help "Put an item in your hands"
   @full_help """

@@ -8,6 +8,7 @@ defmodule Game.Command.Move do
   @custom_parse true
   @commands ["north", "east", "south", "west"]
   @aliases ["n", "e", "s", "w"]
+  @must_be_alive true
 
   @short_help "Move in a direction"
   @full_help """

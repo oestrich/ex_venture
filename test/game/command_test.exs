@@ -112,6 +112,12 @@ defmodule CommandTest do
     end
   end
 
+  test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do
+    save = %{stats: %{health: 0}}
+    :ok = Command.run({Command.Move, {:north}}, session, %{socket: socket, save: save})
+    assert @socket.get_echos() == [{socket, "You are passed out and cannot perform this action."}]
+  end
+
   describe "quitting" do
     test "quit command", %{session: session, socket: socket} do
       user = create_user(%{name: "user", password: "password", class_id: create_class().id})

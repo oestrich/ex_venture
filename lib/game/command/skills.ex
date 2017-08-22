@@ -11,6 +11,7 @@ defmodule Game.Command.Skills do
   alias Game.Skill
 
   @commands ["skills"]
+  @must_be_alive true
 
   @short_help "List out your class skills"
   @full_help """

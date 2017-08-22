@@ -10,6 +10,7 @@ defmodule Game.Command.Wear do
 
   @custom_parse true
   @commands ["wear", "remove"]
+  @must_be_alive true
 
   @short_help "Put on a piece of armor"
   @full_help """

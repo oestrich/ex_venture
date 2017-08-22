@@ -8,6 +8,7 @@ defmodule Game.Command.Target do
   alias Game.Character
 
   @commands ["target"]
+  @must_be_alive true
 
   @short_help "Target an enemy"
   @full_help """
