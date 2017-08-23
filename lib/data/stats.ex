@@ -13,6 +13,7 @@ defmodule Data.Stats do
     skill_points: integer,
     max_skill_points: integer,
     strength: integer,
+    intelligence: integer,
     dexterity: integer,
   }
   @type armor :: %{
@@ -57,16 +58,16 @@ defmodule Data.Stats do
   Fields in the statistics map
   """
   @spec fields() :: [atom]
-  def fields(), do: [:dexterity, :health, :max_health, :max_skill_points, :skill_points, :strength]
+  def fields(), do: [:dexterity, :health, :intelligence, :max_health, :max_skill_points, :skill_points, :strength]
 
   @doc """
   Validate a character's stats
 
-      iex> stats = %{health: 50, max_health: 50, strength: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
+      iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
       iex> Data.Stats.valid_character?(stats)
       true
 
-      iex> stats = %{health: 50, max_health: 50, strength: 10, dexterity: :atom, skill_points: 10, max_skill_points: 10}
+      iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: :atom, skill_points: 10, max_skill_points: 10}
       iex> Data.Stats.valid_character?(stats)
       false
 
@@ -81,6 +82,7 @@ defmodule Data.Stats do
     keys(stats) == fields()
       && is_integer(stats.dexterity)
       && is_integer(stats.health)
+      && is_integer(stats.intelligence)
       && is_integer(stats.max_health)
       && is_integer(stats.strength)
       && is_integer(stats.skill_points)

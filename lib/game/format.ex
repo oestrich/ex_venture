@@ -257,9 +257,9 @@ Items: #{items(room)}
 
   Example:
 
-      iex> stats = %{health: 50, strength: 10, dexterity: 10}
-      iex> Game.Format.info(%{name: "hero", save: %Data.Save{stats: stats}, class: %{name: "Fighter"}})
-      "hero\\n--------\\nFighter\\n\\nHealth: 50\\nStrength: 10\\nDexterity: 10"
+      iex> stats = %{health: 50, max_health: 55, skill_points: 10, max_skill_points: 10, strength: 10, intelligence: 10, dexterity: 10}
+      iex> Game.Format.info(%{name: "hero", save: %Data.Save{stats: stats}, class: %{name: "Fighter", points_name: "Skill Points"}})
+      "hero\\n--------\\nFighter\\n\\nHealth: 50/55\\nSkill Points: 10/10\\nStrength: 10\\nIntelligence: 10\\nDexterity: 10"
   """
   @spec info(user :: User.t) :: String.t
   def info(user = %{save: save}) do
@@ -270,8 +270,10 @@ Items: #{items(room)}
     #{underline(user.name)}
     #{user.class.name}
 
-    Health: #{stats.health}
+    Health: #{stats.health}/#{stats.max_health}
+    #{user.class.points_name}: #{stats.skill_points}/#{stats.max_skill_points}
     Strength: #{stats.strength}
+    Intelligence: #{stats.intelligence}
     Dexterity: #{stats.dexterity}
     """ |> String.trim
   end
