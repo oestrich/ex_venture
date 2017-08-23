@@ -24,6 +24,8 @@ defmodule Game.Session do
   alias Game.Session
   alias Game.Stats
 
+  @save_period 15000
+
   @timeout_check 5000
   @timeout_seconds 5 * 60 * -1
 
@@ -80,6 +82,7 @@ defmodule Game.Session do
 
   def init(socket) do
     socket |> Session.Login.start()
+    self() |> schedule_save()
     self() |> schedule_inactive_check()
     last_tick = Timex.now() |> Timex.shift(minutes: -2)
 
@@ -199,6 +202,16 @@ defmodule Game.Session do
   # General callback
   #
 
+  def handle_info(:save, state = %{user: user, save: save}) do
+    user |> Account.save(save)
+    self() |> schedule_save()
+    {:noreply, state}
+  end
+  def handle_info(:save, state) do
+    self() |> schedule_save()
+    {:noreply, state}
+  end
+
   def handle_info(:inactive_check, state) do
     state |> check_for_inactive()
     {:noreply, state}
@@ -207,6 +220,11 @@ defmodule Game.Session do
   # Schedule an inactive check
   defp schedule_inactive_check(pid) do
     :erlang.send_after(@timeout_check, pid, :inactive_check)
+  end
+
+  # Schedule a save
+  defp schedule_save(pid) do
+    :erlang.send_after(@save_period, pid, :save)
   end
 
   # Check if the session is inactive, disconnect if it is

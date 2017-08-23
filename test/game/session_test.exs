@@ -76,6 +76,20 @@ defmodule Game.SessionTest do
     assert state.last_recv
   end
 
+  test "user is not signed in yet does not save" do
+    assert {:noreply, %{}} = Session.handle_info(:save, %{})
+  end
+
+  test "save the user's save" do
+    user = create_user(%{name: "player", password: "password"})
+    save = %{user.save | stats: %{user.save.stats | health: 10}}
+
+    {:noreply, _state} = Session.handle_info(:save, %{user: user, save: save})
+
+    user = Data.User |> Data.Repo.get(user.id)
+    assert user.save.stats.health == 10
+  end
+
   test "checking for inactive players - not inactive", %{socket: socket} do
     {:noreply, _state} = Session.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now()})
 
