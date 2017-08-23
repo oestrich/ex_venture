@@ -24,7 +24,7 @@ defmodule Game.Session do
   alias Game.Session
   alias Game.Stats
 
-  @save_period 15000
+  @save_period 15_000
 
   @timeout_check 5000
   @timeout_seconds 5 * 60 * -1
