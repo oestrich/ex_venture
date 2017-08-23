@@ -146,8 +146,9 @@ defmodule Game.SessionTest do
 
   test "a died message is sent" do
     target = {:user, %{id: 10, name: "Player"}}
+    user = %{id: 10}
 
-    {:noreply, state} = Session.handle_cast({:died, target}, %{state: "active", target: {:user, 10}})
+    {:noreply, state} = Session.handle_cast({:died, target}, %{state: "active", user: user, target: {:user, 10}})
 
     assert is_nil(state.target)
   end

@@ -182,10 +182,12 @@ defmodule Game.Session do
     echo(self(), "#{Format.target_name(who)} has died.")
     {:noreply, state}
   end
-  def handle_cast({:died, who}, state = %{state: "active", target: target}) do
+  def handle_cast({:died, who}, state = %{state: "active", user: user, target: target}) do
     echo(self(), "#{Format.target_name(who)} has died.")
     case Character.who(target) == Character.who(who) do
-      true -> {:noreply, Map.put(state, :target, nil)}
+      true ->
+        Character.remove_target(target, {:user, user})
+        {:noreply, Map.put(state, :target, nil)}
       false -> {:noreply, state}
     end
   end
