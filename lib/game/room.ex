@@ -73,6 +73,9 @@ defmodule Game.Room do
   def leave(id, {:user, session, user}) do
     GenServer.cast(pid(id), {:leave, {:user, session, user}})
   end
+  def leave(id, {:npc, npc}) do
+    GenServer.cast(pid(id), {:leave, {:npc, npc}})
+  end
 
   @doc """
   Say to the players in the room
@@ -127,10 +130,15 @@ defmodule Game.Room do
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
-  def handle_cast({:leave, player = {:user, _, user}}, state = %{players: players}) do
-    players = List.delete(players, player)
+  def handle_cast({:leave, {:user, _, user}}, state = %{players: players}) do
+    players = Enum.reject(players, &(elem(&1, 2).id == user.id))
     players |> echo_to_players("{blue}#{user.name}{/blue} leaves")
     {:noreply, Map.put(state, :players, players)}
+  end
+  def handle_cast({:leave, {:npc, npc}}, state = %{npcs: npcs}) do
+    npcs = Enum.reject(npcs, &(&1.id == npc.id))
+    npcs |> echo_to_npcs("{yellow}#{npc.name}{/yellow} leaves")
+    {:noreply, Map.put(state, :npcs, npcs)}
   end
 
   def handle_cast({:say, sender, message}, state = %{players: players, npcs: npcs}) do

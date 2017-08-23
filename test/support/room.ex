@@ -29,7 +29,17 @@ defmodule Test.Game.Room do
   def enter(_id, {:user, _session, _user}) do
   end
 
-  def leave(_id, _user) do
+  def leave(id, user) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) ->
+      leaves = Map.get(state, :leave, [])
+      Map.put(state, :leave, leaves ++ [{id, user}])
+    end)
+  end
+
+  def get_leaves() do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :leave, []) end)
   end
 
   def say(id, _session, message) do

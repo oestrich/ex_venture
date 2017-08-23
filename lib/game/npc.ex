@@ -80,6 +80,7 @@ defmodule Game.NPC do
       %{health: health} when health < 1 ->
         npc.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
         Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
+        npc.room_id |> @room.leave({:npc, npc})
       _ -> nil
     end
     npc = %{npc | stats: stats}
