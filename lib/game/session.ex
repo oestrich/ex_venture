@@ -14,6 +14,7 @@ defmodule Game.Session do
   require Logger
 
   alias Game.Account
+  alias Game.Character
   alias Game.Command
   alias Game.Config
   alias Game.Effect
@@ -161,11 +162,32 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
-  def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active", save: save}) do
+  def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active"}) do
+    %{user: user, save: save, is_targeting: is_targeting} = state
+
     stats = effects |> Effect.apply(save.stats)
     save = %{save | stats: stats}
     echo(self(), Format.skill_usee(description, effects, from))
+
+    case stats do
+      %{health: health} when health < 1 ->
+        Enum.each(is_targeting, &(Character.died(&1, {:user, user})))
+      _ -> nil
+    end
+
     {:noreply, Map.put(state, :save, save)}
+  end
+
+  def handle_cast({:died, who}, state = %{state: "active", target: target}) when is_nil(target) do
+    echo(self(), "#{Format.target_name(who)} has died.")
+    {:noreply, state}
+  end
+  def handle_cast({:died, who}, state = %{state: "active", target: target}) do
+    echo(self(), "#{Format.target_name(who)} has died.")
+    case Character.who(target) == Character.who(who) do
+      true -> {:noreply, Map.put(state, :target, nil)}
+      false -> {:noreply, state}
+    end
   end
 
   #

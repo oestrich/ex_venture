@@ -8,6 +8,7 @@ defmodule Game.Character do
   - `{:targeted, player}`
   - `{:remove_target, player}`
   - `{:apply_effects, effects, player}`
+  - `{:died, player}`
   """
 
   alias Data.User
@@ -30,10 +31,21 @@ defmodule Game.Character do
   end
 
   @doc """
+  Apply effects on the target
   """
-  @spec apply_effects(who :: tuple, effects :: [Effect.t], from :: {atom, map}, description :: String.t) :: :ok
+  @spec apply_effects(target :: tuple, effects :: [Effect.t], from :: {atom, map}, description :: String.t) :: :ok
   def apply_effects(target, effects, from, description) do
     GenServer.cast({:via, Via, who(target)}, {:apply_effects, effects, from, description})
+  end
+
+  @doc """
+  Let the character targeting you know you died
+
+  PC targets NPC, NPC dies, NPC let's the PC know it died. Should clear the target on the PC.
+  """
+  @spec died(who :: {atom, map}, to :: {atom, map}) :: :ok
+  def died(target, who) do
+    GenServer.cast({:via, Via, who(target)}, {:died, who})
   end
 
   @doc """

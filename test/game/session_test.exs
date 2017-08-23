@@ -100,10 +100,29 @@ defmodule Game.SessionTest do
     stats = %{health: 25}
     user = %{name: "user"}
 
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, %{socket: socket, state: "active", user: user, save: %{stats: stats}})
+    state = %{socket: socket, state: "active", user: user, save: %{stats: stats}, is_targeting: MapSet.new}
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
+  end
+
+  test "applying effects - died", %{socket: socket} do
+    Session.Registry.register(%{id: 2})
+
+    effect = %{kind: "damage", type: :slashing, amount: 10}
+    stats = %{health: 5}
+    user = %{name: "user"}
+
+    is_targeting = MapSet.new() |> MapSet.put({:user, 2})
+    state = %{socket: socket, state: "active", user: user, save: %{stats: stats}, is_targeting: is_targeting}
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, state)
+    assert state.save.stats.health == -5
+
+    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
+    assert_received {:"$gen_cast", {:died, {:user, _}}}
+
+    Session.Registry.unregister()
   end
 
   test "being targeted tracks the targeter", %{socket: socket} do
@@ -123,5 +142,13 @@ defmodule Game.SessionTest do
 
     assert state.is_targeting |> MapSet.size() == 0
     refute state.is_targeting |> MapSet.member?({:user, 10})
+  end
+
+  test "a died message is sent" do
+    target = {:user, %{id: 10, name: "Player"}}
+
+    {:noreply, state} = Session.handle_cast({:died, target}, %{state: "active", target: {:user, 10}})
+
+    assert is_nil(state.target)
   end
 end
