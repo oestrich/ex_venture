@@ -66,8 +66,8 @@ defmodule Game.Effect do
 
   Magical:
       iex> effect = %{kind: "damage", amount: 10, type: :arcane}
-      iex> Game.Effect.calculate_damage(effect, %{strength: 10})
-      %{kind: "damage", amount: 10, type: :arcane}
+      iex> Game.Effect.calculate_damage(effect, %{intelligence: 10})
+      %{kind: "damage", amount: 11, type: :arcane}
   """
   @spec calculate_damage(effect :: Effect.t, stats :: Stats.t) :: map
   def calculate_damage(effect, stats) do
@@ -77,7 +77,9 @@ defmodule Game.Effect do
         modified_amount = round(Float.ceil(effect.amount * strength_modifier))
         effect |> Map.put(:amount, modified_amount)
       false ->
-        effect
+        intelligence_modifier = 1 + (stats.intelligence / 100.0)
+        modified_amount = round(Float.ceil(effect.amount * intelligence_modifier))
+        effect |> Map.put(:amount, modified_amount)
     end
   end
 
