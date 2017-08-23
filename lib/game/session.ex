@@ -13,6 +13,8 @@ defmodule Game.Session do
 
   require Logger
 
+  import Game.Character.Target, only: [clear_target: 2]
+
   alias Game.Account
   alias Game.Character
   alias Game.Command
@@ -105,6 +107,7 @@ defmodule Game.Session do
   def handle_cast(:disconnect, state = %{user: user, save: save}) do
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, self(), user})
+    clear_target(state, {:user, user})
     user |> Account.save(save)
     {:stop, :normal, state}
   end
