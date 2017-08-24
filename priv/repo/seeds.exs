@@ -147,7 +147,10 @@ defmodule Seeds do
     stats = %{
       health: 25,
       max_health: 25,
+      skill_points: 10,
+      max_skill_points: 10,
       strength: 13,
+      intelligence: 10,
       dexterity: 10,
     }
 

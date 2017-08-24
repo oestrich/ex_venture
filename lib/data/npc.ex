@@ -5,6 +5,8 @@ defmodule Data.NPC do
 
   use Data.Schema
 
+  alias Data.Stats
+
   schema "npcs" do
     field :name, :string
     field :hostile, :boolean
@@ -20,5 +22,17 @@ defmodule Data.NPC do
     struct
     |> cast(params, [:name, :room_id, :hostile, :stats, :spawn_interval])
     |> validate_required([:name, :room_id, :hostile, :stats, :spawn_interval])
+    |> validate_stats()
+  end
+
+  defp validate_stats(changeset) do
+    case changeset do
+      %{changes: %{stats: stats}} when stats != nil ->
+        case Stats.valid_character?(stats) do
+          true -> changeset
+          false -> add_error(changeset, :stats, "are invalid")
+        end
+      _ -> changeset
+    end
   end
 end
