@@ -3,6 +3,7 @@ defmodule Web.Item do
   Bounded context for the Phoenix app talking to the data layer
   """
 
+  alias Data.Effect
   alias Data.Item
   alias Data.Stats
   alias Data.Repo
@@ -69,7 +70,7 @@ defmodule Web.Item do
     params
     |> split_keywords()
     |> parse_stats()
-    |> Map.put("effects", [])
+    |> parse_effects()
   end
 
   # Split keywords into an array of strings based on a comma
@@ -92,5 +93,26 @@ defmodule Web.Item do
         Map.put(params, "stats", stats)
         _ -> params
     end
+  end
+
+  defp parse_effects(params = %{"effects" => effects}) do
+    case Poison.decode(effects) do
+      {:ok, effects} -> effects |> cast_effects(params)
+      _ -> params
+    end
+  end
+  defp parse_effects(params), do: params
+
+  defp cast_effects(effects, params) do
+    effects = effects
+    |> Enum.map(fn (effect) ->
+      case Effect.load(effect) do
+        {:ok, effect} -> effect
+        _ -> nil
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+
+    Map.put(params, "effects", effects)
   end
 end

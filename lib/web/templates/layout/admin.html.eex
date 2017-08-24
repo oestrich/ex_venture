@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admin</title>
+    <title>ExVenture Admin</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/admin.css") %>">
   </head>
 

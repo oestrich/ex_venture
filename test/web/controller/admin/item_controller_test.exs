@@ -14,6 +14,7 @@ defmodule Web.Admin.ItemControllerTest do
       name: "Helmet",
       description: "A helmet",
       stats: ~s({"slot":"head","armor":10}),
+      effects: ~s([{"kind":"stats","field":"strength","amount":10}]),
       keywords: "helmet",
     }
 

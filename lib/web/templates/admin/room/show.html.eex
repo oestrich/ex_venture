@@ -31,7 +31,7 @@
                 <td>
                   <ul>
                     <%= Enum.map @room.item_ids |> Game.Items.items(), fn (item) -> %>
-                      <li><%= item.name %></li>
+                      <li><%= link(item.name, to: item_path(@conn, :show, item.id)) %></li>
                     <% end %>
                   </ul>
                 </td>

@@ -24,5 +24,19 @@ defmodule Web.Admin.ItemView do
   end
   def stats(%{}), do: ""
 
+  def effects(%{changes: %{effects: effects}}) when effects != nil do
+    effects(%{effects: effects})
+  end
+  def effects(%{data: %{effects: effects}}) when effects != nil do
+    effects(%{effects: effects})
+  end
+  def effects(%{effects: effects}) when effects != nil do
+    case Poison.encode(effects) do
+      {:ok, effects} -> effects
+      _ -> ""
+    end
+  end
+  def effects(%{}), do: ""
+
   def types(), do: Data.Item.types()
 end
