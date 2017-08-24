@@ -9,6 +9,7 @@ defmodule Game.Room do
 
   alias Game.Room.Actions
   alias Game.Room.Repo
+  alias Game.Format
   alias Game.Message
   alias Game.NPC
   alias Game.Session
@@ -126,7 +127,8 @@ defmodule Game.Room do
     players |> echo_to_players("{blue}#{user.name}{/blue} enters")
     {:noreply, Map.put(state, :players, [player | players])}
   end
-  def handle_cast({:enter, {:npc, npc}}, state = %{npcs: npcs}) do
+  def handle_cast({:enter, character = {:npc, npc}}, state = %{npcs: npcs, players: players}) do
+    players |> echo_to_players("#{Format.target_name(character)} enters")
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 

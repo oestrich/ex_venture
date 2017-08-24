@@ -162,7 +162,7 @@ defmodule Seeds do
       effects: [],
       keywords: ["sword"],
     })
-    entrance = entrance |> add_item_to_room(sword, %{interval: 15})
+    entrance = entrance |> add_item_to_room(sword, %{spawn_interval: 15})
 
     leather_armor = create_item(%{
       name: "Leather Armor",
@@ -172,7 +172,7 @@ defmodule Seeds do
       effects: [],
       keywords: ["leather"],
     })
-    entrance = entrance |> add_item_to_room(leather_armor, %{interval: 15})
+    entrance = entrance |> add_item_to_room(leather_armor, %{spawn_interval: 15})
 
     elven_armor = create_item(%{
       name: "Elven armor",
@@ -182,7 +182,7 @@ defmodule Seeds do
       effects: [%{kind: "stats", field: :dexterity, amount: 5}, %{kind: "stats", field: :strength, amount: 5}],
       keywords: ["elven"],
     })
-    entrance = entrance |> add_item_to_room(elven_armor, %{interval: 15})
+    entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
 
     save =  %{
       room_id: entrance.id,

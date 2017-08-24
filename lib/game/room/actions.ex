@@ -55,7 +55,7 @@ defmodule Game.Room.Actions do
   end
 
   defp respawn_if_after_interval(room_item, time, state) do
-    case past_interval?(time, room_item.interval) do
+    case past_interval?(time, room_item.spawn_interval) do
       true -> respawn_item(room_item, state)
       false -> state
     end

@@ -5,6 +5,7 @@ defmodule Game.Server do
 
   use GenServer
 
+  alias Game.NPC
   alias Game.Session
   alias Game.Zone
 
@@ -36,6 +37,7 @@ defmodule Game.Server do
     end)
 
     Zone.Supervisor.zones |> Enum.each(&Zone.tick/1)
+    NPC.Supervisor.npcs |> Enum.each(&(NPC.tick(&1, time)))
 
     {:noreply, state}
   end

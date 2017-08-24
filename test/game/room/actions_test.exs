@@ -26,7 +26,7 @@ defmodule Game.Room.ActionsTest do
 
   describe "tick - respawning items" do
     setup %{room: room, item: item} do
-      create_room_item(room, item, %{spawn: true, interval: 30})
+      create_room_item(room, item, %{spawn: true, spawn_interval: 30})
       room = Repo.preload(room, [:room_items])
       {:ok, %{room: room, item: item}}
     end

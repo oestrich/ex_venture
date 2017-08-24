@@ -1,3 +1,5 @@
 {
-  "priv/repo/migrations":{ "type": "migration", }
+  "priv/repo/migrations": { "type": "migration" },
+  "lib/*.ex": { "alternate": "test/{}_test.exs" },
+  "test/*_test.exs": { "alternate": "lib/{}.ex" }
 }

@@ -12,6 +12,7 @@ defmodule Game.NPC do
   alias Game.Character
   alias Game.Effect
   alias Game.Message
+  alias Game.NPC.Actions
 
   @doc """
   Starts a new NPC server
@@ -48,6 +49,14 @@ defmodule Game.NPC do
     GenServer.cast(pid(id), {:heard, message})
   end
 
+  @doc """
+  Send a tick message
+  """
+  @spec tick(pid :: pid, time :: DateTime.t) :: :ok
+  def tick(pid, time) do
+    GenServer.cast(pid, {:tick, time})
+  end
+
   def init(npc) do
     GenServer.cast(self(), :enter)
     {:ok, %{npc: npc, is_targeting: MapSet.new()}}
@@ -57,6 +66,7 @@ defmodule Game.NPC do
     @room.enter(npc.room_id, {:npc, npc})
     {:noreply, state}
   end
+
   def handle_cast({:heard, message}, state = %{npc: npc}) do
     case message.message do
       "Hello" <> _ ->
@@ -65,6 +75,17 @@ defmodule Game.NPC do
     end
     {:noreply, state}
   end
+
+  def handle_cast({:tick, time}, state) do
+    case Actions.tick(state, time) do
+      :ok -> {:noreply, state}
+      {:update, state} -> {:noreply, state}
+    end
+  end
+
+  #
+  # Character callbacks
+  #
   def handle_cast({:targeted, {_, player}}, state = %{npc: npc}) do
     npc.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
     state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, {:user, player.id}))
