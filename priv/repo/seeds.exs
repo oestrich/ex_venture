@@ -151,8 +151,8 @@ defmodule Seeds do
       dexterity: 10,
     }
 
-    entrance |> create_npc(%{name: "Bran", hostile: false, stats: stats})
-    great_room |> create_npc(%{name: "Bandit", hostile: true, stats: stats})
+    entrance |> create_npc(%{name: "Bran", hostile: false, spawn_interval: 15, stats: stats})
+    great_room |> create_npc(%{name: "Bandit", spawn_interval: 15, hostile: true, stats: stats})
 
     sword = create_item(%{
       name: "Short Sword",
