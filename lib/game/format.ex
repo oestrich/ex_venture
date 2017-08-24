@@ -61,6 +61,25 @@ defmodule Game.Format do
   end
 
   @doc """
+  Format an emote message
+
+  Example:
+
+      iex> Game.Format.emote({:npc, %{name: "NPC"}}, "does something")
+      ~s[{yellow}NPC{/yellow} {green}does something{/green}]
+
+      iex> Game.Format.emote({:user, %{name: "Player"}}, "does something")
+      ~s[{blue}Player{/blue} {green}does something{/green}]
+  """
+  @spec emote(sender :: map, message :: String.t) :: String.t
+  def emote({:npc, %{name: name}}, emote) do
+    ~s[{yellow}#{name}{/yellow} {green}#{emote}{/green}]
+  end
+  def emote({:user, %{name: name}}, emote) do
+    ~s[{blue}#{name}{/blue} {green}#{emote}{/green}]
+  end
+
+  @doc """
   Format full text for a room
   """
   @spec room(room :: Game.Room.t) :: String.t

@@ -2,6 +2,7 @@ defmodule Game.RoomTest do
   use Data.ModelCase
 
   alias Game.Room
+  alias Game.Message
 
   setup do
     {:ok, user: %{id: 10, name: "user"}}
@@ -21,5 +22,11 @@ defmodule Game.RoomTest do
     npc = %{id: 10, name: "Bandit"}
     {:noreply, state} = Room.handle_cast({:leave, {:npc, npc}}, %{npcs: [npc]})
     assert state.npcs == []
+  end
+
+  test "emoting", %{user: user} do
+    message = Message.emote(user, "emote")
+    {:noreply, _state} = Room.handle_cast({:emote, :session, message}, %{players: [{:user, self(), :user}], npcs: []})
+    assert_received {:"$gen_cast", {:echo, "{blue}user{/blue} {green}emote{/green}"}}
   end
 end

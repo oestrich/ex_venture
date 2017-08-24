@@ -87,6 +87,14 @@ defmodule Game.Room do
   end
 
   @doc """
+  Emote to the players in the room
+  """
+  @spec emote(id :: integer, sender :: pid, message :: Message.t) :: :ok
+  def emote(id, sender, message) do
+    GenServer.cast(pid(id), {:emote, sender, message})
+  end
+
+  @doc """
   Pick up the item
   """
   @spec pick_up(id :: integer, item :: Item.t) :: :ok
@@ -144,6 +152,16 @@ defmodule Game.Room do
   end
 
   def handle_cast({:say, sender, message}, state = %{players: players, npcs: npcs}) do
+    players
+    |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
+    |> echo_to_players(message.formatted)
+
+    npcs |> echo_to_npcs(message)
+
+    {:noreply, state}
+  end
+
+  def handle_cast({:emote, sender, message}, state = %{players: players, npcs: npcs}) do
     players
     |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
     |> echo_to_players(message.formatted)

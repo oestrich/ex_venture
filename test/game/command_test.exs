@@ -111,6 +111,10 @@ defmodule CommandTest do
 
       assert Command.parse("slash", user) == {Command.Skills, {slash, "slash"}}
     end
+
+    test "emoting", %{user: user} do
+      assert Command.parse("emote does something", user) == {Command.Emote, {"does something"}}
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do

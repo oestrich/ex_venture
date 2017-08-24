@@ -24,6 +24,15 @@ defmodule Game.Message do
     }
   end
 
+  def emote(user, message) do
+    %__MODULE__{
+      type: :user,
+      sender: user,
+      message: message,
+      formatted: Format.emote({:user, user}, message),
+    }
+  end
+
   def npc(npc, message) do
     %__MODULE__{
       type: :npc,

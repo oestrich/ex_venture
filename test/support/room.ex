@@ -65,6 +65,19 @@ defmodule Test.Game.Room do
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :say, []) end)
   end
 
+  def emote(id, _session, message) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) ->
+      emotes = Map.get(state, :emote, [])
+      Map.put(state, :emote, emotes ++ [{id, message}])
+    end)
+  end
+
+  def get_emotes() do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :emote, []) end)
+  end
+
   def set_pick_up(response) do
     start_link()
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up, response) end)
