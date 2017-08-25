@@ -37,6 +37,8 @@ defmodule Web do
       use Phoenix.HTML
 
       import Web.Router.Helpers
+      import Web.ErrorHelpers
+      import Web.Gettext
     end
   end
 
