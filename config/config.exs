@@ -10,6 +10,7 @@ config :ex_venture,
 config :ex_venture, Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "7mps3fp2M1dk3Cnd8Wu/91TdGWhzrh3PC3naZcn/umPyZabQQL2Zq8yysm9WMkc3",
+  render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]
 
 import_config "#{Mix.env}.exs"
