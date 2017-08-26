@@ -154,8 +154,8 @@ defmodule Seeds do
       dexterity: 10,
     }
 
-    entrance |> create_npc(%{name: "Bran", hostile: false, spawn_interval: 15, stats: stats})
-    great_room |> create_npc(%{name: "Bandit", spawn_interval: 15, hostile: true, stats: stats})
+    entrance |> create_npc(%{name: "Bran", hostile: false, level: 1, experience_points: 100, spawn_interval: 15, stats: stats})
+    great_room |> create_npc(%{name: "Bandit", spawn_interval: 15, hostile: true, level: 1, experience_points: 100, stats: stats})
 
     sword = create_item(%{
       name: "Short Sword",
@@ -189,6 +189,8 @@ defmodule Seeds do
 
     save =  %{
       room_id: entrance.id,
+      level: 1,
+      experience_points: 0,
       item_ids: [sword.id],
       wearing: %{},
       wielding: %{},

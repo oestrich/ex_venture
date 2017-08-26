@@ -10,6 +10,8 @@ defmodule Data.Save do
   @type t :: %{
     room_id: integer,
     class: atom,
+    level: integer,
+    experience_points: integer,
     stats: map,
     item_ids: [integer],
     wearing: %{
@@ -21,7 +23,7 @@ defmodule Data.Save do
     },
   }
 
-  defstruct [:room_id, :class, :stats, :item_ids, :wearing, :wielding]
+  defstruct [:room_id, :class, :level, :experience_points, :stats, :item_ids, :wearing, :wielding]
 
   @behaviour Ecto.Type
 
@@ -29,7 +31,6 @@ defmodule Data.Save do
 
   def cast(save) when is_map(save), do: {:ok, save}
   def cast(_), do: :error
-
 
   @doc """
   Load a save from the database
@@ -80,7 +81,8 @@ defmodule Data.Save do
   Validate a save struct
 
       iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
-      iex> Data.Save.valid?(%Data.Save{room_id: 1, item_ids: [], wearing: %{}, wielding: %{}, stats: stats})
+      iex> save = %Data.Save{room_id: 1, level: 1, experience_points: 0, item_ids: [], wearing: %{}, wielding: %{}, stats: stats}
+      iex> Data.Save.valid?(save)
       true
 
       iex> Data.Save.valid?(%Data.Save{room_id: 1, class: "fighter", item_ids: [], wearing: %{}, wielding: %{}})
@@ -91,7 +93,7 @@ defmodule Data.Save do
   """
   @spec valid?(save :: Save.t) :: boolean
   def valid?(save) do
-    keys(save) == [:item_ids, :room_id, :stats, :wearing, :wielding]
+    keys(save) == [:experience_points, :item_ids, :level, :room_id, :stats, :wearing, :wielding]
       && valid_stats?(save)
       && valid_item_ids?(save)
       && valid_room_id?(save)

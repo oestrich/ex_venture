@@ -30,14 +30,14 @@ defmodule Game.Format do
 
       iex> class = %{points_abbreviation: "SP"}
       iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10}
-      iex> Game.Format.prompt(%{name: "user", class: class}, %{stats: stats})
-      "[50/75hp 9/10sp] > "
+      iex> Game.Format.prompt(%{name: "user", class: class}, %{experience_points: 10, stats: stats})
+      "[50/75hp 9/10sp 10xp] > "
   """
   @spec prompt(user :: User.t, save :: Save.t) :: String.t
   def prompt(user, save)
-  def prompt(%{class: class}, %{stats: stats}) do
+  def prompt(%{class: class}, %{experience_points: xp, stats: stats}) do
     sp = class.points_abbreviation |> String.downcase
-    "[#{stats.health}/#{stats.max_health}hp #{stats.skill_points}/#{stats.max_skill_points}#{sp}] > "
+    "[#{stats.health}/#{stats.max_health}hp #{stats.skill_points}/#{stats.max_skill_points}#{sp} #{xp}xp] > "
   end
   def prompt(_user, _save), do: "> "
 
@@ -277,8 +277,10 @@ Items: #{items(room)}
   Example:
 
       iex> stats = %{health: 50, max_health: 55, skill_points: 10, max_skill_points: 10, strength: 10, intelligence: 10, dexterity: 10}
-      iex> Game.Format.info(%{name: "hero", save: %Data.Save{stats: stats}, class: %{name: "Fighter", points_name: "Skill Points"}})
-      "hero\\n--------\\nFighter\\n\\nHealth: 50/55\\nSkill Points: 10/10\\nStrength: 10\\nIntelligence: 10\\nDexterity: 10"
+      iex> save = %Data.Save{level: 1, experience_points: 0, stats: stats}
+      iex> user = %{name: "hero", save: save, class: %{name: "Fighter", points_name: "Skill Points"}}
+      iex> Game.Format.info(user)
+      "hero\\n--------\\nFighter\\n\\nLevel: 1\\nXP: 0\\nHealth: 50/55\\nSkill Points: 10/10\\nStrength: 10\\nIntelligence: 10\\nDexterity: 10"
   """
   @spec info(user :: User.t) :: String.t
   def info(user = %{save: save}) do
@@ -289,6 +291,8 @@ Items: #{items(room)}
     #{underline(user.name)}
     #{user.class.name}
 
+    Level: #{save.level}
+    XP: #{save.experience_points}
     Health: #{stats.health}/#{stats.max_health}
     #{user.class.points_name}: #{stats.skill_points}/#{stats.max_skill_points}
     Strength: #{stats.strength}

@@ -11,6 +11,8 @@ defmodule TestHelpers do
   def base_save() do
     %Data.Save{
       room_id: 1,
+      level: 1,
+      experience_points: 0,
       item_ids: [],
       stats: %{
         health: 50,

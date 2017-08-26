@@ -10,6 +10,8 @@ defmodule Data.NPC do
   schema "npcs" do
     field :name, :string
     field :hostile, :boolean
+    field :level, :integer
+    field :experience_points, :integer # given after defeat
     field :stats, Data.Stats
     field :spawn_interval, :integer
     
@@ -20,8 +22,8 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :room_id, :hostile, :stats, :spawn_interval])
-    |> validate_required([:name, :room_id, :hostile, :stats, :spawn_interval])
+    |> cast(params, [:name, :room_id, :hostile, :level, :experience_points, :stats, :spawn_interval])
+    |> validate_required([:name, :room_id, :hostile, :level, :experience_points, :stats, :spawn_interval])
     |> validate_stats()
   end
 
