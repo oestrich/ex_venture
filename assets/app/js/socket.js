@@ -60,6 +60,7 @@ channel.on("echo", payload => {
 channel.on("disconnect", payload => {
   document.getElementById("terminal").append("\nDisconnected.")
   socket.disconnect()
+  window.scrollTo(0, document.body.scrollHeight);
 })
 
 document.getElementById("prompt").addEventListener("keydown", e => {
