@@ -5,6 +5,7 @@ defmodule Game.SessionTest do
   alias Game.Session
 
   @socket Test.Networking.Socket
+  @room Test.Game.Room
 
   setup do
     socket = :socket
@@ -24,7 +25,7 @@ defmodule Game.SessionTest do
   describe "ticking" do
     setup do
       stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12}
-      %{user: %{class: %{points_name: "Skill Points"}}, save: %{stats: stats}, regen: %{count: 5}}
+      %{user: %{class: %{points_name: "Skill Points"}}, save: %{room_id: 1, stats: stats}, regen: %{count: 5}}
     end
 
     test "updates last tick", state do
@@ -38,12 +39,18 @@ defmodule Game.SessionTest do
       assert stats.skill_points == 10
 
       assert_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
+
+      user = %{
+        class: %{points_name: "Skill Points"},
+        save: %{room_id: 1, stats: %{health: 11, max_health: 15, max_skill_points: 12, skill_points: 10}}, 
+      }
+      assert [{1, {:user, _, ^user}}] = @room.get_update_characters()
     end
 
     test "does not echo if stats did not change", state do
       stats = %{health: 15, max_health: 15, skill_points: 12, max_skill_points: 12}
 
-      {:noreply, %{save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, %{state | save: %{stats: stats}})
+      {:noreply, %{save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, %{state | save: %{room_id: 1, stats: stats}})
 
       assert stats.health == 15
       assert stats.skill_points == 12
@@ -114,11 +121,13 @@ defmodule Game.SessionTest do
     stats = %{health: 25}
     user = %{name: "user"}
 
-    state = %{socket: socket, state: "active", user: user, save: %{stats: stats}, is_targeting: MapSet.new}
+    state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
     {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
+
+    assert [{1, {:user, _,  %{name: "user", save: %{room_id: 1, stats: %{health: 15}}}}}] = @room.get_update_characters()
   end
 
   test "applying effects - died", %{socket: socket} do
@@ -129,7 +138,7 @@ defmodule Game.SessionTest do
     user = %{name: "user"}
 
     is_targeting = MapSet.new() |> MapSet.put({:user, 2})
-    state = %{socket: socket, state: "active", user: user, save: %{stats: stats}, is_targeting: is_targeting}
+    state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: is_targeting}
     {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == -5
 

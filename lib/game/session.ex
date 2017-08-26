@@ -14,15 +14,15 @@ defmodule Game.Session do
   require Logger
 
   import Game.Character.Target, only: [clear_target: 2]
+  import Game.Character.Update, only: [update_character: 2]
 
   alias Game.Account
   alias Game.Character
   alias Game.Command
-  alias Game.Config
   alias Game.Effect
   alias Game.Format
   alias Game.Session
-  alias Game.Stats
+  alias Game.Session.Tick
 
   @save_period 15_000
 
@@ -124,7 +124,7 @@ defmodule Game.Session do
 
   # Update the tick timestamp
   def handle_cast({:tick, time}, state = %{save: _save}) do
-    {:noreply, handle_tick(time, state)}
+    {:noreply, Tick.tick(time, state)}
   end
 
   # Handle logging in
@@ -172,7 +172,11 @@ defmodule Game.Session do
     %{user: user, save: save, is_targeting: is_targeting} = state
 
     stats = effects |> Effect.apply(save.stats)
-    save = %{save | stats: stats}
+
+    save = Map.put(save, :stats, stats)
+    user = Map.put(user, :save, save)
+    save.room_id |> update_character(user)
+
     echo(self(), Format.skill_usee(description, effects, from))
 
     case stats do
@@ -181,7 +185,11 @@ defmodule Game.Session do
       _ -> nil
     end
 
-    {:noreply, Map.put(state, :save, save)}
+    state = state
+    |> Map.put(:user, user)
+    |> Map.put(:save, save)
+
+    {:noreply, state}
   end
 
   def handle_cast({:died, who}, state = %{state: "active", target: target}) when is_nil(target) do
@@ -236,41 +244,5 @@ defmodule Game.Session do
       _ ->
         self() |> schedule_inactive_check()
     end
-  end
-
-  defp handle_tick(time, state) do
-    state
-    |> handle_regen()
-    |> Map.put(:last_tick, time)
-  end
-
-  defp handle_regen(state) do
-    _handle_regen(Config.regen_tick_count(5), state)
-  end
-
-  defp _handle_regen(count, state = %{regen: %{count: count}, user: %{class: class}, save: save}) do
-    stats = Stats.regen(:health, save.stats, Config.regen_health(1))
-    stats = Stats.regen(:skill_points, stats, Config.regen_skill_points(1))
-
-    starting_hp = save.stats.health
-    starting_sp = save.stats.skill_points
-    case stats do
-      %{health: ^starting_hp, skill_points: ^starting_sp} ->
-        nil
-      %{health: ^starting_hp} ->
-        echo(self(), "You regenerated some #{class.points_name |> String.downcase}.")
-      %{skill_points: ^starting_sp} -> nil
-        echo(self(), "You regenerated some health.")
-      _ ->
-        echo(self(), "You regenerated some health and #{class.points_name |> String.downcase}.")
-    end
-
-    state
-    |> Map.put(:save, Map.put(save, :stats, stats))
-    |> Map.put(:regen, %{count: 0})
-  end
-  defp _handle_regen(_count, state = %{regen: %{count: count}}) do
-    state
-    |> Map.put(:regen, %{count: count + 1})
   end
 end

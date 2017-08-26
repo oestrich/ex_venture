@@ -95,6 +95,14 @@ defmodule Game.Room do
   end
 
   @doc """
+  Update the character after a stats change
+  """
+  @spec update_character(id :: integer, character :: tuple) :: :ok
+  def update_character(id, character) do
+    GenServer.cast(pid(id), {:update_character, character})
+  end
+
+  @doc """
   Pick up the item
   """
   @spec pick_up(id :: integer, item :: Item.t) :: :ok
@@ -169,6 +177,17 @@ defmodule Game.Room do
     npcs |> echo_to_npcs(message)
 
     {:noreply, state}
+  end
+
+  def handle_cast({:update_character, player = {:user, session, _user}}, state = %{players: players}) do
+    case Enum.member?(Enum.map(players, &(elem(&1, 1))), session) do
+      true ->
+        players = players |> Enum.reject(&(elem(&1, 1) == session))
+        players = [player | players]
+        {:noreply, Map.put(state, :players, players)}
+      false ->
+        {:noreply, state}
+    end
   end
 
   defp echo_to_players(players, message) do

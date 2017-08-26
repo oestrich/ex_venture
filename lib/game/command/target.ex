@@ -5,6 +5,9 @@ defmodule Game.Command.Target do
 
   use Game.Command
 
+  alias Data.NPC
+  alias Data.Room
+  alias Data.User
   alias Game.Character
 
   @commands ["target"]
@@ -20,27 +23,59 @@ defmodule Game.Command.Target do
   @doc """
   Target an enemy
   """
-  def run(command, _session, state)
-  def run({target}, _session, state = %{socket: socket, user: user, save: %{room_id: room_id}}) do
+  def run(command, session, state)
+  def run({target}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    case find_target(target, room.players, room.npcs) do
-      nil ->
-        socket |> @socket.echo(~s(Could not find target "#{target}".))
-        :ok
-      {:npc, %{id: id, name: name}} ->
-        Character.being_targeted({:npc, id}, {:user, user})
-        socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
-        {:update, Map.put(state, :target, {:npc, id})}
-      {:user, %{id: id, name: name}} ->
-        Character.being_targeted({:user, id}, {:user, user})
-        socket |> @socket.echo("You are now targeting {blue}#{name}{/blue}.")
-        {:update, Map.put(state, :target, {:user, id})}
-    end
+    socket |> target_character(target, room, state)
   end
   def run({}, _session, %{socket: socket, save: %{room_id: room_id}, target: target}) do
     room = @room.look(room_id)
     socket |> display_target(target, room)
     :ok
+  end
+
+  @doc """
+  Target a character (NPC or PC)
+  """
+  @spec target_character(socket :: pid, target :: String.t, room :: Room.t, state :: map) :: :ok | {:update, map}
+  def target_character(socket, target, room, state) do
+    case find_target(target, room.players, room.npcs) do
+      nil ->
+        socket |> @socket.echo(~s(Could not find target "#{target}".))
+        :ok
+      {:npc, npc} ->
+        npc |> target_npc(socket, state)
+      {:user, user} ->
+        user |> target_user(socket, state)
+    end
+  end
+
+  @doc """
+  Target an NPC
+  """
+  @spec target_npc(npc :: NPC.t, socket :: pid, state :: map) :: {:update, state :: map}
+  def target_npc(npc, socket, state)
+  def target_npc(%{id: id, name: name}, socket, state = %{user: user}) do
+    Character.being_targeted({:npc, id}, {:user, user})
+    socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
+    {:update, Map.put(state, :target, {:npc, id})}
+  end
+
+  @doc """
+  Target a user
+
+  Does not target if the target is too low of health
+  """
+  @spec target_user(user :: User.t, socket :: pid, state :: map) :: :ok | {:update, state :: map}
+  def target_user(user, socket, state)
+  def target_user(user = %{save: %{stats: %{health: health}}}, socket, _state) when health < 1 do
+    socket |> @socket.echo("#{Format.target_name({:user, user})} could not be targeted.")
+    :ok
+  end
+  def target_user(%{id: id, name: name}, socket, state = %{user: user}) do
+    Character.being_targeted({:user, id}, {:user, user})
+    socket |> @socket.echo("You are now targeting {blue}#{name}{/blue}.")
+    {:update, Map.put(state, :target, {:user, id})}
   end
 
   @doc """

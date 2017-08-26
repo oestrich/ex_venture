@@ -10,7 +10,7 @@ defmodule Game.Command.TargetTest do
 
     room = @room._room()
     |> Map.put(:npcs, [npc])
-    |> Map.put(:players, [%{id: 2, name: "Player"}])
+    |> Map.put(:players, [%{id: 2, name: "Player", save: %{stats: %{health: 1}}}])
 
     @room.set_room(room)
     @socket.clear_messages
@@ -32,6 +32,18 @@ defmodule Game.Command.TargetTest do
     assert state.target == {:user, 2}
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look) 
+  end
+
+  test "cannot target another player if health is < 1", %{session: session, socket: socket, user: user} do
+    room = @room._room()
+    |> Map.put(:npcs, [])
+    |> Map.put(:players, [%{id: 2, name: "Player", save: %{stats: %{health: -1}}}])
+    @room.set_room(room)
+
+    :ok = Game.Command.Target.run({"player"}, session, %{socket: socket, user: user, save: %{room_id: 1}})
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(could not be targeted), look) 
   end
 
   test "target not found", %{session: session, socket: socket, user: user} do

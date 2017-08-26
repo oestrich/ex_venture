@@ -29,4 +29,14 @@ defmodule Game.RoomTest do
     {:noreply, _state} = Room.handle_cast({:emote, :session, message}, %{players: [{:user, self(), :user}], npcs: []})
     assert_received {:"$gen_cast", {:echo, "{blue}user{/blue} {green}emote{/green}"}}
   end
+
+  test "updating player data" do
+    {:noreply, state} = Room.handle_cast({:update_character, {:user, self(), :new_user}}, %{players: [{:user, self(), :user}], npcs: []})
+    assert state.players == [{:user, self(), :new_user}]
+  end
+
+  test "ignores updates to players not in the list already" do
+    {:noreply, state} = Room.handle_cast({:update_character, {:user, self(), :new_user}}, %{players: [{:user, :pid, :user}], npcs: []})
+    assert state.players == [{:user, :pid, :user}]
+  end
 end
