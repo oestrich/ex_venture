@@ -14,14 +14,13 @@ defmodule Game.Session do
   require Logger
 
   import Game.Character.Target, only: [clear_target: 2]
-  import Game.Character.Update, only: [update_character: 2]
 
   alias Game.Account
   alias Game.Character
   alias Game.Command
-  alias Game.Effect
   alias Game.Format
   alias Game.Session
+  alias Game.Session.Effects
   alias Game.Session.Tick
 
   @save_period 15_000
@@ -169,26 +168,7 @@ defmodule Game.Session do
   end
 
   def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active"}) do
-    %{user: user, save: save, is_targeting: is_targeting} = state
-
-    stats = effects |> Effect.apply(save.stats)
-
-    save = Map.put(save, :stats, stats)
-    user = Map.put(user, :save, save)
-    save.room_id |> update_character(user)
-
-    echo(self(), Format.skill_usee(description, effects, from))
-
-    case stats do
-      %{health: health} when health < 1 ->
-        Enum.each(is_targeting, &(Character.died(&1, {:user, user})))
-      _ -> nil
-    end
-
-    state = state
-    |> Map.put(:user, user)
-    |> Map.put(:save, save)
-
+    state = Effects.apply(effects, from, description, state)
     {:noreply, state}
   end
 
