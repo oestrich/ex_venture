@@ -9,7 +9,7 @@ defmodule Web.Zone do
   alias Data.Room
   alias Data.Repo
 
-  alias Game.Zone.Supervisor, as: ZoneSupervisor
+  alias Game.World
 
   def all() do
     Zone |> Repo.all
@@ -42,7 +42,7 @@ defmodule Web.Zone do
     changeset = %Zone{} |> Zone.changeset(params)
     case changeset |> Repo.insert() do
       {:ok, zone} ->
-        ZoneSupervisor.start_child(zone)
+        World.start_child(zone)
         {:ok, zone}
       anything -> anything
     end

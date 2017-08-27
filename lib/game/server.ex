@@ -8,6 +8,7 @@ defmodule Game.Server do
   alias Game.NPC
   alias Game.Session
   alias Game.Zone
+  alias Game.World
 
   @tick_interval 2000
 
@@ -36,8 +37,8 @@ defmodule Game.Server do
       session |> Session.tick(time)
     end)
 
-    Zone.Supervisor.zones |> Enum.each(&Zone.tick/1)
-    NPC.Supervisor.npcs |> Enum.each(&(NPC.tick(&1, time)))
+    World.zones() |> Enum.each(&(Zone.tick(&1, time)))
+    NPC.Supervisor.npcs() |> Enum.each(&(NPC.tick(&1, time)))
 
     {:noreply, state}
   end

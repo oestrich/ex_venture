@@ -13,6 +13,7 @@ defmodule Game.Room do
   alias Game.Message
   alias Game.NPC
   alias Game.Session
+  alias Game.Zone
 
   @type t :: map
 
@@ -113,12 +114,13 @@ defmodule Game.Room do
   @doc """
   Send a tick to the room
   """
-  @spec tick(id :: pid) :: :ok
-  def tick(pid) do
-    GenServer.cast(pid, :tick)
+  @spec tick(id :: integer, time :: DateTime.t) :: :ok
+  def tick(id, _time) do
+    GenServer.cast(pid(id), :tick)
   end
 
   def init(room) do
+    room.zone_id |> Zone.room_online(room)
     {:ok, %{room: room, players: [], npcs: [], respawn: %{}}}
   end
 

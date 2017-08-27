@@ -7,13 +7,13 @@ defmodule Game.Zone do
     name: String.t,
   }
 
-  use Supervisor
+  use GenServer
 
   alias Game.Room
   alias Game.Zone.Repo
 
   def start_link(zone) do
-    Supervisor.start_link(__MODULE__, zone, name: pid(zone.id))
+    GenServer.start_link(__MODULE__, zone, name: pid(zone.id))
   end
 
   defp pid(id) do
@@ -28,27 +28,36 @@ defmodule Game.Zone do
     Repo.all()
   end
 
+  #
+  # Client
+  #
+
   @doc """
-  Return all rooms that are currently online
+  Send a tick to the zone
   """
-  @spec rooms(pid :: pid) :: [pid]
-  def rooms(pid) do
-    pid
-    |> Supervisor.which_children()
-    |> Enum.map(&(elem(&1, 1)))
+  @spec tick(pid, time :: DateTime.t) :: :ok
+  def tick(pid, time) do
+    GenServer.cast(pid, {:tick, time})
   end
 
-  def tick(pid) do
-    pid |> rooms() |> Enum.map(&Room.tick/1)
+  def room_online(id, room) do
+    GenServer.cast(pid(id), {:room_online, room})
   end
+
+  #
+  # Server
+  #
 
   def init(zone) do
-    children = zone.id
-    |> Room.for_zone()
-    |> Enum.map(fn (room) ->
-      worker(Room, [room], id: room.id, restart: :permanent)
-    end)
+    {:ok, %{zone: zone, rooms: []}}
+  end
 
-    supervise(children, strategy: :one_for_one)
+  def handle_cast({:tick, time}, state = %{rooms: rooms}) do
+    rooms |> Enum.each(&(Room.tick(&1.id, time)))
+    {:noreply, state}
+  end
+
+  def handle_cast({:room_online, room}, state = %{rooms: rooms}) do
+    {:noreply, Map.put(state, :rooms, [room | rooms])}
   end
 end
