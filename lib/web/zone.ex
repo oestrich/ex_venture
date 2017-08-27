@@ -11,10 +11,20 @@ defmodule Web.Zone do
 
   alias Game.World
 
+  @doc """
+  Get all zones
+  """
+  @spec all() :: [Zone.t]
   def all() do
     Zone |> Repo.all
   end
 
+  @doc """
+  Get a zone
+
+  Preload rooms
+  """
+  @spec get(id :: integer) :: [Zone.t]
   def get(id) do
     Zone
     |> where([z], z.id == ^id)

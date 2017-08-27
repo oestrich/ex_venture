@@ -8,6 +8,10 @@ defmodule Web.User do
   alias Data.User
   alias Data.Repo
 
+  @doc """
+  Fetch a user from a web token
+  """
+  @spec from_token(token :: String.t) :: User.t
   def from_token(token) do
     User
     |> where([u], u.token == ^token)

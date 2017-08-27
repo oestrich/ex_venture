@@ -66,6 +66,10 @@ defmodule Web.Item do
     end
   end
 
+  @doc """
+  Cast params into what `Data.Item` expects
+  """
+  @spec cast_params(params :: map) :: map
   def cast_params(params) do
     params
     |> split_keywords()

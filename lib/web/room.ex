@@ -9,6 +9,12 @@ defmodule Web.Room do
   alias Data.Room
   alias Data.Repo
 
+  @doc """
+  Get a room
+
+  Preload rooms in each direction and the zone
+  """
+  @spec get(id :: integer) :: [Room.t]
   def get(id) do
     Room
     |> where([r], r.id == ^id)
@@ -16,6 +22,10 @@ defmodule Web.Room do
     |> Repo.one
   end
 
+  @doc """
+  Get npcs for a room
+  """
+  @spec npcs(room_id :: integer) :: [NPC.t]
   def npcs(room_id) do
     NPC
     |> where([n], n.room_id == ^room_id)
