@@ -44,6 +44,14 @@ defmodule Game.Zone do
     GenServer.cast(pid(id), {:room_online, room})
   end
 
+  @doc """
+  Update a zone definition in the server state
+  """
+  @spec update(id :: integer, zone :: Zone.t) :: :ok
+  def update(id, zone) do
+    GenServer.cast(pid(id), {:update, zone})
+  end
+
   #
   # Server
   #
@@ -59,5 +67,9 @@ defmodule Game.Zone do
 
   def handle_cast({:room_online, room}, state = %{rooms: rooms}) do
     {:noreply, Map.put(state, :rooms, [room | rooms])}
+  end
+
+  def handle_cast({:update, zone}, state) do
+    {:noreply, Map.put(state, :zone, zone)}
   end
 end

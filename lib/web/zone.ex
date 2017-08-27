@@ -56,7 +56,9 @@ defmodule Web.Zone do
     zone = id |> get()
     changeset = zone |> Zone.changeset(params)
     case changeset |> Repo.update do
-      {:ok, zone} -> {:ok, zone}
+      {:ok, zone} ->
+        Game.Zone.update(zone.id, zone)
+        {:ok, zone}
       anything -> anything
     end
   end
