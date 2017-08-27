@@ -9,7 +9,6 @@ defmodule Data.Save do
 
   @type t :: %{
     room_id: integer,
-    class: atom,
     level: integer,
     experience_points: integer,
     stats: map,
@@ -23,7 +22,7 @@ defmodule Data.Save do
     },
   }
 
-  defstruct [:room_id, :class, :level, :experience_points, :stats, :item_ids, :wearing, :wielding]
+  defstruct [:room_id, :level, :experience_points, :stats, :item_ids, :wearing, :wielding]
 
   @behaviour Ecto.Type
 
@@ -85,7 +84,7 @@ defmodule Data.Save do
       iex> Data.Save.valid?(save)
       true
 
-      iex> Data.Save.valid?(%Data.Save{room_id: 1, class: "fighter", item_ids: [], wearing: %{}, wielding: %{}})
+      iex> Data.Save.valid?(%Data.Save{room_id: 1, item_ids: [], wearing: %{}, wielding: %{}})
       false
 
       iex> Data.Save.valid?(%Data.Save{})
