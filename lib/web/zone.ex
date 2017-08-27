@@ -29,6 +29,12 @@ defmodule Web.Zone do
   def new(), do: %Zone{} |> Zone.changeset(%{})
 
   @doc """
+  Get a changeset for an edit page
+  """
+  @spec edit(zone :: Zone.t) :: changeset :: map
+  def edit(zone), do: zone |> Zone.changeset(%{})
+
+  @doc """
   Create a zone
   """
   @spec create(params :: map) :: {:ok, Zone.t} | {:error, changeset :: map}
@@ -38,6 +44,19 @@ defmodule Web.Zone do
       {:ok, zone} ->
         ZoneSupervisor.start_child(zone)
         {:ok, zone}
+      anything -> anything
+    end
+  end
+
+  @doc """
+  Update an zone
+  """
+  @spec update(id :: integer, params :: map) :: {:ok, Zone.t} | {:error, changeset :: map}
+  def update(id, params) do
+    zone = id |> get()
+    changeset = zone |> Zone.changeset(params)
+    case changeset |> Repo.update do
+      {:ok, zone} -> {:ok, zone}
       anything -> anything
     end
   end

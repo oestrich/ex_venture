@@ -24,4 +24,19 @@ defmodule Web.Admin.ZoneController do
       {:error, changeset} -> conn |> render("new.html", changeset: changeset)
     end
   end
+
+  def edit(conn, %{"id" => id}) do
+    zone = Zone.get(id)
+    changeset = Zone.edit(zone)
+    conn |> render("edit.html", zone: zone, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "zone" => params}) do
+    case Zone.update(id, params) do
+      {:ok, zone} -> conn |> redirect(to: zone_path(conn, :show, zone.id))
+      {:error, changeset} ->
+        zone = Zone.get(id)
+        conn |> render("edit.html", zone: zone, changeset: changeset)
+    end
+  end
 end

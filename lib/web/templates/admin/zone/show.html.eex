@@ -9,6 +9,27 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: zone_path(@conn, :edit, @zone.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tr>
+              <th>Name</th>
+              <td><%= @zone.name %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
           <h3 class="box-title">Rooms</h3>
         </div>
         <div class="box-body">

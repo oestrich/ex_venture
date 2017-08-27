@@ -30,6 +30,6 @@ defmodule Web.Router do
 
     resources "/sessions", SessionController, only: [:new, :create]
 
-    resources "/zones", ZoneController, only: [:index, :show, :new, :create]
+    resources "/zones", ZoneController, only: [:index, :show, :new, :create, :edit, :update]
   end
 end
