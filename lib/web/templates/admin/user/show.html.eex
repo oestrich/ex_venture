@@ -1,0 +1,51 @@
+<section class="content-header">
+  <h1>
+    <%= @user.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td><%= @user.name %></td>
+              </tr>
+              <tr>
+                <th>Class</th>
+                <td><%= @user.class.name %></td>
+              </tr>
+              <tr>
+                <th>Flags</th>
+                <td><%= @user.flags |> Enum.join(", ") %></td>
+              </tr>
+              <tr>
+                <th>Created</th>
+                <td><%= @user.inserted_at %></td>
+              </tr>
+              <tr>
+                <th>Last Saved</th>
+                <td><%= @user.updated_at %></td>
+              </tr>
+              <tr>
+                <th>Save</th>
+                <td>
+                  <pre>
+                    <%= @user.save |> Poison.encode!(pretty: true) |> raw %>
+                  </pre>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

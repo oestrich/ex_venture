@@ -17,4 +17,22 @@ defmodule Web.User do
     |> where([u], u.token == ^token)
     |> Repo.one
   end
+
+  @doc """
+  Load all users
+  """
+  @spec all() :: [User.t]
+  def all() do
+    User |> Repo.all
+  end
+
+  @doc """
+  Load a user
+  """
+  @spec get(id :: integer) :: User.t
+  def get(id) do
+    User
+    |> Repo.get(id)
+    |> Repo.preload([:class])
+  end
 end

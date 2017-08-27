@@ -33,14 +33,19 @@
         <section class="sidebar">
           <ul class="sidebar-menu" data-widget="tree">
             <li class="header">MAIN NAVIGATION</li>
-            <li>
+            <li class="<%= tab_selected(@conn, "zones") %>">
               <%= link(to: zone_path(@conn, :index)) do %>
                 <i class="fa fa-flag"></i> Zones
               <% end %>
             </li>
-            <li>
+            <li class="<%= tab_selected(@conn, "items") %>">
               <%= link(to: item_path(@conn, :index)) do %>
                 <i class="fa fa-archive"></i> Items
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "users") %>">
+              <%= link(to: user_path(@conn, :index)) do %>
+                <i class="fa fa-users"></i> Users
               <% end %>
             </li>
           </ul>
