@@ -25,7 +25,8 @@ defmodule Game.SessionTest do
   describe "ticking" do
     setup do
       stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12}
-      %{user: %{class: %{points_name: "Skill Points"}}, save: %{room_id: 1, stats: stats}, regen: %{count: 5}}
+      class = %{points_name: "Skill Points", regen_health: 1, regen_skill_points: 1}
+      %{user: %{class: class}, save: %{room_id: 1, stats: stats}, regen: %{count: 5}}
     end
 
     test "updates last tick", state do
@@ -41,8 +42,8 @@ defmodule Game.SessionTest do
       assert_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
 
       user = %{
-        class: %{points_name: "Skill Points"},
-        save: %{room_id: 1, stats: %{health: 11, max_health: 15, max_skill_points: 12, skill_points: 10}}, 
+        class: %{points_name: "Skill Points", regen_health: 1, regen_skill_points: 1},
+        save: %{room_id: 1, stats: %{health: 11, max_health: 15, max_skill_points: 12, skill_points: 10}},
       }
       assert [{1, {:user, _, ^user}}] = @room.get_update_characters()
     end

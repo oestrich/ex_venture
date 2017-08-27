@@ -94,6 +94,8 @@ defmodule TestHelpers do
       description: "A fighter",
       points_name: "Skill Points",
       points_abbreviation: "SP",
+      regen_health: 1,
+      regen_skill_points: 1,
       starting_stats: %{
         health: 25,
         max_health: 25,

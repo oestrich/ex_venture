@@ -224,6 +224,8 @@ defmodule Seeds do
       description: "Uses strength and swords to overcome.",
       points_name: "Skill Points",
       points_abbreviation: "SP",
+      regen_health: 2,
+      regen_skill_points: 1,
       starting_stats: %{
         health: 25,
         max_health: 25,
@@ -253,21 +255,23 @@ defmodule Seeds do
       description: "Uses intelligence and magic to overcome.",
       points_name: "Mana",
       points_abbreviation: "MP",
+      regen_health: 1,
+      regen_skill_points: 2,
       starting_stats: %{
-        health: 25,
-        max_health: 25,
+        health: 15,
+        max_health: 15,
+        skill_points: 20,
+        max_skill_points: 20,
         strength: 10,
         intelligence: 12,
         dexterity: 12,
-        skill_points: 10,
-        max_skill_points: 10,
       },
     })
     mage
     |> create_skill(%{
       name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
-      points: 1,
+      points: 3,
       user_text: "You shoot a bolt of arcane energy at {target}.",
       usee_text: "{user} shoots a bolt of arcane energy at you.",
       command: "magic missile",

@@ -14,13 +14,16 @@ defmodule Data.Class do
     field :points_abbreviation, :string
     field :starting_stats, Stats
 
+    field :regen_health, :integer
+    field :regen_skill_points, :integer
+
     has_many :skills, Data.Skill
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :points_name, :points_abbreviation, :starting_stats])
-    |> validate_required([:name, :description, :points_name, :points_abbreviation, :starting_stats])
+    |> cast(params, [:name, :description, :points_name, :points_abbreviation, :starting_stats, :regen_health, :regen_skill_points])
+    |> validate_required([:name, :description, :points_name, :points_abbreviation, :starting_stats, :regen_health, :regen_skill_points])
     |> validate_stats()
   end
 

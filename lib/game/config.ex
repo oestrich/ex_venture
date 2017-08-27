@@ -27,18 +27,4 @@ defmodule Game.Config do
       regen_tick_count -> regen_tick_count |> Integer.parse() |> elem(0)
     end
   end
-
-  def regen_health(default) do
-    case find_config("regen_health") do
-      nil -> default
-      regen_health -> regen_health |> Integer.parse() |> elem(0)
-    end
-  end
-
-  def regen_skill_points(default) do
-    case find_config("regen_skill_points") do
-      nil -> default
-      regen_skill_points -> regen_skill_points |> Integer.parse() |> elem(0)
-    end
-  end
 end

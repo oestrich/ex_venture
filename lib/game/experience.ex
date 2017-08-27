@@ -38,13 +38,16 @@ defmodule Game.Experience do
       iex> Game.Experience.calculate_experience(%{level: 5}, 5, 100)
       100
 
-  Higher: 
+  Higher:
 
       iex> Game.Experience.calculate_experience(%{level: 5}, 6, 100)
       120
 
       iex> Game.Experience.calculate_experience(%{level: 5}, 7, 100)
       140
+
+      iex> Game.Experience.calculate_experience(%{level: 5}, 12, 100)
+      200
 
   Lower:
 
@@ -53,13 +56,22 @@ defmodule Game.Experience do
 
       iex> Game.Experience.calculate_experience(%{level: 5}, 3, 100)
       60
+
+      iex> Game.Experience.calculate_experience(%{level: 10}, 3, 100)
+      1
   """
   @spec calculate_experience(save :: Save.t, level :: integer, exp :: integer) :: integer
   def calculate_experience(save, level, exp)
   def calculate_experience(%{level: player_level}, level, exp) do
-    diff = level - player_level
-    multiplier = 1 + (diff * 0.2)
-    round(exp * multiplier)
+    case level - player_level do
+      diff when diff > 0 ->
+        multiplier = 1 + (diff * 0.2)
+        min(round(exp * multiplier), exp * 2)
+      diff when diff < 0 ->
+        multiplier = 1 + (diff * 0.2)
+        max(round(exp * multiplier), 1)
+      _ -> exp
+    end
   end
 
   @doc """
