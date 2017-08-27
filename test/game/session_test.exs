@@ -167,12 +167,25 @@ defmodule Game.SessionTest do
     refute state.is_targeting |> MapSet.member?({:user, 10})
   end
 
-  test "a died message is sent" do
+  test "a died message is sent", %{socket: socket} do
     target = {:user, %{id: 10, name: "Player"}}
     user = %{id: 10}
 
-    {:noreply, state} = Session.handle_cast({:died, target}, %{state: "active", user: user, target: {:user, 10}})
+    state = %{socket: socket, state: "active", user: user, save: %{}, target: {:user, 10}}
+    {:noreply, state} = Session.handle_cast({:died, target}, state)
 
     assert is_nil(state.target)
+  end
+
+  test "npc - a died message is sent and experience is applied", %{socket: socket} do
+    target = {:npc, %{id: 10, name: "Bandit", level: 1, experience_points: 1200}}
+    user = %{id: 10}
+    save = %{level: 1, experience_points: 0}
+
+    state = %{socket: socket, state: "active", user: user, save: save, target: {:npc, 10}}
+    {:noreply, state} = Session.handle_cast({:died, target}, state)
+
+    assert is_nil(state.target)
+    assert state.save.level == 2
   end
 end

@@ -18,6 +18,7 @@ defmodule Game.Session do
   alias Game.Account
   alias Game.Character
   alias Game.Command
+  alias Game.Experience
   alias Game.Format
   alias Game.Session
   alias Game.Session.Effects
@@ -115,9 +116,9 @@ defmodule Game.Session do
   end
 
   # forward the echo the socket pid
-  def handle_cast({:echo, message}, state = %{socket: socket, user: user, save: save}) do
+  def handle_cast({:echo, message}, state = %{socket: socket}) do
     socket |> @socket.echo(message)
-    socket |> @socket.prompt(Format.prompt(user, save))
+    state |> prompt()
     {:noreply, state}
   end
 
@@ -139,14 +140,14 @@ defmodule Game.Session do
   end
 
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{socket: socket, state: "active", user: user, save: save}) do
+  def handle_cast({:recv, message}, state = %{state: "active", user: user}) do
     state = Map.merge(state, %{last_recv: Timex.now()})
     case message |> Command.parse(user) |> Command.run(self(), state) do
       :ok ->
-        socket |> @socket.prompt(Format.prompt(user, save))
+        state |> prompt()
         {:noreply, state}
       {:update, state} ->
-        socket |> @socket.prompt(Format.prompt(state.user, state.save))
+        state |> prompt()
         {:noreply, state}
     end
   end
@@ -176,14 +177,22 @@ defmodule Game.Session do
     echo(self(), "#{Format.target_name(who)} has died.")
     {:noreply, state}
   end
-  def handle_cast({:died, who}, state = %{state: "active", user: user, target: target}) do
-    echo(self(), "#{Format.target_name(who)} has died.")
+  def handle_cast({:died, who}, state = %{socket: socket, state: "active", user: user, target: target}) do
+    socket |> @socket.echo("#{Format.target_name(who)} has died.")
+    state = apply_experience(state, who)
+    state |> prompt()
+
     case Character.who(target) == Character.who(who) do
       true ->
         Character.remove_target(target, {:user, user})
         {:noreply, Map.put(state, :target, nil)}
       false -> {:noreply, state}
     end
+  end
+
+  defp apply_experience(state, {:user, _user}), do: state
+  defp apply_experience(state, {:npc, npc}) do
+    Experience.apply(state, level: npc.level, experience_points: npc.experience_points)
   end
 
   #
@@ -203,6 +212,10 @@ defmodule Game.Session do
   def handle_info(:inactive_check, state) do
     state |> check_for_inactive()
     {:noreply, state}
+  end
+
+  defp prompt(%{socket: socket, user: user, save: save}) do
+    socket |> @socket.prompt(Format.prompt(user, save))
   end
 
   # Schedule an inactive check
