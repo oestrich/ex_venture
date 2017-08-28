@@ -10,6 +10,8 @@ defmodule Web.Room do
   alias Data.Repo
   alias Data.Zone
 
+  alias Game.Room.Repo, as: RoomRepo
+
   @doc """
   Get a room
 
@@ -73,6 +75,7 @@ defmodule Web.Room do
     changeset = room |> Room.changeset(params)
     case changeset |> Repo.update do
       {:ok, room} ->
+        room = RoomRepo.get(room.id)
         Game.Room.update(room.id, room)
         {:ok, room}
       anything -> anything

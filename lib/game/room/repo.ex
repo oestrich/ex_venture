@@ -19,6 +19,16 @@ defmodule Game.Room.Repo do
   end
 
   @doc """
+  Get a room
+  """
+  @spec get(id :: integer) :: [Room.t]
+  def get(id) do
+    Room
+    |> Repo.get(id)
+    |> Repo.preload([:room_items])
+  end
+
+  @doc """
   Load all rooms in a zone
   """
   @spec for_zone(zone_id :: integer) :: [Room.t]
