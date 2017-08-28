@@ -31,6 +31,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Rooms</h3>
+          <div class="box-tools">
+            <%= link("Add Room", to: zone_room_path(@conn, :new, @zone.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">

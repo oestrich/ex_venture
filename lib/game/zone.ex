@@ -40,6 +40,11 @@ defmodule Game.Zone do
     GenServer.cast(pid, {:tick, time})
   end
 
+  @doc """
+  Let the zone know a room is online
+
+  For sending ticks to
+  """
   def room_online(id, room) do
     GenServer.cast(pid(id), {:room_online, room})
   end
@@ -52,12 +57,39 @@ defmodule Game.Zone do
     GenServer.cast(pid(id), {:update, zone})
   end
 
+  @doc """
+  Tell the zone where the room supervisor lives
+  """
+  @spec room_supervisor(id :: integer, supervisor_pid :: pid) :: :ok
+  def room_supervisor(id, supervisor_pid) do
+    GenServer.cast(pid(id), {:room_supervisor, supervisor_pid})
+  end
+
+  @doc """
+  Start a new room in the supervision tree
+  """
+  @spec spawn_room(id :: integer, room :: Data.Room.t) :: :ok
+  def spawn_room(id, room) do
+    GenServer.cast(pid(id), {:spawn_room, room})
+  end
+
+  @doc """
+  For testing purposes, get the server's state
+  """
+  def _get_state(id) do
+    GenServer.call(pid(id), :get_state)
+  end
+
   #
   # Server
   #
 
   def init(zone) do
-    {:ok, %{zone: zone, rooms: []}}
+    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil}}
+  end
+
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
   end
 
   def handle_cast({:tick, time}, state = %{rooms: rooms}) do
@@ -71,5 +103,14 @@ defmodule Game.Zone do
 
   def handle_cast({:update, zone}, state) do
     {:noreply, Map.put(state, :zone, zone)}
+  end
+
+  def handle_cast({:room_supervisor, pid}, state) do
+    {:noreply, Map.put(state, :room_supervisor_pid, pid)}
+  end
+
+  def handle_cast({:spawn_room, room}, state = %{room_supervisor_pid: room_supervisor_pid}) do
+    Room.Supervisor.start_child(room_supervisor_pid, room)
+    {:noreply, state}
   end
 end

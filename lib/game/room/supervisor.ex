@@ -6,6 +6,7 @@ defmodule Game.Room.Supervisor do
   use Supervisor
 
   alias Game.Room
+  alias Game.Zone
   alias Game.Zone.Repo
 
   def start_link(zone) do
@@ -30,12 +31,22 @@ defmodule Game.Room.Supervisor do
     |> Enum.map(&(elem(&1, 1)))
   end
 
+  @doc """
+  """
+  @spec start_child(pid, room :: Room.t) :: :ok
+  def start_child(pid, room) do
+    child_spec = worker(Room, [room], id: room.id, restart: :permanent)
+    Supervisor.start_child(pid, child_spec)
+  end
+
   def init(zone) do
     children = zone.id
     |> Room.for_zone()
     |> Enum.map(fn (room) ->
       worker(Room, [room], id: room.id, restart: :permanent)
     end)
+
+    Zone.room_supervisor(zone.id, self())
 
     supervise(children, strategy: :one_for_one)
   end

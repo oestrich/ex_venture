@@ -32,6 +32,8 @@ defmodule Web.Router do
 
     resources "/users", UserController, only: [:index, :show]
 
-    resources "/zones", ZoneController, only: [:index, :show, :new, :create, :edit, :update]
+    resources "/zones", ZoneController, only: [:index, :show, :new, :create, :edit, :update] do
+      resources "/rooms", RoomController, only: [:new, :create]
+    end
   end
 end
