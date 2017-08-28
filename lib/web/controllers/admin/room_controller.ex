@@ -23,4 +23,19 @@ defmodule Web.Admin.RoomController do
       {:error, changeset} -> conn |> render("new.html", zone: zone, changeset: changeset)
     end
   end
+
+  def edit(conn, %{"id" => id}) do
+    room = Room.get(id)
+    changeset = Room.edit(room)
+    conn |> render("edit.html", room: room, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "room" => params}) do
+    case Room.update(id, params) do
+      {:ok, room} -> conn |> redirect(to: room_path(conn, :show, room.id))
+      {:error, changeset} ->
+        room = Room.get(id)
+        conn |> render("edit.html", room: room, changeset: changeset)
+    end
+  end
 end

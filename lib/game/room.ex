@@ -119,6 +119,21 @@ defmodule Game.Room do
     GenServer.cast(pid(id), :tick)
   end
 
+  @doc """
+  Update a room's data
+  """
+  @spec update(id :: integer, room :: Room.t) :: :ok
+  def update(id, room) do
+    GenServer.cast(pid(id), {:update, room})
+  end
+
+  @doc """
+  For testing purposes, get the server's state
+  """
+  def _get_state(id) do
+    GenServer.call(pid(id), :get_state)
+  end
+
   def init(room) do
     room.zone_id |> Zone.room_online(room)
     {:ok, %{room: room, players: [], npcs: [], respawn: %{}}}
@@ -129,9 +144,19 @@ defmodule Game.Room do
     items = Game.Items.items(room.item_ids)
     {:reply, Map.merge(room, %{players: players, npcs: npcs, items: items}), state}
   end
+
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do
     {room, return} = Actions.pick_up(room, item)
     {:reply, return, Map.put(state, :room, room)}
+  end
+
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
+  end
+
+  def handle_cast({:update, room}, state) do
+    room = Map.put(room, :item_ids, state.room.item_ids)
+    {:noreply, Map.put(state, :room, room)}
   end
 
   def handle_cast(:tick, state) do

@@ -19,7 +19,8 @@ defmodule Web.Room do
   def get(id) do
     Room
     |> where([r], r.id == ^id)
-    |> preload([:zone, :north, :east, :south, :west])
+    |> preload([zone: [:rooms]])
+    |> preload([:north, :east, :south, :west])
     |> Repo.one
   end
 
@@ -44,6 +45,12 @@ defmodule Web.Room do
   end
 
   @doc """
+  Get a changeset for an edit page
+  """
+  @spec edit(room :: Room.t) :: changeset :: map
+  def edit(room), do: room |> Room.changeset(%{})
+
+  @doc """
   Create a room
   """
   @spec create(zone :: Zone.t, params :: map) :: {:ok, Room.t} | {:error, changeset :: map}
@@ -52,6 +59,21 @@ defmodule Web.Room do
     case changeset |> Repo.insert() do
       {:ok, room} ->
         Game.Zone.spawn_room(zone.id, room)
+        {:ok, room}
+      anything -> anything
+    end
+  end
+
+  @doc """
+  Update a room
+  """
+  @spec update(id :: integer, params :: map) :: {:ok, Room.t} | {:error, changeset :: map}
+  def update(id, params) do
+    room = id |> get()
+    changeset = room |> Room.changeset(params)
+    case changeset |> Repo.update do
+      {:ok, room} ->
+        Game.Room.update(room.id, room)
         {:ok, room}
       anything -> anything
     end
