@@ -31,19 +31,11 @@
               </tr>
               <tr>
                 <th>Stats</th>
-                <td><%= @item |> stats() %></td>
+                <td><pre><%= @item |> stats() %></pre></td>
               </tr>
               <tr>
                 <th>Effects</th>
-                <td>
-                  <ul>
-                    <%= Enum.map @item.effects, fn (effect) -> %>
-                      <li>
-                        <%= effect |> Poison.encode! %>
-                      </li>
-                    <% end %>
-                  </ul>
-                </td>
+                <td><pre><%= @item |> effects() %></pre></td>
               </tr>
             </tbody>
           </table>

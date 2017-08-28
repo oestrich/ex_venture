@@ -17,7 +17,7 @@ defmodule Web.Admin.ItemView do
     stats(%{stats: stats})
   end
   def stats(%{stats: stats}) when stats != nil do
-    case Poison.encode(stats) do
+    case Poison.encode(stats, pretty: true) do
       {:ok, stats} -> stats
       _ -> ""
     end
@@ -31,7 +31,7 @@ defmodule Web.Admin.ItemView do
     effects(%{effects: effects})
   end
   def effects(%{effects: effects}) when effects != nil do
-    case Poison.encode(effects) do
+    case Poison.encode(effects, pretty: true) do
       {:ok, effects} -> effects
       _ -> ""
     end
