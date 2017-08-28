@@ -3,7 +3,9 @@ defmodule Networking.Listener do
   Start a new ranch listener
   """
 
+  @port Application.get_env(:ex_venture, :networking)[:port]
+
   def start_link() do
-    :ranch.start_listener(make_ref(), :ranch_tcp, [{:port, 5555}], Networking.Protocol, [])
+    :ranch.start_listener(make_ref(), :ranch_tcp, [{:port, ExVenture.config(@port)}], Networking.Protocol, [])
   end
 end

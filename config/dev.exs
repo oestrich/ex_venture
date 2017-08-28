@@ -15,6 +15,7 @@ config :ex_venture, Web.Endpoint,
   watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin", cd: Path.expand("../assets", __DIR__)]]
 
 config :ex_venture, :networking,
+  port: 5555,
   server: true,
   socket_module: Networking.Protocol
 
