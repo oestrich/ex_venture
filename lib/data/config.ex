@@ -20,13 +20,6 @@ defmodule Data.Config do
     |> validate_required([:name, :value])
   end
 
-  def motd() do
-    __MODULE__
-    |> where([c], c.name == "motd")
-    |> select([c], c.value)
-    |> Repo.one
-  end
-
   def starting_save() do
     save = __MODULE__
     |> where([c], c.name == "starting_save")

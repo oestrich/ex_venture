@@ -13,4 +13,30 @@ defmodule Game.ConfigTest do
       assert Config.regen_tick_count(:default) == :default
     end
   end
+
+  describe "motd" do
+    test "finding the config value" do
+      create_config("motd", "ExVenture")
+      assert Config.motd(:default) == "ExVenture"
+    end
+
+    test "using the default" do
+      assert Config.motd(:default) == :default
+    end
+  end
+
+  describe "game name" do
+    test "finding the config value" do
+      create_config("game_name", "ExVenture")
+      assert Config.game_name(:default) == "ExVenture"
+    end
+
+    test "using the default" do
+      assert Config.game_name(:default) == :default
+    end
+
+    test "has a default provided" do
+      assert Config.game_name() == "ExVenture"
+    end
+  end
 end

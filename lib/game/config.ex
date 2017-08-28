@@ -27,4 +27,28 @@ defmodule Game.Config do
       regen_tick_count -> regen_tick_count |> Integer.parse() |> elem(0)
     end
   end
+
+  @doc """
+  The Game's name
+
+  Used in web page titles
+  """
+  def game_name(default \\ "ExVenture") do
+    case find_config("game_name") do
+      nil -> default
+      game_name -> game_name
+    end
+  end
+
+  @doc """
+  Message of the Day
+
+  Used during sign in
+  """
+  def motd(default) do
+    case find_config("motd") do
+      nil -> default
+      motd -> motd
+    end
+  end
 end

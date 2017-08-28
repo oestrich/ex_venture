@@ -213,11 +213,10 @@ defmodule Seeds do
       wielding: %{},
     }
 
-    {:ok, _} = create_config("starting_save", save |> Poison.encode!)
+    {:ok, _} = create_config("game_name", "ExVenture MUD")
     {:ok, _} = create_config("motd", "Welcome to the {white}MUD{/white}")
+    {:ok, _} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _} = create_config("regen_tick_count", "7")
-    {:ok, _} = create_config("regen_health", "1")
-    {:ok, _} = create_config("regen_skill_points", "1")
 
     {:ok, fighter} = create_class(%{
       name: "Fighter",

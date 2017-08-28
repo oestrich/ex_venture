@@ -1,6 +1,8 @@
 defmodule Web.LayoutView do
   use Web, :view
 
+  alias Game.Config
+
   def tab_selected(conn, route) do
     case conn.path_info do
       ["admin", ^route] -> "active"

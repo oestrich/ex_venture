@@ -9,8 +9,8 @@ defmodule Game.Session.Login do
   use Networking.Socket
   use Game.Room
 
-  alias Data.Config
   alias Game.Authentication
+  alias Game.Config
   alias Game.Format
   alias Game.Session
 
@@ -19,15 +19,12 @@ defmodule Game.Session.Login do
   """
   @spec start(socket :: pid) :: :ok
   def start(socket) do
-    socket |> @socket.echo("#{version()}\n#{motd()}\nEnter {white}create{/white} to create a new account.")
+    socket |> @socket.echo("#{version()}\n#{motd()}\n\nEnter {white}create{/white} to create a new account.")
     socket |> @socket.prompt("What is your player name? ")
   end
 
   defp motd() do
-    case Config.motd() do
-      nil -> "Welcome to ExVenture."
-      motd -> motd
-    end
+    Config.motd("Welcome to ExVenture.")
   end
 
   def version() do
