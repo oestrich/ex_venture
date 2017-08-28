@@ -36,11 +36,7 @@
               </tr>
               <tr>
                 <th>Save</th>
-                <td>
-                  <pre>
-                    <%= @user.save |> Poison.encode!(pretty: true) |> raw %>
-                  </pre>
-                </td>
+                <td><pre><%= @user.save |> Poison.encode!(pretty: true) %></pre></td>
               </tr>
             </tbody>
           </table>
