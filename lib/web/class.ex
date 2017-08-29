@@ -7,6 +7,7 @@ defmodule Web.Class do
 
   alias Data.Class
   alias Data.Repo
+  alias Data.Stats
 
   @doc """
   Get all classes
@@ -27,5 +28,46 @@ defmodule Web.Class do
     |> where([z], z.id == ^id)
     |> preload([:skills])
     |> Repo.one
+  end
+
+  @doc """
+  Get a changeset for a new page
+  """
+  @spec new() :: changeset :: map
+  def new(), do: %Class{} |> Class.changeset(%{})
+
+  @doc """
+  Create a class
+  """
+  @spec create(params :: map) :: {:ok, Class.t} | {:error, changeset :: map}
+  def create(params) do
+    %Class{}
+    |> Class.changeset(cast_params(params))
+    |> Repo.insert()
+  end
+
+  @doc """
+  Cast params into what `Data.Class` expects
+  """
+  @spec cast_params(params :: map) :: map
+  def cast_params(params) do
+    params
+    |> parse_stats()
+  end
+
+  defp parse_stats(params = %{"starting_stats" => stats}) do
+    case Poison.decode(stats) do
+      {:ok, stats} -> stats |> cast_stats(params)
+      _ -> params
+    end
+  end
+  defp parse_stats(params), do: params
+
+  defp cast_stats(stats, params) do
+    case stats |> Stats.load do
+      {:ok, stats} ->
+        Map.put(params, "starting_stats", stats)
+        _ -> params
+    end
   end
 end

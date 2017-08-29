@@ -1,0 +1,55 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label f, :name %>
+        <%= text_input f, :name, class: "form-control" %>
+        <%= error_tag f, :name %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :description %>
+        <%= textarea f, :description, class: "form-control" %>
+        <%= error_tag f, :description %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :points_name %>
+        <%= text_input f, :points_name, class: "form-control" %>
+        <%= error_tag f, :points_name %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :points_abbreviation %>
+        <%= text_input f, :points_abbreviation, class: "form-control" %>
+        <%= error_tag f, :points_abbreviation %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :starting_stats %>
+        <%= textarea f, :starting_stats, value: @changeset |> starting_stats(), class: "form-control" %>
+        <%= error_tag f, :starting_stats %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :regen_health %>
+        <%= text_input f, :regen_health, class: "form-control" %>
+        <%= error_tag f, :regen_health %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :regen_skill_points %>
+        <%= text_input f, :regen_skill_points, class: "form-control" %>
+        <%= error_tag f, :regen_skill_points %>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
