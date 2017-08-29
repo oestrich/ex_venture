@@ -39,4 +39,11 @@ defmodule Game.ConfigTest do
       assert Config.game_name() == "ExVenture"
     end
   end
+
+  describe "starting save" do
+    test "finding the config value" do
+      create_config("starting_save", %{} |> Poison.encode!())
+      assert Config.starting_save() == %Data.Save{}
+    end
+  end
 end

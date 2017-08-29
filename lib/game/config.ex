@@ -4,6 +4,7 @@ defmodule Game.Config do
   """
 
   alias Data.Config
+  alias Data.Save
 
   @doc false
   def start_link() do
@@ -49,6 +50,20 @@ defmodule Game.Config do
     case find_config("motd") do
       nil -> default
       motd -> motd
+    end
+  end
+
+  @doc """
+  Starting save
+
+  Which room, etc the player will start out with
+  """
+  def starting_save() do
+    case find_config("starting_save") do
+      nil -> nil
+      save ->
+        {:ok, save} = Save.load(Poison.decode!(save))
+        save
     end
   end
 end

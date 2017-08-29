@@ -33,6 +33,11 @@
         <section class="sidebar">
           <ul class="sidebar-menu" data-widget="tree">
             <li class="header">MAIN NAVIGATION</li>
+            <li class="<%= tab_selected(@conn, "config") %>">
+              <%= link(to: config_path(@conn, :index)) do %>
+                <i class="fa fa-gears"></i> Config
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "zones") %>">
               <%= link(to: zone_path(@conn, :index)) do %>
                 <i class="fa fa-flag"></i> Zones
