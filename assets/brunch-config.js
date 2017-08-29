@@ -20,6 +20,7 @@ exports.config = {
       joinTo: {
         "css/app.css": /(app\/css)/,
         "css/admin.css": /(admin\/css)/,
+        "css/home.css": /(home\/css)/,
       },
       order: {
         before: [
@@ -27,6 +28,7 @@ exports.config = {
           "admin/css/vendor/AdminLTE.css",
           "admin/css/vendor/skin-black.css",
           "admin/css/vendor/skin-black-light.css",
+          "home/css/vendor/bootstrap.min.css",
         ],
         after: [
           "admin/css/app.css",
@@ -48,7 +50,7 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "vendor"],
+    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "home/css", "vendor"],
     // Where to compile files to
     public: "../priv/static"
   },

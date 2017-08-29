@@ -1,0 +1,4 @@
+<div class="panel">
+  <pre><code id="terminal"></code></pre>
+</div>
+<input type="text" id="prompt" autofocus="autofocus" />

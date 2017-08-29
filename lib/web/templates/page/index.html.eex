@@ -1,4 +1,9 @@
-<div class="panel">
-  <pre><code id="terminal"></code></pre>
+<div class="row align-items-center">
+  <div class="col-md-6 text-center text-md-left">
+    <h1 class="mb-3"><%= Config.game_name() %></h1>
+
+    <%= link(to: play_path(@conn, :show), class: "btn btn-lg btn-primary") do %>
+      Play &raquo;
+    <% end %>
+  </div>
 </div>
-<input type="text" id="prompt" autofocus="autofocus" />

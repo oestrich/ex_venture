@@ -17,6 +17,8 @@ defmodule Web.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    get "/play", PlayController, :show
   end
 
   scope "/admin", Web.Admin do
