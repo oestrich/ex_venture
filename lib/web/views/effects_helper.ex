@@ -1,4 +1,8 @@
 defmodule Web.EffectsHelper do
+  @moduledoc """
+  Helper functions for displaying effects
+  """
+
   def effects(%{changes: %{effects: effects}}) when effects != nil do
     effects(%{effects: effects})
   end
