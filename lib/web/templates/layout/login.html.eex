@@ -14,7 +14,7 @@
   <body class="hold-transition login-page">
     <div class="login-box">
       <div class="login-logo">
-        <%= link("ExVenture", to: dashboard_path(@conn, :index)) %>
+        <%= link(Config.game_name(), to: dashboard_path(@conn, :index)) %>
       </div>
 
       <%= render @view_module, @view_template, assigns %>
