@@ -6,6 +6,7 @@ defmodule Game.Command.PickUp do
   use Game.Command
 
   @commands ["pick up"]
+  @aliases ["get"]
   @must_be_alive true
 
   @short_help "Pick up an item in the same room"
