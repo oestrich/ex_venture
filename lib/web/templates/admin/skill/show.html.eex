@@ -1,0 +1,62 @@
+<section class="content-header">
+  <h1>
+    <%= @skill.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
+    <li><%= link(@skill.class.name, to: class_path(@conn, :show, @skill.class_id)) %></li>
+    <li class="active">Skills</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td><%= @skill.name %></td>
+              </tr>
+              <tr>
+                <th>Command</th>
+                <td>"<%= @skill.command %>"</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><%= @skill.description %></td>
+              </tr>
+              <tr>
+                <th>User Text</th>
+                <td><%= @skill.user_text %></td>
+              </tr>
+              <tr>
+                <th>Usee Text (target)</th>
+                <td><%= @skill.usee_text %></td>
+              </tr>
+              <tr>
+                <th>Points</th>
+                <td><%= @skill.points %></td>
+              </tr>
+              <tr>
+                <th>Effects</th>
+                <td><pre><%= @skill |> effects() %></pre></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

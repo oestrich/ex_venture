@@ -1,0 +1,57 @@
+<section class="content-header">
+  <h1>
+    <%= @class.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tr>
+              <th>Name</th>
+              <td><%= @class.name %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Skills</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <td>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @class.skills, fn (skill) -> %>
+                <tr>
+                  <td><%= skill.id %></td>
+                  <td><%= skill.name %></td>
+                  <td>
+                    <%= link("View", to: skill_path(@conn, :show, skill.id)) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

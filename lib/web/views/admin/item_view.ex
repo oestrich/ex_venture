@@ -1,6 +1,8 @@
 defmodule Web.Admin.ItemView do
   use Web, :view
 
+  import Web.EffectsHelper
+
   def keywords(%{changes: %{keywords: keywords}}) when keywords != nil do
     keywords(%{keywords: keywords})
   end
@@ -23,20 +25,6 @@ defmodule Web.Admin.ItemView do
     end
   end
   def stats(%{}), do: ""
-
-  def effects(%{changes: %{effects: effects}}) when effects != nil do
-    effects(%{effects: effects})
-  end
-  def effects(%{data: %{effects: effects}}) when effects != nil do
-    effects(%{effects: effects})
-  end
-  def effects(%{effects: effects}) when effects != nil do
-    case Poison.encode(effects, pretty: true) do
-      {:ok, effects} -> effects
-      _ -> ""
-    end
-  end
-  def effects(%{}), do: ""
 
   def types(), do: Data.Item.types()
 end

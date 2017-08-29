@@ -1,0 +1,36 @@
+<section class="content-header">
+  <h1>
+    Classsess
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @classes, fn (class) -> %>
+                <tr>
+                  <td><%= class.id %></td>
+                  <td><%= class.name %></td>
+                  <td>
+                    <%= link("View", to: class_path(@conn, :show, class.id)) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

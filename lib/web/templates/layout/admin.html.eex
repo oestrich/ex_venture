@@ -33,14 +33,14 @@
         <section class="sidebar">
           <ul class="sidebar-menu" data-widget="tree">
             <li class="header">MAIN NAVIGATION</li>
+            <li class="<%= tab_selected(@conn, ["classes", "skills"]) %>">
+              <%= link(to: class_path(@conn, :index)) do %>
+                <i class="fa fa-user-circle"></i> Classes
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "config") %>">
               <%= link(to: config_path(@conn, :index)) do %>
                 <i class="fa fa-gears"></i> Config
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, "zones") %>">
-              <%= link(to: zone_path(@conn, :index)) do %>
-                <i class="fa fa-flag"></i> Zones
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "items") %>">
@@ -51,6 +51,11 @@
             <li class="<%= tab_selected(@conn, "users") %>">
               <%= link(to: user_path(@conn, :index)) do %>
                 <i class="fa fa-users"></i> Users
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, ["zones", "rooms"]) %>">
+              <%= link(to: zone_path(@conn, :index)) do %>
+                <i class="fa fa-flag"></i> Zones
               <% end %>
             </li>
           </ul>
