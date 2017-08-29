@@ -17,5 +17,13 @@
         <%= render @view_module, @view_template, assigns %>
       </div>
     </main>
+
+    <footer>
+      <div class="container">
+        <p class="text-muted">
+          Built with <%= Game.Session.Login.version() %>.
+        </p>
+      </div>
+    </footer>
   </body>
 </html>
