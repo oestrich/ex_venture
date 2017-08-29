@@ -21,7 +21,7 @@
     <footer>
       <div class="container">
         <p class="text-muted">
-          Built with <%= Game.Session.Login.version() %>.
+          Built with <%= ExVenture.version() %>.
         </p>
       </div>
     </footer>

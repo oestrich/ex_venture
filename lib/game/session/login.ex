@@ -19,18 +19,12 @@ defmodule Game.Session.Login do
   """
   @spec start(socket :: pid) :: :ok
   def start(socket) do
-    socket |> @socket.echo("#{version()}\n#{motd()}\n\nEnter {white}create{/white} to create a new account.")
+    socket |> @socket.echo("#{ExVenture.version()}\n#{motd()}\n\nEnter {white}create{/white} to create a new account.")
     socket |> @socket.prompt("What is your player name? ")
   end
 
   defp motd() do
     Config.motd("Welcome to ExVenture.")
-  end
-
-  def version() do
-    ex_venture = :application.loaded_applications()
-    |> Enum.find(&(elem(&1, 0) == :ex_venture))
-    "ExVenture v#{elem(ex_venture, 2)}"
   end
 
   @doc """
