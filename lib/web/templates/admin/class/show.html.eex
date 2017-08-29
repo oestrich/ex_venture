@@ -17,6 +17,30 @@
               <th>Name</th>
               <td><%= @class.name %></td>
             </tr>
+            <tr>
+              <th>Description</th>
+              <td><%= @class.description %></td>
+            </tr>
+            <tr>
+              <th>Points Name</th>
+              <td><%= @class.points_name %></td>
+            </tr>
+            <tr>
+              <th>Points Abbreviation</th>
+              <td><%= @class.points_abbreviation %></td>
+            </tr>
+            <tr>
+              <th>Starting Stats</th>
+              <td><pre><%= @class.starting_stats |> Poison.encode!(pretty: true) %></pre></td>
+            </tr>
+            <tr>
+              <th>Regen Health</th>
+              <td><%= @class.regen_health %></td>
+            </tr>
+            <tr>
+              <th>Regen Skill Points</th>
+              <td><%= @class.regen_skill_points %></td>
+            </tr>
           </table>
         </div>
       </div>
