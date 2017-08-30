@@ -20,4 +20,11 @@ defmodule Web.Admin.SkillControllerTest do
     conn = post conn, class_skill_path(conn, :create, class.id), skill: params
     assert html_response(conn, 302)
   end
+
+  test "update a skill", %{conn: conn, class: class} do
+    skill = create_skill(class)
+
+    conn = put conn, skill_path(conn, :update, skill.id), skill: %{name: "Dodge"}
+    assert html_response(conn, 302)
+  end
 end

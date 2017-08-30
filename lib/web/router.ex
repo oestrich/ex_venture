@@ -38,7 +38,7 @@ defmodule Web.Router do
 
     resources "/sessions", SessionController, only: [:new, :create]
 
-    resources "/skills", SkillController, only: [:show]
+    resources "/skills", SkillController, only: [:show, :edit, :update]
 
     resources "/users", UserController, only: [:index, :show]
 

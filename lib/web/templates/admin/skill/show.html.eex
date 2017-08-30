@@ -11,7 +11,7 @@
     </li>
     <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
     <li><%= link(@skill.class.name, to: class_path(@conn, :show, @skill.class_id)) %></li>
-    <li class="active">Skills</li>
+    <li class="active"><%= @skill.name %></li>
   </ol>
 </section>
 
@@ -21,6 +21,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: skill_path(@conn, :edit, @skill.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">

@@ -1,0 +1,25 @@
+<section class="content-header">
+  <h1>
+    <%= @skill.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
+    <li><%= link(@skill.class.name, to: class_path(@conn, :show, @skill.class_id)) %></li>
+    <li><%= link(@skill.name, to: skill_path(@conn, :show, @skill.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: skill_path(@conn, :update, @skill.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+    </div>
+  </div>
+</section>

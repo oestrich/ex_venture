@@ -26,6 +26,12 @@ defmodule Web.Skill do
   end
 
   @doc """
+  Get a changeset for an edit page
+  """
+  @spec edit(skill :: Skill.t) :: changeset :: map
+  def edit(skill), do: skill |> Skill.changeset(%{})
+
+  @doc """
   Create a skill
   """
   @spec create(class :: Class.t, params :: map) :: {:ok, Skill.t} | {:error, changeset :: map}
@@ -34,6 +40,17 @@ defmodule Web.Skill do
     |> Ecto.build_assoc(:skills)
     |> Skill.changeset(cast_params(params))
     |> Repo.insert()
+  end
+
+  @doc """
+  Update a skill
+  """
+  @spec update(id :: integer, params :: map) :: {:ok, Skill.t} | {:error, changeset :: map}
+  def update(id, params) do
+    id
+    |> get()
+    |> Skill.changeset(cast_params(params))
+    |> Repo.update()
   end
 
   @doc """

@@ -5,6 +5,7 @@ defmodule TestHelpers do
   alias Data.Item
   alias Data.Room
   alias Data.RoomItem
+  alias Data.Skill
   alias Data.User
   alias Data.Zone
 
@@ -111,6 +112,25 @@ defmodule TestHelpers do
   def create_class(attributes \\ %{}) do
     %Class{}
     |> Class.changeset(class_attributes(attributes))
+    |> Repo.insert!
+  end
+
+  def skill_attributes(class, attributes) do
+    Map.merge(%{
+      class_id: class.id,
+      name: "Slash",
+      command: "slash",
+      description: "Slash at the target",
+      user_text: "You slash at your {target}",
+      usee_text: "You are slashed at by {who}",
+      points: 3,
+      effects: [],
+    }, attributes)
+  end
+
+  def create_skill(class, attributes \\ %{}) do
+    %Skill{}
+    |> Skill.changeset(skill_attributes(class, attributes))
     |> Repo.insert!
   end
 end

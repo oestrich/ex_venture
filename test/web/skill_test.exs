@@ -23,4 +23,11 @@ defmodule Web.SkillTest do
     assert skill.name == "Slash"
     assert skill.class_id == class.id
   end
+
+  test "updating a skill", %{class: class} do
+    skill = create_skill(class, %{name: "Magic Missile"})
+
+    {:ok, skill} = Skill.update(skill.id, %{name: "Dodge"})
+    assert skill.name == "Dodge"
+  end
 end
