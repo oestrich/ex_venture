@@ -13,6 +13,7 @@ config :ex_venture, Web.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :ex_venture, :networking,
+  host: {:system, "HOST"},
   port: 5555,
   server: true,
   socket_module: Networking.Protocol

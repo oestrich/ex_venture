@@ -2,8 +2,12 @@
   <div class="col-md-6 text-center text-md-left">
     <h1 class="mb-3"><%= Config.game_name() %></h1>
 
+    <p>
+      Connect with telnet: <code><%= Config.host() %>:<%= Config.port() %></code>
+    </p>
+
     <%= link(to: play_path(@conn, :show), class: "btn btn-lg btn-primary") do %>
-      Play &raquo;
+      Play Now &raquo;
     <% end %>
   </div>
 </div>

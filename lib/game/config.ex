@@ -22,6 +22,14 @@ defmodule Game.Config do
     end
   end
 
+  def host() do
+    ExVenture.config(Application.get_env(:ex_venture, :networking)[:host])
+  end
+
+  def port() do
+    ExVenture.config(Application.get_env(:ex_venture, :networking)[:port])
+  end
+
   def regen_tick_count(default) do
     case find_config("regen_tick_count") do
       nil -> default
