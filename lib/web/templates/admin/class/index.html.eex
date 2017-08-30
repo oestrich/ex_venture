@@ -29,6 +29,7 @@
                   <td><%= class.name %></td>
                   <td>
                     <%= link("View", to: class_path(@conn, :show, class.id)) %>
+                    <%= link("Edit", to: class_path(@conn, :edit, class.id)) %>
                   </td>
                 </tr>
               <% end %>

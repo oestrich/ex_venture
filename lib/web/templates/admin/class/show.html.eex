@@ -75,6 +75,7 @@
                   <td><%= skill.name %></td>
                   <td>
                     <%= link("View", to: skill_path(@conn, :show, skill.id)) %>
+                    <%= link("Edit", to: skill_path(@conn, :edit, skill.id)) %>
                   </td>
                 </tr>
               <% end %>

@@ -29,6 +29,7 @@
                   <td><%= item.name %></td>
                   <td>
                     <%= link("View", to: item_path(@conn, :show, item.id)) %>
+                    <%= link("Edit", to: item_path(@conn, :edit, item.id)) %>
                   </td>
                 </tr>
               <% end %>

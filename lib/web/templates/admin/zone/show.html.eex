@@ -51,6 +51,7 @@
                   <td><%= room.name %></td>
                   <td>
                     <%= link("View", to: room_path(@conn, :show, room.id)) %>
+                    <%= link("Edit", to: room_path(@conn, :edit, room.id)) %>
                   </td>
                 </tr>
               <% end %>
