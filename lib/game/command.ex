@@ -66,9 +66,8 @@ defmodule Game.Command do
         }
       end
 
-      def run(_, _, %{socket: socket}) do
-        socket |> @socket.echo("Unknown command")
-        :ok
+      def run(_, session, state) do
+        Game.Command.run({:error, :bad_parse}, session, state)
       end
     end
   end
@@ -166,7 +165,7 @@ defmodule Game.Command do
   end
 
   def run({:error, :bad_parse}, _session, %{socket: socket}) do
-    socket |> @socket.echo("Unknown command")
+    socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
     :ok
   end
   def run({module, args}, session, state = %{socket: socket}) do
