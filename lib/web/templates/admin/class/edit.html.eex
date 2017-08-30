@@ -1,0 +1,13 @@
+<section class="content-header">
+  <h1>
+    <%= @class.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: class_path(@conn, :update, @class.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+    </div>
+  </div>
+</section>

@@ -37,6 +37,12 @@ defmodule Web.Class do
   def new(), do: %Class{} |> Class.changeset(%{})
 
   @doc """
+  Get a changeset for an edit page
+  """
+  @spec edit(class :: Class.t) :: changeset :: map
+  def edit(class), do: class |> Class.changeset(%{})
+
+  @doc """
   Create a class
   """
   @spec create(params :: map) :: {:ok, Class.t} | {:error, changeset :: map}
@@ -44,6 +50,17 @@ defmodule Web.Class do
     %Class{}
     |> Class.changeset(cast_params(params))
     |> Repo.insert()
+  end
+
+  @doc """
+  Update an zone
+  """
+  @spec update(id :: integer, params :: map) :: {:ok, Zone.t} | {:error, changeset :: map}
+  def update(id, params) do
+    id
+    |> get()
+    |> Class.changeset(cast_params(params))
+    |> Repo.update
   end
 
   @doc """

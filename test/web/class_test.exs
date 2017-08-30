@@ -27,4 +27,12 @@ defmodule Web.ClassTest do
     assert class.name == "Fighter"
     assert class.starting_stats.health == 25
   end
+
+  test "updating a class" do
+    class = create_class(%{name: "Fighter"})
+
+    {:ok, class} = Class.update(class.id, %{name: "Barbarian"})
+
+    assert class.name == "Barbarian"
+  end
 end
