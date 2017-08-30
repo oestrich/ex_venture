@@ -52,7 +52,7 @@ defmodule Data.Stats do
   Slots on a character
   """
   @spec slots() :: [atom]
-  def slots(), do: [:chest, :head]
+  def slots(), do: [:chest, :head, :shoulders, :neck, :back, :hands, :waist, :legs, :feet, :finger]
 
   @doc """
   Fields in the statistics map
@@ -98,7 +98,7 @@ defmodule Data.Stats do
       iex> Data.Stats.valid_armor?(%{slot: :chest, armor: :none})
       false
 
-      iex> Data.Stats.valid_armor?(%{slot: :finger, armor: 10})
+      iex> Data.Stats.valid_armor?(%{slot: :eye, armor: 10})
       false
 
       iex> Data.Stats.valid_armor?(%{})
@@ -149,7 +149,7 @@ defmodule Data.Stats do
 
       iex> Data.Stats.valid_slot?(%{slot: :chest})
       true
-      iex> Data.Stats.valid_slot?(%{slot: :finger})
+      iex> Data.Stats.valid_slot?(%{slot: :eye})
       false
   """
   @spec valid_slot?(stats :: Stats.t) :: boolean

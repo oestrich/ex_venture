@@ -34,6 +34,7 @@
         <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 5 %>
         <%= error_tag f, :stats %>
         <span class="help-block">Enter in valid JSON</span>
+        <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
       </div>
 
       <div class="form-group">

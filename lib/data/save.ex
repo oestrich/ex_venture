@@ -157,7 +157,7 @@ defmodule Data.Save do
       iex> Data.Save.valid_wearing?(%{wearing: %{chest: 1}})
       true
 
-      iex> Data.Save.valid_wearing?(%{wearing: %{finger: 1}})
+      iex> Data.Save.valid_wearing?(%{wearing: %{eye: 1}})
       false
 
       iex> Data.Save.valid_wearing?(%{wearing: %{finger: :anything}})
