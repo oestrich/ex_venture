@@ -35,27 +35,32 @@
             <li class="header">MAIN NAVIGATION</li>
             <li class="<%= tab_selected(@conn, ["classes", "skills"]) %>">
               <%= link(to: class_path(@conn, :index)) do %>
-                <i class="fa fa-user-circle"></i> Classes
+                <i class="fa fa-user-circle"></i>
+                <span>Classes</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "config") %>">
               <%= link(to: config_path(@conn, :index)) do %>
-                <i class="fa fa-gears"></i> Config
+                <i class="fa fa-gears"></i>
+                <span>Config</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "items") %>">
               <%= link(to: item_path(@conn, :index)) do %>
-                <i class="fa fa-archive"></i> Items
+                <i class="fa fa-archive"></i>
+                <span>Items</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "users") %>">
               <%= link(to: user_path(@conn, :index)) do %>
-                <i class="fa fa-users"></i> Users
+                <i class="fa fa-users"></i>
+                <span>Users</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, ["zones", "rooms"]) %>">
               <%= link(to: zone_path(@conn, :index)) do %>
-                <i class="fa fa-flag"></i> Zones
+                <i class="fa fa-flag"></i>
+                <span>Zones</span>
               <% end %>
             </li>
           </ul>
