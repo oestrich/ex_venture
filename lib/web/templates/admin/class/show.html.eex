@@ -55,6 +55,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Skills</h3>
+          <div class="box-tools">
+            <%= link("Add Skill", to: class_skill_path(@conn, :new, @class.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">

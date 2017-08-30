@@ -26,7 +26,9 @@ defmodule Web.Router do
 
     get "/", DashboardController, :index
 
-    resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update]
+    resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
+      resources "/skills", SkillController, only: [:new, :create]
+    end
 
     resources "/config", ConfigController, only: [:index]
 

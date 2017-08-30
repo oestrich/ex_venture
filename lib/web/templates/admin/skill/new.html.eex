@@ -1,0 +1,13 @@
+<section class="content-header">
+  <h1>
+    New Skill
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: class_skill_path(@conn, :create, @class.id), class: @class, changeset: @changeset, title: "New", submit: "Create" %>
+    </div>
+  </div>
+</section>
