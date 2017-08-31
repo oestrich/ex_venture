@@ -11,6 +11,7 @@ defmodule Test.Game.Room do
       description: "An empty hallway",
       north_id: 10,
       west_id: 11,
+      zone_id: 1,
       players: [],
       items: [%Data.Item{id: 15, name: "Short Sword", description: "A simple blade", keywords: ["sword"]}],
     }

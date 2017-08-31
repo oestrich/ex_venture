@@ -16,7 +16,8 @@ config :ex_venture, :networking,
   socket_module: Test.Networking.Socket
 
 config :ex_venture, :game,
-  room: Test.Game.Room
+  room: Test.Game.Room,
+  zone: Test.Game.Zone
 
 config :comeonin, :bcrypt_log_rounds, 4
 config :comeonin, :pbkdf2_rounds, 1

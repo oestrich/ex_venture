@@ -19,4 +19,5 @@ config :ex_venture, :networking,
   socket_module: Networking.Protocol
 
 config :ex_venture, :game,
-  room: Game.Room
+  room: Game.Room,
+  room: Game.Zone

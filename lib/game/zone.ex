@@ -9,8 +9,15 @@ defmodule Game.Zone do
 
   use GenServer
 
+  alias Game.Map, as: GameMap
   alias Game.Room
   alias Game.Zone.Repo
+
+  defmacro __using__(_opts) do
+    quote do
+      @zone Application.get_env(:ex_venture, :game)[:zone]
+    end
+  end
 
   def start_link(zone) do
     GenServer.start_link(__MODULE__, zone, name: pid(zone.id))
@@ -74,6 +81,14 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Display a map of the zone
+  """
+  @spec map(id :: integer, player_at :: {integer, integer}) :: String.t
+  def map(id, player_at) do
+    GenServer.call(pid(id), {:map, player_at})
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -90,6 +105,15 @@ defmodule Game.Zone do
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call({:map, player_at}, _from, state = %{zone: zone}) do
+    map = """
+    #{zone.name}
+
+    #{GameMap.display_map(state, player_at)}
+    """
+    {:reply, map |> String.trim(), state}
   end
 
   def handle_cast({:tick, time}, state = %{rooms: rooms}) do
