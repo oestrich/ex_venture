@@ -21,12 +21,14 @@ defmodule Game.MapTest do
   end
 
   test "filling out a grid for the map", %{zone: zone} do
-    map = Map.map(zone)
-
-    assert map == [
+    assert Map.map(zone) == [
       [nil,           %{x: 2, y: 1}, nil],
       [%{x: 1, y: 2}, %{x: 2, y: 2}, %{x: 3, y: 2}],
       [nil,           %{x: 2, y: 3}, nil],
     ]
+  end
+
+  test "display a map in text form", %{zone: zone} do
+    assert Map.display_map(zone, {2, 2}) == "    [ ]    \n[ ] [X] [ ]\n    [ ]    "
   end
 end

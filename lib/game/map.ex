@@ -34,4 +34,23 @@ defmodule Game.Map do
       end
     end
   end
+
+  @doc """
+  Generate a text view of the zone
+  """
+  @spec map(zone :: Zone.t) :: [[Room.t]]
+  def display_map(zone, {x, y}) do
+    zone
+    |> map()
+    |> Enum.map(fn (row) ->
+      row
+      |> Enum.map(&(display_room(&1, {x, y})))
+      |> Enum.join(" ")
+    end)
+    |> Enum.join("\n")
+  end
+
+  defp display_room(nil, _), do: "   "
+  defp display_room(%{x: x, y: y}, {x, y}), do: "[X]"
+  defp display_room(%{}, _), do: "[ ]"
 end
