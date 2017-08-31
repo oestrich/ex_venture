@@ -20,4 +20,4 @@ config :ex_venture, :networking,
 
 config :ex_venture, :game,
   room: Game.Room,
-  room: Game.Zone
+  zone: Game.Zone
