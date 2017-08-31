@@ -2,6 +2,18 @@
   <h1>
     <%= @room.name %>
   </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Zones", to: zone_path(@conn, :index)) %></li>
+    <li><%= link(@room.zone.name, to: zone_path(@conn, :show, @room.zone_id)) %></li>
+    <li><%= link(@room.name, to: room_path(@conn, :show, @room.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
 </section>
 
 <section class="content">
