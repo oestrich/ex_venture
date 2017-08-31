@@ -85,19 +85,4 @@ defmodule Web.Zone do
       {zone.name, rooms}
     end)
   end
-
-  @doc """
-  Find the coordinates for each room in a zone and the size of the zone
-
-  1,1 is top left
-  """
-  @spec map(zone :: Zone.t) :: {{max_x :: integer, max_y :: integer}, [{{x :: integer, y :: integer}, Room.t}]}
-  def map(zone)
-  def map(%{rooms: rooms}) do
-    map = Enum.map(rooms, &({{&1.x, &1.y}, &1}))
-    max_x = Enum.max_by(map, &(elem(elem(&1, 0), 0))) |> elem(0) |> elem(0)
-    max_y = Enum.max_by(map, &(elem(elem(&1, 0), 1))) |> elem(0) |> elem(1)
-
-    {{max_x, max_y}, map}
-  end
 end
