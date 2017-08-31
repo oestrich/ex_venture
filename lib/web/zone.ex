@@ -16,7 +16,9 @@ defmodule Web.Zone do
   """
   @spec all() :: [Zone.t]
   def all() do
-    Zone |> Repo.all
+    Zone
+    |> order_by([z], z.id)
+    |> Repo.all
   end
 
   @doc """

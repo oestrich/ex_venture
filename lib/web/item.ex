@@ -3,6 +3,8 @@ defmodule Web.Item do
   Bounded context for the Phoenix app talking to the data layer
   """
 
+  import Ecto.Query
+
   alias Data.Effect
   alias Data.Item
   alias Data.Stats
@@ -14,7 +16,9 @@ defmodule Web.Item do
   """
   @spec all() :: [Item.t]
   def all() do
-    Item |> Repo.all
+    Item
+    |> order_by([i], i.id)
+    |> Repo.all
   end
 
   @doc """

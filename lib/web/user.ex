@@ -23,7 +23,9 @@ defmodule Web.User do
   """
   @spec all() :: [User.t]
   def all() do
-    User |> Repo.all
+    User
+    |> order_by([u], u.id)
+    |> Repo.all
   end
 
   @doc """

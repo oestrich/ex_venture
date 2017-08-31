@@ -14,7 +14,9 @@ defmodule Web.Class do
   """
   @spec all() :: [Class.t]
   def all() do
-    Class |> Repo.all
+    Class
+    |> order_by([c], c.id)
+    |> Repo.all
   end
 
   @doc """
@@ -25,7 +27,7 @@ defmodule Web.Class do
   @spec get(id :: integer) :: [Class.t]
   def get(id) do
     Class
-    |> where([z], z.id == ^id)
+    |> where([c], c.id == ^id)
     |> preload([:skills])
     |> Repo.one
   end
