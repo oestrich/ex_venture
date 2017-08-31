@@ -140,7 +140,7 @@ defmodule CommandTest do
       Command.run({Command.Help, {}}, session, %{socket: socket})
 
       [{^socket, help}] = @socket.get_echos()
-      assert Regex.match?(~r(The commands you can), help)
+      assert Regex.match?(~r(The topics you can), help)
     end
 
     test "loading command help", %{session: session, socket: socket} do

@@ -10,7 +10,7 @@ defmodule Game.Help do
 
   Example:
 
-      iex> Regex.match?(~r(^The commands you can run are:), Game.Help.base())
+      iex> Regex.match?(~r(^The topics you can look up are:), Game.Help.base())
       true
   """
   def base() do
@@ -21,7 +21,7 @@ defmodule Game.Help do
     end)
     |> Enum.join("")
 
-    "The commands you can run are:\n#{commands}"
+    "The topics you can look up are:\n#{commands}"
   end
 
   @spec topic(topic :: String.t) :: String.t
