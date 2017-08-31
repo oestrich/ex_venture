@@ -58,6 +58,8 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "Hallway",
       description: "A long empty hallway",
+      x: 1,
+      y: 1,
     }, attributes)
   end
 

@@ -13,6 +13,8 @@ defmodule Web.Admin.RoomControllerTest do
     room = %{
       name: "Forest Path",
       description: "A small forest path",
+      x: 1,
+      y: 1,
     }
 
     conn = post conn, zone_room_path(conn, :create, zone.id), room: room
@@ -23,6 +25,8 @@ defmodule Web.Admin.RoomControllerTest do
     params = %{
       name: "Forest Path",
       description: "A small forest path",
+      x: 1,
+      y: 1,
     }
     {:ok, room} = Room.create(zone, params)
 

@@ -15,6 +15,9 @@ defmodule Data.Room do
     field :players, {:array, :tuple}, virtual: true
     field :items, {:array, :map}, virtual: true
 
+    field :x, :integer
+    field :y, :integer
+
     has_many :room_items, Data.RoomItem
 
     belongs_to :zone, Zone
@@ -28,9 +31,9 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :north_id, :east_id, :south_id, :west_id, :item_ids])
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :north_id, :east_id, :south_id, :west_id, :item_ids])
     |> ensure_item_ids
-    |> validate_required([:zone_id, :name, :description])
+    |> validate_required([:zone_id, :name, :description, :x, :y])
   end
 
   def exits(room) do

@@ -30,6 +30,10 @@
                 <td><%= @room.description %></td>
               </tr>
               <tr>
+                <th>Coorinates</th>
+                <td><%= @room.x %>, <%= @room.y %></td>
+              </tr>
+              <tr>
                 <th>Items</th>
                 <td>
                   <ul>

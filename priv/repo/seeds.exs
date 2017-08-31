@@ -86,12 +86,16 @@ defmodule Seeds do
     entrance = create_room(bandit_hideout, %{
       name: "Entrance",
       description: "A large square room with rough hewn walls.",
+      x: 4,
+      y: 1,
     })
 
     hallway = create_room(bandit_hideout, %{
       name: "Hallway",
       description: "As you go further west, the hallway descends downward.",
       east_id: entrance.id,
+      x: 3,
+      y: 1,
     })
     entrance = update_room(entrance, %{west_id: hallway.id})
 
@@ -99,6 +103,8 @@ defmodule Seeds do
       name: "Hallway",
       description: "The hallway bends south, continuing sloping down.",
       east_id: hallway.id,
+      x: 2,
+      y: 1,
     })
     _hallway = update_room(hallway, %{west_id: hallway_turn.id})
 
@@ -106,6 +112,8 @@ defmodule Seeds do
       name: "Hallway",
       description: "The south end of the hall has a wooden door embedded in the rock wall.",
       north_id: hallway_turn.id,
+      x: 2,
+      y: 2,
     })
     _hallway_turn = update_room(hallway_turn, %{south_id: hallway_south.id})
 
@@ -113,6 +121,8 @@ defmodule Seeds do
       name: "Great Room",
       description: "The great room of the bandit hideout. There are several tables along the walls with chairs pulled up. Cards are on the table along with mugs.",
       north_id: hallway_south.id,
+      x: 2,
+      y: 3,
     })
     _hallway_south = update_room(hallway_south, %{south_id: great_room.id})
 
@@ -120,6 +130,8 @@ defmodule Seeds do
       name: "Bedroom",
       description: "There is a bed in the corner with a dirty blanket on top. A chair sits in the corner by a small fire pit.",
       east_id: great_room.id,
+      x: 1,
+      y: 3,
     })
     great_room = update_room(great_room, %{west_id: dorm.id})
 
@@ -127,6 +139,8 @@ defmodule Seeds do
       name: "Kitchen",
       description: "A large cooking fire is at this end of the great room. A pot boils away at over the flame.",
       west_id: great_room.id,
+      x: 3,
+      y: 3,
     })
     great_room = update_room(great_room, %{east_id: kitchen.id})
 
@@ -134,6 +148,8 @@ defmodule Seeds do
       name: "Shack",
       description: "A small shack built against the rock walls of a small cliff.",
       west_id: entrance.id,
+      x: 1,
+      y: 1,
     })
     entrance = update_room(entrance, %{east_id: shack.id})
 
@@ -141,6 +157,8 @@ defmodule Seeds do
       name: "Forest Path",
       description: "A small path that leads away from the village to the mountain",
       west_id: shack.id,
+      x: 2,
+      y: 1,
     })
     _shack = update_room(shack, %{east_id: forest_path.id})
 
