@@ -2,6 +2,16 @@
   <h1>
     New Class
   </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
+    <li class="active">New</li>
+  </ol>
 </section>
 
 <section class="content">

@@ -2,6 +2,17 @@
   <h1>
     <%= @class.name %>
   </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
+    <li><%= link(@class.name, to: class_path(@conn, :show, @class.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
 </section>
 
 <section class="content">
