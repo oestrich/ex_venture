@@ -45,4 +45,17 @@ defmodule Web.RoomTest do
     state = Game.Room._get_state(room.id)
     assert state.room.name == "Pathway"
   end
+
+  test "delete room item", %{zone: zone} do
+    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
+    {:ok, room} = Room.create(zone, params)
+    item = create_item()
+    room_item = create_room_item(room, item, %{spawn_interval: 15})
+    {:ok, room} = Room.update(room.id, %{name: "Pathway"})
+
+    {:ok, _room_item} = Room.delete_item(room_item.id)
+
+    state = Game.Room._get_state(room.id)
+    assert state.room.room_items |> length() == 0
+  end
 end

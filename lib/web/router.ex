@@ -34,6 +34,8 @@ defmodule Web.Router do
 
     resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create]
 
+    resources "/room_items", RoomItemController, only: [:delete]
+
     resources "/rooms", RoomController, only: [:show, :edit, :update]
 
     resources "/sessions", SessionController, only: [:new, :create]

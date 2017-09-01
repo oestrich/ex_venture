@@ -45,16 +45,6 @@
                 <td><%= @room.x %>, <%= @room.y %></td>
               </tr>
               <tr>
-                <th>Items</th>
-                <td>
-                  <ul>
-                    <%= Enum.map @room.item_ids |> Game.Items.items(), fn (item) -> %>
-                      <li><%= link(item.name, to: item_path(@conn, :show, item.id)) %></li>
-                    <% end %>
-                  </ul>
-                </td>
-              </tr>
-              <tr>
                 <th>NPCs</th>
                 <td>
                   <ul>
@@ -64,6 +54,35 @@
                   </ul>
                 </td>
               </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Items</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Spawn Interval</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @room.room_items, fn (room_item) -> %>
+                <tr>
+                  <td><%= link(room_item.item.name, to: item_path(@conn, :show, room_item.item_id)) %></td>
+                  <td><%= room_item.spawn_interval %></td>
+                  <td><%= link("Delete", to: room_item_path(@conn, :delete, room_item.id), method: :delete) %></td>
+                </tr>
+              <% end %>
             </tbody>
           </table>
         </div>

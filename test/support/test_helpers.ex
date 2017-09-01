@@ -48,9 +48,9 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  def create_room(attributes) do
+  def create_room(zone, attributes \\ %{}) do
     %Room{}
-    |> Room.changeset(room_attributes(attributes))
+    |> Room.changeset(Map.merge(room_attributes(attributes), %{zone_id: zone.id}))
     |> Repo.insert!
   end
 
@@ -63,7 +63,7 @@ defmodule TestHelpers do
     }, attributes)
   end
 
-  def create_item(attributes) do
+  def create_item(attributes \\ %{}) do
     %Item{}
     |> Item.changeset(item_attributes(attributes))
     |> Repo.insert!
@@ -82,13 +82,19 @@ defmodule TestHelpers do
   def create_room_item(room, item, attributes) do
     %RoomItem{}
     |> RoomItem.changeset(Map.merge(attributes, %{room_id: room.id, item_id: item.id}))
-    |> Repo.insert
+    |> Repo.insert!
   end
 
-  def create_zone(attributes) do
+  def create_zone(attributes \\ %{}) do
     %Zone{}
-    |> Zone.changeset(room_attributes(attributes))
+    |> Zone.changeset(zone_attributes(attributes))
     |> Repo.insert!
+  end
+
+  defp zone_attributes(attributes) do
+    Map.merge(%{
+      name: "Hidden Forest",
+    }, attributes)
   end
 
   def class_attributes(attributes) do

@@ -7,6 +7,7 @@ defmodule Web.Room do
 
   alias Data.NPC
   alias Data.Room
+  alias Data.RoomItem
   alias Data.Repo
   alias Data.Zone
 
@@ -21,7 +22,7 @@ defmodule Web.Room do
   def get(id) do
     Room
     |> where([r], r.id == ^id)
-    |> preload([zone: [:rooms]])
+    |> preload([zone: [:rooms], room_items: [:item]])
     |> preload([:north, :east, :south, :west])
     |> Repo.one
   end
@@ -78,6 +79,17 @@ defmodule Web.Room do
         room = RoomRepo.get(room.id)
         Game.Room.update(room.id, room)
         {:ok, room}
+      anything -> anything
+    end
+  end
+
+  def delete_item(room_item_id) do
+    room_item = RoomItem |> Repo.get(room_item_id)
+    case room_item |> Repo.delete do
+      {:ok, room_item} ->
+        room = RoomRepo.get(room_item.room_id)
+        Game.Room.update(room.id, room)
+        {:ok, room_item}
       anything -> anything
     end
   end

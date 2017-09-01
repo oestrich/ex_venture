@@ -6,7 +6,7 @@ defmodule Game.Room.ActionsTest do
   setup do
     item = create_item(%{name: "Short Sword"})
     village = create_zone(%{name: "Village"})
-    room = create_room(%{zone_id: village.id, item_ids: [item.id]})
+    room = create_room(village, %{item_ids: [item.id]})
     {:ok, %{room: room, item: item}}
   end
 
