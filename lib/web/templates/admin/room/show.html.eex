@@ -65,6 +65,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Items</h3>
+          <div class="box-tools">
+            <%= link("Add Item", to: room_room_item_path(@conn, :new, @room.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">

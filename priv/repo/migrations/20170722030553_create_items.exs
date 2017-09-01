@@ -14,7 +14,7 @@ defmodule Data.Repo.Migrations.CreateItems do
       add :room_id, references(:rooms)
       add :item_id, references(:items)
       add :spawn, :boolean, default: false, null: false
-      add :interval, :integer
+      add :interval, :integer, null: false
 
       timestamps()
     end

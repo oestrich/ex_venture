@@ -1,0 +1,26 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label f, :item_id %>
+        <%= select f, :item_id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+        <%= error_tag f, :item_id %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :spawn_interval %>
+        <%= text_input f, :spawn_interval, class: "form-control" %>
+        <%= error_tag f, :spawn_interval %>
+        <span class="help-block">Time in seconds for a respawn</span>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

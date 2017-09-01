@@ -83,6 +83,39 @@ defmodule Web.Room do
     end
   end
 
+  #
+  # Room Items
+  #
+
+  @doc """
+  Get a changeset for a new room new
+  """
+  @spec new_item(room :: Room.t) :: changeset :: map
+  def new_item(room) do
+    room
+    |> Ecto.build_assoc(:room_items)
+    |> RoomItem.changeset(%{})
+  end
+
+  @doc """
+  Create a room item
+  """
+  @spec create_item(room :: Room.t, params :: map) :: {:ok, RoomItem.t} | {:error, changeset :: map}
+  def create_item(room, params) do
+    changeset = room |> Ecto.build_assoc(:room_items) |> RoomItem.changeset(params)
+    case changeset |> Repo.insert() do
+      {:ok, room_item} ->
+        room = RoomRepo.get(room_item.room_id)
+        Game.Room.update(room.id, room)
+        {:ok, room_item}
+      anything -> anything
+    end
+  end
+
+  @doc """
+  Delete a room item
+  """
+  @spec delete_item(room_item_id :: integer) :: {:ok, RoomItem.t}
   def delete_item(room_item_id) do
     room_item = RoomItem |> Repo.get(room_item_id)
     case room_item |> Repo.delete do

@@ -17,6 +17,7 @@ defmodule Data.RoomItem do
   def changeset(struct, params) do
     struct
     |> cast(params, [:room_id, :item_id, :spawn_interval])
-    |> validate_required([:room_id, :item_id])
+    |> validate_required([:room_id, :item_id, :spawn_interval])
+    |> unique_constraint(:item_id, name: :room_items_room_id_item_id_index)
   end
 end
