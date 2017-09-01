@@ -18,6 +18,18 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :x %>
+        <%= text_input f, :x, class: "form-control" %>
+        <%= error_tag f, :x %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :y %>
+        <%= text_input f, :y, class: "form-control" %>
+        <%= error_tag f, :y %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :north_id %>
         <%= select f, :north_id, Zone.room_exits(), prompt: "Select room", class: "form-control" %>
         <%= error_tag f, :north_id %>
