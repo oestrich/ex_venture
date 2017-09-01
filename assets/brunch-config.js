@@ -4,12 +4,15 @@ exports.config = {
       joinTo: {
         "js/app.js": /(app\/js)|(priv\/static\/phoenix*)/,
         "js/admin.js": /(admin\/js)/,
+        "js/home.js": /(home\/js)/,
       },
       order: {
         before: [
           "admin/js/vendor/jquery-3.2.1.js",
           "admin/js/vendor/bootstrap.js",
           "admin/js/vendor/adminlte.js",
+          "home/js/vendor/jquery-3.2.1.js",
+          "home/js/vendor/popper.min.js",
         ],
         after: [
           "admin/js/app.js"
@@ -50,7 +53,7 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "home/css", "vendor"],
+    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "home/css", "home/js", "vendor"],
     // Where to compile files to
     public: "../priv/static"
   },

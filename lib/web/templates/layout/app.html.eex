@@ -12,6 +12,20 @@
   </head>
 
   <body>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
+    <div class="container">
+        <%= link(Config.game_name(), to: page_path(@conn, :index), class: "navbar-brand") %>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExample09">
+          <ul class="navbar-nav mr-auto">
+          </ul>
+          <%= link("Play Now", to: play_path(@conn, :show), class: "btn btn-primary") %>
+        </div>
+    </div>
+      </nav>
     <main>
       <div class="container">
         <%= render @view_module, @view_template, assigns %>
@@ -25,5 +39,7 @@
         </p>
       </div>
     </footer>
+
+    <script src="<%= static_path(@conn, "/js/home.js") %>"></script>
   </body>
 </html>
