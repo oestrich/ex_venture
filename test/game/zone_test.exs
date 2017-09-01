@@ -18,4 +18,10 @@ defmodule Game.ZoneTest do
     {:reply, map, _} = Zone.handle_call({:map, {2, 2}}, self(), %{zone: zone, rooms: zone.rooms})
     assert map == "Bandit Hideout\n\n    [ ]    \n[ ] [X] [ ]\n    [ ]"
   end
+
+  test "updates the local room" do
+    {:noreply, state} = Zone.handle_cast({:update_room, %{id: 10, name: "Forest"}}, %{rooms: [%{id: 10}]})
+     room = state.rooms |> List.first
+     assert room.name == "Forest"
+  end
 end

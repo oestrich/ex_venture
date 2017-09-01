@@ -156,6 +156,7 @@ defmodule Game.Room do
 
   def handle_cast({:update, room}, state) do
     room = Map.put(room, :item_ids, state.room.item_ids)
+    room.zone_id |> Zone.update_room(room)
     {:noreply, Map.put(state, :room, room)}
   end
 

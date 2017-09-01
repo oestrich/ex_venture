@@ -81,6 +81,16 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Update a room's definition in the state
+
+  For making sure mapping data stays correct on updates
+  """
+  @spec update_room(id :: integer, room :: Room.t) :: :ok
+  def update_room(id, room) do
+    GenServer.cast(pid(id), {:update_room, room})
+  end
+
+  @doc """
   Display a map of the zone
   """
   @spec map(id :: integer, player_at :: {integer, integer}) :: String.t
@@ -136,5 +146,10 @@ defmodule Game.Zone do
   def handle_cast({:spawn_room, room}, state = %{room_supervisor_pid: room_supervisor_pid}) do
     Room.Supervisor.start_child(room_supervisor_pid, room)
     {:noreply, state}
+  end
+
+  def handle_cast({:update_room, room}, state = %{rooms: rooms}) do
+    rooms = rooms |> Enum.reject(&(&1.id == room.id))
+    {:noreply, Map.put(state, :rooms, [room | rooms])}
   end
 end
