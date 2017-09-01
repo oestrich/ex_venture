@@ -7,6 +7,7 @@ defmodule Web.User do
 
   alias Data.User
   alias Data.Repo
+  alias Game.Session.Registry, as: SessionRegistry
 
   @doc """
   Fetch a user from a web token
@@ -36,5 +37,14 @@ defmodule Web.User do
     User
     |> Repo.get(id)
     |> Repo.preload([:class])
+  end
+
+  @doc """
+  List out connected players
+  """
+  @spec connected_players() :: [User.t]
+  def connected_players() do
+    SessionRegistry.connected_players()
+    |> Enum.map(&(elem(&1, 1)))
   end
 end

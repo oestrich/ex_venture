@@ -1,0 +1,10 @@
+<div class="row align-items-center">
+  <div class="col-md-6 text-center text-md-left">
+    <h1 class="mb-3">Connected Players</h1>
+    <ul class="list-group">
+      <%= Enum.map(@players, fn (player) -> %>
+        <li class="list-group-item"><%= player.name %></li>
+      <% end) %>
+    </ul>
+  </div>
+</div>

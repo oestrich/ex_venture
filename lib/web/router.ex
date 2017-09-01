@@ -19,6 +19,8 @@ defmodule Web.Router do
     get "/", PageController, :index
 
     get "/play", PlayController, :show
+
+    get "/who", PageController, :who
   end
 
   scope "/admin", Web.Admin do

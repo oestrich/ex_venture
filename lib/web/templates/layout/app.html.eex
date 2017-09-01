@@ -21,6 +21,9 @@
 
         <div class="collapse navbar-collapse" id="navbarsExample09">
           <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <%= link("Who's Online", to: page_path(@conn, :who), class: "nav-link") %>
+            </li>
           </ul>
           <%= link("Play Now", to: play_path(@conn, :show), class: "btn btn-primary") %>
         </div>
