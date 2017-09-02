@@ -3,6 +3,12 @@ defmodule Web.LayoutView do
 
   alias Game.Config
 
+  def tab_selected(conn, "dashboard") do
+    case conn.path_info do
+      ["admin"] -> "active"
+      _ -> ""
+    end
+  end
   def tab_selected(conn, routes) when is_list(routes) do
     routes |> Enum.map(&(tab_selected(conn, &1))) |> Enum.join(" ")
   end
