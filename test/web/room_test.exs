@@ -46,6 +46,16 @@ defmodule Web.RoomTest do
     assert state.room.name == "Pathway"
   end
 
+  test "adding an item to a room", %{zone: zone} do
+    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
+    {:ok, room} = Room.create(zone, params)
+    item = create_item()
+    {:ok, room} = Room.add_item(room, item.id)
+
+    state = Game.Room._get_state(room.id)
+    assert state.room.item_ids |> length() == 1
+  end
+
   test "create a room item", %{zone: zone} do
     params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
     {:ok, room} = Room.create(zone, params)

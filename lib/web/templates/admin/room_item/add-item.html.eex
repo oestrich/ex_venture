@@ -19,7 +19,24 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render "_form.html", path: room_room_item_path(@conn, :create, @room.id), items: @items, changeset: @changeset, title: "Add Item Spawn", submit: "Create" %>
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Add Item to Room</h3>
+        </div>
+
+        <%= form_tag room_room_item_path(@conn, :create, @room.id, spawn: false) do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :item, :id %>
+              <%= select :item, :id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Add Item", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </section>

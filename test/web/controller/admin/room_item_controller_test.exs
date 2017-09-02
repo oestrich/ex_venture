@@ -9,6 +9,11 @@ defmodule Web.Controller.RoomItemControllerTest do
     %{item: item, room: room}
   end
 
+  test "add an item to a room", %{conn: conn, room: room, item: item} do
+    conn = post conn, room_room_item_path(conn, :create, room.id, spawn: false), item: %{id: item.id}
+    assert html_response(conn, 302)
+  end
+
   test "add a room item", %{conn: conn, room: room, item: item} do
     conn = post conn, room_room_item_path(conn, :create, room.id), room_item: %{item_id: item.id, spawn_interval: 15}
     assert html_response(conn, 302)

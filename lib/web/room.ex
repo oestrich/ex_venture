@@ -98,6 +98,20 @@ defmodule Web.Room do
   end
 
   @doc """
+  Add an item to a room
+  """
+  @spec add_item(room :: Room.t, item_id :: integer) :: {:ok, Room.t} | {:error, changeset :: map}
+  def add_item(room, item_id) do
+    changeset = room |> Room.changeset(%{item_ids: [item_id | room.item_ids]})
+    case changeset |> Repo.update() do
+      {:ok, room} ->
+        Game.Room.update(room.id, room)
+        {:ok, room}
+      anything -> anything
+    end
+  end
+
+  @doc """
   Create a room item
   """
   @spec create_item(room :: Room.t, params :: map) :: {:ok, RoomItem.t} | {:error, changeset :: map}
