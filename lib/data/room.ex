@@ -5,6 +5,7 @@ defmodule Data.Room do
 
   use Data.Schema
 
+  alias Data.Exit
   alias Data.Zone
 
   schema "rooms" do
@@ -18,20 +19,18 @@ defmodule Data.Room do
     field :x, :integer
     field :y, :integer
 
+    field :exits, {:array, Exit}, virtual: true
+
     has_many :room_items, Data.RoomItem
 
     belongs_to :zone, Zone
-    belongs_to :north, __MODULE__
-    belongs_to :east, __MODULE__
-    belongs_to :south, __MODULE__
-    belongs_to :west, __MODULE__
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :x, :y, :north_id, :east_id, :south_id, :west_id, :item_ids])
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :item_ids])
     |> ensure_item_ids
     |> validate_required([:zone_id, :name, :description, :x, :y])
   end
@@ -39,7 +38,7 @@ defmodule Data.Room do
   def exits(room) do
     ["north", "east", "south", "west"]
     |> Enum.filter(fn (direction) ->
-      Map.get(room, :"#{direction}_id") != nil
+      Exit.exit_to(room, direction)
     end)
   end
 

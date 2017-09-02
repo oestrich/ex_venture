@@ -74,15 +74,4 @@ defmodule Web.Zone do
       anything -> anything
     end
   end
-
-  def room_exits() do
-    Zone
-    |> order_by([z], z.id)
-    |> preload([rooms: ^(from r in Room, order_by: r.id)])
-    |> Repo.all
-    |> Enum.map(fn (zone) ->
-      rooms = Enum.map(zone.rooms, &({"#{&1.id} - #{&1.name}", &1.id}))
-      {zone.name, rooms}
-    end)
-  end
 end

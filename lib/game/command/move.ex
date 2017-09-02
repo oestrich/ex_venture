@@ -5,6 +5,8 @@ defmodule Game.Command.Move do
 
   use Game.Command
 
+  alias Data.Exit
+
   import Game.Character.Target, only: [clear_target: 2]
 
   @custom_parse true
@@ -40,36 +42,36 @@ defmodule Game.Command.Move do
   def run({:east}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
-      case room do
-        %{east_id: nil} -> :ok
+      case room |> Exit.exit_to(:east) do
         %{east_id: id} -> session |> move_to(state, id)
+        _ -> :ok
       end
     end)
   end
   def run({:north}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn () ->
       room = @room.look(room_id)
-      case room do
-        %{north_id: nil} -> :ok
+      case room |> Exit.exit_to(:north) do
         %{north_id: id} -> session |> move_to(state, id)
+        _ -> :ok
       end
     end)
   end
   def run({:south}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
-      case room do
-        %{south_id: nil} -> :ok
+      case room |> Exit.exit_to(:south) do
         %{south_id: id} -> session |> move_to(state, id)
+        _ -> :ok
       end
     end)
   end
   def run({:west}, session, state = %{save: %{room_id: room_id}}) do
     speed_check(state, fn() ->
       room = @room.look(room_id)
-      case room do
-        %{west_id: nil} -> :ok
+      case room |> Exit.exit_to(:west) do
         %{west_id: id} -> session |> move_to(state, id)
+        _ -> :ok
       end
     end)
   end

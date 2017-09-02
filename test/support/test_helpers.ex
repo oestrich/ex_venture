@@ -2,6 +2,7 @@ defmodule TestHelpers do
   alias Data.Repo
   alias Data.Class
   alias Data.Config
+  alias Data.Exit
   alias Data.Item
   alias Data.Room
   alias Data.RoomItem
@@ -61,6 +62,12 @@ defmodule TestHelpers do
       x: 1,
       y: 1,
     }, attributes)
+  end
+
+  def create_exit(attributes) do
+    %Exit{}
+    |> Exit.changeset(attributes)
+    |> Repo.insert!
   end
 
   def create_item(attributes \\ %{}) do

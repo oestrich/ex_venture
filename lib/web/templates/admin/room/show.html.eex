@@ -131,8 +131,8 @@
     <div class="col-md-offset-4 col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= if @room.north_id != nil do %>
-            <%= link("North (#{@room.north.name})", to: room_path(@conn, :show, @room.north_id)) %>
+          <%= if @room |> has_exit?(:north) do %>
+            <%= link("North (#{get_exit(@room, :north).name})", to: room_path(@conn, :show, get_exit(@room, :north).id)) %>
           <% else %>
             No Exit
           <% end %>
@@ -144,8 +144,8 @@
     <div class="col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= if @room.west_id != nil do %>
-            <%= link("West (#{@room.west.name})", to: room_path(@conn, :show, @room.west_id)) %>
+          <%= if @room |> has_exit?(:west) do %>
+            <%= link("West (#{get_exit(@room, :west).name})", to: room_path(@conn, :show, get_exit(@room, :west).id)) %>
           <% else %>
             No Exit
           <% end %>
@@ -155,8 +155,8 @@
     <div class="col-md-offset-4 col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= if @room.east_id != nil do %>
-            <%= link("East (#{@room.east.name})", to: room_path(@conn, :show, @room.east_id)) %>
+          <%= if @room |> has_exit?(:east) do %>
+            <%= link("East (#{get_exit(@room, :east).name})", to: room_path(@conn, :show, get_exit(@room, :east).id)) %>
           <% else %>
             No Exit
           <% end %>
@@ -168,8 +168,8 @@
     <div class="col-md-offset-4 col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= if @room.south_id != nil do %>
-            <%= link("South (#{@room.south.name})", to: room_path(@conn, :show, @room.south_id)) %>
+          <%= if @room |> has_exit?(:south) do %>
+            <%= link("South (#{get_exit(@room, :south).name})", to: room_path(@conn, :show, get_exit(@room, :south).id)) %>
           <% else %>
             No Exit
           <% end %>

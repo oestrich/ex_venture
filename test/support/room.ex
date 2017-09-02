@@ -7,10 +7,10 @@ defmodule Test.Game.Room do
 
   def _room() do
     %Room{
+      id: 1,
       name: "Hallway",
       description: "An empty hallway",
-      north_id: 10,
-      west_id: 11,
+      exits: [%{north_id: 2, south_id: 1}],
       zone_id: 1,
       players: [],
       items: [%Data.Item{id: 15, name: "Short Sword", description: "A simple blade", keywords: ["sword"]}],

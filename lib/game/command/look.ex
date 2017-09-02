@@ -5,6 +5,8 @@ defmodule Game.Command.Look do
 
   use Game.Command
 
+  alias Data.Exit
+
   @commands ["look at", "look"]
 
   @short_help "Look around the room"
@@ -25,11 +27,12 @@ defmodule Game.Command.Look do
   def run({direction}, _, %{socket: socket, save: %{room_id: room_id}}) when direction in ["north", "east", "south", "west"] do
     room = @room.look(room_id)
 
-    case Map.get(room, :"#{direction}_id") do
-      nil -> nil
-      room_id ->
+    id_key = String.to_atom("#{direction}_id")
+    case room |> Exit.exit_to(direction) do
+      %{^id_key => room_id} ->
         room = @room.look(room_id)
         socket |> @socket.echo(Format.peak_room(room, direction))
+      _ -> nil
     end
 
     :ok

@@ -5,6 +5,7 @@ defmodule Web.Room do
 
   import Ecto.Query
 
+  alias Data.Exit
   alias Data.NPC
   alias Data.Room
   alias Data.RoomItem
@@ -23,8 +24,8 @@ defmodule Web.Room do
     Room
     |> where([r], r.id == ^id)
     |> preload([zone: [:rooms], room_items: [:item]])
-    |> preload([:north, :east, :south, :west])
     |> Repo.one
+    |> Exit.load_exits(preload: true)
   end
 
   @doc """

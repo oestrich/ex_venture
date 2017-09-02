@@ -28,30 +28,6 @@
         <%= text_input f, :y, class: "form-control" %>
         <%= error_tag f, :y %>
       </div>
-
-      <div class="form-group">
-        <%= label f, :north_id %>
-        <%= select f, :north_id, Zone.room_exits(), prompt: "Select room", class: "form-control" %>
-        <%= error_tag f, :north_id %>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :east_id %>
-        <%= select f, :east_id, Zone.room_exits(), prompt: "Select room", class: "form-control" %>
-        <%= error_tag f, :east_id %>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :south_id %>
-        <%= select f, :south_id, Zone.room_exits(), prompt: "Select room", class: "form-control" %>
-        <%= error_tag f, :south_id %>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :west_id %>
-        <%= select f, :west_id, Zone.room_exits(), prompt: "Select room", class: "form-control" %>
-        <%= error_tag f, :west_id %>
-      </div>
     </div>
 
     <div class="box-footer">

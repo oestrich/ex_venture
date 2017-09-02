@@ -5,6 +5,7 @@ defmodule Game.Room.Repo do
 
   import Ecto.Query
 
+  alias Data.Exit
   alias Data.Room
   alias Data.Repo
 
@@ -25,6 +26,7 @@ defmodule Game.Room.Repo do
   def get(id) do
     Room
     |> Repo.get(id)
+    |> Exit.load_exits()
     |> Repo.preload([:room_items])
   end
 
@@ -37,6 +39,7 @@ defmodule Game.Room.Repo do
     |> where([r], r.zone_id == ^zone_id)
     |> preload([:room_items])
     |> Repo.all
+    |> Enum.map(&Exit.load_exits/1)
   end
 
   def update(room, params) do

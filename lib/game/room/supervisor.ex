@@ -7,18 +7,9 @@ defmodule Game.Room.Supervisor do
 
   alias Game.Room
   alias Game.Zone
-  alias Game.Zone.Repo
 
   def start_link(zone) do
     Supervisor.start_link(__MODULE__, zone, id: zone.id)
-  end
-
-  @doc """
-  Return all zones
-  """
-  @spec all() :: [map]
-  def all() do
-    Repo.all()
   end
 
   @doc """
