@@ -5,7 +5,7 @@ defmodule Game.Room do
 
   use GenServer
 
-  alias Data.Repo
+  alias Data.Room
 
   alias Game.Room.Actions
   alias Game.Room.Repo
@@ -155,7 +155,6 @@ defmodule Game.Room do
   end
 
   def handle_cast({:update, room}, state) do
-    room = Map.put(room, :item_ids, state.room.item_ids)
     room.zone_id |> Zone.update_room(room)
     {:noreply, Map.put(state, :room, room)}
   end
