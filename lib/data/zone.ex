@@ -5,10 +5,14 @@ defmodule Data.Zone do
 
   use Data.Schema
 
+  alias Data.Room
+  alias Data.ZoneNPC
+
   schema "zones" do
     field :name, :string
 
-    has_many :rooms, Data.Room
+    has_many :rooms, Room
+    has_many :zone_npcs, ZoneNPC
 
     timestamps()
   end

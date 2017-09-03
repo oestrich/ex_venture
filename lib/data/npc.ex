@@ -6,6 +6,7 @@ defmodule Data.NPC do
   use Data.Schema
 
   alias Data.Stats
+  alias Data.ZoneNPC
 
   schema "npcs" do
     field :name, :string
@@ -13,17 +14,16 @@ defmodule Data.NPC do
     field :level, :integer
     field :experience_points, :integer # given after defeat
     field :stats, Data.Stats
-    field :spawn_interval, :integer
-    
-    belongs_to :room, Data.Room
+
+    has_many :zone_npcs, ZoneNPC
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :room_id, :hostile, :level, :experience_points, :stats, :spawn_interval])
-    |> validate_required([:name, :room_id, :hostile, :level, :experience_points, :stats, :spawn_interval])
+    |> cast(params, [:name, :hostile, :level, :experience_points, :stats])
+    |> validate_required([:name, :hostile, :level, :experience_points, :stats])
     |> validate_stats()
   end
 

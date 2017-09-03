@@ -7,23 +7,25 @@ defmodule Game.NPC.Supervisor do
 
   alias Game.NPC
 
-  def start_link() do
-    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(zone) do
+    Supervisor.start_link(__MODULE__, zone, id: zone.id)
   end
 
   @doc """
-  Return all npcs that are currently online
+  Return all npcs that are currently online in a zone
   """
-  @spec npcs() :: [pid]
-  def npcs() do
-    __MODULE__
+  @spec npcs(pid) :: [pid]
+  def npcs(pid) do
+    pid
     |> Supervisor.which_children()
     |> Enum.map(&(elem(&1, 1)))
   end
 
-  def init(_) do
-    children = NPC.all |> Enum.map(fn (npc) ->
-      worker(NPC, [npc], id: npc.id, restart: :permanent)
+  def init(zone) do
+    children = zone
+    |> NPC.for_zone()
+    |> Enum.map(fn (zone_npc) ->
+      worker(NPC, [zone_npc], id: zone_npc.id, restart: :permanent)
     end)
 
     supervise(children, strategy: :one_for_one)

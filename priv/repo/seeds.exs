@@ -10,6 +10,7 @@ alias Data.RoomItem
 alias Data.Skill
 alias Data.User
 alias Data.Zone
+alias Data.ZoneNPC
 
 defmodule Helpers do
   def add_item_to_room(room, item, attributes) do
@@ -20,6 +21,12 @@ defmodule Helpers do
       _ ->
         raise "Error creating room item"
     end
+  end
+
+  def add_npc_to_zone(zone, npc, attributes) do
+    %ZoneNPC{}
+    |> ZoneNPC.changeset(Map.merge(attributes, %{npc_id: npc.id, zone_id: zone.id}))
+    |> Repo.insert!()
   end
 
   def create_config(name, value) do
@@ -34,9 +41,9 @@ defmodule Helpers do
     |> Repo.insert!
   end
 
-  def create_npc(room, attributes) do
+  def create_npc(attributes) do
     %NPC{}
-    |> NPC.changeset(Map.merge(attributes, %{room_id: room.id}))
+    |> NPC.changeset(attributes)
     |> Repo.insert!
   end
 
@@ -171,24 +178,32 @@ defmodule Seeds do
       dexterity: 10,
     }
 
-    entrance
-    |> create_npc(%{
+    bran = create_npc(%{
       name: "Bran",
       hostile: false,
       level: 1,
       experience_points: 124,
-      spawn_interval: 15,
       stats: stats,
     })
-
-    great_room
-    |> create_npc(%{
-      name: "Bandit",
+    add_npc_to_zone(bandit_hideout, bran, %{
+      room_id: entrance.id,
       spawn_interval: 15,
+    })
+
+    bandit = create_npc(%{
+      name: "Bandit",
       hostile: true,
       level: 2,
       experience_points: 230,
       stats: stats,
+    })
+    add_npc_to_zone(bandit_hideout, bandit, %{
+      room_id: great_room.id,
+      spawn_interval: 15,
+    })
+    add_npc_to_zone(bandit_hideout, bandit, %{
+      room_id: kitchen.id,
+      spawn_interval: 15,
     })
 
     sword = create_item(%{

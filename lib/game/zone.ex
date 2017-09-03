@@ -10,6 +10,7 @@ defmodule Game.Zone do
   use GenServer
 
   alias Game.Map, as: GameMap
+  alias Game.NPC
   alias Game.Room
   alias Game.Zone.Repo
 
@@ -54,6 +55,15 @@ defmodule Game.Zone do
   """
   def room_online(id, room) do
     GenServer.cast(pid(id), {:room_online, room})
+  end
+
+  @doc """
+  Let the zone know a npc is online
+
+  For sending ticks to
+  """
+  def npc_online(id, npc) do
+    GenServer.cast(pid(id), {:npc_online, npc})
   end
 
   @doc """
@@ -110,7 +120,7 @@ defmodule Game.Zone do
   #
 
   def init(zone) do
-    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil}}
+    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil, npcs: []}}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -126,13 +136,18 @@ defmodule Game.Zone do
     {:reply, map |> String.trim(), state}
   end
 
-  def handle_cast({:tick, time}, state = %{rooms: rooms}) do
+  def handle_cast({:tick, time}, state = %{rooms: rooms, npcs: npcs}) do
     rooms |> Enum.each(&(Room.tick(&1.id, time)))
+    npcs |> Enum.each(&(NPC.tick(&1.id, time)))
     {:noreply, state}
   end
 
   def handle_cast({:room_online, room}, state = %{rooms: rooms}) do
     {:noreply, Map.put(state, :rooms, [room | rooms])}
+  end
+
+  def handle_cast({:npc_online, npc}, state = %{npcs: npcs}) do
+    {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
   def handle_cast({:update, zone}, state) do

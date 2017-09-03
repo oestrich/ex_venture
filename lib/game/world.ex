@@ -32,7 +32,7 @@ defmodule Game.World do
     |> Enum.flat_map(fn ({_id, pid, _type, _module}) ->
       pid
       |> Supervisor.which_children()
-      |> Enum.reject(&(Regex.match?(~r(rooms), to_string(elem(&1, 0)))))
+      |> Enum.reject(&(Regex.match?(~r(rooms|npcs), to_string(elem(&1, 0)))))
       |> Enum.map(&(elem(&1, 1)))
     end)
   end

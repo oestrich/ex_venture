@@ -14,16 +14,16 @@ defmodule Game.NPC.Actions do
   end
   def tick(_state, _time), do: :ok
 
-  defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc}, time) when respawn_at != nil do
+  defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc, zone_npc: zone_npc}, time) when respawn_at != nil do
     case Timex.after?(time, respawn_at) do
       true ->
         npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
-        npc.room_id |> @room.enter({:npc, npc})
+        zone_npc.room_id |> @room.enter({:npc, npc})
         %{state | npc: npc, respawn_at: nil}
       false -> state
     end
   end
   defp handle_respawn(state, time) do
-    Map.put(state, :respawn_at, time |> Timex.shift(seconds: state.npc.spawn_interval))
+    Map.put(state, :respawn_at, time |> Timex.shift(seconds: state.zone_npc.spawn_interval))
   end
 end

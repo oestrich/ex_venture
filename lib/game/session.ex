@@ -232,7 +232,7 @@ defmodule Game.Session do
   defp check_for_inactive(%{socket: socket, last_recv: last_recv}) do
     case Timex.diff(last_recv, Timex.now, :seconds) do
       time when time < @timeout_seconds ->
-        Logger.info "Disconnecting player"
+        Logger.info "Idle player - disconnecting"
         socket |> @socket.disconnect()
       _ ->
         self() |> schedule_inactive_check()

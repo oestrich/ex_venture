@@ -23,6 +23,7 @@ defmodule Game.Room.Supervisor do
   end
 
   @doc """
+  Start a newly created room in the zone
   """
   @spec start_child(pid, room :: Room.t) :: :ok
   def start_child(pid, room) do

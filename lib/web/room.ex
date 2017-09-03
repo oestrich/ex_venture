@@ -6,11 +6,11 @@ defmodule Web.Room do
   import Ecto.Query
 
   alias Data.Exit
-  alias Data.NPC
   alias Data.Room
   alias Data.RoomItem
   alias Data.Repo
   alias Data.Zone
+  alias Data.ZoneNPC
 
   alias Game.Room.Repo, as: RoomRepo
 
@@ -33,8 +33,9 @@ defmodule Web.Room do
   """
   @spec npcs(room_id :: integer) :: [NPC.t]
   def npcs(room_id) do
-    NPC
+    ZoneNPC
     |> where([n], n.room_id == ^room_id)
+    |> preload([:npc])
     |> Repo.all
   end
 
