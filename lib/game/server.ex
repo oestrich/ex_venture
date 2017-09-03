@@ -5,7 +5,6 @@ defmodule Game.Server do
 
   use GenServer
 
-  alias Game.NPC
   alias Game.Session
   alias Game.Zone
   alias Game.World
