@@ -80,4 +80,37 @@ defmodule Web.RoomTest do
     state = Game.Room._get_state(room.id)
     assert state.room.room_items |> length() == 0
   end
+
+  test "create an exit", %{zone: zone} do
+    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
+    {:ok, room1} = Room.create(zone, params)
+
+    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 2}
+    {:ok, room2} = Room.create(zone, params)
+
+    {:ok, _room_exit} = Room.create_exit(%{north_id: room1.id, south_id: room2.id})
+
+    state = Game.Room._get_state(room1.id)
+    assert state.room.exits |> length() == 1
+
+    state = Game.Room._get_state(room2.id)
+    assert state.room.exits |> length() == 1
+  end
+
+  test "delete a room exit", %{zone: zone} do
+    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
+    {:ok, room1} = Room.create(zone, params)
+
+    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 2}
+    {:ok, room2} = Room.create(zone, params)
+
+    {:ok, room_exit} = Room.create_exit(%{north_id: room1.id, south_id: room2.id})
+    {:ok, _room_exit} = Room.delete_exit(room_exit.id)
+
+    state = Game.Room._get_state(room1.id)
+    assert state.room.exits |> length() == 0
+
+    state = Game.Room._get_state(room2.id)
+    assert state.room.exits |> length() == 0
+  end
 end

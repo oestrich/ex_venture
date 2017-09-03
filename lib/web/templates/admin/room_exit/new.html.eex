@@ -1,0 +1,50 @@
+<section class="content-header">
+  <h1>
+    New Exit
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Zones", to: zone_path(@conn, :index)) %></li>
+    <li><%= link(@room.zone.name, to: zone_path(@conn, :show, @room.zone_id)) %></li>
+    <li><%= link(@room.name, to: room_path(@conn, :show, @room.id)) %></li>
+    <li class="active">New Exit</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">New Exit</h3>
+        </div>
+
+        <%= form_for @changeset, room_exit_path(@conn, :create, @room.id, direction: @direction), fn (f) -> %>
+          <div class="box-body">
+            <%= if @direction == "north" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :south_id, select_field: :north_id) %>
+            <% end %>
+            <%= if @direction == "south" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :north_id, select_field: :south_id) %>
+            <% end %>
+            <%= if @direction == "west" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :east_id, select_field: :west_id) %>
+            <% end %>
+            <%= if @direction == "east" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :west_id, select_field: :east_id) %>
+            <% end %>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Create", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

@@ -133,8 +133,11 @@
         <div class="box-body">
           <%= if @room |> has_exit?(:north) do %>
             <%= link("North (#{get_exit(@room, :north).name})", to: room_path(@conn, :show, get_exit(@room, :north).id)) %>
+            <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :north).id, room_id: @room.id), method: :delete) do %>
+              <i class="fa fa-times"></i>
+            <% end %>
           <% else %>
-            No Exit
+            <%= link("Add Exit", to: room_exit_path(@conn, :new, @room.id, direction: :north)) %>
           <% end %>
         </div>
       </div>
@@ -146,8 +149,11 @@
         <div class="box-body">
           <%= if @room |> has_exit?(:west) do %>
             <%= link("West (#{get_exit(@room, :west).name})", to: room_path(@conn, :show, get_exit(@room, :west).id)) %>
+            <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :west).id, room_id: @room.id), method: :delete) do %>
+              <i class="fa fa-times"></i>
+            <% end %>
           <% else %>
-            No Exit
+            <%= link("Add Exit", to: room_exit_path(@conn, :new, @room.id, direction: :west)) %>
           <% end %>
         </div>
       </div>
@@ -157,8 +163,11 @@
         <div class="box-body">
           <%= if @room |> has_exit?(:east) do %>
             <%= link("East (#{get_exit(@room, :east).name})", to: room_path(@conn, :show, get_exit(@room, :east).id)) %>
+            <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :east).id, room_id: @room.id), method: :delete) do %>
+              <i class="fa fa-times"></i>
+            <% end %>
           <% else %>
-            No Exit
+            <%= link("Add Exit", to: room_exit_path(@conn, :new, @room.id, direction: :east)) %>
           <% end %>
         </div>
       </div>
@@ -170,8 +179,11 @@
         <div class="box-body">
           <%= if @room |> has_exit?(:south) do %>
             <%= link("South (#{get_exit(@room, :south).name})", to: room_path(@conn, :show, get_exit(@room, :south).id)) %>
+            <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :south).id, room_id: @room.id), method: :delete) do %>
+              <i class="fa fa-times"></i>
+            <% end %>
           <% else %>
-            No Exit
+            <%= link("Add Exit", to: room_exit_path(@conn, :new, @room.id, direction: :south)) %>
           <% end %>
         </div>
       </div>

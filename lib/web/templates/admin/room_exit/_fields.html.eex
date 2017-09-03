@@ -1,0 +1,10 @@
+<div class="form-group">
+  <%= label @f, @room_field %>
+  <%= hidden_input @f, @room_field, value: @room.id %>
+  <%= select @f, @room_field, disabled_room_option(@room), disabled: true, class: "form-control" %>
+</div>
+
+<div class="form-group">
+  <%= label @f, @select_field %>
+  <%= select @f, @select_field, Zone.room_exits(), class: "form-control" %>
+</div>

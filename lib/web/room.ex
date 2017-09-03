@@ -141,4 +141,54 @@ defmodule Web.Room do
       anything -> anything
     end
   end
+
+  #
+  # Room Exits
+  #
+
+  @doc """
+  Get a changeset for a new room exit
+  """
+  @spec new_exit() :: changeset :: map
+  def new_exit(), do: %Exit{} |> Exit.changeset(%{})
+
+  @doc """
+  Create a room exit
+  """
+  @spec create_exit(params :: map) :: {:ok, Exit.t} | {:error, changeset :: map}
+  def create_exit(params) do
+    changeset = %Exit{} |> Exit.changeset(params)
+    case changeset |> Repo.insert() do
+      {:ok, room_exit} ->
+        room_exit |> update_directions()
+        {:ok, room_exit}
+      anything -> anything
+    end
+  end
+
+  @doc """
+  Delete a room exit
+  """
+  @spec delete_exit(exit_id :: integer) :: {:ok, Exit.t} | {:error, changeset :: map}
+  def delete_exit(exit_id) do
+    room_exit = Exit |> Repo.get(exit_id)
+    case room_exit |> Repo.delete() do
+      {:ok, room_exit} ->
+        room_exit |> update_directions()
+        {:ok, room_exit}
+      anything -> anything
+    end
+  end
+
+  defp update_directions(room_exit) do
+    [:north_id, :south_id, :east_id, :west_id]
+    |> Enum.each(fn (direction) ->
+      case Map.get(room_exit, direction) do
+        nil -> nil
+        id ->
+          room = RoomRepo.get(id)
+          Game.Room.update(room.id, room)
+      end
+    end)
+  end
 end

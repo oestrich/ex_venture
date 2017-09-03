@@ -20,6 +20,10 @@ defmodule Data.Exit do
     struct
     |> cast(params, [:north_id, :east_id, :south_id, :west_id])
     |> validate_direction()
+    |> foreign_key_constraint(:north_id)
+    |> foreign_key_constraint(:south_id)
+    |> foreign_key_constraint(:west_id)
+    |> foreign_key_constraint(:east_id)
     |> unique_constraint(:north_id)
     |> unique_constraint(:south_id)
     |> unique_constraint(:west_id)

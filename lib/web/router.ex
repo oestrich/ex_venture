@@ -34,11 +34,15 @@ defmodule Web.Router do
 
     resources "/config", ConfigController, only: [:index]
 
+    resources "/exits", RoomExitController, only: [:delete], as: :exit
+
     resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create]
 
     resources "/room_items", RoomItemController, only: [:delete]
 
     resources "/rooms", RoomController, only: [:show, :edit, :update] do
+      resources "/exits", RoomExitController, only: [:new, :create], as: :exit
+
       resources "/items", RoomItemController, only: [:new, :create]
     end
 
