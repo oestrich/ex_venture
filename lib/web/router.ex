@@ -38,6 +38,8 @@ defmodule Web.Router do
 
     resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create]
 
+    resources "/npcs", NPCController, only: [:index, :show]
+
     resources "/room_items", RoomItemController, only: [:delete]
 
     resources "/rooms", RoomController, only: [:show, :edit, :update] do
