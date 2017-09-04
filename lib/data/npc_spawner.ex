@@ -1,4 +1,4 @@
-defmodule Data.ZoneNPC do
+defmodule Data.NPCSpawner do
   @moduledoc """
   Schema for Zone NPC connections
   """
@@ -9,7 +9,7 @@ defmodule Data.ZoneNPC do
   alias Data.Room
   alias Data.Zone
 
-  schema "zone_npcs" do
+  schema "npc_spawners" do
     field :spawn_interval, :integer
 
     belongs_to :zone, Zone

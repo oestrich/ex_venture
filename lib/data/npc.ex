@@ -6,7 +6,7 @@ defmodule Data.NPC do
   use Data.Schema
 
   alias Data.Stats
-  alias Data.ZoneNPC
+  alias Data.NPCSpawner
 
   schema "npcs" do
     field :name, :string
@@ -15,7 +15,7 @@ defmodule Data.NPC do
     field :experience_points, :integer # given after defeat
     field :stats, Data.Stats
 
-    has_many :zone_npcs, ZoneNPC
+    has_many :npc_spawners, NPCSpawner
 
     timestamps()
   end

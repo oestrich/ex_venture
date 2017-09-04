@@ -9,7 +9,7 @@ defmodule Game.NPCTest do
   test "being targeted makes the npc say something" do
     targeter = {:user, %{id: 10, name: "Player"}}
 
-    {:noreply, state} = NPC.handle_cast({:targeted, targeter}, %{zone_npc: %{room_id: 1}, npc: %{name: "NPC"}, is_targeting: MapSet.new})
+    {:noreply, state} = NPC.handle_cast({:targeted, targeter}, %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC"}, is_targeting: MapSet.new})
 
     [{_, message}] = @room.get_says()
     assert message.message == "Why are you targeting me, Player?"
@@ -31,7 +31,7 @@ defmodule Game.NPCTest do
   test "applying effects" do
     effect = %{kind: "damage", type: :slashing, amount: 10}
 
-    state = %{zone_npc: %{room_id: 1}, npc: %{name: "NPC", stats: %{health: 25}}, is_targeting: MapSet.new()}
+    state = %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC", stats: %{health: 25}}, is_targeting: MapSet.new()}
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, 1}, "description"}, state)
     assert state.npc.stats.health == 15
   end
@@ -42,7 +42,7 @@ defmodule Game.NPCTest do
     effect = %{kind: "damage", type: :slashing, amount: 10}
 
     is_targeting = MapSet.new |> MapSet.put({:user, 2})
-    state = %{zone_npc: %{room_id: 1}, npc: %{id: 1, name: "NPC", stats: %{health: 10}}, is_targeting: is_targeting}
+    state = %{npc_spawner: %{room_id: 1}, npc: %{id: 1, name: "NPC", stats: %{health: 10}}, is_targeting: is_targeting}
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, 1}, "description"}, state)
     assert state.npc.stats.health == 0
 

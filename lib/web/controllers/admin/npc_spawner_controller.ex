@@ -1,4 +1,4 @@
-defmodule Web.Admin.ZoneNPCController do
+defmodule Web.Admin.NPCSpawnerController do
   use Web.AdminController
 
   alias Web.NPC
@@ -9,10 +9,10 @@ defmodule Web.Admin.ZoneNPCController do
     conn |> render("new.html", npc: npc, changeset: changeset)
   end
 
-  def create(conn, %{"npc_id" => npc_id, "zone_npc" => params}) do
+  def create(conn, %{"npc_id" => npc_id, "npc_spawner" => params}) do
     npc = NPC.get(npc_id)
     case NPC.add_spawner(npc, params) do
-      {:ok, zone_npc} -> conn |> redirect(to: npc_path(conn, :show, zone_npc.npc_id))
+      {:ok, npc_spawner} -> conn |> redirect(to: npc_path(conn, :show, npc_spawner.npc_id))
       {:error, changeset} -> conn |> render("new.html", npc: npc, changeset: changeset)
     end
   end

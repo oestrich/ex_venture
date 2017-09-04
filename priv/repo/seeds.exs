@@ -5,12 +5,12 @@ alias Data.Config
 alias Data.Exit
 alias Data.Item
 alias Data.NPC
+alias Data.NPCSpawner
 alias Data.Room
 alias Data.RoomItem
 alias Data.Skill
 alias Data.User
 alias Data.Zone
-alias Data.ZoneNPC
 
 defmodule Helpers do
   def add_item_to_room(room, item, attributes) do
@@ -24,8 +24,8 @@ defmodule Helpers do
   end
 
   def add_npc_to_zone(zone, npc, attributes) do
-    %ZoneNPC{}
-    |> ZoneNPC.changeset(Map.merge(attributes, %{npc_id: npc.id, zone_id: zone.id}))
+    %NPCSpawner{}
+    |> NPCSpawner.changeset(Map.merge(attributes, %{npc_id: npc.id, zone_id: zone.id}))
     |> Repo.insert!()
   end
 

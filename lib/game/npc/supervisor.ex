@@ -24,8 +24,8 @@ defmodule Game.NPC.Supervisor do
   def init(zone) do
     children = zone
     |> NPC.for_zone()
-    |> Enum.map(fn (zone_npc) ->
-      worker(NPC, [zone_npc], id: zone_npc.id, restart: :permanent)
+    |> Enum.map(fn (npc_spawner) ->
+      worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :permanent)
     end)
 
     supervise(children, strategy: :one_for_one)

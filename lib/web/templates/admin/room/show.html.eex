@@ -52,8 +52,8 @@
                 <th>NPCs</th>
                 <td>
                   <ul>
-                    <%= Enum.map @npcs, fn (zone_npc) -> %>
-                      <li><%= zone_npc.npc.name %></li>
+                    <%= Enum.map @npcs, fn (npc_spawner) -> %>
+                      <li><%= npc_spawner.npc.name %></li>
                     <% end %>
                   </ul>
                 </td>

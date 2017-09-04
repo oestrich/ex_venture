@@ -9,7 +9,7 @@ defmodule Game.NPC do
   import Ecto.Query
 
   alias Data.Repo
-  alias Data.ZoneNPC
+  alias Data.NPCSpawner
 
   alias Game.Character
   alias Game.Effect
@@ -22,8 +22,8 @@ defmodule Game.NPC do
 
   Will have a registered name with the return from `Game.NPC.pid/1`.
   """
-  def start_link(zone_npc) do
-    GenServer.start_link(__MODULE__, zone_npc, name: pid(zone_npc.id))
+  def start_link(npc_spawner) do
+    GenServer.start_link(__MODULE__, npc_spawner, name: pid(npc_spawner.id))
   end
 
   @doc """
@@ -39,8 +39,8 @@ defmodule Game.NPC do
   """
   @spec for_zone(zone :: Zone.t) :: [map]
   def for_zone(zone) do
-    ZoneNPC
-    |> where([zn], zn.zone_id == ^zone.id)
+    NPCSpawner
+    |> where([ns], ns.zone_id == ^zone.id)
     |> preload([:npc])
     |> Repo.all
   end
@@ -63,23 +63,23 @@ defmodule Game.NPC do
     GenServer.cast(pid(id), {:tick, time})
   end
 
-  def init(zone_npc) do
-    npc = %{zone_npc.npc | id: zone_npc.id}
+  def init(npc_spawner) do
+    npc = %{npc_spawner.npc | id: npc_spawner.id}
 
-    zone_npc.zone_id |> Zone.npc_online(npc)
+    npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
-    {:ok, %{zone_npc: zone_npc, npc: npc, is_targeting: MapSet.new()}}
+    {:ok, %{npc_spawner: npc_spawner, npc: npc, is_targeting: MapSet.new()}}
   end
 
-  def handle_cast(:enter, state = %{zone_npc: zone_npc, npc: npc}) do
-    @room.enter(zone_npc.room_id, {:npc, npc})
+  def handle_cast(:enter, state = %{npc_spawner: npc_spawner, npc: npc}) do
+    @room.enter(npc_spawner.room_id, {:npc, npc})
     {:noreply, state}
   end
 
-  def handle_cast({:heard, message}, state = %{zone_npc: zone_npc, npc: npc}) do
+  def handle_cast({:heard, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
     case message.message do
       "Hello" <> _ ->
-        zone_npc.room_id |> @room.say(npc, Message.npc(npc, npc |> message))
+        npc_spawner.room_id |> @room.say(npc, Message.npc(npc, npc |> message))
       _ -> nil
     end
     {:noreply, state}
@@ -96,8 +96,8 @@ defmodule Game.NPC do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, {_, player}}, state = %{zone_npc: zone_npc, npc: npc}) do
-    zone_npc.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
+  def handle_cast({:targeted, {_, player}}, state = %{npc_spawner: npc_spawner, npc: npc}) do
+    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
     state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, {:user, player.id}))
     {:noreply, state}
   end
@@ -107,13 +107,13 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_cast({:apply_effects, effects, _from, _description}, state = %{zone_npc: zone_npc, npc: npc, is_targeting: is_targeting}) do
+  def handle_cast({:apply_effects, effects, _from, _description}, state = %{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
     stats = effects |> Effect.apply(npc.stats)
     case stats do
       %{health: health} when health < 1 ->
-        zone_npc.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
+        npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
         Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
-        zone_npc.room_id |> @room.leave({:npc, npc})
+        npc_spawner.room_id |> @room.leave({:npc, npc})
       _ -> nil
     end
     npc = %{npc | stats: stats}

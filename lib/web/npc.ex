@@ -6,9 +6,9 @@ defmodule Web.NPC do
   import Ecto.Query
 
   alias Data.NPC
+  alias Data.NPCSpawner
   alias Data.Stats
   alias Data.Repo
-  alias Data.ZoneNPC
 
   @doc """
   Get all npcs
@@ -27,7 +27,7 @@ defmodule Web.NPC do
   def get(id) do
     NPC
     |> where([c], c.id == ^id)
-    |> preload([zone_npcs: [:zone, :room]])
+    |> preload([npc_spawners: [:zone, :room]])
     |> Repo.one
   end
 
@@ -99,8 +99,8 @@ defmodule Web.NPC do
   @spec new_spawner(npc :: NPC.t) :: changeset :: map
   def new_spawner(npc) do
     npc
-    |> Ecto.build_assoc(:zone_npcs)
-    |> ZoneNPC.changeset(%{})
+    |> Ecto.build_assoc(:npc_spawners)
+    |> NPCSpawner.changeset(%{})
   end
 
   @doc """
@@ -108,8 +108,8 @@ defmodule Web.NPC do
   """
   def add_spawner(npc_id, params) do
     npc_id
-    |> Ecto.build_assoc(:zone_npcs)
-    |> ZoneNPC.changeset(params)
+    |> Ecto.build_assoc(:npc_spawners)
+    |> NPCSpawner.changeset(params)
     |> Repo.insert()
   end
 end

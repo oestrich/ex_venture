@@ -73,12 +73,12 @@
               </tr>
             </thead>
             <tbody>
-              <%= Enum.map @npc.zone_npcs, fn (zone_npc) -> %>
+              <%= Enum.map @npc.npc_spawners, fn (npc_spawner) -> %>
                 <tr>
-                  <td><%= zone_npc.id %></td>
-                  <td><%= link(zone_npc.zone.name, to: zone_path(@conn, :show, zone_npc.zone_id)) %></td>
-                  <td><%= link(zone_npc.room.name, to: room_path(@conn, :show, zone_npc.room_id)) %></td>
-                  <td><%= zone_npc.spawn_interval %></td>
+                  <td><%= npc_spawner.id %></td>
+                  <td><%= link(npc_spawner.zone.name, to: zone_path(@conn, :show, npc_spawner.zone_id)) %></td>
+                  <td><%= link(npc_spawner.room.name, to: room_path(@conn, :show, npc_spawner.room_id)) %></td>
+                  <td><%= npc_spawner.spawn_interval %></td>
                   <td></td>
                 </tr>
               <% end %>

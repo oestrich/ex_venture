@@ -41,8 +41,8 @@ defmodule Web.NPCTest do
 
     npc = create_npc(%{name: "Fighter"})
 
-    {:ok, zone_npc} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
+    {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    assert zone_npc.zone_id == zone.id
+    assert npc_spawner.zone_id == zone.id
   end
 end
