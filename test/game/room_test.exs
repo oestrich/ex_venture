@@ -20,7 +20,7 @@ defmodule Game.RoomTest do
 
   test "leaving a room - npc" do
     npc = %{id: 10, name: "Bandit"}
-    {:noreply, state} = Room.handle_cast({:leave, {:npc, npc}}, %{npcs: [npc]})
+    {:noreply, state} = Room.handle_cast({:leave, {:npc, npc}}, %{npcs: [npc], players: []})
     assert state.npcs == []
   end
 

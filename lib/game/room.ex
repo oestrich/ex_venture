@@ -180,9 +180,9 @@ defmodule Game.Room do
     players |> echo_to_players("{blue}#{user.name}{/blue} leaves")
     {:noreply, Map.put(state, :players, players)}
   end
-  def handle_cast({:leave, {:npc, npc}}, state = %{npcs: npcs}) do
+  def handle_cast({:leave, {:npc, npc}}, state = %{players: players, npcs: npcs}) do
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
-    npcs |> echo_to_npcs("{yellow}#{npc.name}{/yellow} leaves")
+    players |> echo_to_players("{yellow}#{npc.name}{/yellow} leaves")
     {:noreply, Map.put(state, :npcs, npcs)}
   end
 
