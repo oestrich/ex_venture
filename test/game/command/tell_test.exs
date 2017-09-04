@@ -31,10 +31,18 @@ defmodule Game.Command.TellTest do
 
   test "send a reply", %{session: session, socket: socket, user: user} do
     Channel.join_tell(user)
+    Session.Registry.register(user)
 
     :ok = Tell.run({"reply", "howdy"}, session, %{socket: socket, user: user, reply_to: user})
 
     assert_receive {:channel, {:tell, ^user, ~s[{blue}Player{/blue} tells you, {green}"howdy"{/green}]}}
+  end
+
+  test "send a reply - player not online", %{session: session, socket: socket, user: user} do
+    :ok = Tell.run({"reply", "howdy"}, session, %{socket: socket, user: user, reply_to: user})
+
+    [{^socket, echo}] = @socket.get_echos()
+    assert Regex.match?(~r(not online), echo)
   end
 
   test "send reply - no reply to", %{session: session, socket: socket, user: user} do

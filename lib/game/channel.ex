@@ -117,7 +117,7 @@ defmodule Game.Channel do
 
   def handle_cast({:tell, user, from, message}, state = %{tells: tells}) do
     case tells |> Map.get("tells:#{user.id}", nil) do
-      nil -> {:noreply, state}
+      nil -> nil
       pid -> send(pid, {:channel, {:tell, from, message}})
     end
 
