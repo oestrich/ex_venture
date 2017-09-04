@@ -34,6 +34,8 @@ defmodule Game.SessionTest do
     end
 
     test "regens stats", state do
+      @room.clear_update_characters()
+
       {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, state)
 
       assert stats.health == 11
@@ -41,11 +43,7 @@ defmodule Game.SessionTest do
 
       assert_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
 
-      user = %{
-        class: %{points_name: "Skill Points", regen_health: 1, regen_skill_points: 1},
-        save: %{room_id: 1, stats: %{health: 11, max_health: 15, max_skill_points: 12, skill_points: 10}},
-      }
-      assert [{1, {:user, _, ^user}}] = @room.get_update_characters()
+      assert @room.get_update_characters() |> length() == 1
     end
 
     test "does not echo if stats did not change", state do
@@ -118,6 +116,8 @@ defmodule Game.SessionTest do
   end
 
   test "applying effects", %{socket: socket} do
+    @room.clear_update_characters()
+
     effect = %{kind: "damage", type: :slashing, amount: 10}
     stats = %{health: 25}
     user = %{name: "user"}

@@ -107,6 +107,11 @@ defmodule Test.Game.Room do
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :update_character, []) end)
   end
 
+  def clear_update_characters() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :update_character, []) end)
+  end
+
   def set_pick_up(response) do
     start_link()
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up, response) end)
@@ -115,5 +120,10 @@ defmodule Test.Game.Room do
   def pick_up(_id, item) do
     start_link()
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :pick_up, {:ok, item}) end)
+  end
+
+  def clear_pick_up() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.delete(state, :pick_up) end)
   end
 end

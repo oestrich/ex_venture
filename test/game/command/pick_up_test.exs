@@ -13,6 +13,8 @@ defmodule Game.Command.PickUpTest do
   end
 
   test "pick up an item from a room", %{session: session, socket: socket} do
+    @room.clear_pick_up()
+
     {:update, state} = Game.Command.PickUp.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
 
     assert state.save.item_ids |> length == 1
