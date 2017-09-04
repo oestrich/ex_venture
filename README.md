@@ -9,8 +9,8 @@ A MUD written in Elixir
 ```bash
 mix deps.get
 mix compile
-mix ecto.reset
 cd assets && npm install && node node_modules/brunch/bin/brunch build && cd ..
+mix ecto.reset
 mix run --no-halt
 ```
 
