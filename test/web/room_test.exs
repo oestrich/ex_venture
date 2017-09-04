@@ -50,12 +50,13 @@ defmodule Web.RoomTest do
     params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
     {:ok, room} = Room.create(zone, params)
     item = create_item()
-    {:ok, room} = Room.add_item(room, item.id)
 
     # Check the supervision tree to make sure casts have gone through
     state = Game.Zone._get_state(zone.id)
     children = state.room_supervisor_pid |> Supervisor.which_children()
     assert children |> length() == 1
+
+    {:ok, room} = Room.add_item(room, item.id)
 
     state = Game.Room._get_state(room.id)
     assert state.room.item_ids |> length() == 1
