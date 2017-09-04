@@ -4,6 +4,7 @@ defmodule TestHelpers do
   alias Data.Config
   alias Data.Exit
   alias Data.Item
+  alias Data.NPC
   alias Data.Room
   alias Data.RoomItem
   alias Data.Skill
@@ -146,6 +147,30 @@ defmodule TestHelpers do
   def create_skill(class, attributes \\ %{}) do
     %Skill{}
     |> Skill.changeset(skill_attributes(class, attributes))
+    |> Repo.insert!
+  end
+
+  defp npc_attributes(attributes) do
+    Map.merge(%{
+      name: "Bandit",
+      hostile: false,
+      level: 1,
+      experience_points: 124,
+      stats: %{
+        health: 25,
+        max_health: 25,
+        skill_points: 10,
+        max_skill_points: 10,
+        strength: 13,
+        intelligence: 10,
+        dexterity: 10,
+      },
+    }, attributes)
+  end
+
+  def create_npc(attributes) do
+    %NPC{}
+    |> NPC.changeset(npc_attributes(attributes))
     |> Repo.insert!
   end
 end

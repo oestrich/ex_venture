@@ -17,6 +17,11 @@
   <div class="row">
     <div class="col-md-12">
       <div class="box">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New NPC", to: npc_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
         <div class="box-body">
           <table class="table">
             <thead>
@@ -33,6 +38,7 @@
                   <td><%= npc.name %></td>
                   <td>
                     <%= link("View", to: npc_path(@conn, :show, npc.id)) %>
+                    <%= link("Edit", to: npc_path(@conn, :edit, npc.id)) %>
                   </td>
                 </tr>
               <% end %>
