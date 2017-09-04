@@ -43,6 +43,7 @@ defmodule Game.Session.Login do
     session |> Session.recv("look")
 
     Channel.join("global")
+    Channel.join("newbie")
 
     state
     |> Map.put(:user, user)

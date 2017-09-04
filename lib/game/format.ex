@@ -11,16 +11,16 @@ defmodule Game.Format do
   alias Data.Skill
 
   @doc """
-  Format a global channel message
+  Format a channel message
 
   Example:
 
-      iex> Game.Format.global_say({:npc, %{name: "NPC"}}, "Hello")
+      iex> Game.Format.channel_say("global", {:npc, %{name: "NPC"}}, "Hello")
       ~s({red}[global]{/red} {yellow}NPC{/yellow} says, {green}"Hello"{/green})
   """
-  @spec global_say(sender :: map, message :: String.t) :: String.t
-  def global_say(sender, message) do
-    ~s({red}[global]{/red} #{say(sender, message)})
+  @spec channel_say(channel :: String.t, sender :: {atom, map}, message :: String.t) :: String.t
+  def channel_say(channel, sender, message) do
+    ~s({red}[#{channel}]{/red} #{say(sender, message)})
   end
 
   @doc """

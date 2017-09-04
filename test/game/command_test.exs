@@ -29,7 +29,7 @@ defmodule CommandTest do
     end
 
     test "parsing global", %{user: user} do
-      assert Command.parse("global hello", user) == {Command.Global, {"hello"}}
+      assert Command.parse("global hello", user) == {Command.Channels, {"global", "hello"}}
     end
 
     test "parsing who is online", %{user: user} do
@@ -173,7 +173,7 @@ defmodule CommandTest do
     end
 
     test "talk on the global channel", %{session: session, socket: socket} do
-      Command.run({Command.Global, {"hi"}}, session, %{socket: socket, user: %{name: "user"}})
+      Command.run({Command.Channels, {"global", "hi"}}, session, %{socket: socket, user: %{name: "user"}})
       assert_receive {:channel, {:broadcast, ~s({red}[global]{/red} {blue}user{/blue} says, {green}"hi"{/green})}}
     end
   end
