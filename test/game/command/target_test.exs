@@ -15,7 +15,7 @@ defmodule Game.Command.TargetTest do
     @room.set_room(room)
     @socket.clear_messages
 
-    {:ok, %{session: :session, socket: :socket, user: :user}}
+    {:ok, %{session: :session, socket: :socket, user: %{id: 1, name: "Player"}}}
   end
 
   test "set your target from someone in the room", %{session: session, socket: socket, user: user} do
