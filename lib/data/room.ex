@@ -22,6 +22,7 @@ defmodule Data.Room do
     field :exits, {:array, Exit}, virtual: true
 
     has_many :room_items, Data.RoomItem
+    has_many :npc_spawners, Data.NPCSpawner
 
     belongs_to :zone, Zone
 

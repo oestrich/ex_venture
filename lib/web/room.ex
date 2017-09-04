@@ -23,7 +23,7 @@ defmodule Web.Room do
   def get(id) do
     Room
     |> where([r], r.id == ^id)
-    |> preload([zone: [:rooms], room_items: [:item]])
+    |> preload([zone: [:rooms], room_items: [:item], npc_spawners: [:npc]])
     |> Repo.one
     |> Exit.load_exits(preload: true)
   end
