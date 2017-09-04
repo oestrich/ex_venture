@@ -63,12 +63,35 @@ defmodule Game.NPC do
     GenServer.cast(pid(id), {:tick, time})
   end
 
+  @doc """
+  Update a npc's data
+  """
+  @spec update(id :: integer, npc_spawner :: NPCSpawner.t) :: :ok
+  def update(id, npc_spawner) do
+    GenServer.cast(pid(id), {:update, npc_spawner})
+  end
+
+  @doc """
+  For testing purposes, get the server's state
+  """
+  def _get_state(id) do
+    GenServer.call(pid(id), :get_state)
+  end
+
+  #
+  # Server
+  #
+
   def init(npc_spawner) do
     npc = %{npc_spawner.npc | id: npc_spawner.id}
 
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
     {:ok, %{npc_spawner: npc_spawner, npc: npc, is_targeting: MapSet.new()}}
+  end
+
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
   end
 
   def handle_cast(:enter, state = %{npc_spawner: npc_spawner, npc: npc}) do
@@ -90,6 +113,14 @@ defmodule Game.NPC do
       :ok -> {:noreply, state}
       {:update, state} -> {:noreply, state}
     end
+  end
+
+  def handle_cast({:update, npc_spawner}, state) do
+    state = state
+    |> Map.put(:npc_spawner, npc_spawner)
+    |> Map.put(:npc, %{npc_spawner.npc | id: npc_spawner.id})
+
+    {:noreply, state}
   end
 
   #

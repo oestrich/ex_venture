@@ -6,6 +6,11 @@ defmodule Game.NPCTest do
   alias Game.NPC
   alias Game.Session.Registry
 
+  setup do
+    @room.clear_says()
+    @room.clear_leaves()
+  end
+
   test "being targeted makes the npc say something" do
     targeter = {:user, %{id: 10, name: "Player"}}
 

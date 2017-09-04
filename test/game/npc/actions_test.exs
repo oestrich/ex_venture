@@ -7,6 +7,8 @@ defmodule Game.NPC.ActionsTest do
 
   describe "tick - respawning the npc" do
     setup do
+      @room.clear_enters()
+
       %{time: Timex.now(), npc_spawner: %{room_id: 1, spawn_interval: 10}, npc: %{stats: %{health: 10, max_health: 15}}}
     end
 

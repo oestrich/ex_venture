@@ -83,11 +83,27 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Tell the zone where the npc supervisor lives
+  """
+  @spec npc_supervisor(id :: integer, supervisor_pid :: pid) :: :ok
+  def npc_supervisor(id, supervisor_pid) do
+    GenServer.cast(pid(id), {:npc_supervisor, supervisor_pid})
+  end
+
+  @doc """
   Start a new room in the supervision tree
   """
   @spec spawn_room(id :: integer, room :: Data.Room.t) :: :ok
   def spawn_room(id, room) do
     GenServer.cast(pid(id), {:spawn_room, room})
+  end
+
+  @doc """
+  Start a new npc in the supervision tree
+  """
+  @spec spawn_npc(id :: integer, npc_spawner :: Data.Room.t) :: :ok
+  def spawn_npc(id, npc_spawner) do
+    GenServer.cast(pid(id), {:spawn_npc, npc_spawner})
   end
 
   @doc """
@@ -120,7 +136,7 @@ defmodule Game.Zone do
   #
 
   def init(zone) do
-    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil, npcs: []}}
+    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil, npcs: [], npc_supervisor_pid: nil}}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -158,8 +174,17 @@ defmodule Game.Zone do
     {:noreply, Map.put(state, :room_supervisor_pid, pid)}
   end
 
+  def handle_cast({:npc_supervisor, pid}, state) do
+    {:noreply, Map.put(state, :npc_supervisor_pid, pid)}
+  end
+
   def handle_cast({:spawn_room, room}, state = %{room_supervisor_pid: room_supervisor_pid}) do
     Room.Supervisor.start_child(room_supervisor_pid, room)
+    {:noreply, state}
+  end
+
+  def handle_cast({:spawn_npc, npc_spawner}, state = %{npc_supervisor_pid: npc_supervisor_pid}) do
+    NPC.Supervisor.start_child(npc_supervisor_pid, npc_spawner)
     {:noreply, state}
   end
 

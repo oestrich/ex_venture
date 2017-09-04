@@ -58,10 +58,16 @@ defmodule Web.NPC do
   """
   @spec update(id :: integer, params :: map) :: {:ok, NPC.t} | {:error, changeset :: map}
   def update(id, params) do
-    id
-    |> get()
-    |> NPC.changeset(cast_params(params))
-    |> Repo.update
+    changeset = id |> get() |> NPC.changeset(cast_params(params))
+    case changeset |> Repo.update do
+      {:ok, npc} ->
+        npc = npc |> Repo.preload([npc_spawners: [:npc]])
+        Enum.map(npc.npc_spawners, fn (npc_spawner) ->
+          Game.NPC.update(npc_spawner.id, npc_spawner)
+        end)
+        {:ok, npc}
+      anything -> anything
+    end
   end
 
   @doc """
@@ -107,12 +113,15 @@ defmodule Web.NPC do
   Add a new NPC spawner
   """
   def add_spawner(npc_id, params) do
-    npc_id
-    |> Ecto.build_assoc(:npc_spawners)
-    |> NPCSpawner.changeset(params)
-    |> Repo.insert()
+    changeset = npc_id |> Ecto.build_assoc(:npc_spawners) |> NPCSpawner.changeset(params)
+    case changeset |> Repo.insert() do
+      {:ok, npc_spawner} ->
+        npc_spawner = npc_spawner |> Repo.preload([:npc])
+        Game.Zone.spawn_npc(npc_spawner.zone_id, npc_spawner)
+        {:ok, npc_spawner}
+      anything -> anything
+    end
   end
-
 
   @doc """
   Delete a room exit

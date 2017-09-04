@@ -40,6 +40,11 @@ defmodule Test.Game.Room do
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :enter, []) end)
   end
 
+  def clear_enters() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :enter, []) end)
+  end
+
   def leave(id, user) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
@@ -53,6 +58,11 @@ defmodule Test.Game.Room do
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :leave, []) end)
   end
 
+  def clear_leaves() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :leave, []) end)
+  end
+
   def say(id, _session, message) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
@@ -64,6 +74,11 @@ defmodule Test.Game.Room do
   def get_says() do
     start_link()
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :say, []) end)
+  end
+
+  def clear_says() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :say, []) end)
   end
 
   def emote(id, _session, message) do
