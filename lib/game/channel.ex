@@ -23,6 +23,10 @@ defmodule Game.Channel do
     GenServer.cast(__MODULE__, {:join, channel, self()})
   end
 
+  def join_tell(user) do
+    GenServer.cast(__MODULE__, {:join_tell, self(), user})
+  end
+
   @doc """
   Leave a channel
 
@@ -33,13 +37,20 @@ defmodule Game.Channel do
     GenServer.cast(__MODULE__, {:leave, channel, self()})
   end
 
-
   @doc """
   Broadcast a message to a channel
   """
   @spec broadcast(channel :: String.t, message :: String.t) :: :ok
   def broadcast(channel, message) do
     GenServer.cast(__MODULE__, {:broadcast, channel, message})
+  end
+
+  @doc """
+  Tell a message to a user
+  """
+  @spec tell(user :: User.t, from :: User.t, message :: String.t) :: :ok
+  def tell(user, from, message) do
+    GenServer.cast(__MODULE__, {:tell, user, from, message})
   end
 
   @doc """
@@ -58,7 +69,7 @@ defmodule Game.Channel do
 
   def init(_) do
     Process.flag(:trap_exit, true)
-    {:ok, %{channels: %{}}}
+    {:ok, %{channels: %{}, tells: %{}}}
   end
 
   def handle_call(:subscribed, {pid, _}, state = %{channels: channels}) do
@@ -76,6 +87,11 @@ defmodule Game.Channel do
 
     send(pid, {:channel, {:joined, channel}})
     {:noreply, Map.put(state, :channels, channels)}
+  end
+
+  def handle_cast({:join_tell, pid, user}, state = %{tells: tells}) do
+    tells = Map.put(tells, "tells:#{user.id}", pid)
+    {:noreply, Map.put(state, :tells, tells)}
   end
 
   def handle_cast({:leave, channel, pid}, state = %{channels: channels}) do
@@ -99,11 +115,29 @@ defmodule Game.Channel do
     {:noreply, state}
   end
 
-  def handle_info({:EXIT, pid, _reason}, state = %{channels: channels}) do
+  def handle_cast({:tell, user, from, message}, state = %{tells: tells}) do
+    case tells |> Map.get("tells:#{user.id}", nil) do
+      nil -> {:noreply, state}
+      pid -> send(pid, {:channel, {:tell, from, message}})
+    end
+
+    {:noreply, state}
+  end
+
+  def handle_info({:EXIT, pid, _reason}, state = %{channels: channels, tells: tells}) do
     channels = Enum.reduce(channels, %{}, fn ({channel, pids}, channels) ->
       pids = pids |> Enum.reject(&(&1 == pid))
       Map.put(channels, channel, pids)
     end)
-    {:noreply, Map.put(state, :channels, channels)}
+
+    tells = tells
+    |> Enum.reject(fn ({_, tell_pid}) -> tell_pid == pid end)
+    |> Enum.into(%{})
+
+    state = state
+    |> Map.put(:channels, channels)
+    |> Map.put(:tells, tells)
+
+    {:noreply, state}
   end
 end

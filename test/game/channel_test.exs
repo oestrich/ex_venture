@@ -31,8 +31,25 @@ defmodule Game.ChannelTest do
   end
 
   test "removing a pid after an exit is trapped" do
-    {:noreply, state} = Channel.handle_info({:EXIT, self(), "quit"}, %{channels: %{"global" => [self()]}})
+    state = %{channels: %{"global" => [self()]}, tells: %{"tells:10" => self(), "tells:11" => :pid}}
+    {:noreply, state} = Channel.handle_info({:EXIT, self(), "quit"}, state)
 
-    assert state == %{channels: %{"global" => []}}
+    assert state == %{channels: %{"global" => []}, tells: %{"tells:11" => :pid}}
+  end
+
+  test "join the tell channel" do
+    {:noreply, state} = Channel.handle_cast({:join_tell, self(), %{id: 10}}, %{tells: %{}})
+    assert state.tells["tells:10"] == self()
+  end
+
+  test "receive a tell" do
+    user = %{id: 10}
+    from = %{id: 11}
+
+    :ok = Channel.join_tell(user)
+
+    Channel.tell(user, from, "hi")
+
+    assert_receive {:channel, {:tell, ^from, "hi"}}
   end
 end

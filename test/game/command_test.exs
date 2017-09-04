@@ -33,6 +33,14 @@ defmodule CommandTest do
       assert Command.parse("global hello", user) == {Command.Channels, {"global", "hello"}}
     end
 
+    test "parsing tell", %{user: user} do
+      assert Command.parse("tell player hello", user) == {Command.Tell, {"tell", "player hello"}}
+    end
+
+    test "parsing reply", %{user: user} do
+      assert Command.parse("reply hello", user) == {Command.Tell, {"reply", "hello"}}
+    end
+
     test "parsing who is online", %{user: user} do
       assert Command.parse("who", user) == {Command.Who, {}}
     end
@@ -172,6 +180,10 @@ defmodule CommandTest do
   end
 
   describe "say" do
+    setup do
+      @room.clear_says()
+    end
+
     test "says to the room", %{session: session, socket: socket} do
       Command.run({Command.Say, {"hi"}}, session, %{socket: socket, user: %{name: "user"}, save: %{room_id: 1}})
 

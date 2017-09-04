@@ -95,6 +95,7 @@ defmodule Game.Session do
       target: nil,
       is_targeting: MapSet.new,
       regen: %{count: 0},
+      reply_to: nil,
     }
 
     {:ok, state}
@@ -210,6 +211,11 @@ defmodule Game.Session do
   def handle_info({:channel, {:broadcast, message}}, state = %{socket: socket}) do
     socket |> @socket.echo(message)
     {:noreply, state}
+  end
+
+  def handle_info({:channel, {:tell, from, message}}, state = %{socket: socket}) do
+    socket |> @socket.echo(message)
+    {:noreply, Map.put(state, :reply_to, from)}
   end
 
   #

@@ -62,6 +62,16 @@ defmodule Game.Format do
   end
 
   @doc """
+  Format a tell message
+
+      iex> Game.Format.tell(%{name: "Player"}, "secret message")
+      ~s[{blue}Player{/blue} tells you, {green}"secret message"{/green}]
+  """
+  def tell(%{name: name}, message) do
+    ~s[{blue}#{name}{/blue} tells you, {green}"#{message}"{/green}]
+  end
+
+  @doc """
   Format an emote message
 
   Example:

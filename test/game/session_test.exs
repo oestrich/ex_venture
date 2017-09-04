@@ -189,4 +189,19 @@ defmodule Game.SessionTest do
     assert is_nil(state.target)
     assert state.save.level == 2
   end
+
+  describe "channels" do
+    setup do
+      @socket.clear_messages()
+
+      %{from: %{id: 10, name: "Player"}}
+    end
+
+    test "receiving a tell", %{socket: socket, from: from} do
+      {:noreply, state} = Session.handle_info({:channel, {:tell, from, "howdy"}}, %{socket: socket})
+
+      assert @socket.get_echos() == [{socket, "howdy"}]
+      assert state.reply_to == from
+    end
+  end
 end

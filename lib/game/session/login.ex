@@ -44,6 +44,7 @@ defmodule Game.Session.Login do
 
     Channel.join("global")
     Channel.join("newbie")
+    Channel.join_tell(user)
 
     state
     |> Map.put(:user, user)
