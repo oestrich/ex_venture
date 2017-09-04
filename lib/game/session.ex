@@ -196,6 +196,23 @@ defmodule Game.Session do
   end
 
   #
+  # Channels
+  #
+
+  def handle_info({:channel, {:joined, _}}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:channel, {:left, _}}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:channel, {:broadcast, message}}, state = %{socket: socket}) do
+    socket |> @socket.echo(message)
+    {:noreply, state}
+  end
+
+  #
   # General callback
   #
 

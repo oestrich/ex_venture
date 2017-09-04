@@ -11,6 +11,7 @@ defmodule Game.Session.Login do
 
   alias Game.Authentication
   alias Game.Config
+  alias Game.Channel
   alias Game.Format
   alias Game.Session
 
@@ -40,6 +41,8 @@ defmodule Game.Session.Login do
 
     @room.enter(user.save.room_id, {:user, session, user})
     session |> Session.recv("look")
+
+    Channel.join("global")
 
     state
     |> Map.put(:user, user)

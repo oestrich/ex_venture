@@ -16,6 +16,7 @@ defmodule Game.Supervisor do
       worker(Game.Server, []),
       supervisor(Game.Session.Supervisor, []),
       supervisor(Game.World, []),
+      worker(Game.Channel, []),
       worker(Game.Items, []),
     ]
 

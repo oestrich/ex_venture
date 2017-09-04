@@ -5,6 +5,8 @@ defmodule Game.Command.Global do
 
   use Game.Command
 
+  alias Game.Channel
+
   @commands ["global"]
 
   @short_help "Talk to other players"
@@ -18,16 +20,10 @@ defmodule Game.Command.Global do
   Send to all connected players
   """
   def run(command, session, state)
-  def run({message}, session, %{socket: socket, user: user}) do
+  def run({message}, _session, %{user: user}) do
     message = ~s({red}[global]{/red} {blue}#{user.name}{/blue} says, {green}"#{message}"{/green})
 
-    socket |> @socket.echo(message)
-
-    Session.Registry.connected_players()
-    |> Enum.reject(&(elem(&1, 0) == session)) # don't send to your own
-    |> Enum.each(fn ({session, _user}) ->
-      Session.echo(session, message)
-    end)
+    Channel.broadcast("global", message)
 
     :ok
   end

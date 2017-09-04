@@ -2,9 +2,9 @@ defmodule CommandTest do
   use Data.ModelCase
   doctest Game.Command
 
+  alias Game.Channel
   alias Game.Command
   alias Game.Message
-  alias Game.Session
   alias Game.Session.Registry
 
   @socket Test.Networking.Socket
@@ -169,15 +169,12 @@ defmodule CommandTest do
 
   describe "global" do
     setup do
-      Session.Registry.register({self(), :user})
-      on_exit fn() ->
-        Session.Registry.unregister()
-      end
+      Channel.join("global")
     end
 
     test "talk on the global channel", %{session: session, socket: socket} do
       Command.run({Command.Global, {"hi"}}, session, %{socket: socket, user: %{name: "user"}})
-      assert_received {:"$gen_cast", {:echo, ~s({red}[global]{/red} {blue}user{/blue} says, {green}"hi"{/green})}}
+      assert_receive {:channel, {:broadcast, ~s({red}[global]{/red} {blue}user{/blue} says, {green}"hi"{/green})}}
     end
   end
 
