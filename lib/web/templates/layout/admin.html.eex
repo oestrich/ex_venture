@@ -51,6 +51,12 @@
                 <span>Config</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "insights") %>">
+              <%= link(to: insight_path(@conn, :index)) do %>
+                <i class="fa fa-search"></i>
+                <span>Insights</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "items") %>">
               <%= link(to: item_path(@conn, :index)) do %>
                 <i class="fa fa-archive"></i>

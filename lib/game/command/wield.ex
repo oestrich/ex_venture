@@ -31,11 +31,14 @@ defmodule Game.Command.Wield do
 
       iex> Game.Command.Wield.parse("unwield right sword")
       {:unwield, "right sword"}
+
+      iex> Game.Command.Wield.parse("unweld right sword")
+      {:error, :bad_parse, "unweld right sword"}
   """
   @spec parse(command :: String.t) :: []
   def parse("wield " <> command), do: {:wield, command}
   def parse("unwield " <> command), do: {:unwield, command}
-  def parse(_), do: {:error, :bad_parse}
+  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Put an item in your hands

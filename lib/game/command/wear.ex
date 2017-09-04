@@ -28,11 +28,14 @@ defmodule Game.Command.Wear do
 
       iex> Game.Command.Wear.parse("remove chest")
       {:remove, "chest"}
+
+      iex> Game.Command.Wear.parse("remve chest")
+      {:error, :bad_parse, "remve chest"}
   """
   @spec parse(command :: String.t) :: []
   def parse("wear " <> command), do: {:wear, command}
   def parse("remove " <> command), do: {:remove, command}
-  def parse(_), do: {:error, :bad_parse}
+  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Put an item in your hands

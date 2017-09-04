@@ -18,6 +18,7 @@ defmodule Game.Supervisor do
       supervisor(Game.World, []),
       worker(Game.Channel, []),
       worker(Game.Items, []),
+      worker(Game.Insight, []),
     ]
 
     supervise(children, strategy: :one_for_one)

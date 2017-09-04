@@ -30,14 +30,14 @@ defmodule Game.Command.Channels do
       {"newbie", "hi"}
 
       iex> Game.Command.Channels.parse("unknown hi")
-      {:error, :bad_parse}
+      {:error, :bad_parse, "unknown hi"}
   """
   @spec parse(command :: String.t) :: {atom}
-  def parse(commnd)
+  def parse(command)
   def parse("channels"), do: {}
   def parse("global " <> message), do: {"global", message}
   def parse("newbie " <> message), do: {"newbie", message}
-  def parse(_), do: {:error, :bad_parse}
+  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Send to all connected players

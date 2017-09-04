@@ -36,6 +36,8 @@ defmodule Web.Router do
 
     resources "/exits", RoomExitController, only: [:delete], as: :exit
 
+    resources "/insights", InsightController, only: [:index]
+
     resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create]
 
     resources "/npcs", NPCController, only: [:index, :show, :edit, :update, :new, :create] do

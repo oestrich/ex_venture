@@ -66,8 +66,8 @@ defmodule Game.Command do
         }
       end
 
-      def run(_, session, state) do
-        Game.Command.run({:error, :bad_parse}, session, state)
+      def run(command, session, state) do
+        Game.Command.run({:error, :bad_parse, command}, session, state)
       end
     end
   end
@@ -77,6 +77,7 @@ defmodule Game.Command do
 
   alias Data.User
   alias Game.Command
+  alias Game.Insight
 
   @commands [
     Command.Channels, Command.Help, Command.Info, Command.Inventory, Command.Look,
@@ -152,7 +153,7 @@ defmodule Game.Command do
     end
   end
 
-  defp _parse(nil, _), do: {:error, :bad_parse}
+  defp _parse(nil, command), do: {:error, :bad_parse, command}
   defp _parse(module, command) do
     case module.custom_parse? do
       true ->
@@ -164,7 +165,8 @@ defmodule Game.Command do
     end
   end
 
-  def run({:error, :bad_parse}, _session, %{socket: socket}) do
+  def run({:error, :bad_parse, command}, _session, %{socket: socket}) do
+    Insight.bad_command(command)
     socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
     :ok
   end

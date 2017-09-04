@@ -4,6 +4,7 @@ defmodule CommandTest do
 
   alias Game.Channel
   alias Game.Command
+  alias Game.Insight
   alias Game.Message
   alias Game.Session.Registry
 
@@ -21,7 +22,7 @@ defmodule CommandTest do
     end
 
     test "command not found", %{user: user} do
-      assert Command.parse("does not exist", user) == {:error, :bad_parse}
+      assert Command.parse("does not exist", user) == {:error, :bad_parse, "does not exist"}
     end
 
     test "parsing say", %{user: user} do
@@ -129,6 +130,17 @@ defmodule CommandTest do
     save = %{stats: %{health: 0}}
     :ok = Command.run({Command.Move, {:north}}, session, %{socket: socket, save: save})
     assert @socket.get_echos() == [{socket, "You are passed out and cannot perform this action."}]
+  end
+
+  describe "bad parse" do
+    setup do
+      %{user: %{class: %{skills: []}}, state: %{socket: :socket}}
+    end
+
+    test "an unknown command is run", %{user: user, state: state} do
+      "bad command" |> Command.parse(user) |> Command.run(self(), state)
+      assert Insight.bad_commands |> length() > 0
+    end
   end
 
   describe "quitting" do
