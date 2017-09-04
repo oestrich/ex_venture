@@ -52,6 +52,11 @@ defmodule Web.RoomTest do
     item = create_item()
     {:ok, room} = Room.add_item(room, item.id)
 
+    # Check the supervision tree to make sure casts have gone through
+    state = Game.Zone._get_state(zone.id)
+    children = state.room_supervisor_pid |> Supervisor.which_children()
+    assert children |> length() == 1
+
     state = Game.Room._get_state(room.id)
     assert state.room.item_ids |> length() == 1
   end
