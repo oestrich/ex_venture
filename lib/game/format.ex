@@ -117,6 +117,7 @@ Items: #{items(room)}
       iex> Game.Format.underline("Room Name")
       "-------------"
   """
+  def underline(nil), do: ""
   def underline(string) do
     (1..(String.length(string) + 4))
     |> Enum.map(fn (_) -> "-" end)
