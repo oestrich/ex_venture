@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    New Spawner for <%= @npc.name %>
+    Edit Spawner for <%= @npc_spawner.npc.name %>
   </h1>
 
   <ol class="breadcrumb">
@@ -10,7 +10,7 @@
       <% end %>
     </li>
     <li><%= link("NPCs", to: npc_path(@conn, :index)) %></li>
-    <li><%= link(@npc.name, to: npc_path(@conn, :show, @npc.id)) %></li>
+    <li><%= link(@npc_spawner.npc.name, to: npc_path(@conn, :show, @npc_spawner.npc.id)) %></li>
     <li class="active">New Spawner</li>
   </ol>
 </section>
@@ -18,7 +18,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render "_form.html", path: npc_spawner_path(@conn, :create, @npc.id), changeset: @changeset, new: true, title: "New", submit: "Create" %>
+      <%= render "_form.html", path: npc_spawner_path(@conn, :update, @npc_spawner.id), changeset: @changeset, new: false, title: "Edit", submit: "Update" %>
     </div>
   </div>
 </section>

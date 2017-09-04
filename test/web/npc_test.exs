@@ -59,6 +59,21 @@ defmodule Web.NPCTest do
     assert state.npc.name == "Fighter"
   end
 
+  test "updating a spawner" do
+    npc = create_npc(%{name: "Fighter"})
+
+    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, room} = Room.create(zone, %{name: "Forest Path", description: "A small forest path", x: 1, y: 1})
+    {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
+
+    {:ok, npc_spawner} = NPC.update_spawner(npc_spawner.id, %{spawn_interval: 30})
+
+    assert npc_spawner.spawn_interval == 30
+
+    state = Game.NPC._get_state(npc_spawner.id)
+    assert state.npc_spawner.spawn_interval == 30
+  end
+
   test "deleting a spawner" do
     Process.flag(:trap_exit, true)
 

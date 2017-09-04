@@ -14,6 +14,13 @@ defmodule Web.Controller.NPCSpawnerControllerTest do
     assert html_response(conn, 302)
   end
 
+  test "update a spawner", %{conn: conn, npc: npc, zone: zone, room: room} do
+    npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
+
+    conn = put conn, npc_spawner_path(conn, :delete, npc_spawner.id), npc_spawner: %{spawn_interval: 30}
+    assert html_response(conn, 302)
+  end
+
   test "delete a spawner", %{conn: conn, npc: npc, zone: zone, room: room} do
     npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 

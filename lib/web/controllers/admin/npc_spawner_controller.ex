@@ -17,6 +17,21 @@ defmodule Web.Admin.NPCSpawnerController do
     end
   end
 
+  def edit(conn, %{"id" => id}) do
+    npc_spawner = NPC.get_spawner(id)
+    changeset = NPC.edit_spawner(npc_spawner)
+    conn |> render("edit.html", npc_spawner: npc_spawner, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "npc_spawner" => params}) do
+    case NPC.update_spawner(id, params) do
+      {:ok, npc_spawner} -> conn |> redirect(to: npc_path(conn, :show, npc_spawner.npc_id))
+      {:error, changeset} ->
+        npc_spawner = NPC.get_spawner(id)
+        conn |> render("edit.html", npc_spawner: npc_spawner, changeset: changeset)
+    end
+  end
+
   def delete(conn, %{"id" => id, "npc_id" => npc_id}) do
     case NPC.delete_spawner(id) do
       {:ok, _npc_spanwer} -> conn |> redirect(to: npc_path(conn, :show, npc_id))

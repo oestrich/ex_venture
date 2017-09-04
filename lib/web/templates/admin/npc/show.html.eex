@@ -80,6 +80,7 @@
                   <td><%= link(npc_spawner.room.name, to: room_path(@conn, :show, npc_spawner.room_id)) %></td>
                   <td><%= npc_spawner.spawn_interval %></td>
                   <td>
+                    <%= link("Edit", to: npc_spawner_path(@conn, :edit, npc_spawner.id)) %>
                     <%= link(to: npc_spawner_path(@conn, :delete, npc_spawner.id, npc_id: npc_spawner.npc_id), method: :delete, data: [confirm: "Are you sure?"]) do %>
                       <i class="fa fa-times"></i>
                     <% end %>

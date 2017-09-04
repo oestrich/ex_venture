@@ -100,6 +100,16 @@ defmodule Web.NPC do
   #
 
   @doc """
+  Load a npc spawner
+  """
+  @spec get_spawner(id :: integer) :: NPCSpawner.t
+  def get_spawner(npc_spawner_id) do
+    NPCSpawner
+    |> Repo.get(npc_spawner_id)
+    |> Repo.preload([:npc])
+  end
+
+  @doc """
   Get a changeset for a new page
   """
   @spec new_spawner(npc :: NPC.t) :: changeset :: map
@@ -108,6 +118,12 @@ defmodule Web.NPC do
     |> Ecto.build_assoc(:npc_spawners)
     |> NPCSpawner.changeset(%{})
   end
+
+  @doc """
+  Get a changeset for an edit page
+  """
+  @spec edit_spawner(npc_spawner :: NPCSpawner.t) :: changeset :: map
+  def edit_spawner(npc_spawner), do: npc_spawner |> NPCSpawner.changeset(%{})
 
   @doc """
   Add a new NPC spawner
@@ -124,11 +140,26 @@ defmodule Web.NPC do
   end
 
   @doc """
+  Update a NPC Spawner
+  """
+  @spec update_spawner(id :: integer, params :: map) :: {:ok, NPCSpawner.t} | {:error, changeset :: map}
+  def update_spawner(id, params) do
+    changeset = id |> get_spawner() |> NPCSpawner.update_changeset(params)
+    case changeset |> Repo.update do
+      {:ok, npc_spawner} ->
+        npc_spawner = npc_spawner |> Repo.preload([:npc])
+        Game.NPC.update(npc_spawner.id, npc_spawner)
+        {:ok, npc_spawner}
+      anything -> anything
+    end
+  end
+
+  @doc """
   Delete a room exit
   """
   @spec delete_spawner(npc_spawner_id :: integer) :: {:ok, NPCSpawner.t} | {:error, changeset :: map}
   def delete_spawner(npc_spawner_id) do
-    npc_spawner = NPCSpawner |> Repo.get(npc_spawner_id)
+    npc_spawner = npc_spawner_id |> get_spawner()
     case npc_spawner |> Repo.delete() do
       {:ok, npc_spawner} ->
         Game.NPC.terminate(npc_spawner.id)

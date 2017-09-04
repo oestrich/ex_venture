@@ -29,6 +29,12 @@ defmodule Data.NPCSpawner do
     |> foreign_key_constraint(:room_id)
   end
 
+  def update_changeset(struct, params) do
+    struct
+    |> cast(params, [:spawn_interval])
+    |> validate_required([:spawn_interval])
+  end
+
   defp validate_room_in_zone(changeset) do
     case changeset.changes do
       %{room_id: room_id} ->
