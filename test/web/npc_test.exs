@@ -45,4 +45,14 @@ defmodule Web.NPCTest do
 
     assert npc_spawner.zone_id == zone.id
   end
+
+  test "deleting a spawner" do
+    npc = create_npc(%{name: "Fighter"})
+
+    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, room} = Room.create(zone, %{name: "Forest Path", description: "A small forest path", x: 1, y: 1})
+    {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
+
+    assert {:ok, _npc_spanwer} = NPC.delete_spawner(npc_spawner.id)
+  end
 end

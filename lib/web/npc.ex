@@ -112,4 +112,18 @@ defmodule Web.NPC do
     |> NPCSpawner.changeset(params)
     |> Repo.insert()
   end
+
+
+  @doc """
+  Delete a room exit
+  """
+  @spec delete_spawner(npc_spawner_id :: integer) :: {:ok, NPCSpawner.t} | {:error, changeset :: map}
+  def delete_spawner(npc_spawner_id) do
+    npc_spawner = NPCSpawner |> Repo.get(npc_spawner_id)
+    case npc_spawner |> Repo.delete() do
+      {:ok, npc_spawner} ->
+        {:ok, npc_spawner}
+      anything -> anything
+    end
+  end
 end

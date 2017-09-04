@@ -16,4 +16,11 @@ defmodule Web.Admin.NPCSpawnerController do
       {:error, changeset} -> conn |> render("new.html", npc: npc, changeset: changeset)
     end
   end
+
+  def delete(conn, %{"id" => id, "npc_id" => npc_id}) do
+    case NPC.delete_spawner(id) do
+      {:ok, _npc_spanwer} -> conn |> redirect(to: npc_path(conn, :show, npc_id))
+      {:error, _changeset} -> conn |> redirect(to: npc_path(conn, :show, npc_id))
+    end
+  end
 end

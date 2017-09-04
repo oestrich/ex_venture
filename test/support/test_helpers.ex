@@ -5,6 +5,7 @@ defmodule TestHelpers do
   alias Data.Exit
   alias Data.Item
   alias Data.NPC
+  alias Data.NPCSpawner
   alias Data.Room
   alias Data.RoomItem
   alias Data.Skill
@@ -171,6 +172,13 @@ defmodule TestHelpers do
   def create_npc(attributes \\ %{}) do
     %NPC{}
     |> NPC.changeset(npc_attributes(attributes))
+    |> Repo.insert!
+  end
+
+  def create_npc_spawner(npc, attributes) do
+    npc
+    |> Ecto.build_assoc(:npc_spawners)
+    |> NPCSpawner.changeset(attributes)
     |> Repo.insert!
   end
 end

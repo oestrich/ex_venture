@@ -79,7 +79,11 @@
                   <td><%= link(npc_spawner.zone.name, to: zone_path(@conn, :show, npc_spawner.zone_id)) %></td>
                   <td><%= link(npc_spawner.room.name, to: room_path(@conn, :show, npc_spawner.room_id)) %></td>
                   <td><%= npc_spawner.spawn_interval %></td>
-                  <td></td>
+                  <td>
+                    <%= link(to: npc_spawner_path(@conn, :delete, npc_spawner.id, npc_id: npc_spawner.npc_id), method: :delete, data: [confirm: "Are you sure?"]) do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
                 </tr>
               <% end %>
             </tbody>
