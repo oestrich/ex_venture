@@ -119,6 +119,10 @@ defmodule CommandTest do
     test "map", %{user: user} do
       assert Command.parse("map", user) == {Command.Map, {}}
     end
+
+    test "examine", %{user: user} do
+      assert Command.parse("examine", user) == {Command.Examine, {}}
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do

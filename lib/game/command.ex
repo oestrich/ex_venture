@@ -81,7 +81,7 @@ defmodule Game.Command do
   @commands [
     Command.Global, Command.Help, Command.Info, Command.Inventory, Command.Look,
     Command.Move, Command.PickUp, Command.Quit, Command.Say, Command.Who, Command.Wield,
-    Command.Wear, Command.Target, Command.Skills, Command.Emote, Command.Map,
+    Command.Wear, Command.Target, Command.Skills, Command.Emote, Command.Map, Command.Examine,
   ]
 
   @doc """
