@@ -72,6 +72,13 @@ defmodule Game.NPC do
   end
 
   @doc """
+  """
+  @spec terminate(id :: integer) :: :ok
+  def terminate(id) do
+    GenServer.cast(pid(id), :terminate)
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -153,6 +160,12 @@ defmodule Game.NPC do
 
   def handle_cast({:died, _who}, state) do
     {:noreply, state}
+  end
+
+  def handle_cast(:terminate, state = %{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
+    Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
+    npc_spawner.room_id |> @room.leave({:npc, npc})
+    {:stop, :normal, state}
   end
 
   defp message(%{hostile: true}), do: "Die!"

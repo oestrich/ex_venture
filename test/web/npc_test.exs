@@ -60,12 +60,20 @@ defmodule Web.NPCTest do
   end
 
   test "deleting a spawner" do
+    Process.flag(:trap_exit, true)
+
     npc = create_npc(%{name: "Fighter"})
 
     {:ok, zone} = Zone.create(%{name: "The Forest"})
     {:ok, room} = Room.create(zone, %{name: "Forest Path", description: "A small forest path", x: 1, y: 1})
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
+    assert Game.Zone._get_state(zone.id)
+    npc_pid = Registry.whereis_name({Game.NPC.Registry, npc_spawner.id})
+    Process.link(npc_pid)
+
     assert {:ok, _npc_spanwer} = NPC.delete_spawner(npc_spawner.id)
+
+    assert_receive {:EXIT, ^npc_pid, _}
   end
 end

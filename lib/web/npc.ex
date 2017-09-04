@@ -131,6 +131,7 @@ defmodule Web.NPC do
     npc_spawner = NPCSpawner |> Repo.get(npc_spawner_id)
     case npc_spawner |> Repo.delete() do
       {:ok, npc_spawner} ->
+        Game.NPC.terminate(npc_spawner.id)
         {:ok, npc_spawner}
       anything -> anything
     end

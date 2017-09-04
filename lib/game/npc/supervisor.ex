@@ -28,7 +28,7 @@ defmodule Game.NPC.Supervisor do
   """
   @spec start_child(pid, npc_spawner :: NPCSpawner.t) :: :ok
   def start_child(pid, npc_spawner) do
-    child_spec = worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :permanent)
+    child_spec = worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :transient)
     Supervisor.start_child(pid, child_spec)
   end
 
@@ -36,7 +36,7 @@ defmodule Game.NPC.Supervisor do
     children = zone
     |> NPC.for_zone()
     |> Enum.map(fn (npc_spawner) ->
-      worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :permanent)
+      worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :transient)
     end)
 
     Zone.npc_supervisor(zone.id, self())
