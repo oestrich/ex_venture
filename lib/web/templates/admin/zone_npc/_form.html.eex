@@ -1,0 +1,31 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label f, :zone_id %>
+        <%= select f, :zone_id, Zone.all() |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+        <%= error_tag f, :zone_id %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :room_id %>
+        <%= select f, :room_id, Zone.room_exits(), class: "form-control" %>
+        <%= error_tag f, :room_id %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :spawn_interval %>
+        <%= number_input f, :spawn_interval, class: "form-control", rows: 10 %>
+        <%= error_tag f, :spawn_interval %>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

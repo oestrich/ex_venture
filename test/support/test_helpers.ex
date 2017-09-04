@@ -168,7 +168,7 @@ defmodule TestHelpers do
     }, attributes)
   end
 
-  def create_npc(attributes) do
+  def create_npc(attributes \\ %{}) do
     %NPC{}
     |> NPC.changeset(npc_attributes(attributes))
     |> Repo.insert!
