@@ -42,6 +42,16 @@ defmodule Game.Channel do
     GenServer.cast(__MODULE__, {:broadcast, channel, message})
   end
 
+  @doc """
+  List out the subscribed channels
+
+  The current process PID will be used
+  """
+  @spec subscribed() :: [String.t]
+  def subscribed() do
+    GenServer.call(__MODULE__, :subscribed)
+  end
+
   #
   # Server
   #
@@ -49,6 +59,13 @@ defmodule Game.Channel do
   def init(_) do
     Process.flag(:trap_exit, true)
     {:ok, %{channels: %{}}}
+  end
+
+  def handle_call(:subscribed, {pid, _}, state = %{channels: channels}) do
+    channels = channels
+    |> Enum.filter(fn ({_channel, pids}) -> Enum.member?(pids, pid) end)
+    |> Enum.map(fn ({channel, _pids}) -> channel end)
+    {:reply, channels, state}
   end
 
   def handle_cast({:join, channel, pid}, state = %{channels: channels}) do

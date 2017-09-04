@@ -24,6 +24,12 @@ defmodule Game.ChannelTest do
     assert_receive {:channel, {:broadcast, "sending a message"}}
   end
 
+  test "list out subscribed channels" do
+    :ok = Channel.join("global")
+
+    assert Channel.subscribed() == ["global"]
+  end
+
   test "removing a pid after an exit is trapped" do
     {:noreply, state} = Channel.handle_info({:EXIT, self(), "quit"}, %{channels: %{"global" => [self()]}})
 

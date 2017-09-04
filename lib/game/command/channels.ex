@@ -8,7 +8,7 @@ defmodule Game.Command.Channels do
   alias Game.Channel
 
   @custom_parse true
-  @commands ["global", "newbie"]
+  @commands ["channels", "global", "newbie"]
 
   @short_help "Talk to other players"
   @full_help """
@@ -19,6 +19,9 @@ defmodule Game.Command.Channels do
 
   @doc """
   Parse the command into arguments
+
+      iex> Game.Command.Channels.parse("channels")
+      {}
 
       iex> Game.Command.Channels.parse("global hi")
       {"global", "hi"}
@@ -31,6 +34,7 @@ defmodule Game.Command.Channels do
   """
   @spec parse(command :: String.t) :: {atom}
   def parse(commnd)
+  def parse("channels"), do: {}
   def parse("global " <> message), do: {"global", message}
   def parse("newbie " <> message), do: {"newbie", message}
   def parse(_), do: {:error, :bad_parse}
@@ -39,6 +43,14 @@ defmodule Game.Command.Channels do
   Send to all connected players
   """
   def run(command, session, state)
+  def run({}, _session, %{socket: socket}) do
+    channels = Channel.subscribed()
+    |> Enum.map(&("  - {red}#{&1}{/red}"))
+    |> Enum.join("\n")
+
+    socket |> @socket.echo("You are subscribed to:\n#{channels}")
+    :ok
+  end
   def run({channel, message}, _session, %{user: user}) do
     Channel.broadcast(channel, Format.channel_say(channel, {:user, user}, message))
     :ok
