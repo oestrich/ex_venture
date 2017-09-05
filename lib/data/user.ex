@@ -7,11 +7,6 @@ defmodule Data.User do
 
   alias Data.Save
 
-  @type t :: %{
-    name: String.t,
-    save: Save.t,
-  }
-
   schema "users" do
     field :name, :string
     field :password, :string, virtual: true

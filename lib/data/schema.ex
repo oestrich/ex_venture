@@ -12,6 +12,8 @@ defmodule Data.Schema do
       import Ecto.Query
 
       alias Data.Repo
+
+      @type t :: %__MODULE__{}
     end
   end
 end

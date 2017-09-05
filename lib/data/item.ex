@@ -8,13 +8,6 @@ defmodule Data.Item do
   alias Data.Effect
   alias Data.Stats
 
-  @type t :: %{
-    name: String.t,
-    description: String.t,
-    type: String.t,
-    stats: Stats.weapon | Stats.armor,
-  }
-
   @types ["basic", "weapon", "armor"]
 
   @valid_effects %{
