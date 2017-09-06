@@ -34,11 +34,26 @@ defmodule Game.Help do
     case command do
       nil -> "Unknown topic"
       command ->
-        """
-        #{command.help.full}
-        Commands: #{command.commands |> Enum.join(", ")}
-        Aliases: #{command.aliases |> Enum.join(", ")}
-        """
+        lines = [
+          "Commands: #{command.commands |> Enum.join(", ")}",
+          aliases(command),
+          " ",
+          command.help.full,
+        ]
+
+        lines
+        |> Enum.reject(&(&1 == ""))
+        |> Enum.join("\n")
+        |> String.trim
+    end
+  end
+
+  defp aliases(command) do
+    case command.aliases do
+      [] ->
+        ""
+      aliases ->
+        "Aliases: #{aliases |> Enum.join(", ")}"
     end
   end
 

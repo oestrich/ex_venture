@@ -13,7 +13,6 @@ defmodule Game.Command.Inventory do
   @short_help "View your character's inventory"
   @full_help """
   Example: inventory
-  Alias: `inv`
   """
 
   @doc """
