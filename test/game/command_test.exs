@@ -25,6 +25,10 @@ defmodule CommandTest do
       assert Command.parse("does not exist", user) == {:error, :bad_parse, "does not exist"}
     end
 
+    test "empty command", %{user: user} do
+      assert Command.parse("", user) == {:skip, {}}
+    end
+
     test "parsing say", %{user: user} do
       assert Command.parse("say hello", user) == {Command.Say, {"hello"}}
     end
@@ -153,6 +157,16 @@ defmodule CommandTest do
     test "an unknown command is run", %{user: user, state: state} do
       "bad command" |> Command.parse(user) |> Command.run(self(), state)
       assert Insight.bad_commands |> length() > 0
+    end
+  end
+
+  describe "empty command" do
+    setup do
+      %{user: %{class: %{skills: []}}, state: %{socket: :socket}}
+    end
+
+    test "an empty command is run", %{user: user, state: state} do
+      assert :ok = "" |> Command.parse(user) |> Command.run(self(), state)
     end
   end
 

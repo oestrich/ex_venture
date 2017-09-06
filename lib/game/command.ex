@@ -97,6 +97,7 @@ defmodule Game.Command do
   """
   @spec parse(command :: String.t, user :: User.t) :: t
   def parse(command, user)
+  def parse("", _user), do: {:skip, {}}
   def parse(command, %{class: class}) do
     class_skill = class.skills |> Enum.find(&(class_parse_command(&1, command)))
     builtin = commands() |> Enum.find(&(module_parse_command(&1, command)))
@@ -166,6 +167,7 @@ defmodule Game.Command do
     end
   end
 
+  def run({:skip, {}}, _session, _state), do: :ok
   def run({:error, :bad_parse, command}, _session, %{socket: socket}) do
     Insight.bad_command(command)
     socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
