@@ -21,4 +21,21 @@ defmodule Game.Help.Agent do
   def all() do
     Agent.get(__MODULE__, fn (topics) -> topics end)
   end
+
+  @doc """
+  Add a newly added topic to the agent
+  """
+  def add(help_topic) do
+    Agent.update(__MODULE__, fn (topics) -> [help_topic | topics] end)
+  end
+
+  @doc """
+  Update a help topic already in the agent
+  """
+  def update(help_topic) do
+    Agent.update(__MODULE__, fn (topics) ->
+      topics = Enum.reject(topics, &(&1.id == help_topic.id))
+      [help_topic | topics]
+    end)
+  end
 end

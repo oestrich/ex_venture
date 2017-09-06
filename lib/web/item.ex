@@ -4,6 +4,7 @@ defmodule Web.Item do
   """
 
   import Ecto.Query
+  import Web.KeywordsHelper
 
   alias Data.Effect
   alias Data.Item
@@ -80,12 +81,6 @@ defmodule Web.Item do
     |> parse_stats()
     |> parse_effects()
   end
-
-  # Split keywords into an array of strings based on a comma
-  defp split_keywords(params = %{"keywords" => keywords}) do
-    params |> Map.put("keywords", keywords |> String.split(",") |> Enum.map(&String.trim/1))
-  end
-  defp split_keywords(params), do: params
 
   defp parse_stats(params = %{"stats" => stats}) do
     case Poison.decode(stats) do

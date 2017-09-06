@@ -20,6 +20,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: help_topic_path(@conn, :edit, @help_topic.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">

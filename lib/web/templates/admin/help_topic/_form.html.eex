@@ -1,0 +1,31 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label f, :name %>
+        <%= text_input f, :name, class: "form-control" %>
+        <%= error_tag f, :name %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :keywords %>
+        <%= text_input f, :keywords, value: @changeset |> keywords(), class: "form-control" %>
+        <%= error_tag f, :keywords %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :body %>
+        <%= textarea f, :body, class: "form-control" %>
+        <%= error_tag f, :body %>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
