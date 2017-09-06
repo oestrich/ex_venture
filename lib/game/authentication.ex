@@ -5,6 +5,7 @@ defmodule Game.Authentication do
   import Ecto.Query
 
   alias Data.Repo
+  alias Data.Skill
   alias Data.User
 
   @doc """
@@ -14,7 +15,7 @@ defmodule Game.Authentication do
   def find_and_validate(name, password) do
     user = User
     |> where([u], u.name == ^name)
-    |> preload([class: [:skills]])
+    |> preload([class: [skills: ^(from s in Skill, order_by: [s.level, s.id])]])
     |> Repo.one
     _find_and_validate(user, password)
   end

@@ -29,6 +29,10 @@
           <table class="table">
             <tbody>
               <tr>
+                <th>Level</th>
+                <td><%= @skill.level %></td>
+              </tr>
+              <tr>
                 <th>Name</th>
                 <td><%= @skill.name %></td>
               </tr>

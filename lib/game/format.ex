@@ -332,17 +332,21 @@ Items: #{items(room)}
   @doc """
   Format skills
 
-      iex> skills = [%{name: "Slash", points: 2, command: "slash", description: "Fight your foe"}]
+      iex> skills = [%{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}]
       iex> Game.Format.skills(%{name: "Fighter", points_abbreviation: "PP", skills: skills})
-      "Fighter\\nSlash (slash) - 2PP - Fight your foe\\n"
+      "Fighter\\n\\nLevel - Name - Points - Description\\n1 - Slash (slash) - 2PP - Fight your foe\\n"
   """
   @spec skills(class :: Class.t) :: String.t
   def skills(class)
   def skills(%{name: name, points_abbreviation: points_abbreviation, skills: skills}) do
-    skills = skills |> Enum.map(&(skill(&1, points_abbreviation)))
+    skills = skills
+    |> Enum.map(&(skill(&1, points_abbreviation)))
+    |> Enum.join("\n")
 
     """
     #{name}
+
+    Level - Name - Points - Description
     #{skills}
     """
   end
@@ -350,13 +354,13 @@ Items: #{items(room)}
   @doc """
   Format a skill
 
-      iex> skill = %{name: "Slash", points: 2, command: "slash", description: "Fight your foe"}
+      iex> skill = %{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}
       iex> Game.Format.skill(skill, "PP")
-      "Slash (slash) - 2PP - Fight your foe"
+      "1 - Slash (slash) - 2PP - Fight your foe"
   """
   @spec skill(skill :: Skill.t, sp_name :: String.t) :: String.t
   def skill(skill, sp_name) do
-    "#{skill.name} (#{skill.command}) - #{skill.points}#{sp_name} - #{skill.description}"
+    "#{skill.level} - #{skill.name} (#{skill.command}) - #{skill.points}#{sp_name} - #{skill.description}"
   end
 
   @doc """

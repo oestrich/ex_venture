@@ -140,6 +140,7 @@ defmodule TestHelpers do
       name: "Slash",
       command: "slash",
       description: "Slash at the target",
+      level: 1,
       user_text: "You slash at your {target}",
       usee_text: "You are slashed at by {who}",
       points: 3,

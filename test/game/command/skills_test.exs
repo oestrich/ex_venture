@@ -17,6 +17,7 @@ defmodule Game.Command.SkillsTest do
     @socket.clear_messages
 
     slash = %{
+      level: 1,
       name: "Slash",
       points: 2,
       command: "slash",
@@ -27,7 +28,7 @@ defmodule Game.Command.SkillsTest do
     }
 
     user = %{id: 10, name: "Player", class: %{name: "Fighter", points_abbreviation: "PP", skills: [slash]}}
-    save = %{stats: %{strength: 10, skill_points: 10}, wearing: %{}}
+    save = %{level: 1, stats: %{strength: 10, skill_points: 10}, wearing: %{}}
     {:ok, %{session: :session, socket: :socket, user: user, save: save, slash: slash}}
   end
 
@@ -72,5 +73,15 @@ defmodule Game.Command.SkillsTest do
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You don't have), look)
+  end
+
+  test "using a skill - not high enough level", %{session: session, socket: socket, user: user, save: save, slash: slash} do
+    state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
+    slash = %{slash | level: 2}
+
+    :ok = Command.Skills.run({slash, "slash"}, session, state)
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(You are not high), look)
   end
 end

@@ -10,6 +10,7 @@ defmodule Data.Skill do
   schema "skills" do
     field :name, :string
     field :description, :string
+    field :level, :integer
     field :points, :integer
     field :user_text, :string
     field :usee_text, :string
@@ -21,8 +22,8 @@ defmodule Data.Skill do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :points, :user_text, :usee_text, :command, :effects, :class_id])
-    |> validate_required([:name, :description, :points, :user_text, :usee_text, :command, :effects, :class_id])
+    |> cast(params, [:name, :description, :level, :points, :user_text, :usee_text, :command, :effects, :class_id])
+    |> validate_required([:name, :description, :level, :points, :user_text, :usee_text, :command, :effects, :class_id])
     |> validate_effects()
   end
 end

@@ -7,6 +7,7 @@ defmodule Web.Class do
 
   alias Data.Class
   alias Data.Repo
+  alias Data.Skill
   alias Data.Stats
 
   @doc """
@@ -29,6 +30,7 @@ defmodule Web.Class do
     Class
     |> where([c], c.id == ^id)
     |> preload([:skills])
+    |> preload([skills: ^(from s in Skill, order_by: [s.level, s.id])])
     |> Repo.one
   end
 

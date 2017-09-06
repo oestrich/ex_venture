@@ -42,6 +42,12 @@ defmodule Game.Command.Skills do
     end
   end
 
+  defp use_skill(%{level: skill_level}, _traget, state = %{save: %{level: player_level}})
+    when skill_level > player_level do
+    %{socket: socket} = state
+    socket |> @socket.echo("You are not high enough level to use this skill.")
+    :ok
+  end
   defp use_skill(skill, target, state = %{socket: socket, user: user, save: %{stats: stats}}) do
     %{save: save} = state
 
