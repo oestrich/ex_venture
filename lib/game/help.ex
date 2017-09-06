@@ -26,10 +26,10 @@ defmodule Game.Help do
 
   @spec topic(topic :: String.t) :: String.t
   def topic(topic) do
+    topic = topic |> String.upcase
+
     command = Game.Command.commands
-    |> Enum.find(fn (command) ->
-      command |> command_topic_key == topic |> String.upcase
-    end)
+    |> Enum.find(&(match_command?(&1, topic)))
 
     case command do
       nil -> "Unknown topic"
@@ -40,6 +40,15 @@ defmodule Game.Help do
         Aliases: #{command.aliases |> Enum.join(", ")}
         """
     end
+  end
+
+  defp match_command?(command, topic) do
+    commands = command.commands |> Enum.map(&String.upcase/1)
+    aliases = command.aliases |> Enum.map(&String.upcase/1)
+
+    command |> command_topic_key == topic |> String.upcase
+      || topic in commands
+      || topic in aliases
   end
 
   defp command_topic_key(command) do

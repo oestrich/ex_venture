@@ -8,6 +8,14 @@ defmodule Game.HelpTest do
     assert Regex.match?(~r(Example:), Help.topic("say"))
   end
 
+  test "loading a help topic from an alias" do
+    assert Regex.match?(~r(Example:), Help.topic("inv"))
+  end
+
+  test "loading a help topic from a command" do
+    assert Regex.match?(~r(Example:), Help.topic("global"))
+  end
+
   test "loading a help topic - unknown" do
     assert Help.topic("unknown") == "Unknown topic"
   end
