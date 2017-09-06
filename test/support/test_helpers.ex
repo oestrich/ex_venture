@@ -3,6 +3,7 @@ defmodule TestHelpers do
   alias Data.Class
   alias Data.Config
   alias Data.Exit
+  alias Data.HelpTopic
   alias Data.Item
   alias Data.NPC
   alias Data.NPCSpawner
@@ -180,6 +181,12 @@ defmodule TestHelpers do
     npc
     |> Ecto.build_assoc(:npc_spawners)
     |> NPCSpawner.changeset(attributes)
+    |> Repo.insert!
+  end
+
+  def create_help_topic(attributes) do
+    %HelpTopic{}
+    |> HelpTopic.changeset(attributes)
     |> Repo.insert!
   end
 end

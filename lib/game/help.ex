@@ -3,6 +3,8 @@ defmodule Game.Help do
   Find help about a topic
   """
 
+  alias Game.Help.Agent, as: HelpAgent
+
   @doc """
   Basic help information
 
@@ -24,28 +26,38 @@ defmodule Game.Help do
     "The topics you can look up are:\n#{commands}"
   end
 
+  @doc """
+  Find a help topic whether a command or a database topic
+  """
   @spec topic(topic :: String.t) :: String.t
   def topic(topic) do
     topic = topic |> String.upcase
 
-    command = Game.Command.commands
-    |> Enum.find(&(match_command?(&1, topic)))
-
-    case command do
-      nil -> "Unknown topic"
-      command ->
-        lines = [
-          "Commands: #{command.commands |> Enum.join(", ")}",
-          aliases(command),
-          " ",
-          command.help.full,
-        ]
-
-        lines
-        |> Enum.reject(&(&1 == ""))
-        |> Enum.join("\n")
-        |> String.trim
+    case find_command(topic) do
+      nil -> find_help_topic(topic)
+      body -> body
     end
+  end
+
+  defp find_command(topic) do
+    Game.Command.commands
+    |> Enum.find(&(match_command?(&1, topic)))
+    |> format_command_help()
+  end
+
+  defp format_command_help(nil), do: nil
+  defp format_command_help(command) do
+    lines = [
+      "Commands: #{command.commands |> Enum.join(", ")}",
+      aliases(command),
+      " ",
+      command.help.full,
+    ]
+
+    lines
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.join("\n")
+    |> String.trim
   end
 
   defp aliases(command) do
@@ -68,5 +80,28 @@ defmodule Game.Help do
 
   defp command_topic_key(command) do
     command |> to_string |> String.split(".") |> List.last |> String.upcase
+  end
+
+  defp find_help_topic(topic) do
+    help_topic = HelpAgent.all()
+    |> Enum.find(&(match_help_topic?(&1, topic)))
+
+    format_help_topic(help_topic)
+  end
+
+  defp format_help_topic(nil), do: "Unknown topic"
+  defp format_help_topic(help_topic) do
+    """
+    #{help_topic.name}
+    Keywords: #{help_topic.keywords |> Enum.join(", ")}
+
+    #{help_topic.body}
+    """ |> String.trim
+  end
+
+  defp match_help_topic?(help_topic, topic) do
+    keywords = Enum.map(help_topic.keywords, &String.upcase/1)
+    help_topic.name |> String.upcase == topic
+      || topic in keywords
   end
 end

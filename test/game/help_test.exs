@@ -1,5 +1,5 @@
 defmodule Game.HelpTest do
-  use ExUnit.Case
+  use Data.ModelCase
   doctest Game.Help
 
   alias Game.Help
@@ -18,5 +18,12 @@ defmodule Game.HelpTest do
 
   test "loading a help topic - unknown" do
     assert Help.topic("unknown") == "Unknown topic"
+  end
+
+  test "loading a topic from the database" do
+    topic = create_help_topic(%{name: "The World", keywords: ["world"], body: "It is a world"})
+    Agent.update(Help.Agent, fn (_) -> [topic] end)
+
+    assert Regex.match?(~r(world), Help.topic("world"))
   end
 end
