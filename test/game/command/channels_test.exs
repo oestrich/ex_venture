@@ -52,6 +52,12 @@ defmodule Game.Command.ChannelsTest do
     refute_receive {:channel, {:joined, "global"}}
   end
 
+  test "limit to official channels on a join", %{session: session, socket: socket, user: user} do
+    :ok = Channels.run({:join, "new-channel"}, session, %{socket: socket, user: user})
+
+    refute_receive {:channel, {:joined, "new-channel"}}
+  end
+
   test "leave a channel", %{session: session, socket: socket, user: user} do
     :ok = Channel.join("global")
 

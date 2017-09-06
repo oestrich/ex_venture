@@ -7,6 +7,8 @@ defmodule Game.Command.Channels do
 
   alias Game.Channel
 
+  @channels ["global", "newbie"]
+
   @custom_parse true
   @commands ["channels", "global", "newbie"]
 
@@ -63,10 +65,7 @@ defmodule Game.Command.Channels do
     :ok
   end
   def run({:join, channel}, _session, %{user: user}) do
-    case in_channel?(channel, user) do
-      false -> Channel.join(channel)
-      true -> nil
-    end
+    join_channel(channel, user)
     :ok
   end
   def run({:leave, channel}, _session, %{user: user}) do
@@ -85,4 +84,12 @@ defmodule Game.Command.Channels do
   end
 
   defp in_channel?(channel, %{save: %{channels: channels}}), do: channel in channels
+
+  defp join_channel(channel, user) when channel in @channels do
+    case in_channel?(channel, user) do
+      false -> Channel.join(channel)
+      true -> nil
+    end
+  end
+  defp join_channel(_channel, _user), do: nil
 end
