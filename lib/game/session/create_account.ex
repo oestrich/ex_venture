@@ -30,6 +30,7 @@ defmodule Game.Session.CreateAccount do
         user |> Login.login(session, socket, state |> Map.delete(:create))
       {:error, _changeset} ->
         socket |> @socket.echo("There was a problem creating your account.\nPlease start over.")
+        socket |> @socket.prompt("Name: ")
         state
         |> Map.delete(:create)
     end

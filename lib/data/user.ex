@@ -25,6 +25,7 @@ defmodule Data.User do
     |> cast(params, [:name, :password, :save, :flags, :class_id])
     |> validate_required([:name, :save, :class_id])
     |> validate_save()
+    |> validate_name()
     |> ensure_flags()
     |> ensure_token()
     |> hash_password
@@ -53,6 +54,17 @@ defmodule Data.User do
     case Save.valid?(save) do
       true -> changeset
       false -> add_error(changeset, :save, "is invalid")
+    end
+  end
+
+  defp validate_name(changeset) do
+    case changeset do
+      %{changes: %{name: name}} ->
+        case Regex.match?(~r/ /, name) do
+          true -> add_error(changeset, :name, "cannot contain spaces")
+          false -> changeset
+        end
+      _ -> changeset
     end
   end
 
