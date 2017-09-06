@@ -201,7 +201,11 @@ defmodule Game.Session do
   #
 
   def handle_info({:channel, {:joined, channel}}, state = %{save: save}) do
-    save = %{save | channels: [channel | save.channels]}
+    channels = [channel | save.channels]
+    |> Enum.into(MapSet.new)
+    |> Enum.into([])
+
+    save = %{save | channels: channels}
     state = %{state | save: save}
     {:noreply, state}
   end

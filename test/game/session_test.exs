@@ -209,6 +209,11 @@ defmodule Game.SessionTest do
       assert state.save.channels == ["global", "newbie"]
     end
 
+    test "does not duplicate channels list" do
+      {:noreply, state} = Session.handle_info({:channel, {:joined, "newbie"}}, %{save: %{channels: ["newbie"]}})
+      assert state.save.channels == ["newbie"]
+    end
+
     test "receiving a leave" do
       {:noreply, state} = Session.handle_info({:channel, {:left, "global"}}, %{save: %{channels: ["global", "newbie"]}})
       assert state.save.channels == ["newbie"]
