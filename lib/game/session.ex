@@ -90,7 +90,6 @@ defmodule Game.Session do
       socket: socket,
       state: "login",
       session_started_at: Timex.now(),
-      last_move: Timex.now(),
       last_recv: Timex.now(),
       last_tick: last_tick,
       target: nil,

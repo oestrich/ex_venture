@@ -40,49 +40,31 @@ defmodule Game.Command.Move do
   @spec run(args :: [atom()], session :: Session.t, state :: map()) :: :ok
   def run(command, session, state)
   def run({:east}, session, state = %{save: %{room_id: room_id}}) do
-    speed_check(state, fn() ->
-      room = @room.look(room_id)
-      case room |> Exit.exit_to(:east) do
-        %{east_id: id} -> session |> move_to(state, id)
-        _ -> :ok
-      end
-    end)
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(:east) do
+      %{east_id: id} -> session |> move_to(state, id)
+      _ -> :ok
+    end
   end
   def run({:north}, session, state = %{save: %{room_id: room_id}}) do
-    speed_check(state, fn () ->
-      room = @room.look(room_id)
-      case room |> Exit.exit_to(:north) do
-        %{north_id: id} -> session |> move_to(state, id)
-        _ -> :ok
-      end
-    end)
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(:north) do
+      %{north_id: id} -> session |> move_to(state, id)
+      _ -> :ok
+    end
   end
   def run({:south}, session, state = %{save: %{room_id: room_id}}) do
-    speed_check(state, fn() ->
-      room = @room.look(room_id)
-      case room |> Exit.exit_to(:south) do
-        %{south_id: id} -> session |> move_to(state, id)
-        _ -> :ok
-      end
-    end)
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(:south) do
+      %{south_id: id} -> session |> move_to(state, id)
+      _ -> :ok
+    end
   end
   def run({:west}, session, state = %{save: %{room_id: room_id}}) do
-    speed_check(state, fn() ->
-      room = @room.look(room_id)
-      case room |> Exit.exit_to(:west) do
-        %{west_id: id} -> session |> move_to(state, id)
-        _ -> :ok
-      end
-    end)
-  end
-
-  defp speed_check(state = %{socket: socket}, fun) do
-    case Timex.after?(state.last_tick, state.last_move) do
-      true ->
-        fun.()
-      false ->
-        socket |> @socket.echo("Slow down.")
-        :ok
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(:west) do
+      %{west_id: id} -> session |> move_to(state, id)
+      _ -> :ok
     end
   end
 
@@ -94,7 +76,6 @@ defmodule Game.Command.Move do
     save = %{save | room_id: room_id}
     state = state
     |> Map.put(:save, save)
-    |> Map.put(:last_move, Timex.now())
     |> Map.put(:target, nil)
 
     @room.enter(room_id, {:user, session, user})

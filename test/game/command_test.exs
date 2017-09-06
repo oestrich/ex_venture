@@ -215,8 +215,6 @@ defmodule CommandTest do
       state = %{
         socket: socket,
         user: user,
-        last_move: Timex.now() |> Timex.shift(minutes: -1),
-        last_tick: Timex.now(),
       }
       %{user: user, state: state}
     end
@@ -225,11 +223,6 @@ defmodule CommandTest do
       @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: []})
       {:update, state} = Command.run({Command.Move, {:north}}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
-    end
-
-    test "cannot move north faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({Command.Move, {:north}}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
-      assert @socket.get_echos() == [{socket, "Slow down."}]
     end
 
     test "north - not found", %{session: session, state: state} do
@@ -243,11 +236,6 @@ defmodule CommandTest do
       assert state.save.room_id == 2
     end
 
-    test "cannot move east faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({Command.Move, {:east}}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
-      assert @socket.get_echos() == [{socket, "Slow down."}]
-    end
-
     test "east - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{exits: []})
       :ok = Command.run({Command.Move, {:east}}, session, Map.merge(state, %{save: %{room_id: 1}}))
@@ -259,11 +247,6 @@ defmodule CommandTest do
       assert state.save.room_id == 2
     end
 
-    test "cannot move south faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({Command.Move, {:south}}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
-      assert @socket.get_echos() == [{socket, "Slow down."}]
-    end
-
     test "south - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{exits: []})
       :ok = Command.run({Command.Move, {:south}}, session, Map.merge(state, %{save: %{room_id: 1}}))
@@ -273,11 +256,6 @@ defmodule CommandTest do
       @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{west_id: 2, east_id: 1}], players: []})
       {:update, state} = Command.run({Command.Move, {:west}}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
-    end
-
-    test "cannot move west faster than the tick", %{session: session, socket: socket, state: state} do
-      :ok = Command.run({Command.Move, {:west}}, session, Map.merge(state, %{save: %{room_id: 1}, last_tick: Timex.now() |> Timex.shift(minutes: -2)}))
-      assert @socket.get_echos() == [{socket, "Slow down."}]
     end
 
     test "west - not found", %{session: session, state: state} do
