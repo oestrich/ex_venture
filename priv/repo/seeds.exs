@@ -3,6 +3,7 @@ alias Data.Repo
 alias Data.Class
 alias Data.Config
 alias Data.Exit
+alias Data.HelpTopic
 alias Data.Item
 alias Data.NPC
 alias Data.NPCSpawner
@@ -87,6 +88,12 @@ defmodule Helpers do
     %Skill{}
     |> Skill.changeset(Map.merge(attributes, %{class_id: class.id}))
     |> Repo.insert
+  end
+
+  def create_help_topic(attributes) do
+    %HelpTopic{}
+    |> HelpTopic.changeset(attributes)
+    |> Repo.insert!
   end
 end
 
@@ -312,6 +319,9 @@ defmodule Seeds do
         %{kind: "damage/type", types: [:arcane]},
       ],
     })
+
+    create_help_topic(%{name: "Fighter", keywords: ["fighter"], body: "This class uses physical skills"})
+    create_help_topic(%{name: "Mage", keywords: ["mage"], body: "This class uses arcane skills"})
 
     save = Config.starting_save()
     |> Map.put(:stats, mage.starting_stats())

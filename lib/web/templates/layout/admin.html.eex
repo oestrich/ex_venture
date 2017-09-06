@@ -51,6 +51,12 @@
                 <span>Config</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "help_topics") %>">
+              <%= link(to: help_topic_path(@conn, :index)) do %>
+                <i class="fa fa-folder"></i>
+                <span>Help Topics</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "insights") %>">
               <%= link(to: insight_path(@conn, :index)) do %>
                 <i class="fa fa-search"></i>

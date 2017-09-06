@@ -1,0 +1,47 @@
+<section class="content-header">
+  <h1>
+    Help Topics
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Help Topics</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Keywords</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @help_topics, fn (help_topic) -> %>
+                <tr>
+                  <td><%= help_topic.id %></td>
+                  <td><%= help_topic.name %></td>
+                  <td><%= help_topic.keywords |> Enum.join(", ") %></td>
+                  <td>
+                    <%= link("View", to: help_topic_path(@conn, :show, help_topic.id)) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
