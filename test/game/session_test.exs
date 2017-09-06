@@ -108,11 +108,24 @@ defmodule Game.SessionTest do
     assert @socket.get_disconnects() == [socket]
   end
 
-  test "unregisters the pid when disconnected" do
-    Registry.register(Session.Registry, "player", :connected)
+  describe "disconnects" do
+    test "unregisters the pid when disconnected" do
+      Registry.register(Session.Registry, "player", :connected)
 
-    {:stop, :normal, _state} = Session.handle_cast(:disconnect, %{user: %Data.User{name: "user"}, save: %{room_id: 1}})
-    assert Registry.lookup(Session.Registry, "player") == []
+      state = %{user: %Data.User{name: "user", seconds_online: 0}, save: %{room_id: 1}, session_started_at: Timex.now()}
+      {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
+      assert Registry.lookup(Session.Registry, "player") == []
+    end
+
+    test "adds the time played" do
+      user = create_user(%{name: "user", password: "password"})
+      state = %{user: user, save: user.save, session_started_at: Timex.now() |> Timex.shift(hours: -3)}
+
+      {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
+
+      user = Repo.get(Data.User, user.id)
+      assert user.seconds_online == 10800
+    end
   end
 
   test "applying effects", %{socket: socket} do

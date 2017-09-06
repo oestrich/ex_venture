@@ -89,6 +89,7 @@ defmodule Game.Session do
     state = %{
       socket: socket,
       state: "login",
+      session_started_at: Timex.now(),
       last_move: Timex.now(),
       last_recv: Timex.now(),
       last_tick: last_tick,
@@ -108,11 +109,12 @@ defmodule Game.Session do
   def handle_cast(:disconnect, state = %{state: "create"}) do
     {:stop, :normal, state}
   end
-  def handle_cast(:disconnect, state = %{user: user, save: save}) do
+  def handle_cast(:disconnect, state = %{user: user, save: save, session_started_at: session_started_at}) do
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, self(), user})
     clear_target(state, {:user, user})
     user |> Account.save(save)
+    user |> Account.update_time_online(session_started_at, Timex.now())
     {:stop, :normal, state}
   end
 

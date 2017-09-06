@@ -41,4 +41,15 @@ defmodule Game.Account do
     |> User.changeset(%{save: save})
     |> Repo.update
   end
+
+  def update_time_online(user, session_started_at, now) do
+    user
+    |> User.changeset(%{seconds_online: current_play_time(user, session_started_at, now)})
+    |> Repo.update
+  end
+
+  def current_play_time(user, session_started_at, now) do
+    play_time = Timex.diff(now, session_started_at, :seconds)
+    user.seconds_online + play_time
+  end
 end

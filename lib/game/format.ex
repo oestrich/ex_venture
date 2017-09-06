@@ -305,9 +305,9 @@ Items: #{items(room)}
 
       iex> stats = %{health: 50, max_health: 55, skill_points: 10, max_skill_points: 10, strength: 10, intelligence: 10, dexterity: 10}
       iex> save = %Data.Save{level: 1, experience_points: 0, stats: stats}
-      iex> user = %{name: "hero", save: save, class: %{name: "Fighter", points_name: "Skill Points"}}
+      iex> user = %{name: "hero", save: save, class: %{name: "Fighter", points_name: "Skill Points"}, seconds_online: 61}
       iex> Game.Format.info(user)
-      "hero\\n--------\\nFighter\\n\\nLevel: 1\\nXP: 0\\nHealth: 50/55\\nSkill Points: 10/10\\nStrength: 10\\nIntelligence: 10\\nDexterity: 10"
+      "hero\\n--------\\nFighter\\n\\nLevel: 1\\nXP: 0\\nHealth: 50/55\\nSkill Points: 10/10\\nStrength: 10\\nIntelligence: 10\\nDexterity: 10\\nPlay Time: 00h 01m 01s"
   """
   @spec info(user :: User.t) :: String.t
   def info(user = %{save: save}) do
@@ -325,6 +325,7 @@ Items: #{items(room)}
     Strength: #{stats.strength}
     Intelligence: #{stats.intelligence}
     Dexterity: #{stats.dexterity}
+    Play Time: #{play_time(user.seconds_online)}
     """ |> String.trim
   end
 
@@ -420,5 +421,29 @@ Items: #{items(room)}
         ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
       _ -> effects(remaining)
     end
+  end
+
+  @doc """
+  Format number of seconds online into a human readable string
+
+      iex> Game.Format.play_time(125)
+      "00h 02m 05s"
+
+      iex> Game.Format.play_time(600)
+      "00h 10m 00s"
+
+      iex> Game.Format.play_time(3670)
+      "01h 01m 10s"
+
+      iex> Game.Format.play_time(36700)
+      "10h 11m 40s"
+  """
+  @spec play_time(seconds :: integer) :: String.t
+  def play_time(seconds) do
+    hours = seconds |> div(3600) |> to_string |> String.pad_leading(2, "0")
+    minutes = seconds |> div(60) |> rem(60) |> to_string |> String.pad_leading(2, "0")
+    seconds = seconds |> rem(60) |> to_string |> String.pad_leading(2, "0")
+
+    "#{hours}h #{minutes}m #{seconds}s"
   end
 end

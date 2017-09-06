@@ -14,6 +14,7 @@ defmodule Data.User do
     field :save, Data.Save
     field :flags, {:array, :string}
     field :token, Ecto.UUID
+    field :seconds_online, :integer
 
     belongs_to :class, Data.Class
 
@@ -22,12 +23,13 @@ defmodule Data.User do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :password, :save, :flags, :class_id])
+    |> cast(params, [:name, :password, :save, :flags, :class_id, :seconds_online])
     |> validate_required([:name, :save, :class_id])
     |> validate_save()
     |> validate_name()
-    |> ensure_flags()
-    |> ensure_token()
+    |> ensure(:flags, [])
+    |> ensure(:token, UUID.uuid4())
+    |> ensure(:seconds_online, 0)
     |> hash_password
     |> validate_required([:password_hash])
     |> unique_constraint(:name)
@@ -68,19 +70,11 @@ defmodule Data.User do
     end
   end
 
-  defp ensure_flags(changeset) do
+  defp ensure(changeset, field, default) do
     case changeset do
-      %{changes: %{flags: _ids}} -> changeset
-      %{data: %{flags: ids}} when ids != nil -> changeset
-      _ -> put_change(changeset, :flags, [])
-    end
-  end
-
-  defp ensure_token(changeset) do
-    case changeset do
-      %{changes: %{token: _token}} -> changeset
-      %{data: %{token: token}} when token != nil -> changeset
-      _ -> put_change(changeset, :token, UUID.uuid4())
+      %{changes: %{^field => _ids}} -> changeset
+      %{data: %{^field => ids}} when ids != nil -> changeset
+      _ -> put_change(changeset, field, default)
     end
   end
 end

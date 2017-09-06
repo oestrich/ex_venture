@@ -35,6 +35,10 @@
                 <td><%= @user.updated_at %></td>
               </tr>
               <tr>
+                <th>Play Time</th>
+                <td><%= @user.seconds_online |> Format.play_time() %></td>
+              </tr>
+              <tr>
                 <th>Save</th>
                 <td><pre><%= @user.save |> Poison.encode!(pretty: true) %></pre></td>
               </tr>
