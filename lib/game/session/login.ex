@@ -42,8 +42,7 @@ defmodule Game.Session.Login do
     @room.enter(user.save.room_id, {:user, session, user})
     session |> Session.recv("look")
 
-    Channel.join("global")
-    Channel.join("newbie")
+    Enum.each(user.save.channels, &Channel.join/1)
     Channel.join_tell(user)
 
     state

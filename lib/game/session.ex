@@ -200,11 +200,16 @@ defmodule Game.Session do
   # Channels
   #
 
-  def handle_info({:channel, {:joined, _}}, state) do
+  def handle_info({:channel, {:joined, channel}}, state = %{save: save}) do
+    save = %{save | channels: [channel | save.channels]}
+    state = %{state | save: save}
     {:noreply, state}
   end
 
-  def handle_info({:channel, {:left, _}}, state) do
+  def handle_info({:channel, {:left, channel}}, state = %{save: save}) do
+    channels = Enum.reject(save.channels, &(&1 == channel))
+    save = %{save | channels: channels}
+    state = %{state | save: save}
     {:noreply, state}
   end
 

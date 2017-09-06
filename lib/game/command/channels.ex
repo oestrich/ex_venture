@@ -15,6 +15,9 @@ defmodule Game.Command.Channels do
   Example: global Hello, everyone!
 
   This chats to players in the channel
+
+  Turn a channel on with "{white}channel on global{/white}".
+  Turn a channel off with "{white}channel off global{/white}".
   """
 
   @doc """
@@ -22,6 +25,12 @@ defmodule Game.Command.Channels do
 
       iex> Game.Command.Channels.parse("channels")
       {}
+
+      iex> Game.Command.Channels.parse("channels off global")
+      {:leave, "global"}
+
+      iex> Game.Command.Channels.parse("channels on global")
+      {:join, "global"}
 
       iex> Game.Command.Channels.parse("global hi")
       {"global", "hi"}
@@ -35,6 +44,8 @@ defmodule Game.Command.Channels do
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("channels"), do: {}
+  def parse("channels off " <> channel), do: {:leave, channel}
+  def parse("channels on " <> channel), do: {:join, channel}
   def parse("global " <> message), do: {"global", message}
   def parse("newbie " <> message), do: {"newbie", message}
   def parse(command), do: {:error, :bad_parse, command}
@@ -51,8 +62,27 @@ defmodule Game.Command.Channels do
     socket |> @socket.echo("You are subscribed to:\n#{channels}")
     :ok
   end
-  def run({channel, message}, _session, %{user: user}) do
-    Channel.broadcast(channel, Format.channel_say(channel, {:user, user}, message))
+  def run({:join, channel}, _session, %{user: user}) do
+    case in_channel?(channel, user) do
+      false -> Channel.join(channel)
+      true -> nil
+    end
     :ok
   end
+  def run({:leave, channel}, _session, %{user: user}) do
+    case in_channel?(channel, user) do
+      true -> Channel.leave(channel)
+      false -> nil
+    end
+    :ok
+  end
+  def run({channel, message}, _session, %{user: user}) do
+    case in_channel?(channel, user) do
+      true -> Channel.broadcast(channel, Format.channel_say(channel, {:user, user}, message))
+      false -> nil
+    end
+    :ok
+  end
+
+  defp in_channel?(channel, %{save: %{channels: channels}}), do: channel in channels
 end

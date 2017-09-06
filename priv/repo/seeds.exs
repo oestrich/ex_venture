@@ -236,8 +236,9 @@ defmodule Seeds do
     })
     entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
 
-    save =  %{
+    save =  %Data.Save{
       room_id: entrance.id,
+      channels: ["global", "newbie"],
       level: 1,
       experience_points: 0,
       item_ids: [sword.id],

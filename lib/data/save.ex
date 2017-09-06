@@ -9,6 +9,7 @@ defmodule Data.Save do
 
   @type t :: %{
     room_id: integer,
+    channels: [String.t],
     level: integer,
     experience_points: integer,
     stats: map,
@@ -22,7 +23,7 @@ defmodule Data.Save do
     },
   }
 
-  defstruct [:room_id, :level, :experience_points, :stats, :item_ids, :wearing, :wielding]
+  defstruct [:room_id, :channels, :level, :experience_points, :stats, :item_ids, :wearing, :wielding]
 
   @behaviour Ecto.Type
 
@@ -35,24 +36,35 @@ defmodule Data.Save do
   Load a save from the database
 
       iex> Data.Save.load(%{"room_id" => 1})
-      {:ok, %Data.Save{room_id: 1}}
+      {:ok, %Data.Save{room_id: 1, channels: []}}
 
       iex> Data.Save.load(%{"stats" => %{"health" => 50, "strength" => 10, "dexterity" => 10}})
-      {:ok, %Data.Save{stats: %{health: 50, strength: 10, dexterity: 10}}}
+      {:ok, %Data.Save{channels: [], stats: %{health: 50, strength: 10, dexterity: 10}}}
 
       iex> Data.Save.load(%{"wearing" => %{"chest" => 1}})
-      {:ok, %Data.Save{wearing: %{chest: 1}}}
+      {:ok, %Data.Save{channels: [], wearing: %{chest: 1}}}
 
       iex> Data.Save.load(%{"wielding" => %{"right" => 1}})
-      {:ok, %Data.Save{wielding: %{right: 1}}}
+      {:ok, %Data.Save{channels: [], wielding: %{right: 1}}}
   """
   @spec load(save :: map) :: {:ok, Data.Save.t}
   def load(save) do
     save = for {key, val} <- save, into: %{}, do: {String.to_atom(key), val}
-    save = atomize_stats(save)
-    save = atomize_wearing(save)
-    save = atomize_wielding(save)
+
+    save = save
+    |> ensure_channels()
+    |> atomize_stats()
+    |> atomize_wearing()
+    |> atomize_wielding()
+
     {:ok, struct(__MODULE__, save)}
+  end
+
+  defp ensure_channels(save) do
+    case Map.get(save, :channels, nil) do
+      nil -> Map.put(save, :channels, [])
+      _ -> save
+    end
   end
 
   defp atomize_stats(save = %{stats: stats}) when stats != nil do
@@ -80,7 +92,7 @@ defmodule Data.Save do
   Validate a save struct
 
       iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
-      iex> save = %Data.Save{room_id: 1, level: 1, experience_points: 0, item_ids: [], wearing: %{}, wielding: %{}, stats: stats}
+      iex> save = %Data.Save{room_id: 1, channels: [], level: 1, experience_points: 0, item_ids: [], wearing: %{}, wielding: %{}, stats: stats}
       iex> Data.Save.valid?(save)
       true
 
@@ -92,12 +104,31 @@ defmodule Data.Save do
   """
   @spec valid?(save :: Save.t) :: boolean
   def valid?(save) do
-    keys(save) == [:experience_points, :item_ids, :level, :room_id, :stats, :wearing, :wielding]
+    keys(save) == [:channels, :experience_points, :item_ids, :level, :room_id, :stats, :wearing, :wielding]
+      && valid_channels?(save)
       && valid_stats?(save)
       && valid_item_ids?(save)
       && valid_room_id?(save)
       && valid_wearing?(save)
       && valid_wielding?(save)
+  end
+
+  @doc """
+  Validate channels are correct
+
+      iex> Data.Save.valid_channels?(%{channels: ["global"]})
+      true
+
+      iex> Data.Save.valid_channels?(%{channels: [:bad]})
+      false
+
+      iex> Data.Save.valid_channels?(%{channels: :anything})
+      false
+  """
+  @spec valid_channels?(save :: Save.t) :: boolean
+  def valid_channels?(save)
+  def valid_channels?(%{channels: channels}) do
+    is_list(channels) && Enum.all?(channels, &is_binary/1)
   end
 
   @doc """

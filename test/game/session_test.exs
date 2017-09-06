@@ -203,5 +203,15 @@ defmodule Game.SessionTest do
       assert @socket.get_echos() == [{socket, "howdy"}]
       assert state.reply_to == from
     end
+
+    test "receiving a join" do
+      {:noreply, state} = Session.handle_info({:channel, {:joined, "global"}}, %{save: %{channels: ["newbie"]}})
+      assert state.save.channels == ["global", "newbie"]
+    end
+
+    test "receiving a leave" do
+      {:noreply, state} = Session.handle_info({:channel, {:left, "global"}}, %{save: %{channels: ["global", "newbie"]}})
+      assert state.save.channels == ["newbie"]
+    end
   end
 end

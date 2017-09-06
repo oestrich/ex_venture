@@ -2,7 +2,6 @@ defmodule CommandTest do
   use Data.ModelCase
   doctest Game.Command
 
-  alias Game.Channel
   alias Game.Command
   alias Game.Insight
   alias Game.Message
@@ -207,17 +206,6 @@ defmodule CommandTest do
       Command.run({Command.Say, {"hi"}}, session, %{socket: socket, user: %{name: "user"}, save: %{room_id: 1}})
 
       assert @room.get_says() == [{1, Message.new(%{name: "user"}, "hi")}]
-    end
-  end
-
-  describe "global" do
-    setup do
-      Channel.join("global")
-    end
-
-    test "talk on the global channel", %{session: session, socket: socket} do
-      Command.run({Command.Channels, {"global", "hi"}}, session, %{socket: socket, user: %{name: "user"}})
-      assert_receive {:channel, {:broadcast, ~s({red}[global]{/red} {blue}user{/blue} says, {green}"hi"{/green})}}
     end
   end
 
