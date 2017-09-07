@@ -11,6 +11,15 @@ defmodule Networking.Protocol do
   @behaviour :ranch_protocol
   @behaviour Networking.Socket
 
+  @iac 255
+  @will 251
+  @wont 252
+  @telnet_do 253
+  @sb 250
+  @se 240
+  @mccp 86
+  @telnet_option_echo 1
+
   def start_link(ref, socket, transport, _opts) do
     pid = :proc_lib.spawn_link(__MODULE__, :init, [ref, socket, transport])
     {:ok, pid}
@@ -41,10 +50,10 @@ defmodule Networking.Protocol do
   """
   @spec tcp_option(socket :: pid, command :: atom, toggle :: boolean) :: :ok
   def tcp_option(socket, :echo, true) do
-    GenServer.cast(socket, {:command, [255, 252, 1], {:echo, true}})
+    GenServer.cast(socket, {:command, [@iac, @wont, @telnet_option_echo], {:echo, true}})
   end
   def tcp_option(socket, :echo, false) do
-    GenServer.cast(socket, {:command, [255, 251, 1], {:echo, false}})
+    GenServer.cast(socket, {:command, [@iac, @will, @telnet_option_echo], {:echo, false}})
   end
 
   @doc """
@@ -66,20 +75,21 @@ defmodule Networking.Protocol do
     :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport})
   end
 
-  def handle_cast({:command, message, _}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, message)
+  def handle_cast({:command, message, _}, state) do
+    send_data(state, message)
     {:noreply, state}
   end
-  def handle_cast({:echo, message}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, "\n#{message |> Color.format}\n")
+  def handle_cast({:echo, message}, state) do
+    send_data(state, "\n#{message |> Color.format}\n")
     {:noreply, state}
   end
-  def handle_cast({:echo, message, :prompt}, state = %{socket: socket, transport: transport}) do
-    transport.send(socket, "\n#{message |> Color.format}")
+  def handle_cast({:echo, message, :prompt}, state) do
+    send_data(state, "\n#{message |> Color.format}")
     {:noreply, state}
   end
   def handle_cast(:start_session, state) do
     {:ok, pid} = Game.Session.start(self())
+    send_data(state, [@iac, @will, @mccp])
     {:noreply, Map.merge(state, %{session: pid})}
   end
   # close the socket and terminate the server
@@ -88,16 +98,28 @@ defmodule Networking.Protocol do
     {:stop, :normal, state}
   end
 
-  def handle_info({:tcp, socket, data}, state = %{socket: socket, transport: transport}) do
-    handle_options(data, fn() ->
-      case state do
-        %{session: pid} ->
-          pid |> Game.Session.recv(data |> String.trim)
-        _ ->
-          transport.send(socket, data)
-      end
+  def handle_info({:tcp, _socket, data}, state) do
+    handle_options(data, fn
+      (:mccp) ->
+        Logger.info("Starting MCCP")
+        zlib_context = :zlib.open()
+        :zlib.deflateInit(zlib_context, 9)
+        send_data(state, [@iac, @sb, @mccp, @iac, @se])
+
+        {:noreply, Map.put(state, :zlib_context, zlib_context)}
+
+      (:iac) -> {:noreply, state}
+
+      (_) ->
+        case state do
+          %{session: pid} ->
+            pid |> Game.Session.recv(data |> String.trim)
+          _ ->
+            send_data(state, data)
+        end
+
+        {:noreply, state}
     end)
-    {:noreply, state}
   end
   def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
     Logger.info "Connection Closed"
@@ -112,6 +134,7 @@ defmodule Networking.Protocol do
 
   # Disconnect the socket and optionally the session
   defp disconnect(transport, socket, state) do
+    terminate_zlib_context(state)
     case state do
       %{session: pid} ->
         Logger.info "Disconnecting player"
@@ -123,8 +146,24 @@ defmodule Networking.Protocol do
 
   defp handle_options(data, fun) do
     case data do
-      << iac :: size(8), _data :: binary >> when iac == 255 -> nil
-      _ -> fun.()
+      << @iac, @telnet_do, @mccp >> -> fun.(:mccp)
+      << @iac, _data :: binary >> -> fun.(:iac)
+      _ -> fun.(:skip)
     end
+  end
+
+  defp terminate_zlib_context(%{zlib_context: nil}), do: nil
+  defp terminate_zlib_context(%{zlib_context: zlib_context}) do
+    Logger.info "Terminating zlib stream"
+    :zlib.deflate(zlib_context, "", :finish)
+    :zlib.deflateEnd(zlib_context)
+  end
+
+  defp send_data(%{socket: socket, transport: transport, zlib_context: zlib_context}, data) do
+    data = :zlib.deflate(zlib_context, data, :full)
+    transport.send(socket, data)
+  end
+  defp send_data(%{socket: socket, transport: transport}, data) do
+    transport.send(socket, data)
   end
 end
