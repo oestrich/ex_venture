@@ -1,4 +1,10 @@
 defmodule Networking.MSSP do
+  @moduledoc """
+  Helpers for dealing with the MSSP protocol
+
+  http://tintin.sourceforge.net/mssp/
+  """
+
   @mssp_var 1
   @mssp_val 2
 
@@ -28,6 +34,6 @@ defmodule Networking.MSSP do
     |> Integer.to_string()
     |> String.graphemes()
 
-    [@mssp_var] ++'UPTIME' ++ [@mssp_val] ++ started_at
+    [@mssp_var] ++ 'UPTIME' ++ [@mssp_val] ++ started_at
   end
 end
