@@ -1,5 +1,5 @@
 defmodule Web.Admin.SkillView do
   use Web, :view
 
-  import Web.EffectsHelper
+  import Web.JSONHelper
 end

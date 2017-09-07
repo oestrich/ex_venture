@@ -3,9 +3,8 @@ defmodule Web.Admin.ItemView do
 
   alias Data.Stats
 
-  import Web.EffectsHelper
   import Web.KeywordsHelper
-  import Web.StatsHelper
+  import Web.JSONHelper
 
   def types(), do: Data.Item.types()
 end

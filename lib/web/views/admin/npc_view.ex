@@ -1,5 +1,5 @@
 defmodule Web.Admin.NPCView do
   use Web, :view
 
-  import Web.StatsHelper
+  import Web.JSONHelper
 end

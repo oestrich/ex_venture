@@ -31,7 +31,7 @@
 
       <div class="form-group">
         <%= label f, :stats %>
-        <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 10 %>
+        <%= textarea f, :stats, value: @changeset |> json_field(:stats), class: "form-control", rows: 10 %>
         <%= error_tag f, :stats %>
         <span class="help-block">Enter in valid JSON</span>
       </div>

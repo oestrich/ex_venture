@@ -58,7 +58,7 @@
               </tr>
               <tr>
                 <th>Effects</th>
-                <td><pre><%= @skill |> effects() %></pre></td>
+                <td><pre><%= @skill |> json_field(:effects) %></pre></td>
               </tr>
             </tbody>
           </table>

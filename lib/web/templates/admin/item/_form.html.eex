@@ -31,7 +31,7 @@
 
       <div class="form-group">
         <%= label f, :stats %>
-        <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 5 %>
+        <%= textarea f, :stats, value: @changeset |> json_field(:stats), class: "form-control", rows: 5 %>
         <%= error_tag f, :stats %>
         <span class="help-block">Enter in valid JSON</span>
         <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
@@ -39,7 +39,7 @@
 
       <div class="form-group">
         <%= label f, :effects %>
-        <%= textarea f, :effects, value: @changeset |> effects(), class: "form-control", rows: 15 %>
+        <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
         <%= error_tag f, :effects %>
         <span class="help-block">Enter in valid JSON</span>
       </div>

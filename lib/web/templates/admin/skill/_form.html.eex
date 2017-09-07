@@ -49,7 +49,7 @@
 
       <div class="form-group">
         <%= label f, :effects %>
-        <%= textarea f, :effects, value: @changeset |> effects(), class: "form-control", rows: 15 %>
+        <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
         <%= error_tag f, :effects %>
         <span class="help-block">Enter in valid JSON</span>
       </div>
