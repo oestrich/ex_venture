@@ -109,14 +109,23 @@ defmodule Game.Experience do
   @doc """
   Level up after receing experience points
 
-      iex> Game.Experience.level_up(%{level: 1, experience_points: 1000})
-      %{level: 2, experience_points: 1000}
+      iex> Game.Experience.level_up(%{level: 1, experience_points: 1000, stats: %{}})
+      %{level: 2, experience_points: 1000, stats: %{}}
 
-      iex> Game.Experience.level_up(%{level: 10, experience_points: 10030})
-      %{level: 11, experience_points: 10030}
+      iex> Game.Experience.level_up(%{level: 10, experience_points: 10030, stats: %{}})
+      %{level: 11, experience_points: 10030, stats: %{}}
   """
   @spec level_up(save :: Save.t) :: Save.t
   def level_up(save = %{experience_points: xp}) do
-     Map.put(save, :level, div(xp, 1000) + 1)
+    level = div(xp, 1000) + 1
+
+    stats = save.stats
+    |> Enum.reduce(%{}, fn ({key, val}, stats) ->
+      Map.put(stats, key, val + level)
+    end)
+
+    save
+    |> Map.put(:level, level)
+    |> Map.put(:stats, stats)
   end
 end

@@ -21,6 +21,20 @@ defmodule Game.ExperienceTest do
     assert Regex.match?(~r(You leveled), lvl_echo)
   end
 
+  test "on level up, boost stats by your level", state do
+    state = Experience.apply(state, level: 2, experience_points: 1000)
+
+    assert state.save.stats == %{
+      health: 52,
+      max_health: 52,
+      skill_points: 52,
+      max_skill_points: 52,
+      strength: 12,
+      intelligence: 12,
+      dexterity: 12,
+    }
+  end
+
   test "receive experience and no level up", state do
     state = Experience.apply(state, level: 1, experience_points: 901)
     assert state.save.level == 1
