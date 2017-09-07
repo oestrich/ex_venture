@@ -9,7 +9,7 @@ defmodule Game.EffectTest do
     damage_effect = %{kind: "damage", type: :slashing, amount: 10}
 
     calculated_effects = Effect.calculate(%{strength: 10}, [damage_effect, stat_effect])
-    assert calculated_effects == [%{kind: "damage", amount: 12, type: :slashing}]
+    assert calculated_effects == [%{kind: "damage", amount: 20, type: :slashing}]
   end
 
   test "changes damage for the damage/type effect" do
@@ -18,6 +18,6 @@ defmodule Game.EffectTest do
     damage_type_effect = %{kind: "damage/type", types: [:bludgeoning]}
 
     calculated_effects = Effect.calculate(%{strength: 10}, [slashing_effect, bludeonging_effect, damage_type_effect])
-    assert calculated_effects == [%{kind: "damage", amount: 6, type: :slashing}, %{kind: "damage", amount: 11, type: :bludgeoning}]
+    assert calculated_effects == [%{kind: "damage", amount: 8, type: :slashing}, %{kind: "damage", amount: 15, type: :bludgeoning}]
   end
 end

@@ -16,7 +16,7 @@ defmodule Game.Effect do
       []
 
       iex> Game.Effect.calculate(%{strength: 10}, [%{kind: "damage", type: :slashing, amount: 10}])
-      [%{kind: "damage", amount: 11, type: :slashing}]
+      [%{kind: "damage", amount: 15, type: :slashing}]
   """
   @spec calculate(stats :: Stats.t, effects :: [Effect.t]) :: [map]
   def calculate(stats, effects) do
@@ -62,12 +62,12 @@ defmodule Game.Effect do
   Physical:
       iex> effect = %{kind: "damage", amount: 10, type: :slashing}
       iex> Game.Effect.calculate_damage(effect, %{strength: 10})
-      %{kind: "damage", amount: 11, type: :slashing}
+      %{kind: "damage", amount: 15, type: :slashing}
 
   Magical:
       iex> effect = %{kind: "damage", amount: 10, type: :arcane}
       iex> Game.Effect.calculate_damage(effect, %{intelligence: 10})
-      %{kind: "damage", amount: 11, type: :arcane}
+      %{kind: "damage", amount: 15, type: :arcane}
   """
   @spec calculate_damage(effect :: Effect.t, stats :: Stats.t) :: map
   def calculate_damage(effect, stats) do
