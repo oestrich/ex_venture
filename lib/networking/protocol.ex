@@ -7,6 +7,7 @@ defmodule Networking.Protocol do
   require Logger
 
   alias Game.Color
+  alias Networking.MSSP
 
   @behaviour :ranch_protocol
   @behaviour Networking.Socket
@@ -17,8 +18,10 @@ defmodule Networking.Protocol do
   @telnet_do 253
   @sb 250
   @se 240
-  @mccp 86
   @telnet_option_echo 1
+
+  @mccp 86
+  @mssp 70
 
   def start_link(ref, socket, transport, _opts) do
     pid = :proc_lib.spawn_link(__MODULE__, :init, [ref, socket, transport])
@@ -90,6 +93,7 @@ defmodule Networking.Protocol do
   def handle_cast(:start_session, state) do
     {:ok, pid} = Game.Session.start(self())
     send_data(state, [@iac, @will, @mccp])
+    send_data(state, [@iac, @will, @mssp])
     {:noreply, Map.merge(state, %{session: pid})}
   end
   # close the socket and terminate the server
@@ -98,8 +102,8 @@ defmodule Networking.Protocol do
     {:stop, :normal, state}
   end
 
-  def handle_info({:tcp, _socket, data}, state) do
-    handle_options(data, fn
+  def handle_info({:tcp, socket, data}, state) do
+    handle_options(data, socket, fn
       (:mccp) ->
         Logger.info("Starting MCCP")
         zlib_context = :zlib.open()
@@ -107,6 +111,13 @@ defmodule Networking.Protocol do
         send_data(state, [@iac, @sb, @mccp, @iac, @se])
 
         {:noreply, Map.put(state, :zlib_context, zlib_context)}
+
+      (:mssp) ->
+        Logger.info("Sending MSSP")
+
+        send_data(state, [@iac, @sb] ++ MSSP.name() ++ MSSP.players() ++ MSSP.uptime() ++ [@iac, @se])
+
+        {:noreply, state}
 
       (:iac) -> {:noreply, state}
 
@@ -144,12 +155,24 @@ defmodule Networking.Protocol do
     transport.close(socket)
   end
 
-  defp handle_options(data, fun) do
+  # multiple IAC dos might come in at the same time, so forward
+  # them along to us after handling one
+  defp handle_options(data, socket, fun) do
     case data do
-      << @iac, @telnet_do, @mccp >> -> fun.(:mccp)
+      << @iac, @telnet_do, @mccp, data :: binary >> ->
+        forward_options(socket, data)
+        fun.(:mccp)
+      << @iac, @telnet_do, @mssp, data :: binary >> ->
+        forward_options(socket, data)
+        fun.(:mssp)
       << @iac, _data :: binary >> -> fun.(:iac)
       _ -> fun.(:skip)
     end
+  end
+
+  defp forward_options(_socket, ""), do: nil
+  defp forward_options(socket, data) do
+    send(self(), {:tcp, socket, data})
   end
 
   defp terminate_zlib_context(%{zlib_context: nil}), do: nil
@@ -158,6 +181,7 @@ defmodule Networking.Protocol do
     :zlib.deflate(zlib_context, "", :finish)
     :zlib.deflateEnd(zlib_context)
   end
+  defp terminate_zlib_context(_), do: nil
 
   defp send_data(%{socket: socket, transport: transport, zlib_context: zlib_context}, data) do
     data = :zlib.deflate(zlib_context, data, :full)

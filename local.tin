@@ -1,2 +1,3 @@
 #split
+#config {debug telnet} on
 #session game 127.0.0.1 5555
