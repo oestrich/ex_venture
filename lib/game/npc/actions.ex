@@ -1,5 +1,6 @@
 defmodule Game.NPC.Actions do
   @moduledoc """
+  NPC Actions
   """
 
   @rand Application.get_env(:ex_venture, :game)[:rand]
@@ -55,6 +56,10 @@ defmodule Game.NPC.Actions do
     :ok
   end
 
+  @doc """
+  Drop items into the room with a random chance
+  """
+  @spec drop_items(room_id :: integer, npc :: NPC.t, item_ids :: [integer]) :: :ok
   def drop_items(room_id, npc, item_ids) do
     item_ids
     |> Items.items()
@@ -64,6 +69,12 @@ defmodule Game.NPC.Actions do
     end)
   end
 
+  @doc """
+  Determine if the item should be dropped
+
+  Uses `:rand` by default
+  """
+  @spec drop_item?(item :: Item.t, rand :: atom) :: boolean
   def drop_item?(item, rand \\ @rand)
   def drop_item?(%{drop_rate: drop_rate}, rand) do
     rand.uniform(100) <= drop_rate
