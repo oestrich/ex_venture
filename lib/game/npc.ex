@@ -145,15 +145,9 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_cast({:apply_effects, effects, _from, _description}, state = %{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
+  def handle_cast({:apply_effects, effects, _from, _description}, state = %{npc: npc}) do
     stats = effects |> Effect.apply(npc.stats)
-    case stats do
-      %{health: health} when health < 1 ->
-        npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
-        Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
-        npc_spawner.room_id |> @room.leave({:npc, npc})
-      _ -> nil
-    end
+    stats |> Actions.maybe_died(state)
     npc = %{npc | stats: stats}
     {:noreply, Map.put(state, :npc, npc)}
   end

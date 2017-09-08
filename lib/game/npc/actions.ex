@@ -4,6 +4,9 @@ defmodule Game.NPC.Actions do
 
   use Game.Room
 
+  alias Game.Character
+  alias Game.Message
+
   @doc """
   Respawn the NPC as a tick happens
   """
@@ -25,5 +28,24 @@ defmodule Game.NPC.Actions do
   end
   defp handle_respawn(state, time) do
     Map.put(state, :respawn_at, time |> Timex.shift(seconds: state.npc_spawner.spawn_interval))
+  end
+
+  @doc """
+  Check if the NPC died, and if so perform actions
+  """
+  @spec maybe_died(stats :: map, state :: map) :: :ok
+  def maybe_died(stats, state)
+  def maybe_died(%{health: health}, state) when health < 1, do: died(state)
+  def maybe_died(_stats, _state), do: :ok
+
+  @doc """
+  The NPC died, send out messages
+  """
+  @spec died(state :: map) :: :ok
+  def died(%{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
+    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
+    Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
+    npc_spawner.room_id |> @room.leave({:npc, npc})
+    :ok
   end
 end
