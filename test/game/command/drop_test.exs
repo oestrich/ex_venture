@@ -18,14 +18,15 @@ defmodule Game.Command.DropTest do
   test "drop an item in a room", %{session: session, socket: socket} do
     @room.clear_drops()
 
-    {:update, state} = Game.Command.Drop.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, item_ids: [1]}})
+    state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, item_ids: [1]}}
+    {:update, state} = Game.Command.Drop.run({"sword"}, session, state)
 
     assert state.save.item_ids |> length == 0
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You dropped), look)
 
-    assert [{1, %{id: 1}}] = @room.get_drops()
+    assert [{1, {:user, _}, %{id: 1}}] = @room.get_drops()
   end
 
   test "item not found in your inventory", %{session: session, socket: socket} do

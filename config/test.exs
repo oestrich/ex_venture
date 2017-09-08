@@ -17,7 +17,8 @@ config :ex_venture, :networking,
 
 config :ex_venture, :game,
   room: Test.Game.Room,
-  zone: Test.Game.Zone
+  zone: Test.Game.Zone,
+  rand: Test.DropChanceSuccess
 
 config :comeonin, :bcrypt_log_rounds, 4
 config :comeonin, :pbkdf2_rounds, 1

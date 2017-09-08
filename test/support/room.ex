@@ -127,11 +127,11 @@ defmodule Test.Game.Room do
     Agent.update(__MODULE__, fn (state) -> Map.delete(state, :pick_up) end)
   end
 
-  def drop(id, item) do
+  def drop(id, who, item) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
       drops = Map.get(state, :drop, [])
-      Map.put(state, :drop, drops ++ [{id, item}])
+      Map.put(state, :drop, drops ++ [{id, who, item}])
     end)
   end
 

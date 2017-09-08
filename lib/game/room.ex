@@ -114,9 +114,9 @@ defmodule Game.Room do
   @doc """
   Drop an item into a room
   """
-  @spec drop(id :: integer, item :: Item.t) :: :ok
-  def drop(id, item) do
-    GenServer.cast(pid(id), {:drop, item})
+  @spec drop(id :: integer, who :: {atom, map}, item :: Item.t) :: :ok
+  def drop(id, who, item) do
+    GenServer.cast(pid(id), {:drop, who, item})
   end
 
   @doc """
@@ -156,13 +156,6 @@ defmodule Game.Room do
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do
     {room, return} = Actions.pick_up(room, item)
     {:reply, return, Map.put(state, :room, room)}
-  end
-
-  def handle_call({:drop, item}, _from, state = %{room: room}) do
-    case Actions.drop(room, item) do
-      {:ok, room} -> {:noreply, Map.put(state, :room, room)}
-      _ -> {:noreply, state}
-    end
   end
 
   def handle_call(:get_state, _from, state) do
@@ -229,6 +222,16 @@ defmodule Game.Room do
         {:noreply, Map.put(state, :players, players)}
       false ->
         {:noreply, state}
+    end
+  end
+
+  def handle_cast({:drop, who, item}, state = %{room: room, players: players}) do
+    case Actions.drop(room, item) do
+      {:ok, room} ->
+        players |> echo_to_players(Format.dropped(who, item))
+
+        {:noreply, Map.put(state, :room, room)}
+      _ -> {:noreply, state}
     end
   end
 

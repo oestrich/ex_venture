@@ -415,6 +415,8 @@ Items: #{items(room)}
     "{blue}#{user.name}{/blue}"
   end
 
+  def name(who), do: target_name(who)
+
   @doc """
   Format effects for display.
   """
@@ -449,5 +451,19 @@ Items: #{items(room)}
     seconds = seconds |> rem(60) |> to_string |> String.pad_leading(2, "0")
 
     "#{hours}h #{minutes}m #{seconds}s"
+  end
+
+  @doc """
+  An item was dropped message
+
+      iex> Game.Format.dropped({:npc, %{name: "NPC"}}, %{name: "Sword"})
+      "{yellow}NPC{/yellow} dropped a Sword."
+
+      iex> Game.Format.dropped({:user, %{name: "Player"}}, %{name: "Sword"})
+      "{blue}Player{/blue} dropped a Sword."
+  """
+  @spec dropped(who :: {tuple, map}, item :: Item.t) :: String.t
+  def dropped(who, item) do
+    "#{name(who)} dropped a #{item.name}."
   end
 end

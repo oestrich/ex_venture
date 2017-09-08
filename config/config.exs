@@ -6,6 +6,9 @@ config :ex_venture,
   ecto_repos: [Data.Repo],
   namespace: Web
 
+config :ex_venture, :game,
+  rand: :rand
+
 # Configures the endpoint
 config :ex_venture, Web.Endpoint,
   url: [host: "localhost"],

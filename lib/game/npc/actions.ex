@@ -2,9 +2,12 @@ defmodule Game.NPC.Actions do
   @moduledoc """
   """
 
+  @rand Application.get_env(:ex_venture, :game)[:rand]
+
   use Game.Room
 
   alias Game.Character
+  alias Game.Items
   alias Game.Message
 
   @doc """
@@ -46,6 +49,23 @@ defmodule Game.NPC.Actions do
     npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
     Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
     npc_spawner.room_id |> @room.leave({:npc, npc})
+
+    drop_items(npc_spawner.room_id, npc, npc.item_ids)
+
     :ok
+  end
+
+  def drop_items(room_id, npc, item_ids) do
+    item_ids
+    |> Items.items()
+    |> Enum.filter(&drop_item?/1)
+    |> Enum.each(fn (item) ->
+      room_id |> @room.drop({:npc, npc}, item)
+    end)
+  end
+
+  def drop_item?(item, rand \\ @rand)
+  def drop_item?(%{drop_rate: drop_rate}, rand) do
+    rand.uniform(100) <= drop_rate
   end
 end
