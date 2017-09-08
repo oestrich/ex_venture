@@ -11,6 +11,7 @@ defmodule Test.Networking.Socket do
     Agent.update(__MODULE__, fn (_) -> %{} end)
   end
 
+  @impl Networking.Socket
   def echo(socket, message) do
     start_link()
     Agent.update(__MODULE__, fn state ->
@@ -24,6 +25,7 @@ defmodule Test.Networking.Socket do
     Agent.get(__MODULE__, fn state -> Map.get(state, :echo, []) end)
   end
 
+  @impl Networking.Socket
   def prompt(socket, message) do
     start_link()
     Agent.update(__MODULE__, fn state ->
@@ -37,6 +39,7 @@ defmodule Test.Networking.Socket do
     Agent.get(__MODULE__, fn state -> Map.get(state, :prompt, []) end)
   end
 
+  @impl Networking.Socket
   def disconnect(socket) do
     start_link()
     Agent.update(__MODULE__, fn state ->
@@ -50,5 +53,6 @@ defmodule Test.Networking.Socket do
     Agent.get(__MODULE__, fn state -> Map.get(state, :disconnect, []) end)
   end
 
+  @impl Networking.Socket
   def tcp_option(_socket, _option, _enabled), do: :ok
 end
