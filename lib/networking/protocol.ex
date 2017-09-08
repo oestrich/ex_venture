@@ -23,6 +23,7 @@ defmodule Networking.Protocol do
   @mccp 86
   @mssp 70
 
+  @impl :ranch_protocol
   def start_link(ref, socket, transport, _opts) do
     pid = :proc_lib.spawn_link(__MODULE__, :init, [ref, socket, transport])
     {:ok, pid}
@@ -34,6 +35,7 @@ defmodule Networking.Protocol do
   This includes a new line at the end of the message
   """
   @spec echo(socket :: pid, message :: String.t) :: :ok
+  @impl Networking.Socket
   def echo(socket, message) do
     GenServer.cast(socket, {:echo, message})
   end
@@ -44,6 +46,7 @@ defmodule Networking.Protocol do
   This does not include a new line at the end of the message
   """
   @spec prompt(socket :: pid, message :: String.t) :: :ok
+  @impl Networking.Socket
   def prompt(socket, message) do
     GenServer.cast(socket, {:echo, message, :prompt})
   end
@@ -52,6 +55,7 @@ defmodule Networking.Protocol do
   Toggle telnet options
   """
   @spec tcp_option(socket :: pid, command :: atom, toggle :: boolean) :: :ok
+  @impl Networking.Socket
   def tcp_option(socket, :echo, true) do
     GenServer.cast(socket, {:command, [@iac, @wont, @telnet_option_echo], {:echo, true}})
   end
@@ -65,6 +69,7 @@ defmodule Networking.Protocol do
   Will terminate the socket and the session
   """
   @spec disconnect(socket :: pid) :: :ok
+  @impl Networking.Socket
   def disconnect(socket) do
     GenServer.cast(socket, :disconnect)
   end
@@ -78,6 +83,7 @@ defmodule Networking.Protocol do
     :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport})
   end
 
+  @impl GenServer
   def handle_cast({:command, message, _}, state) do
     send_data(state, message)
     {:noreply, state}
@@ -102,6 +108,7 @@ defmodule Networking.Protocol do
     {:stop, :normal, state}
   end
 
+  @impl GenServer
   def handle_info({:tcp, socket, data}, state) do
     handle_options(data, socket, fn
       (:mccp) ->
