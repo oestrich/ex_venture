@@ -67,13 +67,17 @@ defmodule Web.NPC do
     changeset = id |> get() |> NPC.changeset(cast_params(params))
     case changeset |> Repo.update do
       {:ok, npc} ->
-        npc = npc |> Repo.preload([npc_spawners: [:npc]])
-        Enum.map(npc.npc_spawners, fn (npc_spawner) ->
-          Game.NPC.update(npc_spawner.id, npc_spawner)
-        end)
+        push_update(npc)
         {:ok, npc}
       anything -> anything
     end
+  end
+
+  defp push_update(npc) do
+    npc = npc |> Repo.preload([npc_spawners: [:npc]])
+    Enum.map(npc.npc_spawners, fn (npc_spawner) ->
+      Game.NPC.update(npc_spawner.id, npc_spawner)
+    end)
   end
 
   @doc """
@@ -170,6 +174,42 @@ defmodule Web.NPC do
       {:ok, npc_spawner} ->
         Game.NPC.terminate(npc_spawner.id)
         {:ok, npc_spawner}
+      anything -> anything
+    end
+  end
+
+  #
+  # Items
+  #
+
+  def new_item(npc), do: npc |> edit()
+
+  @doc """
+  Add an Item to an NPC
+  """
+  @spec add_item(npc :: NPC.t, item_id :: integer) :: {:ok, NPC.t} | {:error, changeset :: map}
+  def add_item(npc, item_id) do
+    changeset = npc |> NPC.changeset(%{item_ids: [item_id | npc.item_ids]})
+    case changeset |> Repo.update() do
+      {:ok, npc} ->
+        push_update(npc)
+        {:ok, npc}
+      anything -> anything
+    end
+  end
+
+  @doc """
+  Delete an Item from an NPC
+  """
+  @spec delete_item(npc :: NPC.t, item_id :: integer) :: {:ok, NPC.t} | {:error, changeset :: map}
+  def delete_item(npc, item_id) do
+    item_id = String.to_integer(item_id)
+    item_ids = npc.item_ids |> Enum.reject(&(&1 == item_id))
+    changeset = npc |> NPC.changeset(%{item_ids: item_ids})
+    case changeset |> Repo.update() do
+      {:ok, npc} ->
+        push_update(npc)
+        {:ok, npc}
       anything -> anything
     end
   end

@@ -43,6 +43,8 @@ defmodule Web.Router do
     resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create]
 
     resources "/npcs", NPCController, only: [:index, :show, :edit, :update, :new, :create] do
+      resources "/items", NPCItemController, only: [:new, :create, :delete], as: :item
+
       resources "/spawners", NPCSpawnerController, only: [:new, :create], as: :spawner
     end
 

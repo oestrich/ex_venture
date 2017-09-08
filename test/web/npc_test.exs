@@ -91,4 +91,37 @@ defmodule Web.NPCTest do
 
     assert_receive {:EXIT, ^npc_pid, _}
   end
+
+  test "adding an item to an NPC" do
+    npc = create_npc(%{name: "Fighter"})
+    armor = create_item(%{name: "Armor"})
+
+    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, room} = Room.create(zone, %{name: "Forest Path", description: "A small forest path", x: 1, y: 1})
+    {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
+
+    {:ok, npc} = NPC.add_item(npc, armor.id)
+
+    assert npc.item_ids == [armor.id]
+
+    state = Game.NPC._get_state(npc_spawner.id)
+    assert state.npc.item_ids == [armor.id]
+  end
+
+  test "deleting an item npc an NPC" do
+    npc = create_npc(%{name: "Fighter"})
+    armor = create_item(%{name: "Armor"})
+
+    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, room} = Room.create(zone, %{name: "Forest Path", description: "A small forest path", x: 1, y: 1})
+    {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
+
+    {:ok, npc} = NPC.add_item(npc, armor.id)
+    {:ok, npc} = NPC.delete_item(npc, armor.id |> Integer.to_string())
+
+    assert npc.item_ids == []
+
+    state = Game.NPC._get_state(npc_spawner.id)
+    assert state.npc.item_ids == []
+  end
 end

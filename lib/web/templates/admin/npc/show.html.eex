@@ -57,6 +57,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Items</h3>
+          <div class="box-tools">
+            <%= link("Add Item", to: npc_item_path(@conn, :new, @npc.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">
@@ -74,7 +77,11 @@
                   <td><%= item.id %></td>
                   <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
                   <td><%= item.drop_rate %></td>
-                  <td></td>
+                  <td>
+                    <%= link(to: npc_item_path(@conn, :delete, @npc.id, item.id), method: "delete", data: [confirm: "Are you sure?"]) do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
                 </tr>
               <% end %>
             </tbody>
