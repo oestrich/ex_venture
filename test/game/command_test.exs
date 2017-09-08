@@ -97,6 +97,10 @@ defmodule CommandTest do
       assert Command.parse("pick up sword", user) == {Command.PickUp, {"sword"}}
     end
 
+    test "drop something", %{user: user} do
+      assert Command.parse("drop sword", user) == {Command.Drop, {"sword"}}
+    end
+
     test "info sheet", %{user: user} do
       assert Command.parse("info", user) == {Command.Info, {}}
     end

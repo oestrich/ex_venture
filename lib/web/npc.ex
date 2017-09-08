@@ -204,7 +204,7 @@ defmodule Web.NPC do
   @spec delete_item(npc :: NPC.t, item_id :: integer) :: {:ok, NPC.t} | {:error, changeset :: map}
   def delete_item(npc, item_id) do
     item_id = String.to_integer(item_id)
-    item_ids = npc.item_ids |> Enum.reject(&(&1 == item_id))
+    item_ids = List.delete(npc.item_ids, item_id)
     changeset = npc |> NPC.changeset(%{item_ids: item_ids})
     case changeset |> Repo.update() do
       {:ok, npc} ->

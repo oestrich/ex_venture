@@ -112,6 +112,14 @@ defmodule Game.Room do
   end
 
   @doc """
+  Drop an item into a room
+  """
+  @spec drop(id :: integer, item :: Item.t) :: :ok
+  def drop(id, item) do
+    GenServer.cast(pid(id), {:drop, item})
+  end
+
+  @doc """
   Send a tick to the room
   """
   @spec tick(id :: integer, time :: DateTime.t) :: :ok
@@ -148,6 +156,13 @@ defmodule Game.Room do
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do
     {room, return} = Actions.pick_up(room, item)
     {:reply, return, Map.put(state, :room, room)}
+  end
+
+  def handle_call({:drop, item}, _from, state = %{room: room}) do
+    case Actions.drop(room, item) do
+      {:ok, room} -> {:noreply, Map.put(state, :room, room)}
+      _ -> {:noreply, state}
+    end
   end
 
   def handle_call(:get_state, _from, state) do

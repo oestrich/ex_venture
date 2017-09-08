@@ -3,6 +3,8 @@ defmodule Game.Room.Actions do
   Actions that can happen in a room; pick up, tick, etc.
   """
 
+  alias Game.Item
+  alias Game.Room
   alias Game.Room.Repo
 
   def pick_up(room, item) do
@@ -17,6 +19,14 @@ defmodule Game.Room.Actions do
       {:ok, room} -> {room, {:ok, item}}
       _ -> {room, :error}
     end
+  end
+
+  @doc """
+  Drop an item into a room
+  """
+  @spec drop(room :: Room.t, item :: Item.t) :: {:ok, Room.t}
+  def drop(room, item) do
+    room |> Repo.update(%{item_ids: [item.id | room.item_ids]})
   end
 
   @doc """

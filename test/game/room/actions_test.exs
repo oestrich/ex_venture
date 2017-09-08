@@ -24,6 +24,12 @@ defmodule Game.Room.ActionsTest do
     assert room.item_ids |> length == 1
   end
 
+  test "dropping an item", %{room: room, item: item} do
+    {:ok, room} = Room.Actions.drop(room, item)
+
+    assert room.item_ids == [item.id, item.id]
+  end
+
   describe "tick - respawning items" do
     setup %{room: room, item: item} do
       create_room_item(room, item, %{spawn: true, spawn_interval: 30})
