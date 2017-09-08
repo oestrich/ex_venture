@@ -97,7 +97,7 @@ defmodule Helpers do
   def create_skill(class, attributes) do
     %Skill{}
     |> Skill.changeset(Map.merge(attributes, %{class_id: class.id}))
-    |> Repo.insert
+    |> Repo.insert!
   end
 
   def create_help_topic(attributes) do
@@ -291,6 +291,7 @@ defmodule Seeds do
     })
     fighter
     |> create_skill(%{
+      level: 1,
       name: "Slash",
       description: "Use your weapon to slash at your target",
       points: 1,
@@ -322,6 +323,7 @@ defmodule Seeds do
     })
     mage
     |> create_skill(%{
+      level: 1,
       name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
       points: 3,
