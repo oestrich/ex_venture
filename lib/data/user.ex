@@ -69,12 +69,4 @@ defmodule Data.User do
       _ -> changeset
     end
   end
-
-  defp ensure(changeset, field, default) do
-    case changeset do
-      %{changes: %{^field => _ids}} -> changeset
-      %{data: %{^field => ids}} when ids != nil -> changeset
-      _ -> put_change(changeset, field, default)
-    end
-  end
 end

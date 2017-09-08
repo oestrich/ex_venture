@@ -5,6 +5,7 @@ defmodule Data.NPC do
 
   use Data.Schema
 
+  alias Data.Item
   alias Data.Stats
   alias Data.NPCSpawner
 
@@ -15,6 +16,9 @@ defmodule Data.NPC do
     field :experience_points, :integer # given after defeat
     field :stats, Data.Stats
 
+    field :item_ids, {:array, :integer}
+    field :items, {:array, Item}, virtual: true
+
     has_many :npc_spawners, NPCSpawner
 
     timestamps()
@@ -22,8 +26,9 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :hostile, :level, :experience_points, :stats])
-    |> validate_required([:name, :hostile, :level, :experience_points, :stats])
+    |> cast(params, [:name, :hostile, :level, :experience_points, :stats, :item_ids])
+    |> ensure(:item_ids, [])
+    |> validate_required([:name, :hostile, :level, :experience_points, :stats, :item_ids])
     |> validate_stats()
   end
 

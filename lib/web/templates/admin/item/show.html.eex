@@ -30,6 +30,10 @@
                 <td><%= @item |> keywords() %></td>
               </tr>
               <tr>
+                <th>Drop Rate</th>
+                <td><%= @item.drop_rate %>%</td>
+              </tr>
+              <tr>
                 <th>Stats</th>
                 <td><pre><%= @item |> json_field(:stats) %></pre></td>
               </tr>

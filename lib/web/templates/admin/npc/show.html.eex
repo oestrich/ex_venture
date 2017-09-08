@@ -56,6 +56,38 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
+          <h3 class="box-title">Items</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Drop Rate</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @npc.items, fn (item) -> %>
+                <tr>
+                  <td><%= item.id %></td>
+                  <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
+                  <td><%= item.drop_rate %></td>
+                  <td></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
           <h3 class="box-title">Zone Spawners</h3>
           <div class="box-tools">
             <%= link("New Spawner", to: npc_spawner_path(@conn, :new, @npc.id), class: "btn btn-primary") %>

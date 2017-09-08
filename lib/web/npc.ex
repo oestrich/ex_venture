@@ -9,6 +9,7 @@ defmodule Web.NPC do
   alias Data.NPCSpawner
   alias Data.Stats
   alias Data.Repo
+  alias Game.Items
 
   @doc """
   Get all npcs
@@ -29,6 +30,11 @@ defmodule Web.NPC do
     |> where([c], c.id == ^id)
     |> preload([npc_spawners: [:zone, :room]])
     |> Repo.one
+    |> load_items()
+  end
+
+  defp load_items(npc = %{item_ids: item_ids}) do
+    %{npc | items: Items.items(item_ids)}
   end
 
   @doc """

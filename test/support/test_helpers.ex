@@ -87,6 +87,7 @@ defmodule TestHelpers do
       type: "weapon",
       stats: %{},
       effects: [],
+      drop_rate: 50,
     }, attributes)
   end
 
@@ -160,6 +161,7 @@ defmodule TestHelpers do
       hostile: false,
       level: 1,
       experience_points: 124,
+      item_ids: [],
       stats: %{
         health: 25,
         max_health: 25,
