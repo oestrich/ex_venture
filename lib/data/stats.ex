@@ -25,11 +25,14 @@ defmodule Data.Stats do
 
   @behaviour Ecto.Type
 
+  @impl Ecto.Type
   def type, do: :map
 
+  @impl Ecto.Type
   def cast(stats) when is_map(stats), do: {:ok, stats}
   def cast(_), do: :error
 
+  @impl Ecto.Type
   def load(stats) do
     stats = for {key, val} <- stats, into: %{}, do: {String.to_atom(key), val}
     stats = stats |> Enum.map(&cast_val/1) |> Enum.into(%{})
@@ -45,6 +48,7 @@ defmodule Data.Stats do
     end
   end
 
+  @impl Ecto.Type
   def dump(stats) when is_map(stats), do: {:ok, Map.delete(stats, :__struct__)}
   def dump(_), do: :error
 

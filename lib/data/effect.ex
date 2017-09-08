@@ -34,8 +34,10 @@ defmodule Data.Effect do
 
   @behaviour Ecto.Type
 
+  @impl Ecto.Type
   def type, do: :map
 
+  @impl Ecto.Type
   def cast(stats) when is_map(stats), do: {:ok, stats}
   def cast(_), do: :error
 
@@ -53,6 +55,7 @@ defmodule Data.Effect do
       iex> Data.Effect.load(%{"kind" => "stats", "field" => "dexterity"})
       {:ok, %{kind: "stats", field: :dexterity}}
   """
+  @impl Ecto.Type
   def load(effect) do
     effect = for {key, val} <- effect, into: %{}, do: {String.to_atom(key), val}
     effect = effect.kind |> cast_vals(effect)
@@ -71,6 +74,7 @@ defmodule Data.Effect do
   end
   defp cast_vals(_type, effect), do: effect
 
+  @impl Ecto.Type
   def dump(stats) when is_map(stats), do: {:ok, Map.delete(stats, :__struct__)}
   def dump(_), do: :error
 

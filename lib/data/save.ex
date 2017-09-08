@@ -27,8 +27,10 @@ defmodule Data.Save do
 
   @behaviour Ecto.Type
 
+  @impl Ecto.Type
   def type, do: :map
 
+  @impl Ecto.Type
   def cast(save) when is_map(save), do: {:ok, save}
   def cast(_), do: :error
 
@@ -48,6 +50,7 @@ defmodule Data.Save do
       {:ok, %Data.Save{channels: [], wielding: %{right: 1}}}
   """
   @spec load(save :: map) :: {:ok, Data.Save.t}
+  @impl Ecto.Type
   def load(save) do
     save = for {key, val} <- save, into: %{}, do: {String.to_atom(key), val}
 
@@ -85,6 +88,7 @@ defmodule Data.Save do
   end
   defp atomize_wielding(save), do: save
 
+  @impl Ecto.Type
   def dump(save) when is_map(save), do: {:ok, Map.delete(save, :__struct__)}
   def dump(_), do: :error
 
