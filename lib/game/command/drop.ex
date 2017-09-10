@@ -35,15 +35,18 @@ defmodule Game.Command.Drop do
     |> String.to_integer()
 
     case currency - amount >= 0 do
-      true ->
-        save = %{state.save | currency: currency - amount}
-        socket |> @socket.echo("You dropped #{amount} #{currency()}")
-        @room.drop_currency(save.room_id, {:user, state.user}, amount)
-        {:update, Map.put(state, :save, save)}
+      true -> _drop_currency(amount, state)
       false ->
         socket |> @socket.echo("You do not have enough #{currency()} to drop #{amount}.")
         :ok
     end
+  end
+
+  defp _drop_currency(amount, state = %{socket: socket, save: %{currency: currency}}) do
+    save = %{state.save | currency: currency - amount}
+    socket |> @socket.echo("You dropped #{amount} #{currency()}")
+    @room.drop_currency(save.room_id, {:user, state.user}, amount)
+    {:update, Map.put(state, :save, save)}
   end
 
   defp drop_item(item_name, state = %{socket: socket, save: %{item_ids: item_ids}}) do
@@ -52,11 +55,11 @@ defmodule Game.Command.Drop do
       nil ->
         socket |> @socket.echo(~s(Could not find "#{item_name}"))
         :ok
-      item -> drop(item, state)
+      item -> _drop_item(item, state)
     end
   end
 
-  def drop(item, state = %{socket: socket, user: user, save: save}) do
+  defp _drop_item(item, state = %{socket: socket, user: user, save: save}) do
     save = %{save | item_ids: List.delete(save.item_ids, item.id)}
     socket |> @socket.echo("You dropped #{item.name}")
     @room.drop(save.room_id, {:user, user}, item)
