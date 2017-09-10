@@ -56,7 +56,10 @@
         <div class="box-body">
           <ul class="list-group">
             <%= Enum.map(@players, fn (player) -> %>
-              <li class="list-group-item"><%= player.name %></li>
+              <li class="list-group-item">
+                <%= link(player.name, to: user_path(@conn, :show, player.id)) %>
+                <%= link("Teleport to", to: user_path(@conn, :teleport, room_id: player.save.room_id), method: "post", class: "pull-right") %>
+              </li>
             <% end) %>
           </ul>
         </div>
