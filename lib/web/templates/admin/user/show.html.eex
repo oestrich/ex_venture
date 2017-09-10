@@ -20,11 +20,11 @@
               </tr>
               <tr>
                 <th>Race</th>
-                <td><%= @user.race.name %></td>
+                <td><%= link(@user.race.name, to: race_path(@conn, :show, @user.race_id)) %></td>
               </tr>
               <tr>
                 <th>Class</th>
-                <td><%= @user.class.name %></td>
+                <td><%= link(@user.class.name, to: class_path(@conn, :show, @user.class_id)) %></td>
               </tr>
               <tr>
                 <th>Flags</th>
