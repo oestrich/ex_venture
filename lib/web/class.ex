@@ -76,7 +76,7 @@ defmodule Web.Class do
     |> parse_stats()
   end
 
-  defp parse_stats(params = %{"starting_stats" => stats}) do
+  defp parse_stats(params = %{"each_level_stats" => stats}) do
     case Poison.decode(stats) do
       {:ok, stats} -> stats |> cast_stats(params)
       _ -> params
@@ -87,7 +87,7 @@ defmodule Web.Class do
   defp cast_stats(stats, params) do
     case stats |> Stats.load do
       {:ok, stats} ->
-        Map.put(params, "starting_stats", stats)
+        Map.put(params, "each_level_stats", stats)
         _ -> params
     end
   end

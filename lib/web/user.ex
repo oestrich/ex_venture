@@ -36,7 +36,7 @@ defmodule Web.User do
   def get(id) do
     User
     |> Repo.get(id)
-    |> Repo.preload([:class])
+    |> Repo.preload([:class, :race])
   end
 
   @doc """

@@ -5,6 +5,8 @@ defmodule Data.User do
 
   use Data.Schema
 
+  alias Data.Class
+  alias Data.Race
   alias Data.Save
 
   schema "users" do
@@ -16,15 +18,16 @@ defmodule Data.User do
     field :token, Ecto.UUID
     field :seconds_online, :integer
 
-    belongs_to :class, Data.Class
+    belongs_to :class, Class
+    belongs_to :race, Race
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :password, :save, :flags, :class_id, :seconds_online])
-    |> validate_required([:name, :save, :class_id])
+    |> cast(params, [:name, :password, :save, :flags, :race_id, :class_id, :seconds_online])
+    |> validate_required([:name, :save, :race_id, :class_id])
     |> validate_save()
     |> validate_name()
     |> ensure(:flags, [])

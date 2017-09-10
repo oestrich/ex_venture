@@ -11,7 +11,7 @@ defmodule Web.ClassTest do
       "points_abbreviation" => "SP",
       "regen_health" => 1,
       "regen_skill_points" => 1,
-      "starting_stats" => %{
+      "each_level_stats" => %{
         health: 25,
         max_health: 25,
         strength: 10,
@@ -25,7 +25,7 @@ defmodule Web.ClassTest do
     {:ok, class} = Class.create(params)
 
     assert class.name == "Fighter"
-    assert class.starting_stats.health == 25
+    assert class.each_level_stats.health == 25
   end
 
   test "updating a class" do

@@ -19,6 +19,10 @@
                 <td><%= @user.name %></td>
               </tr>
               <tr>
+                <th>Race</th>
+                <td><%= @user.race.name %></td>
+              </tr>
+              <tr>
                 <th>Class</th>
                 <td><%= @user.class.name %></td>
               </tr>

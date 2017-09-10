@@ -9,6 +9,7 @@ defmodule Game.Session.CreateAccount do
 
   alias Game.Account
   alias Game.Class
+  alias Game.Race
   alias Game.Session.Login
 
   @doc """
@@ -22,20 +23,19 @@ defmodule Game.Session.CreateAccount do
     socket |> @socket.prompt("Name: ")
   end
 
-  def process(password, session, state = %{socket: socket, create: %{name: name, class: class}}) do
+  def process(password, session, state = %{socket: socket, create: %{name: name, race: race, class: class}}) do
     socket |> @socket.tcp_option(:echo, true)
 
-    case Account.create(%{name: name, password: password}, %{class: class}) do
+    case Account.create(%{name: name, password: password}, %{race: race, class: class}) do
       {:ok, user} ->
         user |> Login.login(session, socket, state |> Map.delete(:create))
       {:error, _changeset} ->
         socket |> @socket.echo("There was a problem creating your account.\nPlease start over.")
         socket |> @socket.prompt("Name: ")
-        state
-        |> Map.delete(:create)
+        state |> Map.delete(:create)
     end
   end
-  def process(class, _session, state = %{socket: socket, create: %{name: name}}) do
+  def process(class, _session, state = %{socket: socket, create: %{name: name, race: race}}) do
     class = Class.classes
     |> Enum.find(fn (cls) -> String.downcase(cls.name) == String.downcase(class) end)
 
@@ -46,12 +46,34 @@ defmodule Game.Session.CreateAccount do
       class ->
         socket |> @socket.prompt("Password: ")
         socket |> @socket.tcp_option(:echo, false)
-        Map.merge(state, %{create: %{name: name, class: class}})
+        Map.merge(state, %{create: %{name: name, race: race, class: class}})
+    end
+  end
+  def process(race_name, _session, state = %{socket: socket, create: %{name: name}}) do
+    race = Race.races
+    |> Enum.find(fn (race) -> String.downcase(race.name) == String.downcase(race_name) end)
+
+    case race do
+      nil ->
+        socket |> race_prompt
+        state
+      race ->
+        socket |> class_prompt()
+        Map.merge(state, %{create: %{name: name, race: race}})
     end
   end
   def process(name, _session, state = %{socket: socket}) do
-    socket |> class_prompt
+    socket |> race_prompt()
     Map.merge(state, %{create: %{name: name}})
+  end
+
+  defp race_prompt(socket) do
+    races = Race.races
+    |> Enum.map(fn (race) -> "\t- #{race.name()}" end)
+    |> Enum.join("\n")
+
+    socket |> @socket.echo("Now to pick a race. Your options are:\n#{races}")
+    socket |> @socket.prompt("Race: ")
   end
 
   defp class_prompt(socket) do

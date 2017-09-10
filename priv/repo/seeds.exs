@@ -7,6 +7,7 @@ alias Data.HelpTopic
 alias Data.Item
 alias Data.NPC
 alias Data.NPCSpawner
+alias Data.Race
 alias Data.Room
 alias Data.RoomItem
 alias Data.Skill
@@ -88,6 +89,12 @@ defmodule Helpers do
     |> Repo.insert!
   end
 
+  def create_race(attributes) do
+    %Race{}
+    |> Race.changeset(attributes)
+    |> Repo.insert
+  end
+
   def create_class(attributes) do
     %Class{}
     |> Class.changeset(attributes)
@@ -117,6 +124,7 @@ defmodule Seeds do
     entrance = create_room(bandit_hideout, %{
       name: "Entrance",
       description: "A large square room with rough hewn walls.",
+      currency: 0,
       x: 4,
       y: 1,
     })
@@ -124,6 +132,7 @@ defmodule Seeds do
     hallway = create_room(bandit_hideout, %{
       name: "Hallway",
       description: "As you go further west, the hallway descends downward.",
+      currency: 0,
       x: 3,
       y: 1,
     })
@@ -132,6 +141,7 @@ defmodule Seeds do
     hallway_turn = create_room(bandit_hideout, %{
       name: "Hallway",
       description: "The hallway bends south, continuing sloping down.",
+      currency: 0,
       x: 2,
       y: 1,
     })
@@ -140,6 +150,7 @@ defmodule Seeds do
     hallway_south = create_room(bandit_hideout, %{
       name: "Hallway",
       description: "The south end of the hall has a wooden door embedded in the rock wall.",
+      currency: 0,
       x: 2,
       y: 2,
     })
@@ -148,6 +159,7 @@ defmodule Seeds do
     great_room = create_room(bandit_hideout, %{
       name: "Great Room",
       description: "The great room of the bandit hideout. There are several tables along the walls with chairs pulled up. Cards are on the table along with mugs.",
+      currency: 0,
       x: 2,
       y: 3,
     })
@@ -156,6 +168,7 @@ defmodule Seeds do
     dorm = create_room(bandit_hideout, %{
       name: "Bedroom",
       description: "There is a bed in the corner with a dirty blanket on top. A chair sits in the corner by a small fire pit.",
+      currency: 0,
       x: 1,
       y: 3,
     })
@@ -164,6 +177,7 @@ defmodule Seeds do
     kitchen = create_room(bandit_hideout, %{
       name: "Kitchen",
       description: "A large cooking fire is at this end of the great room. A pot boils away at over the flame.",
+      currency: 0,
       x: 3,
       y: 3,
     })
@@ -172,6 +186,7 @@ defmodule Seeds do
     shack = create_room(village, %{
       name: "Shack",
       description: "A small shack built against the rock walls of a small cliff.",
+      currency: 0,
       x: 1,
       y: 1,
     })
@@ -180,6 +195,7 @@ defmodule Seeds do
     forest_path = create_room(village, %{
       name: "Forest Path",
       description: "A small path that leads away from the village to the mountain",
+      currency: 0,
       x: 2,
       y: 1,
     })
@@ -199,6 +215,7 @@ defmodule Seeds do
       name: "Bran",
       hostile: false,
       level: 1,
+      currency: 0,
       experience_points: 124,
       stats: stats,
     })
@@ -211,6 +228,7 @@ defmodule Seeds do
       name: "Bandit",
       hostile: true,
       level: 2,
+      currency: 100,
       experience_points: 230,
       stats: stats,
     })
@@ -272,6 +290,48 @@ defmodule Seeds do
     {:ok, _} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _} = create_config("regen_tick_count", "7")
 
+    {:ok, human} = create_race(%{
+      name: "Human",
+      description: "A human",
+      starting_stats: %{
+        health: 15,
+        max_health: 15,
+        strength: 10,
+        intelligence: 10,
+        dexterity: 10,
+        skill_points: 15,
+        max_skill_points: 15,
+      },
+    })
+
+    {:ok, dwarf} = create_race(%{
+      name: "Dwarf",
+      description: "A dwarf",
+      starting_stats: %{
+        health: 20,
+        max_health: 20,
+        strength: 12,
+        intelligence: 10,
+        dexterity: 8,
+        skill_points: 15,
+        max_skill_points: 15,
+      },
+    })
+
+    {:ok, elf} = create_race(%{
+      name: "Elf",
+      description: "An elf",
+      starting_stats: %{
+        health: 15,
+        max_health: 15,
+        strength: 8,
+        intelligence: 10,
+        dexterity: 12,
+        skill_points: 15,
+        max_skill_points: 15,
+      },
+    })
+
     {:ok, fighter} = create_class(%{
       name: "Fighter",
       description: "Uses strength and swords to overcome.",
@@ -279,14 +339,14 @@ defmodule Seeds do
       points_abbreviation: "SP",
       regen_health: 2,
       regen_skill_points: 1,
-      starting_stats: %{
-        health: 25,
-        max_health: 25,
-        strength: 13,
-        intelligence: 10,
-        dexterity: 10,
-        skill_points: 10,
-        max_skill_points: 10,
+      each_level_stats: %{
+        health: 5,
+        max_health: 5,
+        strength: 3,
+        intelligence: 1,
+        dexterity: 1,
+        skill_points: 2,
+        max_skill_points: 2,
       },
     })
     fighter
@@ -311,7 +371,7 @@ defmodule Seeds do
       points_abbreviation: "MP",
       regen_health: 1,
       regen_skill_points: 2,
-      starting_stats: %{
+      each_level_stats: %{
         health: 15,
         max_health: 15,
         skill_points: 20,
@@ -340,9 +400,9 @@ defmodule Seeds do
     create_help_topic(%{name: "Mage", keywords: ["mage"], body: "This class uses arcane skills"})
 
     save = Config.starting_save()
-    |> Map.put(:stats, mage.starting_stats())
+    |> Map.put(:stats, mage.each_level_stats())
 
-    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"], class_id: mage.id})
+    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"], race_id: dwarf.id, class_id: mage.id})
   end
 end
 

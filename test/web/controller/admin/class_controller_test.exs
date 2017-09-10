@@ -9,7 +9,7 @@ defmodule Web.Admin.ClassControllerTest do
       "points_abbreviation" => "SP",
       "regen_health" => 1,
       "regen_skill_points" => 1,
-      "starting_stats" => %{
+      "each_level_stats" => %{
         health: 25,
         max_health: 25,
         strength: 10,

@@ -7,6 +7,7 @@ defmodule TestHelpers do
   alias Data.Item
   alias Data.NPC
   alias Data.NPCSpawner
+  alias Data.Race
   alias Data.Room
   alias Data.RoomItem
   alias Data.Skill
@@ -38,6 +39,7 @@ defmodule TestHelpers do
   defp user_attributes(attributes) do
     Map.merge(%{
       save: base_save(),
+      race_id: create_race().id,
       class_id: create_class().id,
     }, attributes)
   end
@@ -111,6 +113,28 @@ defmodule TestHelpers do
     }, attributes)
   end
 
+  def race_attributes(attributes) do
+    Map.merge(%{
+      name: "Human",
+      description: "A human",
+      starting_stats: %{
+        health: 25,
+        max_health: 25,
+        strength: 10,
+        intelligence: 10,
+        dexterity: 10,
+        skill_points: 10,
+        max_skill_points: 10,
+      },
+    }, attributes)
+  end
+
+  def create_race(attributes \\ %{}) do
+    %Race{}
+    |> Race.changeset(race_attributes(attributes))
+    |> Repo.insert!
+  end
+
   def class_attributes(attributes) do
     Map.merge(%{
       name: "Fighter",
@@ -119,7 +143,7 @@ defmodule TestHelpers do
       points_abbreviation: "SP",
       regen_health: 1,
       regen_skill_points: 1,
-      starting_stats: %{
+      each_level_stats: %{
         health: 25,
         max_health: 25,
         strength: 10,

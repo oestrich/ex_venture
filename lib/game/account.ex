@@ -12,16 +12,21 @@ defmodule Game.Account do
   Create a new user from attributes
   """
   @spec create(attributes :: map, save_attributes :: map) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
-  def create(attributes, %{class: class}) do
+  def create(attributes, %{race: race, class: class}) do
     save = Config.starting_save()
-    |> Map.put(:stats, class.starting_stats())
+    |> Map.put(:stats, race.starting_stats())
 
     attributes = attributes
+    |> Map.put(:race_id, race.id)
     |> Map.put(:class_id, class.id)
     |> Map.put(:save, save)
 
     case create_account(attributes) do
-      {:ok, user} -> {:ok, user |> Repo.preload([class: :skills])}
+      {:ok, user} ->
+        user = user
+        |> Repo.preload([:race])
+        |> Repo.preload([class: :skills])
+        {:ok, user}
       anything -> anything
     end
   end

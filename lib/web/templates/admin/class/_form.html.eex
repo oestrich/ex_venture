@@ -30,9 +30,9 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :starting_stats %>
-        <%= textarea f, :starting_stats, value: @changeset |> json_field(:starting_stats), class: "form-control", rows: 10 %>
-        <%= error_tag f, :starting_stats %>
+        <%= label f, :each_level_stats %>
+        <%= textarea f, :each_level_stats, value: @changeset |> json_field(:each_level_stats), class: "form-control", rows: 10 %>
+        <%= error_tag f, :each_level_stats %>
       </div>
 
       <div class="form-group">
