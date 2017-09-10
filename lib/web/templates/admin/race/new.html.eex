@@ -1,0 +1,23 @@
+<section class="content-header">
+  <h1>
+    New Race
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Races", to: race_path(@conn, :index)) %></li>
+    <li class="active">New</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: race_path(@conn, :create), changeset: @changeset, title: "New", submit: "Create" %>
+    </div>
+  </div>
+</section>

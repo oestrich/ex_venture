@@ -50,7 +50,7 @@ defmodule Web.Router do
 
     resources "/npc_spawners", NPCSpawnerController, only: [:edit, :update, :delete]
 
-    resources "/races", RaceController, only: [:index, :show]
+    resources "/races", RaceController, only: [:index, :show, :new, :create, :edit, :update]
 
     resources "/room_items", RoomItemController, only: [:delete]
 
