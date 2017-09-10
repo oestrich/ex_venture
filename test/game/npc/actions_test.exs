@@ -40,6 +40,7 @@ defmodule Game.NPC.ActionsTest do
 
   describe "dying" do
     setup do
+      @room.clear_drop_currencies()
       @room.clear_drops()
 
       Items.start_link
@@ -50,7 +51,24 @@ defmodule Game.NPC.ActionsTest do
         }
       end)
 
-      %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC", item_ids: [1, 2]}, is_targeting: []}
+      %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC", currency: 100, item_ids: [1, 2]}, is_targeting: []}
+    end
+
+    test "drops currency in the room", state do
+      :ok = Actions.died(state)
+
+      assert [{1, {:npc, _}, 51}] = @room.get_drop_currencies()
+    end
+
+    test "does not drop 0 currency", state do
+      npc = %{state.npc | currency: 0}
+      :ok = Actions.died(%{state | npc: npc})
+
+      assert [] = @room.get_drop_currencies()
+    end
+
+    test "will drop an amount 50-100% of the total currency" do
+      assert Actions.currency_amount_to_drop(100, Test.DropCurrency) == 80
     end
 
     test "drops items in the room", state do

@@ -30,7 +30,7 @@ defmodule Game.Command.DropTest do
   end
 
   test "drop currency in a room", %{session: session, socket: socket} do
-    @room.clear_drops()
+    @room.clear_drop_currencies()
 
     state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, currency: 101}}
     {:update, state} = Game.Command.Drop.run({"100 gold"}, session, state)
@@ -44,7 +44,7 @@ defmodule Game.Command.DropTest do
   end
 
   test "drop currency in a room - not enough to do so", %{session: session, socket: socket} do
-    @room.clear_drops()
+    @room.clear_drop_currencies()
 
     state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, currency: 101}}
     :ok = Game.Command.Drop.run({"110 gold"}, session, state)

@@ -39,6 +39,10 @@
               <td><%= @npc.experience_points %> xp</td>
             </tr>
             <tr>
+              <th><%= currency() |> String.capitalize() %></th>
+              <td><%= @npc.currency %></td>
+            </tr>
+            <tr>
               <th>Hostile</th>
               <td><%= @npc.hostile %></td>
             </tr>

@@ -163,6 +163,7 @@ defmodule TestHelpers do
       hostile: false,
       level: 1,
       experience_points: 124,
+      currency: 0,
       item_ids: [],
       stats: %{
         health: 25,

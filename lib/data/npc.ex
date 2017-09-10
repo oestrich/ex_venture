@@ -16,6 +16,7 @@ defmodule Data.NPC do
     field :experience_points, :integer # given after defeat
     field :stats, Data.Stats
 
+    field :currency, :integer
     field :item_ids, {:array, :integer}
     field :items, {:array, Item}, virtual: true
 
@@ -26,9 +27,9 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :hostile, :level, :experience_points, :stats, :item_ids])
+    |> cast(params, [:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids])
     |> ensure(:item_ids, [])
-    |> validate_required([:name, :hostile, :level, :experience_points, :stats, :item_ids])
+    |> validate_required([:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids])
     |> validate_stats()
   end
 

@@ -11,6 +11,7 @@ defmodule Web.NPCTest do
       "hostile" => "false",
       "level" => "1",
       "experience_points" => "124",
+      "currency" => "10",
       "stats" => %{
         health: 25,
         max_health: 25,

@@ -51,9 +51,36 @@ defmodule Game.NPC.Actions do
     Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
     npc_spawner.room_id |> @room.leave({:npc, npc})
 
+    drop_currency(npc_spawner.room_id, npc, npc.currency)
     drop_items(npc_spawner.room_id, npc, npc.item_ids)
 
     :ok
+  end
+
+  @doc """
+  Drop any currency into the room
+
+  Only when above 0
+  """
+  @spec drop_currency(room_id :: integer, npc :: NPC.t, currency :: integer) :: :ok
+  def drop_currency(room_id, npc, currency) do
+    currency = currency |> currency_amount_to_drop()
+    case currency do
+      currency when currency > 0 ->
+        room_id |> @room.drop_currency({:npc, npc}, currency)
+      _ -> nil
+    end
+  end
+
+  @doc """
+  Determine how much of the currency should be dropped
+
+  Uses `:rand` by default
+  """
+  @spec currency_amount_to_drop(item :: Item.t, rand :: atom) :: integer
+  def currency_amount_to_drop(currency, rand \\ @rand) do
+    percentage_to_drop = (rand.uniform(50) + 50) / 100.0
+    round(Float.ceil(currency * percentage_to_drop))
   end
 
   @doc """
