@@ -8,6 +8,7 @@ config :ex_venture,
 
 config :ex_venture, :game,
   currency: "gold",
+  timeout_seconds: 5 * 60,
   rand: :rand
 
 # Configures the endpoint

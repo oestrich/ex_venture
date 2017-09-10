@@ -27,7 +27,7 @@ defmodule Game.Session do
   @save_period 15_000
 
   @timeout_check 5000
-  @timeout_seconds 5 * 60 * -1
+  @timeout_seconds Application.get_env(:ex_venture, :game)[:timeout_seconds]
 
   @doc """
   Start a new session
@@ -263,8 +263,8 @@ defmodule Game.Session do
 
   # Check if the session is inactive, disconnect if it is
   defp check_for_inactive(%{socket: socket, last_recv: last_recv}) do
-    case Timex.diff(last_recv, Timex.now, :seconds) do
-      time when time < @timeout_seconds ->
+    case Timex.diff(Timex.now, last_recv, :seconds) do
+      time when time > @timeout_seconds ->
         Logger.info "Idle player - disconnecting"
         socket |> @socket.disconnect()
       _ ->
