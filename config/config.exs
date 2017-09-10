@@ -7,6 +7,7 @@ config :ex_venture,
   namespace: Web
 
 config :ex_venture, :game,
+  currency: "gold",
   rand: :rand
 
 # Configures the endpoint

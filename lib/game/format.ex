@@ -10,6 +10,8 @@ defmodule Game.Format do
   alias Data.Save
   alias Data.Skill
 
+  @currency Application.get_env(:ex_venture, :game)[:currency]
+
   @doc """
   Format a channel message
 
@@ -253,22 +255,19 @@ Items: #{items(room)}
 
   @doc """
   Format your inventory
-
-  Example:
-
-      iex> wearing = %{chest: %{name: "Leather Armor"}}
-      iex> wielding = %{right: %{name: "Short Sword"}, left: %{name: "Shield"}}
-      iex> items = [%{name: "Potion"}, %{name: "Dagger"}]
-      iex> Game.Format.inventory(wearing, wielding, items)
-      "You are wearing:\\n  - {cyan}Leather Armor{/cyan} on your chest\\nYou are wielding:\\n  - a {cyan}Shield{/cyan} in your left hand\\n  - a {cyan}Short Sword{/cyan} in your right hand\\nYou are holding:\\n  - {cyan}Potion{/cyan}\\n  - {cyan}Dagger{/cyan}"
   """
-  @spec inventory(wearing :: map, wielding :: map, items :: [Item.t]) :: String.t
-  def inventory(wearing, wielding, items) do
+  @spec inventory(currency :: integer, wearing :: map, wielding :: map, items :: [Item.t]) :: String.t
+  def inventory(currency, wearing, wielding, items) do
     items = items
     |> Enum.map(fn (item) -> "  - {cyan}#{item.name}{/cyan}" end)
     |> Enum.join("\n")
 
-    "#{equipment(wearing, wielding)}\nYou are holding:\n#{items}"
+    """
+    #{equipment(wearing, wielding)}
+    You are holding:
+    #{items}
+    You have #{currency} #{@currency}.
+    """ |> String.trim
   end
 
   @doc """
@@ -295,7 +294,9 @@ Items: #{items(room)}
     |> Enum.map(fn ({hand, item}) -> "  - a {cyan}#{item.name}{/cyan} in your #{hand} hand" end)
     |> Enum.join("\n")
 
-    "You are wearing:\n#{wearing}\nYou are wielding:\n#{wielding}"
+    ["You are wearing:", wearing, "You are wielding:", wielding]
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.join("\n")
   end
 
   @doc """

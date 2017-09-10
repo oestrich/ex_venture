@@ -19,6 +19,7 @@ defmodule TestHelpers do
       channels: [],
       level: 1,
       experience_points: 0,
+      currency: 0,
       item_ids: [],
       stats: %{
         health: 50,

@@ -13,6 +13,7 @@ defmodule Data.Save do
     level: integer,
     experience_points: integer,
     stats: map,
+    currency: integer,
     item_ids: [integer],
     wearing: %{
       chest: integer,
@@ -23,7 +24,7 @@ defmodule Data.Save do
     },
   }
 
-  defstruct [:room_id, :channels, :level, :experience_points, :stats, :item_ids, :wearing, :wielding]
+  defstruct [:room_id, :channels, :level, :experience_points, :stats, :currency, :item_ids, :wearing, :wielding]
 
   @behaviour Ecto.Type
 
@@ -38,16 +39,16 @@ defmodule Data.Save do
   Load a save from the database
 
       iex> Data.Save.load(%{"room_id" => 1})
-      {:ok, %Data.Save{room_id: 1, channels: []}}
+      {:ok, %Data.Save{room_id: 1, channels: [], currency: 0}}
 
       iex> Data.Save.load(%{"stats" => %{"health" => 50, "strength" => 10, "dexterity" => 10}})
-      {:ok, %Data.Save{channels: [], stats: %{health: 50, strength: 10, dexterity: 10}}}
+      {:ok, %Data.Save{channels: [], currency: 0, stats: %{health: 50, strength: 10, dexterity: 10}}}
 
       iex> Data.Save.load(%{"wearing" => %{"chest" => 1}})
-      {:ok, %Data.Save{channels: [], wearing: %{chest: 1}}}
+      {:ok, %Data.Save{channels: [], currency: 0, wearing: %{chest: 1}}}
 
       iex> Data.Save.load(%{"wielding" => %{"right" => 1}})
-      {:ok, %Data.Save{channels: [], wielding: %{right: 1}}}
+      {:ok, %Data.Save{channels: [], currency: 0, wielding: %{right: 1}}}
   """
   @spec load(save :: map) :: {:ok, Data.Save.t}
   @impl Ecto.Type
@@ -55,7 +56,8 @@ defmodule Data.Save do
     save = for {key, val} <- save, into: %{}, do: {String.to_atom(key), val}
 
     save = save
-    |> ensure_channels()
+    |> ensure(:channels, [])
+    |> ensure(:currency, 0)
     |> atomize_stats()
     |> atomize_wearing()
     |> atomize_wielding()
@@ -63,9 +65,9 @@ defmodule Data.Save do
     {:ok, struct(__MODULE__, save)}
   end
 
-  defp ensure_channels(save) do
-    case Map.get(save, :channels, nil) do
-      nil -> Map.put(save, :channels, [])
+  defp ensure(save, field, default) do
+    case Map.get(save, field, nil) do
+      nil -> Map.put(save, field, default)
       _ -> save
     end
   end
@@ -96,7 +98,7 @@ defmodule Data.Save do
   Validate a save struct
 
       iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
-      iex> save = %Data.Save{room_id: 1, channels: [], level: 1, experience_points: 0, item_ids: [], wearing: %{}, wielding: %{}, stats: stats}
+      iex> save = %Data.Save{room_id: 1, channels: [], level: 1, experience_points: 0, currency: 0, item_ids: [], wearing: %{}, wielding: %{}, stats: stats}
       iex> Data.Save.valid?(save)
       true
 
@@ -108,8 +110,9 @@ defmodule Data.Save do
   """
   @spec valid?(save :: Save.t) :: boolean
   def valid?(save) do
-    keys(save) == [:channels, :experience_points, :item_ids, :level, :room_id, :stats, :wearing, :wielding]
+    keys(save) == [:channels, :currency, :experience_points, :item_ids, :level, :room_id, :stats, :wearing, :wielding]
       && valid_channels?(save)
+      && valid_currency?(save)
       && valid_stats?(save)
       && valid_item_ids?(save)
       && valid_room_id?(save)
@@ -133,6 +136,21 @@ defmodule Data.Save do
   def valid_channels?(save)
   def valid_channels?(%{channels: channels}) do
     is_list(channels) && Enum.all?(channels, &is_binary/1)
+  end
+
+  @doc """
+  Validate currency is correct
+
+      iex> Data.Save.valid_currency?(%{currency: 1})
+      true
+
+      iex> Data.Save.valid_currency?(%{currency: :anything})
+      false
+  """
+  @spec valid_currency?(save :: Save.t) :: boolean
+  def valid_currency?(save)
+  def valid_currency?(%{currency: currency}) do
+    is_integer(currency)
   end
 
   @doc """
