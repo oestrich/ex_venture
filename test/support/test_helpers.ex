@@ -144,13 +144,13 @@ defmodule TestHelpers do
       regen_health: 1,
       regen_skill_points: 1,
       each_level_stats: %{
-        health: 25,
-        max_health: 25,
-        strength: 10,
-        intelligence: 10,
-        dexterity: 10,
-        skill_points: 10,
-        max_skill_points: 10,
+        health: 5,
+        max_health: 5,
+        strength: 1,
+        intelligence: 1,
+        dexterity: 1,
+        skill_points: 5,
+        max_skill_points: 5,
       },
     }, attributes)
   end

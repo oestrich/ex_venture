@@ -8,7 +8,18 @@ defmodule Game.ExperienceTest do
 
   setup do
     @socket.clear_messages
-    %{socket: :socket, save: base_save()}
+    class = %{
+      each_level_stats: %{
+        health: 5,
+        max_health: 5,
+        strength: 3,
+        intelligence: 3,
+        dexterity: 3,
+        skill_points: 5,
+        max_skill_points: 5,
+      },
+    }
+    %{socket: :socket, user: %{class: class}, save: base_save()}
   end
 
   test "receive experience and level up", state do
@@ -25,13 +36,13 @@ defmodule Game.ExperienceTest do
     state = Experience.apply(state, level: 2, experience_points: 1000)
 
     assert state.save.stats == %{
-      health: 52,
-      max_health: 52,
-      skill_points: 52,
-      max_skill_points: 52,
-      strength: 12,
-      intelligence: 12,
-      dexterity: 12,
+      health: 57,
+      max_health: 57,
+      skill_points: 57,
+      max_skill_points: 57,
+      strength: 15,
+      intelligence: 15,
+      dexterity: 15,
     }
   end
 

@@ -193,8 +193,8 @@ defmodule Game.SessionTest do
 
   test "npc - a died message is sent and experience is applied", %{socket: socket} do
     target = {:npc, %{id: 10, name: "Bandit", level: 1, experience_points: 1200}}
-    user = %{id: 10}
-    save = %{level: 1, experience_points: 0, stats: %{}}
+    user = %{id: 10, class: class_attributes(%{})}
+    save = base_save()
 
     state = %{socket: socket, state: "active", user: user, save: save, target: {:npc, 10}}
     {:noreply, state} = Session.handle_cast({:died, target}, state)
