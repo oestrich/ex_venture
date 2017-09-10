@@ -3,14 +3,14 @@ defmodule Game.Format do
   Format data into strings to send to the connected player
   """
 
+  use Game.Currency
+
   alias Data.Class
   alias Data.Item
   alias Data.Room
   alias Data.User
   alias Data.Save
   alias Data.Skill
-
-  @currency Application.get_env(:ex_venture, :game)[:currency]
 
   @doc """
   Format a channel message
@@ -471,8 +471,14 @@ Items: #{items(room)}
 
       iex> Game.Format.dropped({:user, %{name: "Player"}}, %{name: "Sword"})
       "{blue}Player{/blue} dropped a Sword."
+
+      iex> Game.Format.dropped({:user, %{name: "Player"}}, {:currency, 100})
+      "{blue}Player{/blue} dropped 100 gold."
   """
   @spec dropped(who :: {tuple, map}, item :: Item.t) :: String.t
+  def dropped(who, {:currency, amount}) do
+    "#{name(who)} dropped #{amount} #{currency()}."
+  end
   def dropped(who, item) do
     "#{name(who)} dropped a #{item.name}."
   end

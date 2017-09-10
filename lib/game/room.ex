@@ -128,6 +128,14 @@ defmodule Game.Room do
   end
 
   @doc """
+  Drop currency into a room
+  """
+  @spec drop_currency(id :: integer, who :: {atom, map}, current :: integer) :: :ok
+  def drop_currency(id, who, currency) do
+    GenServer.cast(pid(id), {:drop_currency, who, currency})
+  end
+
+  @doc """
   Send a tick to the room
   """
   @spec tick(id :: integer, time :: DateTime.t) :: :ok
@@ -246,6 +254,24 @@ defmodule Game.Room do
         {:noreply, Map.put(state, :room, room)}
       _ -> {:noreply, state}
     end
+  end
+
+  def handle_cast({:drop_currency, who, amount}, state = %{room: room, players: players}) do
+    case Actions.drop_currency(room, amount) do
+      {:ok, room} ->
+        players |> echo_to_players(who, Format.dropped(who, {:currency, amount}))
+        {:noreply, Map.put(state, :room, room)}
+      _ -> {:noreply, state}
+    end
+  end
+
+  defp echo_to_players(players, {:user, user}, message) do
+    players
+    |> Enum.reject(fn ({_, _, player}) -> player.id == user.id end)
+    |> echo_to_players(message)
+  end
+  defp echo_to_players(players, _, message) do
+    echo_to_players(players, message)
   end
 
   defp echo_to_players(players, message) do

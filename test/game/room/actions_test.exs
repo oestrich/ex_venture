@@ -32,6 +32,12 @@ defmodule Game.Room.ActionsTest do
 
       assert room.item_ids == [item.id, item.id]
     end
+
+    test "dropping currency", %{room: room} do
+      {:ok, room} = Room.Actions.drop_currency(room, 100)
+
+      assert room.currency == 200
+    end
   end
 
   describe "picking up currency" do

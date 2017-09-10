@@ -154,4 +154,22 @@ defmodule Test.Game.Room do
     start_link()
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :drop, []) end)
   end
+
+  def drop_currency(id, who, amount) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) ->
+      drops = Map.get(state, :drop_currency, [])
+      Map.put(state, :drop_currency, drops ++ [{id, who, amount}])
+    end)
+  end
+
+  def get_drop_currencies() do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :drop_currency, []) end)
+  end
+
+  def clear_drop_currencies() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :drop_currency, []) end)
+  end
 end

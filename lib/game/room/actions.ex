@@ -41,6 +41,14 @@ defmodule Game.Room.Actions do
   end
 
   @doc """
+  Drop currency into a room
+  """
+  @spec drop_currency(room :: Room.t, currency :: integer) :: {:ok, Room.t}
+  def drop_currency(room, currency) do
+    room |> Repo.update(%{currency: room.currency + currency})
+  end
+
+  @doc """
   Handle a tick
 
   Spawns items if necessary
