@@ -310,14 +310,6 @@ Items: #{items(room)}
 
   @doc """
   Format your info sheet
-
-  Example:
-
-      iex> stats = %{health: 50, max_health: 55, skill_points: 10, max_skill_points: 10, strength: 10, intelligence: 10, dexterity: 10}
-      iex> save = %Data.Save{level: 1, experience_points: 0, stats: stats}
-      iex> user = %{name: "hero", save: save, class: %{name: "Fighter", points_name: "Skill Points"}, seconds_online: 61}
-      iex> Game.Format.info(user)
-      "hero\\n--------\\nFighter\\n\\nLevel: 1\\nXP: 0\\nHealth: 50/55\\nSkill Points: 10/10\\nStrength: 10\\nIntelligence: 10\\nDexterity: 10\\nPlay Time: 00h 01m 01s"
   """
   @spec info(user :: User.t) :: String.t
   def info(user = %{save: save}) do
@@ -326,7 +318,7 @@ Items: #{items(room)}
     """
     #{user.name}
     #{underline(user.name)}
-    #{user.class.name}
+    #{user.race.name} - #{user.class.name}
 
     Level: #{save.level}
     XP: #{save.experience_points}

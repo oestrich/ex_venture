@@ -16,7 +16,13 @@ defmodule Game.Command.InfoTest do
   end
 
   test "view room information", %{session: session, socket: socket, armor: armor} do
-    user = %{name: "hero", save: base_save(), class: %{name: "Fighter", points_name: "Skill Points"}, seconds_online: 15}
+    user = %{
+      name: "hero",
+      save: base_save(),
+      race: %{name: "Human"},
+      class: %{name: "Fighter", points_name: "Skill Points"},
+      seconds_online: 15,
+    }
     stats = %{health: 50, max_health: 50, skill_points: 10, max_skill_points: 10, strength: 10, intelligence: 10, dexterity: 10}
     save = %{user.save | wearing: %{chest: armor.id}, stats: stats}
     ten_min_ago = Timex.now() |> Timex.shift(minutes: -10)
