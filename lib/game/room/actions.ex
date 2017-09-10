@@ -22,6 +22,17 @@ defmodule Game.Room.Actions do
   end
 
   @doc """
+  Pick up all of the currency in the room
+  """
+  @spec pick_up_currency(room :: Data.Room.t) :: {Data.Room.t, {:ok, integer}}
+  def pick_up_currency(room = %{currency: currency}) do
+    case Repo.update(room, %{currency: 0}) do
+      {:ok, room} -> {room, {:ok, currency}}
+      _ -> {room, :error}
+    end
+  end
+
+  @doc """
   Drop an item into a room
   """
   @spec drop(room :: Room.t, item :: Item.t) :: {:ok, Room.t}

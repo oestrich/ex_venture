@@ -41,6 +41,10 @@
                 <td><%= @room.description %></td>
               </tr>
               <tr>
+                <th>Currency in Room</th>
+                <td><%= @room.currency %> <%= currency() %></td>
+              </tr>
+              <tr>
                 <th>Coorinates</th>
                 <td><%= @room.x %>, <%= @room.y %></td>
               </tr>

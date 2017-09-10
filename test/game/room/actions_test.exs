@@ -6,28 +6,40 @@ defmodule Game.Room.ActionsTest do
   setup do
     item = create_item(%{name: "Short Sword"})
     village = create_zone(%{name: "Village"})
-    room = create_room(village, %{item_ids: [item.id]})
+    room = create_room(village, %{currency: 100, item_ids: [item.id]})
     {:ok, %{room: room, item: item}}
   end
 
-  test "picking up an item", %{room: room, item: item} do
-    {room, {:ok, item}} = Room.Actions.pick_up(room, item)
+  describe "picking up an item" do
+    test "picking up an item", %{room: room, item: item} do
+      {room, {:ok, item}} = Room.Actions.pick_up(room, item)
 
-    assert room.item_ids == []
-    assert item.id == item.id
+      assert room.item_ids == []
+      assert item.id == item.id
+    end
+
+    test "item not found", %{room: room, item: item} do
+      item = %{item | id: "bad id"}
+      {room, :error} = Room.Actions.pick_up(room, item)
+
+      assert room.item_ids |> length == 1
+    end
   end
 
-  test "item not found", %{room: room, item: item} do
-    item = %{item | id: "bad id"}
-    {room, :error} = Room.Actions.pick_up(room, item)
+  describe "dropping" do
+    test "dropping an item", %{room: room, item: item} do
+      {:ok, room} = Room.Actions.drop(room, item)
 
-    assert room.item_ids |> length == 1
+      assert room.item_ids == [item.id, item.id]
+    end
   end
 
-  test "dropping an item", %{room: room, item: item} do
-    {:ok, room} = Room.Actions.drop(room, item)
+  describe "picking up currency" do
+    test "picking up currency", %{room: room} do
+      {room, {:ok, 100}} = Room.Actions.pick_up_currency(room)
 
-    assert room.item_ids == [item.id, item.id]
+      assert room.currency == 0
+    end
   end
 
   describe "tick - respawning items" do

@@ -4,6 +4,7 @@ defmodule Game.Command.PickUp do
   """
 
   use Game.Command
+  use Game.Currency
 
   @commands ["pick up"]
   @aliases ["get"]
@@ -19,6 +20,17 @@ defmodule Game.Command.PickUp do
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
   def run(command, session, state)
+  def run({@currency}, _session, state = %{socket: socket, save: save}) do
+    case @room.pick_up_currency(save.room_id) do
+      {:ok, currency} ->
+        save = %{save | currency: save.currency + currency}
+        socket |> @socket.echo("You picked up #{currency} #{@currency}")
+        {:update, Map.put(state, :save, save)}
+      _ ->
+        socket |> @socket.echo(~s("#{@currency}" could not be found))
+        :ok
+    end
+  end
   def run({item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 

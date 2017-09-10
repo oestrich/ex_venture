@@ -1,5 +1,6 @@
 defmodule Web.Admin.RoomView do
   use Web, :view
+  use Game.Currency
 
   alias Data.Exit
   alias Game.Items

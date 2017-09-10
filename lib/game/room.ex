@@ -112,6 +112,14 @@ defmodule Game.Room do
   end
 
   @doc """
+  Pick up currency
+  """
+  @spec pick_up_currency(id :: integer) :: :ok
+  def pick_up_currency(id) do
+    GenServer.call(pid(id), :pick_up_currency)
+  end
+
+  @doc """
   Drop an item into a room
   """
   @spec drop(id :: integer, who :: {atom, map}, item :: Item.t) :: :ok
@@ -155,6 +163,11 @@ defmodule Game.Room do
 
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do
     {room, return} = Actions.pick_up(room, item)
+    {:reply, return, Map.put(state, :room, room)}
+  end
+
+  def handle_call(:pick_up_currency, _from, state = %{room: room}) do
+    {room, return} = Actions.pick_up_currency(room)
     {:reply, return, Map.put(state, :room, room)}
   end
 

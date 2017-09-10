@@ -11,6 +11,7 @@ defmodule Data.Room do
   schema "rooms" do
     field :name, :string
     field :description, :string
+    field :currency, :integer
     field :item_ids, {:array, :integer}
 
     field :players, {:array, :tuple}, virtual: true
@@ -31,9 +32,9 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :x, :y, :item_ids])
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :currency, :item_ids])
     |> ensure_item_ids
-    |> validate_required([:zone_id, :name, :description, :x, :y])
+    |> validate_required([:zone_id, :name, :description, :currency, :x, :y])
   end
 
   def exits(room) do

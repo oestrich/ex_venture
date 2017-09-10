@@ -45,4 +45,50 @@ defmodule Game.FormatTest do
       Regex.match?(~r/- {cyan}Dagger{\/cyan}/, Format.inventory(currency, wearing, wielding, items))
     end
   end
+
+  describe "room formatting" do
+    setup do
+      room = %{
+        id: 1,
+        name: "Hallway",
+        description: "A hallway",
+        currency: 100,
+        players: [%{name: "Player"}],
+        npcs: [%{name: "Bandit"}],
+        exits: [%{south_id: 1}, %{west_id: 1}],
+        items: [%{name: "Sword"}],
+      }
+
+      %{room: room}
+    end
+
+    test "includes the room name", %{room: room} do
+      assert Regex.match?(~r/Hallway/, Format.room(room))
+    end
+
+    test "includes the room description", %{room: room} do
+      assert Regex.match?(~r/A hallway/, Format.room(room))
+    end
+
+    test "includes the room exits", %{room: room} do
+      assert Regex.match?(~r/north/, Format.room(room))
+      assert Regex.match?(~r/east/, Format.room(room))
+    end
+
+    test "includes currency", %{room: room} do
+      assert Regex.match?(~r/100 gold/, Format.room(room))
+    end
+
+    test "includes the room items", %{room: room} do
+      assert Regex.match?(~r/Sword/, Format.room(room))
+    end
+
+    test "includes the players", %{room: room} do
+      assert Regex.match?(~r/Player/, Format.room(room))
+    end
+
+    test "includes the npcs", %{room: room} do
+      assert Regex.match?(~r/Bandit/, Format.room(room))
+    end
+  end
 end

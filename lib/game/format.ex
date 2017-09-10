@@ -211,12 +211,21 @@ Items: #{items(room)}
   end
   def npcs(_), do: ""
 
-  def items(%{items: items}) when is_list(items) do
-    items
-    |> Enum.map(fn (item) -> "{cyan}#{item.name}{/cyan}" end)
+  def items(room = %{items: items}) when is_list(items) do
+    items = items |> Enum.map(fn (item) -> "{cyan}#{item.name}{/cyan}" end)
+
+    items ++ [currency(room)]
+    |> Enum.reject(&(&1 == ""))
     |> Enum.join(", ")
   end
   def items(_), do: ""
+
+  @doc """
+  Format currency
+  """
+  @spec currency(Save.t | Room.t) :: String.t
+  def currency(%{currency: currency}) when currency == 0, do: ""
+  def currency(%{currency: currency}), do: "{cyan}#{currency} #{@currency}{/cyan}"
 
   @doc """
   Display an item

@@ -60,10 +60,11 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  defp room_attributes(attributes) do
+  def room_attributes(attributes) do
     Map.merge(%{
       name: "Hallway",
       description: "A long empty hallway",
+      currency: 0,
       x: 1,
       y: 1,
     }, attributes)

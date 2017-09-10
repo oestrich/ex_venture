@@ -13,6 +13,7 @@ defmodule Web.RoomTest do
     params = %{
       name: "Forest Path",
       description: "A small forest path",
+      currency: "10",
       x: 1,
       y: 1,
     }
@@ -26,14 +27,7 @@ defmodule Web.RoomTest do
   end
 
   test "updating a room updates the room state in the supervision tree", %{zone: zone} do
-    params = %{
-      name: "Forest Path",
-      description: "A small forest path",
-      x: 1,
-      y: 1,
-    }
-
-    {:ok, room} = Room.create(zone, params)
+    {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, room} = Room.update(room.id, %{name: "Pathway"})
     assert room.name == "Pathway"
 
@@ -47,8 +41,7 @@ defmodule Web.RoomTest do
   end
 
   test "adding an item to a room", %{zone: zone} do
-    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
-    {:ok, room} = Room.create(zone, params)
+    {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     item = create_item()
 
     # Check the supervision tree to make sure casts have gone through
@@ -63,8 +56,7 @@ defmodule Web.RoomTest do
   end
 
   test "create a room item", %{zone: zone} do
-    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
-    {:ok, room} = Room.create(zone, params)
+    {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     item = create_item()
     {:ok, room} = Room.update(room.id, %{name: "Pathway"})
 
@@ -75,8 +67,7 @@ defmodule Web.RoomTest do
   end
 
   test "delete room item", %{zone: zone} do
-    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
-    {:ok, room} = Room.create(zone, params)
+    {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     item = create_item()
     room_item = create_room_item(room, item, %{spawn_interval: 15})
     {:ok, room} = Room.update(room.id, %{name: "Pathway"})
@@ -88,11 +79,8 @@ defmodule Web.RoomTest do
   end
 
   test "create an exit", %{zone: zone} do
-    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
-    {:ok, room1} = Room.create(zone, params)
-
-    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 2}
-    {:ok, room2} = Room.create(zone, params)
+    {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
+    {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
 
     {:ok, _room_exit} = Room.create_exit(%{north_id: room1.id, south_id: room2.id})
 
@@ -104,11 +92,8 @@ defmodule Web.RoomTest do
   end
 
   test "delete a room exit", %{zone: zone} do
-    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 1}
-    {:ok, room1} = Room.create(zone, params)
-
-    params = %{name: "Forest Path", description: "A small forest path", x: 1, y: 2}
-    {:ok, room2} = Room.create(zone, params)
+    {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
+    {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
 
     {:ok, room_exit} = Room.create_exit(%{north_id: room1.id, south_id: room2.id})
     {:ok, _room_exit} = Room.delete_exit(room_exit.id)

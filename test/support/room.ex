@@ -127,6 +127,16 @@ defmodule Test.Game.Room do
     Agent.update(__MODULE__, fn (state) -> Map.delete(state, :pick_up) end)
   end
 
+  def set_pick_up_currency(response) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up_currency, response) end)
+  end
+
+  def pick_up_currency(_id) do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :pick_up_currency) end)
+  end
+
   def drop(id, who, item) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->

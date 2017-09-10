@@ -40,4 +40,15 @@ defmodule Game.Command.PickUpTest do
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r("shield" could not be found), look)
   end
+
+  test "pick up gold from a room", %{session: session, socket: socket} do
+    @room.set_pick_up_currency({:ok, 100})
+
+    {:update, state} = Game.Command.PickUp.run({"gold"}, session, %{socket: socket, save: %Save{room_id: 1, currency: 1}})
+
+    assert state.save.currency == 101
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(You picked up), look)
+  end
 end

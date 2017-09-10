@@ -13,6 +13,7 @@ defmodule Web.Admin.RoomControllerTest do
     room = %{
       name: "Forest Path",
       description: "A small forest path",
+      currency: "10",
       x: 1,
       y: 1,
     }
@@ -25,6 +26,7 @@ defmodule Web.Admin.RoomControllerTest do
     params = %{
       name: "Forest Path",
       description: "A small forest path",
+      currency: "10",
       x: 1,
       y: 1,
     }
