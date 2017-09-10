@@ -232,4 +232,20 @@ defmodule Game.SessionTest do
       assert state.save.channels == ["newbie"]
     end
   end
+
+  describe "teleport" do
+    setup do
+      user = create_user(%{name: "user", password: "password"})
+      |> Repo.preload([:race, :class])
+      zone = create_zone()
+      room = create_room(zone)
+
+      %{user: user, room: room}
+    end
+
+    test "teleports the user", %{socket: socket, user: user, room: room} do
+      {:noreply, state} = Session.handle_cast({:teleport, room.id}, %{socket: socket, user: user, save: user.save})
+      assert state.save.room_id == room.id
+    end
+  end
 end

@@ -22,6 +22,7 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
+            <%= link("Teleport", to: user_path(@conn, :teleport, room_id: @room.id), method: "post", class: "btn btn-primary") %>
             <%= link("Edit", to: room_path(@conn, :edit, @room.id), class: "btn btn-primary") %>
           </div>
         </div>

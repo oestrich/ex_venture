@@ -68,7 +68,7 @@ defmodule Game.Command.Move do
     end
   end
 
-  defp move_to(session, state = %{save: save, user: user}, room_id) do
+  def move_to(session, state = %{save: save, user: user}, room_id) do
     @room.leave(save.room_id, {:user, session, user})
 
     clear_target(state, {:user, user})

@@ -18,6 +18,7 @@ defmodule Game.Session do
   alias Game.Account
   alias Game.Character
   alias Game.Command
+  alias Game.Command.Move
   alias Game.Experience
   alias Game.Format
   alias Game.Session
@@ -74,6 +75,14 @@ defmodule Game.Session do
   @spec tick(pid, time :: DateTime.t) :: :ok
   def tick(pid, time) do
     GenServer.cast(pid, {:tick, time})
+  end
+
+  @doc """
+  Teleport the user to the room passed in
+  """
+  @spec teleport(pid, room_id :: integer) :: :ok
+  def teleport(pid, room_id) do
+    GenServer.cast(pid, {:teleport, room_id})
   end
 
   #
@@ -152,6 +161,12 @@ defmodule Game.Session do
         state |> prompt()
         {:noreply, state}
     end
+  end
+
+  def handle_cast({:teleport, room_id}, state) do
+    {:update, state} = self() |> Move.move_to(state, room_id)
+    state |> prompt()
+    {:noreply, state}
   end
 
   #

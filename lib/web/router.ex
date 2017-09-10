@@ -64,6 +64,7 @@ defmodule Web.Router do
 
     resources "/skills", SkillController, only: [:show, :edit, :update]
 
+    post "/users/teleport", UserController, :teleport
     resources "/users", UserController, only: [:index, :show]
 
     resources "/zones", ZoneController, only: [:index, :show, :new, :create, :edit, :update] do
