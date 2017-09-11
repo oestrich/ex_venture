@@ -14,21 +14,31 @@
   <body>
       <nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
     <div class="container">
-        <%= link(Config.game_name(), to: page_path(@conn, :index), class: "navbar-brand") %>
+        <%= link(Config.game_name(), to: public_page_path(@conn, :index), class: "navbar-brand") %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarsExample09">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <%= link("Who's Online", to: page_path(@conn, :who), class: "nav-link") %>
+            <li class="nav-item <%= tab_selected(@conn, "who") %>">
+              <%= link("Who's Online", to: public_page_path(@conn, :who), class: "nav-link") %>
+            </li>
+            <li class="nav-item <%= tab_selected(@conn, "classes") %>">
+              <%= link("Classes", to: public_class_path(@conn, :index), class: "nav-link") %>
+            </li>
+            <li class="nav-item <%= tab_selected(@conn, "races") %>">
+              <%= link("Races", to: public_race_path(@conn, :index), class: "nav-link") %>
+            </li>
+            <li class="nav-item <%= tab_selected(@conn, "help") %>">
+              <%= link("Help", to: public_help_path(@conn, :index), class: "nav-link") %>
             </li>
           </ul>
-          <%= link("Play Now", to: play_path(@conn, :show), class: "btn btn-primary") %>
+          <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-primary") %>
         </div>
-    </div>
-      </nav>
+      </div>
+    </nav>
+
     <main>
       <div class="container">
         <%= render @view_module, @view_template, assigns %>

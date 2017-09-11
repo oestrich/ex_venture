@@ -1,0 +1,15 @@
+<div class="row align-items-center">
+  <div class="col-md-12">
+    <h1 class="mb-3">Help Topics</h1>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <%= link("Commands", to: public_help_path(@conn, :commands)) %>
+      </li>
+      <%= Enum.map(@help_topics, fn (help_topic) -> %>
+        <li class="list-group-item">
+          <%= link(help_topic.name, to: public_help_path(@conn, :show, help_topic.id)) %>
+        </li>
+      <% end) %>
+    </ul>
+  </div>
+</div>

@@ -6,7 +6,7 @@
       Connect with telnet: <code><%= Config.host() %>:<%= Config.port() %></code>
     </p>
 
-    <%= link(to: play_path(@conn, :show), class: "btn btn-lg btn-primary") do %>
+    <%= link(to: public_play_path(@conn, :show), class: "btn btn-lg btn-primary") do %>
       Play Now &raquo;
     <% end %>
   </div>

@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="mb-3"><%= @class.name %></h2>
+    <p><%= @class.description %></p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <ul class="list-group">
+      <%= Enum.map(@class.skills, fn (skill) -> %>
+        <li class="list-group-item">
+          <h5><%= skill.name %></h5>
+          <span>Level <%= skill.level %> - <%= skill.points %> <%= @class.points_abbreviation %></span>
+          <p>Command: <code><%= skill.command %></code></p>
+          <p><%= skill.description %></p>
+        </li>
+      <% end) %>
+    </ul>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="back">
+      <%= link(to: public_class_path(@conn, :index)) do %>
+        &laquo; Back
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="mb-3"><%= @race.name %></h2>
+    <p><%= @race.description %></p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table">
+      <legend>Starting Stats</legend>
+      <tr>
+        <th>Health</th>
+        <td><%= @race.starting_stats.health %>/<%= @race.starting_stats.max_health %></td>
+      </tr>
+      <tr>
+        <th>Skill Points</th>
+        <td><%= @race.starting_stats.skill_points %>/<%= @race.starting_stats.max_skill_points %></td>
+      </tr>
+      <tr>
+        <th>Strength</th>
+        <td><%= @race.starting_stats.strength %></td>
+      </tr>
+      <tr>
+        <th>Intelligence</th>
+        <td><%= @race.starting_stats.intelligence %></td>
+      </tr>
+      <tr>
+        <th>Dexterity</th>
+        <td><%= @race.starting_stats.dexterity %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="back">
+      <%= link(to: public_race_path(@conn, :index)) do %>
+        &laquo; Back
+      <% end %>
+    </div>
+  </div>
+</div>

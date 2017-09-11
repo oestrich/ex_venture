@@ -1,0 +1,12 @@
+<div class="row align-items-center">
+  <div class="col-md-12">
+    <h1 class="mb-3">Classes</h1>
+    <ul class="list-group">
+      <%= Enum.map(@classes, fn (class) -> %>
+        <li class="list-group-item">
+          <%= link(class.name, to: public_class_path(@conn, :show, class.id)) %>
+        </li>
+      <% end) %>
+    </ul>
+  </div>
+</div>

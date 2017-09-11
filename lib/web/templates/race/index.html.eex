@@ -1,0 +1,12 @@
+<div class="row align-items-center">
+  <div class="col-md-12">
+    <h1 class="mb-3">Races</h1>
+    <ul class="list-group">
+      <%= Enum.map(@races, fn (race) -> %>
+        <li class="list-group-item">
+          <%= link(race.name, to: public_race_path(@conn, :show, race.id)) %>
+        </li>
+      <% end) %>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="row align-items-center">
+  <div class="col-md-12">
+    <h1 class="mb-3">Help Commands</h1>
+    <ul class="list-group">
+      <%= Enum.map(@commands, fn (command) -> %>
+        <li class="list-group-item">
+          <%= link(command, to: public_help_path(@conn, :command, command |> String.downcase)) %>
+        </li>
+      <% end) %>
+    </ul>
+  </div>
+</div>

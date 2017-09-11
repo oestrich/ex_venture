@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="mb-3"><%= @help_topic.name %></h2>
+    <span>Keywords: <%= @help_topic.keywords |> Enum.join(", ") %></span>
+    <p><%= @help_topic.body %></p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="back">
+      <%= link(to: public_help_path(@conn, :index)) do %>
+        &laquo; Back
+      <% end %>
+    </div>
+  </div>
+</div>

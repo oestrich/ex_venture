@@ -13,8 +13,14 @@ defmodule Web.Class do
   @doc """
   Get all classes
   """
-  @spec all() :: [Class.t]
-  def all() do
+  @spec all(opts :: Keyword.t) :: [Class.t]
+  def all(opts \\ [])
+  def all(alpha: true) do
+    Class
+    |> order_by([c], c.name)
+    |> Repo.all
+  end
+  def all(_) do
     Class
     |> order_by([c], c.id)
     |> Repo.all
@@ -29,7 +35,6 @@ defmodule Web.Class do
   def get(id) do
     Class
     |> where([c], c.id == ^id)
-    |> preload([:skills])
     |> preload([skills: ^(from s in Skill, order_by: [s.level, s.id])])
     |> Repo.one
   end

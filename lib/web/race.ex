@@ -10,19 +10,23 @@ defmodule Web.Race do
   alias Data.Stats
 
   @doc """
-  Get all classes
+  Get all races
   """
-  @spec all() :: [Race.t]
-  def all() do
+  @spec all(opts :: Keyword.t) :: [Race.t]
+  def all(opts \\ [])
+  def all(alpha: true) do
+    Race
+    |> order_by([r], r.name)
+    |> Repo.all
+  end
+  def all(_) do
     Race
     |> order_by([r], r.id)
     |> Repo.all
   end
 
   @doc """
-  Get a class
-
-  Preload skills
+  Get a races
   """
   @spec get(id :: integer) :: [Race.t]
   def get(id) do

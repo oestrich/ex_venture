@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="mb-3"><%= @command |> command_topic_key() %></h2>
+    <p>
+      Commands:
+      <%= Enum.map(@command.commands(), fn (command) -> %>
+        <code><%= command %></code>
+      <% end) %>
+    </p>
+    <p>
+      Aliases:
+      <%= Enum.map(@command.aliases(), fn (alias) -> %>
+        <code><%= alias %></code>
+      <% end) %>
+    </p>
+    <p><%= @command.help.full |> String.replace("\n", "<br />") |> raw() %></p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="back">
+      <%= link(to: public_help_path(@conn, :commands), class: "back") do %>
+        &laquo; Back
+      <% end %>
+    </div>
+  </div>
+</div>

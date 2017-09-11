@@ -13,11 +13,31 @@ defmodule Web.HelpTopic do
   @doc """
   Get all help_topics
   """
-  @spec all() :: [HelpTopic.t]
-  def all() do
+  @spec all(opts :: Keyword.t) :: [HelpTopic.t]
+  def all(opts \\ [])
+  def all(alpha: true) do
     HelpTopic
-    |> order_by([z], z.id)
+    |> order_by([ht], ht.name)
     |> Repo.all
+  end
+  def all(_) do
+    HelpTopic
+    |> order_by([ht], ht.id)
+    |> Repo.all
+  end
+
+  def commands() do
+    Game.Command.commands
+    |> Enum.map(fn (command) ->
+      command |> to_string |> String.split(".") |> List.last
+    end)
+  end
+
+  def command(topic) do
+    Game.Command.commands
+    |> Enum.find(fn (command) ->
+      command |> to_string |> String.split(".") |> List.last |> String.downcase() == topic |> String.downcase()
+    end)
   end
 
   @doc """

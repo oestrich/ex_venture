@@ -13,12 +13,20 @@ defmodule Web.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", Web do
+  scope "/", Web, as: :public do
     pipe_through :browser
 
     get "/", PageController, :index
 
+    resources "/classes", ClassController, only: [:index, :show]
+
+    get "/help/commands", HelpController, :commands
+    get "/help/commands/:command", HelpController, :command
+    resources "/help", HelpController, only: [:index, :show]
+
     get "/play", PlayController, :show
+
+    resources "/races", RaceController, only: [:index, :show]
 
     get "/who", PageController, :who
   end
