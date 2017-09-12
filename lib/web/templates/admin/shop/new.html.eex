@@ -1,0 +1,25 @@
+<section class="content-header">
+  <h1>
+    New Shop
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Zones", to: zone_path(@conn, :index)) %></li>
+    <li><%= link(@room.zone.name, to: zone_path(@conn, :show, @room.zone_id)) %></li>
+    <li><%= link(@room.name, to: room_path(@conn, :show, @room.id)) %></li>
+    <li class="active">New Shop</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: room_shop_path(@conn, :create, @room.id), room: @room, changeset: @changeset, title: "New", submit: "Create" %>
+    </div>
+  </div>
+</section>

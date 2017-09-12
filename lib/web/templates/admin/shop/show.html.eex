@@ -1,0 +1,39 @@
+<section class="content-header">
+  <h1>
+    <%= @shop.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Zones", to: zone_path(@conn, :index)) %></li>
+    <li><%= link(@room.zone.name, to: zone_path(@conn, :show, @room.zone_id)) %></li>
+    <li><%= link(@room.name, to: room_path(@conn, :show, @room.id)) %></li>
+    <li class="active"><%= @shop.name %></li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td><%= @shop.name %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

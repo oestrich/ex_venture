@@ -64,6 +64,39 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
+          <h3 class="box-title">Shops</h3>
+          <div class="box-tools">
+            <%= link("New Shop", to: room_shop_path(@conn, :new, @room.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @room.shops, fn (shop) -> %>
+                <tr>
+                  <td><%= shop.id %></td>
+                  <td><%= shop.name %></td>
+                  <td><%= link("View", to: shop_path(@conn, :show, shop.id)) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
           <h3 class="box-title">Items</h3>
           <div class="box-tools">
             <%= link("Add Item", to: room_room_item_path(@conn, :new, @room.id, spawn: false), class: "btn btn-primary") %>

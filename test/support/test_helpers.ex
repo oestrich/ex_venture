@@ -10,6 +10,7 @@ defmodule TestHelpers do
   alias Data.Race
   alias Data.Room
   alias Data.RoomItem
+  alias Data.Shop
   alias Data.Skill
   alias Data.User
   alias Data.Zone
@@ -217,6 +218,13 @@ defmodule TestHelpers do
   def create_help_topic(attributes) do
     %HelpTopic{}
     |> HelpTopic.changeset(attributes)
+    |> Repo.insert!
+  end
+
+  def create_shop(room, attributes) do
+    room
+    |> Ecto.build_assoc(:shops)
+    |> Shop.changeset(attributes)
     |> Repo.insert!
   end
 end

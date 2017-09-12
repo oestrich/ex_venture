@@ -6,6 +6,7 @@ defmodule Data.Room do
   use Data.Schema
 
   alias Data.Exit
+  alias Data.Shop
   alias Data.Zone
 
   schema "rooms" do
@@ -22,8 +23,9 @@ defmodule Data.Room do
 
     field :exits, {:array, Exit}, virtual: true
 
-    has_many :room_items, Data.RoomItem
     has_many :npc_spawners, Data.NPCSpawner
+    has_many :room_items, Data.RoomItem
+    has_many :shops, Shop
 
     belongs_to :zone, Zone
 

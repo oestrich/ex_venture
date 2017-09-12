@@ -15,7 +15,7 @@ defmodule Game.Room.Repo do
   @spec all() :: [Room.t]
   def all() do
     Room
-    |> preload([:room_items])
+    |> preload([:room_items, :shops])
     |> Repo.all
   end
 
@@ -27,7 +27,7 @@ defmodule Game.Room.Repo do
     Room
     |> Repo.get(id)
     |> Exit.load_exits()
-    |> Repo.preload([:room_items])
+    |> Repo.preload([:room_items, :shops])
   end
 
   @doc """
@@ -37,7 +37,7 @@ defmodule Game.Room.Repo do
   def for_zone(zone_id) do
     Room
     |> where([r], r.zone_id == ^zone_id)
-    |> preload([:room_items])
+    |> preload([:room_items, :shops])
     |> Repo.all
     |> Enum.map(&Exit.load_exits/1)
   end

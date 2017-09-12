@@ -66,9 +66,13 @@ defmodule Web.Router do
       resources "/exits", RoomExitController, only: [:new, :create], as: :exit
 
       resources "/items", RoomItemController, only: [:new, :create]
+
+      resources "/shops", ShopController, only: [:new, :create]
     end
 
     resources "/sessions", SessionController, only: [:new, :create]
+
+    resources "/shops", ShopController, only: [:show, :edit, :update]
 
     resources "/skills", SkillController, only: [:show, :edit, :update]
 

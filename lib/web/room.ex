@@ -23,7 +23,7 @@ defmodule Web.Room do
   def get(id) do
     Room
     |> where([r], r.id == ^id)
-    |> preload([zone: [:rooms], room_items: [:item], npc_spawners: [:npc]])
+    |> preload([zone: [:rooms], room_items: [:item], npc_spawners: [:npc], shops: []])
     |> Repo.one
     |> Exit.load_exits(preload: true)
   end
@@ -63,6 +63,7 @@ defmodule Web.Room do
     changeset = zone |> Ecto.build_assoc(:rooms) |> Room.changeset(params)
     case changeset |> Repo.insert() do
       {:ok, room} ->
+        room = RoomRepo.get(room.id)
         Game.Zone.spawn_room(zone.id, room)
         {:ok, room}
       anything -> anything
