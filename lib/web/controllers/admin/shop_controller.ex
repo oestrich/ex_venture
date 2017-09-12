@@ -24,12 +24,20 @@ defmodule Web.Admin.ShopController do
     end
   end
 
+  def edit(conn, %{"id" => id}) do
+    shop = Shop.get(id)
+    room = Room.get(shop.room_id)
+    changeset = Shop.edit(shop)
+    conn |> render("edit.html", shop: shop, room: room, changeset: changeset)
+  end
+
   def update(conn, %{"id" => id, "shop" => params}) do
     case Shop.update(id, params) do
       {:ok, shop} -> conn |> redirect(to: shop_path(conn, :show, shop.id))
       {:error, changeset} ->
         shop = Shop.get(id)
-        conn |> render("edit.html", shop: shop, changeset: changeset)
+        room = Room.get(shop.room_id)
+        conn |> render("edit.html", room: room, changeset: changeset)
     end
   end
 end

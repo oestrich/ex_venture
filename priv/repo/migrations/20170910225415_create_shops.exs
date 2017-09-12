@@ -13,6 +13,7 @@ defmodule Data.Repo.Migrations.CreateShops do
       add :shop_id, references(:shops), null: false
       add :item_id, references(:items), null: false
       add :price, :integer, null: false
+      add :quantity, :integer, null: false
 
       timestamps()
     end

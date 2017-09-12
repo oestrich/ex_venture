@@ -11,6 +11,7 @@ defmodule TestHelpers do
   alias Data.Room
   alias Data.RoomItem
   alias Data.Shop
+  alias Data.ShopItem
   alias Data.Skill
   alias Data.User
   alias Data.Zone
@@ -221,10 +222,23 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  def create_shop(room, attributes) do
+  def shop_attributes(attributes) do
+    Map.merge(%{
+      name: "Tree Stand Shop",
+    }, attributes)
+  end
+
+  def create_shop(room, attributes \\ %{}) do
     room
     |> Ecto.build_assoc(:shops)
-    |> Shop.changeset(attributes)
+    |> Shop.changeset(shop_attributes(attributes))
+    |> Repo.insert!
+  end
+
+  def create_shop_item(shop, item, attributes \\ %{}) do
+    shop
+    |> Ecto.build_assoc(:shop_items)
+    |> ShopItem.changeset(Map.merge(attributes, %{item_id: item.id}))
     |> Repo.insert!
   end
 end

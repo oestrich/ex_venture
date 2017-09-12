@@ -30,4 +30,30 @@ defmodule Web.ShopTest do
     state = Game.Room._get_state(room.id)
     assert state.room.shops |> List.first() |> Map.get(:name) == "Tree Stand"
   end
+
+  test "adding an item to a shop", %{room: room} do
+    item = create_item()
+    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
+
+    {:ok, shop} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
+
+    assert shop.shop_items |> length() == 1
+
+    state = Game.Room._get_state(room.id)
+    shop = state.room.shops |> List.first()
+    assert shop.shop_items |> length() == 1
+  end
+
+  test "removing an item from a shop", %{room: room} do
+    item = create_item()
+    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
+    {:ok, shop} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
+    shop_item = shop.shop_items |> List.first()
+
+    {:ok, _shop_item} = Shop.delete_item(shop_item.id)
+
+    state = Game.Room._get_state(room.id)
+    shop = state.room.shops |> List.first()
+    assert shop.shop_items |> length() == 0
+  end
 end

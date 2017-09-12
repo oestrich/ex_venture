@@ -22,5 +22,6 @@ defmodule Data.Shop do
     struct
     |> cast(params, [:room_id, :name])
     |> validate_required([:room_id, :name])
+    |> foreign_key_constraint(:room_id)
   end
 end

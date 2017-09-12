@@ -87,7 +87,7 @@
                 <span>Users</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, ["zones", "rooms"]) %>">
+            <li class="<%= tab_selected(@conn, ["zones", "rooms", "shops"]) %>">
               <%= link(to: zone_path(@conn, :index)) do %>
                 <i class="fa fa-flag"></i>
                 <span>Zones</span>

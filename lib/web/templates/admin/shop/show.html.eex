@@ -22,6 +22,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: shop_path(@conn, :edit, @shop.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">
@@ -30,6 +33,41 @@
                 <th>Name</th>
                 <td><%= @shop.name %></td>
               </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Item</h3>
+          <div class="box-tools">
+            <%= link("Add Item", to: shop_shop_item_path(@conn, :new, @shop.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @shop.shop_items, fn (shop_item) -> %>
+                <tr>
+                  <td><%= link(shop_item.item.name, to: item_path(@conn, :show, shop_item.item_id)) %></td>
+                  <td><%= shop_item.price %></td>
+                  <td><%= shop_item.quantity %></td>
+                  <td><%= link("Delete", to: shop_item_path(@conn, :delete, shop_item.id), method: :delete) %></td>
+                </tr>
+              <% end %>
             </tbody>
           </table>
         </div>
