@@ -224,7 +224,7 @@ defmodule CommandTest do
     end
 
     test "north", %{session: session, state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: []})
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
       {:update, state} = Command.run({Command.Move, {:north}}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
@@ -235,7 +235,7 @@ defmodule CommandTest do
     end
 
     test "east", %{session: session, state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{west_id: 1, east_id: 2}], players: []})
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{west_id: 1, east_id: 2}], players: [], shops: []})
       {:update, state} = Command.run({Command.Move, {:east}}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
@@ -246,7 +246,7 @@ defmodule CommandTest do
     end
 
     test "south", %{session: session, state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 1, south_id: 2}], players: []})
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 1, south_id: 2}], players: [], shops: []})
       {:update, state} = Command.run({Command.Move, {:south}}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
@@ -257,7 +257,7 @@ defmodule CommandTest do
     end
 
     test "west", %{session: session, state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{west_id: 2, east_id: 1}], players: []})
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{west_id: 2, east_id: 1}], players: [], shops: []})
       {:update, state} = Command.run({Command.Move, {:west}}, session, Map.merge(state, %{save: %{room_id: 1}}))
       assert state.save.room_id == 2
     end
@@ -268,7 +268,7 @@ defmodule CommandTest do
     end
 
     test "clears the target after moving", %{session: session, state: state, user: user} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: []})
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
       Registry.register(user)
 
       state = Map.merge(state, %{user: user, save: %{room_id: 1}, target: {:user, 10}})

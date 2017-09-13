@@ -104,6 +104,7 @@ defmodule Game.Format do
 #{who_is_here(room)}
 Exits: #{exits(room)}
 Items: #{items(room)}
+#{shops(room)}
     """
     |> String.trim
   end
@@ -226,6 +227,24 @@ Items: #{items(room)}
   @spec currency(Save.t | Room.t) :: String.t
   def currency(%{currency: currency}) when currency == 0, do: ""
   def currency(%{currency: currency}), do: "{cyan}#{currency} #{@currency}{/cyan}"
+
+  @doc """
+  Format Shop text for shops in the room
+
+  Example:
+
+      iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]})
+      "Shops: {magenta}Hole in the Wall{/magenta}"
+  """
+  @spec shops(room :: Game.Room.t) :: String.t
+  def shops(%{shops: []}), do: ""
+  def shops(%{shops: shops}) do
+    shops = shops
+    |> Enum.map(fn (shop) -> "{magenta}#{shop.name}{/magenta}" end)
+    |> Enum.join(", ")
+    "Shops: #{shops}"
+  end
+  def shops(_), do: ""
 
   @doc """
   Display an item

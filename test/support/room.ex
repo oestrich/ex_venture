@@ -14,6 +14,7 @@ defmodule Test.Game.Room do
       zone_id: 1,
       players: [],
       items: [%Data.Item{id: 15, name: "Short Sword", description: "A simple blade", keywords: ["sword"]}],
+      shops: [],
     }
   end
 
