@@ -235,16 +235,25 @@ Items: #{items(room)}
 
       iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]})
       "Shops: {magenta}Hole in the Wall{/magenta}"
+
+      iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]}, label: false)
+      "  - {magenta}Hole in the Wall{/magenta}"
   """
   @spec shops(room :: Game.Room.t) :: String.t
-  def shops(%{shops: []}), do: ""
-  def shops(%{shops: shops}) do
+  def shops(room, opts \\ [])
+  def shops(%{shops: []}, _opts), do: ""
+  def shops(%{shops: shops}, [label: false]) do
+    shops
+    |> Enum.map(fn (shop) -> "  - {magenta}#{shop.name}{/magenta}" end)
+    |> Enum.join(", ")
+  end
+  def shops(%{shops: shops}, _) do
     shops = shops
     |> Enum.map(fn (shop) -> "{magenta}#{shop.name}{/magenta}" end)
     |> Enum.join(", ")
     "Shops: #{shops}"
   end
-  def shops(_), do: ""
+  def shops(_, _), do: ""
 
   @doc """
   Display an item
