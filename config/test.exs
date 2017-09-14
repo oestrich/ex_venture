@@ -17,6 +17,7 @@ config :ex_venture, :networking,
 
 config :ex_venture, :game,
   room: Test.Game.Room,
+  shop: Test.Game.Shop,
   zone: Test.Game.Zone,
   rand: Test.DropChanceSuccess
 

@@ -11,6 +11,12 @@ defmodule Game.Shop do
   alias Data.Repo
   alias Data.Shop
 
+  defmacro __using__(_opts) do
+    quote do
+      @shop Application.get_env(:ex_venture, :game)[:shop]
+    end
+  end
+
   @doc """
   Starts a new Shop
 
@@ -53,6 +59,13 @@ defmodule Game.Shop do
   end
 
   @doc """
+  List out a shop
+  """
+  def list(id) do
+    GenServer.call(pid(id), :list)
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -65,6 +78,10 @@ defmodule Game.Shop do
 
   def init(shop) do
     {:ok, %{shop: shop}}
+  end
+
+  def handle_call(:list, _from, state) do
+    {:reply, state.shop, state}
   end
 
   def handle_call(:get_state, _from, state) do

@@ -166,4 +166,26 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r/Play Time: 00h 01m 01s/, Format.info(user))
     end
   end
+
+  describe "shop listing" do
+    setup do
+      sword = %{name: "Sword", price: 100, quantity: 10}
+      shield = %{name: "Shield", price: 80, quantity: -1}
+      %{shop: %{name: "Tree Top Stand"}, items: [sword, shield]}
+    end
+
+    test "includes shop name", %{shop: shop, items: items} do
+      assert Regex.match?(~r/Tree Top Stand/, Format.list_shop(shop, items))
+    end
+
+    test "includes shop items", %{shop: shop, items: items} do
+      assert Regex.match?(~r/100 gold/, Format.list_shop(shop, items))
+      assert Regex.match?(~r/10 left/, Format.list_shop(shop, items))
+      assert Regex.match?(~r/{cyan}Sword{\/cyan}/, Format.list_shop(shop, items))
+    end
+
+    test "-1 quantity is unlimited", %{shop: shop, items: items} do
+      assert Regex.match?(~r/unlimited/, Format.list_shop(shop, items))
+    end
+  end
 end

@@ -48,10 +48,6 @@ defmodule Web.ShopTest do
 
     assert shop.shop_items |> length() == 1
 
-    state = Game.Room._get_state(room.id)
-    shop = state.room.shops |> List.first()
-    assert shop.shop_items |> length() == 1
-
     state = Game.Shop._get_state(shop.id)
     assert state.shop.shop_items |> length() == 1
   end
@@ -63,10 +59,6 @@ defmodule Web.ShopTest do
     shop_item = shop.shop_items |> List.first()
 
     {:ok, _shop_item} = Shop.delete_item(shop_item.id)
-
-    state = Game.Room._get_state(room.id)
-    shop = state.room.shops |> List.first()
-    assert shop.shop_items |> length() == 0
 
     state = Game.Shop._get_state(shop.id)
     assert state.shop.shop_items |> length() == 0

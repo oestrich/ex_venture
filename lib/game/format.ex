@@ -255,6 +255,8 @@ Items: #{items(room)}
   end
   def shops(_, _), do: ""
 
+  def list_shop(shop, items), do: Game.Format.Shop.list(shop, items)
+
   @doc """
   Display an item
 

@@ -20,4 +20,5 @@ config :ex_venture, :networking,
 
 config :ex_venture, :game,
   room: Game.Room,
+  shop: Game.Shop,
   zone: Game.Zone

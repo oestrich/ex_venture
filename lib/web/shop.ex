@@ -52,6 +52,7 @@ defmodule Web.Shop do
       {:ok, shop} ->
         room = RoomRepo.get(shop.room_id)
         Game.Room.update(room.id, room)
+        shop = shop.id |> get()
         Game.Zone.spawn_shop(room.zone_id, shop)
         {:ok, shop}
       anything -> anything
@@ -122,6 +123,8 @@ defmodule Web.Shop do
   defp push_update(shop) do
     room = RoomRepo.get(shop.room_id)
     Game.Room.update(room.id, room)
+
+    shop = shop.id |> get()
     Game.Shop.update(shop.id, shop)
   end
 end
