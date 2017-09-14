@@ -50,7 +50,9 @@ defmodule Web.Shop do
     changeset = room |> Ecto.build_assoc(:shops) |> Shop.changeset(params)
     case changeset |> Repo.insert() do
       {:ok, shop} ->
-        update_room(shop.room_id)
+        room = RoomRepo.get(shop.room_id)
+        Game.Room.update(room.id, room)
+        Game.Zone.spawn_shop(room.zone_id, shop)
         {:ok, shop}
       anything -> anything
     end
@@ -64,7 +66,7 @@ defmodule Web.Shop do
     changeset = id |> get() |> Shop.changeset(params)
     case changeset |> Repo.update() do
       {:ok, shop} ->
-        update_room(shop.room_id)
+        push_update(shop)
         {:ok, shop}
       anything -> anything
     end
@@ -96,7 +98,7 @@ defmodule Web.Shop do
     case changeset |> Repo.insert() do
       {:ok, _shop_item} ->
         shop = shop.id |> get()
-        update_room(shop.room_id)
+        push_update(shop)
         {:ok, shop}
       anything -> anything
     end
@@ -111,14 +113,15 @@ defmodule Web.Shop do
     case shop_item |> Repo.delete() do
       {:ok, shop_item} ->
         shop = shop_item.shop_id |> get()
-        update_room(shop.room_id)
+        push_update(shop)
         {:ok, shop_item}
       anything -> anything
     end
   end
 
-  defp update_room(room_id) do
-    room = RoomRepo.get(room_id)
+  defp push_update(shop) do
+    room = RoomRepo.get(shop.room_id)
     Game.Room.update(room.id, room)
+    Game.Shop.update(shop.id, shop)
   end
 end

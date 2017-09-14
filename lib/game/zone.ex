@@ -12,6 +12,7 @@ defmodule Game.Zone do
   alias Game.Map, as: GameMap
   alias Game.NPC
   alias Game.Room
+  alias Game.Shop
   alias Game.Zone.Repo
 
   defmacro __using__(_opts) do
@@ -91,6 +92,14 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Tell the zone where the shop supervisor lives
+  """
+  @spec shop_supervisor(id :: integer, supervisor_pid :: pid) :: :ok
+  def shop_supervisor(id, supervisor_pid) do
+    GenServer.cast(pid(id), {:shop_supervisor, supervisor_pid})
+  end
+
+  @doc """
   Start a new room in the supervision tree
   """
   @spec spawn_room(id :: integer, room :: Data.Room.t) :: :ok
@@ -104,6 +113,14 @@ defmodule Game.Zone do
   @spec spawn_npc(id :: integer, npc_spawner :: Data.Room.t) :: :ok
   def spawn_npc(id, npc_spawner) do
     GenServer.cast(pid(id), {:spawn_npc, npc_spawner})
+  end
+
+  @doc """
+  Start a new shop in the supervision tree
+  """
+  @spec spawn_shop(id :: integer, shop :: Data.Shop.t) :: :ok
+  def spawn_shop(id, shop) do
+    GenServer.cast(pid(id), {:spawn_shop, shop})
   end
 
   @doc """
@@ -136,7 +153,7 @@ defmodule Game.Zone do
   #
 
   def init(zone) do
-    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil, npcs: [], npc_supervisor_pid: nil}}
+    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil, npcs: [], npc_supervisor_pid: nil, shop_supervisor_pid: nil}}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -178,6 +195,10 @@ defmodule Game.Zone do
     {:noreply, Map.put(state, :npc_supervisor_pid, pid)}
   end
 
+  def handle_cast({:shop_supervisor, pid}, state) do
+    {:noreply, Map.put(state, :shop_supervisor_pid, pid)}
+  end
+
   def handle_cast({:spawn_room, room}, state = %{room_supervisor_pid: room_supervisor_pid}) do
     Room.Supervisor.start_child(room_supervisor_pid, room)
     {:noreply, state}
@@ -185,6 +206,11 @@ defmodule Game.Zone do
 
   def handle_cast({:spawn_npc, npc_spawner}, state = %{npc_supervisor_pid: npc_supervisor_pid}) do
     NPC.Supervisor.start_child(npc_supervisor_pid, npc_spawner)
+    {:noreply, state}
+  end
+
+  def handle_cast({:spawn_shop, shop}, state = %{shop_supervisor_pid: shop_supervisor_pid}) do
+    Shop.Supervisor.start_child(shop_supervisor_pid, shop)
     {:noreply, state}
   end
 
