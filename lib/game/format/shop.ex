@@ -12,11 +12,11 @@ defmodule Game.Format.Shop do
     rows = items
     |> Enum.map(&item/1)
 
-    Table.format(name, rows, [10, 10, 30])
+    Table.format("{magenta}#{name}{/magenta}", rows, [10, 10, 30])
   end
 
   defp item(item) do
-    ["#{item.price} #{currency()}", quantity(item.quantity), item.name]
+    ["#{item.price} #{currency()}", quantity(item.quantity), "{cyan}#{item.name}{/cyan}"]
   end
 
   defp quantity(-1), do: "unlimited"

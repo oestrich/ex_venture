@@ -19,4 +19,9 @@ defmodule Game.Format.TableTest do
 +-----------------------------------+
     """ |> String.trim
   end
+
+  test "formatting a row with color in it" do
+    row = Table.row(["10 gold", "unlimited", "{cyan}Sword{/cyan}"], [10, 10, 10])
+    assert row == "| 10 gold    | unlimited  | {cyan}Sword{/cyan}      |"
+  end
 end

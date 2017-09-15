@@ -3,7 +3,7 @@ defmodule Game.Format.Table do
   Format a table
   """
 
-  import String, only: [pad_trailing: 2, pad_trailing: 3]
+  alias Game.Color
 
   @doc """
   Format an ASCII table
@@ -49,10 +49,52 @@ defmodule Game.Format.Table do
     |> Enum.map(fn ({column, index}) ->
       column_size = Enum.at(column_sizes, index)
       column = to_string(column)
-      column = String.slice(column, 0, column_size)
+      column = limit_visible(column, column_size)
       " #{pad_trailing(column, column_size)} "
     end)
     |> Enum.join("|")
     "|#{row}|"
+  end
+
+  defp pad_trailing(string, width, pad_string \\ " ") do
+    no_color_string = Color.strip_color(string)
+    no_color_string_length = String.length(no_color_string)
+    padder = String.pad_trailing("", width - no_color_string_length, pad_string)
+    "#{string}#{padder}"
+  end
+
+  @doc """
+  Limit strings to visible characters
+
+      iex> Game.Format.Table.limit_visible("string", 3)
+      "str"
+
+      iex> Game.Format.Table.limit_visible("{cyan}string{/cyan}", 3)
+      "{cyan}str{/cyan}"
+  """
+  @spec limit_visible(string :: String.t, limit :: integer) :: String.t
+  def limit_visible(string, limit) do
+    string
+    |> String.to_charlist
+    |> _limit_visible(limit)
+    |> to_string()
+  end
+
+  defp _limit_visible(characters, limit, pass \\ false)
+  defp _limit_visible([], _limit, _), do: []
+  defp _limit_visible([char | left], limit, _) when [char] == '{' do
+    [char | _limit_visible(left, limit, true)]
+  end
+  defp _limit_visible([char | left], limit, _) when [char] == '}' do
+    [char | _limit_visible(left, limit, false)]
+  end
+  defp _limit_visible([char | left], limit, true) do
+    [char | _limit_visible(left, limit, true)]
+  end
+  defp _limit_visible([_char | left], limit, _) when limit <= 0 do
+    _limit_visible(left, limit)
+  end
+  defp _limit_visible([char | left], limit, false) do
+    [char | _limit_visible(left, limit - 1)]
   end
 end
