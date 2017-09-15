@@ -20,8 +20,8 @@ defmodule Game.Session.Login do
   """
   @spec start(socket :: pid) :: :ok
   def start(socket) do
-    socket |> @socket.echo("#{ExVenture.version()}\n#{motd()}\n\nEnter {white}create{/white} to create a new account.")
-    socket |> @socket.prompt("What is your player name? ")
+    socket |> @socket.echo("#{ExVenture.version()}\n#{motd()}")
+    socket |> @socket.prompt("What is your player name (Enter {white}create{/white} for a new account)? ")
   end
 
   defp motd() do
