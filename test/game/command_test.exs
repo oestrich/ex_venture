@@ -148,6 +148,7 @@ defmodule CommandTest do
     test "shops", %{user: user} do
       assert Command.parse("shops", user) == {Command.Shops, {}}
       assert Command.parse("shops list tree top", user) == {Command.Shops, {:list, "tree top"}}
+      assert Command.parse("shops buy item from tree top", user) == {Command.Shops, {:buy, "item", :from, "tree top"}}
     end
   end
 

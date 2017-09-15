@@ -86,7 +86,7 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  defp item_attributes(attributes) do
+  def item_attributes(attributes) do
     Map.merge(%{
       name: "Short Sword",
       description: "A slender sword",
