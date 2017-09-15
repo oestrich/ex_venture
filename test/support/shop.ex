@@ -16,7 +16,7 @@ defmodule Test.Game.Shop do
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :shop, shop) end)
   end
 
-  def list(id) do
+  def list(_id) do
     start_link()
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :shop) end)
   end
