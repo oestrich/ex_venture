@@ -56,11 +56,28 @@ defmodule Game.Format.Table do
     "|#{row}|"
   end
 
-  defp pad_trailing(string, width, pad_string \\ " ") do
+  @doc """
+  Pad the end of a string with spaces
+
+      iex> Game.Format.Table.pad_trailing("string", 7)
+      "string "
+
+      iex> Game.Format.Table.pad_trailing("string", 6)
+      "string"
+
+      iex> Game.Format.Table.pad_trailing("", 5, "-")
+      "-----"
+  """
+  @spec pad_trailing(string :: String.t, width :: integer, pad_trailing :: String.t) :: String.t
+  def pad_trailing(string, width, pad_string \\ " ") do
     no_color_string = Color.strip_color(string)
     no_color_string_length = String.length(no_color_string)
-    padder = String.pad_trailing("", width - no_color_string_length, pad_string)
-    "#{string}#{padder}"
+    case width - no_color_string_length do
+      str_length when str_length > 0 ->
+        padder = String.pad_trailing("", width - no_color_string_length, pad_string)
+        "#{string}#{padder}"
+      _ -> string
+    end
   end
 
   @doc """

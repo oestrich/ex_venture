@@ -24,4 +24,10 @@ defmodule Game.Format.TableTest do
     row = Table.row(["10 gold", "unlimited", "{cyan}Sword{/cyan}"], [10, 10, 10])
     assert row == "| 10 gold    | unlimited  | {cyan}Sword{/cyan}      |"
   end
+
+  describe "pad string" do
+    test "less than total string length" do
+      assert Table.pad_trailing("string", 5) == "string"
+    end
+  end
 end
