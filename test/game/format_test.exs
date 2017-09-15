@@ -135,35 +135,35 @@ defmodule Game.FormatTest do
     end
 
     test "includes player level", %{user: user} do
-      assert Regex.match?(~r/Level: 1/, Format.info(user))
+      assert Regex.match?(~r/Level.+|.+1/, Format.info(user))
     end
 
     test "includes player xp", %{user: user} do
-      assert Regex.match?(~r/XP: 0/, Format.info(user))
+      assert Regex.match?(~r/XP.+|.+0/, Format.info(user))
     end
 
     test "includes player health", %{user: user} do
-      assert Regex.match?(~r/Health: 50\/55/, Format.info(user))
+      assert Regex.match?(~r/Health.+|.+50\/55/, Format.info(user))
     end
 
     test "includes player skill points", %{user: user} do
-      assert Regex.match?(~r/Skill Points: 10\/10/, Format.info(user))
+      assert Regex.match?(~r/Skill Points.+|.+10\/10/, Format.info(user))
     end
 
     test "includes player strength", %{user: user} do
-      assert Regex.match?(~r/Strength: 10/, Format.info(user))
+      assert Regex.match?(~r/Strength.+|.+10/, Format.info(user))
     end
 
     test "includes player intelligence", %{user: user} do
-      assert Regex.match?(~r/Intelligence: 10/, Format.info(user))
+      assert Regex.match?(~r/Intelligence.+|.+10/, Format.info(user))
     end
 
     test "includes player dexterity", %{user: user} do
-      assert Regex.match?(~r/Dexterity: 10/, Format.info(user))
+      assert Regex.match?(~r/Dexterity.+|.+10/, Format.info(user))
     end
 
     test "includes player play time", %{user: user} do
-      assert Regex.match?(~r/Play Time: 00h 01m 01s/, Format.info(user))
+      assert Regex.match?(~r/Play Time.+|.+00h 01m 01s/, Format.info(user))
     end
   end
 
@@ -181,7 +181,7 @@ defmodule Game.FormatTest do
     test "includes shop items", %{shop: shop, items: items} do
       assert Regex.match?(~r/100 gold/, Format.list_shop(shop, items))
       assert Regex.match?(~r/10 left/, Format.list_shop(shop, items))
-      assert Regex.match?(~r/{cyan}Sword{\/cyan}/, Format.list_shop(shop, items))
+      assert Regex.match?(~r/Sword/, Format.list_shop(shop, items))
     end
 
     test "-1 quantity is unlimited", %{shop: shop, items: items} do

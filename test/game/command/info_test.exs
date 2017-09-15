@@ -31,8 +31,8 @@ defmodule Game.Command.InfoTest do
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(hero), look)
-    assert Regex.match?(~r(Strength: 20), look)
-    assert Regex.match?(~r(Skill Points: 10), look)
-    assert Regex.match?(~r(Play Time: 00h 10m 15s), look)
+    assert Regex.match?(~r(Strength.+|.+20), look)
+    assert Regex.match?(~r(Skill Points.+|.+10), look)
+    assert Regex.match?(~r(Play Time.+|.+00h 10m 15s), look)
   end
 end

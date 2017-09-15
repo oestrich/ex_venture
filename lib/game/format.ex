@@ -11,6 +11,7 @@ defmodule Game.Format do
   alias Data.User
   alias Data.Save
   alias Data.Skill
+  alias Game.Format.Table
 
   @doc """
   Format a channel message
@@ -345,20 +346,18 @@ Items: #{items(room)}
   def info(user = %{save: save}) do
     %{stats: stats} = save
 
-    """
-    #{user.name}
-    #{underline(user.name)}
-    #{user.race.name} - #{user.class.name}
+    rows = [
+      ["Level", save.level],
+      ["XP", save.experience_points],
+      ["Health", "#{stats.health}/#{stats.max_health}"],
+      [user.class.points_name, "#{stats.skill_points}/#{stats.max_skill_points}"],
+      ["Strength", stats.strength],
+      ["Intelligence", stats.intelligence],
+      ["Dexterity", stats.dexterity],
+      ["Play Time", play_time(user.seconds_online)],
+    ]
 
-    Level: #{save.level}
-    XP: #{save.experience_points}
-    Health: #{stats.health}/#{stats.max_health}
-    #{user.class.points_name}: #{stats.skill_points}/#{stats.max_skill_points}
-    Strength: #{stats.strength}
-    Intelligence: #{stats.intelligence}
-    Dexterity: #{stats.dexterity}
-    Play Time: #{play_time(user.seconds_online)}
-    """ |> String.trim
+    Table.format("#{user.name} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
   end
 
   @doc """
