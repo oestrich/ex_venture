@@ -64,21 +64,25 @@ defmodule CommandTest do
     end
 
     test "north", %{user: user} do
+      assert Command.parse("move north", user) == {Command.Move, {:north}}
       assert Command.parse("north", user) == {Command.Move, {:north}}
       assert Command.parse("n", user) == {Command.Move, {:north}}
     end
 
     test "east", %{user: user} do
+      assert Command.parse("move east", user) == {Command.Move, {:east}}
       assert Command.parse("east", user) == {Command.Move, {:east}}
       assert Command.parse("e", user) == {Command.Move, {:east}}
     end
 
     test "south", %{user: user} do
+      assert Command.parse("move south", user) == {Command.Move, {:south}}
       assert Command.parse("south", user) == {Command.Move, {:south}}
       assert Command.parse("s", user) == {Command.Move, {:south}}
     end
 
     test "west", %{user: user} do
+      assert Command.parse("move west", user) == {Command.Move, {:west}}
       assert Command.parse("west", user) == {Command.Move, {:west}}
       assert Command.parse("w", user) == {Command.Move, {:west}}
     end

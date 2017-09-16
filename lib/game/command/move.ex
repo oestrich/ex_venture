@@ -10,7 +10,7 @@ defmodule Game.Command.Move do
   import Game.Character.Target, only: [clear_target: 2]
 
   @custom_parse true
-  @commands ["north", "east", "south", "west"]
+  @commands ["move", "north", "east", "south", "west"]
   @aliases ["n", "e", "s", "w"]
   @must_be_alive true
 
@@ -24,6 +24,7 @@ defmodule Game.Command.Move do
   """
   @spec parse(command :: String.t) :: {atom}
   def parse(commnd)
+  def parse("move " <> direction), do: parse(direction)
   def parse("north"), do: {:north}
   def parse("n"), do: {:north}
   def parse("east"), do: {:east}
