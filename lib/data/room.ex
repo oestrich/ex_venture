@@ -36,6 +36,7 @@ defmodule Data.Room do
     struct
     |> cast(params, [:zone_id, :name, :description, :x, :y, :currency, :item_ids])
     |> ensure_item_ids
+    |> ensure(:currency, 0)
     |> validate_required([:zone_id, :name, :description, :currency, :x, :y])
   end
 
