@@ -158,6 +158,7 @@ defmodule Game.Session do
         state |> prompt()
         {:noreply, state}
       {:update, state} ->
+        Session.Registry.update(%{state.user | save: state.save})
         state |> prompt()
         {:noreply, state}
     end

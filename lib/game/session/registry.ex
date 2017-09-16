@@ -21,6 +21,14 @@ defmodule Game.Session.Registry do
   end
 
   @doc """
+  Update user's information
+  """
+  @spec update(user :: User.t) :: :ok
+  def update(user) do
+    GenServer.cast(__MODULE__, {:update, self(), user})
+  end
+
+  @doc """
   Unregister the current session pid
   """
   @spec unregister() :: :ok
@@ -54,6 +62,13 @@ defmodule Game.Session.Registry do
   def handle_cast({:register, pid, user}, state = %{connected_players: connected_players}) do
     Process.link(pid)
     connected_players = [%{user: user, pid: pid} | connected_players]
+    {:noreply, %{state | connected_players: connected_players}}
+  end
+
+  def handle_cast({:update, pid, user}, state = %{connected_players: connected_players}) do
+    connected_players = [%{user: user, pid: pid} | connected_players]
+    connected_players = connected_players
+    |> Enum.uniq_by(&(&1.pid))
     {:noreply, %{state | connected_players: connected_players}}
   end
 
