@@ -10,6 +10,7 @@ defmodule Game.Command.PickUp do
   @aliases ["get"]
   @must_be_alive true
 
+  @help_topic "Pick Up"
   @short_help "Pick up an item in the same room"
   @full_help """
   Example: pick up sword

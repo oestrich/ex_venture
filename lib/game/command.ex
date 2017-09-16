@@ -31,6 +31,7 @@ defmodule Game.Command do
       @behaviour Game.Command
       @before_compile Game.Command
 
+      @help_topic __MODULE__ |> to_string |> String.split(".") |> List.last
       @short_help ""
       @full_help ""
 
@@ -61,6 +62,7 @@ defmodule Game.Command do
       @doc false
       def help() do
         %{
+          topic: @help_topic,
           short: @short_help,
           full: @full_help,
         }

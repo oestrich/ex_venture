@@ -73,13 +73,13 @@ defmodule Game.Help do
     commands = command.commands |> Enum.map(&String.upcase/1)
     aliases = command.aliases |> Enum.map(&String.upcase/1)
 
-    command |> command_topic_key == topic |> String.upcase
+    command |> command_topic_key |> String.downcase == topic |> String.downcase
       || topic in commands
       || topic in aliases
   end
 
   defp command_topic_key(command) do
-    command |> to_string |> String.split(".") |> List.last |> String.upcase
+    command.help()[:topic]
   end
 
   defp find_help_topic(topic) do
