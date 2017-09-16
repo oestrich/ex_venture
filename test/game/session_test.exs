@@ -103,7 +103,7 @@ defmodule Game.SessionTest do
   end
 
   test "checking for inactive players - inactive", %{socket: socket} do
-    {:noreply, _state} = Session.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now() |> Timex.shift(minutes: -6)})
+    {:noreply, _state} = Session.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now() |> Timex.shift(minutes: -66)})
 
     assert @socket.get_disconnects() == [socket]
   end
