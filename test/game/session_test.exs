@@ -110,11 +110,12 @@ defmodule Game.SessionTest do
 
   describe "disconnects" do
     test "unregisters the pid when disconnected" do
-      Registry.register(Session.Registry, "player", :connected)
+      user = %Data.User{name: "user", seconds_online: 0}
+      Session.Registry.register(user)
 
-      state = %{user: %Data.User{name: "user", seconds_online: 0}, save: %{room_id: 1}, session_started_at: Timex.now()}
+      state = %{user: user, save: %{room_id: 1}, session_started_at: Timex.now()}
       {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
-      assert Registry.lookup(Session.Registry, "player") == []
+      assert Session.Registry.connected_players == []
     end
 
     test "adds the time played" do

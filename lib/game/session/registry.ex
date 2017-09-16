@@ -3,16 +3,21 @@ defmodule Game.Session.Registry do
   Helper functions for the connected users registry
   """
 
-  @registry_key "player"
+  use GenServer
 
   alias Data.User
+
+  @doc false
+  def start_link() do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
 
   @doc """
   Register the session PID for the user
   """
   @spec register(user :: User.t) :: :ok
   def register(user) do
-    Registry.register(__MODULE__, @registry_key, user)
+    GenServer.cast(__MODULE__, {:register, self(), user})
   end
 
   @doc """
@@ -20,7 +25,7 @@ defmodule Game.Session.Registry do
   """
   @spec unregister() :: :ok
   def unregister() do
-    Registry.unregister(__MODULE__, @registry_key)
+    GenServer.cast(__MODULE__, {:unregister, self()})
   end
 
   @doc """
@@ -28,7 +33,41 @@ defmodule Game.Session.Registry do
   """
   @spec connected_players() :: [{pid, User.t}]
   def connected_players() do
-    __MODULE__
-    |> Registry.lookup(@registry_key)
+    GenServer.call(__MODULE__, :connected_players)
+  end
+
+  #
+  # Server
+  #
+
+  def init(_) do
+    Process.flag(:trap_exit, true)
+    {:ok, %{connected_players: []}}
+  end
+
+  def handle_call(:connected_players, _from, state) do
+    players = state.connected_players
+    |> Enum.map(&({&1.pid, &1.user}))
+    {:reply, players, state}
+  end
+
+  def handle_cast({:register, pid, user}, state = %{connected_players: connected_players}) do
+    Process.link(pid)
+    connected_players = [%{user: user, pid: pid} | connected_players]
+    {:noreply, %{state | connected_players: connected_players}}
+  end
+
+  def handle_cast({:unregister, pid}, state = %{connected_players: connected_players}) do
+    connected_players = connected_players
+    |> Enum.reject(&(&1.pid == pid))
+
+    state = state
+    |> Map.put(:connected_players, connected_players)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:EXIT, pid, _reason}, state) do
+    handle_cast({:unregister, pid}, state)
   end
 end
