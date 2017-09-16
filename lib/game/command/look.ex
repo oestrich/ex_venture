@@ -8,6 +8,7 @@ defmodule Game.Command.Look do
   alias Data.Exit
 
   @commands ["look at", "look"]
+  @aliases ["l"]
 
   @short_help "Look around the room"
   @full_help """
