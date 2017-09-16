@@ -66,8 +66,8 @@ defmodule Game.Command do
         }
       end
 
-      def run(command, session, state) do
-        Game.Command.run({:error, :bad_parse, command}, session, state)
+      def run(_command, session, state) do
+        Game.Command.run({:error, :bad_parse, "bad parse"}, session, state)
       end
     end
   end
