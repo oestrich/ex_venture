@@ -25,7 +25,7 @@
               </tr>
               <tr>
                 <th>Message of the day</th>
-                <td><%= Config.motd("Not set") %></td>
+                <td><pre><%= Config.motd("Not set") %></pre></td>
                 <td></td>
               </tr>
               <tr>
