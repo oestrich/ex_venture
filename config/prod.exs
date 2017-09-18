@@ -22,3 +22,6 @@ config :ex_venture, :game,
   room: Game.Room,
   shop: Game.Shop,
   zone: Game.Zone
+
+config :logger,
+  level: :warn
