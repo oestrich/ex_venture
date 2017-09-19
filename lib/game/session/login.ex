@@ -51,6 +51,16 @@ defmodule Game.Session.Login do
     |> Map.put(:state, "active")
   end
 
+  def sign_in(user_id, session, state = %{socket: socket}) do
+    case Authentication.find_user(user_id) do
+      nil ->
+        socket |> @socket.disconnect()
+        state
+      user ->
+        user |> process_login(session, state)
+    end
+  end
+
   def process("create", _session, state = %{socket: socket}) do
     socket |> Session.CreateAccount.start()
     state |> Map.put(:state, "create")

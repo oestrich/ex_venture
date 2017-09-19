@@ -15,8 +15,7 @@ defmodule Game.Authentication do
   def find_and_validate(name, password) do
     user = User
     |> where([u], u.name == ^name)
-    |> preload([:race])
-    |> preload([class: [skills: ^(from s in Skill, order_by: [s.level, s.id])]])
+    |> preloads()
     |> Repo.one
     _find_and_validate(user, password)
   end
@@ -30,5 +29,22 @@ defmodule Game.Authentication do
       true -> user
       _ -> {:error, :invalid}
     end
+  end
+
+  @doc """
+  Find a user by an id and preload properly
+  """
+  @spec find_user(user_id :: integer) :: nil | User.t
+  def find_user(user_id) do
+    User
+    |> where([u], u.id == ^user_id)
+    |> preloads()
+    |> Repo.one
+  end
+
+  defp preloads(query) do
+    query
+    |> preload([:race])
+    |> preload([class: [skills: ^(from s in Skill, order_by: [s.level, s.id])]])
   end
 end

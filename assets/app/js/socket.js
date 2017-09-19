@@ -1,7 +1,11 @@
 import {Socket} from "phoenix"
 import format from "./color"
 
-let socket = new Socket("/socket", {})
+var body = document.getElementById("body")
+var userToken = body.getAttribute("data-user-token")
+
+let socket = new Socket("/socket", {params: {token: userToken}})
+
 socket.connect()
 
 function guid() {

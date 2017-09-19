@@ -7,6 +7,8 @@ defmodule Web.TelnetChannel do
 
   use Phoenix.Channel
 
+  alias Web.User
+
   defmodule Monitor do
     @moduledoc """
     TelnetChannel monitor
@@ -108,7 +110,16 @@ defmodule Web.TelnetChannel do
     def handle_cast(:start_session, state) do
       {:ok, pid} = Game.Session.start(self())
       Monitor.monitor(self(), pid)
+      GenServer.cast(self(), :attempt_sign_in)
       {:noreply, Map.merge(state, %{session: pid})}
+    end
+    def handle_cast(:attempt_sign_in, state) do
+      case state.socket.assigns do
+        %{user: user} ->
+          Game.Session.sign_in(state.session, user)
+        _ -> nil
+      end
+      {:noreply, state}
     end
     def handle_cast(:disconnect, state) do
       Monitor.demonitor(self())
@@ -133,6 +144,14 @@ defmodule Web.TelnetChannel do
   alias Web.TelnetChannel.Server
 
   def join("telnet:" <> _, _message, socket) do
+    socket =
+      case socket.assigns do
+        %{user_id: user_id} ->
+          user = User.get(user_id)
+          socket |> assign(:user, user)
+        _ -> socket
+      end
+
     {:ok, pid} = Server.start_link(socket)
     {:ok, socket |> assign(:server_pid, pid)}
   end

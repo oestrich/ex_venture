@@ -85,6 +85,10 @@ defmodule Game.Session do
     GenServer.cast(pid, {:teleport, room_id})
   end
 
+  def sign_in(pid, user) do
+    GenServer.cast(pid, {:sign_in, user.id})
+  end
+
   #
   # GenServer callbacks
   #
@@ -167,6 +171,12 @@ defmodule Game.Session do
   def handle_cast({:teleport, room_id}, state) do
     {:update, state} = self() |> Move.move_to(state, room_id)
     state |> prompt()
+    {:noreply, state}
+  end
+
+  # Handle logging in from the web client
+  def handle_cast({:sign_in, user_id}, state = %{state: "login"}) do
+    state = Session.Login.sign_in(user_id, self(), state)
     {:noreply, state}
   end
 

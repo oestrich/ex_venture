@@ -22,4 +22,7 @@ defmodule Web.LayoutView do
       _ -> ""
     end
   end
+
+  def user_token(%{assigns: %{user_token: token}}), do: token
+  def user_token(_), do: ""
 end

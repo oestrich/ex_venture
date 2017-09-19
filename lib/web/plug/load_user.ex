@@ -1,4 +1,8 @@
 defmodule Web.Plug.LoadUser do
+  @moduledoc """
+  Plug for loading the user and generating a secure token for playing
+  """
+
   import Plug.Conn
 
   def init(default), do: default
@@ -11,5 +15,11 @@ defmodule Web.Plug.LoadUser do
   end
 
   defp _load_user(conn, nil), do: conn
-  defp _load_user(conn, user), do: conn |> assign(:user, user)
+  defp _load_user(conn, user) do
+    token = Phoenix.Token.sign(conn, "user socket", user.id)
+
+    conn
+    |> assign(:user, user)
+    |> assign(:user_token, token)
+  end
 end
