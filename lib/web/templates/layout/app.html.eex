@@ -38,6 +38,11 @@
               <li class="nav-item>">
                 <%= link("Account", to: public_account_path(@conn, :show), class: "nav-link") %>
               </li>
+              <%= if @conn |> is_admin? do %>
+                <li class="nav-item>">
+                  <%= link("Admin", to: dashboard_path(@conn, :index), class: "nav-link") %>
+                </li>
+              <% end %>
               <li class="nav-item">
                 <%= link("Sign Out", to: public_session_path(@conn, :delete), class: "nav-link", method: "delete") %>
               </li>

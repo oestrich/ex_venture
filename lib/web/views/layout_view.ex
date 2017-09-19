@@ -25,4 +25,7 @@ defmodule Web.LayoutView do
 
   def user_token(%{assigns: %{user_token: token}}), do: token
   def user_token(_), do: ""
+
+  def is_admin?(%{assigns: %{user: user}}), do: "admin" in user.flags
+  def is_admin?(_), do: false
 end
