@@ -32,13 +32,19 @@
       <aside class="main-sidebar">
         <section class="sidebar">
           <ul class="sidebar-menu" data-widget="tree">
-            <li class="header">MAIN NAVIGATION</li>
             <li class="<%= tab_selected(@conn, "dashboard") %>">
               <%= link(to: dashboard_path(@conn, :index)) do %>
                 <i class="fa fa-dashboard"></i>
                 <span>Dashboard</span>
               <% end %>
             </li>
+            <li>
+              <%= link(to: public_page_path(@conn, :index), target: "_blank") do %>
+                <i class="fa fa-home"></i>
+                <span>Home Page &raquo;</span>
+              <% end %>
+            </li>
+            <li class="header">MAIN NAVIGATION</li>
             <li class="<%= tab_selected(@conn, ["classes", "skills"]) %>">
               <%= link(to: class_path(@conn, :index)) do %>
                 <i class="fa fa-user-circle"></i>
