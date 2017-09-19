@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-md-4 offset-md-4">
+    <h3>Sign In</h3>
+
+    <%= form_tag public_session_path(@conn, :create), [method: :post] do %>
+      <div class="form-group has-feedback">
+        <%= label :user, :name %>
+        <%= text_input :user, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus" %>
+      </div>
+
+      <div class="form-group has-feedback">
+        <%= label :user, :password %>
+        <%= text_input :user, :password, type: "password", class: "form-control", placeholder: "Password" %>
+      </div>
+
+      <%= submit "Sign In", class: "btn btn-primary btn-block btn-flat" %>
+    <% end %>
+  </div>
+</div>

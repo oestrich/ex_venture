@@ -9,12 +9,16 @@ defmodule Web.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :public do
+    plug Web.Plug.LoadUser
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
 
   scope "/", Web, as: :public do
-    pipe_through :browser
+    pipe_through [:browser, :public]
 
     get "/", PageController, :index
 
@@ -27,6 +31,9 @@ defmodule Web.Router do
     get "/play", PlayController, :show
 
     resources "/races", RaceController, only: [:index, :show]
+
+    delete "/sessions", SessionController, :delete
+    resources "/sessions", SessionController, only: [:new, :create]
 
     get "/who", PageController, :who
   end

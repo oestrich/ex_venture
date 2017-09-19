@@ -33,6 +33,16 @@
             <li class="nav-item <%= tab_selected(@conn, "help") %>">
               <%= link("Help", to: public_help_path(@conn, :index), class: "nav-link") %>
             </li>
+
+            <%= if Map.has_key?(@conn.assigns, :user) do %>
+              <li class="nav-item <%= tab_selected(@conn, "help") %>">
+                <%= link("Sign Out", to: public_session_path(@conn, :delete), class: "nav-link", method: "delete") %>
+              </li>
+            <% else %>
+              <li class="nav-item <%= tab_selected(@conn, "help") %>">
+                <%= link("Sign In", to: public_session_path(@conn, :new), class: "nav-link") %>
+              </li>
+            <% end %>
           </ul>
           <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-primary") %>
         </div>
