@@ -7,6 +7,7 @@ defmodule Web.User do
 
   alias Data.User
   alias Data.Repo
+  alias Game.Authentication
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
 
@@ -75,6 +76,20 @@ defmodule Web.User do
     case player do
       nil -> nil
       {pid, _} -> pid |> Session.teleport(room_id)
+    end
+  end
+
+  @doc """
+  Change a user's password
+  """
+  @spec change_password(user :: User.t, current_password :: String.t, params :: map) :: {:ok, User.t}
+  def change_password(user, current_password, params) do
+    case Authentication.find_and_validate(user.name, current_password) do
+      {:error, :invalid} -> {:error, :invalid}
+      user ->
+        user
+        |> User.password_changeset(params)
+        |> Repo.update
     end
   end
 end

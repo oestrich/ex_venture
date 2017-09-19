@@ -1,6 +1,7 @@
 defmodule Web.UserTest do
   use Data.ModelCase
 
+  alias Game.Authentication
   alias Game.Session
   alias Web.Room
   alias Web.User
@@ -33,5 +34,15 @@ defmodule Web.UserTest do
 
     assert user.save.room_id == room_id
     refute_receive {:"$gen_cast", {:teleport, ^room_id}}
+  end
+
+  test "changing password", %{user: user} do
+    {:ok, user} = User.change_password(user, "password", %{password: "apassword", password_confirmation: "apassword"})
+
+    assert user.id == Authentication.find_and_validate(user.name, "apassword").id
+  end
+
+  test "changing password - bad current password", %{user: user} do
+    assert {:error, :invalid} = User.change_password(user, "p@ssword", %{password: "apassword", password_confirmation: "apassword"})
   end
 end

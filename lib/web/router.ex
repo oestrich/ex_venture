@@ -22,6 +22,9 @@ defmodule Web.Router do
 
     get "/", PageController, :index
 
+    get "/account", AccountController, :show
+    put "/account", AccountController, :update
+
     resources "/classes", ClassController, only: [:index, :show]
 
     get "/help/commands", HelpController, :commands

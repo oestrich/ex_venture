@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-md-4 offset-md-4">
+    <h3>Change Password</h3>
+
+    <%= form_tag public_account_path(@conn, :update), [method: :put] do %>
+      <div class="form-group has-feedback">
+        <%= label :user, :current_password, "Current Password" %>
+        <%= text_input :user, :current_password, type: "password", class: "form-control", placeholder: "Current Password" %>
+      </div>
+
+      <div class="form-group has-feedback">
+        <%= label :user, :password %>
+        <%= text_input :user, :password, type: "password", class: "form-control", placeholder: "Password" %>
+      </div>
+
+      <div class="form-group has-feedback">
+        <%= label :user, :password_confirmation, "Password Confirmation" %>
+        <%= text_input :user, :password_confirmation, type: "password", class: "form-control", placeholder: "Password Confirmation" %>
+      </div>
+
+      <%= submit "Update Password", class: "btn btn-primary btn-block btn-flat" %>
+    <% end %>
+  </div>
+</div>

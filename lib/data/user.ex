@@ -12,6 +12,7 @@ defmodule Data.User do
   schema "users" do
     field :name, :string
     field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
     field :password_hash, :string
     field :save, Data.Save
     field :flags, {:array, :string}
@@ -36,6 +37,15 @@ defmodule Data.User do
     |> hash_password
     |> validate_required([:password_hash])
     |> unique_constraint(:name)
+  end
+
+  def password_changeset(struct, params) do
+    struct
+    |> cast(params, [:password, :password_confirmation])
+    |> validate_required([:password])
+    |> validate_confirmation(:password)
+    |> hash_password
+    |> validate_required([:password_hash])
   end
 
   defp hash_password(changeset) do

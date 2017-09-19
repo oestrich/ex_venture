@@ -35,11 +35,14 @@
             </li>
 
             <%= if Map.has_key?(@conn.assigns, :user) do %>
-              <li class="nav-item <%= tab_selected(@conn, "help") %>">
+              <li class="nav-item>">
+                <%= link("Account", to: public_account_path(@conn, :show), class: "nav-link") %>
+              </li>
+              <li class="nav-item">
                 <%= link("Sign Out", to: public_session_path(@conn, :delete), class: "nav-link", method: "delete") %>
               </li>
             <% else %>
-              <li class="nav-item <%= tab_selected(@conn, "help") %>">
+              <li class="nav-item">
                 <%= link("Sign In", to: public_session_path(@conn, :new), class: "nav-link") %>
               </li>
             <% end %>
