@@ -10,6 +10,7 @@ defmodule Web.User do
   alias Game.Authentication
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
+  alias Web.Pagination
 
   @doc """
   Fetch a user from a web token
@@ -24,11 +25,11 @@ defmodule Web.User do
   @doc """
   Load all users
   """
-  @spec all() :: [User.t]
-  def all() do
-    User
-    |> order_by([u], u.id)
-    |> Repo.all
+  @spec all(opts :: Keyword.t) :: [User.t]
+  def all(opts \\ []) do
+    opts = Enum.into(opts, %{})
+    query = User |> order_by([u], u.id)
+    query |> Pagination.paginate(opts)
   end
 
   @doc """

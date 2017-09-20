@@ -29,6 +29,8 @@
               <% end %>
             </tbody>
           </table>
+
+          <%= render(SharedView, "_pagination.html", path: user_path(@conn, :index), pagination: @pagination) %>
         </div>
       </div>
     </div>
