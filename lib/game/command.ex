@@ -101,6 +101,7 @@ defmodule Game.Command do
   def parse(command, user)
   def parse("", _user), do: {:skip, {}}
   def parse(command, %{class: class}) do
+    command = command |> String.replace(~r/  /, " ")
     class_skill = class.skills |> Enum.find(&(class_parse_command(&1, command)))
     builtin = commands() |> Enum.find(&(module_parse_command(&1, command)))
     case class_skill do

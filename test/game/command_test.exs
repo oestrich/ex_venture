@@ -32,6 +32,10 @@ defmodule CommandTest do
       assert Command.parse("Say hello", user) == {Command.Say, {"hello"}}
     end
 
+    test "removes extra spaces", %{user: user} do
+      assert Command.parse("say  hello  how are you", user) == {Command.Say, {"hello how are you"}}
+    end
+
     test "parsing say", %{user: user} do
       assert Command.parse("say hello", user) == {Command.Say, {"hello"}}
     end
