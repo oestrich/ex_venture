@@ -2,11 +2,13 @@ defmodule Web.Admin.RoomExitController do
   use Web.AdminController
 
   alias Web.Room
+  alias Web.Zone
 
   def new(conn, %{"room_id" => room_id, "direction" => direction}) do
     room = Room.get(room_id)
+    zone = Zone.get(room.zone_id)
     changeset = Room.new_exit()
-    conn |> render("new.html", changeset: changeset, room: room, direction: direction)
+    conn |> render("new.html", changeset: changeset, zone: zone, room: room, direction: direction)
   end
 
   def create(conn, %{"room_id" => room_id, "exit" => params, "direction" => direction}) do

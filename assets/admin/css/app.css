@@ -1,0 +1,8 @@
+.map span.empty {
+  display: block;
+  height: 34px;
+}
+
+.map span.btn {
+  cursor: default;
+}
