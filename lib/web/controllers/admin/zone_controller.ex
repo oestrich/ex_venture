@@ -1,11 +1,14 @@
 defmodule Web.Admin.ZoneController do
   use Web.AdminController
 
+  plug Web.Plug.FetchPage when action in [:index]
+
   alias Web.Zone
 
   def index(conn, _params) do
-    zones = Zone.all
-    conn |> render("index.html", zones: zones)
+    %{page: page, per: per} = conn.assigns
+    %{page: zones, pagination: pagination} = Zone.all(page: page, per: per)
+    conn |> render("index.html", zones: zones, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do

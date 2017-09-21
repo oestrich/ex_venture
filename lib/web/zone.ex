@@ -8,17 +8,17 @@ defmodule Web.Zone do
   alias Data.Zone
   alias Data.Room
   alias Data.Repo
-
   alias Game.World
+  alias Web.Pagination
 
   @doc """
   Get all zones
   """
-  @spec all() :: [Zone.t]
-  def all() do
-    Zone
-    |> order_by([z], z.id)
-    |> Repo.all
+  @spec all(opts :: Keyword.t) :: [Zone.t]
+  def all(opts \\ []) do
+    opts = Enum.into(opts, %{})
+    query = Zone |> order_by([z], z.id)
+    query |> Pagination.paginate(opts)
   end
 
   @doc """
