@@ -120,12 +120,12 @@ defmodule Game.Command do
     |> Enum.any?(fn (alias_cmd) ->
       # match an alias only if it's by itself or it won't match another similar command
       # eg 'w' matching for 'west'
-      Regex.match?(~r(^#{alias_cmd}$), command) || Regex.match?(~r(^#{alias_cmd}[^\w]), command)
+      Regex.match?(~r(^#{alias_cmd}$)i, command) || Regex.match?(~r(^#{alias_cmd}[^\w]), command)
     end)
 
     command_found = module.commands
     |> Enum.any?(fn (cmd) ->
-      Regex.match?(~r(^#{cmd}), command)
+      Regex.match?(~r(^#{cmd})i, command)
     end)
 
     command_found || alias_found
@@ -147,7 +147,7 @@ defmodule Game.Command do
     argument = (module.commands ++ module.aliases)
     |> Enum.reduce(command, fn (cmd, command) ->
       command
-      |> String.replace_prefix(cmd, "")
+      |> String.replace(~r/^#{cmd}/i, "")
       |> String.trim
     end)
 

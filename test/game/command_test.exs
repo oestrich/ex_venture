@@ -28,6 +28,10 @@ defmodule CommandTest do
       assert Command.parse("", user) == {:skip, {}}
     end
 
+    test "allows capitalization of the command", %{user: user} do
+      assert Command.parse("Say hello", user) == {Command.Say, {"hello"}}
+    end
+
     test "parsing say", %{user: user} do
       assert Command.parse("say hello", user) == {Command.Say, {"hello"}}
     end
