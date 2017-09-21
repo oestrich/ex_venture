@@ -58,7 +58,7 @@
           <table class="table map">
             <%= Enum.map(map(@zone), fn (row) -> %>
               <tr>
-                <%= Enum.map(row, fn ({{x, y}, nil}) -> %>
+                <%= Enum.map(row, fn ({_, nil}) -> %>
                   <td><span class="empty"></span></td>
                 <% ({_, room}) -> %>
                   <td><span class="btn btn-success"><%= room.id %> - <%= room.name %></span></td>
