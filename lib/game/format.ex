@@ -164,7 +164,7 @@ Items: #{items(room)}
     room
     |> Room.exits()
     |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
-    |> Enum.join(" ")
+    |> Enum.join(", ")
   end
 
   @doc """
