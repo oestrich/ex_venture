@@ -46,10 +46,10 @@
           <table class="table">
             <%= Enum.map(map(@zone), fn (row) -> %>
               <tr>
-                <%= Enum.map(row, fn (nil) -> %>
-                  <td></td>
-                <% (room) -> %>
-                  <td><%= link(room.name, to: room_path(@conn, :show, room.id)) %></td>
+                <%= Enum.map(row, fn ({{x, y}, nil}) -> %>
+                  <td><%= link("New Room", to: zone_room_path(@conn, :new, @zone.id, x: x, y: y), class: "btn btn-default") %></td>
+                <% ({_, room}) -> %>
+                  <td><%= link(room.name, to: room_path(@conn, :show, room.id), class: "btn btn-success") %></td>
                 <% end) %>
               </tr>
             <% end) %>

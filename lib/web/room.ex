@@ -42,11 +42,11 @@ defmodule Web.Room do
   @doc """
   Get a changeset for a new page
   """
-  @spec new(zone :: Zone.t) :: changeset :: map
-  def new(zone) do
+  @spec new(zone :: Zone.t, params :: map) :: changeset :: map
+  def new(zone, params) do
     zone
     |> Ecto.build_assoc(:rooms)
-    |> Room.changeset(%{})
+    |> Room.changeset(params)
   end
 
   @doc """

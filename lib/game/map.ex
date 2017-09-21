@@ -13,10 +13,12 @@ defmodule Game.Map do
   def size_of_map(%{rooms: []}), do: {{0, 0}, []}
   def size_of_map(%{rooms: rooms}) do
     map = Enum.map(rooms, &({{&1.x, &1.y}, &1}))
+    min_x = map |> Enum.min_by(fn ({{x, _y}, _room}) -> x end) |> elem(0) |> elem(0)
+    min_y = map |> Enum.min_by(fn ({{_x, y}, _room}) -> y end) |> elem(0) |> elem(1)
     max_x = map |> Enum.max_by(fn ({{x, _y}, _room}) -> x end) |> elem(0) |> elem(0)
     max_y = map |> Enum.max_by(fn ({{_x, y}, _room}) -> y end) |> elem(0) |> elem(1)
 
-    {{max_x, max_y}, map}
+    {{min_x, min_y}, {max_x, max_y}, map}
   end
 
   @doc """
@@ -24,13 +26,18 @@ defmodule Game.Map do
   """
   @spec map(zone :: Zone.t) :: [[Room.t]]
   def map(zone) do
-    {{max_x, max_y}, map} = size_of_map(zone)
+    {{min_x, min_y}, {max_x, max_y}, map} = size_of_map(zone)
 
-    for y <- 1..max_y do
-      for x <- 1..max_x do
+    min_x = min_x - 1
+    min_y = min_y - 1
+    max_x = max_x + 1
+    max_y = max_y + 1
+
+    for y <- min_y..max_y do
+      for x <- min_x..max_x do
         case Enum.find(map, fn ({coords, _room}) -> coords == {x, y} end) do
-          {{_x, _y}, room} -> room
-          _ -> nil
+          {{^x, ^y}, room} -> {{x, y}, room}
+          _ -> {{x, y}, nil}
         end
       end
     end
@@ -51,7 +58,7 @@ defmodule Game.Map do
     |> Enum.join("\n")
   end
 
-  defp display_room(nil, _), do: "   "
-  defp display_room(%{x: x, y: y}, {x, y}), do: "[X]"
-  defp display_room(%{}, _), do: "[ ]"
+  defp display_room({_, nil}, _), do: "   "
+  defp display_room({_, %{x: x, y: y}}, {x, y}), do: "[X]"
+  defp display_room({_, %{}}, _), do: "[ ]"
 end

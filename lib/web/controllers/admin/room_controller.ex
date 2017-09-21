@@ -9,9 +9,9 @@ defmodule Web.Admin.RoomController do
     conn |> render("show.html", room: room)
   end
 
-  def new(conn, %{"zone_id" => zone_id}) do
+  def new(conn, params = %{"zone_id" => zone_id}) do
     zone = Zone.get(zone_id)
-    changeset = Room.new(zone)
+    changeset = Room.new(zone, params)
     conn |> render("new.html", zone: zone, changeset: changeset)
   end
 

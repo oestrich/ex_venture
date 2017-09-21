@@ -16,7 +16,7 @@ defmodule Game.ZoneTest do
 
   test "displays a map", %{zone: zone} do
     {:reply, map, _} = Zone.handle_call({:map, {2, 2}}, self(), %{zone: zone, rooms: zone.rooms})
-    assert map == "Bandit Hideout\n\n    [ ]    \n[ ] [X] [ ]\n    [ ]"
+    assert map == "Bandit Hideout\n\n                   \n        [ ]        \n    [ ] [X] [ ]    \n        [ ]"
   end
 
   test "updates the local room" do
