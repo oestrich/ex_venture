@@ -133,7 +133,6 @@ defmodule Game.Session do
   # forward the echo the socket pid
   def handle_cast({:echo, message}, state = %{socket: socket}) do
     socket |> @socket.echo(message)
-    state |> prompt()
     {:noreply, state}
   end
 
