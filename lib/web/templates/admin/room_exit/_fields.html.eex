@@ -6,5 +6,5 @@
 
 <div class="form-group">
   <%= label @f, @select_field %>
-  <%= select @f, @select_field, Zone.room_exits(), class: "form-control" %>
+  <%= select @f, @select_field, Zone.room_exits(@room.zone), class: "form-control" %>
 </div>

@@ -20,6 +20,7 @@ defmodule Data.Room do
 
     field :x, :integer
     field :y, :integer
+    field :is_zone_exit, :boolean
 
     field :exits, {:array, Exit}, virtual: true
 
@@ -34,7 +35,7 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :x, :y, :currency, :item_ids])
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :is_zone_exit, :currency, :item_ids])
     |> ensure_item_ids
     |> ensure(:currency, 0)
     |> validate_required([:zone_id, :name, :description, :currency, :x, :y])

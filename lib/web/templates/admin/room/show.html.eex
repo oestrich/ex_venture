@@ -50,6 +50,10 @@
                 <td><%= @room.x %>, <%= @room.y %></td>
               </tr>
               <tr>
+                <th>Is a zone exit?</th>
+                <td><%= @room.is_zone_exit %></td>
+              </tr>
+              <tr>
                 <th>Last Save</th>
                 <td><%= @room.updated_at %></td>
               </tr>

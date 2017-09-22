@@ -75,14 +75,24 @@ defmodule Web.Zone do
     end
   end
 
-  def room_exits() do
+  @doc """
+  Helper for selecting room exits
+  """
+  def room_exits(zone \\ nil) do
     Zone
     |> order_by([z], z.id)
-    |> preload([rooms: ^(from r in Room, order_by: r.id)])
+    |> preload([rooms: ^(rooms_query(zone))])
     |> Repo.all
     |> Enum.map(fn (zone) ->
       rooms = Enum.map(zone.rooms, &({"#{&1.id} - #{&1.name}", &1.id}))
       {zone.name, rooms}
     end)
+  end
+
+  defp rooms_query(nil) do
+    from r in Room, order_by: r.id
+  end
+  defp rooms_query(zone) do
+    from r in Room, order_by: r.id, where: r.is_zone_exit == true, or_where: r.zone_id == ^zone.id
   end
 end

@@ -34,6 +34,13 @@
         <%= text_input f, :y, class: "form-control" %>
         <%= error_tag f, :y %>
       </div>
+
+      <div class="checkbox">
+        <%= label f, :is_zone_exit do %>
+          <%= checkbox f, :is_zone_exit %> Is A Zone Exit?
+        <% end %>
+        <%= error_tag f, :is_zone_exit %>
+      </div>
     </div>
 
     <div class="box-footer">
