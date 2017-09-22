@@ -65,7 +65,7 @@
                     <%= if @room.id == room.id do %>
                       <span class="btn btn-default"><%= room.id %> - <%= room.name %></span>
                     <% else %>
-                      <span class="btn btn-success"><%= room.id %> - <%= room.name %></span>
+                      <%= link("#{room.id} - #{room.name}", to: "javascript:selectRoom(#{room.id})", class: "room btn btn-success") %>
                     <% end %>
                   </td>
                 <% end) %>
@@ -77,3 +77,10 @@
     </div>
   </div>
 </section>
+
+<script type="application/javascript">
+function selectRoom(roomId) {
+  var select = document.getElementsByClassName('new-exit')[0];
+  select.value = roomId;
+}
+</script>
