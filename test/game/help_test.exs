@@ -9,7 +9,7 @@ defmodule Game.HelpTest do
   end
 
   test "loading a help topic from an alias" do
-    assert Regex.match?(~r(Example:), Help.topic("inv"))
+    assert Regex.match?(~r(View your inventory), Help.topic("inv"))
   end
 
   test "loading a help topic from a command" do

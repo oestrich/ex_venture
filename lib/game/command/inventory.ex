@@ -12,7 +12,9 @@ defmodule Game.Command.Inventory do
 
   @short_help "View your character's inventory"
   @full_help """
-  Example: inventory
+  View your inventory.
+
+  Listed will be items you are wielding, wearing, and holding.
   """
 
   @doc """
