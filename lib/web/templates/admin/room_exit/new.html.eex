@@ -61,7 +61,13 @@
                 <%= Enum.map(row, fn ({_, nil}) -> %>
                   <td><span class="empty"></span></td>
                 <% ({_, room}) -> %>
-                  <td><span class="btn btn-success"><%= room.id %> - <%= room.name %></span></td>
+                  <td>
+                    <%= if @room.id == room.id do %>
+                      <span class="btn btn-default"><%= room.id %> - <%= room.name %></span>
+                    <% else %>
+                      <span class="btn btn-success"><%= room.id %> - <%= room.name %></span>
+                    <% end %>
+                  </td>
                 <% end) %>
               </tr>
             <% end) %>
