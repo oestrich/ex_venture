@@ -1,14 +1,15 @@
 defmodule Game.MapTest do
   use Data.ModelCase
+  doctest Game.Map
 
   alias Game.Map
 
   setup do
-    north = %{x: 2, y: 1}
-    east = %{x: 3, y: 2}
-    south = %{x: 2, y: 3}
-    west = %{x: 1, y: 2}
-    center = %{x: 2, y: 2}
+    north = %{id: 1, x: 2, y: 1, exits: [%{north_id: 1, south_id: 5}]}
+    east = %{id: 2, x: 3, y: 2, exits: [%{east_id: 2, west_id: 5}]}
+    south = %{id: 3, x: 2, y: 3, exits: [%{north_id: 5, south_id: 3}]}
+    west = %{id: 4, x: 1, y: 2, exits: [%{east_id: 5, west_id: 4}]}
+    center = %{id: 5, x: 2, y: 2, exits: [%{north_id: 1, south_id: 5}, %{east_id: 2, west_id: 5}, %{north_id: 5, south_id: 3}, %{east_id: 5, west_id: 4}]}
 
     zone = %{rooms: [north, east, south, west, center]}
     %{zone: zone}
@@ -26,16 +27,25 @@ defmodule Game.MapTest do
       |> Map.map()
       |> Enum.map(fn (row) -> Enum.map(row, fn ({_, room}) -> room end) end)
 
-    assert map == [
+    assert [
       [nil, nil, nil, nil, nil],
       [nil, nil, %{x: 2, y: 1}, nil, nil],
       [nil, %{x: 1, y: 2}, %{x: 2, y: 2}, %{x: 3, y: 2}, nil],
       [nil, nil, %{x: 2, y: 3}, nil, nil],
       [nil, nil, nil, nil, nil],
-    ]
+    ] = map
   end
 
   test "display a map in text form", %{zone: zone} do
-    assert Map.display_map(zone, {2, 2}) == "                   \n        [ ]        \n    [ ] [X] [ ]    \n        [ ]        \n                   "
+    map = [
+      "       +---+    ",
+      "       |[ ]|    ",
+      "   +---+   +---+",
+      "   |[ ] [X] [ ]|",
+      "   +---+   +---+",
+      "       |[ ]|    ",
+      "       +---+    ",
+    ]
+    assert Map.display_map(zone, {2, 2}) == Enum.join(map, "\n")
   end
 end
