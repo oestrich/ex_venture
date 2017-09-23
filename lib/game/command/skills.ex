@@ -15,7 +15,11 @@ defmodule Game.Command.Skills do
 
   @short_help "List out your class skills"
   @full_help """
-  Example: skills
+  #{@short_help}. To use a skill you must also be
+  targeting something.
+
+  Example:
+  [ ] > {white}skills{/white}
   """
 
   @doc """

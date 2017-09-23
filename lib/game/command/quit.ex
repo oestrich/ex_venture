@@ -9,7 +9,10 @@ defmodule Game.Command.Quit do
 
   @short_help "Leave the game"
   @full_help """
-  Example: quit
+  Leave the game and save.
+
+  Example:
+  [ ] > {white}quit{/white}
   """
 
   @doc """

@@ -14,13 +14,12 @@ defmodule Game.Command.Wield do
 
   @short_help "Put an item in your hands"
   @full_help """
-  wield [left|right] item
-  unwield [left|right]
-
   Put an item from your inventory into your left or right hand.
   The default hand is your right hand.
 
-  Example: wield right sword
+  Example:
+  [ ] > {white}wield [left|right] sword{/white}
+  [ ] > {white}unwield [left|right]{/white}
   """
 
   @doc """

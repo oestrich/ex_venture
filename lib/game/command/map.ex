@@ -11,7 +11,10 @@ defmodule Game.Command.Map do
 
   @short_help "View a map of the zone"
   @full_help """
-  Example: map
+  #{@short_help}
+
+  Example:
+  [ ] > {white}map{/white}
   """
 
   @doc """

@@ -14,10 +14,12 @@ defmodule Game.Command.Wear do
 
   @short_help "Put on a piece of armor"
   @full_help """
-  wear item
-  remove slot
+  Put on a peice of armor, or remove it from a slot. {white}Wear{/white} takes the item
+  name, and {white}remove{/white} takes the slot or item name.
 
-  Example: wear chest
+  Example:
+  [ ] > {white}wear chest piece{/white}
+  [ ] > {white}remove chest{/white}
   """
 
   @doc """

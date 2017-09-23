@@ -12,7 +12,10 @@ defmodule Game.Command.Examine do
 
   @short_help "View information about items in your inventory"
   @full_help """
-  Example: examine short sword
+  #{@short_help}
+
+  Example:
+  [ ] > {white}examine short sword{/white}
   """
 
   @doc """

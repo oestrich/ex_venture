@@ -14,7 +14,10 @@ defmodule Game.Command.Info do
 
   @short_help "View stats about your character"
   @full_help """
-  Example: info
+  #{@short_help}
+
+  Example:
+  [ ] > {white}info{/white}
   """
 
   @doc """

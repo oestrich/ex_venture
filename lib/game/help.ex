@@ -17,6 +17,7 @@ defmodule Game.Help do
   """
   def base() do
     commands = Game.Command.commands
+    |> Enum.sort_by(&command_topic_key/1)
     |> Enum.map(fn (command) ->
       key = command |> command_topic_key()
       "\t{white}#{key}{/white}: #{command.help[:short]}\n"

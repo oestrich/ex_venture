@@ -15,6 +15,9 @@ defmodule Game.Command.Inventory do
   View your inventory.
 
   Listed will be items you are wielding, wearing, and holding.
+
+  Example:
+  [ ] > {white}inventory{/white}
   """
 
   @doc """

@@ -12,7 +12,11 @@ defmodule Game.Command.Equipment do
 
   @short_help "View your character's worn equipment"
   @full_help """
-  Example: equipment
+  #{@short_help}. Similar to inventory but
+  will only display items worn and wielded.
+
+  Example:
+  [ ] > {white}equipment{/white}
   """
 
   @doc """

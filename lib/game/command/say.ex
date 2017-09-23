@@ -9,9 +9,11 @@ defmodule Game.Command.Say do
 
   @short_help "Talk to other players"
   @full_help """
-  Example: say Hello, everyone!
+  Talk to other players in the same room.
 
-  This is the same room only.
+  Example:
+  [ ] > {white}say Hello, everyone!{/white}
+  #{Format.say({:user, %{name: "Player"}}, "Hello, everyone!")}
   """
 
   @doc """

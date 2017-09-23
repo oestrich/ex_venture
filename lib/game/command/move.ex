@@ -17,6 +17,9 @@ defmodule Game.Command.Move do
   @short_help "Move in a direction"
   @full_help """
   Move around rooms.
+
+  Example:
+  [ ] > {white}west{/white}
   """
 
   @doc """

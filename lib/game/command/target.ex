@@ -15,9 +15,10 @@ defmodule Game.Command.Target do
 
   @short_help "Target an enemy"
   @full_help """
-  Example: target bandit
-
   Targets an enemy for skills
+
+  Example:
+  [  ] > {white}target bandit{/white}
   """
 
   @doc """

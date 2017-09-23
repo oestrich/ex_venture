@@ -12,7 +12,10 @@ defmodule Game.Command.Look do
 
   @short_help "Look around the room"
   @full_help """
-  Example: look
+  View information about the room you are in.
+
+  Example:
+  [ ] > {white}look{/white}
   """
 
   @doc """

@@ -9,7 +9,10 @@ defmodule Game.Command.Who do
 
   @short_help "See who is online"
   @full_help """
-  Example: who
+  #{@short_help}
+
+  Example:
+  [ ] > {white}who{/white}
   """
 
   @doc """

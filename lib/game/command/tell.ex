@@ -13,7 +13,11 @@ defmodule Game.Command.Tell do
 
   @short_help "Send a message to one player that is online"
   @full_help """
-  Example: tell player Hello
+  #{@short_help}. You can reply quickly to the last tell
+  you received by using {white}reply{/white}.
+
+  Example:
+  [ ] > {white}tell player Hello{/white}
   """
 
   @doc """
