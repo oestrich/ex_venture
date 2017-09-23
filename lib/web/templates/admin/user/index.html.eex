@@ -14,6 +14,7 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Last Saved</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -22,6 +23,7 @@
                 <tr>
                   <td><%= user.id %></td>
                   <td><%= user.name %></td>
+                  <td><%= user.updated_at |> time() %></td>
                   <td>
                     <%= link("View", to: user_path(@conn, :show, user.id)) %>
                   </td>

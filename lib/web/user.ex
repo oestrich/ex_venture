@@ -28,7 +28,7 @@ defmodule Web.User do
   @spec all(opts :: Keyword.t) :: [User.t]
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
-    query = User |> order_by([u], u.id)
+    query = User |> order_by([u], desc: u.updated_at)
     query |> Pagination.paginate(opts)
   end
 
