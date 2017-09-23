@@ -16,6 +16,13 @@ mix run --no-halt
 
 This will start a server on port 5555 that you can connect with using the `local.tin` tintin++ config. Ecto reset will include a sample area, classes, skills, and a login. You can also load [http://localhost:4000/](http://localhost:4000/) in your browser for the admin panel and web client.
 
+## Running Tests
+
+```bash
+MIX_ENV=test mix ecto.create
+MIX_ENV=test mix ecto.migrate
+```
+
 ## Deployment
 
 Distillery is used to generate releases. Once a release is generated you can copy the tar file to the server and start it up.
