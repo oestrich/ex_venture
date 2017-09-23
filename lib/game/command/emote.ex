@@ -9,7 +9,11 @@ defmodule Game.Command.Emote do
 
   @short_help "Does an emote"
   @full_help """
-  Example: emote does something
+  Performs an emote. Anything you type after emote will be added to your name.
+
+  Example:
+  [ ] > {white}emote does something{/white}
+  #{Format.emote({:user, %{name: "player"}}, "does soemthing")}
   """
 
   @doc """

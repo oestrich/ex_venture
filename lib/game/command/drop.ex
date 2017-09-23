@@ -13,7 +13,10 @@ defmodule Game.Command.Drop do
 
   @short_help "Drop an item in the same room"
   @full_help """
-  Example: drop sword
+  Drop an item into the room you are in.
+
+  Example:
+  [ ] > {white}drop sword{/white}
   """
 
   @doc """
