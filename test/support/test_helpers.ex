@@ -109,9 +109,10 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  defp zone_attributes(attributes) do
+  def zone_attributes(attributes) do
     Map.merge(%{
       name: "Hidden Forest",
+      description: "For level 1s",
     }, attributes)
   end
 

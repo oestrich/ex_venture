@@ -31,7 +31,7 @@ defmodule Web.NPCTest do
   test "updating a npc" do
     npc = create_npc(%{name: "Fighter"})
 
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
@@ -44,7 +44,7 @@ defmodule Web.NPCTest do
   end
 
   test "adding a new spawner" do
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
 
     _state = Game.Zone._get_state(zone.id)
@@ -63,7 +63,7 @@ defmodule Web.NPCTest do
   test "updating a spawner" do
     npc = create_npc(%{name: "Fighter"})
 
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
@@ -80,7 +80,7 @@ defmodule Web.NPCTest do
 
     npc = create_npc(%{name: "Fighter"})
 
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
@@ -97,7 +97,7 @@ defmodule Web.NPCTest do
     npc = create_npc(%{name: "Fighter"})
     armor = create_item(%{name: "Armor"})
 
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
@@ -113,7 +113,7 @@ defmodule Web.NPCTest do
     npc = create_npc(%{name: "Fighter"})
     armor = create_item(%{name: "Armor"})
 
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 

@@ -7,7 +7,7 @@ defmodule Web.ZoneTest do
   test "creating a new zone adds a child to the zone supervision tree" do
     starting_length =  World.zones() |> length()
 
-    params = %{name: "The Forest"}
+    params = %{name: "The Forest", description: "For level 1-4"}
     Zone.create(params)
 
     final_length = World.zones() |> length()
@@ -15,7 +15,7 @@ defmodule Web.ZoneTest do
   end
 
   test "updating a zone updates the gen server state for that zone" do
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, zone} = Zone.update(zone.id, %{name: "Forest"})
 
     pid = {:via, Registry, {Game.Zone.Registry, zone.id}}

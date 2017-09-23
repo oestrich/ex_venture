@@ -6,7 +6,7 @@ defmodule Web.ShopTest do
   alias Web.Zone
 
   setup do
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     %{zone: zone, room: room}
   end

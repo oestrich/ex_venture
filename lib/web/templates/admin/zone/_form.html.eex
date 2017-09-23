@@ -10,6 +10,12 @@
         <%= text_input f, :name, class: "form-control" %>
         <%= error_tag f, :name %>
       </div>
+
+      <div class="form-group">
+        <%= label f, :description %>
+        <%= textarea f, :description, class: "form-control" %>
+        <%= error_tag f, :description %>
+      </div>
     </div>
 
     <div class="box-footer">

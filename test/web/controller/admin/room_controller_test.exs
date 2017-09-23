@@ -5,7 +5,7 @@ defmodule Web.Admin.RoomControllerTest do
   alias Web.Zone
 
   setup do
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     %{zone: zone}
   end
 

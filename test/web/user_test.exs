@@ -10,7 +10,7 @@ defmodule Web.UserTest do
   setup do
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
 
-    {:ok, zone} = Zone.create(%{name: "The Forest"})
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
     {:ok, room} = Room.create(zone, room_attributes(%{}))
 
     %{user: user, room: room}

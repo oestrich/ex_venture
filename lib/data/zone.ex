@@ -10,6 +10,7 @@ defmodule Data.Zone do
 
   schema "zones" do
     field :name, :string
+    field :description, :string
 
     has_many :rooms, Room
     has_many :npc_spawners, NPCSpawner
@@ -19,7 +20,7 @@ defmodule Data.Zone do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:name, :description])
+    |> validate_required([:name, :description])
   end
 end

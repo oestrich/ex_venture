@@ -30,6 +30,10 @@
               <th>Name</th>
               <td><%= @zone.name %></td>
             </tr>
+            <tr>
+              <th>Description</th>
+              <td><%= @zone.description %></td>
+            </tr>
           </table>
         </div>
       </div>
