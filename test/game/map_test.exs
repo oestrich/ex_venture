@@ -48,4 +48,41 @@ defmodule Game.MapTest do
     ]
     assert Map.display_map(zone, {2, 2}) == Enum.join(map, "\n")
   end
+
+  describe "map colors" do
+    test "blue rooms" do
+      ["ocean", "river", "lake"]
+      |> Enum.each(fn (ecology) ->
+        assert Map.room_color(%{ecology: ecology}) == "map:blue"
+      end)
+    end
+
+    test "brown rooms" do
+      ["mountain", "road"]
+      |> Enum.each(fn (ecology) ->
+        assert Map.room_color(%{ecology: ecology}) == "map:brown"
+      end)
+    end
+
+    test "green rooms" do
+      ["hill", "field"]
+      |> Enum.each(fn (ecology) ->
+        assert Map.room_color(%{ecology: ecology}) == "map:green"
+      end)
+    end
+
+    test "dark green rooms" do
+      ["forest", "jungle"]
+      |> Enum.each(fn (ecology) ->
+        assert Map.room_color(%{ecology: ecology}) == "map:dark-green"
+      end)
+    end
+
+    test "gery rooms" do
+      ["inside", "town", "dungeon"]
+      |> Enum.each(fn (ecology) ->
+        assert Map.room_color(%{ecology: ecology}) == "map:grey"
+      end)
+    end
+  end
 end

@@ -39,4 +39,12 @@ defmodule Game.ColorTest do
   test "replaces white" do
     assert format("{white}word{/white}") == "\e[37mword\e[0m"
   end
+
+  test "replaces map colors" do
+    assert format("{map:blue}[ ]{/map:blue}") == "\e[38;5;26m[ ]\e[0m"
+  end
+
+  test "replaces map colors - dark green" do
+    assert format("{map:dark-green}[ ]{/map:dark-green}") == "\e[38;5;22m[ ]\e[0m"
+  end
 end

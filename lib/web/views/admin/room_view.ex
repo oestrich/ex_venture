@@ -3,6 +3,7 @@ defmodule Web.Admin.RoomView do
   use Game.Currency
 
   alias Data.Exit
+  alias Data.Room
   alias Game.Items
 
   def room_select(%{rooms: rooms}) do

@@ -41,6 +41,12 @@
         <% end %>
         <%= error_tag f, :is_zone_exit %>
       </div>
+
+      <div class="form-group">
+        <%= label f, :ecology %>
+        <%= select f, :ecology, Room.ecologies(), class: "form-control" %>
+        <%= error_tag f, :ecology %>
+      </div>
     </div>
 
     <div class="box-footer">

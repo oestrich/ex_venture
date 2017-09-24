@@ -54,6 +54,10 @@
                 <td><%= @room.is_zone_exit %></td>
               </tr>
               <tr>
+                <th>Ecology</th>
+                <td><%= @room.ecology %></td>
+              </tr>
+              <tr>
                 <th>Last Save</th>
                 <td><%= @room.updated_at %></td>
               </tr>

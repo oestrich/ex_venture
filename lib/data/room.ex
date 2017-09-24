@@ -9,6 +9,16 @@ defmodule Data.Room do
   alias Data.Shop
   alias Data.Zone
 
+  @ecologies [
+    "default",
+    "ocean", "river", "lake",
+    "forest", "jungle",
+    "town", "inside", "road",
+    "hill", "mountain",
+    "field", "meadow",
+    "dungeon",
+  ]
+
   schema "rooms" do
     field :name, :string
     field :description, :string
@@ -21,6 +31,7 @@ defmodule Data.Room do
     field :x, :integer
     field :y, :integer
     field :is_zone_exit, :boolean
+    field :ecology, :string
 
     field :exits, {:array, Exit}, virtual: true
 
@@ -33,12 +44,16 @@ defmodule Data.Room do
     timestamps()
   end
 
+  def ecologies(), do: @ecologies
+
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :x, :y, :is_zone_exit, :currency, :item_ids])
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :is_zone_exit, :ecology, :currency, :item_ids])
     |> ensure_item_ids
     |> ensure(:currency, 0)
-    |> validate_required([:zone_id, :name, :description, :currency, :x, :y])
+    |> ensure(:ecology, "default")
+    |> validate_required([:zone_id, :name, :description, :currency, :x, :y, :ecology])
+    |> validate_inclusion(:ecology, @ecologies)
   end
 
   def exits(room) do

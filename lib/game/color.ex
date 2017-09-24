@@ -19,7 +19,12 @@ defmodule Game.Color do
     |> String.replace("{magenta}", "\e[35m")
     |> String.replace("{cyan}", "\e[36m")
     |> String.replace("{white}", "\e[37m")
-    |> String.replace(~r/{\/\w+}/, "\e[0m")
+    |> String.replace("{map:blue}", "\e[38;5;26m")
+    |> String.replace("{map:brown}", "\e[38;5;94m")
+    |> String.replace("{map:dark-green}", "\e[38;5;22m")
+    |> String.replace("{map:green}", "\e[38;5;34m")
+    |> String.replace("{map:grey}", "\e[38;5;247m")
+    |> String.replace(~r/{\/[\w:-]+}/, "\e[0m")
   end
 
   @doc """

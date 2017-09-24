@@ -74,15 +74,23 @@ defmodule Game.Map do
     ]
   end
   def display_room({_, room}, coords) do
+    room_display =
+      room
+      |> _display_room(coords)
+      |> color_room(room_color(room))
+
     [
       exits(room, :north),
-      "#{exits(room, :west)}#{_display_room(room, coords)}#{exits(room, :east)}",
+      "#{exits(room, :west)}#{room_display}#{exits(room, :east)}",
       exits(room, :south),
     ]
   end
 
   defp _display_room(%{x: x, y: y}, {x, y}), do: "[X]"
   defp _display_room(%{}, _), do: "[ ]"
+
+  defp color_room(room_string, nil), do: room_string
+  defp color_room(room_string, color), do: "{#{color}}#{room_string}{/#{color}}"
 
   defp exits(room, direction) when direction in [:north, :south] do
     case Exit.exit_to(room, direction) do
@@ -185,4 +193,24 @@ defmodule Game.Map do
   def join_point(" ", point), do: point
   def join_point(point, " "), do: point
   def join_point(_, point), do: point
+
+  @doc """
+  Determine the color of the room in the map
+
+      iex> Game.Map.room_color(%{ecology: "default"})
+      nil
+  """
+  @spec room_color(room :: Room.t) :: String.t
+  def room_color(room)
+  def room_color(%{ecology: ecology}) do
+    case ecology do
+      ecology when ecology in ["ocean", "lake", "river"] -> "map:blue"
+      ecology when ecology in ["mountain", "road"] -> "map:brown"
+      ecology when ecology in ["hill", "field", "meadow"] -> "map:green"
+      ecology when ecology in ["forest", "jungle"] -> "map:dark-green"
+      ecology when ecology in ["town", "inside", "dungeon"] -> "map:grey"
+      _ -> nil
+    end
+  end
+  def room_color(_room), do: nil
 end
