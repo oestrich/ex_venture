@@ -1,20 +1,15 @@
 defmodule Game.Command.EquipmentTest do
   use Data.ModelCase
 
-  alias Game.Items
   alias Game.Command.Equipment
 
   @socket Test.Networking.Socket
 
   setup do
-    Items.start_link
-    Agent.update(Items, fn (_) ->
-      %{
-        1 => %{name: "Sword"},
-        2 => %{name: "Shield"},
-        3 => %{name: "Leather Chest"},
-      }
-    end)
+    start_and_clear_items()
+    insert_item(%{id: 1, name: "Sword"})
+    insert_item(%{id: 2, name: "Shield"})
+    insert_item(%{id: 3, name: "Leather Chest"})
 
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket}}

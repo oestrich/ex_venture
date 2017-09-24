@@ -1,9 +1,11 @@
 defmodule Web.Admin.ItemControllerTest do
   use Web.AuthConnCase
+  import Test.ItemsHelper
 
   alias Game.Items
 
   setup do
+    start_and_clear_items()
     item = create_item(%{name: "Sword"})
     %{item: item}
   end

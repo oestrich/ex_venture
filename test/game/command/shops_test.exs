@@ -7,11 +7,10 @@ defmodule Game.Command.ShopsTest do
   @shop Test.Game.Shop
 
   alias Game.Command
-  alias Game.Items
 
   setup do
-    Items.start_link
-    Agent.update(Items, fn (_) -> %{1 => %{id: 1, name: "Sword", keywords: []}} end)
+    start_and_clear_items()
+    insert_item(%{id: 1, name: "Sword", keywords: []})
 
     tree_stand = %{id: 10, name: "Tree Stand Shop", shop_items: [%{item_id: 1, price: 10, quantity: -1}]}
     hole_wall = %{id: 11, name: "Hole in the Wall"}

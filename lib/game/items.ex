@@ -3,32 +3,36 @@ defmodule Game.Items do
   Agent for keeping track of items in the system
   """
 
+  use GenServer
+
   alias Data.Item
   alias Data.Repo
 
+  @ets_table :items
+
   @doc false
   def start_link() do
-    Agent.start_link(&load_items/0, name: __MODULE__)
-  end
-
-  defp load_items() do
-    Enum.reduce(Item |> Repo.all, %{}, fn (item, map) ->
-      Map.put(map, item.id, item)
-    end)
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @spec item(id :: integer) :: Item.t | nil
   def item(id) do
-    Agent.get(__MODULE__, &(Map.get(&1, id, nil)))
+    case :ets.lookup(@ets_table, id) do
+      [{_, item}] -> item
+      _ -> nil
+    end
   end
 
   @spec items(ids :: [integer]) :: [Item.t]
   def items(ids) do
-    Agent.get(__MODULE__, fn (items) ->
-      ids
-      |> Enum.map(fn (id) -> Map.get(items, id, nil) end)
-      |> Enum.reject(&is_nil/1)
+    ids
+    |> Enum.map(fn (id) ->
+      case :ets.lookup(@ets_table, id) do
+        [{_, item}] -> item
+        _ -> nil
+      end
     end)
+    |> Enum.reject(&is_nil/1)
   end
 
   @doc """
@@ -36,9 +40,7 @@ defmodule Game.Items do
   """
   @spec insert(item :: Item.t) :: :ok
   def insert(item) do
-    Agent.update(__MODULE__, fn (items) ->
-      Map.put(items, item.id, item)
-    end)
+    GenServer.call(__MODULE__, {:insert, item})
   end
 
   @doc """
@@ -46,4 +48,45 @@ defmodule Game.Items do
   """
   @spec reload(item :: Item.t) :: :ok
   def reload(item), do: insert(item)
+
+  @doc """
+  For testing only: clear the EST table
+  """
+  def clear() do
+    GenServer.call(__MODULE__, :clear)
+  end
+
+  #
+  # Server
+  #
+
+  def init(_) do
+    create_table()
+    GenServer.cast(self(), :load_items)
+    {:ok, %{}}
+  end
+
+  def handle_cast(:load_items, state) do
+    items = Item |> Repo.all
+    Enum.each(items, fn (item) ->
+      :ets.insert(@ets_table, {item.id, item})
+    end)
+    {:noreply, state}
+  end
+
+  def handle_call({:insert, item}, _from, state) do
+    :ets.insert(@ets_table, {item.id, item})
+    {:reply, :ok, state}
+  end
+
+  def handle_call(:clear, _from, state) do
+    :ets.delete(@ets_table)
+    create_table()
+
+    {:reply, :ok, state}
+  end
+
+  defp create_table() do
+    :ets.new(@ets_table, [:set, :protected, :named_table])
+  end
 end

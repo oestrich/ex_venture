@@ -1,7 +1,7 @@
 defmodule Game.NPC.ActionsTest do
   use ExUnit.Case
+  import Test.ItemsHelper
 
-  alias Game.Items
   alias Game.NPC.Actions
 
   @room Test.Game.Room
@@ -43,13 +43,9 @@ defmodule Game.NPC.ActionsTest do
       @room.clear_drop_currencies()
       @room.clear_drops()
 
-      Items.start_link
-      Agent.update(Items, fn (_) ->
-        %{
-          1 => %{id: 1, name: "Sword", keywords: [], drop_rate: 50},
-          2 => %{id: 2, name: "Shield", keywords: [], drop_rate: 50},
-        }
-      end)
+      start_and_clear_items()
+      insert_item(%{id: 1, name: "Sword", keywords: [], drop_rate: 50})
+      insert_item(%{id: 2, name: "Shield", keywords: [], drop_rate: 50})
 
       %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC", currency: 100, item_ids: [1, 2]}, is_targeting: []}
     end

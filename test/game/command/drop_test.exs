@@ -5,11 +5,10 @@ defmodule Game.Command.DropTest do
   @room Test.Game.Room
 
   alias Data.Save
-  alias Game.Items
 
   setup do
-    Items.start_link
-    Agent.update(Items, fn (_) -> %{1 => %{id: 1, name: "Sword", keywords: []}} end)
+    start_and_clear_items()
+    insert_item(%{id: 1, name: "Sword", keywords: []})
 
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket}}

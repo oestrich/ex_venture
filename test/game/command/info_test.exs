@@ -2,14 +2,13 @@ defmodule Game.Command.InfoTest do
   use Data.ModelCase
 
   alias Game.Command
-  alias Game.Items
 
   @socket Test.Networking.Socket
 
   setup do
-    Items.start_link
     armor = %{id: 1, effects: [%{kind: "stats", field: :strength, amount: 10}]}
-    Agent.update(Items, fn (_) -> %{armor.id => armor} end)
+    start_and_clear_items()
+    insert_item(armor)
 
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket, armor: armor}}

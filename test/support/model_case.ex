@@ -10,6 +10,7 @@ defmodule Data.ModelCase do
       import Ecto.Query
       import Data.ModelCase
       import TestHelpers
+      import Test.ItemsHelper
     end
   end
 

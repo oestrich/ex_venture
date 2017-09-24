@@ -2,18 +2,16 @@ defmodule Game.Shop.ActionTest do
   use Data.ModelCase
 
   alias Data.Shop
-  alias Game.Items
   alias Game.Shop.Action
 
   describe "buying items" do
     setup do
-
       shop = %Shop{name: "Tree Top Shop"}
       item = item_attributes(%{id: 1, name: "Sword", keywords: []})
       save = %{base_save() | currency: 100}
 
-      Items.start_link
-      Agent.update(Items, fn (_) -> %{item.id => item} end)
+      start_and_clear_items()
+      insert_item(item)
 
       shop = %{shop | shop_items: [%{id: 2, item_id: item.id, price: 10, quantity: 10}]}
 

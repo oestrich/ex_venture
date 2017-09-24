@@ -2,18 +2,13 @@ defmodule Game.Command.ExamineTest do
   use Data.ModelCase
 
   alias Game.Command
-  alias Game.Items
 
   @socket Test.Networking.Socket
 
   setup do
-    Items.start_link
-    Agent.update(Items, fn (_) ->
-      %{
-        1 => %{name: "Short Sword", keywords: [], description: "A simple blade", stats: %{}, effects: []},
-        2 => %{name: "Leather Armor", keywords: [], description: "A simple leather chest piece", stats: %{}, effects: []},
-      }
-    end)
+    start_and_clear_items()
+    insert_item(%{id: 1, name: "Short Sword", keywords: [], description: "A simple blade", stats: %{}, effects: []})
+    insert_item(%{id: 2, name: "Leather Armor", keywords: [], description: "A simple leather chest piece", stats: %{}, effects: []})
 
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket}}

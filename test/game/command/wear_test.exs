@@ -4,19 +4,14 @@ defmodule Game.Command.WearTest do
 
   alias Data.Save
   alias Game.Command
-  alias Game.Items
 
   @socket Test.Networking.Socket
 
   setup do
-    Items.start_link
-    Agent.update(Items, fn (_) ->
-      %{
-        1 => %{id: 1, name: "Leather Chest", keywords: ["chest"], type: "armor", stats: %{slot: :chest}},
-        2 => %{id: 1, name: "Mail Chest", keywords: [], type: "armor", stats: %{slot: :chest}},
-        3 => %{id: 2, name: "Axe", keywords: [], type: "weapon"},
-      }
-    end)
+    start_and_clear_items()
+    insert_item(%{id: 1, name: "Leather Chest", keywords: ["chest"], type: "armor", stats: %{slot: :chest}})
+    insert_item(%{id: 2, name: "Mail Chest", keywords: [], type: "armor", stats: %{slot: :chest}})
+    insert_item(%{id: 3, name: "Axe", keywords: [], type: "weapon"})
 
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket}}
