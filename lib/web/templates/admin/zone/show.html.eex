@@ -53,7 +53,7 @@
                 <%= Enum.map(row, fn ({{x, y}, nil}) -> %>
                   <td><%= link("New Room", to: zone_room_path(@conn, :new, @zone.id, x: x, y: y), class: "btn btn-default") %></td>
                 <% ({_, room}) -> %>
-                  <td><%= link(room.name, to: room_path(@conn, :show, room.id), class: "btn btn-success") %></td>
+                  <td><%= link(room.name, to: room_path(@conn, :show, room.id), class: "btn #{room_color(room)}") %></td>
                 <% end) %>
               </tr>
             <% end) %>
