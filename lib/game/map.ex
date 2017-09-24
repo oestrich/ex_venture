@@ -12,7 +12,7 @@ defmodule Game.Map do
   """
   @spec size_of_map(zone :: Zone.t) :: {{max_x :: integer, max_y :: integer}, [{{x :: integer, y :: integer}, Room.t}]}
   def size_of_map(zone)
-  def size_of_map(%{rooms: []}), do: {{0, 0}, []}
+  def size_of_map(%{rooms: []}), do: {{0, 0}, {0,0}, []}
   def size_of_map(%{rooms: rooms}) do
     map = Enum.map(rooms, &({{&1.x, &1.y}, &1}))
     min_x = map |> Enum.min_by(fn ({{x, _y}, _room}) -> x end) |> elem(0) |> elem(0)
