@@ -78,7 +78,7 @@ defmodule Game.MapTest do
       end)
     end
 
-    test "gery rooms" do
+    test "grey rooms" do
       ["inside", "town", "dungeon"]
       |> Enum.each(fn (ecology) ->
         assert Map.room_color(%{ecology: ecology}) == "map:grey"
