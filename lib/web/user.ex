@@ -102,7 +102,7 @@ defmodule Web.User do
   @spec disconnect() :: :ok
   def disconnect() do
     SessionRegistry.connected_players()
-    |> Enum.map(fn ({session, _}) ->
+    |> Enum.each(fn ({session, _}) ->
       Session.disconnect(session, force: true)
     end)
     :ok
