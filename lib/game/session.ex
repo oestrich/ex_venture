@@ -26,6 +26,7 @@ defmodule Game.Session do
   alias Game.Session.Tick
 
   @save_period 15_000
+  @force_disconnect_period 5_000
 
   @timeout_check 5000
   @timeout_seconds Application.get_env(:ex_venture, :game)[:timeout_seconds]
@@ -51,6 +52,10 @@ defmodule Game.Session do
   @spec disconnect(pid) :: :ok
   def disconnect(pid) do
     GenServer.cast(pid, :disconnect)
+  end
+  @spec disconnect(pid, opts :: Keyword.t) :: :ok
+  def disconnect(pid, opts) do
+    GenServer.cast(pid, {:disconnect, opts})
   end
 
   @doc """
@@ -128,6 +133,15 @@ defmodule Game.Session do
     user |> Account.save(save)
     user |> Account.update_time_online(session_started_at, Timex.now())
     {:stop, :normal, state}
+  end
+
+  def handle_cast({:disconnect, [force: true]}, state = %{socket: socket}) do
+    socket |> @socket.echo("The server will be shutting down shortly.")
+    Task.start(fn () ->
+      Process.sleep(@force_disconnect_period)
+      socket |> @socket.disconnect()
+    end)
+    {:noreply, state}
   end
 
   # forward the echo the socket pid

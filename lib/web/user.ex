@@ -93,4 +93,18 @@ defmodule Web.User do
         |> Repo.update
     end
   end
+
+  @doc """
+  Disconnect players
+
+  The server will shutdown shortly.
+  """
+  @spec disconnect() :: :ok
+  def disconnect() do
+    SessionRegistry.connected_players()
+    |> Enum.map(fn ({session, _}) ->
+      Session.disconnect(session, force: true)
+    end)
+    :ok
+  end
 end

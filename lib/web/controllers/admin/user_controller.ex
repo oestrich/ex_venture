@@ -23,4 +23,10 @@ defmodule Web.Admin.UserController do
       _ -> conn |> redirect(to: room_path(conn, :show, room_id))
     end
   end
+
+  def disconnect(conn, _params) do
+    case User.disconnect() do
+      :ok -> conn |> redirect(to: dashboard_path(conn, :index))
+    end
+  end
 end

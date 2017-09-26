@@ -45,4 +45,12 @@ defmodule Web.UserTest do
   test "changing password - bad current password", %{user: user} do
     assert {:error, :invalid} = User.change_password(user, "p@ssword", %{password: "apassword", password_confirmation: "apassword"})
   end
+
+  test "disconnecting connected players", %{user: user} do
+    Session.Registry.register(user)
+
+    User.disconnect()
+
+    assert_receive {:"$gen_cast", {:disconnect, [force: true]}}
+  end
 end
