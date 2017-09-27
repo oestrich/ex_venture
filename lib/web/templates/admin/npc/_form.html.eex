@@ -36,6 +36,12 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :notes %>
+        <%= textarea f, :notes, class: "form-control", rows: 10 %>
+        <%= error_tag f, :notes %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :stats %>
         <%= textarea f, :stats, value: @changeset |> json_field(:stats), class: "form-control", rows: 10 %>
         <%= error_tag f, :stats %>

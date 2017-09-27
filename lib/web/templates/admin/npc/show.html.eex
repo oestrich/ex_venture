@@ -47,6 +47,10 @@
               <td><%= @npc.hostile %></td>
             </tr>
             <tr>
+              <th>Notes</th>
+              <td><%= @npc.notes %></td>
+            </tr>
+            <tr>
               <th>Starting Stats</th>
               <td><pre><%= @npc.stats |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
