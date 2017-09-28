@@ -78,6 +78,7 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Ecology</th>
                 <td>Actions</th>
               </tr>
             </thead>
@@ -86,6 +87,7 @@
                 <tr>
                   <td><%= room.id %></td>
                   <td><%= room.name %></td>
+                  <td><%= room.ecology %></td>
                   <td>
                     <%= link("View", to: room_path(@conn, :show, room.id)) %>
                     <%= link("Edit", to: room_path(@conn, :edit, room.id)) %>
