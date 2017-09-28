@@ -75,10 +75,53 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    {:noreply, state} = Session.handle_cast({:recv, "quit"}, %{socket: socket, state: "active", user: user, save: %{room_id: 1}})
+    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1}}
+    {:noreply, state} = Session.handle_cast({:recv, "quit"}, state)
 
     assert @socket.get_echos() == [{socket, "Good bye."}]
     assert state.last_recv
+  after
+    Session.Registry.unregister()
+  end
+
+  test "processing a command that has continued commands", %{socket: socket} do
+    user = create_user(%{name: "user", password: "password"})
+    |> Repo.preload([class: [:skills]])
+
+    @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
+    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1}}
+    {:noreply, state} = Session.handle_cast({:recv, "run 2n"}, state)
+
+    assert state.blocked
+    assert_receive {:continue, {Game.Command.Run, {[:north]}}}
+  after
+    Session.Registry.unregister()
+  end
+
+  test "continuing with processed commands", %{socket: socket} do
+    user = create_user(%{name: "user", password: "password"})
+    |> Repo.preload([class: [:skills]])
+
+    @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
+    state = %{socket: socket, user: user, save: %{room_id: 1}}
+    {:noreply, _state} = Session.handle_info({:continue, {Game.Command.Run, {[:north, :north]}}}, state)
+
+    assert_receive {:continue, {Game.Command.Run, {[:north]}}}
+  after
+    Session.Registry.unregister()
+  end
+
+  test "does not process commands while input is blocked", %{socket: socket} do
+    user = create_user(%{name: "user", password: "password"})
+    |> Repo.preload([class: [:skills]])
+
+    state = %{socket: socket, state: "active", blocked: true, user: user, save: %{room_id: 1}}
+    {:noreply, state} = Session.handle_cast({:recv, "say Hello"}, state)
+
+    assert state.blocked
+    assert @socket.get_echos() == []
+  after
+    Session.Registry.unregister()
   end
 
   test "user is not signed in yet does not save" do
@@ -115,6 +158,8 @@ defmodule Game.SessionTest do
       state = %{user: user, save: %{room_id: 1}, session_started_at: Timex.now()}
       {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
       assert Session.Registry.connected_players == []
+    after
+      Session.Registry.unregister()
     end
 
     test "adds the time played" do
@@ -158,7 +203,7 @@ defmodule Game.SessionTest do
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
     assert_received {:"$gen_cast", {:died, {:user, _}}}
-
+  after
     Session.Registry.unregister()
   end
 

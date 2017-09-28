@@ -110,6 +110,7 @@ defmodule Game.Session do
       session_started_at: Timex.now(),
       last_recv: Timex.now(),
       last_tick: last_tick,
+      blocked: false,
       target: nil,
       is_targeting: MapSet.new,
       regen: %{count: 0},
@@ -168,17 +169,12 @@ defmodule Game.Session do
   end
 
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{state: "active", user: user}) do
+  def handle_cast({:recv, message}, state = %{state: "active", blocked: false, user: user}) do
     state = Map.merge(state, %{last_recv: Timex.now()})
-    case message |> Command.parse(user) |> Command.run(self(), state) do
-      :ok ->
-        state |> prompt()
-        {:noreply, state}
-      {:update, state} ->
-        Session.Registry.update(%{state.user | save: state.save})
-        state |> prompt()
-        {:noreply, state}
-    end
+    message |> Command.parse(user) |> run_command(self(), state)
+  end
+  def handle_cast({:recv, _message}, state = %{state: "active", blocked: true}) do
+    {:noreply, state}
   end
 
   def handle_cast({:teleport, room_id}, state) do
@@ -271,6 +267,10 @@ defmodule Game.Session do
   # General callback
   #
 
+  def handle_info({:continue, command}, state) do
+    command |> run_command(self(), state)
+  end
+
   def handle_info(:save, state = %{user: user, save: save}) do
     user |> Account.save(save)
     self() |> schedule_save()
@@ -284,6 +284,22 @@ defmodule Game.Session do
   def handle_info(:inactive_check, state) do
     state |> check_for_inactive()
     {:noreply, state}
+  end
+
+  def run_command(command, session, state) do
+    case command |> Command.run(session, state) do
+      :ok ->
+        state |> prompt()
+        {:noreply, Map.put(state, :blocked, false)}
+      {:update, state} ->
+        Session.Registry.update(%{state.user | save: state.save})
+        state |> prompt()
+        {:noreply, Map.put(state, :blocked, false)}
+      {:update, state, {command, args, send_in}} ->
+        Session.Registry.update(%{state.user | save: state.save})
+        :erlang.send_after(send_in, self(), {:continue, {command, args}})
+        {:noreply, Map.put(state, :blocked, true)}
+    end
   end
 
   defp prompt(%{socket: socket, user: user, save: save}) do

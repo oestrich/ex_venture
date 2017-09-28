@@ -162,6 +162,10 @@ defmodule CommandTest do
       assert Command.parse("shops list tree top", user) == {Command.Shops, {:list, "tree top"}}
       assert Command.parse("shops buy item from tree top", user) == {Command.Shops, {:buy, "item", :from, "tree top"}}
     end
+
+    test "run", %{user: user} do
+      assert Command.parse("run 3en4s", user) == {Command.Run, {"3en4s"}}
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do

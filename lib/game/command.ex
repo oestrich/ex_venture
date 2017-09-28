@@ -85,7 +85,7 @@ defmodule Game.Command do
     Command.Channels, Command.Help, Command.Info, Command.Inventory, Command.Look,
     Command.Move, Command.PickUp, Command.Quit, Command.Say, Command.Who, Command.Wield,
     Command.Wear, Command.Target, Command.Skills, Command.Emote, Command.Map, Command.Examine,
-    Command.Tell, Command.Equipment, Command.Drop, Command.Shops,
+    Command.Tell, Command.Equipment, Command.Drop, Command.Shops, Command.Run,
   ]
 
   @doc """
