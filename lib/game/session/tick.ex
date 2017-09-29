@@ -11,6 +11,8 @@ defmodule Game.Session.Tick do
   alias Game.Config
   alias Game.Stats
 
+  @movement_regen 1
+
   @doc """
   Perform a tick on a session
 
@@ -21,7 +23,23 @@ defmodule Game.Session.Tick do
   def tick(time, state) do
     state
     |> handle_regen(Config.regen_tick_count(5))
+    |> regen_movement()
     |> Map.put(:last_tick, time)
+  end
+
+  @doc """
+  Regenerate movement points, 1 per tick
+  """
+  @spec regen_movement(state :: map) :: map
+  def regen_movement(state = %{user: user, save: save = %{stats: stats}}) do
+    stats = Stats.regen(:move_points, stats, @movement_regen)
+
+    save = Map.put(save, :stats, stats)
+    user = Map.put(user, :save, save)
+    save.room_id |> update_character(user)
+
+    state
+    |> Map.put(:save, save)
   end
 
   @doc """

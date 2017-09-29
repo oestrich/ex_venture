@@ -19,6 +19,12 @@ defmodule Game.Stats do
 
     iex> Game.Stats.regen(:skill_points, %{skill_points: 13, max_skill_points: 15}, 3)
     %{skill_points: 15, max_skill_points: 15}
+
+    iex> Game.Stats.regen(:move_points, %{move_points: 10, max_move_points: 15}, 3)
+    %{move_points: 13, max_move_points: 15}
+
+    iex> Game.Stats.regen(:move_points, %{move_points: 13, max_move_points: 15}, 3)
+    %{move_points: 15, max_move_points: 15}
   """
   @spec regen(field :: atom, stats :: Stats.t, regen :: map) :: Stats.t
   def regen(field, stats, regen)
@@ -33,6 +39,13 @@ defmodule Game.Stats do
     case %{stats | skill_points: stats.skill_points + skill_points} do
       %{skill_points: skill_points, max_skill_points: max_skill_points} when skill_points > max_skill_points ->
         %{stats | skill_points: max_skill_points}
+      stats -> stats
+    end
+  end
+  def regen(:move_points, stats, move_points) do
+    case %{stats | move_points: stats.move_points + move_points} do
+      %{move_points: move_points, max_move_points: max_move_points} when move_points > max_move_points ->
+        %{stats | move_points: max_move_points}
       stats -> stats
     end
   end
