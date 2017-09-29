@@ -15,6 +15,8 @@ defmodule Web.RaceTest do
         dexterity: 10,
         skill_points: 10,
         max_skill_points: 10,
+        move_points: 10,
+        max_move_points: 10,
       } |> Poison.encode!(),
     }
 

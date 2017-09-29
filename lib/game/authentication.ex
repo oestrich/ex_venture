@@ -6,6 +6,7 @@ defmodule Game.Authentication do
 
   alias Data.Repo
   alias Data.Skill
+  alias Data.Stats
   alias Data.User
 
   @doc """
@@ -26,7 +27,7 @@ defmodule Game.Authentication do
   end
   defp _find_and_validate(user, password) do
     case Comeonin.Bcrypt.checkpw(password, user.password_hash) do
-      true -> user
+      true -> user |> set_defaults()
       _ -> {:error, :invalid}
     end
   end
@@ -40,11 +41,18 @@ defmodule Game.Authentication do
     |> where([u], u.id == ^user_id)
     |> preloads()
     |> Repo.one
+    |> set_defaults()
   end
 
   defp preloads(query) do
     query
     |> preload([:race])
     |> preload([class: [skills: ^(from s in Skill, order_by: [s.level, s.id])]])
+  end
+
+  def set_defaults(nil), do: nil
+  def set_defaults(user) do
+    stats = user.save.stats |> Stats.default()
+    %{user | save: %{user.save | stats: stats}}
   end
 end

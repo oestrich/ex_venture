@@ -16,6 +16,20 @@ defmodule TestHelpers do
   alias Data.User
   alias Data.Zone
 
+  def base_stats() do
+    %{
+      health: 50,
+      max_health: 50,
+      skill_points: 50,
+      max_skill_points: 50,
+      move_points: 10,
+      max_move_points: 10,
+      strength: 10,
+      intelligence: 10,
+      dexterity: 10,
+    }
+  end
+
   def base_save() do
     %Data.Save{
       room_id: 1,
@@ -24,15 +38,7 @@ defmodule TestHelpers do
       experience_points: 0,
       currency: 0,
       item_ids: [],
-      stats: %{
-        health: 50,
-        max_health: 50,
-        skill_points: 50,
-        max_skill_points: 50,
-        strength: 10,
-        intelligence: 10,
-        dexterity: 10,
-      },
+      stats: base_stats(),
       wearing: %{},
       wielding: %{},
     }
@@ -128,6 +134,8 @@ defmodule TestHelpers do
         dexterity: 10,
         skill_points: 10,
         max_skill_points: 10,
+        move_points: 10,
+        max_move_points: 10,
       },
     }, attributes)
   end
@@ -154,6 +162,8 @@ defmodule TestHelpers do
         dexterity: 1,
         skill_points: 5,
         max_skill_points: 5,
+        move_points: 2,
+        max_move_points: 10,
       },
     }, attributes)
   end
@@ -200,6 +210,8 @@ defmodule TestHelpers do
         strength: 13,
         intelligence: 10,
         dexterity: 10,
+        move_points: 1,
+        max_move_points: 10,
       },
     }, attributes)
   end

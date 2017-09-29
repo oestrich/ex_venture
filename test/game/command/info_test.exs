@@ -22,8 +22,7 @@ defmodule Game.Command.InfoTest do
       class: %{name: "Fighter", points_name: "Skill Points"},
       seconds_online: 15,
     }
-    stats = %{health: 50, max_health: 50, skill_points: 10, max_skill_points: 10, strength: 10, intelligence: 10, dexterity: 10}
-    save = %{user.save | wearing: %{chest: armor.id}, stats: stats}
+    save = %{user.save | wearing: %{chest: armor.id}, stats: base_stats()}
     ten_min_ago = Timex.now() |> Timex.shift(minutes: -10)
 
     Command.Info.run({}, session, %{socket: socket, user: user, save: save, session_started_at: ten_min_ago})

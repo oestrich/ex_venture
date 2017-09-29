@@ -8,15 +8,7 @@ defmodule Web.Admin.NPCControllerTest do
       "level" => "1",
       "experience_points" => "124",
       "currency" => "10",
-      "stats" => %{
-        health: 25,
-        max_health: 25,
-        strength: 10,
-        intelligence: 10,
-        dexterity: 10,
-        skill_points: 10,
-        max_skill_points: 10,
-      } |> Poison.encode!(),
+      "stats" => base_stats() |> Poison.encode!(),
     }
 
     conn = post conn, npc_path(conn, :create), npc: params

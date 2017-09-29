@@ -11,21 +11,13 @@ defmodule Web.ClassTest do
       "points_abbreviation" => "SP",
       "regen_health" => 1,
       "regen_skill_points" => 1,
-      "each_level_stats" => %{
-        health: 25,
-        max_health: 25,
-        strength: 10,
-        intelligence: 10,
-        dexterity: 10,
-        skill_points: 10,
-        max_skill_points: 10,
-      } |> Poison.encode!(),
+      "each_level_stats" => base_stats() |> Poison.encode!(),
     }
 
     {:ok, class} = Class.create(params)
 
     assert class.name == "Fighter"
-    assert class.each_level_stats.health == 25
+    assert class.each_level_stats.health == 50
   end
 
   test "updating a class" do

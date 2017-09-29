@@ -12,6 +12,8 @@ defmodule Data.Stats do
     max_health: integer,
     skill_points: integer,
     max_skill_points: integer,
+    move_points: integer,
+    max_move_points: integer,
     strength: integer,
     intelligence: integer,
     dexterity: integer,
@@ -53,6 +55,26 @@ defmodule Data.Stats do
   def dump(_), do: :error
 
   @doc """
+  Set defaults for new statistics
+
+  A "migration" of stats to ensure new ones are always available. They should be
+  saved back in after the user loads their account.
+  """
+  @spec default(Stats.t) :: Stats.t
+  def default(stats) do
+    stats
+    |> ensure(:move_points, 10)
+    |> ensure(:max_move_points, 10)
+  end
+
+  defp ensure(stats, field, default) do
+    case Map.has_key?(stats, field) do
+      true -> stats
+      false -> Map.put(stats, field, default)
+    end
+  end
+
+  @doc """
   Slots on a character
   """
   @spec slots() :: [atom]
@@ -62,18 +84,10 @@ defmodule Data.Stats do
   Fields in the statistics map
   """
   @spec fields() :: [atom]
-  def fields(), do: [:dexterity, :health, :intelligence, :max_health, :max_skill_points, :skill_points, :strength]
+  def fields(), do: [:dexterity, :health, :intelligence, :max_health, :max_move_points, :max_skill_points, :move_points, :skill_points, :strength]
 
   @doc """
   Validate a character's stats
-
-      iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
-      iex> Data.Stats.valid_character?(stats)
-      true
-
-      iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: :atom, skill_points: 10, max_skill_points: 10}
-      iex> Data.Stats.valid_character?(stats)
-      false
 
       iex> Data.Stats.valid_character?(%{health: 50, strength: 10})
       false

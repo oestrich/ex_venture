@@ -17,6 +17,8 @@ defmodule Game.ExperienceTest do
         dexterity: 3,
         skill_points: 5,
         max_skill_points: 5,
+        move_points: 3,
+        max_move_points: 3,
       },
     }
     %{socket: :socket, user: %{class: class}, save: base_save()}
@@ -43,6 +45,8 @@ defmodule Game.ExperienceTest do
       strength: 15,
       intelligence: 15,
       dexterity: 15,
+      move_points: 15,
+      max_move_points: 15,
     }
   end
 

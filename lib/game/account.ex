@@ -42,6 +42,7 @@ defmodule Game.Account do
   """
   @spec save(User.t, Save.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
   def save(user, save) do
+    user = %{user | save: %{}}
     user
     |> User.changeset(%{save: save})
     |> Repo.update

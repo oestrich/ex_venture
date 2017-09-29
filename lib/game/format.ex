@@ -32,16 +32,21 @@ defmodule Game.Format do
   Example:
 
       iex> class = %{points_abbreviation: "SP"}
-      iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10}
+      iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10, move_points: 4, max_move_points: 10}
       iex> Game.Format.prompt(%{name: "user", class: class}, %{experience_points: 1010, stats: stats})
-      "[50/75hp 9/10sp 10xp] > "
+      "[50/75hp 9/10sp 4/10mv 10xp] > "
   """
   @spec prompt(user :: User.t, save :: Save.t) :: String.t
   def prompt(user, save)
   def prompt(%{class: class}, %{experience_points: exp, stats: stats}) do
     sp = class.points_abbreviation |> String.downcase
     exp = rem(exp, 1000)
-    "[#{stats.health}/#{stats.max_health}hp #{stats.skill_points}/#{stats.max_skill_points}#{sp} #{exp}xp] > "
+
+    health = "#{stats.health}/#{stats.max_health}hp"
+    skill = "#{stats.skill_points}/#{stats.max_skill_points}#{sp}"
+    move = "#{stats.move_points}/#{stats.max_move_points}mv"
+
+    "[#{health} #{skill} #{move} #{exp}xp] > "
   end
   def prompt(_user, _save), do: "> "
 
@@ -351,6 +356,7 @@ Items: #{items(room)}
       ["XP", save.experience_points],
       ["Health", "#{stats.health}/#{stats.max_health}"],
       [user.class.points_name, "#{stats.skill_points}/#{stats.max_skill_points}"],
+      ["Movement", "#{stats.move_points}/#{stats.max_move_points}"],
       ["Strength", stats.strength],
       ["Intelligence", stats.intelligence],
       ["Dexterity", stats.dexterity],

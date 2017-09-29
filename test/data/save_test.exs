@@ -1,5 +1,6 @@
 defmodule Data.SaveTest do
   use ExUnit.Case
+  import TestHelpers
   doctest Data.Save
 
   alias Data.Save

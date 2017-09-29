@@ -97,9 +97,7 @@ defmodule Data.Save do
   @doc """
   Validate a save struct
 
-      iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
-      iex> save = %Data.Save{room_id: 1, channels: [], level: 1, experience_points: 0, currency: 0, item_ids: [], wearing: %{}, wielding: %{}, stats: stats}
-      iex> Data.Save.valid?(save)
+      iex> Data.Save.valid?(base_save())
       true
 
       iex> Data.Save.valid?(%Data.Save{room_id: 1, item_ids: [], wearing: %{}, wielding: %{}})
@@ -156,8 +154,7 @@ defmodule Data.Save do
   @doc """
   Validate stats are correct
 
-      iex> stats = %{health: 50, max_health: 50, strength: 10, intelligence: 10, dexterity: 10, skill_points: 10, max_skill_points: 10}
-      iex> Data.Save.valid_stats?(%{stats: stats})
+      iex> Data.Save.valid_stats?(%{stats: base_stats()})
       true
 
       iex> Data.Save.valid_stats?(%{stats: :anything})

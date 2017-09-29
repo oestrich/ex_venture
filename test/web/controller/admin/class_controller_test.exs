@@ -9,15 +9,7 @@ defmodule Web.Admin.ClassControllerTest do
       "points_abbreviation" => "SP",
       "regen_health" => 1,
       "regen_skill_points" => 1,
-      "each_level_stats" => %{
-        health: 25,
-        max_health: 25,
-        strength: 10,
-        intelligence: 10,
-        dexterity: 10,
-        skill_points: 10,
-        max_skill_points: 10,
-      } |> Poison.encode!(),
+      "each_level_stats" => base_stats() |> Poison.encode!(),
     }
 
     conn = post conn, class_path(conn, :create), class: params
