@@ -14,7 +14,7 @@ defmodule Game.Command.Run do
 
   @short_help "Move around quickly"
   @full_help """
-  #{@short_help}
+  #{@short_help}. You will stop running if an exit cannot be found.
 
   Example:
   [ ] > {white}run 3en4s{/white}
