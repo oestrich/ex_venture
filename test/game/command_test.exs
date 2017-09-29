@@ -253,7 +253,7 @@ defmodule CommandTest do
 
     test "north - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{exits: []})
-      :ok = Command.run({Command.Move, {:north}}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:error, :no_exit} = Command.run({Command.Move, {:north}}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "east", %{session: session, state: state} do
@@ -264,7 +264,7 @@ defmodule CommandTest do
 
     test "east - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{exits: []})
-      :ok = Command.run({Command.Move, {:east}}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:error, :no_exit} = Command.run({Command.Move, {:east}}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "south", %{session: session, state: state} do
@@ -275,7 +275,7 @@ defmodule CommandTest do
 
     test "south - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{exits: []})
-      :ok = Command.run({Command.Move, {:south}}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:error, :no_exit} = Command.run({Command.Move, {:south}}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "west", %{session: session, state: state} do
@@ -286,7 +286,7 @@ defmodule CommandTest do
 
     test "west - not found", %{session: session, state: state} do
       @room.set_room(%Data.Room{exits: []})
-      :ok = Command.run({Command.Move, {:west}}, session, Map.merge(state, %{save: %{room_id: 1}}))
+      {:error, :no_exit} = Command.run({Command.Move, {:west}}, session, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "clears the target after moving", %{session: session, state: state, user: user} do

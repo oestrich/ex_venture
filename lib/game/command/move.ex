@@ -47,28 +47,28 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:east) do
       %{east_id: id} -> session |> move_to(state, id)
-      _ -> :ok
+      _ -> {:error, :no_exit}
     end
   end
   def run({:north}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:north) do
       %{north_id: id} -> session |> move_to(state, id)
-      _ -> :ok
+      _ -> {:error, :no_exit}
     end
   end
   def run({:south}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:south) do
       %{south_id: id} -> session |> move_to(state, id)
-      _ -> :ok
+      _ -> {:error, :no_exit}
     end
   end
   def run({:west}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:west) do
       %{west_id: id} -> session |> move_to(state, id)
-      _ -> :ok
+      _ -> {:error, :no_exit}
     end
   end
 

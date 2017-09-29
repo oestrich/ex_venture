@@ -288,9 +288,6 @@ defmodule Game.Session do
 
   def run_command(command, session, state) do
     case command |> Command.run(session, state) do
-      :ok ->
-        state |> prompt()
-        {:noreply, Map.put(state, :blocked, false)}
       {:update, state} ->
         Session.Registry.update(%{state.user | save: state.save})
         state |> prompt()
@@ -299,6 +296,9 @@ defmodule Game.Session do
         Session.Registry.update(%{state.user | save: state.save})
         :erlang.send_after(send_in, self(), {:continue, {command, args}})
         {:noreply, Map.put(state, :blocked, true)}
+      _ ->
+        state |> prompt()
+        {:noreply, Map.put(state, :blocked, false)}
     end
   end
 

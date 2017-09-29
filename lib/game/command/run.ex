@@ -41,7 +41,7 @@ defmodule Game.Command.Run do
   """
   def move([direction | directions], session, state) do
     case Move.run({direction}, session, state) do
-      :ok ->
+      {:error, :no_exit} ->
         state.socket |> @socket.echo("Could not move #{direction}, no exit found.")
         :ok
       {:update, state} -> maybe_continue(state, directions)
