@@ -46,32 +46,52 @@ defmodule Game.Command.Move do
   def run({:east}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:east) do
-      %{east_id: id} -> session |> move_to(state, id)
+      %{east_id: id} -> session |> maybe_move_to(state, id)
       _ -> {:error, :no_exit}
     end
   end
   def run({:north}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:north) do
-      %{north_id: id} -> session |> move_to(state, id)
+      %{north_id: id} -> session |> maybe_move_to(state, id)
       _ -> {:error, :no_exit}
     end
   end
   def run({:south}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:south) do
-      %{south_id: id} -> session |> move_to(state, id)
+      %{south_id: id} -> session |> maybe_move_to(state, id)
       _ -> {:error, :no_exit}
     end
   end
   def run({:west}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:west) do
-      %{west_id: id} -> session |> move_to(state, id)
+      %{west_id: id} -> session |> maybe_move_to(state, id)
       _ -> {:error, :no_exit}
     end
   end
 
+  @doc """
+  Maybe move a player
+
+  They require at least 1 movement point to proceed
+  """
+  def maybe_move_to(session, state = %{save: %{stats: stats}}, room_id) do
+    case stats.move_points > 0 do
+      true ->
+        stats = %{stats | move_points: stats.move_points - 1}
+        save = %{state.save | stats: stats}
+        session |> move_to(Map.put(state, :save, save), room_id)
+      false ->
+        state.socket |> @socket.echo("You have no movement points to move in that direction.")
+        {:error, :no_movement}
+    end
+  end
+
+  @doc """
+  Move the player to a new room
+  """
   def move_to(session, state = %{save: save, user: user}, room_id) do
     @room.leave(save.room_id, {:user, session, user})
 

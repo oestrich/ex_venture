@@ -89,7 +89,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1}}
+    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
     {:noreply, state} = Session.handle_cast({:recv, "run 2n"}, state)
 
     assert state.blocked
@@ -103,7 +103,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-    state = %{socket: socket, user: user, save: %{room_id: 1}}
+    state = %{socket: socket, user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
     {:noreply, _state} = Session.handle_info({:continue, {Game.Command.Run, {[:north, :north]}}}, state)
 
     assert_receive {:continue, {Game.Command.Run, {[:north]}}}

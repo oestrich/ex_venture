@@ -44,6 +44,8 @@ defmodule Game.Command.Run do
       {:error, :no_exit} ->
         state.socket |> @socket.echo("Could not move #{direction}, no exit found.")
         :ok
+      {:error, :no_movement} ->
+        :ok
       {:update, state} -> maybe_continue(state, directions)
     end
   end
