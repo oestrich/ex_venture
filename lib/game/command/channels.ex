@@ -14,12 +14,16 @@ defmodule Game.Command.Channels do
 
   @short_help "Talk to other players"
   @full_help """
-  Example: global Hello, everyone!
+  #{@short_help}
 
-  This chats to players in the channel
+  Talk to players in a channel
+  [ ] > global Hello!
 
-  Turn a channel on with "{white}channel on global{/white}".
-  Turn a channel off with "{white}channel off global{/white}".
+  Turn a channel on:
+  [ ] > {white}channel on global{/white}
+
+  Turn a channel off:
+  [ ] > {white}channel off global{/white}
   """
 
   @doc """

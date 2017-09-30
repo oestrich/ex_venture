@@ -17,6 +17,7 @@ defmodule Game.Command.Drop do
 
   Example:
   [ ] > {white}drop sword{/white}
+  [ ] > {white}drop 10 gold{/white}
   """
 
   @doc """
