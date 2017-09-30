@@ -16,13 +16,16 @@ defmodule Game.Command.Shops do
   @short_help "View shops and buy from them"
   @full_help """
   View shops:
-    {white}shops{/white}
+  [ ] > {white}shops{/white}
 
   List items in a shop:
-    {white}shops list shop{/white}
+  [ ] > {white}shops list shop{/white}
+
+  View an item in a shop:
+  [ ] > {white}shops show item from shop{/white}
 
   Buy an item from a shop:
-    {white}shops buy item from shop{/white}
+  [ ] > {white}shops buy item from shop{/white}
 
   When matching a shop name, you can use the shortest unique string for
   the shop. So "{magenta}Blacksmith{/magenta}" can be matched with "{white}blac{/white}".
