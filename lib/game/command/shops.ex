@@ -40,6 +40,9 @@ defmodule Game.Command.Shops do
       iex> Game.Command.Shops.parse("shops buy sword from tree top")
       {:buy, "sword", :from, "tree top"}
 
+      iex> Game.Command.Shops.parse("shops show sword from tree top")
+      {:show, "sword", :from, "tree top"}
+
       iex> Game.Command.Shops.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
@@ -51,6 +54,12 @@ defmodule Game.Command.Shops do
     case Regex.run(~r/(?<item>.+) from (?<shop>.+)/i, string, capture: :all) do
       nil -> {:error, :bad_parse, "shops buy #{string}"}
       [_string, item_name, shop_name] -> {:buy, item_name, :from, shop_name}
+    end
+  end
+  def parse("shops show " <> string) do
+    case Regex.run(~r/(?<item>.+) from (?<shop>.+)/i, string, capture: :all) do
+      nil -> {:error, :bad_parse, "shops show #{string}"}
+      [_string, item_name, shop_name] -> {:show, item_name, :from, shop_name}
     end
   end
   def parse(command), do: {:error, :bad_parse, command}
@@ -80,6 +89,15 @@ defmodule Game.Command.Shops do
     socket |> @socket.echo(Format.list_shop(shop, items))
 
     :ok
+  end
+  def run({:show, item_name, :from, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case find_shop(room.shops, shop_name) do
+      {:error, :not_found} ->
+        socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        :ok
+      {:ok, shop} -> show_item(shop, item_name, state)
+    end
   end
   def run({:buy, item_name, :from, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
@@ -115,6 +133,14 @@ defmodule Game.Command.Shops do
       {:error, :not_enough_quantity, item} ->
         socket |> @socket.echo("\"#{shop.name}\" does not have enough of #{item.name} for you to buy.")
         :ok
+    end
+  end
+
+  defp show_item(shop, item_name, %{socket: socket}) do
+    items = Enum.map(shop.shop_items, &(Items.item(&1.item_id)))
+    case Enum.find(items, &(Game.Item.matches_lookup?(&1, item_name))) do
+      nil -> socket |> @socket.echo("The \"#{item_name}\" could not be found in #{shop.name}.")
+      item -> socket |> @socket.echo(Format.item(item))
     end
   end
 end
