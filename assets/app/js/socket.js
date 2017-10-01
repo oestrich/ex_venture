@@ -1,5 +1,7 @@
 import {Socket} from "phoenix"
 import format from "./color"
+import Sizzle from "sizzle"
+import _ from "underscore"
 
 var body = document.getElementById("body")
 var userToken = body.getAttribute("data-user-token")
@@ -53,10 +55,26 @@ channel.on("gmcp", payload => {
       console.log(`Signed in as ${data.name}`)
       break;
     case "Character.Vitals":
-      document.getElementById("health").innerHTML = `<span>${data.health}/${data.max_health}</span>`;
-      document.getElementById("skills").innerHTML = `<span>${data.skill_points}/${data.max_skill_points}</span>`;
-      document.getElementById("movement").innerHTML = `<span>${data.move_points}/${data.max_move_points}</span>`;
-      console.log("Vitals: ", data)
+      let healthWidth = data.health / data.max_health;
+      let skillWidth = data.skill_points / data.max_skill_points;
+      console.log(skillWidth * 100);
+      let moveWidth = data.move_points / data.max_move_points;
+
+      let health = _.first(Sizzle("#health .container"));
+      health.style.width = `${healthWidth * 100}%`;
+      let healthStat = _.first(Sizzle("#health .stat"));
+      healthStat.innerHTML = `${data.health}/${data.max_health}`;
+
+      let skill = _.first(Sizzle("#skills .container"));
+      skill.style.width = `${skillWidth * 100}%`;
+      let skillStat = _.first(Sizzle("#skills .stat"));
+      skillStat.innerHTML = `${data.skill_points}/${data.max_skill_points}`;
+
+      let movement = _.first(Sizzle("#movement .container"));
+      movement.style.width = `${moveWidth * 100}%`;
+      let movementStat = _.first(Sizzle("#movement .stat"));
+      movementStat.innerHTML = `${data.move_points}/${data.max_move_points}`;
+
       break;
     default:
       console.log("Module not found")

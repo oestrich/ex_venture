@@ -30,29 +30,43 @@ input {
 #skills,
 #movement {
   display: inline-block;
-  width: 33%;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  width: 32.7%;
   font-size: 1.25em;
 }
 
-#health > span,
-#skills > span,
-#movement > span {
+#health .container,
+#skills .container,
+#movement .container {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+#health span,
+#skills span,
+#movement span {
   padding-left: 10px;
 }
 
 #health {
+  border: 2px solid #dc322f;
+}
+#health .container {
   background: #dc322f;
   color: #fdf6e3;
 }
 
 #skills {
+  border: 2px solid #859901;
+}
+#skills .container {
   background: #859901;
   color: #fdf6e3;
 }
 
 #movement {
+  border: 2px solid #268bd2;
+}
+#movement .container {
   background: #268bd2;
   color: #fdf6e3;
 }

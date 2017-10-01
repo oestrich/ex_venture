@@ -2,7 +2,7 @@ exports.config = {
   files: {
     javascripts: {
       joinTo: {
-        "js/app.js": /(app\/js)|(priv\/static\/phoenix*)/,
+        "js/app.js": /(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
         "js/admin.js": /(admin\/js)/,
         "js/home.js": /(home\/js)/,
       },
