@@ -22,6 +22,7 @@ let options = {
   echo: true,
 };
 let commandHistory = [];
+let commandIndex = -1;
 
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("telnet:" + guid(), {})
@@ -106,27 +107,24 @@ channel.on("disconnect", payload => {
 
 document.getElementById("prompt").addEventListener("keydown", e => {
   let commandPrompt = document.getElementById("prompt")
-  let cmdIndex = commandHistory.indexOf(commandPrompt.value)
 
   switch (e.keyCode) {
     case 38:
-      if (cmdIndex > 0) {
-        commandPrompt.value = commandHistory[cmdIndex - 1]
-      } else if (cmdIndex == 0) {
-        // do nothing at the end of the list
-      } else {
-        commandPrompt.value = commandHistory[commandHistory.length - 1]
+      if (commandHistory[commandIndex + 1] != undefined) {
+        commandIndex += 1
+        commandPrompt.value = commandHistory[commandIndex]
       }
       break;
 
     case 40:
-      if (cmdIndex >= 0) {
-        if (commandHistory[cmdIndex + 1] != undefined) {
-          commandPrompt.value = commandHistory[cmdIndex + 1]
-        } else {
-          commandPrompt.value = ""
-        }
+      if (commandHistory[commandIndex - 1] != undefined) {
+        commandIndex -= 1
+        commandPrompt.value = commandHistory[commandIndex]
+      } else if (commandIndex - 1 <= -1) {
+        commandIndex = -1
+        commandPrompt.value = ""
       }
+
       break;
   }
 })
@@ -135,9 +133,12 @@ document.getElementById("prompt").addEventListener("keypress", e => {
     var command = document.getElementById("prompt").value
 
     if (options.echo) {
-      commandHistory.push(command)
-      if (commandHistory.length > 10) {
-        commandHistory.shift()
+      if (command != "") {
+        commandIndex = -1
+        commandHistory.unshift(command)
+        if (commandHistory.length > 10) {
+          commandHistory.pop()
+        }
       }
 
       let html = document.createElement('span');
