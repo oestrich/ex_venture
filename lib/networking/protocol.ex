@@ -22,6 +22,7 @@ defmodule Networking.Protocol do
 
   @mccp 86
   @mssp 70
+  @gmcp 201
 
   @impl :ranch_protocol
   def start_link(ref, socket, transport, _opts) do
@@ -64,6 +65,15 @@ defmodule Networking.Protocol do
   end
 
   @doc """
+  Push GMCP data to the client
+  """
+  @spec push_gmcp(socket :: pid, module :: String.t, data :: String.t) :: :ok
+  @impl Networking.Socket
+  def push_gmcp(socket, module, data) do
+    GenServer.cast(socket, {:gmcp, module, data})
+  end
+
+  @doc """
   Disconnect the socket
 
   Will terminate the socket and the session
@@ -80,7 +90,7 @@ defmodule Networking.Protocol do
     :ok = :ranch.accept_ack(ref)
     :ok = transport.setopts(socket, [{:active, true}])
     GenServer.cast(self(), :start_session)
-    :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport})
+    :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport, gmcp: false, gmcp_supports: []})
   end
 
   @impl GenServer
@@ -88,6 +98,24 @@ defmodule Networking.Protocol do
     send_data(state, message)
     {:noreply, state}
   end
+
+  def handle_cast({:gmcp, module, data}, state = %{gmcp: true}) do
+    case module in state.gmcp_supports do
+      true ->
+        Logger.debug ["GMCP: Sending", module]
+        module_char = module |> String.to_charlist()
+        data_char = data |> String.to_charlist()
+        message = [@iac, @sb, @gmcp] ++ module_char ++ data_char ++ [@iac, @se]
+        send_data(state, message)
+        {:noreply, state}
+      false ->
+        {:noreply, state}
+    end
+  end
+  def handle_cast({:gmcp, _module, _data}, state) do
+    {:noreply, state}
+  end
+
   def handle_cast({:echo, message}, state) do
     send_data(state, "\n#{message |> Color.format}\n")
     {:noreply, state}
@@ -96,10 +124,12 @@ defmodule Networking.Protocol do
     send_data(state, "\n#{message |> Color.format}")
     {:noreply, state}
   end
+
   def handle_cast(:start_session, state) do
     {:ok, pid} = Game.Session.start(self())
     send_data(state, [@iac, @will, @mccp])
     send_data(state, [@iac, @will, @mssp])
+    send_data(state, [@iac, @will, @gmcp])
     {:noreply, Map.merge(state, %{session: pid})}
   end
   # close the socket and terminate the server
@@ -126,7 +156,17 @@ defmodule Networking.Protocol do
 
         {:noreply, state}
 
-      (:iac) -> {:noreply, state}
+      (:iac) ->
+        {:noreply, state}
+
+      (:gmcp) ->
+        Logger.info("Will do GCMP")
+        {:noreply, Map.put(state, :gmcp, true)}
+
+      ({:gmcp, data}) ->
+        data = data |> to_string() |> String.trim()
+        Logger.debug(["GMCP: ", data])
+        handle_gmcp(data, state)
 
       (_) ->
         case state do
@@ -162,9 +202,13 @@ defmodule Networking.Protocol do
     transport.close(socket)
   end
 
-  # multiple IAC dos might come in at the same time, so forward
-  # them along to us after handling one
-  defp handle_options(data, socket, fun) do
+  @doc """
+  Handle telnet options
+
+  Multiple IAC dos might come in at the same time, so forward
+  them along to us after handling one.
+  """
+  def handle_options(data, socket, fun) do
     case data do
       << @iac, @telnet_do, @mccp, data :: binary >> ->
         forward_options(socket, data)
@@ -172,10 +216,42 @@ defmodule Networking.Protocol do
       << @iac, @telnet_do, @mssp, data :: binary >> ->
         forward_options(socket, data)
         fun.(:mssp)
-      << @iac, _data :: binary >> -> fun.(:iac)
-      _ -> fun.(:skip)
+      << @iac, @telnet_do, @gmcp, data :: binary >> ->
+        forward_options(socket, data)
+        fun.(:gmcp)
+      << @iac, @sb, @gmcp, data :: binary >> ->
+        {data, forward} = split_iac_sb(data)
+        forward_options(socket, forward)
+        fun.({:gmcp, data})
+      << @iac, _data :: binary >> ->
+        fun.(:iac)
+      _ ->
+        fun.(:skip)
     end
   end
+
+  @doc """
+  Handle GMCP requests
+
+  Handles the following options:
+  - Core.Supports.Set
+  """
+  def handle_gmcp("Core.Supports.Set " <> supports, state) do
+    case Poison.decode(supports) do
+      {:ok, supports} ->
+        supports = remove_version_numbers(supports)
+        {:noreply, Map.put(state, :gmcp_supports, supports)}
+      _ -> {:noreply, state}
+    end
+  end
+  def handle_gmcp(_, state), do: {:noreply, state}
+
+  defp split_iac_sb(<< @iac, @se, data :: binary >>), do: {[], data}
+  defp split_iac_sb(<< int :: size(8), data :: binary >>) do
+    {data, forward} = split_iac_sb(data)
+    {[int | data], forward}
+  end
+  defp split_iac_sb(_), do: {[], ""}
 
   defp forward_options(_socket, ""), do: nil
   defp forward_options(socket, data) do
@@ -196,5 +272,12 @@ defmodule Networking.Protocol do
   end
   defp send_data(%{socket: socket, transport: transport}, data) do
     transport.send(socket, data)
+  end
+
+  defp remove_version_numbers(supports) do
+    supports
+    |> Enum.map(fn (support) ->
+      support |> String.split(" ") |> List.first()
+    end)
   end
 end

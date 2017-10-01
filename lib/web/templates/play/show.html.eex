@@ -1,4 +1,6 @@
 <div class="panel">
   <pre><code id="terminal"></code></pre>
 </div>
-<input type="text" id="prompt" autofocus="autofocus" autocorrect="off" autocapitalize="off" spellcheck="false" />
+<div class="prompt">
+  <input type="text" id="prompt" autofocus="autofocus" autocorrect="off" autocapitalize="off" spellcheck="false" />
+</div>

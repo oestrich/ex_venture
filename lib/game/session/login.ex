@@ -14,6 +14,7 @@ defmodule Game.Session.Login do
   alias Game.Channel
   alias Game.Format
   alias Game.Session
+  alias Game.Session.GMCP
 
   @doc """
   Start text for logging in
@@ -37,6 +38,12 @@ defmodule Game.Session.Login do
   def login(user, session, socket, state) do
     Session.Registry.register(user)
 
+    state =
+      state
+      |> Map.put(:user, user)
+      |> Map.put(:save, user.save)
+      |> Map.put(:state, "active")
+
     socket |> @socket.echo("Welcome, #{user.name}!")
 
     @room.enter(user.save.room_id, {:user, session, user})
@@ -45,10 +52,9 @@ defmodule Game.Session.Login do
     Enum.each(user.save.channels, &Channel.join/1)
     Channel.join_tell(user)
 
+    state |> GMCP.character()
+
     state
-    |> Map.put(:user, user)
-    |> Map.put(:save, user.save)
-    |> Map.put(:state, "active")
   end
 
   def sign_in(user_id, session, state = %{socket: socket}) do

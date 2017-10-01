@@ -23,6 +23,7 @@ defmodule Game.Session do
   alias Game.Format
   alias Game.Session
   alias Game.Session.Effects
+  alias Game.Session.GMCP
   alias Game.Session.Tick
 
   @save_period 15_000
@@ -302,7 +303,8 @@ defmodule Game.Session do
     end
   end
 
-  defp prompt(%{socket: socket, user: user, save: save}) do
+  defp prompt(state = %{socket: socket, user: user, save: save}) do
+    state |> GMCP.vitals()
     socket |> @socket.prompt(Format.prompt(user, save))
   end
 

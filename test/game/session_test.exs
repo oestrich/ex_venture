@@ -77,7 +77,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1}}
+    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1, stats: %{}}}
     {:noreply, state} = Session.handle_cast({:recv, "quit"}, state)
 
     assert @socket.get_echos() == [{socket, "Good bye."}]
@@ -232,7 +232,7 @@ defmodule Game.SessionTest do
     target = {:user, %{id: 10, name: "Player"}}
     user = %{id: 10}
 
-    state = %{socket: socket, state: "active", user: user, save: %{}, target: {:user, 10}}
+    state = %{socket: socket, state: "active", user: user, save: %{stats: %{}}, target: {:user, 10}}
     {:noreply, state} = Session.handle_cast({:died, target}, state)
 
     assert is_nil(state.target)

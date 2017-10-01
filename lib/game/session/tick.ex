@@ -9,6 +9,7 @@ defmodule Game.Session.Tick do
   import Game.Character.Update, only: [update_character: 2]
 
   alias Game.Config
+  alias Game.Session.GMCP
   alias Game.Stats
 
   @movement_regen 1
@@ -24,7 +25,16 @@ defmodule Game.Session.Tick do
     state
     |> handle_regen(Config.regen_tick_count(5))
     |> regen_movement()
+    |> push()
     |> Map.put(:last_tick, time)
+  end
+
+  @doc """
+  Push character vitals to the client on regen
+  """
+  def push(state) do
+    state |> GMCP.vitals()
+    state
   end
 
   @doc """

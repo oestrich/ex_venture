@@ -45,6 +45,20 @@ channel.on("option", payload => {
       console.log("No option found")
   }
 })
+channel.on("gmcp", payload => {
+  let data = JSON.parse(payload.data)
+
+  switch(payload.module) {
+    case "Character":
+      console.log(`Signed in as ${data.name}`)
+      break;
+    case "Character.Vitals":
+      console.log("Vitals: ", data)
+      break;
+    default:
+      console.log("Module not found")
+  }
+})
 channel.on("prompt", payload => {
   let message = format(payload.message)
   let html = document.createElement('span');

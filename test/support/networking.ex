@@ -55,4 +55,7 @@ defmodule Test.Networking.Socket do
 
   @impl Networking.Socket
   def tcp_option(_socket, _option, _enabled), do: :ok
+
+  @impl Networking.Socket
+  def push_gmcp(_socket, _module, _data), do: :ok
 end

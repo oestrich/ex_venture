@@ -99,6 +99,10 @@ defmodule Web.TelnetChannel do
       end
       {:noreply, state}
     end
+    def handle_cast({:gmcp, module, data}, state) do
+      send(state.socket.channel_pid, {:gmcp, module, data})
+      {:noreply, state}
+    end
     def handle_cast({:echo, message}, state) do
       send(state.socket.channel_pid, {:echo, message})
       {:noreply, state}
@@ -167,6 +171,10 @@ defmodule Web.TelnetChannel do
 
   def handle_info({:option, :echo, flag}, socket) do
     push socket, "option", %{type: "echo", echo: flag}
+    {:noreply, socket}
+  end
+  def handle_info({:gmcp, module, data}, socket) do
+    push socket, "gmcp", %{module: module, data: data}
     {:noreply, socket}
   end
   def handle_info({:echo, message}, socket) do
