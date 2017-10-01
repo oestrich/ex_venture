@@ -21,6 +21,42 @@ input {
   margin: 10px;
 }
 
+.stats {
+  margin-left: 10px;
+  margin-right: 8px;
+}
+
+#health,
+#skills,
+#movement {
+  display: inline-block;
+  width: 33%;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-size: 1.25em;
+}
+
+#health > span,
+#skills > span,
+#movement > span {
+  padding-left: 10px;
+}
+
+#health {
+  background: #dc322f;
+  color: #fdf6e3;
+}
+
+#skills {
+  background: #859901;
+  color: #fdf6e3;
+}
+
+#movement {
+  background: #268bd2;
+  color: #fdf6e3;
+}
+
 @media only screen and (max-width: 500px) {
   input {
     width: 90%;
@@ -30,6 +66,10 @@ input {
     white-space: pre-wrap;
   }
 }
+
+/*
+ * Colors
+ */
 
 .black {
   color: #003541;

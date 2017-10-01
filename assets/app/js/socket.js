@@ -53,6 +53,9 @@ channel.on("gmcp", payload => {
       console.log(`Signed in as ${data.name}`)
       break;
     case "Character.Vitals":
+      document.getElementById("health").innerHTML = `<span>${data.health}/${data.max_health}</span>`;
+      document.getElementById("skills").innerHTML = `<span>${data.skill_points}/${data.max_skill_points}</span>`;
+      document.getElementById("movement").innerHTML = `<span>${data.move_points}/${data.max_move_points}</span>`;
       console.log("Vitals: ", data)
       break;
     default:

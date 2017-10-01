@@ -2,5 +2,10 @@
   <pre><code id="terminal"></code></pre>
 </div>
 <div class="prompt">
+  <div class="stats">
+    <div id="health"></div>
+    <div id="skills"></div>
+    <div id="movement"></div>
+  </div>
   <input type="text" id="prompt" autofocus="autofocus" autocorrect="off" autocapitalize="off" spellcheck="false" />
 </div>
