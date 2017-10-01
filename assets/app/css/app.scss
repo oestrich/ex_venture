@@ -27,49 +27,57 @@ input {
   display: none;
 }
 
-#health,
-#skills,
-#movement {
+@mixin stat-block {
   display: inline-block;
   width: 32.7%;
   font-size: 1.25em;
+
+  .container {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  span {
+    padding-left: 10px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    & {
+      display: inline-block;
+      width: 31%;
+    }
+  }
 }
 
-#health .container,
-#skills .container,
-#movement .container {
-  padding-top: 3px;
-  padding-bottom: 3px;
-}
-
-#health span,
-#skills span,
-#movement span {
-  padding-left: 10px;
-}
 
 #health {
+  @include stat-block;
   border: 2px solid #dc322f;
-}
-#health .container {
-  background: #dc322f;
-  color: #fdf6e3;
+
+  .container {
+    background: #dc322f;
+    color: #fdf6e3;
+  }
 }
 
 #skills {
+  @include stat-block;
   border: 2px solid #859901;
-}
-#skills .container {
-  background: #859901;
-  color: #fdf6e3;
+
+  .container {
+    background: #859901;
+    color: #fdf6e3;
+  }
 }
 
 #movement {
+  @include stat-block;
   border: 2px solid #268bd2;
-}
-#movement .container {
-  background: #268bd2;
-  color: #fdf6e3;
+
+  .container {
+    background: #268bd2;
+    color: #fdf6e3;
+  }
 }
 
 @media only screen and (max-width: 500px) {
