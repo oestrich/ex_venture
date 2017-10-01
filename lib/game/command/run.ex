@@ -6,6 +6,7 @@ defmodule Game.Command.Run do
   use Game.Command
 
   alias Game.Command.Move
+  alias Game.Session.GMCP
 
   @direction_regex ~r/(?<count>\d+)?(?<direction>[nesw])/
   @continue_wait Application.get_env(:ex_venture, :game)[:continue_wait]
@@ -52,6 +53,7 @@ defmodule Game.Command.Run do
 
   defp maybe_continue(state, []), do: {:update, state}
   defp maybe_continue(state, directions) do
+    state |> GMCP.vitals()
     {:update, state, {__MODULE__, {directions}, @continue_wait}}
   end
 
