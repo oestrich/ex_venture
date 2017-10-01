@@ -53,11 +53,13 @@ channel.on("gmcp", payload => {
   switch(payload.module) {
     case "Character":
       console.log(`Signed in as ${data.name}`)
+      let stats = _.first(Sizzle(".stats"));
+      stats.style.display = "inherit";
+
       break;
     case "Character.Vitals":
       let healthWidth = data.health / data.max_health;
       let skillWidth = data.skill_points / data.max_skill_points;
-      console.log(skillWidth * 100);
       let moveWidth = data.move_points / data.max_move_points;
 
       let health = _.first(Sizzle("#health .container"));

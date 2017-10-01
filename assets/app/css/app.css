@@ -24,6 +24,7 @@ input {
 .stats {
   margin-left: 10px;
   margin-right: 8px;
+  display: none;
 }
 
 #health,
