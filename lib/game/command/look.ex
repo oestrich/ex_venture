@@ -6,6 +6,7 @@ defmodule Game.Command.Look do
   use Game.Command
 
   alias Data.Exit
+  alias Game.Session.GMCP
 
   @commands ["look at", "look"]
   @aliases ["l"]
@@ -23,8 +24,9 @@ defmodule Game.Command.Look do
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
-  def run({}, _session, %{socket: socket, save: %{room_id: room_id}}) do
+  def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
+    state |> GMCP.room(room)
     socket |> @socket.echo(Format.room(room))
     :ok
   end
