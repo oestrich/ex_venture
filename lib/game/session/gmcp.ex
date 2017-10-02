@@ -31,13 +31,22 @@ defmodule Game.Session.GMCP do
     socket |> @socket.push_gmcp("Room.Info", room |> room_info() |> Poison.encode!())
   end
 
-  defp room_info(room = %Room{}) do
-    basics = Map.take(room, [:name, :description, :ecology, :zone_id, :x, :y])
-    Map.merge(basics, %{
-      items: Enum.map(room.items, &(%{id: &1.id, name: &1.name})),
-      players: Enum.map(room.players, &(%{id: &1.id, name: &1.name})),
-      npcs: Enum.map(room.npcs, &(%{id: &1.id, name: &1.name})),
-      shops: Enum.map(room.shops, &(%{id: &1.id, name: &1.name})),
+  defp room_info(room) do
+    room
+    |> Map.take([:name, :description, :ecology, :zone_id, :x, :y])
+    |> Map.merge(%{
+      items: render_many(room, :items),
+      players: render_many(room, :players),
+      npcs: render_many(room, :npcs),
+      shops: render_many(room, :shops),
     })
+  end
+
+  defp render_many(struct, key) do
+    case struct do
+      %{^key => data} when data != nil ->
+        Enum.map(data, &(%{id: &1.id, name: &1.name}))
+      _ -> []
+    end
   end
 end
