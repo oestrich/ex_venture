@@ -209,11 +209,13 @@ defmodule Game.Room do
 
   def handle_cast({:leave, {:user, _, user}}, state = %{players: players}) do
     players = Enum.reject(players, &(elem(&1, 2).id == user.id))
+    players |> echo_gmcp_to_players(GMCP.character_leave({:user, user}))
     players |> echo_to_players("{blue}#{user.name}{/blue} leaves")
     {:noreply, Map.put(state, :players, players)}
   end
   def handle_cast({:leave, {:npc, npc}}, state = %{players: players, npcs: npcs}) do
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
+    players |> echo_gmcp_to_players(GMCP.character_leave({:npc, npc}))
     players |> echo_to_players("{yellow}#{npc.name}{/yellow} leaves")
     {:noreply, Map.put(state, :npcs, npcs)}
   end
