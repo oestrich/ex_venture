@@ -76,6 +76,14 @@ defmodule Game.Session do
   end
 
   @doc """
+  Echo GMCP to the socket
+  """
+  @spec gmcp(pid, module :: String.t, data :: map) :: :ok
+  def gmcp(pid, module, data) do
+    GenServer.cast(pid, {:gmcp, module, data})
+  end
+
+  @doc """
   Send a tick to the session
   """
   @spec tick(pid, time :: DateTime.t) :: :ok
@@ -149,6 +157,12 @@ defmodule Game.Session do
   # forward the echo the socket pid
   def handle_cast({:echo, message}, state = %{socket: socket}) do
     socket |> @socket.echo(message)
+    {:noreply, state}
+  end
+
+  # forward the gmcp the socket pid
+  def handle_cast({:gmcp, module, data}, state = %{socket: socket}) do
+    socket |> @socket.push_gmcp(module, data |> Poison.encode!)
     {:noreply, state}
   end
 

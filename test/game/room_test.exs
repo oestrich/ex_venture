@@ -13,6 +13,16 @@ defmodule Game.RoomTest do
     assert state.players == [{:user, :session, user}]
   end
 
+  test "entering a room pushes gmcp data - user", %{user: user} do
+    {:noreply, _state} = Room.handle_cast({:enter, {:user, :session, user}}, %{players: [{:user, self(), user}]})
+    assert_receive {:"$gen_cast", {:gmcp, "Room.Character.Enter", %{type: :player, id: 10, name: "user"}}}
+  end
+
+  test "entering a room pushes gmcp data - npc", %{user: user} do
+    {:noreply, _state} = Room.handle_cast({:enter, {:npc, user}}, %{players: [{:user, self(), user}], npcs: []})
+    assert_receive {:"$gen_cast", {:gmcp, "Room.Character.Enter", %{type: :npc, id: 10, name: "user"}}}
+  end
+
   test "leaving a room - user", %{user: user} do
     {:noreply, state} = Room.handle_cast({:leave, {:user, :session, user}}, %{players: [{:user, :session, user}]})
     assert state.players == []

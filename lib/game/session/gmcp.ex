@@ -31,6 +31,19 @@ defmodule Game.Session.GMCP do
     socket |> @socket.push_gmcp("Room.Info", room |> room_info() |> Poison.encode!())
   end
 
+  @doc """
+  A character enters a room
+
+  Does not push directly to the socket
+  """
+  @spec character_enter({:user, map} | {:npc, map}) :: {module :: String.t, data :: map}
+  def character_enter({:user, user}) do
+    {"Room.Character.Enter", %{type: :player, id: user.id, name: user.name}}
+  end
+  def character_enter({:npc, npc}) do
+    {"Room.Character.Enter", %{type: :npc, id: npc.id, name: npc.name}}
+  end
+
   defp room_info(room) do
     room
     |> Map.take([:name, :description, :ecology, :zone_id, :x, :y])

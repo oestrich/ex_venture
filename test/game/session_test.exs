@@ -295,4 +295,11 @@ defmodule Game.SessionTest do
       assert state.save.room_id == room.id
     end
   end
+
+  describe "pushing GMCP forward" do
+    test "pushes and encodes the data" do
+      {:noreply, _state} = Session.handle_cast({:gmcp, "Room.Info", %{id: 10}}, %{socket: :socket})
+      assert [{:socket, "Room.Info", "{\"id\":10}"}] = @socket.get_push_gmcps()
+    end
+  end
 end

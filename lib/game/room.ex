@@ -13,6 +13,7 @@ defmodule Game.Room do
   alias Game.Message
   alias Game.NPC
   alias Game.Session
+  alias Game.Session.GMCP
   alias Game.Zone
 
   @type t :: map
@@ -196,10 +197,12 @@ defmodule Game.Room do
   end
 
   def handle_cast({:enter, player = {:user, _, user}}, state = %{players: players}) do
+    players |> echo_gmcp_to_players(GMCP.character_enter({:user, user}))
     players |> echo_to_players("{blue}#{user.name}{/blue} enters")
     {:noreply, Map.put(state, :players, [player | players])}
   end
   def handle_cast({:enter, character = {:npc, npc}}, state = %{npcs: npcs, players: players}) do
+    players |> echo_gmcp_to_players(GMCP.character_enter({:npc, npc}))
     players |> echo_to_players("#{Format.target_name(character)} enters")
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
@@ -277,6 +280,12 @@ defmodule Game.Room do
   defp echo_to_players(players, message) do
     Enum.each(players, fn ({:user, session, _user}) ->
       Session.echo(session, message)
+    end)
+  end
+
+  defp echo_gmcp_to_players(players, {module, data}) do
+    Enum.each(players, fn ({:user, session, _user}) ->
+      Session.gmcp(session, module, data)
     end)
   end
 

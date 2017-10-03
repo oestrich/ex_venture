@@ -57,5 +57,16 @@ defmodule Test.Networking.Socket do
   def tcp_option(_socket, _option, _enabled), do: :ok
 
   @impl Networking.Socket
-  def push_gmcp(_socket, _module, _data), do: :ok
+  def push_gmcp(socket, module, data) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) ->
+      push_gmcps = Map.get(state, :push_gmcp, [])
+      Map.put(state, :push_gmcp, push_gmcps ++ [{socket, module, data}])
+    end)
+    :ok
+  end
+
+  def get_push_gmcps() do
+    Agent.get(__MODULE__, fn state -> Map.get(state, :push_gmcp, []) end)
+  end
 end

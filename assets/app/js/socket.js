@@ -87,7 +87,6 @@ channel.on("gmcp", payload => {
 
       break;
     case "Room.Info":
-      console.log(data)
       let roomName = _.first(Sizzle(".room-info .room-name"))
       roomName.innerHTML = data.name
 
