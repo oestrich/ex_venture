@@ -61,6 +61,8 @@ channel.on("gmcp", payload => {
       console.log(`Signed in as ${data.name}`)
       let stats = _.first(Sizzle(".stats"));
       stats.style.display = "inherit";
+      let roomInfo = _.first(Sizzle(".room-info"));
+      roomInfo.style.display = "inherit";
 
       break;
     case "Character.Vitals":

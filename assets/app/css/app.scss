@@ -32,6 +32,8 @@ body {
 }
 
 .room-info {
+  display: none;
+
   background-color: $base3;
   border-bottom: 2px solid $base3;
   color: $base02;
