@@ -18,6 +18,11 @@ function guid() {
     s4() + '-' + s4() + s4() + s4();
 }
 
+let scrollToBottom = function() {
+  let panel = _.first(Sizzle(".panel"))
+  panel.scrollTop = panel.scrollHeight
+}
+
 let options = {
   echo: true,
 };
@@ -79,6 +84,25 @@ channel.on("gmcp", payload => {
       movementStat.innerHTML = `${data.move_points}/${data.max_move_points}`;
 
       break;
+    case "Room.Info":
+      console.log(data)
+      let roomName = _.first(Sizzle(".room-info .room-name"))
+      roomName.innerHTML = data.name
+
+      let characters = _.first(Sizzle(".room-info .characters"))
+      characters.innerHTML = ""
+      _.each(data.npcs, (npc) => {
+        let html = document.createElement('span')
+        html.innerHTML = `<li class="yellow">${npc.name}</li>`
+        characters.append(html)
+      })
+      _.each(data.players, (player) => {
+        let html = document.createElement('span')
+        html.innerHTML = `<li class="blue">${player.name}</li>`
+        characters.append(html)
+      })
+
+      break;
     default:
       console.log("Module not found")
   }
@@ -89,7 +113,7 @@ channel.on("prompt", payload => {
   html.innerHTML = message;
 
   document.getElementById("terminal").append(html)
-  window.scrollTo(0, document.body.scrollHeight);
+  scrollToBottom()
 })
 channel.on("echo", payload => {
   let message = format(payload.message)
@@ -97,12 +121,12 @@ channel.on("echo", payload => {
   html.innerHTML = message;
 
   document.getElementById("terminal").append(html)
-  window.scrollTo(0, document.body.scrollHeight);
+  scrollToBottom()
 })
 channel.on("disconnect", payload => {
   document.getElementById("terminal").append("\nDisconnected.")
   socket.disconnect()
-  window.scrollTo(0, document.body.scrollHeight);
+  scrollToBottom()
 })
 
 document.getElementById("prompt").addEventListener("keydown", e => {

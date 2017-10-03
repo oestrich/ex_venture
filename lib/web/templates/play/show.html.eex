@@ -1,5 +1,14 @@
 <div class="panel">
-  <pre><code id="terminal"></code></pre>
+  <div class="container">
+    <pre><code id="terminal"></code></pre>
+  </div>
+</div>
+<div class="room-info">
+  <div class="container">
+    <h3 class="room-name"></h3>
+    <h4>Characters</h4>
+    <ul class="characters"></ul>
+  </div>
 </div>
 <div class="prompt">
   <div class="stats">
