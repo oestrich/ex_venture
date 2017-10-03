@@ -25,14 +25,19 @@ defmodule Game.Session.Tick do
     state
     |> handle_regen(Config.regen_tick_count(5))
     |> regen_movement()
-    |> push()
+    |> push(state)
     |> Map.put(:last_tick, time)
   end
 
   @doc """
   Push character vitals to the client on regen
+
+  Only pushes if the stats changed
   """
-  def push(state) do
+  def push(state = %{save: %{stats: stats}}, %{save: %{stats: stats}}) do
+    state
+  end
+  def push(state, _old_state) do
     state |> GMCP.vitals()
     state
   end
