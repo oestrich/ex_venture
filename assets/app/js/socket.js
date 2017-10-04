@@ -1,9 +1,9 @@
 import {Socket} from "phoenix"
-import format from "./color"
 import Sizzle from "sizzle"
 import _ from "underscore"
 
 import CommandHistory from "./command-history"
+import {appendMessage, scrollToBottom} from "./panel"
 
 var body = document.getElementById("body")
 var userToken = body.getAttribute("data-user-token")
@@ -12,17 +12,12 @@ let socket = new Socket("/socket", {params: {token: userToken}})
 
 socket.connect()
 
-function guid() {
+let guid = () => {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
   }
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
     s4() + '-' + s4() + s4() + s4();
-}
-
-let scrollToBottom = function() {
-  let panel = _.first(Sizzle(".panel"))
-  panel.scrollTop = panel.scrollHeight
 }
 
 let options = {
@@ -53,6 +48,7 @@ channel.on("option", payload => {
       console.log("No option found")
   }
 })
+
 channel.on("gmcp", payload => {
   let data = JSON.parse(payload.data)
 
@@ -108,22 +104,9 @@ channel.on("gmcp", payload => {
       console.log("Module not found")
   }
 })
-channel.on("prompt", payload => {
-  let message = format(payload.message)
-  let html = document.createElement('span');
-  html.innerHTML = message;
 
-  document.getElementById("terminal").append(html)
-  scrollToBottom()
-})
-channel.on("echo", payload => {
-  let message = format(payload.message)
-  let html = document.createElement('span');
-  html.innerHTML = message;
-
-  document.getElementById("terminal").append(html)
-  scrollToBottom()
-})
+channel.on("prompt", appendMessage)
+channel.on("echo", appendMessage)
 channel.on("disconnect", payload => {
   document.getElementById("terminal").append("\nDisconnected.")
   socket.disconnect()
