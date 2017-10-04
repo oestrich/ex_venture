@@ -3,6 +3,8 @@ import format from "./color"
 import Sizzle from "sizzle"
 import _ from "underscore"
 
+import CommandHistory from "./command-history"
+
 var body = document.getElementById("body")
 var userToken = body.getAttribute("data-user-token")
 
@@ -26,8 +28,6 @@ let scrollToBottom = function() {
 let options = {
   echo: true,
 };
-let commandHistory = [];
-let commandIndex = -1;
 
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("telnet:" + guid(), {})
@@ -130,41 +130,31 @@ channel.on("disconnect", payload => {
   scrollToBottom()
 })
 
+let commandHistory = new CommandHistory()
+
 document.getElementById("prompt").addEventListener("keydown", e => {
   let commandPrompt = document.getElementById("prompt")
 
   switch (e.keyCode) {
     case 38:
-      if (commandHistory[commandIndex + 1] != undefined) {
-        commandIndex += 1
-        commandPrompt.value = commandHistory[commandIndex]
-      }
+      commandHistory.scrollBack((command) => {
+        commandPrompt.value = command
+      })
       break;
-
     case 40:
-      if (commandHistory[commandIndex - 1] != undefined) {
-        commandIndex -= 1
-        commandPrompt.value = commandHistory[commandIndex]
-      } else if (commandIndex - 1 <= -1) {
-        commandIndex = -1
-        commandPrompt.value = ""
-      }
-
+      commandHistory.scrollForward((command) => {
+        commandPrompt.value = command
+      })
       break;
   }
 })
+
 document.getElementById("prompt").addEventListener("keypress", e => {
   if (e.keyCode == 13) {
     var command = document.getElementById("prompt").value
 
     if (options.echo) {
-      if (command != "") {
-        commandIndex = -1
-        commandHistory.unshift(command)
-        if (commandHistory.length > 10) {
-          commandHistory.pop()
-        }
-      }
+      commandHistory.add(command)
 
       let html = document.createElement('span');
       html.innerHTML = command + "<br/>";
