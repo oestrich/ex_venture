@@ -57,20 +57,18 @@ let roomInfo = (data) => {
   })
 }
 
+let gmcp = {
+  "Character": character,
+  "Character.Vitals": characterVitals,
+  "Room.Info": roomInfo,
+}
+
 export function gmcpMessage(payload) {
   let data = JSON.parse(payload.data)
 
-  switch(payload.module) {
-    case "Character":
-      character(data);
-      break;
-    case "Character.Vitals":
-      characterVitals(data);
-      break;
-    case "Room.Info":
-      roomInfo(data);
-      break;
-    default:
-      console.log("Module not found")
+  if (gmcp[payload.module] != undefined) {
+    gmcp[payload.module](data);
+  } else {
+    console.log("Module not found")
   }
 }
