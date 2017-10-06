@@ -37,30 +37,80 @@ let characterVitals = (data) => {
 }
 
 /**
- * Room.Info module
+ * Room state
  */
-let roomInfo = (data) => {
+let room = {};
+
+/**
+ * Render a room into the side panel
+ */
+let renderRoom = (room) => {
   let roomName = _.first(Sizzle(".room-info .room-name"))
-  roomName.innerHTML = data.name
+  roomName.innerHTML = room.name
 
   let characters = _.first(Sizzle(".room-info .characters"))
   characters.innerHTML = ""
-  _.each(data.npcs, (npc) => {
+  _.each(room.npcs, (npc) => {
     let html = document.createElement('span')
     html.innerHTML = `<li class="yellow">${npc.name}</li>`
     characters.append(html)
   })
-  _.each(data.players, (player) => {
+  _.each(room.players, (player) => {
     let html = document.createElement('span')
     html.innerHTML = `<li class="blue">${player.name}</li>`
     characters.append(html)
   })
 }
 
+/**
+ * Room.Info module
+ */
+let roomInfo = (data) => {
+  room = data
+  renderRoom(room)
+}
+
+/**
+ * Room.Character.Enter module
+ */
+let roomCharacterEnter = (data) => {
+  console.log(data)
+  console.log(room.players)
+  switch (data.type) {
+    case "player":
+      room.players.push(data)
+      renderRoom(room)
+      break;
+    case "npc":
+      room.npcs.push(data)
+      renderRoom(room)
+      break;
+  }
+}
+
+/**
+ * Room.Character.Leave module
+ */
+let roomCharacterLeave = (data) => {
+  console.log(data)
+  switch (data.type) {
+    case "player":
+      room.players = _.reject(room.players, (player) => player.id == data.id)
+      renderRoom(room)
+      break;
+    case "npc":
+      room.npcs = _.reject(room.npcs, (npc) => npc.id == data.id)
+      renderRoom(room)
+      break;
+  }
+}
+
 let gmcp = {
   "Character": character,
   "Character.Vitals": characterVitals,
   "Room.Info": roomInfo,
+  "Room.Character.Enter": roomCharacterEnter,
+  "Room.Character.Leave": roomCharacterLeave,
 }
 
 export function gmcpMessage(payload) {
@@ -69,6 +119,6 @@ export function gmcpMessage(payload) {
   if (gmcp[payload.module] != undefined) {
     gmcp[payload.module](data);
   } else {
-    console.log("Module not found")
+    console.log(`Module \"${payload.module}\" not found`)
   }
 }
