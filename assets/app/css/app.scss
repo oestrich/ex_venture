@@ -14,7 +14,7 @@ body {
   left: 0;
   width: 80%;
   height: 88%;
-  overflow: scroll;
+  overflow-y: scroll;
   border-right: 2px solid $base3;
   border-bottom: 2px solid $base3;
 }
