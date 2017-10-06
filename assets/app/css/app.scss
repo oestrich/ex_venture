@@ -64,24 +64,36 @@ pre {
   }
 }
 
+.prompt-container {
+  position: relative;
+  width: 98%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+
 input {
   font-size: 18px;
-  width: 98%;
-  margin: 10px;
+  width: 100%;
+  margin-top: 10px;
 }
 
 .stats {
-  margin-left: 10px;
-  margin-right: 8px;
   display: none;
+  margin-left: 1%;
+  margin-right: 1%;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
 }
 
 @mixin stat-block {
   background-color: $base2;
   border: 2px solid $base2;
   display: inline-block;
-  width: 32.5%;
   font-size: 1.1em;
+  flex: 1;
+  margin-left: 3px;
+  margin-right: 3px;
 
   .container {
     padding-top: 3px;
@@ -94,7 +106,6 @@ input {
 
   @media only screen and (max-width: 500px) {
     & {
-      display: inline-block;
       width: 31%;
     }
   }

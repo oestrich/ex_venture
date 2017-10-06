@@ -7,7 +7,7 @@ import _ from "underscore"
 let character = (data) => {
   console.log(`Signed in as ${data.name}`)
   let stats = _.first(Sizzle(".stats"));
-  stats.style.display = "inherit";
+  stats.style.display = "flex";
   let roomInfo = _.first(Sizzle(".room-info"));
   roomInfo.style.display = "inherit";
 }
