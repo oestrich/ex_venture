@@ -27,9 +27,6 @@ let options = {
 
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("telnet:" + guid(), {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
 
 channel.on("option", payload => {
   let commandPrompt = document.getElementById("prompt")
@@ -95,4 +92,4 @@ document.getElementById("prompt").addEventListener("keypress", e => {
   }
 })
 
-export default socket
+export {channel}
