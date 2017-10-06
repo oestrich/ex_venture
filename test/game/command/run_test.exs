@@ -8,7 +8,7 @@ defmodule Game.Command.RunTest do
   @room Test.Game.Room
 
   setup do
-    user = %{id: 10, save: %{room_id: 1, stats: %{move_points: 10}}}
+    user = %{id: 10, class: %{points_abbreviation: "SP"}, save: %{room_id: 1, stats: %{move_points: 10}}}
     state = %{socket: :socket, user: user, save: user.save}
     {:ok, %{session: :session, socket: :socket, state: state}}
   end

@@ -23,17 +23,17 @@ let characterVitals = (data) => {
   let health = _.first(Sizzle("#health .container"));
   health.style.width = `${healthWidth * 100}%`;
   let healthStat = _.first(Sizzle("#health .stat"));
-  healthStat.innerHTML = `${data.health}/${data.max_health}`;
+  healthStat.innerHTML = `${data.health}/${data.max_health} hp`;
 
   let skill = _.first(Sizzle("#skills .container"));
   skill.style.width = `${skillWidth * 100}%`;
   let skillStat = _.first(Sizzle("#skills .stat"));
-  skillStat.innerHTML = `${data.skill_points}/${data.max_skill_points}`;
+  skillStat.innerHTML = `${data.skill_points}/${data.max_skill_points} ${data.skill_abbreviation.toLowerCase()}`;
 
   let movement = _.first(Sizzle("#movement .container"));
   movement.style.width = `${moveWidth * 100}%`;
   let movementStat = _.first(Sizzle("#movement .stat"));
-  movementStat.innerHTML = `${data.move_points}/${data.max_move_points}`;
+  movementStat.innerHTML = `${data.move_points}/${data.max_move_points} mv`;
 }
 
 /**

@@ -24,7 +24,7 @@ defmodule Game.SessionTest do
   describe "ticking" do
     setup do
       stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12, move_points: 8, max_move_points: 10}
-      class = %{points_name: "Skill Points", regen_health: 1, regen_skill_points: 1}
+      class = %{points_name: "Skill Points", points_abbreviation: "SP", regen_health: 1, regen_skill_points: 1}
       %{user: %{class: class}, save: %{room_id: 1, stats: stats}, regen: %{count: 5}}
     end
 
@@ -230,7 +230,7 @@ defmodule Game.SessionTest do
 
   test "a died message is sent", %{socket: socket} do
     target = {:user, %{id: 10, name: "Player"}}
-    user = %{id: 10}
+    user = %{id: 10, class: %{points_abbreviation: "SP"}}
 
     state = %{socket: socket, state: "active", user: user, save: %{stats: %{}}, target: {:user, 10}}
     {:noreply, state} = Session.handle_cast({:died, target}, state)
