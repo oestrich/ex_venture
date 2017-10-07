@@ -4,7 +4,7 @@ import _ from "underscore"
 /**
  * Character module
  */
-let character = (data) => {
+let character = (channel, data) => {
   console.log(`Signed in as ${data.name}`)
   let stats = _.first(Sizzle(".stats"));
   stats.style.display = "flex";
@@ -15,7 +15,7 @@ let character = (data) => {
 /**
  * Character.Vitals module
  */
-let characterVitals = (data) => {
+let characterVitals = (channel, data) => {
   let healthWidth = data.health / data.max_health;
   let skillWidth = data.skill_points / data.max_skill_points;
   let moveWidth = data.move_points / data.max_move_points;
@@ -41,12 +41,27 @@ let characterVitals = (data) => {
  */
 let room = {};
 
+let sendExit = (channel, exit) => {
+  return (e) => {
+    channel.send(exit)
+  }
+}
+
 /**
  * Render a room into the side panel
  */
-let renderRoom = (room) => {
+let renderRoom = (channel, room) => {
   let roomName = _.first(Sizzle(".room-info .room-name"))
   roomName.innerHTML = room.name
+
+  let exits = _.first(Sizzle(".room-info .exits"))
+  exits.innerHTML = ""
+  _.each(room.exits, (exit) => {
+    let html = document.createElement("span")
+    html.innerHTML = `<span class="exit white">${exit}</span>`
+    html.addEventListener("click", sendExit(channel, exit))
+    exits.append(html)
+  })
 
   let characters = _.first(Sizzle(".room-info .characters"))
   characters.innerHTML = ""
@@ -65,25 +80,25 @@ let renderRoom = (room) => {
 /**
  * Room.Info module
  */
-let roomInfo = (data) => {
+let roomInfo = (channel, data) => {
   room = data
-  renderRoom(room)
+  renderRoom(channel, room)
 }
 
 /**
  * Room.Character.Enter module
  */
-let roomCharacterEnter = (data) => {
+let roomCharacterEnter = (channel, data) => {
   console.log(data)
   console.log(room.players)
   switch (data.type) {
     case "player":
       room.players.push(data)
-      renderRoom(room)
+      renderRoom(channel, room)
       break;
     case "npc":
       room.npcs.push(data)
-      renderRoom(room)
+      renderRoom(channel, room)
       break;
   }
 }
@@ -91,7 +106,7 @@ let roomCharacterEnter = (data) => {
 /**
  * Room.Character.Leave module
  */
-let roomCharacterLeave = (data) => {
+let roomCharacterLeave = (channel, data) => {
   console.log(data)
   switch (data.type) {
     case "player":
@@ -113,11 +128,11 @@ let gmcp = {
   "Room.Character.Leave": roomCharacterLeave,
 }
 
-export function gmcpMessage(payload) {
+export function gmcpMessage(channel, payload) {
   let data = JSON.parse(payload.data)
 
   if (gmcp[payload.module] != undefined) {
-    gmcp[payload.module](data);
+    gmcp[payload.module](channel, data);
   } else {
     console.log(`Module \"${payload.module}\" not found`)
   }

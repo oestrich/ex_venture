@@ -83,6 +83,7 @@ defmodule Game.Session.GMCP do
       players: render_many(room, :players),
       npcs: render_many(room, :npcs),
       shops: render_many(room, :shops),
+      exits: Room.exits(room),
     })
   end
 

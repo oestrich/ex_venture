@@ -7,6 +7,16 @@ import {appendMessage, scrollToBottom} from "./panel"
 import {gmcpMessage} from "./gmcp"
 import {guid} from "./utils"
 
+class ChannelWrapper {
+  constructor(channel) {
+    this.channel = channel
+  }
+
+  send(message) {
+    this.channel.push("recv", {message: message})
+  }
+}
+
 var body = document.getElementById("body")
 var userToken = body.getAttribute("data-user-token")
 
@@ -19,6 +29,7 @@ let options = {
 
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("telnet:" + guid(), {})
+let channelWrapper = new ChannelWrapper(channel)
 
 channel.on("option", payload => {
   let commandPrompt = document.getElementById("prompt")
@@ -39,7 +50,7 @@ channel.on("option", payload => {
   }
 })
 
-channel.on("gmcp", gmcpMessage)
+channel.on("gmcp", (payload) => { gmcpMessage(channelWrapper, payload) })
 channel.on("prompt", appendMessage)
 channel.on("echo", appendMessage)
 channel.on("disconnect", payload => {
@@ -80,7 +91,7 @@ document.getElementById("prompt").addEventListener("keypress", e => {
     }
 
     document.getElementById("prompt").value = ""
-    channel.push("recv", {message: command})
+    channelWrapper.send(command)
   }
 })
 

@@ -53,6 +53,18 @@ body {
     padding-left: 15px;
   }
 
+  .exits {
+    span {
+      padding-right: 5px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .white {
+      color: $base1;
+    }
+  }
+
   ul {
     list-style: none;
     padding-left: 5px;

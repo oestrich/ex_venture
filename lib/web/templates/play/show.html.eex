@@ -6,6 +6,7 @@
 <div class="room-info">
   <div class="container">
     <h3 class="room-name"></h3>
+    <div class="exits"></div>
     <h4>Characters</h4>
     <ul class="characters"></ul>
   </div>
