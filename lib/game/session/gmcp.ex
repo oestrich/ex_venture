@@ -60,6 +60,21 @@ defmodule Game.Session.GMCP do
     {"Room.Character.Leave", %{type: :npc, id: npc.id, name: npc.name}}
   end
 
+  @doc """
+  Send the player's target info
+  """
+  @spec targeted(state :: map, {:user, map} | {:npc, map}) :: :ok
+  def targeted(%{socket: socket}, {:user, user}) do
+    socket |> @socket.push_gmcp("Target.Character", user |> user_info() |> Poison.encode!())
+  end
+  def targeted(%{socket: socket}, {:npc, npc}) do
+    socket |> @socket.push_gmcp("Target.Character", npc |> npc_info() |> Poison.encode!())
+  end
+
+  def clear_target(%{socket: socket}) do
+    socket |> @socket.push_gmcp("Target.Clear", "{}")
+  end
+
   defp room_info(room) do
     room
     |> Map.take([:name, :description, :ecology, :zone_id, :x, :y])
@@ -69,6 +84,30 @@ defmodule Game.Session.GMCP do
       npcs: render_many(room, :npcs),
       shops: render_many(room, :shops),
     })
+  end
+
+  @doc """
+  Gather information for a user
+  """
+  @spec user_info(User.t) :: map
+  def user_info(user) do
+    %{
+      type: :player,
+      id: user.id,
+      name: user.name,
+    }
+  end
+
+  @doc """
+  Gather information for a npc
+  """
+  @spec npc_info(NPC.t) :: map
+  def npc_info(npc) do
+    %{
+      type: :player,
+      id: npc.id,
+      name: npc.name,
+    }
   end
 
   defp render_many(struct, key) do

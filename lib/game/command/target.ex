@@ -9,6 +9,7 @@ defmodule Game.Command.Target do
   alias Data.Room
   alias Data.User
   alias Game.Character
+  alias Game.Session.GMCP
 
   @commands ["target"]
   @must_be_alive true
@@ -56,9 +57,10 @@ defmodule Game.Command.Target do
   """
   @spec target_npc(npc :: NPC.t, socket :: pid, state :: map) :: {:update, state :: map}
   def target_npc(npc, socket, state)
-  def target_npc(%{id: id, name: name}, socket, state = %{user: user}) do
+  def target_npc(npc = %{id: id, name: name}, socket, state = %{user: user}) do
     Character.being_targeted({:npc, id}, {:user, user})
     socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
+    state |> GMCP.targeted({:npc, npc})
     {:update, Map.put(state, :target, {:npc, id})}
   end
 
@@ -76,6 +78,7 @@ defmodule Game.Command.Target do
   def target_user(%{id: id, name: name}, socket, state = %{user: user}) do
     Character.being_targeted({:user, id}, {:user, user})
     socket |> @socket.echo("You are now targeting {blue}#{name}{/blue}.")
+    state |> GMCP.targeted({:user, user})
     {:update, Map.put(state, :target, {:user, id})}
   end
 

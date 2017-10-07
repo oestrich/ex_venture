@@ -329,7 +329,7 @@ defmodule CommandTest do
       assert Regex.match?(~r(no movement), error)
     end
 
-    test "clears the target after moving", %{session: session, state: state, user: user} do
+    test "clears the target after moving", %{session: session, socket: socket, state: state, user: user} do
       @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
       Registry.register(user)
 
@@ -338,6 +338,7 @@ defmodule CommandTest do
 
       assert state.target == nil
       assert_received {:"$gen_cast", {:remove_target, {:user, ^user}}}
+      assert [{^socket, "Target.Clear", "{}"}, _] = @socket.get_push_gmcps()
 
       Registry.unregister()
     end
