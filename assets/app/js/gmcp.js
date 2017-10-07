@@ -128,12 +128,14 @@ let gmcp = {
   "Room.Character.Leave": roomCharacterLeave,
 }
 
-export function gmcpMessage(channel, payload) {
-  let data = JSON.parse(payload.data)
+export function gmcpMessage(channel) {
+  return (payload) => {
+    let data = JSON.parse(payload.data)
 
-  if (gmcp[payload.module] != undefined) {
-    gmcp[payload.module](channel, data);
-  } else {
-    console.log(`Module \"${payload.module}\" not found`)
+    if (gmcp[payload.module] != undefined) {
+      gmcp[payload.module](channel, data);
+    } else {
+      console.log(`Module \"${payload.module}\" not found`)
+    }
   }
 }

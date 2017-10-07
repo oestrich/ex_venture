@@ -50,7 +50,7 @@ channel.on("option", payload => {
   }
 })
 
-channel.on("gmcp", (payload) => { gmcpMessage(channelWrapper, payload) })
+channel.on("gmcp", gmcpMessage(channelWrapper))
 channel.on("prompt", appendMessage)
 channel.on("echo", appendMessage)
 channel.on("disconnect", payload => {
