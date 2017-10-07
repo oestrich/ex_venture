@@ -5,21 +5,13 @@ import _ from "underscore"
 import CommandHistory from "./command-history"
 import {appendMessage, scrollToBottom} from "./panel"
 import {gmcpMessage} from "./gmcp"
+import {guid} from "./utils"
 
 var body = document.getElementById("body")
 var userToken = body.getAttribute("data-user-token")
 
 let socket = new Socket("/socket", {params: {token: userToken}})
-
 socket.connect()
-
-let guid = () => {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
-}
 
 let options = {
   echo: true,
