@@ -1,6 +1,8 @@
 import Sizzle from "sizzle"
 import _ from "underscore"
 
+import format from "./color"
+
 /**
  * Character module
  */
@@ -66,14 +68,14 @@ let renderRoom = (channel, room) => {
   let characters = _.first(Sizzle(".room-info .characters"))
   characters.innerHTML = ""
   _.each(room.npcs, (npc) => {
-    let html = document.createElement('span')
+    let html = document.createElement('div')
     html.innerHTML = `<li class="yellow">${npc.name}</li>`
-    characters.append(html)
+    _.each(html.children, (li) => { characters.append(li) })
   })
   _.each(room.players, (player) => {
-    let html = document.createElement('span')
+    let html = document.createElement('div')
     html.innerHTML = `<li class="blue">${player.name}</li>`
-    characters.append(html)
+    _.each(html.children, (li) => { characters.append(li) })
   })
 }
 
@@ -120,12 +122,24 @@ let roomCharacterLeave = (channel, data) => {
   }
 }
 
+let zoneMap = (channel, data) => {
+  let map = _.first(Sizzle(".room-info .map"))
+
+  let html = document.createElement('pre')
+  let mapString = format(data.map)
+  html.innerHTML = `<code>${mapString}</lcodei>`
+
+  map.innerHTML = ""
+  map.append(html)
+}
+
 let gmcp = {
   "Character": character,
   "Character.Vitals": characterVitals,
   "Room.Info": roomInfo,
   "Room.Character.Enter": roomCharacterEnter,
   "Room.Character.Leave": roomCharacterLeave,
+  "Zone.Map": zoneMap,
 }
 
 export function gmcpMessage(channel) {

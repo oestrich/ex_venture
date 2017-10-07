@@ -7,6 +7,8 @@ defmodule Game.Command.Map do
   use Game.Room
   use Game.Zone
 
+  alias Game.Session.GMCP
+
   @commands ["map"]
 
   @short_help "View a map of the zone"
@@ -22,9 +24,10 @@ defmodule Game.Command.Map do
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
-  def run({}, _session, %{socket: socket, save: %{room_id: room_id}}) do
+  def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     map = room.zone_id |> @zone.map({room.x, room.y})
+    state |> GMCP.map(map)
     socket |> @socket.echo(map)
     :ok
   end

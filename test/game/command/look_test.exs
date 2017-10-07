@@ -17,6 +17,8 @@ defmodule Game.Command.LookTest do
     assert Regex.match?(~r(Hallway), look)
     assert Regex.match?(~r(Exits), look)
     assert Regex.match?(~r(Items), look)
+
+    assert Enum.any?(@socket.get_push_gmcps(), fn ({_socket, module, _}) -> module == "Zone.Map" end)
   end
 
   test "looking at an item", %{session: session, socket: socket} do

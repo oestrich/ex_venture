@@ -9,6 +9,7 @@
     <div class="exits"></div>
     <h4>Characters</h4>
     <ul class="characters"></ul>
+    <div class="map"></div>
   </div>
 </div>
 <div class="prompt">

@@ -338,7 +338,7 @@ defmodule CommandTest do
 
       assert state.target == nil
       assert_received {:"$gen_cast", {:remove_target, {:user, ^user}}}
-      assert [{^socket, "Target.Clear", "{}"}, _] = @socket.get_push_gmcps()
+      assert [{^socket, "Target.Clear", "{}"} | _] = @socket.get_push_gmcps()
 
       Registry.unregister()
     end

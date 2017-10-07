@@ -51,6 +51,9 @@ body {
 
   .container {
     padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   .exits {
@@ -63,6 +66,11 @@ body {
     .white {
       color: $base1;
     }
+  }
+
+  .map {
+    overflow: scroll;
+    margin-top: auto;
   }
 
   ul {

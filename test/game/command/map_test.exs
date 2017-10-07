@@ -17,5 +17,6 @@ defmodule Game.Command.MapTest do
 
     [{^socket, map}] = @socket.get_echos()
     assert Regex.match?(~r([ ]), map)
+    assert [{^socket, "Zone.Map", _}] = @socket.get_push_gmcps()
   end
 end

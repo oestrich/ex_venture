@@ -71,8 +71,20 @@ defmodule Game.Session.GMCP do
     socket |> @socket.push_gmcp("Target.Character", npc |> npc_info() |> Poison.encode!())
   end
 
+  @doc """
+  Send a target cleared message
+  """
+  @spec clear_target(state :: map) :: :ok
   def clear_target(%{socket: socket}) do
     socket |> @socket.push_gmcp("Target.Clear", "{}")
+  end
+
+  @doc """
+  Send a map message
+  """
+  @spec map(state :: map, map :: String.t) :: :ok
+  def map(%{socket: socket}, map) do
+    socket |> @socket.push_gmcp("Zone.Map", %{map: map} |> Poison.encode!())
   end
 
   defp room_info(room) do

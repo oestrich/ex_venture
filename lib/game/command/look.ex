@@ -4,6 +4,7 @@ defmodule Game.Command.Look do
   """
 
   use Game.Command
+  use Game.Zone
 
   alias Data.Exit
   alias Game.Session.GMCP
@@ -28,6 +29,10 @@ defmodule Game.Command.Look do
     room = @room.look(room_id)
     state |> GMCP.room(room)
     socket |> @socket.echo(Format.room(room))
+
+    map = room.zone_id |> @zone.map({room.x, room.y})
+    state |> GMCP.map(map)
+
     :ok
   end
   def run({direction}, _, %{socket: socket, save: %{room_id: room_id}}) when direction in ["north", "east", "south", "west"] do
