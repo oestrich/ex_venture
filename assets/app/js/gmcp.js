@@ -22,17 +22,17 @@ let characterVitals = (channel, data) => {
   let skillWidth = data.skill_points / data.max_skill_points;
   let moveWidth = data.move_points / data.max_move_points;
 
-  let health = _.first(Sizzle("#health .container"));
+  let health = _.first(Sizzle("#health .percentage"));
   health.style.width = `${healthWidth * 100}%`;
   let healthStat = _.first(Sizzle("#health .stat"));
   healthStat.innerHTML = `${data.health}/${data.max_health} hp`;
 
-  let skill = _.first(Sizzle("#skills .container"));
+  let skill = _.first(Sizzle("#skills .percentage"));
   skill.style.width = `${skillWidth * 100}%`;
   let skillStat = _.first(Sizzle("#skills .stat"));
   skillStat.innerHTML = `${data.skill_points}/${data.max_skill_points} ${data.skill_abbreviation.toLowerCase()}`;
 
-  let movement = _.first(Sizzle("#movement .container"));
+  let movement = _.first(Sizzle("#movement .percentage"));
   movement.style.width = `${moveWidth * 100}%`;
   let movementStat = _.first(Sizzle("#movement .stat"));
   movementStat.innerHTML = `${data.move_points}/${data.max_move_points} mv`;

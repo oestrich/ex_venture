@@ -15,18 +15,21 @@
 <div class="prompt">
   <div class="stats">
     <div id="health">
+      <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
     </div>
 
     <div id="skills">
+      <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
     </div>
 
     <div id="movement">
+      <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
