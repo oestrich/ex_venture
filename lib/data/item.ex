@@ -24,6 +24,7 @@ defmodule Data.Item do
     field :stats, Data.Stats
     field :effects, {:array, Data.Effect}
     field :drop_rate, :integer
+    field :cost, :integer, default: 0
 
     timestamps()
   end
@@ -36,9 +37,9 @@ defmodule Data.Item do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :type, :keywords, :stats, :effects, :drop_rate])
+    |> cast(params, [:name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost])
     |> ensure_keywords
-    |> validate_required([:name, :description, :type, :keywords, :stats, :effects, :drop_rate])
+    |> validate_required([:name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost])
     |> validate_inclusion(:type, @types)
     |> validate_stats()
     |> Effect.validate_effects()

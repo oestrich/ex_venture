@@ -7,7 +7,7 @@
     <div class="box-body">
       <div class="form-group">
         <%= label :item, :id %>
-        <%= select :item, :id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+        <%= select :item, :id, @items |> Enum.map(&item_option/1), class: "form-control" %>
       </div>
 
       <div class="form-group">
