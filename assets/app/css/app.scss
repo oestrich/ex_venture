@@ -71,6 +71,10 @@ body {
   .map {
     overflow: scroll;
     margin-top: auto;
+
+    pre {
+      white-space: pre;
+    }
   }
 
   ul {
