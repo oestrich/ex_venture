@@ -11,7 +11,7 @@ defmodule Game.Command.Shops do
   alias Game.Items
 
   @custom_parse true
-  @commands ["shops"]
+  @commands ["shops", "buy", "sell"]
 
   @short_help "View shops and buy from them"
   @full_help """
@@ -25,7 +25,10 @@ defmodule Game.Command.Shops do
   [ ] > {white}shops show item from shop{/white}
 
   Buy an item from a shop:
-  [ ] > {white}shops buy item from shop{/white}
+  [ ] > {white}buy item from shop{/white}
+
+  Sell an item to a shop:
+  [ ] > {white}sell item from shop{/white}
 
   When matching a shop name, you can use the shortest unique string for
   the shop. So "{magenta}Blacksmith{/magenta}" can be matched with "{white}blac{/white}".
@@ -42,8 +45,12 @@ defmodule Game.Command.Shops do
 
       iex> Game.Command.Shops.parse("shops buy sword from tree top")
       {:buy, "sword", :from, "tree top"}
+      iex> Game.Command.Shops.parse("buy sword from tree top")
+      {:buy, "sword", :from, "tree top"}
 
       iex> Game.Command.Shops.parse("shops sell sword to tree top")
+      {:sell, "sword", :to, "tree top"}
+      iex> Game.Command.Shops.parse("sell sword to tree top")
       {:sell, "sword", :to, "tree top"}
 
       iex> Game.Command.Shops.parse("shops show sword from tree top")
@@ -57,7 +64,9 @@ defmodule Game.Command.Shops do
   def parse("shops"), do: {}
   def parse("shops list " <> shop), do: {:list, shop}
   def parse("shops buy " <> string), do: _parse_shop_command(:buy, string, :from)
+  def parse("buy " <> string), do: _parse_shop_command(:buy, string, :from)
   def parse("shops sell " <> string), do: _parse_shop_command(:sell, string, :to)
+  def parse("sell " <> string), do: _parse_shop_command(:sell, string, :to)
   def parse("shops show " <> string), do: _parse_shop_command(:show, string, :from)
   def parse(command), do: {:error, :bad_parse, command}
 
