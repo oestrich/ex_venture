@@ -46,4 +46,29 @@ defmodule Test.Game.Shop do
     start_link()
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :buy, []) end)
   end
+
+  def set_sell(sell_response) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :sell_response, sell_response) end)
+  end
+
+  def sell(id, item_id, save) do
+    start_link()
+    Agent.get_and_update(__MODULE__, fn (state) ->
+      sells = Map.get(state, :sell, [])
+      state = Map.put(state, :sell, sells ++ [{id, item_id, save}])
+      response = Map.get(state, :sell_response, {:ok, %{save | currency: save.currency - 1}, %Item{}})
+      {response, state}
+    end)
+  end
+
+  def get_sells() do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :sell, []) end)
+  end
+
+  def clear_sells() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :sell, []) end)
+  end
 end

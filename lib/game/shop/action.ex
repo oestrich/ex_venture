@@ -5,6 +5,7 @@ defmodule Game.Shop.Action do
 
   alias Game.Item
   alias Game.Items
+  alias Game.Shop
 
   @doc """
   Buy an item from a shop
@@ -15,7 +16,7 @@ defmodule Game.Shop.Action do
 
     case item do
       nil -> {:error, :item_not_found}
-      item -> 
+      item ->
         shop_item = Enum.find(shop.shop_items, &(&1.item_id == item.id))
         buy_item_if_enough(shop, shop_item, item, save)
     end
@@ -35,6 +36,24 @@ defmodule Game.Shop.Action do
         shop_item = change_quantity(shop_item)
         shop_items = [shop_item | shop.shop_items] |> Enum.uniq_by(&(&1.id))
         {:ok, save, item, %{shop | shop_items: shop_items}}
+    end
+  end
+
+  @doc """
+  Sell an item to a shop
+  """
+  @spec sell(shop :: Shop.t, item_name :: String.t, save :: map) :: {:ok, save :: map, item :: Item.t, shop :: Shop.t}
+  def sell(shop, item_name, save) do
+    items = Enum.map(save.item_ids, &Items.item/1)
+    item = Enum.find(items, &(Item.matches_lookup?(&1, item_name)))
+
+    case item do
+      nil -> {:error, :item_not_found}
+      item ->
+        item_ids = List.delete(save.item_ids, item.id)
+        currency = save.currency + item.cost
+        save = %{save | item_ids: item_ids, currency: currency}
+        {:ok, save, item, shop}
     end
   end
 end

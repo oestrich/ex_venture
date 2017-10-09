@@ -7,7 +7,7 @@ defmodule Game.Shop.ActionTest do
   describe "buying items" do
     setup do
       shop = %Shop{name: "Tree Top Shop"}
-      item = item_attributes(%{id: 1, name: "Sword", keywords: []})
+      item = item_attributes(%{id: 1, name: "Sword", keywords: [], cost: 10})
       save = %{base_save() | currency: 100}
 
       start_and_clear_items()
@@ -51,6 +51,30 @@ defmodule Game.Shop.ActionTest do
       shop = %{shop | shop_items: [%{id: 2, item_id: item.id, price: 10, quantity: 0}]}
 
       {:error, :not_enough_quantity, ^item} = Action.buy(shop, "sword", save)
+    end
+  end
+
+  describe "selling items" do
+    setup do
+      shop = %Shop{name: "Tree Top Shop"}
+      item = item_attributes(%{id: 1, name: "Sword", keywords: [], cost: 10})
+      save = %{base_save() | currency: 100, item_ids: [1]}
+
+      start_and_clear_items()
+      insert_item(item)
+
+      %{shop: shop, item: item, save: save}
+    end
+
+    test "successfully sell an item", %{shop: shop, item: item, save: save} do
+      {:ok, save, ^item, ^shop} = Action.sell(shop, "sword", save)
+
+      assert save.currency == 110
+      assert save.item_ids == []
+    end
+
+    test "item not found", %{shop: shop, save: save} do
+      {:error, :item_not_found} = Action.sell(shop, "swrd", save)
     end
   end
 end

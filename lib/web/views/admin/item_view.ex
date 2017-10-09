@@ -1,5 +1,6 @@
 defmodule Web.Admin.ItemView do
   use Web, :view
+  use Game.Currency
 
   alias Data.Stats
 

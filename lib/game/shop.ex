@@ -74,6 +74,13 @@ defmodule Game.Shop do
   end
 
   @doc """
+  Sell to a shop
+  """
+  def sell(name, item_name, save) do
+    GenServer.call(pid(name), {:sell, item_name, save})
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -94,6 +101,15 @@ defmodule Game.Shop do
 
   def handle_call({:buy, item_id, save}, _from, state = %{shop: shop}) do
     case Action.buy(shop, item_id, save) do
+      {:ok, save, item, shop} ->
+        {:reply, {:ok, save, item}, %{state | shop: shop}}
+      error ->
+        {:reply, error, state}
+    end
+  end
+
+  def handle_call({:sell, item_name, save}, _from, state = %{shop: shop}) do
+    case Action.sell(shop, item_name, save) do
       {:ok, save, item, shop} ->
         {:reply, {:ok, save, item}, %{state | shop: shop}}
       error ->

@@ -43,6 +43,9 @@ defmodule Game.Command.Shops do
       iex> Game.Command.Shops.parse("shops buy sword from tree top")
       {:buy, "sword", :from, "tree top"}
 
+      iex> Game.Command.Shops.parse("shops sell sword to tree top")
+      {:sell, "sword", :to, "tree top"}
+
       iex> Game.Command.Shops.parse("shops show sword from tree top")
       {:show, "sword", :from, "tree top"}
 
@@ -53,19 +56,21 @@ defmodule Game.Command.Shops do
   def parse(command)
   def parse("shops"), do: {}
   def parse("shops list " <> shop), do: {:list, shop}
-  def parse("shops buy " <> string) do
-    case Regex.run(~r/(?<item>.+) from (?<shop>.+)/i, string, capture: :all) do
-      nil -> {:error, :bad_parse, "shops buy #{string}"}
-      [_string, item_name, shop_name] -> {:buy, item_name, :from, shop_name}
-    end
-  end
-  def parse("shops show " <> string) do
-    case Regex.run(~r/(?<item>.+) from (?<shop>.+)/i, string, capture: :all) do
-      nil -> {:error, :bad_parse, "shops show #{string}"}
-      [_string, item_name, shop_name] -> {:show, item_name, :from, shop_name}
-    end
-  end
+  def parse("shops buy " <> string), do: _parse_shop_command(:buy, string, :from)
+  def parse("shops sell " <> string), do: _parse_shop_command(:sell, string, :to)
+  def parse("shops show " <> string), do: _parse_shop_command(:show, string, :from)
   def parse(command), do: {:error, :bad_parse, command}
+
+  @doc """
+  Handle the common parsing code for an item name and then the shop
+  """
+  @spec _parse_shop_command(base_command :: atom, string :: String.t, from_or_to :: atom) :: :ok
+  def _parse_shop_command(base_command, string, from_or_to) do
+    case Regex.run(~r/(?<item>.+) #{from_or_to} (?<shop>.+)/i, string, capture: :all) do
+      nil -> {:error, :bad_parse, "shops #{base_command} #{string}"}
+      [_string, item_name, shop_name] -> {base_command, item_name, from_or_to, shop_name}
+    end
+  end
 
   @doc """
   #{@short_help}
@@ -111,6 +116,15 @@ defmodule Game.Command.Shops do
       {:ok, shop} -> buy_item(shop, item_name, state)
     end
   end
+  def run({:sell, item_name, :to, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case find_shop(room.shops, shop_name) do
+      {:error, :not_found} ->
+        socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        :ok
+      {:ok, shop} -> sell_item(shop, item_name, state)
+    end
+  end
 
   defp find_shop(shops, shop_name) do
     case shop = Enum.find(shops, fn (shop) -> Shop.matches?(shop, shop_name) end) do
@@ -135,6 +149,18 @@ defmodule Game.Command.Shops do
         :ok
       {:error, :not_enough_quantity, item} ->
         socket |> @socket.echo("\"#{shop.name}\" does not have enough of #{item.name} for you to buy.")
+        :ok
+    end
+  end
+
+  defp sell_item(shop, item_name, state = %{socket: socket, save: save}) do
+    case shop.id |> @shop.sell(item_name, save) do
+      {:ok, save, item} ->
+        socket |> @socket.echo("You sold #{item.name} to #{shop.name} for #{item.cost} #{currency()}.")
+        state = %{state | save: save}
+        {:update, state}
+      {:error, :item_not_found} ->
+        socket |> @socket.echo("The \"#{item_name}\" item could not be found.")
         :ok
     end
   end

@@ -20,6 +20,7 @@ defmodule Game.Command.ShopsTest do
     @shop.set_shop(tree_stand)
 
     @shop.clear_buys()
+    @shop.clear_sells()
     @socket.clear_messages()
     {:ok, %{session: :session, socket: :socket, room: room}}
   end
@@ -131,5 +132,42 @@ defmodule Game.Command.ShopsTest do
 
     [{^socket, buy}] = @socket.get_echos()
     assert Regex.match?(~r("Tree Stand Shop" does not ), buy)
+  end
+
+  test "sell an item to a shop", %{session: session, socket: socket} do
+    save = %{base_save() | room_id: 1, currency: 20, item_ids: [1]}
+    @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
+
+    {:update, state} = Command.Shops.run({:sell, "sword", :to, "tree stand"}, session, %{socket: socket, save: save})
+
+    assert state.save.currency == 30
+    assert [{_, "sword", _save}] = @shop.get_sells()
+
+    [{^socket, list}] = @socket.get_echos()
+    assert Regex.match?(~r(Tree Stand Shop), list)
+    assert Regex.match?(~r(Sword), list)
+    assert Regex.match?(~r(10 gold), list)
+  end
+
+  test "sell an item to a shop - shop not found", %{session: session, socket: socket} do
+    save = %{base_save() | room_id: 1, currency: 20, item_ids: [1]}
+    :ok = Command.Shops.run({:sell, "sword", :to, "treestand"}, session, %{socket: socket, save: save})
+
+    assert [] = @shop.get_sells()
+
+    [{^socket, list}] = @socket.get_echos()
+    assert Regex.match?(~r("treestand" shop could not), list)
+  end
+
+  test "sell an item to a shop - item not found", %{session: session, socket: socket} do
+    @shop.set_sell({:error, :item_not_found})
+
+    save = %{base_save() | room_id: 1, currency: 20, item_ids: [1]}
+    :ok = Command.Shops.run({:sell, "swrd", :to, "tree stand"}, session, %{socket: socket, save: save})
+
+    assert [{_, "swrd", _}] = @shop.get_sells()
+
+    [{^socket, list}] = @socket.get_echos()
+    assert Regex.match?(~r("swrd" item could not), list)
   end
 end

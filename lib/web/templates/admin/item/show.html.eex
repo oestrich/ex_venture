@@ -34,6 +34,10 @@
                 <td><%= @item.drop_rate %>%</td>
               </tr>
               <tr>
+                <th>Cost</th>
+                <td><%= @item.cost %> <%= currency() %></td>
+              </tr>
+              <tr>
                 <th>Stats</th>
                 <td><pre><%= @item |> json_field(:stats) %></pre></td>
               </tr>
