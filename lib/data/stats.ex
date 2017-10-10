@@ -21,9 +21,7 @@ defmodule Data.Stats do
   @type armor :: %{
     slot: :atom,
   }
-  @type weapon :: %{
-    damage_type: :atom,
-  }
+  @type weapon :: %{}
 
   @behaviour Ecto.Type
 

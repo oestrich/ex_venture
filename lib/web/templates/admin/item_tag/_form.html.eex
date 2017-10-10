@@ -1,3 +1,29 @@
+<script type="application/javascript">
+$(function() {
+  var basicStats = {
+    "armor": <%= Item.basic_stats(:armor) |> Poison.encode!() |> raw() %>,
+    "basic": <%= Item.basic_stats(:basic) |> Poison.encode!() |> raw() %>,
+    "weapon": <%= Item.basic_stats(:weapon) |> Poison.encode!() |> raw() %>
+  };
+
+  var fillInStats = function() {
+    var type = $("#item_tag_type").val()
+    var stats = $("#item_tag_stats");
+    stats.val(JSON.stringify(basicStats[type], null, 2))
+  }
+
+  $("#item_tag_type").on("change", fillInStats)
+
+  if ($("#item_tag_stats").val() == "") {
+    fillInStats()
+  }
+
+  if ($("#item_tag_effects").val() == "") {
+    $("#item_tag_effects").val("[]")
+  }
+});
+</script>
+
 <div class="box">
   <div class="box-header">
     <h3 class="box-title"><%= @title %></h3>

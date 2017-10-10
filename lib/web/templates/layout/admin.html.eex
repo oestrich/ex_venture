@@ -9,6 +9,7 @@
 
     <title><%= Config.game_name() %> Admin</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/admin.css") %>">
+    <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
   </head>
 
   <body class="hold-transition skin-black sidebar-mini">
@@ -112,7 +113,6 @@
       <div class="content-wrapper">
         <%= render @view_module, @view_template, assigns %>
       </div>
-      <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
     </div>
   </body>
 </html>

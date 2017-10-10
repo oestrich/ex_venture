@@ -3,12 +3,12 @@ exports.config = {
     javascripts: {
       joinTo: {
         "js/app.js": /(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
-        "js/admin.js": /(admin\/js)/,
+        "js/admin.js": /(process)|(jquery)|(admin\/js)/,
         "js/home.js": /(home\/js)/,
       },
       order: {
         before: [
-          "admin/js/vendor/jquery-3.2.1.js",
+          /jquery/,
           "admin/js/vendor/bootstrap.js",
           "admin/js/vendor/adminlte.js",
           "home/js/vendor/jquery-3.2.1.js",
@@ -76,6 +76,9 @@ exports.config = {
   },
 
   npm: {
-    enabled: true
+    enabled: true,
+    globals: {
+      $: "jquery",
+    }
   }
 };

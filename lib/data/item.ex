@@ -35,6 +35,19 @@ defmodule Data.Item do
   @spec types() :: [String.t]
   def types(), do: @types
 
+  @doc """
+  Provide a starting point for the web panel to edit new statistics
+  """
+  @spec basic_stats(type :: atom) :: map
+  def basic_stats(:armor) do
+    %{
+      slot: "",
+      armor: 0,
+    }
+  end
+  def basic_stats(:basic), do: %{}
+  def basic_stats(:weapon), do: %{}
+
   def changeset(struct, params) do
     struct
     |> cast(params, [:name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost])
