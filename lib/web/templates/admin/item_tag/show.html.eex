@@ -1,0 +1,46 @@
+<section class="content-header">
+  <h1>
+    <%= @item_tag.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: item_tag_path(@conn, :edit, @item_tag.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Type</th>
+                <td><%= @item_tag.type %></td>
+              </tr>
+              <tr>
+                <th>Name</th>
+                <td><%= @item_tag.name %></td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><%= @item_tag.description %></td>
+              </tr>
+              <tr>
+                <th>Stats</th>
+                <td><pre><%= @item_tag |> json_field(:stats) %></pre></td>
+              </tr>
+              <tr>
+                <th>Effects</th>
+                <td><pre><%= @item_tag |> json_field(:effects) %></pre></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

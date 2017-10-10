@@ -12,7 +12,7 @@ defmodule Data.Item do
 
   @valid_effects %{
     "basic" => [],
-    "weapon" => ["damage", "stats"],
+    "weapon" => ["damage", "damage/type", "stats"],
     "armor" => ["stats"],
   }
 

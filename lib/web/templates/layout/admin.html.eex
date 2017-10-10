@@ -75,6 +75,12 @@
                 <span>Items</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "item_tags") %>">
+              <%= link(to: item_tag_path(@conn, :index)) do %>
+                <i class="fa fa-archive"></i>
+                <span>Item Tags</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "npcs") %>">
               <%= link(to: npc_path(@conn, :index)) do %>
                 <i class="fa fa-address-card"></i>

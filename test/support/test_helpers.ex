@@ -5,6 +5,7 @@ defmodule TestHelpers do
   alias Data.Exit
   alias Data.HelpTopic
   alias Data.Item
+  alias Data.ItemTag
   alias Data.NPC
   alias Data.NPCSpawner
   alias Data.Race
@@ -84,6 +85,22 @@ defmodule TestHelpers do
     %Exit{}
     |> Exit.changeset(attributes)
     |> Repo.insert!
+  end
+
+  def create_item_tag(attributes \\ %{}) do
+    %ItemTag{}
+    |> ItemTag.changeset(item_tag_attributes(attributes))
+    |> Repo.insert!
+  end
+
+  def item_tag_attributes(attributes) do
+    Map.merge(%{
+      name: "Swords",
+      description: "Tag for swords",
+      type: "weapon",
+      stats: %{},
+      effects: [],
+    }, attributes)
   end
 
   def create_item(attributes \\ %{}) do

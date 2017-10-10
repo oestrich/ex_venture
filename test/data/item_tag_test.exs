@@ -42,27 +42,5 @@ defmodule Data.ItemTagTest do
       changeset = %ItemTag{} |> ItemTag.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}, %{kind: :damage}]})
       assert changeset.errors[:effects]
     end
-
-    test "must be a damage/stats type for weapons" do
-      changeset = %ItemTag{} |> ItemTag.changeset(%{type: "weapon", effects: [%{kind: "damage", amount: 10, type: :slashing}]})
-      refute changeset.errors[:effects]
-
-      changeset = %ItemTag{} |> ItemTag.changeset(%{type: "weapon", effects: [%{kind: "stats", field: :strength, amount: 10}]})
-      refute changeset.errors[:effects]
-
-      changeset = %ItemTag{} |> ItemTag.changeset(%{type: "weapon", effects: [%{kind: "damage/type", types: [:slashing]}]})
-      assert changeset.errors[:effects]
-    end
-
-    test "must be a stats type for armor" do
-      changeset = %ItemTag{} |> ItemTag.changeset(%{type: "armor", effects: [%{kind: "stats", field: :strength, amount: 10}]})
-      refute changeset.errors[:effects]
-
-      changeset = %ItemTag{} |> ItemTag.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}]})
-      assert changeset.errors[:effects]
-
-      changeset = %ItemTag{} |> ItemTag.changeset(%{type: "armor", effects: [%{kind: "damage/type", types: [:slashing]}]})
-      assert changeset.errors[:effects]
-    end
   end
 end

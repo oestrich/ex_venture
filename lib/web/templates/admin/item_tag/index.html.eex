@@ -1,0 +1,42 @@
+<section class="content-header">
+  <h1>
+    Item Tags
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Item Tag", to: item_tag_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @item_tags, fn (item_tag) -> %>
+                <tr>
+                  <td><%= item_tag.id %></td>
+                  <td><%= item_tag.name %></td>
+                  <td>
+                    <%= link("View", to: item_tag_path(@conn, :show, item_tag.id)) %>
+                    <%= link("Edit", to: item_tag_path(@conn, :edit, item_tag.id)) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
