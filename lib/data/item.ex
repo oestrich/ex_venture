@@ -54,35 +54,38 @@ defmodule Data.Item do
     end
   end
 
-  defp validate_stats(changeset) do
-    case changeset do
-      %{changes: %{stats: stats}} when stats != nil ->
-        _validate_stats(changeset)
-      _ -> changeset
+  @doc """
+  Validate item statistics
+  """
+  @spec validate_stats(changeset :: Ecto.Changeset.t()) :: Ecto.Changeset.t()
+  def validate_stats(changeset) do
+    case get_change(changeset, :stats) do
+      nil -> changeset
+      stats -> _validate_stats(changeset, stats)
     end
   end
 
-  defp _validate_stats(changeset = %{changes: %{stats: stats}}) do
-    type = type_from_changeset(changeset)
+  defp _validate_stats(changeset, stats) do
+    type = get_field(changeset, :type)
     case Stats.valid?(type, stats) do
       true -> changeset
       false -> add_error(changeset, :stats, "are invalid")
     end
   end
 
-  defp type_from_changeset(%{changes: %{type: type}}) when type != nil, do: type
-  defp type_from_changeset(%{data: %{type: type}}), do: type
-
-  defp validate_effects(changeset) do
-    case changeset do
-      %{changes: %{effects: effects}} when effects != nil ->
-        _validate_effects(changeset)
-      _ -> changeset
+  @doc """
+  Validate effects are for the proper item type
+  """
+  @spec validate_effects(changeset :: Ecto.Changeset.t()) :: Ecto.Changeset.t()
+  def validate_effects(changeset) do
+    case get_change(changeset, :effects) do
+      nil -> changeset
+      effects -> _validate_effects(changeset, effects)
     end
   end
 
-  defp _validate_effects(changeset = %{changes: %{effects: effects}}) do
-    type = type_from_changeset(changeset)
+  defp _validate_effects(changeset, effects) do
+    type = get_field(changeset, :type)
     case effects |> Enum.all?(&(&1.kind in @valid_effects[type])) do
       true -> changeset
       false -> add_error(changeset, :effects, "can only include damage or stats effects")
