@@ -79,6 +79,21 @@ defmodule Data.Effect do
   def dump(_), do: :error
 
   @doc """
+  Get a starting effect, to fill out in the web interface. Just the structure,
+  the values won't mean anyhting.
+  """
+  @spec starting_effect(type :: String.t()) :: t()
+  def starting_effect("damage") do
+    %{kind: "damage", type: :slashing, amount: 0}
+  end
+  def starting_effect("damage/type") do
+    %{kind: "damage/type", types: []}
+  end
+  def starting_effect("stats") do
+    %{kind: "stats", field: :dexterity, amount: 0}
+  end
+
+  @doc """
   Validate an effect based on type
 
       iex> Data.Effect.valid?(%{kind: "damage", type: :slashing, amount: 10})
