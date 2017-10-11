@@ -4,6 +4,7 @@ defmodule Web.Admin.ItemTagView do
   alias Data.Effect
   alias Data.Item
   alias Data.Stats
+  alias Web.Admin.SharedView
 
   import Web.JSONHelper
 

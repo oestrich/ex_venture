@@ -1,0 +1,28 @@
+<script type"application/javascript">
+$(function() {
+  var basicEffects = {
+    "damage": <%= Effect.starting_effect("damage") |> encode_json() %>,
+    "damage/type": <%= Effect.starting_effect("damage/type") |> encode_json() %>,
+    "stats": <%= Effect.starting_effect("stats") |> encode_json() %>
+  };
+
+  if ($("#<%= @id %>").val() == "") {
+    $("#<%= @id %>").val("[]")
+  }
+
+  $(".add-effect").on("click", function (e) {
+    e.preventDefault();
+
+    var type = $(e.target).data("type");
+    var effects = JSON.parse($("#<%= @id %>").val());
+    effects.push(basicEffects[type]);
+    $("#<%= @id %>").val(JSON.stringify(effects, null, 2));
+  });
+});
+</script>
+
+<span class="help-block">
+  <%= link("Add 'damage'", to: "#", class: "btn btn-default add-effect", data: [type: "damage"]) %>
+  <%= link("Add 'damage/type'", to: "#", class: "btn btn-default add-effect", data: [type: "damage/type"]) %>
+  <%= link("Add 'stats'", to: "#", class: "btn btn-default add-effect", data: [type: "stats"]) %>
+</span>

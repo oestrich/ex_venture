@@ -1,6 +1,10 @@
 defmodule Web.Admin.SharedView do
   use Web, :view
 
+  import Web.JSONHelper
+
+  alias Data.Effect
+
   def page_path(path, page) do
     uri = URI.parse(path)
 

@@ -6,12 +6,6 @@ $(function() {
     "weapon": <%= Item.basic_stats(:weapon) |> encode_json() %>
   };
 
-  var basicEffects = {
-    "damage": <%= Effect.starting_effect("damage") |> encode_json() %>,
-    "damage/type": <%= Effect.starting_effect("damage/type") |> encode_json() %>,
-    "stats": <%= Effect.starting_effect("stats") |> encode_json() %>
-  };
-
   var fillInStats = function() {
     var type = $("#item_tag_type").val()
     var stats = $("#item_tag_stats");
@@ -23,19 +17,6 @@ $(function() {
   if ($("#item_tag_stats").val() == "") {
     fillInStats()
   }
-
-  if ($("#item_tag_effects").val() == "") {
-    $("#item_tag_effects").val("[]")
-  }
-
-  $(".add-effect").on("click", function (e) {
-    e.preventDefault();
-
-    var type = $(e.target).data("type");
-    var effects = JSON.parse($("#item_tag_effects").val());
-    effects.push(basicEffects[type]);
-    $("#item_tag_effects").val(JSON.stringify(effects, null, 2));
-  });
 });
 </script>
 
@@ -77,11 +58,7 @@ $(function() {
         <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
         <%= error_tag f, :effects %>
         <span class="help-block">Enter in valid JSON</span>
-        <span class="help-block">
-          <%= link("Add 'damage'", to: "#", class: "btn btn-default add-effect", data: [type: "damage"]) %>
-          <%= link("Add 'damage/type'", to: "#", class: "btn btn-default add-effect", data: [type: "damage/type"]) %>
-          <%= link("Add 'stats'", to: "#", class: "btn btn-default add-effect", data: [type: "stats"]) %>
-        </span>
+        <%= render(SharedView, "_effects.html", id: "item_tag_effects") %>
       </div>
     </div>
 
