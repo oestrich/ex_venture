@@ -6,6 +6,12 @@
       Connect with telnet: <code><%= Config.host() %>:<%= Config.port() %></code>
     </p>
 
+    <%= if !Map.has_key?(@conn.assigns, :user) do %>
+      <p>
+        <%= link("Sign in", to: public_session_path(@conn, :new)) %> before playing to start right away.
+      </p>
+    <% end %>
+
     <%= link(to: public_play_path(@conn, :show), class: "btn btn-lg btn-primary") do %>
       Play Now &raquo;
     <% end %>

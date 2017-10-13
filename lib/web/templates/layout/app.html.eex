@@ -46,13 +46,13 @@
               <li class="nav-item">
                 <%= link("Sign Out", to: public_session_path(@conn, :delete), class: "nav-link", method: "delete") %>
               </li>
-            <% else %>
-              <li class="nav-item">
-                <%= link("Sign In", to: public_session_path(@conn, :new), class: "nav-link") %>
-              </li>
             <% end %>
           </ul>
-          <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-primary") %>
+          <%= if Map.has_key?(@conn.assigns, :user) do %>
+            <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-primary") %>
+          <% else %>
+            <%= link("Sign In", to: public_session_path(@conn, :new), class: "btn btn-primary") %>
+          <% end %>
         </div>
       </div>
     </nav>
