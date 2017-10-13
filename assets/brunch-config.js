@@ -2,9 +2,9 @@ exports.config = {
   files: {
     javascripts: {
       joinTo: {
-        "js/app.js": /(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
+        "js/app.js": /(jquery)|(process)|(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
         "js/admin.js": /(process)|(jquery)|(admin\/js)/,
-        "js/home.js": /(home\/js)/,
+        "js/home.js": /(jquery)|(process)|(home\/js)/,
       },
       order: {
         before: [
