@@ -52,6 +52,7 @@
         <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
         <%= error_tag f, :effects %>
         <span class="help-block">Enter in valid JSON</span>
+        <%= render(SharedView, "_effects.html", id: "skill_effects") %>
       </div>
     </div>
 
