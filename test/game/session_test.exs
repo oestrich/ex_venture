@@ -2,6 +2,7 @@ defmodule Game.SessionTest do
   use GenServerCase
   use Data.ModelCase
 
+  alias Game.Command
   alias Game.Session
 
   @socket Test.Networking.Socket
@@ -95,7 +96,7 @@ defmodule Game.SessionTest do
     {:noreply, state} = Session.handle_cast({:recv, "run 2n"}, state)
 
     assert state.blocked
-    assert_receive {:continue, {Game.Command.Run, {[:north]}}}
+    assert_receive {:continue, %Command{module: Command.Run, args: {[:north]}}}
   after
     Session.Registry.unregister()
   end
@@ -106,9 +107,10 @@ defmodule Game.SessionTest do
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
     state = %{socket: socket, user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
-    {:noreply, _state} = Session.handle_info({:continue, {Game.Command.Run, {[:north, :north]}}}, state)
+    command = %Command{module: Command.Run, args: {[:north, :north]}}
+    {:noreply, _state} = Session.handle_info({:continue, command}, state)
 
-    assert_receive {:continue, {Game.Command.Run, {[:north]}}}
+    assert_receive {:continue, %Command{module: Command.Run, args: {[:north]}}}
   after
     Session.Registry.unregister()
   end

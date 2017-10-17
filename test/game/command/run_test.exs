@@ -19,7 +19,7 @@ defmodule Game.Command.RunTest do
     {:update, state, continue_command} = Command.Run.run({"nen"}, session, state)
 
     assert state.save.room_id == 2
-    assert continue_command == {Game.Command.Run, {[:east, :north]}, 10}
+    assert continue_command == {%Command{module: Command.Run, args: {[:east, :north]}}, 10}
   end
 
   test "continue running in the processed set of directions", %{session: session, state: state} do
@@ -28,7 +28,7 @@ defmodule Game.Command.RunTest do
     {:update, state, continue_command} = Command.Run.run({[:north, :east]}, session, state)
 
     assert state.save.room_id == 2
-    assert continue_command == {Game.Command.Run, {[:east]}, 10}
+    assert continue_command == {%Command{module: Command.Run, args: {[:east]}}, 10}
   end
 
   test "end of the run", %{session: session, state: state} do

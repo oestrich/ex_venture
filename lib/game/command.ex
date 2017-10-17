@@ -3,6 +3,8 @@ defmodule Game.Command do
   Parses and runs commands from players
   """
 
+  defstruct [text: "", module: nil, args: {}]
+
   @typedoc """
   A tuple with the first element being the command to run
 
@@ -108,7 +110,7 @@ defmodule Game.Command do
       nil ->
         builtin |> _parse(command)
       _ ->
-        {Game.Command.Skills, {class_skill, command}}
+        %__MODULE__{text: command, module: Game.Command.Skills, args: {class_skill, command}}
     end
   end
 
@@ -163,10 +165,10 @@ defmodule Game.Command do
     case module.custom_parse? do
       true ->
         arguments = module.parse(command)
-        {module, arguments}
+        %__MODULE__{text: command, module: module, args: arguments}
       false ->
         arguments = parse_command(module, command)
-        {module, arguments}
+        %__MODULE__{text: command, module: module, args: arguments}
     end
   end
 
@@ -176,7 +178,7 @@ defmodule Game.Command do
     socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
     :ok
   end
-  def run({module, args}, session, state = %{socket: socket}) do
+  def run(%__MODULE__{module: module, args: args}, session, state = %{socket: socket}) do
     case module.must_be_alive? do
       true ->
         case state do

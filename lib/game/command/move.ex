@@ -104,7 +104,7 @@ defmodule Game.Command.Move do
 
     @room.enter(room_id, {:user, session, user})
 
-    Game.Command.run({Game.Command.Look, {}}, session, state)
+    Game.Command.run(%Game.Command{module: Game.Command.Look, args: {}}, session, state)
     {:update, state}
   end
 end

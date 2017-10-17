@@ -307,9 +307,9 @@ defmodule Game.Session do
         Session.Registry.update(%{state.user | save: state.save})
         state |> prompt()
         {:noreply, Map.put(state, :blocked, false)}
-      {:update, state, {command, args, send_in}} ->
+      {:update, state, {command = %Command{}, send_in}} ->
         Session.Registry.update(%{state.user | save: state.save})
-        :erlang.send_after(send_in, self(), {:continue, {command, args}})
+        :erlang.send_after(send_in, self(), {:continue, command})
         {:noreply, Map.put(state, :blocked, true)}
       _ ->
         state |> prompt()
