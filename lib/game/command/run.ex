@@ -55,7 +55,7 @@ defmodule Game.Command.Run do
   defp maybe_continue(state, []), do: {:update, state}
   defp maybe_continue(state, directions) do
     state |> GMCP.vitals()
-    {:update, state, {%Command{module: __MODULE__, args: {directions}}, @continue_wait}}
+    {:update, state, {%Command{module: __MODULE__, args: {directions}, continue: true}, @continue_wait}}
   end
 
   @doc """

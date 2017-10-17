@@ -3,7 +3,7 @@ defmodule Game.Command do
   Parses and runs commands from players
   """
 
-  defstruct [text: "", module: nil, args: {}]
+  defstruct [text: "", module: nil, args: {}, system: false, continue: false, parsed_in: nil, ran_in: nil]
 
   @typedoc """
   A tuple with the first element being the command to run
@@ -79,6 +79,8 @@ defmodule Game.Command do
   use Networking.Socket
   use Game.Room
 
+  require Logger
+
   alias Data.User
   alias Game.Command
   alias Game.Insight
@@ -103,16 +105,26 @@ defmodule Game.Command do
   def parse(command, user)
   def parse("", _user), do: {:skip, {}}
   def parse(command, %{class: class}) do
+    start_parsing_at = Timex.now()
     command = command |> String.replace(~r/  /, " ")
     class_skill = class.skills |> Enum.find(&(class_parse_command(&1, command)))
     builtin = commands() |> Enum.find(&(module_parse_command(&1, command)))
     case class_skill do
       nil ->
-        builtin |> _parse(command)
+        builtin
+        |> _parse(command)
+        |> record_parse_time(start_parsing_at)
       _ ->
         %__MODULE__{text: command, module: Game.Command.Skills, args: {class_skill, command}}
+        |> record_parse_time(start_parsing_at)
     end
   end
+
+  defp record_parse_time(command = %Command{}, start_parsing_at) do
+    end_parsing_at = Timex.now()
+    %{command | parsed_in: Timex.diff(end_parsing_at, start_parsing_at, :microseconds)}
+  end
+  defp record_parse_time(command, _start_parsing_at), do: command
 
   defp class_parse_command(skill, command) do
     Regex.match?(~r(^#{skill.command}), command)
@@ -178,7 +190,8 @@ defmodule Game.Command do
     socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
     :ok
   end
-  def run(%__MODULE__{module: module, args: args}, session, state = %{socket: socket}) do
+  def run(command = %__MODULE__{module: module, args: args}, session, state = %{socket: socket}) do
+    started_run_at = Timex.now()
     case module.must_be_alive? do
       true ->
         case state do
@@ -187,9 +200,21 @@ defmodule Game.Command do
             :ok
           _ ->
             module.run(args, session, state)
+            |> log_command(command, session, started_run_at)
         end
       false ->
         module.run(args, session, state)
+        |> log_command(command, session, started_run_at)
     end
+  end
+
+  # Log the command and pass thru the value the command returned
+  defp log_command(pass_thru, command = %Command{}, session, started_run_at) do
+    ran_in = Timex.diff(Timex.now(), started_run_at, :microseconds)
+    command = %{command | ran_in: ran_in}
+
+    Logger.info "Command for session #{inspect(session)} [text=\"#{command.text}\", module=#{command.module}, system=#{command.system}, continue=#{command.continue}, parsed_in=#{command.parsed_in}μs, ran_in=#{command.ran_in}μs]"
+
+    pass_thru
   end
 end

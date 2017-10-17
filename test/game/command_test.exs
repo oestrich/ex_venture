@@ -28,6 +28,11 @@ defmodule CommandTest do
       assert Command.parse("", user) == {:skip, {}}
     end
 
+    test "records how long it takes to parse a command", %{user: user} do
+      command = Command.parse("say hello", user)
+      assert is_integer(command.parsed_in)
+    end
+
     test "allows capitalization of the command", %{user: user} do
       assert %Command{module: Command.Say, args: {"hello"}} = Command.parse("Say hello", user)
     end
