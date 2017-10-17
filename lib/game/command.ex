@@ -199,11 +199,13 @@ defmodule Game.Command do
             socket |> @socket.echo("You are passed out and cannot perform this action.")
             :ok
           _ ->
-            module.run(args, session, state)
+            args
+            |> module.run(session, state)
             |> log_command(command, session, started_run_at)
         end
       false ->
-        module.run(args, session, state)
+        args
+        |> module.run(session, state)
         |> log_command(command, session, started_run_at)
     end
   end
