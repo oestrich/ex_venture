@@ -54,6 +54,7 @@ defmodule ExVenture.Mixfile do
       {:distillery, "~> 1.4", runtime: false},
       {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:logger_file_backend, "~> 0.0.10"},
       {:phoenix, "~> 1.3.0"},
       {:phoenix_ecto, "~> 3.0"},
       {:phoenix_html, "~> 2.10"},

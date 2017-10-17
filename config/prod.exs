@@ -25,4 +25,15 @@ config :ex_venture, :game,
   continue_wait: 500
 
 config :logger,
-  level: :warn
+  level: :info
+
+config :logger,
+  backends: [{LoggerFileBackend, :global}, {LoggerFileBackend, :commands}]
+
+config :logger, :global,
+  path: "/var/logs/ex_venture/global.log"
+
+config :logger, :commands,
+  path: "/var/logs/ex_venture/commands.log",
+  level: :info,
+  metadata_filter: [type: :command]
