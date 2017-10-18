@@ -6,6 +6,7 @@ import CommandHistory from "./command-history"
 import {appendMessage, scrollToBottom} from "./panel"
 import {gmcpMessage} from "./gmcp"
 import {guid} from "./utils"
+import Logger from "./logger"
 
 class ChannelWrapper {
   constructor(channel) {
@@ -30,6 +31,16 @@ let options = {
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("telnet:" + guid(), {})
 let channelWrapper = new ChannelWrapper(channel)
+
+channel.onMessage = function (event, payload, ref) {
+  if (payload.sent_at) {
+    let sentAt = Date.parse(payload.sent_at)
+    let receivedAt = new Date().getTime()
+    let totalTimeMs = receivedAt - sentAt
+    Logger.log(event, `${totalTimeMs}ms`)
+  }
+  return payload
+}
 
 channel.on("option", payload => {
   let commandPrompt = document.getElementById("prompt")

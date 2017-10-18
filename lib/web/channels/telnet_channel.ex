@@ -170,23 +170,23 @@ defmodule Web.TelnetChannel do
   end
 
   def handle_info({:option, :echo, flag}, socket) do
-    push socket, "option", %{type: "echo", echo: flag}
+    push socket, "option", %{type: "echo", echo: flag, sent_at: Timex.now()}
     {:noreply, socket}
   end
   def handle_info({:gmcp, module, data}, socket) do
-    push socket, "gmcp", %{module: module, data: data}
+    push socket, "gmcp", %{module: module, data: data, sent_at: Timex.now()}
     {:noreply, socket}
   end
   def handle_info({:echo, message}, socket) do
-    push socket, "echo", %{message: "\n#{message}\n"}
+    push socket, "echo", %{message: "\n#{message}\n", sent_at: Timex.now()}
     {:noreply, socket}
   end
   def handle_info({:echo, message, :prompt}, socket) do
-    push socket, "prompt", %{message: "\n#{message}"}
+    push socket, "prompt", %{message: "\n#{message}", sent_at: Timex.now()}
     {:noreply, socket}
   end
   def handle_info(:disconnect, socket) do
-    push socket, "disconnect", %{}
+    push socket, "disconnect", %{sent_at: Timex.now()}
     {:noreply, socket}
   end
 end
