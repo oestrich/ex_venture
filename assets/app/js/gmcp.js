@@ -91,8 +91,6 @@ let roomInfo = (channel, data) => {
  * Room.Character.Enter module
  */
 let roomCharacterEnter = (channel, data) => {
-  console.log(data)
-  console.log(room.players)
   switch (data.type) {
     case "player":
       room.players.push(data)
@@ -109,15 +107,14 @@ let roomCharacterEnter = (channel, data) => {
  * Room.Character.Leave module
  */
 let roomCharacterLeave = (channel, data) => {
-  console.log(data)
   switch (data.type) {
     case "player":
       room.players = _.reject(room.players, (player) => player.id == data.id)
-      renderRoom(room)
+      renderRoom(channel, room)
       break;
     case "npc":
       room.npcs = _.reject(room.npcs, (npc) => npc.id == data.id)
-      renderRoom(room)
+      renderRoom(channel, room)
       break;
   }
 }
