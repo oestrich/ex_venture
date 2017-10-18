@@ -6,6 +6,8 @@ defmodule Game.Command.PickUp do
   use Game.Command
   use Game.Currency
 
+  require Logger
+
   @commands ["pick up"]
   @aliases ["get"]
   @must_be_alive true
@@ -27,6 +29,7 @@ defmodule Game.Command.PickUp do
   def run({@currency}, _session, state = %{socket: socket, save: save}) do
     case @room.pick_up_currency(save.room_id) do
       {:ok, currency} ->
+        Logger.info("Session (#{inspect(self())}) picking up #{currency} currency from room (#{save.room_id})", type: :player)
         save = %{save | currency: save.currency + currency}
         socket |> @socket.echo("You picked up #{currency} #{@currency}")
         {:update, Map.put(state, :save, save)}
@@ -37,7 +40,6 @@ defmodule Game.Command.PickUp do
   end
   def run({item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-
     case Enum.find(room.items, &(Game.Item.matches_lookup?(&1, item_name))) do
       nil ->
         socket |> @socket.echo(~s("#{item_name}" could not be found))
@@ -50,6 +52,7 @@ defmodule Game.Command.PickUp do
   def pick_up(item, room, state = %{socket: socket, save: save}) do
     case @room.pick_up(room.id, item) do
       {:ok, item} ->
+        Logger.info("Session (#{inspect(self())}) picking up item (#{item.id}) from room (#{room.id})", type: :player)
         save = %{save | item_ids: [item.id | save.item_ids]}
         socket |> @socket.echo("You picked up the #{item.name}")
         {:update, Map.put(state, :save, save)}

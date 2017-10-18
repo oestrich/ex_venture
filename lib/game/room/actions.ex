@@ -3,6 +3,8 @@ defmodule Game.Room.Actions do
   Actions that can happen in a room; pick up, tick, etc.
   """
 
+  require Logger
+
   alias Game.Item
   alias Game.Room
   alias Game.Room.Repo

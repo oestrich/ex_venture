@@ -36,8 +36,8 @@ defmodule Game.NPCTest do
   test "applying effects" do
     effect = %{kind: "damage", type: :slashing, amount: 10}
 
-    state = %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC", stats: %{health: 25}}, is_targeting: MapSet.new()}
-    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, 1}, "description"}, state)
+    state = %{npc_spawner: %{room_id: 1}, npc: %{id: 1, name: "NPC", stats: %{health: 25}}, is_targeting: MapSet.new()}
+    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
     assert state.npc.stats.health == 15
   end
 
@@ -49,7 +49,7 @@ defmodule Game.NPCTest do
     is_targeting = MapSet.new |> MapSet.put({:user, 2})
     npc = %{currency: 0, item_ids: [], id: 1, name: "NPC", stats: %{health: 10}}
     state = %{npc_spawner: %{room_id: 1}, npc: npc, is_targeting: is_targeting}
-    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, 1}, "description"}, state)
+    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
     assert state.npc.stats.health == 0
 
     assert [{1, {:npc, _}}] = @room.get_leaves()

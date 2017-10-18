@@ -6,6 +6,8 @@ defmodule Game.NPC do
   use GenServer
   use Game.Room
 
+  require Logger
+
   import Ecto.Query
 
   alias Data.Repo
@@ -91,7 +93,7 @@ defmodule Game.NPC do
 
   def init(npc_spawner) do
     npc = %{npc_spawner.npc | id: npc_spawner.id}
-
+    Logger.info("Starting NPC #{npc.id}", type: :npc)
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
     {:ok, %{npc_spawner: npc_spawner, npc: npc, is_targeting: MapSet.new()}}
@@ -126,7 +128,7 @@ defmodule Game.NPC do
     state = state
     |> Map.put(:npc_spawner, npc_spawner)
     |> Map.put(:npc, %{npc_spawner.npc | id: npc_spawner.id})
-
+    Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
     {:noreply, state}
   end
 
@@ -145,7 +147,8 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_cast({:apply_effects, effects, _from, _description}, state = %{npc: npc}) do
+  def handle_cast({:apply_effects, effects, from, _description}, state = %{npc: npc}) do
+    Logger.info("Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})", type: :npc)
     stats = effects |> Effect.apply(npc.stats)
     stats |> Actions.maybe_died(state)
     npc = %{npc | stats: stats}

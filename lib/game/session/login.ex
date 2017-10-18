@@ -9,6 +9,8 @@ defmodule Game.Session.Login do
   use Networking.Socket
   use Game.Room
 
+  require Logger
+
   alias Game.Authentication
   alias Game.Config
   alias Game.Channel
@@ -37,6 +39,8 @@ defmodule Game.Session.Login do
   @spec login(user :: map, session :: pid, socket :: pid, state :: map) :: map
   def login(user, session, socket, state) do
     Session.Registry.register(user)
+
+    Logger.info("Player (#{user.id}) logged in #{inspect(self())}", type: :session)
 
     state =
       state

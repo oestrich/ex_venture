@@ -25,3 +25,8 @@ config :ex_venture, :game,
   shop: Game.Shop,
   zone: Game.Zone,
   continue_wait: 500
+
+config :logger, :level, :info
+config :logger, :console,
+  format: "$time $metadata[$level] $levelpad$message\n",
+  metadata: [:type]

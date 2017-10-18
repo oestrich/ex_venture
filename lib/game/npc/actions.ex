@@ -7,6 +7,8 @@ defmodule Game.NPC.Actions do
 
   use Game.Room
 
+  require Logger
+
   alias Game.Character
   alias Game.Items
   alias Game.Message
@@ -47,6 +49,8 @@ defmodule Game.NPC.Actions do
   """
   @spec died(state :: map) :: :ok
   def died(%{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
+    Logger.info("NPC (#{npc.id}) died", type: :npc)
+
     npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
     Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
     npc_spawner.room_id |> @room.leave({:npc, npc})

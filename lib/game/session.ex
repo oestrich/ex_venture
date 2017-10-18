@@ -113,6 +113,8 @@ defmodule Game.Session do
     self() |> schedule_inactive_check()
     last_tick = Timex.now() |> Timex.shift(minutes: -2)
 
+    Logger.info("New session started #{inspect(self())}", type: :session)
+
     state = %{
       socket: socket,
       state: "login",
@@ -336,7 +338,7 @@ defmodule Game.Session do
   defp check_for_inactive(%{socket: socket, last_recv: last_recv}) do
     case Timex.diff(Timex.now, last_recv, :seconds) do
       time when time > @timeout_seconds ->
-        Logger.info "Idle player - disconnecting"
+        Logger.info("Idle player #{inspect(self())} - disconnecting", type: :session)
         socket |> @socket.disconnect()
       _ ->
         self() |> schedule_inactive_check()

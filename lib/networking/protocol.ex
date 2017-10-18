@@ -85,7 +85,7 @@ defmodule Networking.Protocol do
   end
 
   def init(ref, socket, transport) do
-    Logger.info "Player connecting"
+    Logger.info("Player connecting", type: :socket)
 
     :ok = :ranch.accept_ack(ref)
     :ok = transport.setopts(socket, [{:active, true}])
@@ -102,7 +102,7 @@ defmodule Networking.Protocol do
   def handle_cast({:gmcp, module, data}, state = %{gmcp: true}) do
     case module in state.gmcp_supports do
       true ->
-        Logger.debug ["GMCP: Sending", module]
+        Logger.debug(["GMCP: Sending", module], type: :socket)
         module_char = module |> String.to_charlist()
         data_char = data |> String.to_charlist()
         message = [@iac, @sb, @gmcp] ++ module_char ++ data_char ++ [@iac, @se]
@@ -142,7 +142,7 @@ defmodule Networking.Protocol do
   def handle_info({:tcp, socket, data}, state) do
     handle_options(data, socket, fn
       (:mccp) ->
-        Logger.info("Starting MCCP")
+        Logger.info("Starting MCCP", type: :socket)
         zlib_context = :zlib.open()
         :zlib.deflateInit(zlib_context, 9)
         send_data(state, [@iac, @sb, @mccp, @iac, @se])
@@ -150,7 +150,7 @@ defmodule Networking.Protocol do
         {:noreply, Map.put(state, :zlib_context, zlib_context)}
 
       (:mssp) ->
-        Logger.info("Sending MSSP")
+        Logger.info("Sending MSSP", type: :socket)
 
         send_data(state, [@iac, @sb] ++ MSSP.name() ++ MSSP.players() ++ MSSP.uptime() ++ [@iac, @se])
 
@@ -160,12 +160,12 @@ defmodule Networking.Protocol do
         {:noreply, state}
 
       (:gmcp) ->
-        Logger.info("Will do GCMP")
+        Logger.info("Will do GCMP", type: :socket)
         {:noreply, Map.put(state, :gmcp, true)}
 
       ({:gmcp, data}) ->
         data = data |> to_string() |> String.trim()
-        Logger.debug(["GMCP: ", data])
+        Logger.debug(["GMCP: ", data], type: :socket)
         handle_gmcp(data, state)
 
       (_) ->
@@ -180,12 +180,12 @@ defmodule Networking.Protocol do
     end)
   end
   def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
-    Logger.info "Connection Closed"
+    Logger.info("Connection Closed", type: :socket)
     disconnect(transport, socket, state)
     {:stop, :normal, state}
   end
   def handle_info({:tcp_error, _socket, :etimedout}, state = %{socket: socket, transport: transport}) do
-    Logger.info "Connection Timeout"
+    Logger.info("Connection Timeout", type: :socket)
     disconnect(transport, socket, state)
     {:stop, :normal, state}
   end
@@ -195,7 +195,7 @@ defmodule Networking.Protocol do
     terminate_zlib_context(state)
     case state do
       %{session: pid} ->
-        Logger.info "Disconnecting player"
+        Logger.info("Disconnecting player", type: :socket)
         pid |> Game.Session.disconnect()
       _ -> nil
     end
@@ -260,7 +260,7 @@ defmodule Networking.Protocol do
 
   defp terminate_zlib_context(%{zlib_context: nil}), do: nil
   defp terminate_zlib_context(%{zlib_context: zlib_context}) do
-    Logger.info "Terminating zlib stream"
+    Logger.info("Terminating zlib stream", type: :socket)
     :zlib.deflate(zlib_context, "", :finish)
     :zlib.deflateEnd(zlib_context)
   end

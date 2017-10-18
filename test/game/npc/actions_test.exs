@@ -10,7 +10,7 @@ defmodule Game.NPC.ActionsTest do
     setup do
       @room.clear_enters()
 
-      %{time: Timex.now(), npc_spawner: %{room_id: 1, spawn_interval: 10}, npc: %{stats: %{health: 10, max_health: 15}}}
+      %{time: Timex.now(), npc_spawner: %{room_id: 1, spawn_interval: 10}, npc: %{id: 1, stats: %{health: 10, max_health: 15}}}
     end
 
     test "does nothing if the npc is alive", %{time: time, npc: npc} do
@@ -47,7 +47,7 @@ defmodule Game.NPC.ActionsTest do
       insert_item(%{id: 1, name: "Sword", keywords: [], drop_rate: 50})
       insert_item(%{id: 2, name: "Shield", keywords: [], drop_rate: 50})
 
-      %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC", currency: 100, item_ids: [1, 2]}, is_targeting: []}
+      %{npc_spawner: %{room_id: 1}, npc: %{id: 1, name: "NPC", currency: 100, item_ids: [1, 2]}, is_targeting: []}
     end
 
     test "drops currency in the room", state do

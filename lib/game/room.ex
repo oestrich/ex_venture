@@ -5,6 +5,8 @@ defmodule Game.Room do
 
   use GenServer
 
+  require Logger
+
   alias Data.Room
 
   alias Game.Room.Actions
@@ -160,6 +162,7 @@ defmodule Game.Room do
   end
 
   def init(room) do
+    Logger.info("Room online #{room.id}", type: :room)
     room.zone_id |> Zone.room_online(room)
     {:ok, %{room: room, players: [], npcs: [], respawn: %{}}}
   end
@@ -185,6 +188,7 @@ defmodule Game.Room do
   end
 
   def handle_cast({:update, room}, state) do
+    Logger.info("Room updated #{room.id}", type: :room)
     room.zone_id |> Zone.update_room(room)
     {:noreply, Map.put(state, :room, room)}
   end
@@ -196,24 +200,28 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:enter, player = {:user, _, user}}, state = %{players: players}) do
+  def handle_cast({:enter, player = {:user, _, user}}, state = %{room: room, players: players}) do
+    Logger.info("Player (#{user.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:user, user}))
     players |> echo_to_players("{blue}#{user.name}{/blue} enters")
     {:noreply, Map.put(state, :players, [player | players])}
   end
-  def handle_cast({:enter, character = {:npc, npc}}, state = %{npcs: npcs, players: players}) do
+  def handle_cast({:enter, character = {:npc, npc}}, state = %{room: room, npcs: npcs, players: players}) do
+    Logger.info("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:npc, npc}))
     players |> echo_to_players("#{Format.target_name(character)} enters")
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
-  def handle_cast({:leave, {:user, _, user}}, state = %{players: players}) do
+  def handle_cast({:leave, {:user, _, user}}, state = %{room: room, players: players}) do
+    Logger.info("Player (#{user.id}) left room (#{room.id})", type: :room)
     players = Enum.reject(players, &(elem(&1, 2).id == user.id))
     players |> echo_gmcp_to_players(GMCP.character_leave({:user, user}))
     players |> echo_to_players("{blue}#{user.name}{/blue} leaves")
     {:noreply, Map.put(state, :players, players)}
   end
-  def handle_cast({:leave, {:npc, npc}}, state = %{players: players, npcs: npcs}) do
+  def handle_cast({:leave, {:npc, npc}}, state = %{room: room, players: players, npcs: npcs}) do
+    Logger.info("NPC (#{npc.id}) left room (#{room.id})", type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
     players |> echo_gmcp_to_players(GMCP.character_leave({:npc, npc}))
     players |> echo_to_players("{yellow}#{npc.name}{/yellow} leaves")
@@ -254,8 +262,8 @@ defmodule Game.Room do
   def handle_cast({:drop, who, item}, state = %{room: room, players: players}) do
     case Actions.drop(room, item) do
       {:ok, room} ->
+        Logger.info("Character (#{elem(who, 0)}, #{elem(who, 1).id}) dropped item (#{item.id})", type: :room)
         players |> echo_to_players(Format.dropped(who, item))
-
         {:noreply, Map.put(state, :room, room)}
       _ -> {:noreply, state}
     end
@@ -264,6 +272,7 @@ defmodule Game.Room do
   def handle_cast({:drop_currency, who, amount}, state = %{room: room, players: players}) do
     case Actions.drop_currency(room, amount) do
       {:ok, room} ->
+        Logger.info("Character (#{elem(who, 0)}, #{elem(who, 1).id}) dropped #{amount} currency", type: :room)
         players |> echo_to_players(who, Format.dropped(who, {:currency, amount}))
         {:noreply, Map.put(state, :room, room)}
       _ -> {:noreply, state}
