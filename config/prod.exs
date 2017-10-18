@@ -28,10 +28,15 @@ config :logger,
   level: :info
 
 config :logger,
-  backends: [{LoggerFileBackend, :global}, {LoggerFileBackend, :commands}]
+  backends: [{LoggerFileBackend, :global}, {LoggerFileBackend, :phoenix}, {LoggerFileBackend, :commands}]
 
 config :logger, :global,
   path: "/var/log/ex_venture/global.log"
+
+config :logger, :phoenix,
+  path: "/var/log/ex_venture/phoenix.log",
+  level: :info,
+  metadata_filter: [type: :phoenix]
 
 config :logger, :commands,
   path: "/var/log/ex_venture/commands.log",

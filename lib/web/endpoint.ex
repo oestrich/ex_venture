@@ -16,7 +16,8 @@ defmodule Web.Endpoint do
   end
 
   plug Plug.RequestId
-  plug Plug.Logger
+  plug Logster.Plugs.Logger
+  plug :set_logger_metadata
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
@@ -49,5 +50,10 @@ defmodule Web.Endpoint do
     else
       {:ok, config}
     end
+  end
+
+  def set_logger_metadata(conn, _opts) do
+    Logger.metadata(type: :phoenix)
+    conn
   end
 end
