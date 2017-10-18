@@ -27,6 +27,8 @@ MIX_ENV=test mix ecto.migrate
 
 There is an admin panel located at [http://locahost:4000/admin](http://locahost:4000/admin) that you can build out the game in. Create zones, rooms, npcs, items, etc. in the panel. They will become live instantly on creating or updating.
 
+![Admin Dashboard](https://oestrich.github.io/ex_venture/images/admin-dashboard.png)
+
 ## Deployment
 
 Distillery is used to generate releases. Once a release is generated you can copy the tar file to the server and start it up.
