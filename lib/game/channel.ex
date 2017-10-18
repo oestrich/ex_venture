@@ -5,6 +5,8 @@ defmodule Game.Channel do
 
   use GenServer
 
+  require Logger
+
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
@@ -106,6 +108,8 @@ defmodule Game.Channel do
   end
 
   def handle_cast({:broadcast, channel, message}, state = %{channels: channels}) do
+    Logger.info("Channel '#{channel}' message: #{inspect(message)}", type: :channel)
+
     channels
     |> Map.get(channel, [])
     |> Enum.each(fn (pid) ->

@@ -26,6 +26,8 @@ defmodule Game.Command do
       use Networking.Socket
       use Game.Room
 
+      require Logger
+
       alias Game.Format
       alias Game.Message
       alias Game.Session
@@ -70,7 +72,11 @@ defmodule Game.Command do
         }
       end
 
-      def run(_command, session, state) do
+      def run({:error, :bad_parse, command}, session, state) do
+        Game.Command.run({:error, :bad_parse, command}, session, state)
+      end
+      def run(command, session, state) do
+        Logger.info("#{__MODULE__} hit the generic case, #{inspect(command)}", type: :command)
         Game.Command.run({:error, :bad_parse, "bad parse"}, session, state)
       end
     end
@@ -185,8 +191,9 @@ defmodule Game.Command do
   end
 
   def run({:skip, {}}, _session, _state), do: :ok
-  def run({:error, :bad_parse, command}, _session, %{socket: socket}) do
+  def run({:error, :bad_parse, command}, session, %{socket: socket}) do
     Insight.bad_command(command)
+    Logger.info("Command for session #{inspect(session)} failed to parse #{inspect(command)}", type: :command)
     socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
     :ok
   end

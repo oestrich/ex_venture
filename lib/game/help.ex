@@ -3,6 +3,8 @@ defmodule Game.Help do
   Find help about a topic
   """
 
+  require Logger
+
   alias Game.Help.Agent, as: HelpAgent
 
   @doc """
@@ -32,8 +34,8 @@ defmodule Game.Help do
   """
   @spec topic(topic :: String.t) :: String.t
   def topic(topic) do
+    Logger.info("Help looked up for #{inspect(topic)}", type: :topic)
     topic = topic |> String.upcase
-
     case find_command(topic) do
       nil -> find_help_topic(topic)
       body -> body
