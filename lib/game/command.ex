@@ -222,10 +222,7 @@ defmodule Game.Command do
   defp log_command(pass_thru, command = %Command{}, session, started_run_at) do
     ran_in = Timex.diff(Timex.now(), started_run_at, :microseconds)
     command = %{command | ran_in: ran_in}
-
-    Logger.info("Command for session #{inspect(session)} [text=\"#{command.text}\", module=#{command.module}, system=#{command.system}, continue=#{command.continue}, parsed_in=#{command.parsed_in}μs, ran_in=#{command.ran_in}μs]", type: :command)
-    CommandInstrumenter.inc(command.module)
-
+    CommandInstrumenter.command_run(session, command)
     pass_thru
   end
 end

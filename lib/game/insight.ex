@@ -5,6 +5,8 @@ defmodule Game.Insight do
 
   use GenServer
 
+  alias Metrics.CommandInstrumenter
+
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
@@ -42,6 +44,7 @@ defmodule Game.Insight do
   end
 
   def handle_cast({:bad_command, command, timestamp}, state = %{bad_commands: bad_commands}) do
+    CommandInstrumenter.bad_parse()
     {:noreply, Map.put(state, :bad_commands, [{command, timestamp} | bad_commands])}
   end
 end
