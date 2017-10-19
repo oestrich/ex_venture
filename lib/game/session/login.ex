@@ -17,6 +17,7 @@ defmodule Game.Session.Login do
   alias Game.Format
   alias Game.Session
   alias Game.Session.GMCP
+  alias Metrics.PlayerInstrumenter
 
   @doc """
   Start text for logging in
@@ -40,7 +41,7 @@ defmodule Game.Session.Login do
   def login(user, session, socket, state) do
     Session.Registry.register(user)
 
-    Logger.info("Player (#{user.id}) logged in #{inspect(self())}", type: :session)
+    PlayerInstrumenter.login(user)
 
     state =
       state
@@ -79,6 +80,7 @@ defmodule Game.Session.Login do
     socket |> @socket.tcp_option(:echo, true)
     case Authentication.find_and_validate(name, password) do
       {:error, :invalid} ->
+        PlayerInstrumenter.login_fail()
         socket |> @socket.echo("Invalid password")
         socket |> @socket.disconnect()
         state
