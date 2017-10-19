@@ -1,0 +1,21 @@
+<script type="application/javascript">
+$(function() {
+  var basicStats = {
+    "armor": <%= Item.basic_stats(:armor) |> encode_json() %>,
+    "basic": <%= Item.basic_stats(:basic) |> encode_json() %>,
+    "weapon": <%= Item.basic_stats(:weapon) |> encode_json() %>
+  };
+
+  var fillInStats = function() {
+    var type = $("#<%= @type_id %>").val()
+    var stats = $("#<%= @stats_id %>");
+    stats.val(JSON.stringify(basicStats[type], null, 2))
+  }
+
+  $("#<%= @type_id %>").on("change", fillInStats)
+
+  if ($("#<%= @stats_id %>").val() == "") {
+    fillInStats()
+  }
+});
+</script>

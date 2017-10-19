@@ -1,25 +1,3 @@
-<script type="application/javascript">
-$(function() {
-  var basicStats = {
-    "armor": <%= Item.basic_stats(:armor) |> encode_json() %>,
-    "basic": <%= Item.basic_stats(:basic) |> encode_json() %>,
-    "weapon": <%= Item.basic_stats(:weapon) |> encode_json() %>
-  };
-
-  var fillInStats = function() {
-    var type = $("#item_tag_type").val()
-    var stats = $("#item_tag_stats");
-    stats.val(JSON.stringify(basicStats[type], null, 2))
-  }
-
-  $("#item_tag_type").on("change", fillInStats)
-
-  if ($("#item_tag_stats").val() == "") {
-    fillInStats()
-  }
-});
-</script>
-
 <div class="box">
   <div class="box-header">
     <h3 class="box-title"><%= @title %></h3>
@@ -51,6 +29,7 @@ $(function() {
         <%= error_tag f, :stats %>
         <span class="help-block">Enter in valid JSON</span>
         <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
+        <%= render(SharedView, "_stats.html", stats_id: "item_tag_stats", type_id: "item_tag_type") %>
       </div>
 
       <div class="form-group">
