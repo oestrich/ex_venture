@@ -90,6 +90,7 @@ defmodule Game.Command do
   alias Data.User
   alias Game.Command
   alias Game.Insight
+  alias Metrics.CommandInstrumenter
 
   @commands [
     Command.Channels, Command.Help, Command.Info, Command.Inventory, Command.Look,
@@ -223,6 +224,7 @@ defmodule Game.Command do
     command = %{command | ran_in: ran_in}
 
     Logger.info("Command for session #{inspect(session)} [text=\"#{command.text}\", module=#{command.module}, system=#{command.system}, continue=#{command.continue}, parsed_in=#{command.parsed_in}μs, ran_in=#{command.ran_in}μs]", type: :command)
+    CommandInstrumenter.inc(command.module)
 
     pass_thru
   end

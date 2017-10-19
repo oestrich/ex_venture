@@ -19,6 +19,8 @@ defmodule ExVenture.Application do
       listener(),
     ] |> Enum.reject(fn child -> is_nil(child) end)
 
+    Metrics.Setup.setup()
+
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]

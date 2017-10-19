@@ -35,6 +35,9 @@ defmodule Web.Endpoint do
     key: "_ex_venture_key",
     signing_salt: "dJUOZQux"
 
+  plug Web.PrometheusExporter
+  plug Metrics.PipelineInstrumenter
+
   plug Web.Router
 
   @doc """

@@ -8,6 +8,7 @@ defmodule Game.Server do
   alias Game.Session
   alias Game.Zone
   alias Game.World
+  alias Metrics.PlayerInstrumenter
 
   @tick_interval 2000
 
@@ -40,6 +41,7 @@ defmodule Game.Server do
     time = Timex.now()
 
     Session.Registry.connected_players
+    |> PlayerInstrumenter.set_player_count()
     |> Enum.each(fn ({session, _}) ->
       session |> Session.tick(time)
     end)
