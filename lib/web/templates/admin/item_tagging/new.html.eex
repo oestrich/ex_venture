@@ -1,0 +1,38 @@
+<section class="content-header">
+  <h1>
+    Add Item Tag for <%= @item.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Items", to: item_path(@conn, :index)) %></li>
+    <li><%= link(@item.name, to: item_path(@conn, :show, @item.id)) %></li>
+    <li class="active">Add Item Tag</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <%= form_for @changeset, item_tagging_path(@conn, :create, @item.id), fn (f) -> %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label f, :item_tag_id, "Item Tag" %>
+              <%= select f, :item_tag_id, @item_tags |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+              <%= error_tag f, :item_tag_id %>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Add", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

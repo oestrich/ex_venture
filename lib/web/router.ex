@@ -58,9 +58,13 @@ defmodule Web.Router do
 
     resources "/insights", InsightController, only: [:index]
 
-    resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create]
+    resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create] do
+      resources "/tags", ItemTaggingController, only: [:new, :create], as: :tagging
+    end
 
     resources "/item_tags", ItemTagController, only: [:index, :show, :edit, :update, :new, :create]
+
+    resources "/item_taggings", ItemTaggingController, only: [:delete]
 
     resources "/npcs", NPCController, only: [:index, :show, :edit, :update, :new, :create] do
       resources "/items", NPCItemController, only: [:new, :create, :delete], as: :item

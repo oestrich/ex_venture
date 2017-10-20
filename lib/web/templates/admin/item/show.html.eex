@@ -51,4 +51,41 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Item Tags</h3>
+          <div class="box-tools">
+            <%= link("Add Tag", to: item_tagging_path(@conn, :new, @item.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@item.item_taggings, fn (item_tagging) -> %>
+                <tr>
+                  <td><%= item_tagging.id %></td>
+                  <td><%= link(item_tagging.item_tag.name, to: item_tag_path(@conn, :show, item_tagging.item_tag_id)) %></td>
+                  <td>
+                    <%= link(to: item_tagging_path(@conn, :delete, item_tagging.id), method: :delete) do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

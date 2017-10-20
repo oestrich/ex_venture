@@ -6,6 +6,7 @@ defmodule Data.Item do
   use Data.Schema
 
   alias Data.Effect
+  alias Data.ItemTagging
   alias Data.Stats
 
   @types ["basic", "weapon", "armor"]
@@ -25,6 +26,8 @@ defmodule Data.Item do
     field :effects, {:array, Data.Effect}
     field :drop_rate, :integer
     field :cost, :integer, default: 0
+
+    has_many :item_taggings, ItemTagging
 
     timestamps()
   end

@@ -27,7 +27,9 @@ defmodule Web.Item do
   """
   @spec get(id :: integer) :: Item.t
   def get(id) do
-    Item |> Repo.get(id)
+    Item
+    |> Repo.get(id)
+    |> Repo.preload([item_taggings: [:item_tag]])
   end
 
   @doc """
