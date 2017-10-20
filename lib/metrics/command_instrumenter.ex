@@ -12,7 +12,7 @@ defmodule Metrics.CommandInstrumenter do
     Histogram.declare([
       name: :exventure_command_parsed_in_microseconds,
       help: "Parse time for a command",
-      buckets: [100, 500, 800, 1_000],
+      buckets: [100, 200, 300, 400, 500, 600, 700, 800, 1_000],
       duration_unit: false,
     ])
     Histogram.declare([
