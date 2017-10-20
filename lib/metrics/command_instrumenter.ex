@@ -27,7 +27,13 @@ defmodule Metrics.CommandInstrumenter do
   def command_run(session, command) do
     Logger.info("Command for session #{inspect(session)} [text=\"#{command.text}\", module=#{command.module}, system=#{command.system}, continue=#{command.continue}, parsed_in=#{command.parsed_in}μs, ran_in=#{command.ran_in}μs]", type: :command)
 
-    Counter.inc([name: :exventure_command_total, labels: [command.module]])
+    command_label =
+      command.module
+      |> to_string()
+      |> String.split(".")
+      |> List.last()
+
+    Counter.inc([name: :exventure_command_total, labels: [command_label]])
     record_timing(command)
   end
 
