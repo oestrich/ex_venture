@@ -12,13 +12,13 @@ defmodule Metrics.CommandInstrumenter do
     Histogram.declare([
       name: :exventure_command_parsed_in_microseconds,
       help: "Parse time for a command",
-      buckets: [10, 100, 1_000, 10_000],
+      buckets: [100, 500, 800, 1_000],
       duration_unit: false,
     ])
     Histogram.declare([
       name: :exventure_command_ran_in_microseconds,
       help: "Run time for a command",
-      buckets: [10, 100, 1_000, 10_000],
+      buckets: [100, 1_000, 3_000, 10_000],
       duration_unit: false,
     ])
     Counter.declare([name: :exventure_command_bad_parse_total, help: "Bad command parse counts"])
