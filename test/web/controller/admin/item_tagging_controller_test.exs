@@ -19,7 +19,7 @@ defmodule Web.Admin.ItemTaggingControllerTest do
   end
 
   test "delete item tagging", %{conn: conn, item: item, item_tag: item_tag} do
-    {:ok, item_tagging} = ItemTagging.create(item, item_tag.id)
+    {:ok, item_tagging} = ItemTagging.create(item, %{item_tag_id: item_tag.id})
 
     conn = delete conn, item_tagging_path(conn, :delete, item_tagging.id)
     assert html_response(conn, 302)

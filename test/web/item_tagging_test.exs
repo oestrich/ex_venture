@@ -10,13 +10,13 @@ defmodule Web.ItemTaggingTest do
   end
 
   test "create a new item tagging", %{item: item, item_tag: item_tag} do
-    {:ok, item_tagging} = ItemTagging.create(item, item_tag.id)
+    {:ok, item_tagging} = ItemTagging.create(item, %{item_tag_id: item_tag.id})
 
     assert item_tagging.item_tag_id == item_tag.id
   end
 
   test "delete an item tagging", %{item: item, item_tag: item_tag} do
-    {:ok, item_tagging} = ItemTagging.create(item, item_tag.id)
+    {:ok, item_tagging} = ItemTagging.create(item, %{item_tag_id: item_tag.id})
     assert {:ok, _item_tagging} = ItemTagging.delete(item_tagging)
   end
 end

@@ -9,6 +9,8 @@ defmodule Data.ItemTagging do
   alias Data.ItemTag
 
   schema "item_taggings" do
+    field :level, :integer, default: 1
+
     belongs_to :item, Item
     belongs_to :item_tag, ItemTag
 
@@ -17,8 +19,8 @@ defmodule Data.ItemTagging do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:item_id, :item_tag_id])
-    |> validate_required([:item_id, :item_tag_id])
+    |> cast(params, [:item_id, :item_tag_id, :level])
+    |> validate_required([:item_id, :item_tag_id, :level])
     |> foreign_key_constraint(:item_id)
     |> foreign_key_constraint(:item_tag_id)
     |> unique_constraint(:item_tag_id, name: :item_taggings_item_id_item_tag_id_index)

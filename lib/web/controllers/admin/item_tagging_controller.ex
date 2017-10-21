@@ -12,9 +12,9 @@ defmodule Web.Admin.ItemTaggingController do
     conn |> render("new.html", item: item, item_tags: item_tags, changeset: changeset)
   end
 
-  def create(conn, %{"item_id" => item_id, "item_tagging" => %{"item_tag_id" => item_tag_id}}) do
+  def create(conn, %{"item_id" => item_id, "item_tagging" => params}) do
     item = Item.get(item_id)
-    case ItemTagging.create(item, item_tag_id) do
+    case ItemTagging.create(item, params) do
       {:ok, item_tagging} -> conn |> redirect(to: item_path(conn, :show, item_tagging.item_id))
       {:error, changeset} ->
         item_tags = ItemTag.all()

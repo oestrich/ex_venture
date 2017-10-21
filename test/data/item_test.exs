@@ -1,6 +1,8 @@
 defmodule Data.ItemTest do
   use Data.ModelCase
 
+  doctest Data.Item.Compiled
+
   alias Data.Item
 
   test "validate type" do
@@ -27,7 +29,7 @@ defmodule Data.ItemTest do
       item_tag = create_item_tag(%{type: "armor", stats: %{slot: :chest, armor: 11}})
       item = create_item(%{type: "armor", stats: %{slot: :chest, armor: 10}})
       create_item_tagging(item, item_tag)
-      item = Repo.preload(item, [:item_tags])
+      item = Repo.preload(item, [item_taggings: [:item_tag]])
 
       compiled_item = Item.compile(item)
 
@@ -35,11 +37,23 @@ defmodule Data.ItemTest do
       assert compiled_item.stats == %{slot: :chest, armor: 21}
     end
 
+    test "stats scale with levels" do
+      item_tag = create_item_tag(%{type: "armor", stats: %{slot: :chest, armor: 11}})
+      item = create_item(%{type: "armor", stats: %{slot: :chest, armor: 10}})
+      create_item_tagging(item, item_tag, 10)
+      item = Repo.preload(item, [item_taggings: [:item_tag]])
+
+      compiled_item = Item.compile(item)
+
+      assert %Item.Compiled{} = compiled_item
+      assert compiled_item.stats == %{slot: :chest, armor: 31}
+    end
+
     test "merges effects together" do
       item_tag = create_item_tag(%{effects: [%{kind: "damage/type", types: [:slashing]}]})
       item = create_item(%{effects: [%{kind: "damage", type: :slashing, amount: 30}]})
       create_item_tagging(item, item_tag)
-      item = Repo.preload(item, [:item_tags])
+      item = Repo.preload(item, [item_taggings: [:item_tag]])
 
       compiled_item = Item.compile(item)
 
@@ -47,6 +61,27 @@ defmodule Data.ItemTest do
       assert compiled_item.effects == [
         %{kind: "damage", type: :slashing, amount: 30},
         %{kind: "damage/type", types: [:slashing]},
+      ]
+    end
+
+    test "effects scale with levels" do
+      item_tag = create_item_tag(%{
+        effects: [
+          %{kind: "damage/type", types: [:slashing]},
+          %{kind: "damage", type: :slashing, amount: 10},
+        ],
+      })
+
+      item = create_item()
+      create_item_tagging(item, item_tag, 11)
+      item = Repo.preload(item, [item_taggings: [:item_tag]])
+
+      compiled_item = Item.compile(item)
+
+      assert %Item.Compiled{} = compiled_item
+      assert compiled_item.effects == [
+        %{kind: "damage/type", types: [:slashing]},
+        %{kind: "damage", type: :slashing, amount: 20},
       ]
     end
   end

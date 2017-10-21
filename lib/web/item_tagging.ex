@@ -26,12 +26,12 @@ defmodule Web.ItemTagging do
   @doc """
   Create an item tagging
   """
-  @spec create(item :: Item.t, item_tag_id :: integer) :: {:ok, ItemTagging.t} | {:error, changeset :: map}
-  def create(item, item_tag_id) do
+  @spec create(item :: Item.t, params :: map) :: {:ok, ItemTagging.t} | {:error, changeset :: map}
+  def create(item, params) do
     changeset =
       item
       |> Ecto.build_assoc(:item_taggings)
-      |> ItemTagging.changeset(%{"item_tag_id" => item_tag_id})
+      |> ItemTagging.changeset(params)
 
     case changeset |> Repo.insert() do
       {:ok, item_tagging} ->

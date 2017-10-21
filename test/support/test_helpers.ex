@@ -121,10 +121,10 @@ defmodule TestHelpers do
     }, attributes)
   end
 
-  def create_item_tagging(item, item_tag) do
+  def create_item_tagging(item, item_tag, level \\ 1) do
     item
     |> Ecto.build_assoc(:item_taggings)
-    |> ItemTagging.changeset(%{"item_tag_id" => item_tag.id})
+    |> ItemTagging.changeset(%{"item_tag_id" => item_tag.id, "level" => level})
     |> Repo.insert!()
   end
 
