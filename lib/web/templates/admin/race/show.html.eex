@@ -36,7 +36,7 @@
             </tr>
             <tr>
               <th>Starting stats</th>
-              <td><pre><%= @race |> json_field(:starting_stats) %></pre></td>
+              <td><pre><%= @race.starting_stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
           </table>
         </div>

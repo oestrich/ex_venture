@@ -6,6 +6,7 @@ defmodule Game.Experience do
   use Networking.Socket
 
   alias Data.Save
+  alias Data.Stats
 
   @doc """
   Apply experience points to the user's save
@@ -119,9 +120,13 @@ defmodule Game.Experience do
   def level_up(save = %{experience_points: xp}, class) do
     level = div(xp, 1000) + 1
 
+    each_level_stats =
+      class.each_level_stats
+      |> Stats.default()
+
     stats = save.stats
     |> Enum.reduce(%{}, fn ({key, val}, stats) ->
-      class_boost = Map.get(class.each_level_stats, key, 0)
+      class_boost = Map.get(each_level_stats, key, 0)
       Map.put(stats, key, val + level + class_boost)
     end)
 

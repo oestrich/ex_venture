@@ -19,7 +19,7 @@
 
       <div class="form-group">
         <%= label f, :starting_stats %>
-        <%= textarea f, :starting_stats, value: @changeset |> json_field(:starting_stats), class: "form-control", rows: 10 %>
+        <%= textarea f, :starting_stats, value: @changeset |> starting_stats(), class: "form-control", rows: 10 %>
         <%= error_tag f, :starting_stats %>
       </div>
     </div>

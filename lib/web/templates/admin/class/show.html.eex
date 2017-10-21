@@ -44,7 +44,7 @@
             </tr>
             <tr>
               <th>Stats for each level</th>
-              <td><pre><%= @class.each_level_stats |> Poison.encode!(pretty: true) %></pre></td>
+              <td><pre><%= @class.each_level_stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
             <tr>
               <th>Regen Health</th>

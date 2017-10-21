@@ -3,18 +3,20 @@ defmodule Game.Account do
   Handle database interactions for a user
   """
 
-  alias Data.Repo
   alias Data.Config
-  alias Data.User
+  alias Data.Repo
   alias Data.Save
+  alias Data.Stats
+  alias Data.User
 
   @doc """
   Create a new user from attributes
   """
   @spec create(attributes :: map, save_attributes :: map) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
   def create(attributes, %{race: race, class: class}) do
-    save = Config.starting_save()
-    |> Map.put(:stats, race.starting_stats())
+    save =
+      Config.starting_save()
+      |> Map.put(:stats, race.starting_stats() |> Stats.default())
 
     attributes = attributes
     |> Map.put(:race_id, race.id)
