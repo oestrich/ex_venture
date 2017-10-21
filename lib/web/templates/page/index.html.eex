@@ -6,6 +6,12 @@
       Connect with telnet: <code><%= Config.host() %>:<%= Config.port() %></code>
     </p>
 
+    <%= if Config.ssl?() do %>
+      <p>
+        Connect with a TLS client: <code><%= Config.host() %>:<%= Config.ssl_port() %></code>
+      </p>
+    <% end %>
+
     <%= if !Map.has_key?(@conn.assigns, :user) do %>
       <p>
         <%= link("Sign in", to: public_session_path(@conn, :new)) %> before playing to start right away.
