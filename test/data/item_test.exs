@@ -39,8 +39,8 @@ defmodule Data.ItemTest do
 
     test "stats scale with levels" do
       item_tag = create_item_tag(%{type: "armor", stats: %{slot: :chest, armor: 11}})
-      item = create_item(%{type: "armor", stats: %{slot: :chest, armor: 10}})
-      create_item_tagging(item, item_tag, 10)
+      item = create_item(%{level: 10, type: "armor", stats: %{slot: :chest, armor: 10}})
+      create_item_tagging(item, item_tag)
       item = Repo.preload(item, [item_taggings: [:item_tag]])
 
       compiled_item = Item.compile(item)
@@ -72,8 +72,8 @@ defmodule Data.ItemTest do
         ],
       })
 
-      item = create_item()
-      create_item_tagging(item, item_tag, 11)
+      item = create_item(%{level: 11})
+      create_item_tagging(item, item_tag)
       item = Repo.preload(item, [item_taggings: [:item_tag]])
 
       compiled_item = Item.compile(item)

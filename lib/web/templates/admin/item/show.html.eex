@@ -18,6 +18,10 @@
           <table class="table">
             <tbody>
               <tr>
+                <th>Level</th>
+                <td><%= @item.level %></td>
+              </tr>
+              <tr>
                 <th>Name</th>
                 <td><%= @item.name %></td>
               </tr>
@@ -67,7 +71,6 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Level</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -76,7 +79,6 @@
                 <tr>
                   <td><%= item_tagging.id %></td>
                   <td><%= link(item_tagging.item_tag.name, to: item_tag_path(@conn, :show, item_tagging.item_tag_id)) %></td>
-                  <td><%= item_tagging.level %></td>
                   <td>
                     <%= link(to: item_tagging_path(@conn, :delete, item_tagging.id), method: :delete) do %>
                       <i class="fa fa-times"></i>

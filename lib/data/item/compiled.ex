@@ -6,7 +6,7 @@ defmodule Data.Item.Compiled do
 
   alias Data.Item
 
-  @fields [:id, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost]
+  @fields [:id, :level, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost]
 
   defstruct @fields
 
@@ -28,26 +28,26 @@ defmodule Data.Item.Compiled do
   """
   @spec merge_stats(compiled_item :: t(), item :: Item.t) :: t()
   def merge_stats(compiled_item, %{item_taggings: item_taggings}) do
-    stats = Enum.reduce(item_taggings, compiled_item.stats, &_merge_stats/2)
+    stats = Enum.reduce(item_taggings, compiled_item.stats, &(_merge_stats(&1, &2, compiled_item.level)))
     %{compiled_item | stats: stats}
   end
 
-  defp _merge_stats(%{level: level, item_tag: %{type: "armor", stats: stats}}, acc_stats) do
+  defp _merge_stats(%{item_tag: %{type: "armor", stats: stats}}, acc_stats, level) do
     armor = scale_for_level(level, stats.armor)
     %{acc_stats | armor: acc_stats.armor + armor}
   end
-  defp _merge_stats(_, stats), do: stats
+  defp _merge_stats(_, stats, _), do: stats
 
   @doc """
   Concatenate effects of the item and all of its tags
   """
   @spec merge_effects(compiled_item :: t(), item :: Item.t) :: t()
   def merge_effects(compiled_item, %{item_taggings: item_taggings}) do
-    effects = Enum.flat_map(item_taggings, &_scale_effects/1)
+    effects = Enum.flat_map(item_taggings, &(_scale_effects(&1, compiled_item.level)))
     %{compiled_item | effects: compiled_item.effects ++ effects}
   end
 
-  defp _scale_effects(%{level: level, item_tag: %{effects: effects}}) do
+  defp _scale_effects(%{item_tag: %{effects: effects}}, level) do
     Enum.map(effects, &(_scale_effect(&1, level)))
   end
 

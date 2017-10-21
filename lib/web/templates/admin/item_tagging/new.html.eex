@@ -26,12 +26,6 @@
               <%= select f, :item_tag_id, @item_tags |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
               <%= error_tag f, :item_tag_id %>
             </div>
-
-            <div class="form-group">
-              <%= label f, :level %>
-              <%= number_input f, :level, class: "form-control" %>
-              <%= error_tag f, :level %>
-            </div>
           </div>
 
           <div class="box-footer">

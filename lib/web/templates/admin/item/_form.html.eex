@@ -12,6 +12,12 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :level %>
+        <%= number_input f, :level, class: "form-control" %>
+        <%= error_tag f, :level %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :name %>
         <%= text_input f, :name, class: "form-control" %>
         <%= error_tag f, :name %>
