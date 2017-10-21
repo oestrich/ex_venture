@@ -10,7 +10,8 @@ defmodule Web.Admin.ItemController do
 
   def show(conn, %{"id" => id}) do
     item = Item.get(id)
-    conn |> render("show.html", item: item)
+    compiled_item = Data.Item.compile(item)
+    conn |> render("show.html", item: item, compiled_item: compiled_item)
   end
 
   def edit(conn, %{"id" => id}) do

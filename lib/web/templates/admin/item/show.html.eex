@@ -90,4 +90,28 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Compiled Item</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Stats</th>
+                <td><pre><%= @compiled_item |> json_field(:stats) %></pre></td>
+              </tr>
+              <tr>
+                <th>Effects</th>
+                <td><pre><%= @compiled_item |> json_field(:effects) %></pre></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
