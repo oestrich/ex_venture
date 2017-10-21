@@ -42,6 +42,28 @@ MIX_ENV=prod mix release
 
 The `release.sh` script will also do the same.
 
+### TLS
+
+The game does not support TLS natively, but you can get nginx to serve as a termination point and forward locally to the app. Nginx needs to be built with two modules, [stream_core](http://nginx.org/en/docs/stream/ngx_stream_core_module.html) and [stream_ssl](http://nginx.org/en/docs/stream/ngx_stream_ssl_module.html). You will also need to set the `ssl_port` option in networking. By default it will load from the `SSL_PORT` ENV variable.
+
+```nginx
+stream {
+  upstream exventure {
+    server 127.0.0.1:5555;
+  }
+
+  server {
+    listen 5443 ssl;
+
+    # Copy in your main site's settings here
+    ssl_certificate /path/to/file.pem
+    ssl_certificate_key /path/to/file.key
+
+    proxy_pass exventure;
+  }
+}
+```
+
 ## Metrics
 
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
