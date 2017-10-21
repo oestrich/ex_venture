@@ -61,8 +61,15 @@ defmodule Data.Stats do
   @spec default(Stats.t) :: Stats.t
   def default(stats) do
     stats
+    |> ensure(:health, 10)
+    |> ensure(:max_health, 10)
+    |> ensure(:skill_points, 10)
+    |> ensure(:max_skill_points, 10)
     |> ensure(:move_points, 10)
     |> ensure(:max_move_points, 10)
+    |> ensure(:strength, 10)
+    |> ensure(:intelligence, 10)
+    |> ensure(:dexterity, 10)
   end
 
   defp ensure(stats, field, default) do

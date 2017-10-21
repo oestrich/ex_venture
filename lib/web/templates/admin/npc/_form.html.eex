@@ -6,27 +6,35 @@
   <%= form_for @changeset, @path, fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
+        <%= label f, :level %>
+        <%= number_input f, :level, class: "form-control" %>
+        <%= error_tag f, :level %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :name %>
         <%= text_input f, :name, class: "form-control" %>
         <%= error_tag f, :name %>
       </div>
 
       <div class="form-group">
-        <%= label f, :level %>
-        <%= text_input f, :level, class: "form-control" %>
-        <%= error_tag f, :level %>
+        <%= label f, :tags %>
+        <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
+        <%= error_tag f, :tags %>
       </div>
 
       <div class="form-group">
         <%= label f, :experience_points %>
         <%= number_input f, :experience_points, class: "form-control" %>
         <%= error_tag f, :experience_points %>
+        <span class="help-block">Experience will scale based on the NPCs level</span>
       </div>
 
       <div class="form-group">
         <%= label f, :currency, currency() |> String.capitalize() %>
         <%= number_input f, :currency, class: "form-control" %>
         <%= error_tag f, :currency %>
+        <span class="help-block"><%= currency() |> String.capitalize() %> will drop in the room on defeat</span>
       </div>
 
       <div class="form-group">
@@ -36,16 +44,16 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :notes %>
-        <%= textarea f, :notes, class: "form-control", rows: 10 %>
-        <%= error_tag f, :notes %>
+        <%= label f, :stats %>
+        <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 10 %>
+        <%= error_tag f, :stats %>
+        <span class="help-block">Enter in valid JSON</span>
       </div>
 
       <div class="form-group">
-        <%= label f, :stats %>
-        <%= textarea f, :stats, value: @changeset |> json_field(:stats), class: "form-control", rows: 10 %>
-        <%= error_tag f, :stats %>
-        <span class="help-block">Enter in valid JSON</span>
+        <%= label f, :notes %>
+        <%= textarea f, :notes, class: "form-control", rows: 10 %>
+        <%= error_tag f, :notes %>
       </div>
     </div>
 

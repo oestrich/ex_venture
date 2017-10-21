@@ -87,6 +87,7 @@ defmodule Web.NPC do
   def cast_params(params) do
     params
     |> parse_stats()
+    |> parse_tags()
   end
 
   defp parse_stats(params = %{"stats" => stats}) do
@@ -104,6 +105,17 @@ defmodule Web.NPC do
         _ -> params
     end
   end
+
+  def parse_tags(params = %{"tags" => tags}) do
+    tags =
+      tags
+      |> String.split(",")
+      |> Enum.map(&String.trim/1)
+
+    params
+    |> Map.put("tags", tags)
+  end
+  def parse_tags(params), do: params
 
   #
   # Zone NPC

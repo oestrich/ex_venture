@@ -27,12 +27,20 @@
         <div class="box-body">
           <table class="table">
             <tr>
+              <th>Level</th>
+              <td><%= @npc.level %></td>
+            </tr>
+            <tr>
               <th>Name</th>
               <td><%= @npc.name %></td>
             </tr>
             <tr>
-              <th>Level</th>
-              <td><%= @npc.level %></td>
+              <th>Tags</th>
+              <td>
+                <%= Enum.map(@npc.tags, fn (tag) -> %>
+                  <span class="label label-info"><%= tag %></span>
+                <% end) %>
+              </td>
             </tr>
             <tr>
               <th>Experience Points</th>
@@ -52,7 +60,7 @@
             </tr>
             <tr>
               <th>Starting Stats</th>
-              <td><pre><%= @npc.stats |> Poison.encode!(pretty: true) %></pre></td>
+              <td><pre><%= @npc.stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
           </table>
         </div>

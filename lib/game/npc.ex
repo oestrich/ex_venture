@@ -10,9 +10,9 @@ defmodule Game.NPC do
 
   import Ecto.Query
 
-  alias Data.Repo
   alias Data.NPCSpawner
-
+  alias Data.Repo
+  alias Data.Stats
   alias Game.Character
   alias Game.Effect
   alias Game.Message
@@ -93,6 +93,7 @@ defmodule Game.NPC do
 
   def init(npc_spawner) do
     npc = %{npc_spawner.npc | id: npc_spawner.id}
+    npc = %{npc | stats: Stats.default(npc.stats)}
     Logger.info("Starting NPC #{npc.id}", type: :npc)
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)

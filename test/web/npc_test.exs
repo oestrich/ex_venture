@@ -12,6 +12,7 @@ defmodule Web.NPCTest do
       "level" => "1",
       "experience_points" => "124",
       "currency" => "10",
+      "tags" => "enemy, dungeon",
       "stats" => %{
         health: 25,
         max_health: 25,
@@ -28,6 +29,7 @@ defmodule Web.NPCTest do
     {:ok, npc} = NPC.create(params)
 
     assert npc.name == "Bandit"
+    assert npc.tags == ["enemy", "dungeon"]
   end
 
   test "updating a npc" do
