@@ -6,6 +6,7 @@ defmodule TestHelpers do
   alias Data.HelpTopic
   alias Data.Item
   alias Data.ItemTag
+  alias Data.ItemTagging
   alias Data.NPC
   alias Data.NPCSpawner
   alias Data.Race
@@ -118,6 +119,13 @@ defmodule TestHelpers do
       effects: [],
       drop_rate: 50,
     }, attributes)
+  end
+
+  def create_item_tagging(item, item_tag) do
+    item
+    |> Ecto.build_assoc(:item_taggings)
+    |> ItemTagging.changeset(%{"item_tag_id" => item_tag.id})
+    |> Repo.insert!()
   end
 
   def create_room_item(room, item, attributes) do

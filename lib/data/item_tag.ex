@@ -7,6 +7,7 @@ defmodule Data.ItemTag do
 
   alias Data.Effect
   alias Data.Item
+  alias Data.ItemTagging
   alias Data.Stats
 
   schema "item_tags" do
@@ -15,6 +16,9 @@ defmodule Data.ItemTag do
     field :type, :string
     field :stats, Stats
     field :effects, {:array, Effect}
+
+    has_many :item_taggings, ItemTagging
+    has_many :items, through: [:item_taggings, :item]
 
     timestamps()
   end

@@ -7,6 +7,7 @@ defmodule Web.ItemTag do
 
   alias Data.ItemTag
   alias Data.Repo
+  alias Game.Items
   alias Web.Item
 
   @doc """
@@ -54,9 +55,17 @@ defmodule Web.ItemTag do
   """
   @spec update(id :: integer, params :: map) :: {:ok, ItemTag.t} | {:error, changeset :: map}
   def update(id, params) do
-    id
-    |> get()
-    |> ItemTag.changeset(Item.cast_params(params))
-    |> Repo.update
+    item_tag = id |> get()
+    changeset = item_tag |> ItemTag.changeset(Item.cast_params(params))
+    case changeset |> Repo.update do
+      {:ok, item_tag} ->
+        item_tag
+        |> Repo.preload([:items])
+        |> Map.get(:items)
+        |> Enum.each(&Items.reload/1)
+
+        {:ok, item_tag}
+      error -> error
+    end
   end
 end

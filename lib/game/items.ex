@@ -5,6 +5,8 @@ defmodule Game.Items do
 
   use GenServer
 
+  import Ecto.Query
+
   alias Data.Item
   alias Data.Repo
 
@@ -67,13 +69,28 @@ defmodule Game.Items do
   end
 
   def handle_cast(:load_items, state) do
-    items = Item |> Repo.all
+    items =
+      Item
+      |> preload([:item_tags])
+      |> Repo.all
+
     Enum.each(items, fn (item) ->
+      item = Item.compile(item)
       :ets.insert(@ets_table, {item.id, item})
     end)
+
     {:noreply, state}
   end
 
+  def handle_call({:insert, item = %Item{}}, _from, state) do
+    item =
+      item
+      |> Repo.preload([:item_tags])
+      |> Item.compile()
+
+    :ets.insert(@ets_table, {item.id, item})
+    {:reply, :ok, state}
+  end
   def handle_call({:insert, item}, _from, state) do
     :ets.insert(@ets_table, {item.id, item})
     {:reply, :ok, state}

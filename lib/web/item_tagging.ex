@@ -6,6 +6,7 @@ defmodule Web.ItemTagging do
   alias Data.Item
   alias Data.ItemTagging
   alias Data.Repo
+  alias Game.Items
 
   @doc """
   Get a single item
@@ -27,16 +28,34 @@ defmodule Web.ItemTagging do
   """
   @spec create(item :: Item.t, item_tag_id :: integer) :: {:ok, ItemTagging.t} | {:error, changeset :: map}
   def create(item, item_tag_id) do
-    item 
-    |> Ecto.build_assoc(:item_taggings)
-    |> ItemTagging.changeset(%{"item_tag_id" => item_tag_id})
-    |> Repo.insert()
+    changeset =
+      item
+      |> Ecto.build_assoc(:item_taggings)
+      |> ItemTagging.changeset(%{"item_tag_id" => item_tag_id})
+
+    case changeset |> Repo.insert() do
+      {:ok, item_tagging} ->
+        Item
+        |> Repo.get(item_tagging.item_id)
+        |> Items.reload()
+
+        {:ok, item_tagging}
+      error -> error
+    end
   end
 
   @doc """
   Delete an item tagging
   """
   def delete(item_tagging) do
-    item_tagging |> Repo.delete()
+    case item_tagging |> Repo.delete() do
+      {:ok, item_tagging} ->
+        Item
+        |> Repo.get(item_tagging.item_id)
+        |> Items.reload()
+
+        {:ok, item_tagging}
+      error -> error
+    end
   end
 end

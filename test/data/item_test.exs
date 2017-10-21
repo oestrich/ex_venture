@@ -1,5 +1,5 @@
 defmodule Data.ItemTest do
-  use ExUnit.Case
+  use Data.ModelCase
 
   alias Data.Item
 
@@ -20,6 +20,35 @@ defmodule Data.ItemTest do
 
     changeset = %Item{} |> Item.changeset(%{type: "armor", stats: %{slot: :chest, armor: 10}})
     refute changeset.errors[:stats]
+  end
+
+  describe "compiling an item from its tags" do
+    test "merges stats together" do
+      item_tag = create_item_tag(%{type: "armor", stats: %{slot: :chest, armor: 11}})
+      item = create_item(%{type: "armor", stats: %{slot: :chest, armor: 10}})
+      create_item_tagging(item, item_tag)
+      item = Repo.preload(item, [:item_tags])
+
+      compiled_item = Item.compile(item)
+
+      assert %Item.Compiled{} = compiled_item
+      assert compiled_item.stats == %{slot: :chest, armor: 21}
+    end
+
+    test "merges effects together" do
+      item_tag = create_item_tag(%{effects: [%{kind: "damage/type", types: [:slashing]}]})
+      item = create_item(%{effects: [%{kind: "damage", type: :slashing, amount: 30}]})
+      create_item_tagging(item, item_tag)
+      item = Repo.preload(item, [:item_tags])
+
+      compiled_item = Item.compile(item)
+
+      assert %Item.Compiled{} = compiled_item
+      assert compiled_item.effects == [
+        %{kind: "damage", type: :slashing, amount: 30},
+        %{kind: "damage/type", types: [:slashing]},
+      ]
+    end
   end
 
   describe "validates item effects" do

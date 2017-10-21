@@ -6,6 +6,7 @@ defmodule Data.Item do
   use Data.Schema
 
   alias Data.Effect
+  alias __MODULE__
   alias Data.ItemTagging
   alias Data.Stats
 
@@ -28,9 +29,12 @@ defmodule Data.Item do
     field :cost, :integer, default: 0
 
     has_many :item_taggings, ItemTagging
+    has_many :item_tags, through: [:item_taggings, :item_tag]
 
     timestamps()
   end
+
+  defdelegate compile(item), to: Item.Compiled
 
   @doc """
   List out item types
