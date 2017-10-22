@@ -208,7 +208,8 @@ defmodule Game.Map do
       ecology when ecology in ["mountain", "road"] -> "map:brown"
       ecology when ecology in ["hill", "field", "meadow"] -> "map:green"
       ecology when ecology in ["forest", "jungle"] -> "map:dark-green"
-      ecology when ecology in ["town", "inside", "dungeon"] -> "map:grey"
+      ecology when ecology in ["town", "dungeon"] -> "map:grey"
+      ecology when ecology in ["inside"] -> "map:light-grey"
       _ -> nil
     end
   end

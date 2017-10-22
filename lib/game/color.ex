@@ -24,6 +24,7 @@ defmodule Game.Color do
     |> String.replace("{map:dark-green}", "\e[38;5;22m")
     |> String.replace("{map:green}", "\e[38;5;34m")
     |> String.replace("{map:grey}", "\e[38;5;247m")
+    |> String.replace("{map:light-grey}", "\e[38;5;252m")
     |> String.replace(~r/{\/[\w:-]+}/, "\e[0m")
   end
 

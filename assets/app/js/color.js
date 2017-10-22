@@ -12,6 +12,7 @@ function formatColor(string) {
   string = string.replace(/{map:dark-green}/g, "<span class='map-dark-green'>")
   string = string.replace(/{map:green}/g, "<span class='map-green'>")
   string = string.replace(/{map:grey}/g, "<span class='map-grey'>")
+  string = string.replace(/{map:light-grey}/g, "<span class='map-light-grey'>")
   string = string.replace(/{\/[\w:-]+}/g, "</span>")
   return string;
 }
