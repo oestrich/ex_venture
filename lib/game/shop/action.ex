@@ -52,7 +52,7 @@ defmodule Game.Shop.Action do
     case item do
       nil -> {:error, :item_not_found}
       item ->
-        ShopInstrumenter.buy(item.cost)
+        ShopInstrumenter.sell(item.cost)
         item_ids = List.delete(save.item_ids, item.id)
         currency = save.currency + item.cost
         save = %{save | item_ids: item_ids, currency: currency}
