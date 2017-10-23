@@ -6,6 +6,7 @@ defmodule Game.Shop.Action do
   alias Game.Item
   alias Game.Items
   alias Game.Shop
+  alias Metrics.ShopInstrumenter
 
   @doc """
   Buy an item from a shop
@@ -32,6 +33,7 @@ defmodule Game.Shop.Action do
     case save.currency - shop_item.price do
       currency when currency < 0 -> {:error, :not_enough_currency, item}
       currency ->
+        ShopInstrumenter.buy(shop_item.price)
         save = %{save | currency: currency, item_ids: [item.id | save.item_ids]}
         shop_item = change_quantity(shop_item)
         shop_items = [shop_item | shop.shop_items] |> Enum.uniq_by(&(&1.id))
@@ -50,6 +52,7 @@ defmodule Game.Shop.Action do
     case item do
       nil -> {:error, :item_not_found}
       item ->
+        ShopInstrumenter.buy(item.cost)
         item_ids = List.delete(save.item_ids, item.id)
         currency = save.currency + item.cost
         save = %{save | item_ids: item_ids, currency: currency}
