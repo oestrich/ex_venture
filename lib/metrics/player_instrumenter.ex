@@ -9,8 +9,13 @@ defmodule Metrics.PlayerInstrumenter do
 
   def setup() do
     Gauge.declare([name: :exventure_player_count, help: "Number of players signed in currently"])
+    Counter.declare([name: :exventure_session_total, help: "Session process counter"])
     Counter.declare([name: :exventure_login_total, help: "Login counter"])
     Counter.declare([name: :exventure_login_failure_total, help: "Login failure counter"])
+  end
+
+  def session_started() do
+    Counter.inc([name: :exventure_session_total])
   end
 
   def login(user) do

@@ -25,6 +25,7 @@ defmodule Game.Session do
   alias Game.Session.Effects
   alias Game.Session.GMCP
   alias Game.Session.Tick
+  alias Metrics.PlayerInstrumenter
 
   @save_period 15_000
   @force_disconnect_period 5_000
@@ -114,6 +115,7 @@ defmodule Game.Session do
     last_tick = Timex.now() |> Timex.shift(minutes: -2)
 
     Logger.info("New session started #{inspect(self())}", type: :session)
+    PlayerInstrumenter.session_started()
 
     state = %{
       socket: socket,
