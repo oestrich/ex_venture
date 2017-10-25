@@ -18,6 +18,9 @@ config :ex_venture, Web.Endpoint,
   render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]
 
+config :ex_venture, Data.Repo,
+  loggers: [Metrics.RepoInstrumenter, Ecto.LogEntry]
+
 import_config "#{Mix.env}.exs"
 
 config :distillery,

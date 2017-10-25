@@ -59,6 +59,7 @@ defmodule ExVenture.Mixfile do
       {:phoenix, "~> 1.3.0"},
       {:phoenix_ecto, "~> 3.0"},
       {:phoenix_html, "~> 2.10"},
+      {:prometheus_ecto, "~> 1.0.1"},
       {:prometheus_ex, "~> 1.0"},
       {:prometheus_plugs, "~> 1.1"},
       {:prometheus_process_collector, "~> 1.2"},

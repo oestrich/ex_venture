@@ -7,7 +7,9 @@ defmodule Metrics.Setup do
     Metrics.CommandInstrumenter.setup()
     Metrics.PipelineInstrumenter.setup()
     Metrics.PlayerInstrumenter.setup()
+    Metrics.RepoInstrumenter.setup()
     Metrics.ShopInstrumenter.setup()
+
     Web.PrometheusExporter.setup()
   end
 end
