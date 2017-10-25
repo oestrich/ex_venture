@@ -183,7 +183,7 @@ defmodule Web.Room do
   end
 
   defp update_directions(room_exit) do
-    [:north_id, :south_id, :east_id, :west_id]
+    [:north_id, :south_id, :east_id, :west_id, :up_id, :down_id]
     |> Enum.each(fn (direction) ->
       case Map.get(room_exit, direction) do
         nil -> nil

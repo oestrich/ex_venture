@@ -12,6 +12,9 @@ defmodule Data.ExitTest do
     changeset = %Exit{} |> Exit.changeset(%{east_id: 1, west_id: 2})
     assert changeset.valid?
 
+    changeset = %Exit{} |> Exit.changeset(%{up_id: 1, down_id: 2})
+    assert changeset.valid?
+
     changeset = %Exit{} |> Exit.changeset(%{north_id: 1, west_id: 2})
     refute changeset.valid?
   end
@@ -24,15 +27,19 @@ defmodule Data.ExitTest do
     east = create_room(zone, %{x: 3, y: 2})
     south = create_room(zone, %{x: 2, y: 3})
     west = create_room(zone, %{x: 1, y: 2})
+    up = create_room(zone, %{x: 1, y: 2, map_layer: 2})
+    down = create_room(zone, %{x: 1, y: 2, map_layer: 3})
 
     create_exit(%{north_id: north.id, south_id: room.id})
     create_exit(%{east_id: east.id, west_id: room.id})
     create_exit(%{north_id: room.id, south_id: south.id})
     create_exit(%{east_id: room.id, west_id: west.id})
+    create_exit(%{up_id: room.id, down_id: down.id})
+    create_exit(%{up_id: up.id, down_id: room.id})
 
     room = Exit.load_exits(room)
 
-    assert room.exits |> length() == 4
+    assert room.exits |> length() == 6
   end
 
   test "find an exit" do

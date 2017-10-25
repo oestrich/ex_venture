@@ -38,6 +38,12 @@
             <%= if @direction == "east" do %>
               <%= render("_fields.html", f: f, room: @room, room_field: :west_id, select_field: :east_id) %>
             <% end %>
+            <%= if @direction == "up" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :down_id, select_field: :up_id) %>
+            <% end %>
+            <%= if @direction == "down" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :up_id, select_field: :down_id) %>
+            <% end %>
           </div>
 
           <div class="box-footer">
@@ -67,21 +73,21 @@
               <%= Enum.map(layers(@zone), fn (layer) -> %>
                 <div class="tab-pane <%= layer_class(@room.map_layer, layer) %>" id="layer-<%= layer %>">
                   <table class="table">
-            <%= Enum.map(map(@zone, layer: layer), fn (row) -> %>
-              <tr>
-                <%= Enum.map(row, fn ({_, nil}) -> %>
-                  <td><span class="empty"></span></td>
-                <% ({_, room}) -> %>
-                  <td>
-                    <%= if @room.id == room.id do %>
-                      <span class="btn btn-default"><%= room.id %> - <%= room.name %></span>
-                    <% else %>
-                      <%= link("#{room.id} - #{room.name}", to: "javascript:selectRoom(#{room.id})", class: "room btn btn-success") %>
-                    <% end %>
-                  </td>
-                <% end) %>
-              </tr>
-            <% end) %>
+                    <%= Enum.map(map(@zone, layer: layer), fn (row) -> %>
+                      <tr>
+                        <%= Enum.map(row, fn ({_, nil}) -> %>
+                          <td><span class="empty"></span></td>
+                        <% ({_, room}) -> %>
+                          <td>
+                            <%= if @room.id == room.id do %>
+                              <span class="btn btn-default"><%= room.id %> - <%= room.name %></span>
+                            <% else %>
+                              <%= link("#{room.id} - #{room.name}", to: "javascript:selectRoom(#{room.id})", class: "room btn btn-success") %>
+                            <% end %>
+                          </td>
+                        <% end) %>
+                      </tr>
+                    <% end) %>
                   </table>
                 </div>
               <% end) %>

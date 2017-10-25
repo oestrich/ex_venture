@@ -10,8 +10,8 @@ defmodule Game.Command.Move do
   import Game.Character.Target, only: [clear_target: 2]
 
   @custom_parse true
-  @commands ["move", "north", "east", "south", "west"]
-  @aliases ["n", "e", "s", "w"]
+  @commands ["move", "north", "east", "south", "west", "up", "down"]
+  @aliases ["n", "e", "s", "w", "u", "d"]
   @must_be_alive true
 
   @short_help "Move in a direction"
@@ -36,6 +36,10 @@ defmodule Game.Command.Move do
   def parse("s"), do: {:south}
   def parse("west"), do: {:west}
   def parse("w"), do: {:west}
+  def parse("up"), do: {:up}
+  def parse("u"), do: {:up}
+  def parse("down"), do: {:down}
+  def parse("d"), do: {:down}
   def parse(_), do: {:unknown}
 
   @doc """
@@ -68,6 +72,20 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:west) do
       %{west_id: id} -> session |> maybe_move_to(state, id)
+      _ -> {:error, :no_exit}
+    end
+  end
+  def run({:up}, session, state = %{save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(:up) do
+      %{up_id: id} -> session |> maybe_move_to(state, id)
+      _ -> {:error, :no_exit}
+    end
+  end
+  def run({:down}, session, state = %{save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(:down) do
+      %{down_id: id} -> session |> maybe_move_to(state, id)
       _ -> {:error, :no_exit}
     end
   end

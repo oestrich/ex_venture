@@ -58,7 +58,7 @@ defmodule Data.Room do
   end
 
   def exits(room) do
-    ["north", "east", "south", "west"]
+    ["north", "east", "south", "west", "up", "down"]
     |> Enum.filter(fn (direction) ->
       Exit.exit_to(room, direction)
     end)
