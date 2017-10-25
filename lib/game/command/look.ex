@@ -30,7 +30,7 @@ defmodule Game.Command.Look do
     state |> GMCP.room(room)
     socket |> @socket.echo(Format.room(room))
 
-    map = room.zone_id |> @zone.map({room.x, room.y})
+    map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer})
     state |> GMCP.map(map)
 
     :ok

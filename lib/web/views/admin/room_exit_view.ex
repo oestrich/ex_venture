@@ -4,7 +4,12 @@ defmodule Web.Admin.RoomExitView do
   alias Web.Zone
   alias Game.Map
 
-  defdelegate map(zone), to: Map
+  defdelegate map(zone, opts), to: Map
+
+  def layers(zone), do: Map.layers_in_map(zone)
+
+  def layer_class(layer, layer), do: "active"
+  def layer_class(_, _), do: ""
 
   def disabled_room_option(room) do
     [{"#{room.id} - #{room.name}", room.id}]

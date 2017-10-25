@@ -55,8 +55,19 @@
           <h3 class="box-title">Map</h3>
         </div>
         <div class="box-body">
-          <table class="table map">
-            <%= Enum.map(map(@zone), fn (row) -> %>
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <%= Enum.map(layers(@zone), fn (layer) -> %>
+                <li class="<%= layer_class(@room.map_layer, layer) %>">
+                  <%= link("Layer #{layer}", to: "#layer-#{layer}", data: [toggle: "tab"]) %>
+                </li>
+              <% end)%>
+            </ul>
+            <div class="tab-content">
+              <%= Enum.map(layers(@zone), fn (layer) -> %>
+                <div class="tab-pane <%= layer_class(@room.map_layer, layer) %>" id="layer-<%= layer %>">
+                  <table class="table">
+            <%= Enum.map(map(@zone, layer: layer), fn (row) -> %>
               <tr>
                 <%= Enum.map(row, fn ({_, nil}) -> %>
                   <td><span class="empty"></span></td>
@@ -71,6 +82,12 @@
                 <% end) %>
               </tr>
             <% end) %>
+                  </table>
+                </div>
+              <% end) %>
+            </div>
+          </div>
+          <table class="table map">
           </table>
         </div>
       </div>

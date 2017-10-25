@@ -10,11 +10,18 @@ defmodule Game.Map do
 
   1,1 is top left
   """
-  @spec size_of_map(zone :: Zone.t) :: {{max_x :: integer, max_y :: integer}, [{{x :: integer, y :: integer}, Room.t}]}
-  def size_of_map(zone)
-  def size_of_map(%{rooms: []}), do: {{0, 0}, {0, 0}, []}
-  def size_of_map(%{rooms: rooms}) do
-    map = Enum.map(rooms, &({{&1.x, &1.y}, &1}))
+  @spec size_of_map(zone :: Zone.t, layer :: integer) ::
+    {{min_x :: integer, min_y :: integer}, {max_x :: integer, max_y :: integer}, [{{x :: integer, y :: integer}, Room.t}]}
+  def size_of_map(zone, opts \\ [layer: 1])
+  def size_of_map(%{rooms: []}, _), do: {{0, 0}, {0, 0}, []}
+  def size_of_map(%{rooms: rooms}, opts) do
+    layer = Keyword.get(opts, :layer)
+
+    map =
+      rooms
+      |> Enum.filter(&(&1.map_layer == layer))
+      |> Enum.map(&({{&1.x, &1.y}, &1}))
+
     min_x = map |> Enum.min_by(fn ({{x, _y}, _room}) -> x end) |> elem(0) |> elem(0)
     min_y = map |> Enum.min_by(fn ({{_x, y}, _room}) -> y end) |> elem(0) |> elem(1)
     max_x = map |> Enum.max_by(fn ({{x, _y}, _room}) -> x end) |> elem(0) |> elem(0)
@@ -28,9 +35,10 @@ defmodule Game.Map do
   """
   @spec map(zone :: Zone.t) :: [[Room.t]]
   def map(zone, opts \\ []) do
+    layer = Keyword.get(opts, :layer, 1)
     buffer = Keyword.get(opts, :buffer, true)
 
-    {{min_x, min_y}, {max_x, max_y}, map} = size_of_map(zone)
+    {{min_x, min_y}, {max_x, max_y}, map} = size_of_map(zone, layer: layer)
     {{min_x, min_y}, {max_x, max_y}} =
       case buffer do
         true -> {{min_x - 1, min_y - 1}, {max_x + 1, max_y + 1}}
@@ -48,12 +56,22 @@ defmodule Game.Map do
   end
 
   @doc """
+  Determine which layers are in a map
+  """
+  @spec layers_in_map(zone :: Zone.t) :: [integer]
+  def layers_in_map(zone) do
+    zone.rooms
+    |> Enum.map(&(&1.map_layer))
+    |> Enum.uniq()
+  end
+
+  @doc """
   Generate a text view of the zone
   """
-  @spec map(zone :: Zone.t) :: [[Room.t]]
-  def display_map(zone, {x, y}) do
+  @spec display_map(zone :: Zone.t, {x :: integer, y :: integer, layer :: integer}) :: [String.t]
+  def display_map(zone, {x, y, layer}) do
     zone
-    |> map(buffer: false)
+    |> map(layer: layer, buffer: false)
     |> Enum.map(fn (row) ->
       row |> Enum.map(&(display_room(&1, {x, y})))
     end)

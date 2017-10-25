@@ -16,6 +16,7 @@ defmodule Web.RoomTest do
       currency: "10",
       x: 1,
       y: 1,
+      map_layer: 1,
     }
 
     {:ok, room} = Room.create(zone, params)

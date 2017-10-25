@@ -30,6 +30,7 @@ defmodule Data.Room do
 
     field :x, :integer
     field :y, :integer
+    field :map_layer, :integer
     field :is_zone_exit, :boolean
     field :ecology, :string
 
@@ -48,11 +49,11 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :x, :y, :is_zone_exit, :ecology, :currency, :item_ids])
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :map_layer, :is_zone_exit, :ecology, :currency, :item_ids])
     |> ensure_item_ids
     |> ensure(:currency, 0)
     |> ensure(:ecology, "default")
-    |> validate_required([:zone_id, :name, :description, :currency, :x, :y, :ecology])
+    |> validate_required([:zone_id, :name, :description, :currency, :x, :y, :map_layer, :ecology])
     |> validate_inclusion(:ecology, @ecologies)
   end
 

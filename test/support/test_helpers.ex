@@ -79,6 +79,7 @@ defmodule TestHelpers do
       currency: 0,
       x: 1,
       y: 1,
+      map_layer: 1,
     }, attributes)
   end
 

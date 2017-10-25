@@ -25,14 +25,20 @@
 
       <div class="form-group">
         <%= label f, :x %>
-        <%= text_input f, :x, class: "form-control" %>
+        <%= number_input f, :x, class: "form-control" %>
         <%= error_tag f, :x %>
       </div>
 
       <div class="form-group">
         <%= label f, :y %>
-        <%= text_input f, :y, class: "form-control" %>
+        <%= number_input f, :y, class: "form-control" %>
         <%= error_tag f, :y %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :map_layer %>
+        <%= number_input f, :map_layer, class: "form-control" %>
+        <%= error_tag f, :map_layer %>
       </div>
 
       <div class="checkbox">

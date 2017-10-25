@@ -47,7 +47,7 @@
               </tr>
               <tr>
                 <th>Coorinates</th>
-                <td><%= @room.x %>, <%= @room.y %></td>
+                <td><%= @room.x %>, <%= @room.y %>, layer: <%= @room.map_layer %></td>
               </tr>
               <tr>
                 <th>Is a zone exit?</th>

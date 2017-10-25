@@ -5,48 +5,79 @@ defmodule Game.MapTest do
   alias Game.Map
 
   setup do
-    north = %{id: 1, x: 2, y: 1, exits: [%{north_id: 1, south_id: 5}]}
-    east = %{id: 2, x: 3, y: 2, exits: [%{east_id: 2, west_id: 5}]}
-    south = %{id: 3, x: 2, y: 3, exits: [%{north_id: 5, south_id: 3}]}
-    west = %{id: 4, x: 1, y: 2, exits: [%{east_id: 5, west_id: 4}]}
-    center = %{id: 5, x: 2, y: 2, exits: [%{north_id: 1, south_id: 5}, %{east_id: 2, west_id: 5}, %{north_id: 5, south_id: 3}, %{east_id: 5, west_id: 4}]}
+    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{north_id: 1, south_id: 5}]}
+    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{east_id: 2, west_id: 5}]}
+    south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{north_id: 5, south_id: 3}]}
+    west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{east_id: 5, west_id: 4}]}
+    center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [%{north_id: 1, south_id: 5}, %{east_id: 2, west_id: 5}, %{north_id: 5, south_id: 3}, %{east_id: 5, west_id: 4}]}
+    up = %{id: 6, x: 2, y: 2, map_layer: 2, exits: []}
 
-    zone = %{rooms: [north, east, south, west, center]}
+    zone = %{rooms: [north, east, south, west, center, up]}
     %{zone: zone}
   end
 
   test "sizing a map up", %{zone: zone} do
-    {{1, 1}, {3, 3}, map} = Map.size_of_map(zone)
-
+    {{1, 1}, {3, 3}, map} = Map.size_of_map(zone, layer: 1)
     assert map |> length() == 5
+
+    {{2, 2}, {2, 2}, map} = Map.size_of_map(zone, layer: 2)
+    assert map |> length() == 1
   end
 
-  test "filling out a grid for the map", %{zone: zone} do
-    map =
-      zone
-      |> Map.map()
-      |> Enum.map(fn (row) -> Enum.map(row, fn ({_, room}) -> room end) end)
+  describe "map grid" do
+    test "filling out a grid for the map", %{zone: zone} do
+      map =
+        zone
+        |> Map.map()
+        |> Enum.map(fn (row) -> Enum.map(row, fn ({_, room}) -> room end) end)
 
-    assert [
-      [nil, nil, nil, nil, nil],
-      [nil, nil, %{x: 2, y: 1}, nil, nil],
-      [nil, %{x: 1, y: 2}, %{x: 2, y: 2}, %{x: 3, y: 2}, nil],
-      [nil, nil, %{x: 2, y: 3}, nil, nil],
-      [nil, nil, nil, nil, nil],
-    ] = map
+      assert [
+        [nil, nil, nil, nil, nil],
+        [nil, nil, %{x: 2, y: 1}, nil, nil],
+        [nil, %{x: 1, y: 2}, %{x: 2, y: 2}, %{x: 3, y: 2}, nil],
+        [nil, nil, %{x: 2, y: 3}, nil, nil],
+        [nil, nil, nil, nil, nil],
+      ] = map
+    end
+
+    test "fetching another layer of the map", %{zone: zone} do
+      map =
+        zone
+        |> Map.map(layer: 2, buffer: false)
+        |> Enum.map(fn (row) -> Enum.map(row, fn ({_, room}) -> room end) end)
+
+      assert [
+        [%{x: 2, y: 2}],
+      ] = map
+    end
   end
 
-  test "display a map in text form", %{zone: zone} do
-    map = [
-      "       +---+    ",
-      "       |[ ]|    ",
-      "   +---+   +---+",
-      "   |[ ] [X] [ ]|",
-      "   +---+   +---+",
-      "       |[ ]|    ",
-      "       +---+    ",
-    ]
-    assert Map.display_map(zone, {2, 2}) == Enum.join(map, "\n")
+  test "get layers in a map", %{zone: zone} do
+    assert [1, 2] = Map.layers_in_map(zone)
+  end
+
+  describe "displaying the map" do
+    test "display a map in text form", %{zone: zone} do
+      map = [
+        "       +---+    ",
+        "       |[ ]|    ",
+        "   +---+   +---+",
+        "   |[ ] [X] [ ]|",
+        "   +---+   +---+",
+        "       |[ ]|    ",
+        "       +---+    ",
+      ]
+      assert Map.display_map(zone, {2, 2, 1}) == Enum.join(map, "\n")
+    end
+
+    test "viewing another layer", %{zone: zone} do
+      map = [
+        "   +---+",
+        "   |[X]|",
+        "   +---+",
+      ]
+      assert Map.display_map(zone, {2, 2, 2}) == Enum.join(map, "\n")
+    end
   end
 
   describe "map colors" do

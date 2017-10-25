@@ -47,17 +47,32 @@
           <h3 class="box-title">Map</h3>
         </div>
         <div class="box-body">
-          <table class="table">
-            <%= Enum.map(map(@zone), fn (row) -> %>
-              <tr>
-                <%= Enum.map(row, fn ({{x, y}, nil}) -> %>
-                  <td><%= link("New Room", to: zone_room_path(@conn, :new, @zone.id, x: x, y: y), class: "btn btn-default") %></td>
-                <% ({_, room}) -> %>
-                  <td><%= link(room.name, to: room_path(@conn, :show, room.id), class: "btn #{room_color(room)}") %></td>
-                <% end) %>
-              </tr>
-            <% end) %>
-          </table>
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <%= Enum.map(layers(@zone), fn (layer) -> %>
+                <li class="<%= layer_class(@zone, layer) %>">
+                  <%= link("Layer #{layer}", to: "#layer-#{layer}", data: [toggle: "tab"]) %>
+                </li>
+              <% end)%>
+            </ul>
+            <div class="tab-content">
+              <%= Enum.map(layers(@zone), fn (layer) -> %>
+                <div class="tab-pane <%= layer_class(@zone, layer) %>" id="layer-<%= layer %>">
+                  <table class="table">
+                    <%= Enum.map(map(@zone, layer: layer), fn (row) -> %>
+                      <tr>
+                        <%= Enum.map(row, fn ({{x, y}, nil}) -> %>
+                          <td><%= link("New Room", to: zone_room_path(@conn, :new, @zone.id, x: x, y: y), class: "btn btn-default") %></td>
+                        <% ({_, room}) -> %>
+                          <td><%= link(room.name, to: room_path(@conn, :show, room.id), class: "btn #{room_color(room)}") %></td>
+                        <% end) %>
+                      </tr>
+                    <% end) %>
+                  </table>
+                </div>
+              <% end) %>
+            </div>
+          </div>
         </div>
       </div>
     </div>

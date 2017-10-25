@@ -26,7 +26,7 @@ defmodule Game.Command.Map do
   def run(command, session, state)
   def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    map = room.zone_id |> @zone.map({room.x, room.y})
+    map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer})
     state |> GMCP.map(map)
     socket |> @socket.echo(map)
     :ok
