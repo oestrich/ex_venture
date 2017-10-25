@@ -61,6 +61,7 @@ defmodule ExVenture.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:prometheus_ex, "~> 1.0"},
       {:prometheus_plugs, "~> 1.1"},
+      {:prometheus_process_collector, "~> 1.2"},
       {:poison, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},
       {:ranch, "~> 1.4"},
