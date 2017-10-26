@@ -12,6 +12,7 @@ defmodule Metrics.PlayerInstrumenter do
     Counter.declare([name: :exventure_session_total, help: "Session process counter"])
     Counter.declare([name: :exventure_login_total, help: "Login counter"])
     Counter.declare([name: :exventure_login_failure_total, help: "Login failure counter"])
+    Counter.declare([name: :exventure_new_character_total, help: "New character is created"])
   end
 
   def session_started() do
@@ -25,6 +26,10 @@ defmodule Metrics.PlayerInstrumenter do
 
   def login_fail() do
     Counter.inc([name: :exventure_login_failure_total])
+  end
+
+  def new_character() do
+    Counter.inc([name: :exventure_new_character_total])
   end
 
   @doc """

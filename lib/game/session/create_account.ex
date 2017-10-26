@@ -11,6 +11,7 @@ defmodule Game.Session.CreateAccount do
   alias Game.Class
   alias Game.Race
   alias Game.Session.Login
+  alias Metrics.PlayerInstrumenter
 
   @doc """
   Start text for creating an account
@@ -28,6 +29,7 @@ defmodule Game.Session.CreateAccount do
 
     case Account.create(%{name: name, password: password}, %{race: race, class: class}) do
       {:ok, user} ->
+        PlayerInstrumenter.new_character()
         user |> Login.login(session, socket, state |> Map.delete(:create))
       {:error, _changeset} ->
         socket |> @socket.echo("There was a problem creating your account.\nPlease start over.")
