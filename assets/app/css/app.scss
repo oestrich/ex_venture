@@ -17,6 +17,10 @@ body {
   overflow-y: scroll;
   border-right: 2px solid $base3;
   border-bottom: 2px solid $base3;
+
+  @media only screen and (max-width: 500px) {
+    width: 100%;
+  }
 }
 
 .panel .container {
@@ -48,6 +52,10 @@ body {
   right: 0;
   width: 20%;
   height: 88%;
+
+  @media only screen and (max-width: 500px) {
+    width: 0%;
+  }
 
   .container {
     padding-left: 15px;
