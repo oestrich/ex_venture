@@ -15,7 +15,7 @@ defmodule Game.ZoneTest do
   end
 
   test "displays a map", %{zone: zone} do
-    {:reply, map, _} = Zone.handle_call({:map, {2, 2, 1}}, self(), %{zone: zone, rooms: zone.rooms})
+    {:reply, map, _} = Zone.handle_call({:map, {2, 2, 1}, []}, self(), %{zone: zone, rooms: zone.rooms})
     refute is_nil(map)
   end
 

@@ -136,9 +136,9 @@ defmodule Game.Zone do
   @doc """
   Display a map of the zone
   """
-  @spec map(id :: integer, player_at :: {integer, integer}) :: String.t
-  def map(id, player_at) do
-    GenServer.call(pid(id), {:map, player_at})
+  @spec map(id :: integer, player_at :: {integer, integer}, opts :: Keyword.t) :: String.t
+  def map(id, player_at, opts \\ []) do
+    GenServer.call(pid(id), {:map, player_at, opts})
   end
 
   @doc """
@@ -160,11 +160,11 @@ defmodule Game.Zone do
     {:reply, state, state}
   end
 
-  def handle_call({:map, player_at}, _from, state = %{zone: zone}) do
+  def handle_call({:map, player_at, opts}, _from, state = %{zone: zone}) do
     map = """
     #{zone.name}
 
-    #{GameMap.display_map(state, player_at)}
+    #{GameMap.display_map(state, player_at, opts)}
     """
     {:reply, map |> String.trim(), state}
   end

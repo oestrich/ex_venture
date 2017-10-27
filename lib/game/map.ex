@@ -68,10 +68,11 @@ defmodule Game.Map do
   @doc """
   Generate a text view of the zone
   """
-  @spec display_map(zone :: Zone.t, {x :: integer, y :: integer, layer :: integer}) :: [String.t]
-  def display_map(zone, {x, y, layer}) do
+  @spec display_map(zone :: Zone.t, {x :: integer, y :: integer, layer :: integer}, opts :: Keyword.t) :: [String.t]
+  def display_map(zone, {x, y, layer}, opts \\ []) do
     zone
     |> map(layer: layer, buffer: false)
+    |> mini_map({x, y}, Keyword.get(opts, :mini, false))
     |> Enum.map(fn (row) ->
       row |> Enum.map(&(display_room(&1, {x, y})))
     end)
@@ -80,6 +81,25 @@ defmodule Game.Map do
     |> Enum.join("\n")
     |> String.replace(~r/-\+-/, "---")
   end
+
+  @doc """
+  Create a mini map of the whole zone. Restricts to with in 2 spaces of the player
+  """
+  @spec mini_map(zone :: [], {integer, integer}, opts :: Keyword.t) :: []
+  def mini_map(zone, {x, y}, true) do
+    {min_x, max_x} = {x - 2, x + 2}
+    {min_y, max_y} = {y - 2, y + 2}
+
+    zone
+    |> Enum.map(fn (row) ->
+      row
+      |> Enum.filter(fn ({{x, y}, _}) ->
+        min_x <= x && x <= max_x && min_y <= y && y <= max_y
+      end)
+    end)
+    |> Enum.reject(&(&1 == []))
+  end
+  def mini_map(zone, _, false), do: zone
 
   @doc """
   Determine what the room looks like with it's walls

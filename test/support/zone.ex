@@ -11,7 +11,7 @@ defmodule Test.Game.Zone do
     }
   end
 
-  def map(_id, _player_at) do
+  def map(_id, _player_at, _opts \\ []) do
     "    [ ]    \n[ ] [X] [ ]\n    [ ]    "
   end
 end
