@@ -47,6 +47,9 @@ defmodule Data.Event do
   def starting_event("room/entered") do
     %{type: "room/entered", action: "say", arguments: ["Welcome!"]}
   end
+  def starting_event("room/heard") do
+    %{type: "room/heard", condition: "hello", action: "say", arguments: ["Welcome!"]}
+  end
 
   @doc """
   Validate an event based on type
@@ -55,13 +58,25 @@ defmodule Data.Event do
       true
       iex> Data.Event.valid?(%{type: "room/entered", action: "say", arguments: :invalid})
       false
+
+      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: "say", arguments: ["hi"]})
+      true
+      iex> Data.Event.valid?(%{type: "room/heard", condition: "hello", action: "say", arguments: ["hi"]})
+      true
+      iex> Data.Event.valid?(%{type: "room/heard", action: "say", arguments: :invalid})
+      false
   """
   @spec valid?(event :: t) :: boolean
   def valid?(event)
   def valid?(event = %{type: "room/entered"}) do
     keys(event) == [:action, :arguments, :type]
       && valid_action?(event)
-      && valid_arguments(event)
+      && valid_arguments?(event)
+  end
+  def valid?(event = %{type: "room/heard"}) do
+    (keys(event) == [:action, :arguments, :condition, :type] || keys(event) == [:action, :arguments, :type])
+      && valid_action?(event)
+      && valid_arguments?(event)
   end
   def valid?(_), do: false
 
@@ -70,24 +85,29 @@ defmodule Data.Event do
 
       iex> Data.Event.valid_action?(%{type: "room/entered", action: "say"})
       true
-
       iex> Data.Event.valid_action?(%{type: "room/entered", action: "leave"})
+      false
+
+      iex> Data.Event.valid_action?(%{type: "room/heard", action: "say"})
+      true
+      iex> Data.Event.valid_action?(%{type: "room/heard", action: "leave"})
       false
   """
   def valid_action?(%{type: "room/entered", action: action}), do: action in ["say"]
+  def valid_action?(%{type: "room/heard", action: action}), do: action in ["say"]
   def valid_action?(_), do: false
 
   @doc """
   Validate the arguments matches the action
 
-      iex> Data.Event.valid_arguments(%{action: "say", arguments: ["hi"]})
+      iex> Data.Event.valid_arguments?(%{action: "say", arguments: ["hi"]})
       true
 
-      iex> Data.Event.valid_arguments(%{action: "leave", arguments: :invalid})
+      iex> Data.Event.valid_arguments?(%{action: "leave", arguments: :invalid})
       false
   """
-  def valid_arguments(%{action: "say", arguments: [string]}) when is_binary(string), do: true
-  def valid_arguments(_), do: false
+  def valid_arguments?(%{action: "say", arguments: [string]}) when is_binary(string), do: true
+  def valid_arguments?(_), do: false
 
   @doc """
   Validate events of the NPC

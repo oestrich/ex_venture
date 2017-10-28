@@ -2,6 +2,7 @@
 $(function() {
   var basicEvents = {
     "room/entered": <%= Event.starting_event("room/entered") |> encode_json() %>,
+    "room/heard": <%= Event.starting_event("room/heard") |> encode_json() %>,
   };
 
   if ($("#<%= @id %>").val() == "") {
@@ -21,4 +22,5 @@ $(function() {
 
 <span class="help-block">
   <%= link("Add 'room/entered'", to: "#", class: "btn btn-default add-event", data: [type: "room/entered"]) %>
+  <%= link("Add 'room/heard'", to: "#", class: "btn btn-default add-event", data: [type: "room/heard"]) %>
 </span>
