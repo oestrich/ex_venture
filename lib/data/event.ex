@@ -59,10 +59,10 @@ defmodule Data.Event do
       iex> Data.Event.valid?(%{type: "room/entered", action: "say", arguments: :invalid})
       false
 
-      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: "say", arguments: ["hi"]})
-      true
       iex> Data.Event.valid?(%{type: "room/heard", condition: "hello", action: "say", arguments: ["hi"]})
       true
+      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: "say", arguments: ["hi"]})
+      false
       iex> Data.Event.valid?(%{type: "room/heard", action: "say", arguments: :invalid})
       false
   """
@@ -74,7 +74,7 @@ defmodule Data.Event do
       && valid_arguments?(event)
   end
   def valid?(event = %{type: "room/heard"}) do
-    (keys(event) == [:action, :arguments, :condition, :type] || keys(event) == [:action, :arguments, :type])
+    keys(event) == [:action, :arguments, :condition, :type]
       && valid_action?(event)
       && valid_arguments?(event)
   end
