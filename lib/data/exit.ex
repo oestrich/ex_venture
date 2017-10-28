@@ -8,6 +8,8 @@ defmodule Data.Exit do
   alias Data.Room
 
   schema "exits" do
+    field :has_door, :boolean, default: false
+
     belongs_to :north, Room
     belongs_to :east, Room
     belongs_to :south, Room
@@ -20,7 +22,8 @@ defmodule Data.Exit do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:north_id, :east_id, :south_id, :west_id, :up_id, :down_id])
+    |> cast(params, [:has_door, :north_id, :east_id, :south_id, :west_id, :up_id, :down_id])
+    |> validate_required([:has_door])
     |> validate_direction()
     |> foreign_key_constraint(:north_id)
     |> foreign_key_constraint(:south_id)
@@ -37,7 +40,7 @@ defmodule Data.Exit do
   end
 
   defp validate_direction(changeset) do
-    case changeset.changes |> Map.keys |> Enum.sort do
+    case changeset.changes |> Map.keys |> Enum.sort |> List.delete(:has_door) do
       [:north_id, :south_id] -> changeset
       [:east_id, :west_id] -> changeset
       [:down_id, :up_id] -> changeset

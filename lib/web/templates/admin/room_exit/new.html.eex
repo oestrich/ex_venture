@@ -44,6 +44,11 @@
             <%= if @direction == "down" do %>
               <%= render("_fields.html", f: f, room: @room, room_field: :up_id, select_field: :down_id) %>
             <% end %>
+
+            <div class="form-group">
+              <%= label f, :has_door %>
+              <%= checkbox f, :has_door %>
+            </div>
           </div>
 
           <div class="box-footer">

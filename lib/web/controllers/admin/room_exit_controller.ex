@@ -16,7 +16,8 @@ defmodule Web.Admin.RoomExitController do
       {:ok, _room_exit} -> conn |> redirect(to: room_path(conn, :show, room_id))
       {:error, changeset} ->
         room = Room.get(room_id)
-        conn |> render("new.html", changeset: changeset, room: room, direction: direction)
+        zone = Zone.get(room.zone_id)
+        conn |> render("new.html", changeset: changeset, zone: zone, room: room, direction: direction)
     end
   end
 

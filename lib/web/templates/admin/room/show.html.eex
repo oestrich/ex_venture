@@ -73,7 +73,9 @@
       <div class="box">
         <div class="box-body">
           <%= if @room |> has_exit?(:up) do %>
-            <%= link("Up (#{get_exit(@room, :up).name})", to: room_path(@conn, :show, get_exit(@room, :up).id)) %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :up).id)) do %>
+              <%= display_exit(@room, :up) %>
+            <% end %>
             <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :up).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
               <i class="fa fa-times"></i>
             <% end %>
@@ -87,7 +89,9 @@
       <div class="box">
         <div class="box-body">
           <%= if @room |> has_exit?(:north) do %>
-            <%= link("North (#{get_exit(@room, :north).name})", to: room_path(@conn, :show, get_exit(@room, :north).id)) %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :north).id)) do %>
+              <%= display_exit(@room, :north) %>
+            <% end %>
             <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :north).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
               <i class="fa fa-times"></i>
             <% end %>
@@ -103,7 +107,9 @@
       <div class="box">
         <div class="box-body">
           <%= if @room |> has_exit?(:west) do %>
-            <%= link("West (#{get_exit(@room, :west).name})", to: room_path(@conn, :show, get_exit(@room, :west).id)) %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :west).id)) do %>
+              <%= display_exit(@room, :west) %>
+            <% end %>
             <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :west).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
               <i class="fa fa-times"></i>
             <% end %>
@@ -117,7 +123,9 @@
       <div class="box">
         <div class="box-body">
           <%= if @room |> has_exit?(:east) do %>
-            <%= link("East (#{get_exit(@room, :east).name})", to: room_path(@conn, :show, get_exit(@room, :east).id)) %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :east).id)) do %>
+              <%= display_exit(@room, :east) %>
+            <% end %>
             <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :east).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
               <i class="fa fa-times"></i>
             <% end %>
@@ -133,7 +141,9 @@
       <div class="box">
         <div class="box-body">
           <%= if @room |> has_exit?(:down) do %>
-            <%= link("Down (#{get_exit(@room, :down).name})", to: room_path(@conn, :show, get_exit(@room, :down).id)) %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :down).id)) do %>
+              <%= display_exit(@room, :down) %>
+            <% end %>
             <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :down).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
               <i class="fa fa-times"></i>
             <% end %>
@@ -147,7 +157,9 @@
       <div class="box">
         <div class="box-body">
           <%= if @room |> has_exit?(:south) do %>
-            <%= link("South (#{get_exit(@room, :south).name})", to: room_path(@conn, :show, get_exit(@room, :south).id)) %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :south).id)) do %>
+              <%= display_exit(@room, :south) %>
+            <% end %>
             <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :south).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
               <i class="fa fa-times"></i>
             <% end %>
