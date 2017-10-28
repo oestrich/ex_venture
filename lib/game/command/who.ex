@@ -25,7 +25,7 @@ defmodule Game.Command.Who do
 
     names = players
     |> Enum.map(fn ({_pid, user}) ->
-      "  - {blue}#{user.name}{/blue}"
+      "[#{user.save.level} #{user.class.name} #{user.race.name}] {blue}#{user.name}{/blue}"
     end)
     |> Enum.join("\n")
 
