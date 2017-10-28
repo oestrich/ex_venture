@@ -5,6 +5,7 @@ defmodule Web.NPC do
 
   import Ecto.Query
 
+  alias Data.Event
   alias Data.NPC
   alias Data.NPCSpawner
   alias Data.Stats
@@ -87,6 +88,7 @@ defmodule Web.NPC do
   def cast_params(params) do
     params
     |> parse_stats()
+    |> parse_events()
     |> parse_tags()
   end
 
@@ -104,6 +106,28 @@ defmodule Web.NPC do
         Map.put(params, "stats", stats)
         _ -> params
     end
+  end
+
+  defp parse_events(params = %{"events" => events}) do
+    case Poison.decode(events) do
+      {:ok, events} -> events |> cast_events(params)
+      _ -> params
+    end
+  end
+  defp parse_events(params), do: params
+
+  defp cast_events(events, params) do
+    events =
+      events
+      |> Enum.map(fn (event) ->
+        case Event.load(event) do
+          {:ok, event} -> event
+          _ -> nil
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
+
+    Map.put(params, "events", events)
   end
 
   def parse_tags(params = %{"tags" => tags}) do

@@ -59,8 +59,12 @@
               <td><%= @npc.notes %></td>
             </tr>
             <tr>
-              <th>Starting Stats</th>
+              <th>Stats</th>
               <td><pre><%= @npc.stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
+            </tr>
+            <tr>
+              <th>Events</th>
+              <td><pre><%= @npc.events |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
           </table>
         </div>

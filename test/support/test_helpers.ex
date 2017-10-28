@@ -228,6 +228,7 @@ defmodule TestHelpers do
       experience_points: 124,
       currency: 0,
       item_ids: [],
+      events: [],
       stats: %{
         health: 25,
         max_health: 25,

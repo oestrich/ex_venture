@@ -5,6 +5,7 @@ defmodule Data.NPC do
 
   use Data.Schema
 
+  alias Data.Event
   alias Data.Item
   alias Data.Stats
   alias Data.NPCSpawner
@@ -15,6 +16,7 @@ defmodule Data.NPC do
     field :level, :integer, default: 1
     field :experience_points, :integer, default: 0 # given after defeat
     field :stats, Data.Stats
+    field :events, {:array, Event}
     field :notes, :string
     field :tags, {:array, :string}, default: []
 
@@ -29,10 +31,11 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids, :notes, :tags])
+    |> cast(params, [:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids, :notes, :tags, :events])
     |> ensure(:item_ids, [])
-    |> validate_required([:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids, :tags])
+    |> validate_required([:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids, :tags, :events])
     |> validate_stats()
+    |> Event.validate_events()
   end
 
   defp validate_stats(changeset) do

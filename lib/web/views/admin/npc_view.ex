@@ -2,8 +2,10 @@ defmodule Web.Admin.NPCView do
   use Web, :view
   use Game.Currency
 
+  alias Data.Event
   alias Data.Stats
 
+  import Web.JSONHelper
   import Ecto.Changeset
 
   def stats(changeset) do
@@ -17,6 +19,13 @@ defmodule Web.Admin.NPCView do
     case get_field(changeset, :tags) do
       nil -> ""
       tags -> tags |> Enum.join(", ")
+    end
+  end
+
+  def events(changeset) do
+    case get_field(changeset, :events) do
+      nil -> [] |> Poison.encode!(pretty: true)
+      events -> events |> Poison.encode!(pretty: true)
     end
   end
 end
