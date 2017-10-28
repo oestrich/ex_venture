@@ -60,40 +60,44 @@ defmodule Game.FormatTest do
         shops: [%{name: "Hole in the Wall"}],
       }
 
-      %{room: room}
+      %{room: room, map: "[ ]"}
     end
 
-    test "includes the room name", %{room: room} do
-      assert Regex.match?(~r/Hallway/, Format.room(room))
+    test "includes the room name", %{room: room, map: map} do
+      assert Regex.match?(~r/Hallway/, Format.room(room, map))
     end
 
-    test "includes the room description", %{room: room} do
-      assert Regex.match?(~r/A hallway/, Format.room(room))
+    test "includes the room description", %{room: room, map: map} do
+      assert Regex.match?(~r/A hallway/, Format.room(room, map))
     end
 
-    test "includes the room exits", %{room: room} do
-      assert Regex.match?(~r/north/, Format.room(room))
-      assert Regex.match?(~r/east/, Format.room(room))
+    test "includes the mini map", %{room: room, map: map} do
+      assert Regex.match?(~r/[ ]/, Format.room(room, map))
     end
 
-    test "includes currency", %{room: room} do
-      assert Regex.match?(~r/100 gold/, Format.room(room))
+    test "includes the room exits", %{room: room, map: map} do
+      assert Regex.match?(~r/north/, Format.room(room, map))
+      assert Regex.match?(~r/east/, Format.room(room, map))
     end
 
-    test "includes the room items", %{room: room} do
-      assert Regex.match?(~r/Sword/, Format.room(room))
+    test "includes currency", %{room: room, map: map} do
+      assert Regex.match?(~r/100 gold/, Format.room(room, map))
     end
 
-    test "includes the players", %{room: room} do
-      assert Regex.match?(~r/Player/, Format.room(room))
+    test "includes the room items", %{room: room, map: map} do
+      assert Regex.match?(~r/Sword/, Format.room(room, map))
     end
 
-    test "includes the npcs", %{room: room} do
-      assert Regex.match?(~r/Bandit/, Format.room(room))
+    test "includes the players", %{room: room, map: map} do
+      assert Regex.match?(~r/Player/, Format.room(room, map))
     end
 
-    test "includes the shops", %{room: room} do
-      assert Regex.match?(~r/Hole in the Wall/, Format.room(room))
+    test "includes the npcs", %{room: room, map: map} do
+      assert Regex.match?(~r/Bandit/, Format.room(room, map))
+    end
+
+    test "includes the shops", %{room: room, map: map} do
+      assert Regex.match?(~r/Hole in the Wall/, Format.room(room, map))
     end
   end
 

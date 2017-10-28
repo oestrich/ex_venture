@@ -101,12 +101,14 @@ defmodule Game.Format do
   @doc """
   Format full text for a room
   """
-  @spec room(room :: Game.Room.t) :: String.t
-  def room(room) do
+  @spec room(room :: Game.Room.t, map :: String.t) :: String.t
+  def room(room, map) do
     """
 {green}#{room.name}{/green}
 #{underline(room.name)}
 #{room.description |> wrap()}\n
+#{map}
+
 #{who_is_here(room)}
 Exits: #{exits(room)}
 Items: #{items(room)}

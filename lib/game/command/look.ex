@@ -28,10 +28,15 @@ defmodule Game.Command.Look do
   def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     state |> GMCP.room(room)
-    socket |> @socket.echo(Format.room(room))
+    mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
+    room_map =
+      mini_map
+      |> String.split("\n")
+      |> Enum.slice(2..-1)
+      |> Enum.join("\n")
 
-    map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
-    state |> GMCP.map(map)
+    socket |> @socket.echo(Format.room(room, room_map))
+    state |> GMCP.map(mini_map)
 
     :ok
   end
