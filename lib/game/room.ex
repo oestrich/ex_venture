@@ -200,16 +200,18 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:enter, player = {:user, _, user}}, state = %{room: room, players: players}) do
+  def handle_cast({:enter, player = {:user, _, user}}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:user, user}))
     players |> echo_to_players("{blue}#{user.name}{/blue} enters")
+    npcs |> inform_npcs({:enter, player})
     {:noreply, Map.put(state, :players, [player | players])}
   end
   def handle_cast({:enter, character = {:npc, npc}}, state = %{room: room, npcs: npcs, players: players}) do
     Logger.info("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:npc, npc}))
     players |> echo_to_players("#{Format.target_name(character)} enters")
+    npcs |> inform_npcs({:enter, npc})
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
@@ -307,6 +309,13 @@ defmodule Game.Room do
   defp echo_gmcp_to_players(players, {module, data}) do
     Enum.each(players, fn ({:user, session, _user}) ->
       Session.gmcp(session, module, data)
+    end)
+  end
+
+  @spec inform_npcs(npcs :: list, action :: tuple) :: :ok
+  defp inform_npcs(npcs, action) do
+    Enum.each(npcs, fn (npc) ->
+      NPC.notify(npc.id, action)
     end)
   end
 

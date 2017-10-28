@@ -9,12 +9,12 @@ defmodule Game.RoomTest do
   end
 
   test "entering a room", %{user: user, room: room} do
-    {:noreply, state} = Room.handle_cast({:enter, {:user, :session, user}}, %{room: room, players: []})
+    {:noreply, state} = Room.handle_cast({:enter, {:user, :session, user}}, %{room: room, players: [], npcs: []})
     assert state.players == [{:user, :session, user}]
   end
 
   test "entering a room pushes gmcp data - user", %{user: user, room: room} do
-    {:noreply, _state} = Room.handle_cast({:enter, {:user, :session, user}}, %{room: room, players: [{:user, self(), user}]})
+    {:noreply, _state} = Room.handle_cast({:enter, {:user, :session, user}}, %{room: room, players: [{:user, self(), user}], npcs: []})
     assert_receive {:"$gen_cast", {:gmcp, "Room.Character.Enter", %{type: :player, id: 10, name: "user"}}}
   end
 

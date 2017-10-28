@@ -17,6 +17,7 @@ defmodule Game.NPC do
   alias Game.Effect
   alias Game.Message
   alias Game.NPC.Actions
+  alias Game.NPC.Events
   alias Game.Zone
 
   @doc """
@@ -55,6 +56,14 @@ defmodule Game.NPC do
   @spec heard(id :: integer, message :: Message.t) :: :ok
   def heard(id, message) do
     GenServer.cast(pid(id), {:heard, message})
+  end
+
+  @doc """
+  Notify the NPC of an action occurring in the room
+  """
+  @spec notify(id :: integer, action :: tuple) :: :ok
+  def notify(id, action) do
+    GenServer.cast(pid(id), {:notify, action})
   end
 
   @doc """
@@ -107,6 +116,13 @@ defmodule Game.NPC do
   def handle_cast(:enter, state = %{npc_spawner: npc_spawner, npc: npc}) do
     @room.enter(npc_spawner.room_id, {:npc, npc})
     {:noreply, state}
+  end
+
+  def handle_cast({:notify, action}, state) do
+    case Events.act_on(state, action) do
+      :ok -> {:noreply, state}
+      {:update, state} -> {:noreply, state}
+    end
   end
 
   def handle_cast({:heard, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
