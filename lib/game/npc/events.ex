@@ -7,6 +7,9 @@ defmodule Game.NPC.Events do
 
   alias Game.Message
 
+  @doc """
+  Act on events the NPC has been notified of
+  """
   def act_on(state, action)
   def act_on(%{npc_spawner: npc_spawner, npc: npc}, {:enter, {:user, _, _}}) do
     npc.events

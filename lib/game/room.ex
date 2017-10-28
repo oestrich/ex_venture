@@ -235,7 +235,7 @@ defmodule Game.Room do
     |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
     |> echo_to_players(message.formatted)
 
-    npcs |> echo_to_npcs(message)
+    npcs |> inform_npcs({:heard, message})
 
     {:noreply, state}
   end
@@ -245,7 +245,7 @@ defmodule Game.Room do
     |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
     |> echo_to_players(message.formatted)
 
-    npcs |> echo_to_npcs(message)
+    npcs |> inform_npcs({:heard, message})
 
     {:noreply, state}
   end
@@ -316,13 +316,6 @@ defmodule Game.Room do
   defp inform_npcs(npcs, action) do
     Enum.each(npcs, fn (npc) ->
       NPC.notify(npc.id, action)
-    end)
-  end
-
-  @spec echo_to_npcs(npcs :: list, Message.t) :: :ok
-  defp echo_to_npcs(npcs, message) do
-    Enum.each(npcs, fn (npc) ->
-      NPC.heard(npc.id, message)
     end)
   end
 end

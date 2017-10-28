@@ -49,16 +49,6 @@ defmodule Game.NPC do
   end
 
   @doc """
-  The NPC overheard a message
-
-  Hook to respond to echos
-  """
-  @spec heard(id :: integer, message :: Message.t) :: :ok
-  def heard(id, message) do
-    GenServer.cast(pid(id), {:heard, message})
-  end
-
-  @doc """
   Notify the NPC of an action occurring in the room
   """
   @spec notify(id :: integer, action :: tuple) :: :ok
@@ -125,15 +115,6 @@ defmodule Game.NPC do
     end
   end
 
-  def handle_cast({:heard, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
-    case message.message do
-      "Hello" <> _ ->
-        npc_spawner.room_id |> @room.say(npc, Message.npc(npc, npc |> message))
-      _ -> nil
-    end
-    {:noreply, state}
-  end
-
   def handle_cast({:tick, time}, state) do
     case Actions.tick(state, time) do
       :ok -> {:noreply, state}
@@ -182,7 +163,4 @@ defmodule Game.NPC do
     npc_spawner.room_id |> @room.leave({:npc, npc})
     {:stop, :normal, state}
   end
-
-  defp message(%{hostile: true}), do: "Die!"
-  defp message(%{hostile: false}), do: "How are you?"
 end
