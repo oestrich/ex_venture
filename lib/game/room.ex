@@ -204,14 +204,14 @@ defmodule Game.Room do
     Logger.info("Player (#{user.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:user, user}))
     players |> echo_to_players("{blue}#{user.name}{/blue} enters")
-    npcs |> inform_npcs({:enter, player})
+    npcs |> inform_npcs({"room/entered", player})
     {:noreply, Map.put(state, :players, [player | players])}
   end
   def handle_cast({:enter, character = {:npc, npc}}, state = %{room: room, npcs: npcs, players: players}) do
     Logger.info("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:npc, npc}))
     players |> echo_to_players("#{Format.target_name(character)} enters")
-    npcs |> inform_npcs({:enter, npc})
+    npcs |> inform_npcs({"room/entered", npc})
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
@@ -235,7 +235,7 @@ defmodule Game.Room do
     |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
     |> echo_to_players(message.formatted)
 
-    npcs |> inform_npcs({:heard, message})
+    npcs |> inform_npcs({"room/heard", message})
 
     {:noreply, state}
   end
@@ -245,7 +245,7 @@ defmodule Game.Room do
     |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
     |> echo_to_players(message.formatted)
 
-    npcs |> inform_npcs({:heard, message})
+    npcs |> inform_npcs({"room/heard", message})
 
     {:noreply, state}
   end
