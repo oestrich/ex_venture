@@ -129,6 +129,7 @@ defmodule Game.NPC do
     state = state
     |> Map.put(:npc_spawner, npc_spawner)
     |> Map.put(:npc, %{npc_spawner.npc | id: npc_spawner.id})
+    @room.update_character(npc_spawner.room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
     {:noreply, state}
   end

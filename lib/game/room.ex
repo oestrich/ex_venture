@@ -258,6 +258,16 @@ defmodule Game.Room do
         {:noreply, state}
     end
   end
+  def handle_cast({:update_character, {:npc, npc}}, state = %{npcs: npcs}) do
+    case Enum.find(npcs, &(&1.id == npc.id)) do
+      nil ->
+        {:noreply, state}
+      _npc ->
+        npcs = npcs |> Enum.reject(&(&1.id == npc.id))
+        npcs = [npc | npcs]
+        {:noreply, Map.put(state, :npcs, npcs)}
+    end
+  end
 
   def handle_cast({:drop, who, item}, state = %{room: room, players: players}) do
     case Actions.drop(room, item) do

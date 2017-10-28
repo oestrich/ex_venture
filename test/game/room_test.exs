@@ -60,4 +60,14 @@ defmodule Game.RoomTest do
     {:noreply, state} = Room.handle_cast({:update_character, {:user, self(), :new_user}}, %{players: [{:user, :pid, :user}], npcs: []})
     assert state.players == [{:user, :pid, :user}]
   end
+
+  test "updating npc data" do
+    {:noreply, state} = Room.handle_cast({:update_character, {:npc, %{id: 10, name: "Name"}}}, %{npcs: [%{id: 10}], players: []})
+    assert state.npcs == [%{id: 10, name: "Name"}]
+  end
+
+  test "ignores updates to npcs not in the list already" do
+    {:noreply, state} = Room.handle_cast({:update_character, {:npc, %{id: 11, name: "Name"}}}, %{npcs: [%{id: 10}], players: []})
+    assert state.npcs == [%{id: 10}]
+  end
 end
