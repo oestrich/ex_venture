@@ -13,7 +13,7 @@ defmodule Game.NPC.EventsTest do
   describe "room/entered" do
     test "say something to the room when a player enters it" do
       npc_spawner = %{room_id: 1}
-      npc = %{name: "Mayor", events: [%{type: "room/entered", action: "say", arguments: ["Hello"]}]}
+      npc = %{name: "Mayor", events: [%{type: "room/entered", action: "say", arguments: "Hello"}]}
 
       :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:user, :session, %{}}})
 
@@ -23,7 +23,7 @@ defmodule Game.NPC.EventsTest do
 
     test "do nothing when an NPC enters the room" do
       npc_spawner = %{room_id: 1}
-      npc = %{name: "Mayor", events: [%{type: "room/entered", action: "say", arguments: ["Hello"]}]}
+      npc = %{name: "Mayor", events: [%{type: "room/entered", action: "say", arguments: "Hello"}]}
 
       :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:npc, %{}}})
 
@@ -34,7 +34,7 @@ defmodule Game.NPC.EventsTest do
   describe "room/heard" do
     test "matches condition" do
       npc_spawner = %{room_id: 1}
-      npc = %{name: "Mayor", events: [%{type: "room/heard", condition: "hi", action: "say", arguments: ["Hello"]}]}
+      npc = %{name: "Mayor", events: [%{type: "room/heard", condition: "hi", action: "say", arguments: "Hello"}]}
 
       :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", Message.new(%{name: "name"}, "Hi")})
 
@@ -44,7 +44,7 @@ defmodule Game.NPC.EventsTest do
 
     test "does not match condition" do
       npc_spawner = %{room_id: 1}
-      npc = %{name: "Mayor", events: [%{type: "room/heard", condition: "hi", action: "say", arguments: ["Hello"]}]}
+      npc = %{name: "Mayor", events: [%{type: "room/heard", condition: "hi", action: "say", arguments: "Hello"}]}
 
       :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
 
@@ -53,7 +53,7 @@ defmodule Game.NPC.EventsTest do
 
     test "no condition" do
       npc_spawner = %{room_id: 1}
-      npc = %{name: "Mayor", events: [%{type: "room/heard", condition: nil, action: "say", arguments: ["Hello"]}]}
+      npc = %{name: "Mayor", events: [%{type: "room/heard", condition: nil, action: "say", arguments: "Hello"}]}
 
       :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
 

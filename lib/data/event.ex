@@ -45,23 +45,23 @@ defmodule Data.Event do
   """
   @spec starting_event(type :: String.t()) :: t()
   def starting_event("room/entered") do
-    %{type: "room/entered", action: "say", arguments: ["Welcome!"]}
+    %{type: "room/entered", action: "say", arguments: "Welcome!"}
   end
   def starting_event("room/heard") do
-    %{type: "room/heard", condition: "hello", action: "say", arguments: ["Welcome!"]}
+    %{type: "room/heard", condition: "hello", action: "say", arguments: "Welcome!"}
   end
 
   @doc """
   Validate an event based on type
 
-      iex> Data.Event.valid?(%{type: "room/entered", action: "say", arguments: ["hi"]})
+      iex> Data.Event.valid?(%{type: "room/entered", action: "say", arguments: "hi"})
       true
       iex> Data.Event.valid?(%{type: "room/entered", action: "say", arguments: :invalid})
       false
 
-      iex> Data.Event.valid?(%{type: "room/heard", condition: "hello", action: "say", arguments: ["hi"]})
+      iex> Data.Event.valid?(%{type: "room/heard", condition: "hello", action: "say", arguments: "hi"})
       true
-      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: "say", arguments: ["hi"]})
+      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: "say", arguments: "hi"})
       false
       iex> Data.Event.valid?(%{type: "room/heard", action: "say", arguments: :invalid})
       false
@@ -100,13 +100,13 @@ defmodule Data.Event do
   @doc """
   Validate the arguments matches the action
 
-      iex> Data.Event.valid_arguments?(%{action: "say", arguments: ["hi"]})
+      iex> Data.Event.valid_arguments?(%{action: "say", arguments: "hi"})
       true
 
       iex> Data.Event.valid_arguments?(%{action: "leave", arguments: :invalid})
       false
   """
-  def valid_arguments?(%{action: "say", arguments: [string]}) when is_binary(string), do: true
+  def valid_arguments?(%{action: "say", arguments: string}) when is_binary(string), do: true
   def valid_arguments?(_), do: false
 
   @doc """

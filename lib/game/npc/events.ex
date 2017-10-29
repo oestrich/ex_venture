@@ -29,7 +29,7 @@ defmodule Game.NPC.Events do
 
   defp act_on_room_entered(npc_spawner, npc, event) do
     case event do
-      %{action: "say", arguments: [message]} ->
+      %{action: "say", arguments: message} ->
         npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
       _ -> :ok
     end
@@ -37,14 +37,14 @@ defmodule Game.NPC.Events do
 
   defp act_on_room_heard(npc_spawner, npc, event, message) do
     case event do
-      %{action: "say", condition: condition, arguments: [event_message]} when condition != nil ->
+      %{action: "say", condition: condition, arguments: event_message} when condition != nil ->
         case Regex.match?(~r/#{condition}/i, message.message) do
           true ->
             npc_spawner.room_id |> @room.say(npc, Message.npc(npc, event_message))
           false ->
             :ok
         end
-      %{action: "say", arguments: [event_message]} ->
+      %{action: "say", arguments: event_message} ->
         npc_spawner.room_id |> @room.say(npc, Message.npc(npc, event_message))
       _ -> :ok
     end

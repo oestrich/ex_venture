@@ -14,7 +14,7 @@ defmodule Web.NPCTest do
       "currency" => "10",
       "tags" => "enemy, dungeon",
       "events" => [
-        %{"type" => "room/entered", "action" => "say", "arguments" => ["Hi"]},
+        %{"type" => "room/entered", "action" => "say", "arguments" => "Hi"},
       ] |> Poison.encode!(),
       "stats" => %{
         health: 25,
