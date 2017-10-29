@@ -47,11 +47,15 @@ defmodule Game.Command.Shops do
       {:buy, "sword", :from, "tree top"}
       iex> Game.Command.Shops.parse("buy sword from tree top")
       {:buy, "sword", :from, "tree top"}
+      iex> Game.Command.Shops.parse("buy sword")
+      {:buy, "sword"}
 
       iex> Game.Command.Shops.parse("shops sell sword to tree top")
       {:sell, "sword", :to, "tree top"}
       iex> Game.Command.Shops.parse("sell sword to tree top")
       {:sell, "sword", :to, "tree top"}
+      iex> Game.Command.Shops.parse("sell sword")
+      {:sell, "sword"}
 
       iex> Game.Command.Shops.parse("shops show sword from tree top")
       {:show, "sword", :from, "tree top"}
@@ -76,7 +80,7 @@ defmodule Game.Command.Shops do
   @spec _parse_shop_command(base_command :: atom, string :: String.t, from_or_to :: atom) :: :ok
   def _parse_shop_command(base_command, string, from_or_to) do
     case Regex.run(~r/(?<item>.+) #{from_or_to} (?<shop>.+)/i, string, capture: :all) do
-      nil -> {:error, :bad_parse, "shops #{base_command} #{string}"}
+      nil -> {base_command, string}
       [_string, item_name, shop_name] -> {base_command, item_name, from_or_to, shop_name}
     end
   end
@@ -91,6 +95,7 @@ defmodule Game.Command.Shops do
     socket |> @socket.echo(Format.shops(room, label: false))
     :ok
   end
+
   def run({:list, shop_name}, _session, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     shop = Enum.find(room.shops, fn (shop) -> Shop.matches?(shop, shop_name) end)
@@ -107,6 +112,7 @@ defmodule Game.Command.Shops do
 
     :ok
   end
+
   def run({:show, item_name, :from, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_shop(room.shops, shop_name) do
@@ -116,6 +122,19 @@ defmodule Game.Command.Shops do
       {:ok, shop} -> show_item(shop, item_name, state)
     end
   end
+  def run({:show, item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case one_shop(room.shops) do
+      {:error, :not_found} ->
+        socket |> @socket.echo("The shop could not be found.")
+        :ok
+      {:error, :more_than_one_shop} ->
+        more_than_one_shop(socket)
+        :ok
+      {:ok, shop} -> show_item(shop, item_name, state)
+    end
+  end
+
   def run({:buy, item_name, :from, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_shop(room.shops, shop_name) do
@@ -125,11 +144,36 @@ defmodule Game.Command.Shops do
       {:ok, shop} -> buy_item(shop, item_name, state)
     end
   end
+  def run({:buy, item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case one_shop(room.shops) do
+      {:error, :not_found} ->
+        socket |> @socket.echo("The shop could not be found.")
+        :ok
+      {:error, :more_than_one_shop} ->
+        more_than_one_shop(socket)
+        :ok
+      {:ok, shop} -> buy_item(shop, item_name, state)
+    end
+  end
+
   def run({:sell, item_name, :to, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        :ok
+      {:ok, shop} -> sell_item(shop, item_name, state)
+    end
+  end
+  def run({:sell, item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case one_shop(room.shops) do
+      {:error, :not_found} ->
+        socket |> @socket.echo("The shop could not be found.")
+        :ok
+      {:error, :more_than_one_shop} ->
+        more_than_one_shop(socket)
         :ok
       {:ok, shop} -> sell_item(shop, item_name, state)
     end
@@ -141,6 +185,14 @@ defmodule Game.Command.Shops do
       shop ->
         shop = @shop.list(shop.id)
         {:ok, shop}
+    end
+  end
+
+  defp one_shop(shops) do
+    case shops do
+      [shop] -> {:ok, shop}
+      [_ | _tail] -> {:error, :more_than_one_shop}
+      _ -> {:error, :not_found}
     end
   end
 
@@ -180,5 +232,12 @@ defmodule Game.Command.Shops do
       nil -> socket |> @socket.echo("The \"#{item_name}\" could not be found in #{shop.name}.")
       item -> socket |> @socket.echo(Format.item(item))
     end
+  end
+
+  defp more_than_one_shop(socket) do
+    socket |> @socket.echo("""
+    There is more than one shop in the room, please add the shop you want to use to the command.
+    See {white}help shops{/white} for more information.
+    """)
   end
 end
