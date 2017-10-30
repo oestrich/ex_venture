@@ -15,7 +15,6 @@ defmodule Game.NPC do
   alias Data.Stats
   alias Game.Character
   alias Game.Effect
-  alias Game.Message
   alias Game.NPC.Actions
   alias Game.NPC.Events
   alias Game.Zone
@@ -135,7 +134,7 @@ defmodule Game.NPC do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, {_, player}}, state = %{npc_spawner: npc_spawner, npc: npc}) do
+  def handle_cast({:targeted, {_, player}}, state) do
     state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, {:user, player.id}))
     {:noreply, state}
   end

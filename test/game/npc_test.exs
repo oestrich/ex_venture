@@ -16,9 +16,6 @@ defmodule Game.NPCTest do
 
     {:noreply, state} = NPC.handle_cast({:targeted, targeter}, %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC"}, is_targeting: MapSet.new})
 
-    [{_, message}] = @room.get_says()
-    assert message.message == "Why are you targeting me, Player?"
-
     assert state.is_targeting |> MapSet.size() == 1
     assert state.is_targeting |> MapSet.member?({:user, 10})
   end
