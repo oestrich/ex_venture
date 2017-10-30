@@ -32,6 +32,7 @@ defmodule Game.Door do
   Load a new door into the ETS table
   """
   @spec load(exit_id :: integer) :: :ok
+  def load(%{id: id}), do: load(id)
   def load(exit_id) do
     GenServer.call(__MODULE__, {:load, exit_id})
   end
@@ -51,6 +52,7 @@ defmodule Game.Door do
   Set the state of a door, state must be `#{@open}` or `#{@closed}`
   """
   @spec set(exit_id :: integer, state :: String.t) :: :ok
+  def set(%{id: id}, state) when state in [@open, @closed], do: set(id, state)
   def set(exit_id, state) when state in [@open, @closed] do
     GenServer.call(__MODULE__, {:set, exit_id, state})
   end

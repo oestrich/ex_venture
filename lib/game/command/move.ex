@@ -6,6 +6,7 @@ defmodule Game.Command.Move do
   use Game.Command
 
   alias Data.Exit
+  alias Game.Door
 
   import Game.Character.Target, only: [clear_target: 2]
 
@@ -50,42 +51,42 @@ defmodule Game.Command.Move do
   def run({:east}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:east) do
-      %{east_id: id} -> session |> maybe_move_to(state, id)
+      room_exit = %{east_id: id} -> session |> maybe_move_to(state, id, room_exit)
       _ -> {:error, :no_exit}
     end
   end
   def run({:north}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:north) do
-      %{north_id: id} -> session |> maybe_move_to(state, id)
+      room_exit = %{north_id: id} -> session |> maybe_move_to(state, id, room_exit)
       _ -> {:error, :no_exit}
     end
   end
   def run({:south}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:south) do
-      %{south_id: id} -> session |> maybe_move_to(state, id)
+      room_exit = %{south_id: id} -> session |> maybe_move_to(state, id, room_exit)
       _ -> {:error, :no_exit}
     end
   end
   def run({:west}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:west) do
-      %{west_id: id} -> session |> maybe_move_to(state, id)
+      room_exit = %{west_id: id} -> session |> maybe_move_to(state, id, room_exit)
       _ -> {:error, :no_exit}
     end
   end
   def run({:up}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:up) do
-      %{up_id: id} -> session |> maybe_move_to(state, id)
+      room_exit = %{up_id: id} -> session |> maybe_move_to(state, id, room_exit)
       _ -> {:error, :no_exit}
     end
   end
   def run({:down}, session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case room |> Exit.exit_to(:down) do
-      %{down_id: id} -> session |> maybe_move_to(state, id)
+      room_exit = %{down_id: id} -> session |> maybe_move_to(state, id, room_exit)
       _ -> {:error, :no_exit}
     end
   end
@@ -95,7 +96,16 @@ defmodule Game.Command.Move do
 
   They require at least 1 movement point to proceed
   """
-  def maybe_move_to(session, state = %{save: %{stats: stats}}, room_id) do
+  def maybe_move_to(session, state, room_id, room_exit \\ %{})
+  def maybe_move_to(session, state = %{socket: socket}, room_id, %{id: exit_id, has_door: true}) do
+    case Door.get(exit_id) do
+      "open" -> maybe_move_to(session, state, room_id, %{})
+      "closed" ->
+        socket |> @socket.echo("The door is closed. Open the door first.")
+        {:error, :door_closed}
+    end
+  end
+  def maybe_move_to(session, state = %{save: %{stats: stats}}, room_id, _) do
     case stats.move_points > 0 do
       true ->
         stats = %{stats | move_points: stats.move_points - 1}
