@@ -123,7 +123,7 @@ defmodule Game.Session do
       session_started_at: Timex.now(),
       last_recv: Timex.now(),
       last_tick: last_tick,
-      blocked: false,
+      mode: "commands",
       target: nil,
       is_targeting: MapSet.new,
       regen: %{count: 0},
@@ -188,11 +188,11 @@ defmodule Game.Session do
   end
 
   # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{state: "active", blocked: false, user: user}) do
+  def handle_cast({:recv, message}, state = %{state: "active", mode: "commands", user: user}) do
     state = Map.merge(state, %{last_recv: Timex.now()})
     message |> Command.parse(user) |> run_command(self(), state)
   end
-  def handle_cast({:recv, _message}, state = %{state: "active", blocked: true}) do
+  def handle_cast({:recv, _message}, state = %{state: "active", mode: "continuing"}) do
     {:noreply, state}
   end
 
@@ -310,14 +310,14 @@ defmodule Game.Session do
       {:update, state} ->
         Session.Registry.update(%{state.user | save: state.save})
         state |> prompt()
-        {:noreply, Map.put(state, :blocked, false)}
+        {:noreply, Map.put(state, :mode, "commands")}
       {:update, state, {command = %Command{}, send_in}} ->
         Session.Registry.update(%{state.user | save: state.save})
         :erlang.send_after(send_in, self(), {:continue, command})
-        {:noreply, Map.put(state, :blocked, true)}
+        {:noreply, Map.put(state, :mode, "continuing")}
       _ ->
         state |> prompt()
-        {:noreply, Map.put(state, :blocked, false)}
+        {:noreply, Map.put(state, :mode, "commands")}
     end
   end
 

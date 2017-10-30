@@ -78,7 +78,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1, stats: %{}}}
+    state = %{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{}}}
     {:noreply, state} = Session.handle_cast({:recv, "quit"}, state)
 
     assert @socket.get_echos() == [{socket, "Good bye."}]
@@ -92,10 +92,10 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-    state = %{socket: socket, state: "active", blocked: false, user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
+    state = %{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
     {:noreply, state} = Session.handle_cast({:recv, "run 2n"}, state)
 
-    assert state.blocked
+    assert state.mode == "continuing"
     assert_receive {:continue, %Command{module: Command.Run, args: {[:north]}}}
   after
     Session.Registry.unregister()
@@ -115,14 +115,14 @@ defmodule Game.SessionTest do
     Session.Registry.unregister()
   end
 
-  test "does not process commands while input is blocked", %{socket: socket} do
+  test "does not process commands while mode is continuing", %{socket: socket} do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    state = %{socket: socket, state: "active", blocked: true, user: user, save: %{room_id: 1}}
+    state = %{socket: socket, state: "active", mode: "continuing", user: user, save: %{room_id: 1}}
     {:noreply, state} = Session.handle_cast({:recv, "say Hello"}, state)
 
-    assert state.blocked
+    assert state.mode == "continuing"
     assert @socket.get_echos() == []
   after
     Session.Registry.unregister()
