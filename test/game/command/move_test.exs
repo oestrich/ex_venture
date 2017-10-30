@@ -357,4 +357,102 @@ defmodule Game.Command.MoveTest do
 
     Registry.unregister()
   end
+
+  describe "open a door" do
+    setup do
+      room_exit = %{id: 10, south_id: 1, north_id: 2, has_door: true}
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+      Door.load(room_exit)
+      Door.set(room_exit, "closed")
+      %{room_exit: room_exit}
+    end
+
+    test "open the door", %{session: session, socket: socket, state: state} do
+      command = %Command{module: Command.Move, args: {:open, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(opened the door), echo)
+    end
+
+    test "a door does not exist in the direction", %{session: session, socket: socket, state: state} do
+      room_exit = %{id: 10, north_id: 2, south_id: 1, has_door: false}
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+
+      command = %Command{module: Command.Move, args: {:open, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, error}] = @socket.get_echos()
+      assert Regex.match?(~r(no door)i, error)
+    end
+
+    test "an exit does not exist in the direction", %{session: session, socket: socket, state: state} do
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [], players: [], shops: []})
+
+      command = %Command{module: Command.Move, args: {:open, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, error}] = @socket.get_echos()
+      assert Regex.match?(~r(no exit)i, error)
+    end
+
+    test "door already open", %{session: session, socket: socket, state: state, room_exit: room_exit} do
+      Door.set(room_exit, "open")
+
+      command = %Command{module: Command.Move, args: {:open, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, error}] = @socket.get_echos()
+      assert Regex.match?(~r(door was already open), error)
+    end
+  end
+
+  describe "close a door" do
+    setup do
+      room_exit = %{id: 10, south_id: 1, north_id: 2, has_door: true}
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+      Door.load(room_exit)
+      Door.set(room_exit, "open")
+      %{room_exit: room_exit}
+    end
+
+    test "close the door", %{session: session, socket: socket, state: state} do
+      command = %Command{module: Command.Move, args: {:close, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(closed the door), echo)
+    end
+
+    test "a door does not exist in the direction", %{session: session, socket: socket, state: state} do
+      room_exit = %{id: 10, north_id: 2, south_id: 1, has_door: false}
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+
+      command = %Command{module: Command.Move, args: {:close, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, error}] = @socket.get_echos()
+      assert Regex.match?(~r(no door)i, error)
+    end
+
+    test "an exit does not exist in the direction", %{session: session, socket: socket, state: state} do
+      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [], players: [], shops: []})
+
+      command = %Command{module: Command.Move, args: {:close, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, error}] = @socket.get_echos()
+      assert Regex.match?(~r(no exit)i, error)
+    end
+
+    test "door already closed", %{session: session, socket: socket, state: state, room_exit: room_exit} do
+      Door.set(room_exit, "closed")
+
+      command = %Command{module: Command.Move, args: {:close, :north}}
+      :ok = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1}}))
+
+      [{^socket, error}] = @socket.get_echos()
+      assert Regex.match?(~r(door was already closed), error)
+    end
+  end
 end

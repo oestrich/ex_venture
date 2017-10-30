@@ -6,12 +6,14 @@ defmodule Game.Format do
   use Game.Currency
 
   alias Data.Class
+  alias Data.Exit
   alias Data.Item
   alias Data.Room
   alias Data.User
   alias Data.Save
   alias Data.Skill
   alias Game.Format.Table
+  alias Game.Door
 
   @doc """
   Format a channel message
@@ -170,7 +172,14 @@ Items: #{items(room)}
   defp exits(room) do
     room
     |> Room.exits()
-    |> Enum.map(fn (direction) -> "{white}#{direction}{/white}" end)
+    |> Enum.map(fn (direction) ->
+      case Exit.exit_to(room, direction) do
+        %{id: exit_id, has_door: true} ->
+          "{white}#{direction} (#{Door.get(exit_id)}){/white}"
+        _ ->
+          "{white}#{direction}{/white}"
+      end
+    end)
     |> Enum.join(", ")
   end
 

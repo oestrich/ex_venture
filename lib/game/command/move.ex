@@ -11,7 +11,7 @@ defmodule Game.Command.Move do
   import Game.Character.Target, only: [clear_target: 2]
 
   @custom_parse true
-  @commands ["move", "north", "east", "south", "west", "up", "down"]
+  @commands ["move", "north", "east", "south", "west", "up", "down", "open", "close"]
   @aliases ["n", "e", "s", "w", "u", "d"]
   @must_be_alive true
 
@@ -20,7 +20,15 @@ defmodule Game.Command.Move do
   Move around rooms.
 
   Example:
+  [ ] > {white}move west{/white}
   [ ] > {white}west{/white}
+  [ ] > {white}w{/white}
+
+  Open and close doors.
+
+  Example:
+  [ ] > {white}open west{/white}
+  [ ] > {white}close west{/white}
   """
 
   @doc """
@@ -41,7 +49,19 @@ defmodule Game.Command.Move do
   def parse("u"), do: {:up}
   def parse("down"), do: {:down}
   def parse("d"), do: {:down}
-  def parse(_), do: {:unknown}
+  def parse("open " <> direction) do
+    case parse(direction) do
+      {direction} -> {:open, direction}
+      _ -> {:error, :bad_parse, "open #{direction}"}
+    end
+  end
+  def parse("close " <> direction) do
+    case parse(direction) do
+      {direction} -> {:close, direction}
+      _ -> {:error, :bad_parse, "close #{direction}"}
+    end
+  end
+  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Move in the direction provided
@@ -90,6 +110,30 @@ defmodule Game.Command.Move do
       _ -> {:error, :no_exit}
     end
   end
+  def run({:open, direction}, _session, state = %{save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(direction) do
+      %{id: exit_id, has_door: true} ->
+        state |> maybe_open_door(exit_id)
+      %{id: _exit_id} ->
+        state.socket |> @socket.echo("There is no door #{direction}.")
+      _ ->
+        state.socket |> @socket.echo("There is no exit #{direction}.")
+    end
+    :ok
+  end
+  def run({:close, direction}, _session, state = %{save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case room |> Exit.exit_to(direction) do
+      %{id: exit_id, has_door: true} ->
+        state |> maybe_close_door(exit_id)
+      %{id: _exit_id} ->
+        state.socket |> @socket.echo("There is no door #{direction}.")
+      _ ->
+        state.socket |> @socket.echo("There is no exit #{direction}.")
+    end
+    :ok
+  end
 
   @doc """
   Maybe move a player
@@ -134,5 +178,35 @@ defmodule Game.Command.Move do
 
     Game.Command.run(%Game.Command{module: Game.Command.Look, args: {}, system: true}, session, state)
     {:update, state}
+  end
+
+  @doc """
+  Open a door, if the door was closed
+  """
+  def maybe_open_door(state, exit_id) do
+    case Door.get(exit_id) do
+      "closed" ->
+        Door.set(exit_id, "open")
+        state.socket |> @socket.echo("You opened the door.")
+        :ok
+      _ ->
+        state.socket |> @socket.echo("The door was already open.")
+        :ok
+    end
+  end
+
+  @doc """
+  Open a door, if the door was closed
+  """
+  def maybe_close_door(state, exit_id) do
+    case Door.get(exit_id) do
+      "open" ->
+        Door.set(exit_id, "closed")
+        state.socket |> @socket.echo("You closed the door.")
+        :ok
+      _ ->
+        state.socket |> @socket.echo("The door was already closed.")
+        :ok
+    end
   end
 end

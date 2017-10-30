@@ -75,6 +75,18 @@ defmodule CommandTest do
       assert %Command{module: Command.Look, args: {"item"}} = Command.parse("look item", user)
     end
 
+    test "open", %{user: user} do
+      assert %Command{module: Command.Move, args: {:open, :north}} = Command.parse("open north", user)
+      assert %Command{module: Command.Move, args: {:open, :north}} = Command.parse("open n", user)
+      assert {:error, :bad_parse, "open unknown"} = Command.parse("open unknown", user).args
+    end
+
+    test "close", %{user: user} do
+      assert %Command{module: Command.Move, args: {:close, :north}} = Command.parse("close north", user)
+      assert %Command{module: Command.Move, args: {:close, :north}} = Command.parse("close n", user)
+      assert {:error, :bad_parse, "close unknown"} = Command.parse("close unknown", user).args
+    end
+
     test "north", %{user: user} do
       assert %Command{module: Command.Move, args: {:north}} = Command.parse("move north", user)
       assert %Command{module: Command.Move, args: {:north}} = Command.parse("north", user)
