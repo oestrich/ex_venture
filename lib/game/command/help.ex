@@ -14,12 +14,10 @@ defmodule Game.Command.Help do
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
-  def run({}, _session, %{socket: socket}) do
-    socket |> @socket.echo(Help.base)
-    :ok
+  def run({}, _session, state) do
+    {:paginate, Help.base(), state}
   end
-  def run({topic}, _session, %{socket: socket}) do
-    socket |> @socket.echo(Help.topic(topic))
-    :ok
+  def run({topic}, _session, state) do
+    {:paginate, Help.topic(topic), state}
   end
 end

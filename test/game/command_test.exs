@@ -229,18 +229,16 @@ defmodule CommandTest do
   describe "getting help" do
     test "base help command", %{session: session, socket: socket} do
       command = %Command{module: Command.Help}
-      Command.run(command, session, %{socket: socket})
+      {:paginate, text, _state} = Command.run(command, session, %{socket: socket})
 
-      [{^socket, help}] = @socket.get_echos()
-      assert Regex.match?(~r(The topics you can), help)
+      assert Regex.match?(~r(The topics you can), text)
     end
 
     test "loading command help", %{session: session, socket: socket} do
       command = %Command{module: Command.Help, args: {"say"}}
-      Command.run(command, session, %{socket: socket})
+      {:paginate, text, _state} = Command.run(command, session, %{socket: socket})
 
-      [{^socket, help}] = @socket.get_echos()
-      assert Regex.match?(~r(say), help)
+      assert Regex.match?(~r(say), text)
     end
   end
 

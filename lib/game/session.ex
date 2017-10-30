@@ -19,6 +19,7 @@ defmodule Game.Session do
   alias Game.Character
   alias Game.Command
   alias Game.Command.Move
+  alias Game.Command.Pager
   alias Game.Experience
   alias Game.Format
   alias Game.Session
@@ -192,6 +193,9 @@ defmodule Game.Session do
     state = Map.merge(state, %{last_recv: Timex.now()})
     message |> Command.parse(user) |> run_command(self(), state)
   end
+  def handle_cast({:recv, _message}, state = %{state: "active", mode: "paginate"}) do
+    {:noreply, Pager.paginate(state)}
+  end
   def handle_cast({:recv, _message}, state = %{state: "active", mode: "continuing"}) do
     {:noreply, state}
   end
@@ -315,13 +319,22 @@ defmodule Game.Session do
         Session.Registry.update(%{state.user | save: state.save})
         :erlang.send_after(send_in, self(), {:continue, command})
         {:noreply, Map.put(state, :mode, "continuing")}
+      {:paginate, text, state} ->
+        state =
+          state
+          |> Map.put(:pagination, %{text: text})
+
+        {:noreply, Pager.paginate(state)}
       _ ->
         state |> prompt()
         {:noreply, Map.put(state, :mode, "commands")}
     end
   end
 
-  defp prompt(state = %{socket: socket, user: user, save: save}) do
+  @doc """
+  Send the prompt to the user's socket
+  """
+  def prompt(state = %{socket: socket, user: user, save: save}) do
     state |> GMCP.vitals()
     socket |> @socket.prompt(Format.prompt(user, save))
   end
