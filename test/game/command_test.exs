@@ -152,6 +152,7 @@ defmodule CommandTest do
 
     test "target", %{user: user} do
       assert %Command{module: Command.Target, args: {"mob"}} = Command.parse("target mob", user)
+      assert %Command{module: Command.Target, args: {"mob"}} = Command.parse("t mob", user)
       assert %Command{module: Command.Target, args: {}} = Command.parse("target", user)
     end
 

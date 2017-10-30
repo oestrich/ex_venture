@@ -136,7 +136,6 @@ defmodule Game.NPC do
   #
 
   def handle_cast({:targeted, {_, player}}, state = %{npc_spawner: npc_spawner, npc: npc}) do
-    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "Why are you targeting me, #{player.name}?"))
     state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, {:user, player.id}))
     {:noreply, state}
   end
