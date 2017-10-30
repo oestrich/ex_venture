@@ -1,6 +1,8 @@
 defmodule Game.ZoneTest do
   use GenServerCase
+  import Test.DoorHelper
 
+  alias Game.Door
   alias Game.Zone
 
   setup do
@@ -11,7 +13,10 @@ defmodule Game.ZoneTest do
     center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [%{north_id: 1, south_id: 5}, %{east_id: 2, west_id: 5}, %{north_id: 5, south_id: 3}, %{east_id: 5, west_id: 4}]}
 
     zone = %{rooms: [north, east, south, west, center], name: "Bandit Hideout"}
-    %{zone: zone}
+
+    start_and_clear_doors()
+
+    %{zone: zone, north: north}
   end
 
   test "displays a map", %{zone: zone} do
@@ -23,5 +28,13 @@ defmodule Game.ZoneTest do
     {:noreply, state} = Zone.handle_cast({:update_room, %{id: 10, name: "Forest"}}, %{rooms: [%{id: 10}]})
      room = state.rooms |> List.first
      assert room.name == "Forest"
+  end
+
+  test "when a room comes online and has a door it is initialized", %{north: north} do
+    north = %{north | exits: [%{id: 1, has_door: true}]}
+
+    {:noreply, _state} = Zone.handle_cast({:room_online, north}, %{rooms: []})
+
+    assert Door.closed?(1)
   end
 end

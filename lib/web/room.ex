@@ -11,7 +11,7 @@ defmodule Web.Room do
   alias Data.RoomItem
   alias Data.Repo
   alias Data.Zone
-
+  alias Game.Door
   alias Game.Room.Repo, as: RoomRepo
 
   @doc """
@@ -163,6 +163,7 @@ defmodule Web.Room do
     case changeset |> Repo.insert() do
       {:ok, room_exit} ->
         room_exit |> update_directions()
+        room_exit |> Door.maybe_load()
         {:ok, room_exit}
       anything -> anything
     end
@@ -177,6 +178,7 @@ defmodule Web.Room do
     case room_exit |> Repo.delete() do
       {:ok, room_exit} ->
         room_exit |> update_directions()
+        room_exit |> Door.remove()
         {:ok, room_exit}
       anything -> anything
     end

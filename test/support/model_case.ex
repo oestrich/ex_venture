@@ -11,6 +11,7 @@ defmodule Data.ModelCase do
       import Data.ModelCase
       import TestHelpers
       import Test.ItemsHelper
+      import Test.DoorHelper
     end
   end
 

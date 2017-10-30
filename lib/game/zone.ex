@@ -9,6 +9,7 @@ defmodule Game.Zone do
 
   use GenServer
 
+  alias Game.Door
   alias Game.Map, as: GameMap
   alias Game.NPC
   alias Game.Room
@@ -176,6 +177,7 @@ defmodule Game.Zone do
   end
 
   def handle_cast({:room_online, room}, state = %{rooms: rooms}) do
+    Enum.each(room.exits, &Door.maybe_load/1)
     {:noreply, Map.put(state, :rooms, [room | rooms])}
   end
 
