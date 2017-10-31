@@ -2,15 +2,26 @@ defmodule Game.MapTest do
   use Data.ModelCase
   doctest Game.Map
 
+  alias Game.Door
   alias Game.Map
 
   setup do
-    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{north_id: 1, south_id: 5}]}
-    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{east_id: 2, west_id: 5}]}
+    start_and_clear_doors()
+
+    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{id: 10, has_door: true, north_id: 1, south_id: 5}]}
+    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{id: 11, has_door: true, east_id: 2, west_id: 5}]}
     south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{north_id: 5, south_id: 3}]}
     west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{east_id: 5, west_id: 4}]}
-    center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [%{north_id: 1, south_id: 5}, %{east_id: 2, west_id: 5}, %{north_id: 5, south_id: 3}, %{east_id: 5, west_id: 4}]}
+    center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [
+      %{id: 10, has_door: true, north_id: 1, south_id: 5},
+      %{eid: 11, has_door: true, ast_id: 2, west_id: 5},
+      %{north_id: 5, south_id: 3},
+      %{east_id: 5, west_id: 4},
+    ]}
     up = %{id: 6, x: 2, y: 2, map_layer: 2, exits: []}
+
+    Door.load(10)
+    Door.load(11)
 
     zone = %{rooms: [north, east, south, west, center, up]}
     %{zone: zone}
@@ -61,8 +72,8 @@ defmodule Game.MapTest do
       map = [
         "       +---+    ",
         "       |[ ]|    ",
-        "   +---+   +---+",
-        "   |[ ] [X] [ ]|",
+        "   +-----=-----+",
+        "   |[ ] [X]=[ ]|",
         "   +---+   +---+",
         "       |[ ]|    ",
         "       +---+    ",
@@ -83,8 +94,8 @@ defmodule Game.MapTest do
       map = [
         "       +---+    ",
         "       |[ ]|    ",
-        "   +---+   +---+",
-        "   |[ ] [X] [ ]|",
+        "   +-----=-----+",
+        "   |[ ] [X]=[ ]|",
         "   +---+   +---+",
         "       |[ ]|    ",
         "       +---+    ",

@@ -4,6 +4,7 @@ defmodule Game.Map do
   """
 
   alias Data.Exit
+  alias Game.Door
 
   @doc """
   Find the coordinates for each room in a zone and the size of the zone
@@ -133,12 +134,22 @@ defmodule Game.Map do
   defp exits(room, direction) when direction in [:north, :south] do
     case Exit.exit_to(room, direction) do
       nil -> "+---+"
+      %{id: exit_id, has_door: true} ->
+        case Door.get(exit_id) do
+          "open" -> "+- -+"
+          "closed" -> "+-=-+"
+        end
       _ -> "+   +"
     end
   end
   defp exits(room, direction) when direction in [:east, :west] do
     case Exit.exit_to(room, direction) do
       nil -> "|"
+      %{id: exit_id, has_door: true} ->
+        case Door.get(exit_id) do
+          "open" -> "/"
+          "closed" -> "="
+        end
       _ -> " "
     end
   end

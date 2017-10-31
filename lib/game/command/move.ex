@@ -4,9 +4,11 @@ defmodule Game.Command.Move do
   """
 
   use Game.Command
+  use Game.Zone
 
   alias Data.Exit
   alias Game.Door
+  alias Game.Session.GMCP
 
   import Game.Character.Target, only: [clear_target: 2]
 
@@ -114,7 +116,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
     case room |> Exit.exit_to(direction) do
       %{id: exit_id, has_door: true} ->
-        state |> maybe_open_door(exit_id)
+        state |> maybe_open_door(exit_id) |> update_mini_map(room_id)
       %{id: _exit_id} ->
         state.socket |> @socket.echo("There is no door #{direction}.")
       _ ->
@@ -126,7 +128,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
     case room |> Exit.exit_to(direction) do
       %{id: exit_id, has_door: true} ->
-        state |> maybe_close_door(exit_id)
+        state |> maybe_close_door(exit_id) |> update_mini_map(room_id)
       %{id: _exit_id} ->
         state.socket |> @socket.echo("There is no door #{direction}.")
       _ ->
@@ -188,11 +190,10 @@ defmodule Game.Command.Move do
       "closed" ->
         Door.set(exit_id, "open")
         state.socket |> @socket.echo("You opened the door.")
-        :ok
       _ ->
         state.socket |> @socket.echo("The door was already open.")
-        :ok
     end
+    state
   end
 
   @doc """
@@ -203,10 +204,19 @@ defmodule Game.Command.Move do
       "open" ->
         Door.set(exit_id, "closed")
         state.socket |> @socket.echo("You closed the door.")
-        :ok
       _ ->
         state.socket |> @socket.echo("The door was already closed.")
-        :ok
     end
+    state
+  end
+
+  @doc """
+  Push out an update for the mini map after opening/closing doors
+  """
+  def update_mini_map(state, room_id) do
+    room = @room.look(room_id)
+    mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
+    state |> GMCP.map(mini_map)
+    :ok
   end
 end

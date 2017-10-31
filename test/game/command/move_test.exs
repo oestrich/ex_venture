@@ -373,6 +373,8 @@ defmodule Game.Command.MoveTest do
 
       [{^socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r(opened the door), echo)
+
+      [{^socket, "Zone.Map", _gmcp}] = @socket.get_push_gmcps()
     end
 
     test "a door does not exist in the direction", %{session: session, socket: socket, state: state} do
@@ -422,6 +424,8 @@ defmodule Game.Command.MoveTest do
 
       [{^socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r(closed the door), echo)
+
+      [{^socket, "Zone.Map", _gmcp}] = @socket.get_push_gmcps()
     end
 
     test "a door does not exist in the direction", %{session: session, socket: socket, state: state} do
