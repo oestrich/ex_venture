@@ -200,6 +200,25 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
+  def handle_cast({:recv, ""}, state = %{state: "active", mode: "editor"}) do
+    case state.editor_module.editor(:complete, state) do
+      {:update, state} ->
+        state =
+          state
+          |> Map.put(:mode, "commands")
+          |> Map.delete(:editor_module)
+
+        state |> prompt()
+        {:noreply, Map.put(state, :mode, "commands")}
+    end
+  end
+  def handle_cast({:recv, line}, state = %{state: "active", mode: "editor"}) do
+    case state.editor_module.editor({:text, line}, state) do
+      {:update, state} ->
+        {:noreply, state}
+    end
+  end
+
   def handle_cast({:teleport, room_id}, state) do
     {:update, state} = self() |> Move.move_to(state, room_id)
     state |> prompt()
@@ -325,6 +344,13 @@ defmodule Game.Session do
           |> Map.put(:pagination, %{text: text})
 
         {:noreply, Pager.paginate(state)}
+      {:editor, module, state} ->
+        state =
+          state
+          |> Map.put(:mode, "editor")
+          |> Map.put(:editor_module, module)
+
+        {:noreply, state}
       _ ->
         state |> prompt()
         {:noreply, Map.put(state, :mode, "commands")}

@@ -1,0 +1,49 @@
+<section class="content-header">
+  <h1>
+    Bugs
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Bugs</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Reporter</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @bugs, fn (bug) -> %>
+                <tr>
+                  <td><%= bug.id %></td>
+                  <td><%= bug.title %></td>
+                  <td><%= link(bug.reporter.name, to: user_path(@conn, :show, bug.reporter.id)) %></td>
+                  <td>
+                    <%= link("View", to: bug_path(@conn, :show, bug.id)) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+          <%= render(SharedView, "_pagination.html", path: bug_path(@conn, :index), pagination: @pagination) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

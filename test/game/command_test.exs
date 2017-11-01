@@ -195,6 +195,10 @@ defmodule CommandTest do
     test "run", %{user: user} do
       assert %Command{module: Command.Run, args: {"3en4s"}} = Command.parse("run 3en4s", user)
     end
+
+    test "bug", %{user: user} do
+      assert %Command{module: Command.Bug, args: {"a bug title"}} = Command.parse("bug a bug title", user)
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do
