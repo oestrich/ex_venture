@@ -82,6 +82,23 @@ defmodule Game.Command do
     end
   end
 
+  defmodule Editor do
+    @moduledoc """
+    Editor callback
+
+    If a command requires an editor, it should `use` this module and follow the callbacks.
+    """
+
+    @callback editor({:text, String.t}, state :: map) :: {:update, state :: map}
+    @callback editor(:complete, state :: map) :: {:update, state :: map}
+
+    defmacro __using__(_opts) do
+      quote do
+        @behaviour Game.Command.Editor
+      end
+    end
+  end
+
   use Networking.Socket
   use Game.Room
 
@@ -96,7 +113,7 @@ defmodule Game.Command do
     Command.Channels, Command.Help, Command.Info, Command.Inventory, Command.Look,
     Command.Move, Command.PickUp, Command.Quit, Command.Say, Command.Who, Command.Wield,
     Command.Wear, Command.Target, Command.Skills, Command.Emote, Command.Map, Command.Examine,
-    Command.Tell, Command.Equipment, Command.Drop, Command.Shops, Command.Run,
+    Command.Tell, Command.Equipment, Command.Drop, Command.Shops, Command.Run, Command.Bug,
   ]
 
   @doc """

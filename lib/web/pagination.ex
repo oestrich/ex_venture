@@ -24,6 +24,7 @@ defmodule Web.Pagination do
       query
       |> select([u], count(u.id))
       |> exclude(:order_by)
+      |> exclude(:preload)
       |> Repo.one
 
     total_pages = round(Float.ceil(count / per))
