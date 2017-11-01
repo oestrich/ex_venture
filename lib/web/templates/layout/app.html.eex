@@ -66,7 +66,7 @@
     <footer>
       <div class="container">
         <p class="text-muted">
-          Built with <%= link(ExVenture.version(), to: "http://exventure.org") %>.
+          Built with <%= link(ExVenture.version(), to: "http://exventure.org", target: "_blank") %>.
         </p>
       </div>
     </footer>
