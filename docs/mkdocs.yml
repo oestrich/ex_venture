@@ -1,0 +1,18 @@
+site_name: ExVenture
+site_description: 'A MUD built with Elixir'
+site_author: 'Eric Oestrich'
+site_url: 'http://exventure.org'
+
+repo_name: 'oestrich/ex_venture'
+repo_url: 'https://github.com/oestrich/ex_venture'
+
+copyright: 'Copyright &copy; 2017 Eric Oestrich'
+
+theme:
+  name: 'material'
+  palette:
+    primary: "Blue Grey"
+
+pages:
+  - Home: index.md
+  - Metrics: metrics.md
