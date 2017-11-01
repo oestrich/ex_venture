@@ -4,6 +4,13 @@
 
 A MUD written in Elixir
 
+## Requirements
+
+- PostgreSQL 9.6
+- Elixir 1.6
+- Erlang 20
+- node.js 8.6
+
 ## Setup
 
 ```bash
