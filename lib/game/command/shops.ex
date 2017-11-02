@@ -96,21 +96,14 @@ defmodule Game.Command.Shops do
     :ok
   end
 
-  def run({:list, shop_name}, _session, %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:list, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    shop = Enum.find(room.shops, fn (shop) -> Shop.matches?(shop, shop_name) end)
-
-    shop = @shop.list(shop.id)
-    items = Enum.map(shop.shop_items, fn (shop_item) ->
-      shop_item.item_id
-      |> Items.item()
-      |> Map.put(:price, shop_item.price)
-      |> Map.put(:quantity, shop_item.quantity)
-    end)
-
-    socket |> @socket.echo(Format.list_shop(shop, items))
-
-    :ok
+    case find_shop(room.shops, shop_name) do
+      {:error, :not_found} ->
+        socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        :ok
+      {:ok, shop} -> list_items(shop, state)
+    end
   end
 
   def run({:show, item_name, :from, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
@@ -186,6 +179,19 @@ defmodule Game.Command.Shops do
         shop = @shop.list(shop.id)
         {:ok, shop}
     end
+  end
+
+  defp list_items(shop, %{socket: socket}) do
+    shop = @shop.list(shop.id)
+    items = Enum.map(shop.shop_items, fn (shop_item) ->
+      shop_item.item_id
+      |> Items.item()
+      |> Map.put(:price, shop_item.price)
+      |> Map.put(:quantity, shop_item.quantity)
+    end)
+
+    socket |> @socket.echo(Format.list_shop(shop, items))
+    :ok
   end
 
   defp one_shop(shops) do

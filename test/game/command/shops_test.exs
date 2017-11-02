@@ -41,6 +41,13 @@ defmodule Game.Command.ShopsTest do
     assert Regex.match?(~r(Sword), list)
   end
 
+  test "view items in a shop - bad shop name", %{session: session, socket: socket} do
+    Command.Shops.run({:list, "stand"}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, list}] = @socket.get_echos()
+    assert Regex.match?(~r("stand" shop could not be found), list)
+  end
+
   test "view an item in a shop", %{session: session, socket: socket} do
     Command.Shops.run({:show, "sword", :from, "tree stand"}, session, %{socket: socket, save: %{room_id: 1}})
 
