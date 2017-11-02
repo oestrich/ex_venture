@@ -15,6 +15,7 @@ theme:
 
 pages:
   - Home: index.md
+  - Setup: setup.md
   - Admin:
       - Overview: admin/index.md
   - Metrics: metrics.md
