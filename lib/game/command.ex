@@ -114,6 +114,7 @@ defmodule Game.Command do
     Command.Move, Command.PickUp, Command.Quit, Command.Say, Command.Who, Command.Wield,
     Command.Wear, Command.Target, Command.Skills, Command.Emote, Command.Map, Command.Examine,
     Command.Tell, Command.Equipment, Command.Drop, Command.Shops, Command.Run, Command.Bug,
+    Command.Version
   ]
 
   @doc """
