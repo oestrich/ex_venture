@@ -118,8 +118,8 @@ defmodule Seeds do
   import Helpers
 
   def run do
-    bandit_hideout = create_zone(%{name: "Bandit Hideout"})
-    village = create_zone(%{name: "Village"})
+    bandit_hideout = create_zone(%{name: "Bandit Hideout", description: "A place for bandits to hide out"})
+    village = create_zone(%{name: "Village", description: "The local village"})
 
     entrance = create_room(bandit_hideout, %{
       name: "Entrance",
@@ -127,6 +127,7 @@ defmodule Seeds do
       currency: 0,
       x: 4,
       y: 1,
+      map_layer: 1,
     })
 
     hallway = create_room(bandit_hideout, %{
@@ -135,6 +136,7 @@ defmodule Seeds do
       currency: 0,
       x: 3,
       y: 1,
+      map_layer: 1,
     })
     create_exit(%{west_id: hallway.id, east_id: entrance.id})
 
@@ -144,6 +146,7 @@ defmodule Seeds do
       currency: 0,
       x: 2,
       y: 1,
+      map_layer: 1,
     })
     create_exit(%{west_id: hallway_turn.id, east_id: hallway.id})
 
@@ -153,6 +156,7 @@ defmodule Seeds do
       currency: 0,
       x: 2,
       y: 2,
+      map_layer: 1,
     })
     create_exit(%{north_id: hallway_turn.id, south_id: hallway_south.id})
 
@@ -162,6 +166,7 @@ defmodule Seeds do
       currency: 0,
       x: 2,
       y: 3,
+      map_layer: 1,
     })
     create_exit(%{north_id: hallway_south.id, south_id: great_room.id})
 
@@ -171,6 +176,7 @@ defmodule Seeds do
       currency: 0,
       x: 1,
       y: 3,
+      map_layer: 1,
     })
     create_exit(%{west_id: dorm.id, east_id: great_room.id})
 
@@ -180,6 +186,7 @@ defmodule Seeds do
       currency: 0,
       x: 3,
       y: 3,
+      map_layer: 1,
     })
     create_exit(%{west_id: great_room.id, east_id: kitchen.id})
 
@@ -189,6 +196,7 @@ defmodule Seeds do
       currency: 0,
       x: 1,
       y: 1,
+      map_layer: 1,
     })
     create_exit(%{west_id: entrance.id, east_id: shack.id})
 
@@ -198,6 +206,7 @@ defmodule Seeds do
       currency: 0,
       x: 2,
       y: 1,
+      map_layer: 1,
     })
     create_exit(%{west_id: shack.id, east_id: forest_path.id})
 
@@ -206,6 +215,8 @@ defmodule Seeds do
       max_health: 25,
       skill_points: 10,
       max_skill_points: 10,
+      move_points: 10,
+      max_move_points: 10,
       strength: 13,
       intelligence: 10,
       dexterity: 10,
@@ -218,6 +229,7 @@ defmodule Seeds do
       currency: 0,
       experience_points: 124,
       stats: stats,
+      events: [],
     })
     add_npc_to_zone(bandit_hideout, bran, %{
       room_id: entrance.id,
@@ -231,6 +243,7 @@ defmodule Seeds do
       currency: 100,
       experience_points: 230,
       stats: stats,
+      events: [],
     })
     add_npc_to_zone(bandit_hideout, bandit, %{
       room_id: great_room.id,
@@ -290,7 +303,7 @@ defmodule Seeds do
     {:ok, _} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _} = create_config("regen_tick_count", "7")
 
-    {:ok, human} = create_race(%{
+    {:ok, _human} = create_race(%{
       name: "Human",
       description: "A human",
       starting_stats: %{
@@ -301,6 +314,8 @@ defmodule Seeds do
         dexterity: 10,
         skill_points: 15,
         max_skill_points: 15,
+        move_points: 15,
+        max_move_points: 15,
       },
     })
 
@@ -315,10 +330,12 @@ defmodule Seeds do
         dexterity: 8,
         skill_points: 15,
         max_skill_points: 15,
+        move_points: 15,
+        max_move_points: 15,
       },
     })
 
-    {:ok, elf} = create_race(%{
+    {:ok, _elf} = create_race(%{
       name: "Elf",
       description: "An elf",
       starting_stats: %{
@@ -329,6 +346,8 @@ defmodule Seeds do
         dexterity: 12,
         skill_points: 15,
         max_skill_points: 15,
+        move_points: 15,
+        max_move_points: 15,
       },
     })
 
@@ -347,6 +366,8 @@ defmodule Seeds do
         dexterity: 1,
         skill_points: 2,
         max_skill_points: 2,
+        move_points: 3,
+        max_move_points: 3,
       },
     })
     fighter
@@ -372,13 +393,15 @@ defmodule Seeds do
       regen_health: 1,
       regen_skill_points: 2,
       each_level_stats: %{
-        health: 15,
-        max_health: 15,
-        skill_points: 20,
-        max_skill_points: 20,
-        strength: 10,
-        intelligence: 12,
-        dexterity: 12,
+        health: 3,
+        max_health: 3,
+        skill_points: 5,
+        max_skill_points: 5,
+        move_points: 3,
+        max_move_points: 3,
+        strength: 1,
+        intelligence: 3,
+        dexterity: 2,
       },
     })
     mage
@@ -400,7 +423,7 @@ defmodule Seeds do
     create_help_topic(%{name: "Mage", keywords: ["mage"], body: "This class uses arcane skills"})
 
     save = Config.starting_save()
-    |> Map.put(:stats, mage.each_level_stats())
+    |> Map.put(:stats, dwarf.starting_stats())
 
     create_user(%{name: "eric", password: "password", save: save, flags: ["admin"], race_id: dwarf.id, class_id: mage.id})
   end
