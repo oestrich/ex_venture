@@ -15,12 +15,11 @@ defmodule Game.Command.InventoryTest do
 
   test "view your inventory", %{session: session, socket: socket} do
     state = %{socket: socket, save: %{currency: 10, item_ids: [1], wearing: %{chest: 3}, wielding: %{right: 2}}}
-    Game.Command.Inventory.run({}, session, state)
+    {:paginate, inv, _} = Game.Command.Inventory.run({}, session, state)
 
-    [{^socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(Sword), look)
-    assert Regex.match?(~r(Shield), look)
-    assert Regex.match?(~r(Leather), look)
-    assert Regex.match?(~r(10 gold), look)
+    assert Regex.match?(~r(Sword), inv)
+    assert Regex.match?(~r(Shield), inv)
+    assert Regex.match?(~r(Leather), inv)
+    assert Regex.match?(~r(10 gold), inv)
   end
 end

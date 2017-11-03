@@ -193,8 +193,8 @@ defmodule Game.Session do
     state = Map.merge(state, %{last_recv: Timex.now()})
     message |> Command.parse(user) |> run_command(self(), state)
   end
-  def handle_cast({:recv, _message}, state = %{state: "active", mode: "paginate"}) do
-    {:noreply, Pager.paginate(state)}
+  def handle_cast({:recv, message}, state = %{state: "active", mode: "paginate"}) do
+    {:noreply, Pager.paginate(state, command: message)}
   end
   def handle_cast({:recv, _message}, state = %{state: "active", mode: "continuing"}) do
     {:noreply, state}
