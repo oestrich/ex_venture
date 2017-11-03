@@ -110,11 +110,33 @@ defmodule Game.Command do
   alias Metrics.CommandInstrumenter
 
   @commands [
-    Command.Channels, Command.Help, Command.Info, Command.Inventory, Command.Look,
-    Command.Move, Command.PickUp, Command.Quit, Command.Say, Command.Who, Command.Wield,
-    Command.Wear, Command.Target, Command.Skills, Command.Emote, Command.Map, Command.Examine,
-    Command.Tell, Command.Equipment, Command.Drop, Command.Shops, Command.Run, Command.Bug,
-    Command.Version
+    # Put the more often used commands at the top and loosely sorted
+    Command.Move,
+    Command.Channels,
+    Command.Say,
+    Command.Look,
+    Command.Target,
+    Command.Skills,
+    Command.Run,
+    Command.Info,
+    Command.Inventory,
+
+    # Alphabetical
+    Command.Bug,
+    Command.Drop,
+    Command.Emote,
+    Command.Equipment,
+    Command.Examine,
+    Command.Help,
+    Command.Map,
+    Command.PickUp,
+    Command.Quit,
+    Command.Shops,
+    Command.Tell,
+    Command.Version,
+    Command.Wear,
+    Command.Who,
+    Command.Wield,
   ]
 
   @doc """
