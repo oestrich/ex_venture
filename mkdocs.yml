@@ -17,5 +17,5 @@ pages:
   - Home: index.md
   - Setup: setup.md
   - Admin:
-      - Overview: admin/index.md
+      - Dashboard: admin/index.md
   - Metrics: metrics.md
