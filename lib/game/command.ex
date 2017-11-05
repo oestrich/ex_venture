@@ -35,6 +35,7 @@ defmodule Game.Command do
       @behaviour Game.Command
       @before_compile Game.Command
 
+      @help true
       @help_topic __MODULE__ |> to_string |> String.split(".") |> List.last
       @short_help ""
       @full_help ""
@@ -62,6 +63,9 @@ defmodule Game.Command do
 
       @doc false
       def must_be_alive?(), do: @must_be_alive
+
+      @doc false
+      def has_help?(), do: @help
 
       @doc false
       def help() do
@@ -129,6 +133,7 @@ defmodule Game.Command do
     Command.Examine,
     Command.Help,
     Command.Map,
+    Command.Mistake,
     Command.PickUp,
     Command.Quit,
     Command.Shops,

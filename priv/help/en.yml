@@ -1,0 +1,8 @@
+- name: Combat
+  short: Basics about combat
+  full: |
+    There is no auto combat. You must {white}target{/white} a character before being able to use {white}skills{/white} on them.
+
+    Example:
+    [ ]> {white}target bandit{/white}
+    [ ]> {white}slash{/white}

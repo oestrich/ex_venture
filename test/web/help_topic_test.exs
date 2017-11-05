@@ -5,7 +5,7 @@ defmodule Web.HelpTopicTest do
   alias Web.HelpTopic
 
   test "creating a new help topic updates the agent" do
-    Agent.update(HelpAgent, fn (_) -> [] end)
+    Agent.update(HelpAgent, fn (_) -> %{database: []} end)
 
     params = %{
       "name" => "Fighter",
@@ -15,7 +15,7 @@ defmodule Web.HelpTopicTest do
 
     HelpTopic.create(params)
 
-    assert HelpAgent.all() |> length() == 1
+    assert HelpAgent.database() |> length() == 1
   end
 
   test "updating a help topic updates the agent" do
@@ -25,11 +25,11 @@ defmodule Web.HelpTopicTest do
       body: "This class uses physical skills",
     })
 
-    Agent.update(HelpAgent, fn (_) -> [help_topic] end)
+    Agent.update(HelpAgent, fn (_) -> %{database: [help_topic]} end)
 
     HelpTopic.update(help_topic.id, %{name: "Barbarian"})
 
-    [bararbian | _] = HelpAgent.all()
+    [bararbian | _] = HelpAgent.database()
     assert bararbian.name == "Barbarian"
   end
 end

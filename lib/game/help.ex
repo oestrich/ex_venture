@@ -18,15 +18,26 @@ defmodule Game.Help do
       true
   """
   def base() do
-    commands = Game.Command.commands
-    |> Enum.sort_by(&command_topic_key/1)
-    |> Enum.map(fn (command) ->
-      key = command |> command_topic_key()
-      "\t{white}#{key}{/white}: #{command.help[:short]}\n"
-    end)
-    |> Enum.join("")
+    commands =
+      Game.Command.commands
+      |> Enum.filter(&(&1.has_help?))
+      |> Enum.map(fn (command) ->
+        key = command |> command_topic_key()
+        "\t{white}#{key}{/white}: #{command.help[:short]}\n"
+      end)
 
-    "The topics you can look up are:\n#{commands}"
+    built_ins =
+      HelpAgent.built_in()
+      |> Enum.map(fn (built_in) ->
+        "\t{white}#{built_in.name}{/white}: #{built_in.short}\n"
+      end)
+
+    topics =
+      commands ++ built_ins
+      |> Enum.sort()
+      |> Enum.join("")
+
+    "The topics you can look up are:\n#{topics}"
   end
 
   @doc """
@@ -86,13 +97,16 @@ defmodule Game.Help do
   end
 
   defp find_help_topic(topic) do
-    help_topic = HelpAgent.all()
-    |> Enum.find(&(match_help_topic?(&1, topic)))
+    help_topic =
+      HelpAgent.database()
+      |> Enum.find(&(match_help_topic?(&1, topic)))
 
-    format_help_topic(help_topic)
+    case help_topic do
+      nil -> find_built_in_topic(topic)
+      help_topic -> format_help_topic(help_topic)
+    end
   end
 
-  defp format_help_topic(nil), do: "Unknown topic"
   defp format_help_topic(help_topic) do
     """
     #{help_topic.name}
@@ -106,5 +120,28 @@ defmodule Game.Help do
     keywords = Enum.map(help_topic.keywords, &String.upcase/1)
     help_topic.name |> String.upcase == topic
       || topic in keywords
+  end
+
+  def find_built_in_topic(topic) do
+    built_in =
+      HelpAgent.built_in()
+      |> Enum.find(&(match_built_in_topic?(&1, topic)))
+
+    case built_in do
+      nil -> "Unknown topic"
+      built_in -> format_built_in_topic(built_in)
+    end
+  end
+
+  defp match_built_in_topic?(built_in, topic) do
+    built_in.name |> String.upcase == topic
+  end
+
+  defp format_built_in_topic(built_in) do
+    """
+    #{built_in.name}
+
+    #{built_in.full}
+    """ |> String.trim
   end
 end

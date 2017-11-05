@@ -203,6 +203,10 @@ defmodule CommandTest do
     test "version", %{user: user} do
       assert %Command{module: Command.Version, args: {}} = Command.parse("version", user)
     end
+
+    test "mistakes", %{user: user} do
+      assert %Command{module: Command.Mistake, args: {:auto_combat}} = Command.parse("kill npc", user)
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do

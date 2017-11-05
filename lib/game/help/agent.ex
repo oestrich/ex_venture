@@ -11,31 +11,61 @@ defmodule Game.Help.Agent do
     Agent.start_link(fn () -> _all() end, name: __MODULE__)
   end
 
+  @doc """
+  Test only. Allow tests to reset to the default help
+  """
+  def reset() do
+    Agent.update(__MODULE__, fn (_) -> _all() end)
+  end
+
   defp _all() do
-    Repo.all()
+    %{
+      database: Repo.all(),
+      built_in: _built_in(),
+    }
+  end
+
+  defp _built_in() do
+    :ex_venture
+    |> :code.priv_dir()
+    |> Path.join("help/en.yml")
+    |> YamlElixir.read_from_file()
+    |> Enum.map(fn (help) ->
+      help = for {key, val} <- help, into: %{}, do: {String.to_atom(key), val}
+      help |> Enum.into(%{})
+    end)
   end
 
   @doc """
   Get all help topics in the agent
   """
-  def all() do
-    Agent.get(__MODULE__, fn (topics) -> topics end)
+  def database() do
+    Agent.get(__MODULE__, fn (help) -> Map.get(help, :database, []) end)
+  end
+
+  @doc """
+  Get the built in help files from the agent
+  """
+  def built_in() do
+    Agent.get(__MODULE__, fn (help) -> Map.get(help, :built_in, []) end)
   end
 
   @doc """
   Add a newly added topic to the agent
   """
   def add(help_topic) do
-    Agent.update(__MODULE__, fn (topics) -> [help_topic | topics] end)
+    Agent.update(__MODULE__, fn (help) -> 
+      %{help | database: [help_topic | help.database]}
+    end)
   end
 
   @doc """
   Update a help topic already in the agent
   """
   def update(help_topic) do
-    Agent.update(__MODULE__, fn (topics) ->
-      topics = Enum.reject(topics, &(&1.id == help_topic.id))
-      [help_topic | topics]
+    Agent.update(__MODULE__, fn (help) ->
+      topics = Enum.reject(help.database, &(&1.id == help_topic.id))
+      %{help | database: [help_topic | topics]}
     end)
   end
 end

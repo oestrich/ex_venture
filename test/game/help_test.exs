@@ -22,8 +22,13 @@ defmodule Game.HelpTest do
 
   test "loading a topic from the database" do
     topic = create_help_topic(%{name: "The World", keywords: ["world"], body: "It is a world"})
-    Agent.update(Help.Agent, fn (_) -> [topic] end)
+    Agent.update(Help.Agent, fn (_) -> %{database: [topic]} end)
 
     assert Regex.match?(~r(world), Help.topic("world"))
+  end
+
+  test "load built in help files" do
+    Help.Agent.reset()
+    assert Regex.match?(~r(target), Help.topic("combat"))
   end
 end
