@@ -18,4 +18,5 @@ pages:
   - Setup: setup.md
   - Admin:
       - Dashboard: admin/index.md
+      - Races: admin/races.md
   - Metrics: metrics.md
