@@ -16,6 +16,7 @@ theme:
 pages:
   - Home: index.md
   - Setup: setup.md
+  - Web Client: client.md
   - Admin:
       - Dashboard: admin/index.md
       - Races: admin/races.md
