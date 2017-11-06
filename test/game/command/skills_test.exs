@@ -32,8 +32,8 @@ defmodule Game.Command.SkillsTest do
     {:ok, %{session: :session, socket: :socket, user: user, save: save, slash: slash}}
   end
 
-  test "view skill information", %{session: session, socket: socket, user: user} do
-    :ok = Command.Skills.run({}, session, %{socket: socket, user: user})
+  test "view skill information", %{session: session, socket: socket, user: user, save: save} do
+    :ok = Command.Skills.run({}, session, %{socket: socket, user: user, save: save})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(slash), look)

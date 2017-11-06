@@ -474,6 +474,8 @@ Items: #{items(room)}
     case effect do
       %{kind: "damage"} ->
         ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
+      %{kind: "healing"} ->
+        ["#{effect.amount} damage is healed." | effects(remaining)]
       _ -> effects(remaining)
     end
   end
