@@ -27,6 +27,11 @@ defmodule Data.Effect do
     types: [atom],
   }
 
+  @type heal :: %{
+    type: atom,
+    amount: integer,
+  }
+
   @type stats :: %{
     field: atom,
     amount: integer,
@@ -69,6 +74,9 @@ defmodule Data.Effect do
     types = Enum.map(effect.types, &String.to_atom/1)
     effect |> Map.put(:types, types)
   end
+  defp cast_vals("heal", effect) do
+    effect |> Map.put(:type, String.to_atom(effect.type))
+  end
   defp cast_vals("stats", effect) do
     effect |> Map.put(:field, String.to_atom(effect.field))
   end
@@ -89,6 +97,9 @@ defmodule Data.Effect do
   def starting_effect("damage/type") do
     %{kind: "damage/type", types: []}
   end
+  def starting_effect("heal") do
+    %{kind: "heal", amount: 0}
+  end
   def starting_effect("stats") do
     %{kind: "stats", field: :dexterity, amount: 0}
   end
@@ -106,6 +117,11 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "damage/type", types: [:something]})
       false
 
+      iex> Data.Effect.valid?(%{kind: "healing", amount: 10})
+      true
+      iex> Data.Effect.valid?(%{kind: "healing", amount: :invalid})
+      false
+
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: 10})
       true
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: :invalid})
@@ -118,6 +134,9 @@ defmodule Data.Effect do
   end
   def valid?(effect = %{kind: "damage/type"}) do
     keys(effect) == [:kind, :types] && valid_damage_type?(effect)
+  end
+  def valid?(effect = %{kind: "healing"}) do
+    keys(effect) == [:amount, :kind] && valid_healing?(effect)
   end
   def valid?(effect = %{kind: "stats"}) do
     keys(effect) == [:amount, :field, :kind] && valid_stats?(effect)
@@ -161,6 +180,20 @@ defmodule Data.Effect do
     Enum.all?(types, &(&1 in Damage.types()))
   end
   def valid_damage_type?(_), do: false
+
+  @doc """
+  Validate if healing is right
+
+      iex> Data.Effect.valid_healing?(%{amount: 10})
+      true
+
+      iex> Data.Effect.valid_healing?(%{amount: :invalid})
+      false
+  """
+  @spec valid_healing?(effect :: Effect.t) :: boolean
+  def valid_healing?(effect)
+  def valid_healing?(%{amount: amount}), do: is_integer(amount)
+  def valid_healing?(_), do: false
 
   @doc """
   Validate if the stats type is right

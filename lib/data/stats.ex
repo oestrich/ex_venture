@@ -17,6 +17,7 @@ defmodule Data.Stats do
     strength: integer,
     intelligence: integer,
     dexterity: integer,
+    wisdom: integer,
   }
   @type armor :: %{
     slot: :atom,
@@ -68,8 +69,9 @@ defmodule Data.Stats do
     |> ensure(:move_points, 10)
     |> ensure(:max_move_points, 10)
     |> ensure(:strength, 10)
-    |> ensure(:intelligence, 10)
     |> ensure(:dexterity, 10)
+    |> ensure(:intelligence, 10)
+    |> ensure(:wisdom, 10)
   end
 
   defp ensure(stats, field, default) do
@@ -89,7 +91,7 @@ defmodule Data.Stats do
   Fields in the statistics map
   """
   @spec fields() :: [atom]
-  def fields(), do: [:dexterity, :health, :intelligence, :max_health, :max_move_points, :max_skill_points, :move_points, :skill_points, :strength]
+  def fields(), do: [:dexterity, :health, :intelligence, :max_health, :max_move_points, :max_skill_points, :move_points, :skill_points, :strength, :wisdom]
 
   @doc """
   Validate a character's stats
@@ -110,6 +112,7 @@ defmodule Data.Stats do
       && is_integer(stats.strength)
       && is_integer(stats.skill_points)
       && is_integer(stats.max_skill_points)
+      && is_integer(stats.wisdom)
   end
 
   @doc """
