@@ -6,7 +6,7 @@ Races in ExVenture are entirely created by the admin panel. The seeds ship with 
 
 ## Create a new Race
 
-From the index page, click "New Race" in the top right of the listing.
+From the index page, click `New Race` in the top right of the listing.
 
 ![Races New](/images/admin-races-new.png)
 

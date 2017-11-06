@@ -19,5 +19,7 @@ pages:
   - Web Client: client.md
   - Admin:
       - Dashboard: admin/index.md
+      - Classes: admin/classes.md
+      - Effects: admin/effects.md
       - Races: admin/races.md
   - Metrics: metrics.md

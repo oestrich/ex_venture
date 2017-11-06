@@ -9,6 +9,7 @@
         <%= label f, :level %>
         <%= number_input f, :level, class: "form-control" %>
         <%= error_tag f, :level %>
+        <span class="help-block">Level that the skill unlocks at</span>
       </div>
 
       <div class="form-group">
@@ -21,6 +22,7 @@
         <%= label f, :command %>
         <%= text_input f, :command, class: "form-control" %>
         <%= error_tag f, :command %>
+        <span class="help-block">What the user types in to use the skill</span>
       </div>
 
       <div class="form-group">
@@ -33,18 +35,21 @@
         <%= label f, :user_text %>
         <%= text_input f, :user_text, class: "form-control" %>
         <%= error_tag f, :user_text %>
+        <span class="help-block">Available template variables: <code>{target}</code></span>
       </div>
 
       <div class="form-group">
         <%= label f, :usee_text %>
         <%= text_input f, :usee_text, class: "form-control" %>
         <%= error_tag f, :usee_text %>
+        <span class="help-block">Available template variables: <code>{user}</code></span>
       </div>
 
       <div class="form-group">
         <%= label f, :points %>
         <%= text_input f, :points, class: "form-control" %>
         <%= error_tag f, :points %>
+        <span class="help-block">Number of skill points required to spend</span>
       </div>
 
       <div class="form-group">

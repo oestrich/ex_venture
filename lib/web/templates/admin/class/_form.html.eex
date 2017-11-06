@@ -21,30 +21,35 @@
         <%= label f, :points_name %>
         <%= text_input f, :points_name, class: "form-control" %>
         <%= error_tag f, :points_name %>
+        <span class="help-block">Name of the skill points used for the class.</span>
       </div>
 
       <div class="form-group">
         <%= label f, :points_abbreviation %>
         <%= text_input f, :points_abbreviation, class: "form-control" %>
         <%= error_tag f, :points_abbreviation %>
+        <span class="help-block">Abbreviation of the points used for the class.</span>
       </div>
 
       <div class="form-group">
         <%= label f, :each_level_stats %>
         <%= textarea f, :each_level_stats, value: @changeset |> each_level_stats(), class: "form-control", rows: 10 %>
         <%= error_tag f, :each_level_stats %>
+        <span class="help-block">The stat boost that each level will give the player.</span>
       </div>
 
       <div class="form-group">
         <%= label f, :regen_health %>
         <%= text_input f, :regen_health, class: "form-control" %>
         <%= error_tag f, :regen_health %>
+        <span class="help-block">Number of health each regen tick will give.</span>
       </div>
 
       <div class="form-group">
         <%= label f, :regen_skill_points %>
         <%= text_input f, :regen_skill_points, class: "form-control" %>
         <%= error_tag f, :regen_skill_points %>
+        <span class="help-block">Number of skill points each regen tick will give.</span>
       </div>
     </div>
 
