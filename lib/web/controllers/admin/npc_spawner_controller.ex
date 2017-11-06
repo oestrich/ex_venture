@@ -2,7 +2,16 @@ defmodule Web.Admin.NPCSpawnerController do
   use Web.AdminController
 
   alias Web.NPC
+  alias Web.Zone
 
+  def new(conn, %{"npc_id" => npc_id, "npc_spawner" => %{"zone_id" => zone_id}}) do
+    IO.inspect "Loading zone"
+    zone = Zone.get(zone_id)
+    IO.inspect zone
+    npc = NPC.get(npc_id)
+    changeset = NPC.new_spawner(npc)
+    conn |> render("new.html", npc: npc, changeset: changeset, zone: zone)
+  end
   def new(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
     changeset = NPC.new_spawner(npc)

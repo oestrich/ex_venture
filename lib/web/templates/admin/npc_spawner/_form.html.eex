@@ -8,13 +8,13 @@
       <%= if @new do %>
         <div class="form-group">
           <%= label f, :zone_id %>
-          <%= select f, :zone_id, Zone.all() |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
-          <%= error_tag f, :zone_id %>
+          <%= select f, :zone_id, [{@zone.name, @zone.id}], disabled: true, class: "form-control"  %>
+          <%= hidden_input f, :zone_id, value: @zone.id %>
         </div>
 
         <div class="form-group">
           <%= label f, :room_id %>
-          <%= select f, :room_id, Zone.room_exits(), class: "form-control" %>
+          <%= select f, :room_id, room_exits(@zone), class: "form-control" %>
           <%= error_tag f, :room_id %>
         </div>
       <% end %>

@@ -10,7 +10,7 @@ defmodule Data.NPCSpawner do
   alias Data.Zone
 
   schema "npc_spawners" do
-    field :spawn_interval, :integer
+    field :spawn_interval, :integer, default: 60
 
     belongs_to :zone, Zone
     belongs_to :npc, NPC
