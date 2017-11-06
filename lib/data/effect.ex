@@ -6,6 +6,7 @@ defmodule Data.Effect do
 
   - "damage": Does an amount of damage
   - "damage/type": Halves damage if the type does not align
+  - "healing": Heals an amount of damage
   - "stats": Modify base stats for the player
   """
 
@@ -97,8 +98,8 @@ defmodule Data.Effect do
   def starting_effect("damage/type") do
     %{kind: "damage/type", types: []}
   end
-  def starting_effect("heal") do
-    %{kind: "heal", amount: 0}
+  def starting_effect("healing") do
+    %{kind: "healing", amount: 0}
   end
   def starting_effect("stats") do
     %{kind: "stats", field: :dexterity, amount: 0}

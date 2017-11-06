@@ -111,8 +111,9 @@ defmodule Game.FormatTest do
         move_points: 10,
         max_move_points: 10,
         strength: 10,
-        intelligence: 10,
         dexterity: 10,
+        intelligence: 10,
+        wisdom: 10,
       }
 
       save = %Data.Save{level: 1, experience_points: 0, stats: stats}
@@ -164,12 +165,16 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r/Strength.+|.+10/, Format.info(user))
     end
 
+    test "includes player dexterity", %{user: user} do
+      assert Regex.match?(~r/Dexterity.+|.+10/, Format.info(user))
+    end
+
     test "includes player intelligence", %{user: user} do
       assert Regex.match?(~r/Intelligence.+|.+10/, Format.info(user))
     end
 
-    test "includes player dexterity", %{user: user} do
-      assert Regex.match?(~r/Dexterity.+|.+10/, Format.info(user))
+    test "includes player wisdom", %{user: user} do
+      assert Regex.match?(~r/Wisdom.+|.+10/, Format.info(user))
     end
 
     test "includes player play time", %{user: user} do

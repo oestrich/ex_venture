@@ -3,6 +3,7 @@ $(function() {
   var basicEffects = {
     "damage": <%= Effect.starting_effect("damage") |> encode_json() %>,
     "damage/type": <%= Effect.starting_effect("damage/type") |> encode_json() %>,
+    "healing": <%= Effect.starting_effect("healing") |> encode_json() %>,
     "stats": <%= Effect.starting_effect("stats") |> encode_json() %>
   };
 
@@ -24,5 +25,6 @@ $(function() {
 <span class="help-block">
   <%= link("Add 'damage'", to: "#", class: "btn btn-default add-effect", data: [type: "damage"]) %>
   <%= link("Add 'damage/type'", to: "#", class: "btn btn-default add-effect", data: [type: "damage/type"]) %>
+  <%= link("Add 'healing'", to: "#", class: "btn btn-default add-effect", data: [type: "healing"]) %>
   <%= link("Add 'stats'", to: "#", class: "btn btn-default add-effect", data: [type: "stats"]) %>
 </span>

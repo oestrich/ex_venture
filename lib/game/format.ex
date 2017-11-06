@@ -369,8 +369,9 @@ Items: #{items(room)}
       [user.class.points_name, "#{stats.skill_points}/#{stats.max_skill_points}"],
       ["Movement", "#{stats.move_points}/#{stats.max_move_points}"],
       ["Strength", stats.strength],
-      ["Intelligence", stats.intelligence],
       ["Dexterity", stats.dexterity],
+      ["Intelligence", stats.intelligence],
+      ["Wisdom", stats.wisdom],
       ["Play Time", play_time(user.seconds_online)],
     ]
 
