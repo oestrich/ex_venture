@@ -17,9 +17,11 @@ pages:
   - Home: index.md
   - Setup: setup.md
   - Web Client: client.md
+  - Game:
+    - Races: game/races.md
   - Admin:
-      - Dashboard: admin/index.md
-      - Classes: admin/classes.md
-      - Effects: admin/effects.md
-      - Races: admin/races.md
+    - Dashboard: admin/index.md
+    - Classes: admin/classes.md
+    - Effects: admin/effects.md
+    - Races: admin/races.md
   - Metrics: metrics.md
