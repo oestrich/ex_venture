@@ -10,23 +10,27 @@
       <legend>Starting Stats</legend>
       <tr>
         <th>Health</th>
-        <td><%= @race.starting_stats.health %>/<%= @race.starting_stats.max_health %></td>
+        <td><%= @race |> stat(:health) %>/<%= @race |> stat(:max_health) %></td>
       </tr>
       <tr>
         <th>Skill Points</th>
-        <td><%= @race.starting_stats.skill_points %>/<%= @race.starting_stats.max_skill_points %></td>
+        <td><%= @race |> stat(:skill_points) %>/<%= @race |> stat(:max_skill_points) %></td>
       </tr>
       <tr>
         <th>Strength</th>
-        <td><%= @race.starting_stats.strength %></td>
-      </tr>
-      <tr>
-        <th>Intelligence</th>
-        <td><%= @race.starting_stats.intelligence %></td>
+        <td><%= @race |> stat(:strength) %></td>
       </tr>
       <tr>
         <th>Dexterity</th>
-        <td><%= @race.starting_stats.dexterity %></td>
+        <td><%= @race |> stat(:dexterity) %></td>
+      </tr>
+      <tr>
+        <th>Intelligence</th>
+        <td><%= @race |> stat(:intelligence) %></td>
+      </tr>
+      <tr>
+        <th>Wisdom</th>
+        <td><%= @race |> stat(:wisdom) %></td>
       </tr>
     </table>
   </div>
