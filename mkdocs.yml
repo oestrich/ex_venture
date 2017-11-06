@@ -7,6 +7,7 @@ repo_name: 'oestrich/ex_venture'
 repo_url: 'https://github.com/oestrich/ex_venture'
 
 copyright: 'Copyright &copy; 2017 Eric Oestrich'
+google_analytics: ['UA-20355001-8', 'exventure.org']
 
 theme:
   name: 'material'
