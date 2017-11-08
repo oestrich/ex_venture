@@ -9,8 +9,8 @@ defmodule Game.Command.Look do
   alias Data.Exit
   alias Game.Session.GMCP
 
-  @commands ["look at", "look"]
-  @aliases ["l"]
+  command "look at"
+  command "look", aliases: ["l"]
 
   @short_help "Look around the room"
   @full_help """

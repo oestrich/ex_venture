@@ -8,9 +8,9 @@ defmodule Game.Command.PickUp do
 
   require Logger
 
-  @commands ["pick up"]
-  @aliases ["get"]
   @must_be_alive true
+
+  command "pick up", aliases: ["get"]
 
   @help_topic "Pick Up"
   @short_help "Pick up an item in the same room"

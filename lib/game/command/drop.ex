@@ -8,8 +8,9 @@ defmodule Game.Command.Drop do
 
   alias Game.Items
 
-  @commands ["drop"]
   @must_be_alive true
+
+  command "drop"
 
   @short_help "Drop an item in the same room"
   @full_help """

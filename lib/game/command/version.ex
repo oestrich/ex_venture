@@ -5,7 +5,7 @@ defmodule Game.Command.Version do
 
   use Game.Command
 
-  @commands ["version"]
+  command "version"
 
   @short_help "View the running MUD version"
   @full_help """

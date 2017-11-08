@@ -5,7 +5,7 @@ defmodule Game.Command.Say do
 
   use Game.Command
 
-  @commands ["say"]
+  command "say"
 
   @short_help "Talk to other players"
   @full_help """

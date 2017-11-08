@@ -9,8 +9,7 @@ defmodule Game.Command.Info do
   alias Game.Effect
   alias Game.Item
 
-  @commands ["info"]
-  @aliases ["score"]
+  command "info", aliases: ["score"]
 
   @short_help "View stats about your character"
   @full_help """

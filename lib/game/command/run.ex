@@ -12,7 +12,7 @@ defmodule Game.Command.Run do
   @direction_regex ~r/(?<count>\d+)?(?<direction>[nesw])/
   @continue_wait Application.get_env(:ex_venture, :game)[:continue_wait]
 
-  @commands ["run"]
+  command "run"
 
   @short_help "Move around quickly"
   @full_help """

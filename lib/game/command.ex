@@ -15,6 +15,13 @@ defmodule Game.Command do
   @type t :: {module :: atom(), args :: []}
 
   @doc """
+  Parse a command into arguments
+
+  Should return `{:error, :bad_parse, command}` on a failed parse.
+  """
+  @callback parse(command :: String.t) :: tuple() | {:error, :bad_parse, command :: String.t}
+
+  @doc """
   Run a command
 
   Returns `:ok` or `{:update, new_state}` and the Session server will accept the new state.
@@ -26,11 +33,16 @@ defmodule Game.Command do
       use Networking.Socket
       use Game.Room
 
+      import Game.Command, only: [command: 1, command: 2]
+
       require Logger
 
       alias Game.Format
       alias Game.Message
       alias Game.Session
+
+      Module.register_attribute __MODULE__, :commands, accumulate: true
+      Module.register_attribute __MODULE__, :aliases, accumulate: true
 
       @behaviour Game.Command
       @before_compile Game.Command
@@ -40,12 +52,51 @@ defmodule Game.Command do
       @short_help ""
       @full_help ""
 
-      @commands []
-      @aliases []
-
       @custom_parse false
 
       @must_be_alive false
+    end
+  end
+
+  @doc """
+  Register a command.
+
+  You _must_ use the attribute `@custom_parse` before calling this macro if the command
+  is going to define it's own parser. Otherwise this macro will define parse functions
+  that will match first.
+
+  Examples:
+
+      command "look", aliases: ["l"]
+      command "up", aliases: ["u"]
+  """
+  defmacro command(command, opts \\ []) do
+    aliases = Keyword.get(opts, :aliases, [])
+
+    quote do
+      unquote(Enum.map(aliases, &alias_parse/1))
+
+      @commands unquote(command)
+      if !@custom_parse do
+        def parse(unquote(command)), do: {}
+        def parse(unquote(command) <> " " <> str), do: {str}
+
+        def parse(unquote(String.capitalize(command))), do: {}
+        def parse(unquote(String.capitalize(command)) <> " " <> str), do: {str}
+      end
+    end
+  end
+
+  defp alias_parse(command_alias) do
+    quote do
+      @aliases unquote(command_alias)
+      if !@custom_parse do
+        def parse(unquote(command_alias)), do: {}
+        def parse(unquote(command_alias) <> " " <> str), do: {str}
+
+        def parse(unquote(String.capitalize(command_alias))), do: {}
+        def parse(unquote(String.capitalize(command_alias)) <> " " <> str), do: {str}
+      end
     end
   end
 
@@ -76,13 +127,8 @@ defmodule Game.Command do
         }
       end
 
-      def run({:error, :bad_parse, command}, session, state) do
-        Game.Command.run({:error, :bad_parse, command}, session, state)
-      end
-      def run(command, session, state) do
-        Logger.info("#{__MODULE__} hit the generic case, #{inspect(command)}", type: :command)
-        Game.Command.run({:error, :bad_parse, "bad parse"}, session, state)
-      end
+      # Provide a default bad parse
+      def parse(command), do: {:error, :bad_parse, command}
     end
   end
 
@@ -160,11 +206,11 @@ defmodule Game.Command do
     start_parsing_at = Timex.now()
     command = command |> String.replace(~r/  /, " ")
     class_skill = class.skills |> Enum.find(&(class_parse_command(&1, command)))
-    builtin = commands() |> Enum.find(&(module_parse_command(&1, command)))
     case class_skill do
       nil ->
-        builtin
-        |> _parse(command)
+        command
+        |> _parse()
+        |> maybe_bad_parse(command)
         |> record_parse_time(start_parsing_at)
       _ ->
         %__MODULE__{text: command, module: Game.Command.Skills, args: {class_skill, command}}
@@ -182,59 +228,19 @@ defmodule Game.Command do
     Regex.match?(~r(^#{skill.command}), command)
   end
 
-  defp module_parse_command(module, command) do
-    alias_found = module.aliases
-    |> Enum.any?(fn (alias_cmd) ->
-      # match an alias only if it's by itself or it won't match another similar command
-      # eg 'w' matching for 'west'
-      Regex.match?(~r(^#{alias_cmd}$)i, command) || Regex.match?(~r(^#{alias_cmd}[^\w]), command)
+  defp _parse(command) do
+    @commands
+    |> Enum.find_value(fn (module) ->
+      case module.parse(command) do
+        {:error, :bad_parse, _} -> false
+        arguments -> %__MODULE__{text: command, module: module, args: arguments}
+      end
     end)
-
-    command_found = module.commands
-    |> Enum.any?(fn (cmd) ->
-      Regex.match?(~r(^#{cmd})i, command)
-    end)
-
-    command_found || alias_found
   end
 
-  @doc """
-  Parse a command
-
-  Uses the module's commands and aliases to find the arguments
-
-      iex> Game.Command.parse_command(Game.Command.Who, "who")
-      {}
-
-      iex> Game.Command.parse_command(Game.Command.Say, "say hi")
-      {"hi"}
-  """
-  @spec parse_command(module :: atom, command :: String.t) :: [String.t]
-  def parse_command(module, command) do
-    argument = (module.commands ++ module.aliases)
-    |> Enum.reduce(command, fn (cmd, command) ->
-      command
-      |> String.replace(~r/^#{cmd}/i, "")
-      |> String.trim
-    end)
-
-    case argument do
-      "" -> {}
-      argument -> {argument}
-    end
-  end
-
-  defp _parse(nil, command), do: {:error, :bad_parse, command}
-  defp _parse(module, command) do
-    case module.custom_parse? do
-      true ->
-        arguments = module.parse(command)
-        %__MODULE__{text: command, module: module, args: arguments}
-      false ->
-        arguments = parse_command(module, command)
-        %__MODULE__{text: command, module: module, args: arguments}
-    end
-  end
+  # Capture no command found and return a bad parse
+  defp maybe_bad_parse(nil, command), do: {:error, :bad_parse, command}
+  defp maybe_bad_parse(command, _), do: command
 
   def run({:skip, {}}, _session, _state), do: :ok
   def run({:error, :bad_parse, command}, session, %{socket: socket}) do
