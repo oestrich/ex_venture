@@ -19,6 +19,7 @@ pages:
   - Setup: setup.md
   - Web Client: client.md
   - Game:
+    - GMCP: game/gmcp.md
     - Races: game/races.md
   - Admin:
     - Dashboard: admin/index.md
