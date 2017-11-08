@@ -5,7 +5,7 @@ defmodule Game.Command.Who do
 
   use Game.Command
 
-  @commands ["who"]
+  command "who"
 
   @short_help "See who is online"
   @full_help """

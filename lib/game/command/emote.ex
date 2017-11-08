@@ -5,7 +5,7 @@ defmodule Game.Command.Emote do
 
   use Game.Command
 
-  @commands ["emote"]
+  command "emote"
 
   @short_help "Does an emote"
   @full_help """

@@ -8,9 +8,11 @@ defmodule Game.Command.Wield do
   alias Game.Item
   alias Game.Items
 
-  @custom_parse true
-  @commands ["wield", "unwield"]
   @must_be_alive true
+  @custom_parse true
+
+  command "wield"
+  command "unwield"
 
   @short_help "Put an item in your hands"
   @full_help """

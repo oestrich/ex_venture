@@ -11,9 +11,9 @@ defmodule Game.Command.Target do
   alias Game.Character
   alias Game.Session.GMCP
 
-  @commands ["target"]
-  @aliases ["t"]
   @must_be_alive true
+
+  command "target", aliases: ["t"]
 
   @short_help "Target an enemy"
   @full_help """

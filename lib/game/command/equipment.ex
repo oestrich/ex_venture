@@ -7,8 +7,7 @@ defmodule Game.Command.Equipment do
 
   alias Game.Items
 
-  @commands ["equipment"]
-  @aliases ["eq"]
+  command "equipment", aliases: ["eq"]
 
   @short_help "View your character's worn equipment"
   @full_help """

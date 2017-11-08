@@ -9,7 +9,9 @@ defmodule Game.Command.Tell do
   alias Game.Session
 
   @custom_parse true
-  @commands ["tell", "reply"]
+
+  command "tell"
+  command "reply"
 
   @short_help "Send a message to one player that is online"
   @full_help """

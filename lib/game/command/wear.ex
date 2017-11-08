@@ -8,9 +8,11 @@ defmodule Game.Command.Wear do
   alias Game.Item
   alias Game.Items
 
-  @custom_parse true
-  @commands ["wear", "remove"]
   @must_be_alive true
+  @custom_parse true
+
+  command "wear"
+  command "remove"
 
   @short_help "Put on a piece of armor"
   @full_help """

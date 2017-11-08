@@ -7,8 +7,7 @@ defmodule Game.Command.Examine do
 
   alias Game.Items
 
-  @commands ["examine"]
-  @aliases []
+  command "examine"
 
   @short_help "View information about items in your inventory"
   @full_help """
