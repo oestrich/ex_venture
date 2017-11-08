@@ -7,16 +7,19 @@ defmodule Game.Command.Version do
 
   commands ["version"]
 
-  @short_help "View the running MUD version"
-  @full_help """
-  View the full version of ExVenture running
+  def help(:topic), do: "Version"
+  def help(:short), do: "View the running MUD version"
+  def help(:full) do
+    """
+    View the full version of ExVenture running
 
-  Example:
-  [ ] > {white}version{/white}
-  """
+    Example:
+    [ ] > {white}version{/white}
+    """
+  end
 
   @doc """
-  #{@short_help}
+  View version information
   """
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)

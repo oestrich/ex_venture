@@ -9,15 +9,18 @@ defmodule Game.Command.Inventory do
 
   commands [{"inventory", ["inv", "i"]}]
 
-  @short_help "View your character's inventory"
-  @full_help """
-  View your inventory.
+  def help(:topic), do: "Inventory"
+  def help(:short), do: "View your character's inventory"
+  def help(:full) do
+    """
+    View your inventory.
 
-  Listed will be items you are wielding, wearing, and holding.
+    Listed will be items you are wielding, wearing, and holding.
 
-  Example:
-  [ ] > {white}inventory{/white}
-  """
+    Example:
+    [ ] > {white}inventory{/white}
+    """
+  end
 
   @doc """
   Look at your inventory

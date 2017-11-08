@@ -26,21 +26,24 @@ defmodule Game.Command.Move do
     "close",
   ], parse: false
 
-  @short_help "Move in a direction"
-  @full_help """
-  Move around rooms.
+  def help(:topic), do: "Move"
+  def help(:short), do: "Move in a direction"
+  def help(:full) do
+    """
+    Move around rooms.
 
-  Example:
-  [ ] > {white}move west{/white}
-  [ ] > {white}west{/white}
-  [ ] > {white}w{/white}
+    Example:
+    [ ] > {white}move west{/white}
+    [ ] > {white}west{/white}
+    [ ] > {white}w{/white}
 
-  Open and close doors.
+    Open and close doors.
 
-  Example:
-  [ ] > {white}open west{/white}
-  [ ] > {white}close west{/white}
-  """
+    Example:
+    [ ] > {white}open west{/white}
+    [ ] > {white}close west{/white}
+    """
+  end
 
   @doc """
   Parse the command into arguments

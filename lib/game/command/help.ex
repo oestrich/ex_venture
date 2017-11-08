@@ -9,6 +9,18 @@ defmodule Game.Command.Help do
 
   alias Game.Help
 
+  def help(:topic), do: "Help"
+  def help(:short), do: "View information about commands and other topics"
+  def help(:full) do
+    """
+    #{help(:short)}
+
+    Example:
+    [ ] > {white}help{/white}
+    [ ] > {white}help move{/white}
+    """
+  end
+
   @doc """
   View help
   """

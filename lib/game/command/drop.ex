@@ -12,17 +12,20 @@ defmodule Game.Command.Drop do
 
   commands ["drop"]
 
-  @short_help "Drop an item in the same room"
-  @full_help """
-  Drop an item into the room you are in.
+  def help(:topic), do: "Drop"
+  def help(:short), do: "Drop an item in the same room"
+  def help(:full) do
+    """
+    Drop an item into the room you are in.
 
-  Example:
-  [ ] > {white}drop sword{/white}
-  [ ] > {white}drop 10 gold{/white}
-  """
+    Example:
+    [ ] > {white}drop sword{/white}
+    [ ] > {white}drop 10 gold{/white}
+    """
+  end
 
   @doc """
-  #{@short_help}
+  Drop an item in the same room
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
   def run(command, session, state)

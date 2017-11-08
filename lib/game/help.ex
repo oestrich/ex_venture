@@ -20,10 +20,9 @@ defmodule Game.Help do
   def base() do
     commands =
       Game.Command.commands
-      |> Enum.filter(&(&1.has_help?))
       |> Enum.map(fn (command) ->
-        key = command |> command_topic_key()
-        "\t{white}#{key}{/white}: #{command.help[:short]}\n"
+        key = command.help(:topic)
+        "\t{white}#{key}{/white}: #{command.help(:short)}\n"
       end)
 
     built_ins =
@@ -65,7 +64,7 @@ defmodule Game.Help do
       "Commands: #{command.commands |> Enum.join(", ")}",
       aliases(command),
       " ",
-      command.help.full,
+      command.help(:full),
     ]
 
     lines
@@ -87,13 +86,9 @@ defmodule Game.Help do
     commands = command.commands |> Enum.map(&String.upcase/1)
     aliases = command.aliases |> Enum.map(&String.upcase/1)
 
-    command |> command_topic_key |> String.downcase == topic |> String.downcase
+    :topic |> command.help() |> String.downcase == topic |> String.downcase
       || topic in commands
       || topic in aliases
-  end
-
-  defp command_topic_key(command) do
-    command.help()[:topic]
   end
 
   defp find_help_topic(topic) do

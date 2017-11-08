@@ -9,16 +9,19 @@ defmodule Game.Command.Examine do
 
   commands ["examine"]
 
-  @short_help "View information about items in your inventory"
-  @full_help """
-  #{@short_help}
+  def help(:topic), do: "Examine"
+  def help(:short), do: "View information about items in your inventory"
+  def help(:full) do
+    """
+    #{help(:short)}
 
-  Example:
-  [ ] > {white}examine short sword{/white}
-  """
+    Example:
+    [ ] > {white}examine short sword{/white}
+    """
+  end
 
   @doc """
-  #{@short_help}
+  View information about items in your inventory
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)

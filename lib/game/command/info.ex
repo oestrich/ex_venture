@@ -11,13 +11,16 @@ defmodule Game.Command.Info do
 
   commands [{"info", ["score"]}]
 
-  @short_help "View stats about your character"
-  @full_help """
-  #{@short_help}
+  def help(:topic), do: "Info"
+  def help(:short), do: "View stats about your character"
+  def help(:full) do
+    """
+    #{help(:short)}
 
-  Example:
-  [ ] > {white}info{/white}
-  """
+    Example:
+    [ ] > {white}info{/white}
+    """
+  end
 
   @doc """
   Look at your info sheet

@@ -11,19 +11,22 @@ defmodule Game.Command.Channels do
 
   commands ["channels", "global", "newbie"], parse: false
 
-  @short_help "Talk to other players"
-  @full_help """
-  #{@short_help}
+  def help(:topic), do: "Channels"
+  def help(:short), do: "Talk to other players"
+  def help(:full) do
+    """
+    #{help(:short)}
 
-  Talk to players in a channel
-  [ ] > global Hello!
+    Talk to players in a channel
+    [ ] > global Hello!
 
-  Turn a channel on:
-  [ ] > {white}channel on global{/white}
+    Turn a channel on:
+    [ ] > {white}channel on global{/white}
 
-  Turn a channel off:
-  [ ] > {white}channel off global{/white}
-  """
+    Turn a channel off:
+    [ ] > {white}channel off global{/white}
+    """
+  end
 
   @doc """
   Parse the command into arguments

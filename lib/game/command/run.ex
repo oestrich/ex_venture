@@ -14,13 +14,16 @@ defmodule Game.Command.Run do
 
   commands ["run"]
 
-  @short_help "Move around quickly"
-  @full_help """
-  #{@short_help}. You will stop running if an exit cannot be found.
+  def help(:topic), do: "Run"
+  def help(:short), do: "Move around quickly"
+  def help(:full) do
+    """
+    #{help(:short)}. You will stop running if an exit cannot be found.
 
-  Example:
-  [ ] > {white}run 3en4s{/white}
-  """
+    Example:
+    [ ] > {white}run 3en4s{/white}
+    """
+  end
 
   @doc """
   Run the user around

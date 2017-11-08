@@ -5,9 +5,16 @@ defmodule Game.Command.Mistake do
 
   use Game.Command
 
-  @help false
-
   commands ["kill", "attack"], parse: false
+
+  def help(:topic), do: "Mistakes"
+  def help(:short), do: "Common command mistakes"
+  def help(:full) do
+    """
+    #{help(:short)}. This command catches common mistakes and directs you
+    to more information about the subject.
+    """
+  end
 
   @doc """
   Parse out extra information

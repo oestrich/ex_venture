@@ -7,13 +7,16 @@ defmodule Game.Command.Who do
 
   commands ["who"]
 
-  @short_help "See who is online"
-  @full_help """
-  #{@short_help}
+  def help(:topic), do: "Who"
+  def help(:short), do: "See who is online"
+  def help(:full) do
+    """
+    #{help(:short)}
 
-  Example:
-  [ ] > {white}who{/white}
-  """
+    Example:
+    [ ] > {white}who{/white}
+    """
+  end
 
   @doc """
   Echo the currently connected players

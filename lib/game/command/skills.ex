@@ -14,14 +14,17 @@ defmodule Game.Command.Skills do
 
   commands ["skills"]
 
-  @short_help "List out your class skills"
-  @full_help """
-  #{@short_help}. To use a skill you must also be
-  targeting something.
+  def help(:topic), do: "Skills"
+  def help(:short), do: "List out your class skills"
+  def help(:full) do
+    """
+    #{help(:short)}. To use a skill you must also be
+    targeting something.
 
-  Example:
-  [ ] > {white}skills{/white}
-  """
+    Example:
+    [ ] > {white}skills{/white}
+    """
+  end
 
   @doc """
   Look at your info sheet

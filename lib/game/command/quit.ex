@@ -7,13 +7,16 @@ defmodule Game.Command.Quit do
 
   commands ["quit"]
 
-  @short_help "Leave the game"
-  @full_help """
-  Leave the game and save.
+  def help(:topic), do: "Quit"
+  def help(:short), do: "Leave the game"
+  def help(:full) do
+    """
+    Leave the game and save.
 
-  Example:
-  [ ] > {white}quit{/white}
-  """
+    Example:
+    [ ] > {white}quit{/white}
+    """
+  end
 
   @doc """
   Save and quit the game

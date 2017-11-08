@@ -15,13 +15,16 @@ defmodule Game.Command.Target do
 
   commands [{"target", ["t"]}]
 
-  @short_help "Target an enemy"
-  @full_help """
-  Targets an enemy for skills
+  def help(:topic), do: "Target"
+  def help(:short), do: "Target an enemy"
+  def help(:full) do
+    """
+    Targets an enemy for skills
 
-  Example:
-  [  ] > {white}target bandit{/white}
-  """
+    Example:
+    [ ] > {white}target bandit{/white}
+    """
+  end
 
   @doc """
   Target an enemy

@@ -12,15 +12,18 @@ defmodule Game.Command.Wield do
 
   commands ["wield", "unwield"], parse: false
 
-  @short_help "Put an item in your hands"
-  @full_help """
-  Put an item from your inventory into your left or right hand.
-  The default hand is your right hand.
+  def help(:topic), do: "Wield"
+  def help(:short), do: "Put an item in your hands"
+  def help(:full) do
+    """
+    Put an item from your inventory into your left or right hand.
+    The default hand is your right hand.
 
-  Example:
-  [ ] > {white}wield [left|right] sword{/white}
-  [ ] > {white}unwield [left|right]{/white}
-  """
+    Example:
+    [ ] > {white}wield [left|right] sword{/white}
+    [ ] > {white}unwield [left|right]{/white}
+    """
+  end
 
   @doc """
   Parse the command to determine wield or unwield

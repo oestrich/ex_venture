@@ -15,6 +15,21 @@ defmodule Game.Command do
   @type t :: {module :: atom(), args :: []}
 
   @doc """
+  Help text.
+
+  `type` argument will be one of: `:topic`, `:short`, `:full`
+
+  Example:
+
+      def help(:topic), do: "Who"
+      def help(:short), do: "See who is online"
+      def help(:full) do
+        "Full help text"
+      end
+  """
+  @callback help(type :: atom()) :: Keyword.t()
+
+  @doc """
   Parse a command into arguments
 
   Should return `{:error, :bad_parse, command}` on a failed parse.

@@ -22,11 +22,6 @@ defmodule Game.Command.Macro do
       @behaviour Game.Command
       @before_compile Game.Command.Macro
 
-      @help true
-      @help_topic __MODULE__ |> to_string |> String.split(".") |> List.last
-      @short_help ""
-      @full_help ""
-
       @must_be_alive false
     end
   end
@@ -42,18 +37,6 @@ defmodule Game.Command.Macro do
 
       @doc false
       def must_be_alive?(), do: @must_be_alive
-
-      @doc false
-      def has_help?(), do: @help
-
-      @doc false
-      def help() do
-        %{
-          topic: @help_topic,
-          short: @short_help,
-          full: @full_help,
-        }
-      end
 
       # Provide a default bad parse
       def parse(command), do: {:error, :bad_parse, command}

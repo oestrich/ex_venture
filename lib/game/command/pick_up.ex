@@ -12,14 +12,16 @@ defmodule Game.Command.PickUp do
 
   commands [{"pick up", ["get"]}]
 
-  @help_topic "Pick Up"
-  @short_help "Pick up an item in the same room"
-  @full_help """
-  #{@short_help}.
+  def help(:topic), do: "Pick Up"
+  def help(:short), do: "Pick up an item in the same room"
+  def help(:full) do
+    """
+    #{help(:short)}.
 
-  Example:
-  [ ] > {white}pick up sword{/white}
-  """
+    Example:
+    [ ] > {white}pick up sword{/white}
+    """
+  end
 
   @doc """
   Pick up an item from a room

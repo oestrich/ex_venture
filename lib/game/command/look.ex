@@ -11,13 +11,16 @@ defmodule Game.Command.Look do
 
   commands ["look at", {"look", ["l"]}]
 
-  @short_help "Look around the room"
-  @full_help """
-  View information about the room you are in.
+  def help(:topic), do: "Look"
+  def help(:short), do: "Look around the room"
+  def help(:full) do
+    """
+    View information about the room you are in.
 
-  Example:
-  [ ] > {white}look{/white}
-  """
+    Example:
+    [ ] > {white}look{/white}
+    """
+  end
 
   @doc """
   Look around the current room

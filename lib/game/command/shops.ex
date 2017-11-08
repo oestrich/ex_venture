@@ -12,26 +12,29 @@ defmodule Game.Command.Shops do
 
   commands ["shops", "buy", "sell"], parse: false
 
-  @short_help "View shops and buy from them"
-  @full_help """
-  View shops:
-  [ ] > {white}shops{/white}
+  def help(:topic), do: "Shops"
+  def help(:short), do: "View shops and buy from them"
+  def help(:full) do
+    """
+    View shops:
+    [ ] > {white}shops{/white}
 
-  List items in a shop:
-  [ ] > {white}shops list shop{/white}
+    List items in a shop:
+    [ ] > {white}shops list shop{/white}
 
-  View an item in a shop:
-  [ ] > {white}shops show item from shop{/white}
+    View an item in a shop:
+    [ ] > {white}shops show item from shop{/white}
 
-  Buy an item from a shop:
-  [ ] > {white}buy item from shop{/white}
+    Buy an item from a shop:
+    [ ] > {white}buy item from shop{/white}
 
-  Sell an item to a shop:
-  [ ] > {white}sell item from shop{/white}
+    Sell an item to a shop:
+    [ ] > {white}sell item from shop{/white}
 
-  When matching a shop name, you can use the shortest unique string for
-  the shop. So "{magenta}Blacksmith{/magenta}" can be matched with "{white}blac{/white}".
-  """
+    When matching a shop name, you can use the shortest unique string for
+    the shop. So "{magenta}Blacksmith{/magenta}" can be matched with "{white}blac{/white}".
+    """
+  end
 
   @doc """
   Parse the command into arguments
@@ -85,7 +88,7 @@ defmodule Game.Command.Shops do
   end
 
   @doc """
-  #{@short_help}
+  View shops and buy from them
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)

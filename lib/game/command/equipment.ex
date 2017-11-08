@@ -9,17 +9,20 @@ defmodule Game.Command.Equipment do
 
   commands [{"equipment", ["eq"]}]
 
-  @short_help "View your character's worn equipment"
-  @full_help """
-  #{@short_help}. Similar to inventory but
-  will only display items worn and wielded.
+  def help(:topic), do: "Equipment"
+  def help(:short), do: "View your character's worn equipment"
+  def help(:full) do
+    """
+    #{help(:short)}. Similar to inventory but
+    will only display items worn and wielded.
 
-  Example:
-  [ ] > {white}equipment{/white}
-  """
+    Example:
+    [ ] > {white}equipment{/white}
+    """
+  end
 
   @doc """
-  #{@short_help}
+  View your character's worn equipment
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)

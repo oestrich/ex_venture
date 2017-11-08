@@ -7,14 +7,17 @@ defmodule Game.Command.Say do
 
   commands ["say"]
 
-  @short_help "Talk to other players"
-  @full_help """
-  Talk to other players in the same room.
+  def help(:topic), do: "Say"
+  def help(:short), do: "Talk to other players"
+  def help(:full) do
+    """
+    Talk to other players in the same room.
 
-  Example:
-  [ ] > {white}say Hello, everyone!{/white}
-  #{Format.say({:user, %{name: "Player"}}, "Hello, everyone!")}
-  """
+    Example:
+    [ ] > {white}say Hello, everyone!{/white}
+    #{Format.say({:user, %{name: "Player"}}, "Hello, everyone!")}
+    """
+  end
 
   @doc """
   Says to the current room the player is in

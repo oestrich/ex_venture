@@ -11,16 +11,19 @@ defmodule Game.Command.Map do
 
   commands ["map"]
 
-  @short_help "View a map of the zone"
-  @full_help """
-  #{@short_help}
+  def help(:topic), do: "Map"
+  def help(:short), do: "View a map of the zone"
+  def help(:full) do
+    """
+    #{help(:short)}
 
-  Example:
-  [ ] > {white}map{/white}
-  """
+    Example:
+    [ ] > {white}map{/white}
+    """
+  end
 
   @doc """
-  #{@short_help}
+  View a map of the zone
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)

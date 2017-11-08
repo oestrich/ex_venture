@@ -10,14 +10,17 @@ defmodule Game.Command.Tell do
 
   commands ["tell", "reply"], parse: false
 
-  @short_help "Send a message to one player that is online"
-  @full_help """
-  #{@short_help}. You can reply quickly to the last tell
-  you received by using {white}reply{/white}.
+  def help(:topic), do: "Tell"
+  def help(:short), do: "Send a message to one player that is online"
+  def help(:full) do
+    """
+    #{help(:short)}. You can reply quickly to the last tell
+    you received by using {white}reply{/white}.
 
-  Example:
-  [ ] > {white}tell player Hello{/white}
-  """
+    Example:
+    [ ] > {white}tell player Hello{/white}
+    """
+  end
 
   @doc """
   Parse the command into arguments

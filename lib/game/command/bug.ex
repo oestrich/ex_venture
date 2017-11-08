@@ -11,14 +11,17 @@ defmodule Game.Command.Bug do
 
   commands ["bug"]
 
-  @short_help "Report a bug"
-  @full_help """
-  Report a bug you encounter to the game admins. After entering a title you will
-  be able to enter in multi line text for further information.
+  def help(:topic), do: "Bug"
+  def help(:short), do: "Report a bug"
+  def help(:full) do
+    """
+    Report a bug you encounter to the game admins. After entering a title you will
+    be able to enter in multi line text for further information.
 
-  Example:
-  [ ] > {white}bug title{/white}
-  """
+    Example:
+    [ ] > {white}bug title{/white}
+    """
+  end
 
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)

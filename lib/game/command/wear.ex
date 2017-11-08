@@ -12,15 +12,18 @@ defmodule Game.Command.Wear do
 
   commands ["wear", "remove"], parse: false
 
-  @short_help "Put on a piece of armor"
-  @full_help """
-  Put on a peice of armor, or remove it from a slot. {white}Wear{/white} takes the item
-  name, and {white}remove{/white} takes the slot or item name.
+  def help(:topic), do: "Wear"
+  def help(:short), do: "Put on a piece of armor"
+  def help(:full) do
+    """
+    Put on a peice of armor, or remove it from a slot. {white}Wear{/white} takes the item
+    name, and {white}remove{/white} takes the slot or item name.
 
-  Example:
-  [ ] > {white}wear chest piece{/white}
-  [ ] > {white}remove chest{/white}
-  """
+    Example:
+    [ ] > {white}wear chest piece{/white}
+    [ ] > {white}remove chest{/white}
+    """
+  end
 
   @doc """
   Parse the command to determine wield or unwield
