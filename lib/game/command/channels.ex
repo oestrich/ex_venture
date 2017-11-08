@@ -9,11 +9,7 @@ defmodule Game.Command.Channels do
 
   @channels ["global", "newbie"]
 
-  @custom_parse true
-
-  command "channels"
-  command "global"
-  command "newbie"
+  commands ["channels", "global", "newbie"], parse: false
 
   @short_help "Talk to other players"
   @full_help """

@@ -10,11 +10,7 @@ defmodule Game.Command.Shops do
   alias Data.Shop
   alias Game.Items
 
-  @custom_parse true
-
-  command "shops"
-  command "buy"
-  command "sell"
+  commands ["shops", "buy", "sell"], parse: false
 
   @short_help "View shops and buy from them"
   @full_help """

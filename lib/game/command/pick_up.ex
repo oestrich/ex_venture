@@ -10,7 +10,7 @@ defmodule Game.Command.PickUp do
 
   @must_be_alive true
 
-  command "pick up", aliases: ["get"]
+  commands [{"pick up", ["get"]}]
 
   @help_topic "Pick Up"
   @short_help "Pick up an item in the same room"

@@ -10,7 +10,7 @@ defmodule Game.Command.Drop do
 
   @must_be_alive true
 
-  command "drop"
+  commands ["drop"]
 
   @short_help "Drop an item in the same room"
   @full_help """

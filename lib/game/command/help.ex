@@ -5,7 +5,7 @@ defmodule Game.Command.Help do
 
   use Game.Command
 
-  command "help"
+  commands ["help"]
 
   alias Game.Help
 

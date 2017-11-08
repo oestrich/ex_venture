@@ -12,7 +12,7 @@ defmodule Game.Command.Skills do
 
   @must_be_alive true
 
-  command "skills"
+  commands ["skills"]
 
   @short_help "List out your class skills"
   @full_help """

@@ -9,7 +9,7 @@ defmodule Game.Command.Bug do
   alias Data.Bug
   alias Data.Repo
 
-  command "bug"
+  commands ["bug"]
 
   @short_help "Report a bug"
   @full_help """

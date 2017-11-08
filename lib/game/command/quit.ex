@@ -5,7 +5,7 @@ defmodule Game.Command.Quit do
 
   use Game.Command
 
-  command "quit"
+  commands ["quit"]
 
   @short_help "Leave the game"
   @full_help """

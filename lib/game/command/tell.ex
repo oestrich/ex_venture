@@ -8,10 +8,7 @@ defmodule Game.Command.Tell do
   alias Game.Channel
   alias Game.Session
 
-  @custom_parse true
-
-  command "tell"
-  command "reply"
+  commands ["tell", "reply"], parse: false
 
   @short_help "Send a message to one player that is online"
   @full_help """

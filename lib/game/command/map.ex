@@ -9,7 +9,7 @@ defmodule Game.Command.Map do
 
   alias Game.Session.GMCP
 
-  command "map"
+  commands ["map"]
 
   @short_help "View a map of the zone"
   @full_help """

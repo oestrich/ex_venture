@@ -12,18 +12,19 @@ defmodule Game.Command.Move do
 
   import Game.Character.Target, only: [clear_target: 2]
 
-  @custom_parse true
   @must_be_alive true
 
-  command "move"
-  command "north", aliases: ["n"]
-  command "south", aliases: ["s"]
-  command "east", aliases: ["e"]
-  command "west", aliases: ["w"]
-  command "up", aliases: ["u"]
-  command "down", aliases: ["d"]
-  command "open"
-  command "close"
+  commands [
+    "move",
+    {"north", ["n"]},
+    {"south", ["s"]},
+    {"east", ["e"]},
+    {"west", ["w"]},
+    {"up", ["u"]},
+    {"down", ["d"]},
+    "open",
+    "close",
+  ], parse: false
 
   @short_help "Move in a direction"
   @full_help """

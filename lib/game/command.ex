@@ -28,124 +28,12 @@ defmodule Game.Command do
   """
   @callback run(args :: list, session :: pid, state :: map) :: :ok | {:update, state :: map}
 
+  @doc """
+  Sets up the basic command module. A short cut for `use Game.Command.Macro`.
+  """
   defmacro __using__(_opts) do
     quote do
-      use Networking.Socket
-      use Game.Room
-
-      import Game.Command, only: [command: 1, command: 2]
-
-      require Logger
-
-      alias Game.Format
-      alias Game.Message
-      alias Game.Session
-
-      Module.register_attribute __MODULE__, :commands, accumulate: true
-      Module.register_attribute __MODULE__, :aliases, accumulate: true
-
-      @behaviour Game.Command
-      @before_compile Game.Command
-
-      @help true
-      @help_topic __MODULE__ |> to_string |> String.split(".") |> List.last
-      @short_help ""
-      @full_help ""
-
-      @custom_parse false
-
-      @must_be_alive false
-    end
-  end
-
-  @doc """
-  Register a command.
-
-  You _must_ use the attribute `@custom_parse` before calling this macro if the command
-  is going to define it's own parser. Otherwise this macro will define parse functions
-  that will match first.
-
-  Examples:
-
-      command "look", aliases: ["l"]
-      command "up", aliases: ["u"]
-  """
-  defmacro command(command, opts \\ []) do
-    aliases = Keyword.get(opts, :aliases, [])
-
-    quote do
-      unquote(Enum.map(aliases, &alias_parse/1))
-
-      @commands unquote(command)
-      if !@custom_parse do
-        def parse(unquote(command)), do: {}
-        def parse(unquote(command) <> " " <> str), do: {str}
-
-        def parse(unquote(String.capitalize(command))), do: {}
-        def parse(unquote(String.capitalize(command)) <> " " <> str), do: {str}
-      end
-    end
-  end
-
-  defp alias_parse(command_alias) do
-    quote do
-      @aliases unquote(command_alias)
-      if !@custom_parse do
-        def parse(unquote(command_alias)), do: {}
-        def parse(unquote(command_alias) <> " " <> str), do: {str}
-
-        def parse(unquote(String.capitalize(command_alias))), do: {}
-        def parse(unquote(String.capitalize(command_alias)) <> " " <> str), do: {str}
-      end
-    end
-  end
-
-  @doc false
-  defmacro __before_compile__(_env) do
-    quote do
-      @doc false
-      def commands(), do: @commands
-
-      @doc false
-      def aliases(), do: @aliases
-
-      @doc false
-      def custom_parse?(), do: @custom_parse
-
-      @doc false
-      def must_be_alive?(), do: @must_be_alive
-
-      @doc false
-      def has_help?(), do: @help
-
-      @doc false
-      def help() do
-        %{
-          topic: @help_topic,
-          short: @short_help,
-          full: @full_help,
-        }
-      end
-
-      # Provide a default bad parse
-      def parse(command), do: {:error, :bad_parse, command}
-    end
-  end
-
-  defmodule Editor do
-    @moduledoc """
-    Editor callback
-
-    If a command requires an editor, it should `use` this module and follow the callbacks.
-    """
-
-    @callback editor({:text, String.t}, state :: map) :: {:update, state :: map}
-    @callback editor(:complete, state :: map) :: {:update, state :: map}
-
-    defmacro __using__(_opts) do
-      quote do
-        @behaviour Game.Command.Editor
-      end
+      use Game.Command.Macro
     end
   end
 

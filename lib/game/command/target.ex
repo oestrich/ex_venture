@@ -13,7 +13,7 @@ defmodule Game.Command.Target do
 
   @must_be_alive true
 
-  command "target", aliases: ["t"]
+  commands [{"target", ["t"]}]
 
   @short_help "Target an enemy"
   @full_help """

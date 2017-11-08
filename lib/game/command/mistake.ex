@@ -5,11 +5,9 @@ defmodule Game.Command.Mistake do
 
   use Game.Command
 
-  @custom_parse true
   @help false
 
-  command "kill"
-  command "attack"
+  commands ["kill", "attack"], parse: false
 
   @doc """
   Parse out extra information
