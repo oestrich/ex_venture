@@ -28,5 +28,6 @@ pages:
     - Config: admin/config.md
     - Effects: admin/effects.md
     - Help Topics: admin/help-topics.md
+    - Insights: admin/insights.md
     - Races: admin/races.md
   - Metrics: metrics.md
