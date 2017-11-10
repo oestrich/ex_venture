@@ -15,7 +15,7 @@
         <% end) %>
       </p>
     <% end %>
-    <p><pre><%= @command.help.full |> Color.strip_color() |> String.replace("\n", "<br />") |> raw() %></pre></p>
+    <p><pre><%= @command.help(:full) |> Color.strip_color() |> String.replace("\n", "<br />") |> raw() %></pre></p>
   </div>
 </div>
 

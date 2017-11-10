@@ -20,10 +20,13 @@ pages:
   - Web Client: client.md
   - Game:
     - GMCP: game/gmcp.md
+    - Help: game/help.md
     - Races: game/races.md
   - Admin:
     - Dashboard: admin/index.md
     - Classes: admin/classes.md
+    - Config: admin/config.md
     - Effects: admin/effects.md
+    - Help Topics: admin/help-topics.md
     - Races: admin/races.md
   - Metrics: metrics.md
