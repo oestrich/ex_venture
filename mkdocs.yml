@@ -29,5 +29,6 @@ pages:
     - Effects: admin/effects.md
     - Help Topics: admin/help-topics.md
     - Insights: admin/insights.md
+    - Items: admin/items.md
     - Races: admin/races.md
   - Metrics: metrics.md
