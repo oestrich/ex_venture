@@ -30,5 +30,7 @@ pages:
     - Help Topics: admin/help-topics.md
     - Insights: admin/insights.md
     - Items: admin/items.md
+    - NPCs: admin/npcs.md
+    - NPC Events: admin/events.md
     - Races: admin/races.md
   - Metrics: metrics.md
