@@ -5,16 +5,17 @@ defmodule Game.NPC.Events do
 
   use Game.Room
 
+  alias Game.Character
   alias Game.Message
 
   @doc """
   Act on events the NPC has been notified of
   """
   def act_on(state, action)
-  def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:user, _, _}}) do
+  def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:user, _, user}}) do
     npc.events
     |> Enum.filter(&(&1.type == "room/entered"))
-    |> Enum.each(&(act_on_room_entered(npc_spawner, npc, &1)))
+    |> Enum.each(&(act_on_room_entered(npc_spawner, npc, user, &1)))
 
     :ok
   end
@@ -27,10 +28,12 @@ defmodule Game.NPC.Events do
   end
   def act_on(_, _), do: :ok
 
-  defp act_on_room_entered(npc_spawner, npc, event) do
+  defp act_on_room_entered(npc_spawner, npc, user, event) do
     case event do
       %{action: %{type: "say", message: message}} ->
         npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
+      %{action: %{type: "target"}} ->
+        Character.being_targeted({:user, user}, {:npc, npc})
       _ -> :ok
     end
   end

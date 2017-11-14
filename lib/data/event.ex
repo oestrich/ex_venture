@@ -88,6 +88,8 @@ defmodule Data.Event do
 
       iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
       true
+      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
+      true
       iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "leave"}})
       false
 
@@ -96,7 +98,7 @@ defmodule Data.Event do
       iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "leave"}})
       false
   """
-  def valid_action_for_type?(%{type: "room/entered", action: action}), do: action.type in ["say"]
+  def valid_action_for_type?(%{type: "room/entered", action: action}), do: action.type in ["say", "target"]
   def valid_action_for_type?(%{type: "room/heard", action: action}), do: action.type in ["say"]
   def valid_action_for_type?(_), do: false
 
@@ -118,10 +120,14 @@ defmodule Data.Event do
       iex> Data.Event.valid_action?(%{type: "say", message: "hi"})
       true
 
+      iex> Data.Event.valid_action?(%{type: "target"})
+      true
+
       iex> Data.Event.valid_action?(%{type: "leave"})
       false
   """
   def valid_action?(%{type: "say", message: string}) when is_binary(string), do: true
+  def valid_action?(%{type: "target"}), do: true
   def valid_action?(_), do: false
 
   @doc """

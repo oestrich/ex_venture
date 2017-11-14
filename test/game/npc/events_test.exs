@@ -5,6 +5,7 @@ defmodule Game.NPC.EventsTest do
 
   alias Game.Message
   alias Game.NPC.Events
+  alias Game.Session.Registry
 
   setup do
     @room.clear_says()
@@ -28,6 +29,17 @@ defmodule Game.NPC.EventsTest do
       :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:npc, %{}}})
 
       assert @room.get_says() |> length() == 0
+    end
+
+    test "target the player when they entered" do
+      Registry.register(%{id: 2})
+
+      npc_spawner = %{room_id: 1}
+      npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
+
+      :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:user, :session, %{id: 2}}})
+
+      assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
   end
 
