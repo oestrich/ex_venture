@@ -2,6 +2,10 @@
 
 ## room/entered
 
+When a character enters a room, this event will be triggered.
+
+### action: say
+
 ```
 {
   "type": "room/entered",
@@ -12,7 +16,20 @@
 }
 ```
 
-When a character enters a room, this event will be triggered. At the moment the only action is `say`. The argument is a string that the NPC will say to the room.
+The message is a string that the NPC will say to the room.
+
+### action: target
+
+```
+{
+  "type": "room/entered",
+  "action": {
+    "type": "target",
+  }
+}
+```
+
+When a player enters the room they will be targeted by the NPC.
 
 ## room/heard
 
