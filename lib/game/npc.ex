@@ -19,6 +19,16 @@ defmodule Game.NPC do
   alias Game.NPC.Events
   alias Game.Zone
 
+  defmodule State do
+    @moduledoc """
+    State for the NPC GenServer
+    """
+
+    defstruct [:npc_spawner, :npc, :is_targeting]
+
+    @type t :: %__MODULE__{}
+  end
+
   @doc """
   Starts a new NPC server
 
@@ -95,7 +105,7 @@ defmodule Game.NPC do
     Logger.info("Starting NPC #{npc.id}", type: :npc)
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
-    {:ok, %{npc_spawner: npc_spawner, npc: npc, is_targeting: MapSet.new()}}
+    {:ok, %State{npc_spawner: npc_spawner, npc: npc, is_targeting: MapSet.new()}}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -134,8 +144,8 @@ defmodule Game.NPC do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, {_, player}}, state) do
-    state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, {:user, player.id}))
+  def handle_cast({:targeted, player}, state) do
+    state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, Game.Character.who(player)))
     {:noreply, state}
   end
 

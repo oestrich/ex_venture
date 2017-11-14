@@ -16,7 +16,8 @@ defmodule Game.NPC.EventsTest do
       npc_spawner = %{room_id: 1}
       npc = %{name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
 
-      :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:user, :session, %{}}})
+      state = %{npc_spawner: npc_spawner, npc: npc}
+      {:update, ^state} = Events.act_on(state, {"room/entered", {:user, :session, %{}}})
 
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"
@@ -26,7 +27,8 @@ defmodule Game.NPC.EventsTest do
       npc_spawner = %{room_id: 1}
       npc = %{name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
 
-      :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:npc, %{}}})
+      state = %{npc_spawner: npc_spawner, npc: npc}
+      {:update, ^state} = Events.act_on(state, {"room/entered", {:npc, %{}}})
 
       assert @room.get_says() |> length() == 0
     end
@@ -37,7 +39,8 @@ defmodule Game.NPC.EventsTest do
       npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
 
-      :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:user, :session, %{id: 2}}})
+      state = %{npc_spawner: npc_spawner, npc: npc}
+      {:update, ^state} = Events.act_on(state, {"room/entered", {:user, :session, %{id: 2}}})
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
@@ -48,7 +51,8 @@ defmodule Game.NPC.EventsTest do
       npc_spawner = %{room_id: 1}
       npc = %{name: "Mayor", events: [%{type: "room/heard", condition: %{regex: "hi"}, action: %{type: "say", message: "Hello"}}]}
 
-      :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", Message.new(%{name: "name"}, "Hi")})
+      state = %{npc_spawner: npc_spawner, npc: npc}
+      :ok = Events.act_on(state, {"room/heard", Message.new(%{name: "name"}, "Hi")})
 
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"
@@ -58,7 +62,8 @@ defmodule Game.NPC.EventsTest do
       npc_spawner = %{room_id: 1}
       npc = %{name: "Mayor", events: [%{type: "room/heard", condition: %{regex: "hi"}, action: %{type: "say", message: "Hello"}}]}
 
-      :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
+      state = %{npc_spawner: npc_spawner, npc: npc}
+      :ok = Events.act_on(state, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
 
       assert [] = @room.get_says()
     end
@@ -67,7 +72,8 @@ defmodule Game.NPC.EventsTest do
       npc_spawner = %{room_id: 1}
       npc = %{name: "Mayor", events: [%{type: "room/heard", condition: nil, action: %{type: "say", message: "Hello"}}]}
 
-      :ok = Events.act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
+      state = %{npc_spawner: npc_spawner, npc: npc}
+      :ok = Events.act_on(state, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
 
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"

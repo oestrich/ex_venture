@@ -5,19 +5,23 @@ defmodule Game.NPC.Events do
 
   use Game.Room
 
+  alias Data.Event
   alias Game.Character
   alias Game.Message
+  alias Game.NPC
 
   @doc """
   Act on events the NPC has been notified of
   """
+  @spec act_on(state :: NPC.State.t, action :: {String.t, any()}) :: :ok | {:update, NPC.State.t}
   def act_on(state, action)
-  def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/entered", {:user, _, user}}) do
-    npc.events
-    |> Enum.filter(&(&1.type == "room/entered"))
-    |> Enum.each(&(act_on_room_entered(npc_spawner, npc, user, &1)))
+  def act_on(state = %{npc: npc}, {"room/entered", character}) do
+    state =
+      npc.events
+      |> Enum.filter(&(&1.type == "room/entered"))
+      |> Enum.reduce(state, (&(act_on_room_entered(&2, character, &1))))
 
-    :ok
+    {:update, state}
   end
   def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", message}) do
     npc.events
@@ -28,15 +32,21 @@ defmodule Game.NPC.Events do
   end
   def act_on(_, _), do: :ok
 
-  defp act_on_room_entered(npc_spawner, npc, user, event) do
-    case event do
-      %{action: %{type: "say", message: message}} ->
-        npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
-      %{action: %{type: "target"}} ->
-        Character.being_targeted({:user, user}, {:npc, npc})
-      _ -> :ok
-    end
+  @doc """
+  Act on the `room/entered` event.
+  """
+  @spec act_on_room_entered(state :: NPC.State.t, character :: Character.t, event :: Event.t) :: NPC.State.t
+  def act_on_room_entered(state, character, event)
+  def act_on_room_entered(state, {:user, _, _}, %{action: %{type: "say", message: message}}) do
+    %{npc_spawner: npc_spawner, npc: npc} = state
+    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
+    state
   end
+  def act_on_room_entered(state = %{npc: npc}, {:user, _, user}, %{action: %{type: "target"}}) do
+    Character.being_targeted({:user, user}, {:npc, npc})
+    state
+  end
+  def act_on_room_entered(state, _character, _event), do: state
 
   defp act_on_room_heard(npc_spawner, npc, event, message) do
     case event do

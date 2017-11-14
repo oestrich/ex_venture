@@ -11,10 +11,11 @@ defmodule Game.NPCTest do
     @room.clear_leaves()
   end
 
-  test "being targeted makes the npc say something" do
+  test "being targeted tracks the target" do
     targeter = {:user, %{id: 10, name: "Player"}}
 
-    {:noreply, state} = NPC.handle_cast({:targeted, targeter}, %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC"}, is_targeting: MapSet.new})
+    {:noreply, state} =
+      NPC.handle_cast({:targeted, targeter}, %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC"}, is_targeting: MapSet.new()})
 
     assert state.is_targeting |> MapSet.size() == 1
     assert state.is_targeting |> MapSet.member?({:user, 10})
