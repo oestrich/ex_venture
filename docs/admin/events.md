@@ -5,8 +5,10 @@
 ```
 {
   "type": "room/entered",
-  "arguments": "Welcome!",
-  "action": "say"
+  "action": {
+    "type": "say",
+    "message": "Welcome!",
+  }
 }
 ```
 
@@ -17,9 +19,13 @@ When a character enters a room, this event will be triggered. At the moment the 
 ```
 {
   "type": "room/heard",
-  "condition": "hello",
-  "arguments": "Welcome!",
-  "action": "say"
+  "condition": {
+    "regex": "hello",
+  },
+  "action": {
+    "type": "say",
+    "message": "Welcome!",
+  }
 }
 ```
 

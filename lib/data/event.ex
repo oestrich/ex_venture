@@ -26,12 +26,14 @@ defmodule Data.Event do
 
   Cast it properly
 
-      iex> Data.Event.load(%{"type" => "room/entered", "action" => "say", "arguments" => ["Welcome!"]})
-      {:ok, %{type: "room/entered", action: "say", arguments: ["Welcome!"]}}
+      iex> Data.Event.load(%{"type" => "room/entered", "action" => %{"type" => "say", "message" => "Welcome!"}})
+      {:ok, %{type: "room/entered", action: %{type: "say", message: "Welcome!"}}}
   """
   @impl Ecto.Type
   def load(event) do
     event = for {key, val} <- event, into: %{}, do: {String.to_atom(key), val}
+    action = for {key, val} <- event.action, into: %{}, do: {String.to_atom(key), val}
+    event = %{event | action: action}
     {:ok, event}
   end
 
@@ -45,69 +47,82 @@ defmodule Data.Event do
   """
   @spec starting_event(type :: String.t()) :: t()
   def starting_event("room/entered") do
-    %{type: "room/entered", action: "say", arguments: "Welcome!"}
+    %{type: "room/entered", action: %{type: "say", message: "Welcome!"}}
   end
   def starting_event("room/heard") do
-    %{type: "room/heard", condition: "hello", action: "say", arguments: "Welcome!"}
+    %{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "Welcome!"}}
   end
 
   @doc """
   Validate an event based on type
 
-      iex> Data.Event.valid?(%{type: "room/entered", action: "say", arguments: "hi"})
+      iex> Data.Event.valid?(%{type: "room/entered", action: %{type: "say", message: "hi"}})
       true
-      iex> Data.Event.valid?(%{type: "room/entered", action: "say", arguments: :invalid})
+      iex> Data.Event.valid?(%{type: "room/entered", action: %{type: "say", message: :invalid}})
       false
 
-      iex> Data.Event.valid?(%{type: "room/heard", condition: "hello", action: "say", arguments: "hi"})
+      iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "hi"}})
       true
-      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: "say", arguments: "hi"})
+      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: %{type: "say", message: "hi"}})
       false
-      iex> Data.Event.valid?(%{type: "room/heard", action: "say", arguments: :invalid})
+      iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
       false
   """
   @spec valid?(event :: t) :: boolean
   def valid?(event)
   def valid?(event = %{type: "room/entered"}) do
-    keys(event) == [:action, :arguments, :type]
-      && valid_action?(event)
-      && valid_arguments?(event)
+    keys(event) == [:action, :type]
+      && valid_action_for_type?(event)
+      && valid_action?(event.action)
   end
   def valid?(event = %{type: "room/heard"}) do
-    keys(event) == [:action, :arguments, :condition, :type]
-      && valid_action?(event)
-      && valid_arguments?(event)
+    keys(event) == [:action, :condition, :type]
+      && valid_condition?(event.condition)
+      && valid_action_for_type?(event)
+      && valid_action?(event.action)
   end
   def valid?(_), do: false
 
   @doc """
   Validate the action matches the type
 
-      iex> Data.Event.valid_action?(%{type: "room/entered", action: "say"})
+      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
       true
-      iex> Data.Event.valid_action?(%{type: "room/entered", action: "leave"})
+      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "leave"}})
       false
 
-      iex> Data.Event.valid_action?(%{type: "room/heard", action: "say"})
+      iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "say"}})
       true
-      iex> Data.Event.valid_action?(%{type: "room/heard", action: "leave"})
+      iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "leave"}})
       false
   """
-  def valid_action?(%{type: "room/entered", action: action}), do: action in ["say"]
-  def valid_action?(%{type: "room/heard", action: action}), do: action in ["say"]
-  def valid_action?(_), do: false
+  def valid_action_for_type?(%{type: "room/entered", action: action}), do: action.type in ["say"]
+  def valid_action_for_type?(%{type: "room/heard", action: action}), do: action.type in ["say"]
+  def valid_action_for_type?(_), do: false
 
   @doc """
   Validate the arguments matches the action
 
-      iex> Data.Event.valid_arguments?(%{action: "say", arguments: "hi"})
+      iex> Data.Event.valid_condition?(%{regex: "hello"})
       true
 
-      iex> Data.Event.valid_arguments?(%{action: "leave", arguments: :invalid})
+      iex> Data.Event.valid_condition?(nil)
       false
   """
-  def valid_arguments?(%{action: "say", arguments: string}) when is_binary(string), do: true
-  def valid_arguments?(_), do: false
+  def valid_condition?(%{regex: string}) when is_binary(string), do: true
+  def valid_condition?(_), do: false
+
+  @doc """
+  Validate the arguments matches the action
+
+      iex> Data.Event.valid_action?(%{type: "say", message: "hi"})
+      true
+
+      iex> Data.Event.valid_action?(%{type: "leave"})
+      false
+  """
+  def valid_action?(%{type: "say", message: string}) when is_binary(string), do: true
+  def valid_action?(_), do: false
 
   @doc """
   Validate events of the NPC

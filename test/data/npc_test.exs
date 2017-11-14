@@ -21,7 +21,7 @@ defmodule Data.NPCTest do
     changeset = %NPC{} |> NPC.changeset(%{events: []})
     refute changeset.errors[:events]
 
-    changeset = %NPC{} |> NPC.changeset(%{events: [%{type: "room/entered", action: "say", arguments: "Hi"}]})
+    changeset = %NPC{} |> NPC.changeset(%{events: [%{type: "room/entered", action: %{type: "say", message: "Hi"}}]})
     refute changeset.errors[:events]
 
     changeset = %NPC{} |> NPC.changeset(%{events: [%{type: "room/entered"}]})
