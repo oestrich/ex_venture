@@ -16,6 +16,8 @@ defmodule Game.NPC.Events do
   @spec act_on(state :: NPC.State.t, action :: {String.t, any()}) :: :ok | {:update, NPC.State.t}
   def act_on(state, action)
   def act_on(state = %{npc: npc}, {"room/entered", character}) do
+    broadcast(npc.id, "room/entered", who(character))
+
     state =
       npc.events
       |> Enum.filter(&(&1.type == "room/entered"))
@@ -23,7 +25,9 @@ defmodule Game.NPC.Events do
 
     {:update, state}
   end
-  def act_on(state, {"room/leave", character}) do
+  def act_on(state = %{npc: npc}, {"room/leave", character}) do
+    broadcast(npc.id, "room/leave", who(character))
+
     target = Map.get(state, :target, nil)
     case Character.who(character) do
       ^target -> {:update, %{state | target: nil}}
@@ -31,6 +35,8 @@ defmodule Game.NPC.Events do
     end
   end
   def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", message}) do
+    broadcast(npc.id, "room/heard", %{type: message.type, name: message.sender.name, message: message.message})
+
     npc.events
     |> Enum.filter(&(&1.type == "room/heard"))
     |> Enum.each(&(act_on_room_heard(npc_spawner, npc, &1, message)))
@@ -69,4 +75,12 @@ defmodule Game.NPC.Events do
       _ -> :ok
     end
   end
+
+  defp broadcast(id, action, message) do
+    Web.Endpoint.broadcast!("npc:#{id}", action, message)
+  end
+
+  defp who({:npc, npc}), do: %{type: :npc, name: npc.name}
+  defp who({:user, user}), do: %{type: :user, name: user.name}
+  defp who({:user, _, user}), do: %{type: :user, name: user.name}
 end

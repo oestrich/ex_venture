@@ -15,6 +15,7 @@ defmodule Game.NPC do
   alias Data.Stats
   alias Game.Character
   alias Game.Effect
+  alias Game.Message
   alias Game.NPC.Actions
   alias Game.NPC.Events
   alias Game.Zone
@@ -24,7 +25,7 @@ defmodule Game.NPC do
     State for the NPC GenServer
     """
 
-    defstruct [:npc_spawner, :npc, :is_targeting, :target]
+    defstruct [:npc_spawner, :npc, :is_targeting, :target, :last_controlled_at]
 
     @type t :: %__MODULE__{}
   end
@@ -89,6 +90,30 @@ defmodule Game.NPC do
   end
 
   @doc """
+  Have an admin take control of an NPC
+  """
+  @spec control(id :: integer) :: :ok | {:error, :already_controlled}
+  def control(id) do
+    GenServer.call(pid(id), :control)
+  end
+
+  @doc """
+  Have an admin release control of an NPC
+  """
+  @spec release(id :: integer) :: :ok
+  def release(id) do
+    GenServer.cast(pid(id), :release)
+  end
+
+  @doc """
+  Make the NPC say something
+  """
+  @spec say(id :: integer, message :: String.t) :: :ok
+  def say(id, message) do
+    GenServer.cast(pid(id), {:say, message})
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -110,6 +135,17 @@ defmodule Game.NPC do
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call(:control, _from, state) do
+    case state.last_controlled_at do
+      nil -> {:reply, :ok, %{state | last_controlled_at: Timex.now()}}
+      _ -> {:reply, {:error, :already_controlled}, state}
+    end
+  end
+
+  def handle_cast(:release, state) do
+    {:noreply, %{state | last_controlled_at: nil}}
   end
 
   def handle_cast(:enter, state = %{npc_spawner: npc_spawner, npc: npc}) do
@@ -137,6 +173,11 @@ defmodule Game.NPC do
     |> Map.put(:npc, %{npc_spawner.npc | id: npc_spawner.id})
     @room.update_character(npc_spawner.room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
+    {:noreply, state}
+  end
+
+  def handle_cast({:say, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
+    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
     {:noreply, state}
   end
 

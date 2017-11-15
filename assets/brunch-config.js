@@ -3,7 +3,7 @@ exports.config = {
     javascripts: {
       joinTo: {
         "js/app.js": /(jquery)|(process)|(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
-        "js/admin.js": /(process)|(jquery)|(admin\/js)/,
+        "js/admin.js": /(process)|(jquery)|(underscore)|(sizzle)|(admin\/js)|(priv\/static\/phoenix*)/,
         "js/home.js": /(jquery)|(process)|(home\/js)/,
       },
       order: {
@@ -71,7 +71,8 @@ exports.config = {
 
   modules: {
     autoRequire: {
-      "js/app.js": ["js/app"]
+      "js/app.js": ["js/app"],
+      "js/admin.js": ["admin/js/socket"]
     }
   },
 

@@ -1,0 +1,64 @@
+<section class="content-header">
+  <h1>
+    Controlling <%= @npc.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("NPCs", to: npc_path(@conn, :index)) %></li>
+    <li><%= link(@npc.name, to: npc_path(@conn, :show, @npc.id)) %></li>
+    <li class="active">Spawner</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Basics</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Zone</th>
+                <td><%= link(@npc_spawner.zone.name, to: zone_path(@conn, :show, @npc_spawner.zone_id)) %></td>
+              </tr>
+              <tr>
+                <th>Room</th>
+                <td><%= link(@npc_spawner.room.name, to: room_path(@conn, :show, @npc_spawner.room_id)) %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Chat</h3>
+        </div>
+        <div class="box-body">
+          <pre class="npc-console" style="height: 200px; overflow-y: scroll"></pre>
+        </div>
+        <div class="box-footer">
+          <input class="npc-chat form-control" type="text" placeholder="Send a chat" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="application/javascript">
+$(function () {
+  new NPCSocket(<%= @npc_spawner.id %>).connect();
+});
+</script>

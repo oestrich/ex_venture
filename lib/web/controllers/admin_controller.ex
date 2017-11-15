@@ -4,19 +4,9 @@ defmodule Web.AdminController do
       use Web, :controller
 
       plug :put_layout, "admin.html"
-      plug :load_user
+      plug Web.Plug.LoadUser
       plug :ensure_user!
       plug :ensure_admin!
-
-      defp load_user(conn, _opts) do
-        case conn |> get_session(:user_token) do
-          nil -> conn
-          token -> conn |> _load_user(Web.User.from_token(token))
-        end
-      end
-
-      defp _load_user(conn, nil), do: conn
-      defp _load_user(conn, user), do: conn |> assign(:user, user)
 
       defp ensure_user!(conn, _opts) do
         case Map.has_key?(conn.assigns, :user) do

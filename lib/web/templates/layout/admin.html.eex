@@ -12,7 +12,7 @@
     <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
   </head>
 
-  <body class="hold-transition skin-black sidebar-mini">
+  <body class="hold-transition skin-black sidebar-mini" data-user-token="<%= @conn |> user_token() %>">
     <div class="wrapper">
       <header class="main-header">
         <a href="/admin" class="logo">

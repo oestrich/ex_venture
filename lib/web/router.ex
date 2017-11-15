@@ -74,7 +74,7 @@ defmodule Web.Router do
       resources "/spawners", NPCSpawnerController, only: [:new, :create], as: :spawner
     end
 
-    resources "/npc_spawners", NPCSpawnerController, only: [:edit, :update, :delete]
+    resources "/npc_spawners", NPCSpawnerController, only: [:show, :edit, :update, :delete]
 
     resources "/races", RaceController, only: [:index, :show, :new, :create, :edit, :update]
 

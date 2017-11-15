@@ -152,7 +152,7 @@ defmodule Web.NPC do
   def get_spawner(npc_spawner_id) do
     NPCSpawner
     |> Repo.get(npc_spawner_id)
-    |> Repo.preload([:npc])
+    |> Repo.preload([:npc, :zone, :room])
   end
 
   @doc """

@@ -4,6 +4,12 @@ defmodule Web.Admin.NPCSpawnerController do
   alias Web.NPC
   alias Web.Zone
 
+  def show(conn, %{"id" => id}) do
+    npc_spawner = NPC.get_spawner(id)
+    npc = NPC.get(npc_spawner.npc_id)
+    conn |> render("show.html", npc_spawner: npc_spawner, npc: npc)
+  end
+
   def new(conn, %{"npc_id" => npc_id, "npc_spawner" => %{"zone_id" => zone_id}}) do
     zone = Zone.get(zone_id)
     npc = NPC.get(npc_id)

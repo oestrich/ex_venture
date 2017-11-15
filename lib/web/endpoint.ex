@@ -2,6 +2,7 @@ defmodule Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :ex_venture
 
   socket "/socket", Web.UserSocket
+  socket "/admin/socket", Web.AdminSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #

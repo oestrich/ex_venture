@@ -13,6 +13,7 @@ defmodule Web.Supervisor do
   def init(_) do
     children = [
       supervisor(Web.Endpoint, []),
+      worker(Web.NPCChannel.Monitor, []),
       worker(Web.TelnetChannel.Monitor, []),
     ]
 
