@@ -4,6 +4,7 @@ defmodule Metrics.Setup do
   """
 
   def setup() do
+    Metrics.AdminInstrumenter.setup()
     Metrics.CommandInstrumenter.setup()
     Metrics.PipelineInstrumenter.setup()
     Metrics.PlayerInstrumenter.setup()
