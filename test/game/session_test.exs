@@ -304,4 +304,40 @@ defmodule Game.SessionTest do
       assert [{:socket, "Room.Info", "{\"id\":10}"}] = @socket.get_push_gmcps()
     end
   end
+
+  describe "event notification" do
+    test "player enters the room", state do
+      {:noreply, ^state} = Session.handle_cast({:notify, {"room/enter", {:user, %{id: 1, name: "Player"}}}}, state)
+
+      assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} enters"}}
+    end
+
+    test "npc enters the room", state do
+      {:noreply, ^state} = Session.handle_cast({:notify, {"room/enter", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+
+      assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} enters"}}
+    end
+
+    test "player leaves the room", state do
+      {:noreply, ^state} = Session.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
+      assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} leaves"}}
+    end
+
+    test "player leaves the room and they were the target", %{socket: socket} do
+      state = %{target: {:user, 1}, socket: socket}
+      {:noreply, state} = Session.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
+      assert is_nil(state.target)
+    end
+
+    test "npc leaves the room", state do
+      {:noreply, ^state} = Session.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} leaves"}}
+    end
+
+    test "npc leaves the room and they were the target" do
+      state = %{target: {:npc, 1}}
+      {:noreply, state} = Session.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      assert is_nil(state.target)
+    end
+  end
 end

@@ -203,30 +203,32 @@ defmodule Game.Room do
   def handle_cast({:enter, player = {:user, _, user}}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:user, user}))
-    players |> echo_to_players("{blue}#{user.name}{/blue} enters")
+    players |> inform_players({"room/entered", {:user, user}})
     npcs |> inform_npcs({"room/entered", player})
     {:noreply, Map.put(state, :players, [player | players])}
   end
-  def handle_cast({:enter, character = {:npc, npc}}, state = %{room: room, npcs: npcs, players: players}) do
+  def handle_cast({:enter, {:npc, npc}}, state = %{room: room, npcs: npcs, players: players}) do
     Logger.info("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
     players |> echo_gmcp_to_players(GMCP.character_enter({:npc, npc}))
-    players |> echo_to_players("#{Format.target_name(character)} enters")
-    npcs |> inform_npcs({"room/entered", npc})
+    players |> inform_players({"room/entered", {:npc, npc}})
+    npcs |> inform_npcs({"room/entered", {:npc, npc}})
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
-  def handle_cast({:leave, {:user, _, user}}, state = %{room: room, players: players}) do
+  def handle_cast({:leave, {:user, _, user}}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) left room (#{room.id})", type: :room)
     players = Enum.reject(players, &(elem(&1, 2).id == user.id))
     players |> echo_gmcp_to_players(GMCP.character_leave({:user, user}))
-    players |> echo_to_players("{blue}#{user.name}{/blue} leaves")
+    players |> inform_players({"room/leave", {:user, user}})
+    npcs |> inform_npcs({"room/leave", {:user, user}})
     {:noreply, Map.put(state, :players, players)}
   end
   def handle_cast({:leave, {:npc, npc}}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("NPC (#{npc.id}) left room (#{room.id})", type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
     players |> echo_gmcp_to_players(GMCP.character_leave({:npc, npc}))
-    players |> echo_to_players("{yellow}#{npc.name}{/yellow} leaves")
+    players |> inform_players({"room/leave", {:npc, npc}})
+    npcs |> inform_npcs({"room/leave", {:npc, npc}})
     {:noreply, Map.put(state, :npcs, npcs)}
   end
 
@@ -303,6 +305,12 @@ defmodule Game.Room do
   defp echo_to_players(players, message) do
     Enum.each(players, fn ({:user, session, _user}) ->
       Session.echo(session, message)
+    end)
+  end
+
+  defp inform_players(players, action) do
+    Enum.each(players, fn ({:user, session, _user}) ->
+      Session.notify(session, action)
     end)
   end
 

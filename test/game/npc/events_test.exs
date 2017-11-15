@@ -4,6 +4,7 @@ defmodule Game.NPC.EventsTest do
   @room Test.Game.Room
 
   alias Game.Message
+  alias Game.NPC
   alias Game.NPC.Events
   alias Game.Session.Registry
 
@@ -39,10 +40,30 @@ defmodule Game.NPC.EventsTest do
       npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
 
-      state = %{npc_spawner: npc_spawner, npc: npc}
-      {:update, ^state} = Events.act_on(state, {"room/entered", {:user, :session, %{id: 2}}})
+      state = %NPC.State{npc_spawner: npc_spawner, npc: npc}
+      {:update, state} = Events.act_on(state, {"room/entered", {:user, :session, %{id: 2}}})
+      assert state.target == {:user, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
+    end
+  end
+
+  describe "room/leave" do
+    test "clears the target when player leaves" do
+      npc_spawner = %{room_id: 1}
+      npc = %{id: 1, name: "Mayor", events: []}
+
+      state = %NPC.State{npc_spawner: npc_spawner, npc: npc, target: {:user, 2}}
+      {:update, state} = Events.act_on(state, {"room/leave", {:user, :session, %{id: 2}}})
+      assert is_nil(state.target)
+    end
+
+    test "leaves the target if another player leaves" do
+      npc_spawner = %{room_id: 1}
+      npc = %{id: 1, name: "Mayor", events: []}
+
+      state = %NPC.State{npc_spawner: npc_spawner, npc: npc, target: {:user, 2}}
+      :ok = Events.act_on(state, {"room/leave", {:user, :session, %{id: 3}}})
     end
   end
 

@@ -23,6 +23,13 @@ defmodule Game.NPC.Events do
 
     {:update, state}
   end
+  def act_on(state, {"room/leave", character}) do
+    target = Map.get(state, :target, nil)
+    case Character.who(character) do
+      ^target -> {:update, %{state | target: nil}}
+      _ -> :ok
+    end
+  end
   def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", message}) do
     npc.events
     |> Enum.filter(&(&1.type == "room/heard"))
@@ -44,7 +51,7 @@ defmodule Game.NPC.Events do
   end
   def act_on_room_entered(state = %{npc: npc}, {:user, _, user}, %{action: %{type: "target"}}) do
     Character.being_targeted({:user, user}, {:npc, npc})
-    state
+    %{state | target: Character.who({:user, user})}
   end
   def act_on_room_entered(state, _character, _event), do: state
 

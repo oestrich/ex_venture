@@ -94,6 +94,14 @@ defmodule Game.Session do
   end
 
   @doc """
+  Notify the session of an event, e.g. someone left the room
+  """
+  @spec notify(pid, action :: tuple()) :: :ok
+  def notify(pid, action) do
+    GenServer.cast(pid, {:notify, action})
+  end
+
+  @doc """
   Teleport the user to the room passed in
   """
   @spec teleport(pid, room_id :: integer) :: :ok
@@ -249,6 +257,24 @@ defmodule Game.Session do
 
   def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active"}) do
     state = Effects.apply(effects, from, description, state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:notify, {"room/enter", character}}, state) do
+    echo(self(), "#{Format.name(character)} enters")
+    {:noreply, state}
+  end
+  def handle_cast({:notify, {"room/leave", character}}, state) do
+    echo(self(), "#{Format.name(character)} leaves")
+
+    target = Map.get(state, :target, nil)
+    case Character.who(character) do
+      ^target -> {:noreply, %{state | target: nil}}
+      _ -> {:noreply, state}
+    end
+  end
+  # generic fall through case
+  def handle_cast({:notify, _}, state) do
     {:noreply, state}
   end
 

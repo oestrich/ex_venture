@@ -55,4 +55,5 @@ defmodule Game.Character do
   def who({:npc, npc}), do: {:npc, npc.id}
   def who({:user, id}) when is_integer(id), do: {:user, id}
   def who({:user, user}), do: {:user, user.id}
+  def who({:user, _session, user}), do: {:user, user.id}
 end
