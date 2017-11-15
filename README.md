@@ -30,9 +30,15 @@ MIX_ENV=test mix ecto.create
 MIX_ENV=test mix ecto.migrate
 ```
 
+## Web Client
+
+There is a web client located at [http://localhost:4000/play](http://localhost:4000/play]).
+
+![Web Client](https://exventure.org/images/web-client.png)
+
 ## Admin Panel
 
-There is an admin panel located at [http://locahost:4000/admin](http://locahost:4000/admin) that you can build out the game in. Create zones, rooms, npcs, items, etc. in the panel. They will become live instantly on creating or updating.
+There is an admin panel located at [http://locahost:4000/admin](http://localhost:4000/admin) that you can build out the game in. Create zones, rooms, npcs, items, etc. in the panel. They will become live instantly on creating or updating.
 
 ![Admin Dashboard](https://exventure.org/images/admin-dashboard.png)
 
