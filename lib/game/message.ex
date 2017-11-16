@@ -41,4 +41,13 @@ defmodule Game.Message do
       formatted: Format.say({:npc, npc}, message),
     }
   end
+
+  def npc_emote(npc, message) do
+    %__MODULE__{
+      type: :npc,
+      sender: npc,
+      message: message,
+      formatted: Format.emote({:npc, npc}, message),
+    }
+  end
 end

@@ -97,4 +97,10 @@ defmodule Web.NPCChannel do
     NPC.say(socket.assigns.npc_id, message)
     {:noreply, socket}
   end
+
+  def handle_in("emote", %{"message" => message}, socket) do
+    AdminInstrumenter.action("emote")
+    NPC.emote(socket.assigns.npc_id, message)
+    {:noreply, socket}
+  end
 end

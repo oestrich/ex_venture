@@ -1,6 +1,7 @@
 import {Socket} from "phoenix"
 import _ from "underscore"
 import $ from "jquery"
+import format from "./color"
 
 export class NPCSocket {
   constructor(spawnerId) {
@@ -25,12 +26,13 @@ export class NPCSocket {
     })
 
     this.channel.on("room/heard", msg => {
-      this.append(`${msg.name} says, "${msg.message}"`)
+      this.append(msg.formatted);
     })
 
     $(".npc-chat").on("keyup", e => {
       if (e.which == 13 && $(".npc-chat").val() != "") {
-        this.channel.push("say", {message: $(".npc-chat").val()})
+        let action = $("#npc-action").val()
+        this.channel.push(action, {message: $(".npc-chat").val()})
         $(".npc-chat").val("")
       }
     })
@@ -43,7 +45,7 @@ export class NPCSocket {
 
   append(text) {
     let console = $(".npc-console")
-    console.append(`${text}\n`)
+    console.append(format(`${text}\n`))
     console.scrollTop(console.prop("scrollHeight"))
   }
 }

@@ -50,7 +50,17 @@
           <pre class="npc-console" style="height: 200px; overflow-y: scroll"></pre>
         </div>
         <div class="box-footer">
-          <input class="npc-chat form-control" type="text" placeholder="Send a chat" />
+          <div class="form-group">
+            <div class="col-md-2">
+              <select id="npc-action" class="form-control">
+                <option value="say">Say</option>
+                <option value="emote">Emote</option>
+              </select>
+            </div>
+            <div class="col-md-10">
+              <input class="npc-chat form-control" type="text" placeholder="Send a chat" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

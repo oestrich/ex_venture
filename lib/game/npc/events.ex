@@ -35,7 +35,12 @@ defmodule Game.NPC.Events do
     end
   end
   def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", message}) do
-    broadcast(npc.id, "room/heard", %{type: message.type, name: message.sender.name, message: message.message})
+    broadcast(npc.id, "room/heard", %{
+      type: message.type,
+      name: message.sender.name,
+      message: message.message,
+      formatted: message.formatted,
+    })
 
     npc.events
     |> Enum.filter(&(&1.type == "room/heard"))

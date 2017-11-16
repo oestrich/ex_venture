@@ -114,6 +114,14 @@ defmodule Game.NPC do
   end
 
   @doc """
+  Make the NPC emote something
+  """
+  @spec emote(id :: integer, message :: String.t) :: :ok
+  def emote(id, message) do
+    GenServer.cast(pid(id), {:emote, message})
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -178,6 +186,11 @@ defmodule Game.NPC do
 
   def handle_cast({:say, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
     npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
+    {:noreply, state}
+  end
+
+  def handle_cast({:emote, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
+    npc_spawner.room_id |> @room.emote(npc, Message.npc_emote(npc, message))
     {:noreply, state}
   end
 
