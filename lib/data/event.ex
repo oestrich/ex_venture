@@ -5,10 +5,14 @@ defmodule Data.Event do
   Valid kinds of events:
 
   - "room/entered": When a character enters a room
+  - "room/heard": When a character hears something in a room
+  - "combat/tick": What the character will do during combat
   """
 
   import Data.Type
   import Ecto.Changeset
+
+  alias Data.Effect
 
   @type t :: map
 
@@ -46,6 +50,9 @@ defmodule Data.Event do
   the values won't mean anyhting.
   """
   @spec starting_event(type :: String.t()) :: t()
+  def starting_event("combat/tick") do
+    %{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5}}
+  end
   def starting_event("room/entered") do
     %{type: "room/entered", action: %{type: "say", message: "Welcome!"}}
   end
@@ -55,6 +62,11 @@ defmodule Data.Event do
 
   @doc """
   Validate an event based on type
+
+      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5}})
+      true
+      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: :invalid}})
+      false
 
       iex> Data.Event.valid?(%{type: "room/entered", action: %{type: "say", message: "hi"}})
       true
@@ -70,6 +82,11 @@ defmodule Data.Event do
   """
   @spec valid?(event :: t) :: boolean
   def valid?(event)
+  def valid?(event = %{type: "combat/tick"}) do
+    keys(event) == [:action, :type]
+      && valid_action_for_type?(event)
+      && valid_action?(event.action)
+  end
   def valid?(event = %{type: "room/entered"}) do
     keys(event) == [:action, :type]
       && valid_action_for_type?(event)
@@ -86,6 +103,11 @@ defmodule Data.Event do
   @doc """
   Validate the action matches the type
 
+      iex> Data.Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "target/effects"}})
+      true
+      iex> Data.Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "leave"}})
+      false
+
       iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
       true
       iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
@@ -98,6 +120,7 @@ defmodule Data.Event do
       iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "leave"}})
       false
   """
+  def valid_action_for_type?(%{type: "combat/tick", action: action}), do: action.type in ["target/effects"]
   def valid_action_for_type?(%{type: "room/entered", action: action}), do: action.type in ["say", "target"]
   def valid_action_for_type?(%{type: "room/heard", action: action}), do: action.type in ["say"]
   def valid_action_for_type?(_), do: false
@@ -123,11 +146,22 @@ defmodule Data.Event do
       iex> Data.Event.valid_action?(%{type: "target"})
       true
 
+      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: []})
+      true
+      iex> effect = %{kind: "damage", type: :slashing, amount: 10}
+      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect]})
+      true
+      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [%{}]})
+      false
+
       iex> Data.Event.valid_action?(%{type: "leave"})
       false
   """
   def valid_action?(%{type: "say", message: string}) when is_binary(string), do: true
   def valid_action?(%{type: "target"}), do: true
+  def valid_action?(%{type: "target/effects", delay: delay, effects: effects}) when is_float(delay) do
+    Enum.all?(effects, &Effect.valid?/1)
+  end
   def valid_action?(_), do: false
 
   @doc """
