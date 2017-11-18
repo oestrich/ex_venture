@@ -92,7 +92,7 @@ defmodule Game.NPC.Events do
   end
   def act_on_room_entered(state = %{npc: npc}, {:user, _, user}, %{action: %{type: "target"}}) do
     Character.being_targeted({:user, user}, {:npc, npc})
-    notify_delayed({"combat/tick"}, 3000)
+    notify_delayed({"combat/tick"}, 1500)
     %{state | target: Character.who({:user, user})}
   end
   def act_on_room_entered(state, _character, _event), do: state
