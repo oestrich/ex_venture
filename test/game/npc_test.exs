@@ -31,6 +31,15 @@ defmodule Game.NPCTest do
     refute state.is_targeting |> MapSet.member?({:user, 10})
   end
 
+  describe "a player died" do
+    test "clears their target if that player was their target" do
+      target = {:user, %{id: 10, name: "Player"}}
+      {:noreply, state} = NPC.handle_cast({:died, target}, %{target: {:user, 10}, npc: %{id: 10}})
+
+      assert is_nil(state.target)
+    end
+  end
+
   test "applying effects" do
     effect = %{kind: "damage", type: :slashing, amount: 10}
 

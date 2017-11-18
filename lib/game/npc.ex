@@ -211,13 +211,19 @@ defmodule Game.NPC do
   def handle_cast({:apply_effects, effects, from, _description}, state = %{npc: npc}) do
     Logger.info("Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})", type: :npc)
     stats = effects |> Effect.apply(npc.stats)
-    stats |> Actions.maybe_died(state)
+    state = stats |> Actions.maybe_died(state)
     npc = %{npc | stats: stats}
     {:noreply, Map.put(state, :npc, npc)}
   end
 
-  def handle_cast({:died, _who}, state) do
-    {:noreply, state}
+  def handle_cast({:died, who}, state = %{target: target, npc: npc}) do
+    case Character.who(target) == Character.who(who) do
+      true ->
+        Character.remove_target(target, {:npc, npc})
+        {:noreply, Map.put(state, :target, nil)}
+      false ->
+        {:noreply, state}
+    end
   end
 
   def handle_cast(:terminate, state = %{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do

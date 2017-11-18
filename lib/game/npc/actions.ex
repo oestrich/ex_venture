@@ -42,13 +42,13 @@ defmodule Game.NPC.Actions do
   @spec maybe_died(stats :: map, state :: map) :: :ok
   def maybe_died(stats, state)
   def maybe_died(%{health: health}, state) when health < 1, do: died(state)
-  def maybe_died(_stats, _state), do: :ok
+  def maybe_died(_stats, state), do: state
 
   @doc """
   The NPC died, send out messages
   """
   @spec died(state :: map) :: :ok
-  def died(%{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
+  def died(state = %{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
     npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
@@ -58,7 +58,8 @@ defmodule Game.NPC.Actions do
     drop_currency(npc_spawner.room_id, npc, npc.currency)
     drop_items(npc_spawner.room_id, npc, npc.item_ids)
 
-    :ok
+    state
+    |> Map.put(:target, nil)
   end
 
   @doc """

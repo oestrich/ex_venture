@@ -47,18 +47,18 @@ defmodule Game.NPC.ActionsTest do
       insert_item(%{id: 1, name: "Sword", keywords: [], drop_rate: 50})
       insert_item(%{id: 2, name: "Shield", keywords: [], drop_rate: 50})
 
-      %{npc_spawner: %{room_id: 1}, npc: %{id: 1, name: "NPC", currency: 100, item_ids: [1, 2]}, is_targeting: []}
+      %{npc_spawner: %{room_id: 1}, npc: %{id: 1, name: "NPC", currency: 100, item_ids: [1, 2]}, is_targeting: [], target: nil}
     end
 
     test "drops currency in the room", state do
-      :ok = Actions.died(state)
+      _state = Actions.died(state)
 
       assert [{1, {:npc, _}, 51}] = @room.get_drop_currencies()
     end
 
     test "does not drop 0 currency", state do
       npc = %{state.npc | currency: 0}
-      :ok = Actions.died(%{state | npc: npc})
+      _state = Actions.died(%{state | npc: npc})
 
       assert [] = @room.get_drop_currencies()
     end
@@ -68,7 +68,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "drops items in the room", state do
-      :ok = Actions.died(state)
+      _state = Actions.died(state)
 
       assert [{1, {:npc, _}, %{id: 1}}, {1, {:npc, _}, %{id: 2}}] = @room.get_drops()
     end

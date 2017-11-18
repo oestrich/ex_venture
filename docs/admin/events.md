@@ -55,11 +55,12 @@ When a character hears something in the room, this event will be triggered. The 
   "type": "combat/tick",
   "action": {
     "type": "target/effects",
+    "text": "{user} slashes at you.",
     "effects": [
       {
-        'kind': 'damage',
-        'type': 'slashing',
-        'amount': 10
+        "kind": "damage",
+        "type": "slashing",
+        "amount": 10
       }
     ],
     "delay": 0.5

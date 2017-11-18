@@ -249,14 +249,15 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
-  def handle_cast({:remove_target, player}, state) do
-    echo(self(), "You are no longer being targeted by {blue}#{elem(player, 1).name}{/blue}.")
-    state = Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Character.who(player)))
+  def handle_cast({:remove_target, character}, state) do
+    echo(self(), "You are no longer being targeted by #{Format.name(character)}.")
+    state = Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Character.who(character)))
     {:noreply, state}
   end
 
   def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active"}) do
     state = Effects.apply(effects, from, description, state)
+    state |> GMCP.vitals()
     {:noreply, state}
   end
 

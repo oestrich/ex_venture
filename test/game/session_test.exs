@@ -182,7 +182,7 @@ defmodule Game.SessionTest do
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
     stats = %{health: 25}
-    user = %{name: "user"}
+    user = %{name: "user", class: class_attributes(%{})}
 
     state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
     {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, state)
@@ -198,7 +198,7 @@ defmodule Game.SessionTest do
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
     stats = %{health: 5}
-    user = %{name: "user"}
+    user = %{name: "user", class: class_attributes(%{})}
 
     is_targeting = MapSet.new() |> MapSet.put({:user, 2})
     state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: is_targeting}

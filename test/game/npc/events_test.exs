@@ -6,10 +6,68 @@ defmodule Game.NPC.EventsTest do
   alias Game.Message
   alias Game.NPC
   alias Game.NPC.Events
+  alias Game.NPC.State
   alias Game.Session.Registry
 
   setup do
     @room.clear_says()
+  end
+
+  describe "combat/tick" do
+    setup do
+      event = %{
+        type: "combat/tick",
+        action: %{
+          type: "target/effects",
+          delay: 0.01,
+          text: "A skill was used",
+          effects: [
+            %{kind: "damage", type: :slashing, amount: 10},
+          ],
+        },
+      }
+
+      npc_spawner = %{room_id: 1}
+      npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
+      state = %State{npc_spawner: npc_spawner, npc: npc}
+
+      @room._room()
+      |> Map.put(:npcs, [npc])
+      |> Map.put(:players, [%{id: 1, name: "Player"}])
+      |> @room.set_room()
+
+      event = {"combat/tick"}
+
+      %{state: state, event: event}
+    end
+
+    test "does nothing if no target", %{state: state, event: event} do
+      :ok = Events.act_on(state, event)
+
+      refute_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
+    end
+
+    test "does nothing if target no longer in the room, and removes target", %{state: state, event: event} do
+      state = %{state | target: {:user, 2}}
+
+      {:update, state} = Events.act_on(state, event)
+
+      assert is_nil(state.target)
+
+      refute_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
+    end
+
+    test "calculates the effects and then applies them to the target", %{state: state, event: event} do
+      Registry.register(%{id: 1})
+      state = %{state | target: {:user, 1}}
+
+      {:update, state} = Events.act_on(state, event)
+
+      assert state.target
+
+      assert_receive {:"$gen_cast", {:apply_effects, [%{amount: 15, kind: "damage", type: :slashing}], {:npc, _}, "A skill was used"}}
+      assert_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
+    end
   end
 
   describe "room/entered" do

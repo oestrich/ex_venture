@@ -5,8 +5,11 @@ defmodule Game.NPC.Events do
 
   use Game.Room
 
+  import Game.Command.Skills, only: [find_target: 2]
+
   alias Data.Event
   alias Game.Character
+  alias Game.Effect
   alias Game.Message
   alias Game.NPC
 
@@ -15,6 +18,10 @@ defmodule Game.NPC.Events do
   """
   @spec act_on(state :: NPC.State.t, action :: {String.t, any()}) :: :ok | {:update, NPC.State.t}
   def act_on(state, action)
+  def act_on(state = %{npc: npc}, {"combat/tick"}) do
+    broadcast(npc, "combat/tick")
+    state |> act_on_combat_tick()
+  end
   def act_on(state = %{npc: npc}, {"room/entered", character}) do
     broadcast(npc, "room/entered", who(character))
 
@@ -50,6 +57,29 @@ defmodule Game.NPC.Events do
   end
   def act_on(_, _), do: :ok
 
+  def act_on_combat_tick(%{target: nil}), do: :ok
+  def act_on_combat_tick(state = %{npc_spawner: npc_spawner, npc: npc, target: target}) do
+    room = @room.look(npc_spawner.room_id)
+
+    case find_target(room, target) do
+      nil -> {:update, %{state | target: nil}}
+      target ->
+        event =
+          npc.events
+          |> Enum.filter(&(&1.type == "combat/tick"))
+          |> Enum.random()
+
+        action = event.action
+        effects = npc.stats |> Effect.calculate(action.effects)
+        Character.apply_effects(target, effects, {:npc, npc}, action.text)
+
+        delay = round(Float.ceil(action.delay * 1000))
+        notify_delayed({"combat/tick"}, delay)
+
+        {:update, state}
+    end
+  end
+
   @doc """
   Act on the `room/entered` event.
   """
@@ -62,6 +92,7 @@ defmodule Game.NPC.Events do
   end
   def act_on_room_entered(state = %{npc: npc}, {:user, _, user}, %{action: %{type: "target"}}) do
     Character.being_targeted({:user, user}, {:npc, npc})
+    notify_delayed({"combat/tick"}, 3000)
     %{state | target: Character.who({:user, user})}
   end
   def act_on_room_entered(state, _character, _event), do: state
@@ -81,6 +112,9 @@ defmodule Game.NPC.Events do
     end
   end
 
+  defp broadcast(npc, action) do
+    broadcast(npc, action, %{})
+  end
   defp broadcast(%{id: id}, action, message) do
     Web.Endpoint.broadcast!("npc:#{id}", action, message)
   end
@@ -88,4 +122,8 @@ defmodule Game.NPC.Events do
   defp who({:npc, npc}), do: %{type: :npc, name: npc.name}
   defp who({:user, user}), do: %{type: :user, name: user.name}
   defp who({:user, _, user}), do: %{type: :user, name: user.name}
+
+  defp notify_delayed(action, delayed) do
+    :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})
+  end
 end
