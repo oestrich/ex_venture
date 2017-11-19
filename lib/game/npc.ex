@@ -62,6 +62,9 @@ defmodule Game.NPC do
   Notify the NPC of an action occurring in the room
   """
   @spec notify(id :: integer, action :: tuple) :: :ok
+  def notify(pid, action) when is_pid(pid) do
+    GenServer.cast(pid, {:notify, action})
+  end
   def notify(id, action) do
     GenServer.cast(pid(id), {:notify, action})
   end
@@ -169,6 +172,8 @@ defmodule Game.NPC do
   end
 
   def handle_cast({:tick, time}, state) do
+    notify(self(), {"tick"})
+
     case Actions.tick(state, time) do
       :ok -> {:noreply, state}
       {:update, state} -> {:noreply, state}

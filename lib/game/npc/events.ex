@@ -55,6 +55,10 @@ defmodule Game.NPC.Events do
 
     :ok
   end
+  def act_on(%{npc: npc}, {"tick"}) do
+    broadcast(npc, "combat/tick")
+    :ok
+  end
   def act_on(_, _), do: :ok
 
   def act_on_combat_tick(%{target: nil}), do: :ok

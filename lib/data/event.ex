@@ -80,6 +80,9 @@ defmodule Data.Event do
   def starting_event("room/heard") do
     %{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "Welcome!"}}
   end
+  def starting_event("tick") do
+    %{type: "tick", action: %{type: "move", max_distance: 3, chance: 25}}
+  end
 
   @doc """
   Validate an event based on type

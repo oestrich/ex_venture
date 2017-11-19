@@ -1,8 +1,10 @@
 <script type"application/javascript">
 $(function() {
   var basicEvents = {
+    "combat/tick": <%= Event.starting_event("combat/tick") |> encode_json() %>,
     "room/entered": <%= Event.starting_event("room/entered") |> encode_json() %>,
     "room/heard": <%= Event.starting_event("room/heard") |> encode_json() %>,
+    "tick": <%= Event.starting_event("tick") |> encode_json() %>,
   };
 
   if ($("#<%= @id %>").val() == "") {
@@ -21,6 +23,8 @@ $(function() {
 </script>
 
 <span class="help-block">
+  <%= link("Add 'combat/tick'", to: "#", class: "btn btn-default add-event", data: [type: "combat/tick"]) %>
   <%= link("Add 'room/entered'", to: "#", class: "btn btn-default add-event", data: [type: "room/entered"]) %>
   <%= link("Add 'room/heard'", to: "#", class: "btn btn-default add-event", data: [type: "room/heard"]) %>
+  <%= link("Add 'tick'", to: "#", class: "btn btn-default add-event", data: [type: "tick"]) %>
 </span>
