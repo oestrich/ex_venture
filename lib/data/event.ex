@@ -100,26 +100,21 @@ defmodule Data.Event do
       false
       iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
       false
+
+      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50}})
+      true
+      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move"}})
+      false
   """
   @spec valid?(event :: t) :: boolean
-  def valid?(event)
-  def valid?(event = %{type: "combat/tick"}) do
-    keys(event) == [:action, :type]
+  def valid?(event) do
+    keys(event) == valid_keys(event.type)
       && valid_action_for_type?(event)
       && valid_action?(event.action)
   end
-  def valid?(event = %{type: "room/entered"}) do
-    keys(event) == [:action, :type]
-      && valid_action_for_type?(event)
-      && valid_action?(event.action)
-  end
-  def valid?(event = %{type: "room/heard"}) do
-    keys(event) == [:action, :condition, :type]
-      && valid_condition?(event.condition)
-      && valid_action_for_type?(event)
-      && valid_action?(event.action)
-  end
-  def valid?(_), do: false
+
+  defp valid_keys("room/heard"), do: [:action, :condition, :type]
+  defp valid_keys(_type), do: [:action, :type]
 
   @doc """
   Validate the action matches the type
@@ -140,10 +135,16 @@ defmodule Data.Event do
       true
       iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "leave"}})
       false
+
+      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "move"}})
+      true
+      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "leave"}})
+      false
   """
   def valid_action_for_type?(%{type: "combat/tick", action: action}), do: action.type in ["target/effects"]
   def valid_action_for_type?(%{type: "room/entered", action: action}), do: action.type in ["say", "target"]
   def valid_action_for_type?(%{type: "room/heard", action: action}), do: action.type in ["say"]
+  def valid_action_for_type?(%{type: "tick", action: action}), do: action.type in ["move"]
   def valid_action_for_type?(_), do: false
 
   @doc """
@@ -160,6 +161,11 @@ defmodule Data.Event do
 
   @doc """
   Validate the arguments matches the action
+
+      iex> Data.Event.valid_action?(%{type: "move", max_distance: 3, chance: 50})
+      true
+      iex> Data.Event.valid_action?(%{type: "move", max_distance: 3, chance: 150})
+      false
 
       iex> Data.Event.valid_action?(%{type: "say", message: "hi"})
       true
@@ -178,6 +184,9 @@ defmodule Data.Event do
       iex> Data.Event.valid_action?(%{type: "leave"})
       false
   """
+  def valid_action?(%{type: "move", max_distance: max_distance, chance: chance}) do
+    is_integer(max_distance) && is_integer(chance) && chance < 100
+  end
   def valid_action?(%{type: "say", message: string}) when is_binary(string), do: true
   def valid_action?(%{type: "target"}), do: true
   def valid_action?(%{type: "target/effects", text: text, delay: delay, effects: effects}) when is_binary(text) and is_float(delay) do

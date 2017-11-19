@@ -73,3 +73,22 @@ When a combat tick occurs, this event will be triggered. Combat ticks will start
 ### target/effects
 
 This action will apply the effects to the target.
+
+## tick
+
+```
+{
+  "type": "tick",
+  "action": {
+    "type": "move",
+    "max_distance": 3,
+    "chance": 50
+  }
+}
+```
+
+When a game tick occurs, this event will be triggered. The only action is `move`.
+
+### move
+
+The move action takes a `max_distance` that the NPC will stray from their original spawn point. `chance` is the percent chance that the NPC will move to a random exit.
