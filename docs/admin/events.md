@@ -56,6 +56,7 @@ When a character hears something in the room, this event will be triggered. The 
   "action": {
     "type": "target/effects",
     "text": "{user} slashes at you.",
+    "weight": 10,
     "effects": [
       {
         "kind": "damage",
@@ -68,7 +69,7 @@ When a character hears something in the room, this event will be triggered. The 
 }
 ```
 
-When a combat tick occurs, this event will be triggered. Combat ticks will start after the NPC targets something. They will continue until they lose their target. The `combat/tick` event needs to have a delay for how long before it's next combat tick will trigger. If there are more than one, a random action will be chosen.
+When a combat tick occurs, this event will be triggered. Combat ticks will start after the NPC targets something. They will continue until they lose their target. The `combat/tick` event needs to have a delay for how long before it's next combat tick will trigger. If there are more than one, a random weighted action will be chosen.
 
 ### target/effects
 

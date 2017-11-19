@@ -72,7 +72,7 @@ defmodule Data.Event do
   """
   @spec starting_event(type :: String.t()) :: t()
   def starting_event("combat/tick") do
-    %{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, text: ""}}
+    %{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}}
   end
   def starting_event("room/entered") do
     %{type: "room/entered", action: %{type: "say", message: "Welcome!"}}
@@ -87,7 +87,7 @@ defmodule Data.Event do
   @doc """
   Validate an event based on type
 
-      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, text: ""}})
+      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}})
       true
       iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: :invalid}})
       false
@@ -176,10 +176,10 @@ defmodule Data.Event do
       iex> Data.Event.valid_action?(%{type: "target"})
       true
 
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [], text: ""})
+      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [], weight: 10, text: ""})
       true
       iex> effect = %{kind: "damage", type: :slashing, amount: 10}
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect], text: ""})
+      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect], weight: 10, text: ""})
       true
       iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [%{}], text: ""})
       false
@@ -192,8 +192,8 @@ defmodule Data.Event do
   end
   def valid_action?(%{type: "say", message: string}) when is_binary(string), do: true
   def valid_action?(%{type: "target"}), do: true
-  def valid_action?(%{type: "target/effects", text: text, delay: delay, effects: effects}) when is_binary(text) and is_float(delay) do
-    Enum.all?(effects, &Effect.valid?/1)
+  def valid_action?(%{type: "target/effects", text: text, delay: delay, weight: weight, effects: effects}) do
+    is_integer(weight) && is_binary(text) && is_float(delay) && Enum.all?(effects, &Effect.valid?/1)
   end
   def valid_action?(_), do: false
 

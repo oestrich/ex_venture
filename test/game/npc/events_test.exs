@@ -21,6 +21,7 @@ defmodule Game.NPC.EventsTest do
           type: "target/effects",
           delay: 0.01,
           text: "A skill was used",
+          weight: 10,
           effects: [
             %{kind: "damage", type: :slashing, amount: 10},
           ],

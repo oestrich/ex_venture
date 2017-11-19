@@ -12,6 +12,7 @@ defmodule Game.NPC.Events do
   alias Game.Effect
   alias Game.Message
   alias Game.NPC
+  alias Game.NPC.Combat
 
   @doc """
   Act on events the NPC has been notified of
@@ -71,7 +72,7 @@ defmodule Game.NPC.Events do
         event =
           npc.events
           |> Enum.filter(&(&1.type == "combat/tick"))
-          |> Enum.random()
+          |> Combat.weighted_event()
 
         action = event.action
         effects = npc.stats |> Effect.calculate(action.effects)
