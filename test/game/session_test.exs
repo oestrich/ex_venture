@@ -308,13 +308,13 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", state do
-      {:noreply, ^state} = Session.handle_cast({:notify, {"room/enter", {:user, %{id: 1, name: "Player"}}}}, state)
+      {:noreply, ^state} = Session.handle_cast({:notify, {"room/entered", {:user, %{id: 1, name: "Player"}}}}, state)
 
       assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} enters"}}
     end
 
     test "npc enters the room", state do
-      {:noreply, ^state} = Session.handle_cast({:notify, {"room/enter", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      {:noreply, ^state} = Session.handle_cast({:notify, {"room/entered", {:npc, %{id: 1, name: "Bandit"}}}}, state)
 
       assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} enters"}}
     end

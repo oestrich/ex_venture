@@ -261,7 +261,7 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
-  def handle_cast({:notify, {"room/enter", character}}, state) do
+  def handle_cast({:notify, {"room/entered", character}}, state) do
     echo(self(), "#{Format.name(character)} enters")
     {:noreply, state}
   end
