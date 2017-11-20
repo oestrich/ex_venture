@@ -39,12 +39,12 @@ defmodule Game.Session.GMCP do
 
   Does not push directly to the socket
   """
-  @spec character_enter({:user, map} | {:npc, map}) :: {module :: String.t, data :: map}
-  def character_enter({:user, user}) do
-    {"Room.Character.Enter", %{type: :player, id: user.id, name: user.name}}
+  @spec character_enter(state :: map, {:user, map} | {:npc, map}) :: {module :: String.t, data :: map}
+  def character_enter(%{socket: socket}, {:user, user}) do
+    socket |> @socket.push_gmcp("Room.Character.Enter", %{type: :player, id: user.id, name: user.name} |> Poison.encode!())
   end
-  def character_enter({:npc, npc}) do
-    {"Room.Character.Enter", %{type: :npc, id: npc.id, name: npc.name}}
+  def character_enter(%{socket: socket}, {:npc, npc}) do
+    socket |> @socket.push_gmcp("Room.Character.Enter", %{type: :npc, id: npc.id, name: npc.name} |> Poison.encode!())
   end
 
   @doc """
@@ -52,12 +52,12 @@ defmodule Game.Session.GMCP do
 
   Does not push directly to the socket
   """
-  @spec character_leave({:user, map} | {:npc, map}) :: {module :: String.t, data :: map}
-  def character_leave({:user, user}) do
-    {"Room.Character.Leave", %{type: :player, id: user.id, name: user.name}}
+  @spec character_leave(state :: map, {:user, map} | {:npc, map}) :: {module :: String.t, data :: map}
+  def character_leave(%{socket: socket}, {:user, user}) do
+    socket |> @socket.push_gmcp("Room.Character.Leave", %{type: :player, id: user.id, name: user.name} |> Poison.encode!())
   end
-  def character_leave({:npc, npc}) do
-    {"Room.Character.Leave", %{type: :npc, id: npc.id, name: npc.name}}
+  def character_leave(%{socket: socket}, {:npc, npc}) do
+    socket |> @socket.push_gmcp("Room.Character.Leave", %{type: :npc, id: npc.id, name: npc.name} |> Poison.encode!())
   end
 
   @doc """

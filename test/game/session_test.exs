@@ -299,13 +299,6 @@ defmodule Game.SessionTest do
     end
   end
 
-  describe "pushing GMCP forward" do
-    test "pushes and encodes the data" do
-      {:noreply, _state} = Session.handle_cast({:gmcp, "Room.Info", %{id: 10}}, %{socket: :socket})
-      assert [{:socket, "Room.Info", "{\"id\":10}"}] = @socket.get_push_gmcps()
-    end
-  end
-
   describe "event notification" do
     test "player enters the room", state do
       {:noreply, ^state} = Session.handle_cast({:notify, {"room/entered", {:user, %{id: 1, name: "Player"}}}}, state)
@@ -335,8 +328,8 @@ defmodule Game.SessionTest do
       assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} leaves"}}
     end
 
-    test "npc leaves the room and they were the target" do
-      state = %{target: {:npc, 1}}
+    test "npc leaves the room and they were the target", %{socket: socket} do
+      state = %{target: {:npc, 1}, socket: socket}
       {:noreply, state} = Session.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
       assert is_nil(state.target)
     end

@@ -15,7 +15,6 @@ defmodule Game.Room do
   alias Game.Message
   alias Game.NPC
   alias Game.Session
-  alias Game.Session.GMCP
   alias Game.Zone
 
   @type t :: map
@@ -202,14 +201,12 @@ defmodule Game.Room do
 
   def handle_cast({:enter, player = {:user, _, user}}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) entered room (#{room.id})", type: :room)
-    players |> echo_gmcp_to_players(GMCP.character_enter({:user, user}))
     players |> inform_players({"room/entered", {:user, user}})
     npcs |> inform_npcs({"room/entered", player})
     {:noreply, Map.put(state, :players, [player | players])}
   end
   def handle_cast({:enter, {:npc, npc}}, state = %{room: room, npcs: npcs, players: players}) do
     Logger.info("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
-    players |> echo_gmcp_to_players(GMCP.character_enter({:npc, npc}))
     players |> inform_players({"room/entered", {:npc, npc}})
     npcs |> inform_npcs({"room/entered", {:npc, npc}})
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
@@ -218,7 +215,6 @@ defmodule Game.Room do
   def handle_cast({:leave, {:user, _, user}}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) left room (#{room.id})", type: :room)
     players = Enum.reject(players, &(elem(&1, 2).id == user.id))
-    players |> echo_gmcp_to_players(GMCP.character_leave({:user, user}))
     players |> inform_players({"room/leave", {:user, user}})
     npcs |> inform_npcs({"room/leave", {:user, user}})
     {:noreply, Map.put(state, :players, players)}
@@ -226,7 +222,6 @@ defmodule Game.Room do
   def handle_cast({:leave, {:npc, npc}}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("NPC (#{npc.id}) left room (#{room.id})", type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
-    players |> echo_gmcp_to_players(GMCP.character_leave({:npc, npc}))
     players |> inform_players({"room/leave", {:npc, npc}})
     npcs |> inform_npcs({"room/leave", {:npc, npc}})
     {:noreply, Map.put(state, :npcs, npcs)}
@@ -311,12 +306,6 @@ defmodule Game.Room do
   defp inform_players(players, action) do
     Enum.each(players, fn ({:user, session, _user}) ->
       Session.notify(session, action)
-    end)
-  end
-
-  defp echo_gmcp_to_players(players, {module, data}) do
-    Enum.each(players, fn ({:user, session, _user}) ->
-      Session.gmcp(session, module, data)
     end)
   end
 

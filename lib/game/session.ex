@@ -78,14 +78,6 @@ defmodule Game.Session do
   end
 
   @doc """
-  Echo GMCP to the socket
-  """
-  @spec gmcp(pid, module :: String.t, data :: map) :: :ok
-  def gmcp(pid, module, data) do
-    GenServer.cast(pid, {:gmcp, module, data})
-  end
-
-  @doc """
   Send a tick to the session
   """
   @spec tick(pid, time :: DateTime.t) :: :ok
@@ -173,12 +165,6 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
-  # forward the gmcp the socket pid
-  def handle_cast({:gmcp, module, data}, state = %{socket: socket}) do
-    socket |> @socket.push_gmcp(module, data |> Poison.encode!)
-    {:noreply, state}
-  end
-
   # Update the tick timestamp
   def handle_cast({:tick, time}, state = %{save: _save}) do
     {:noreply, Tick.tick(time, state)}
@@ -263,10 +249,12 @@ defmodule Game.Session do
 
   def handle_cast({:notify, {"room/entered", character}}, state) do
     echo(self(), "#{Format.name(character)} enters")
+    state |> GMCP.character_enter(character)
     {:noreply, state}
   end
   def handle_cast({:notify, {"room/leave", character}}, state) do
     echo(self(), "#{Format.name(character)} leaves")
+    state |> GMCP.character_leave(character)
 
     target = Map.get(state, :target, nil)
     case Character.who(character) do

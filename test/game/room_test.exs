@@ -13,14 +13,15 @@ defmodule Game.RoomTest do
     assert state.players == [{:user, :session, user}]
   end
 
-  test "entering a room pushes gmcp data - user", %{user: user, room: room} do
+  test "entering a room sends notifications - user", %{user: user, room: room} do
     {:noreply, _state} = Room.handle_cast({:enter, {:user, :session, user}}, %{room: room, players: [{:user, self(), user}], npcs: []})
-    assert_receive {:"$gen_cast", {:gmcp, "Room.Character.Enter", %{type: :player, id: 10, name: "user"}}}
+    assert_receive {:"$gen_cast", {:notify, {"room/entered", {:user, ^user}}}}
   end
 
-  test "entering a room pushes gmcp data - npc", %{user: user, room: room} do
-    {:noreply, _state} = Room.handle_cast({:enter, {:npc, user}}, %{room: room, players: [{:user, self(), user}], npcs: []})
-    assert_receive {:"$gen_cast", {:gmcp, "Room.Character.Enter", %{type: :npc, id: 10, name: "user"}}}
+  test "entering a room sends notifications - npc", %{user: user, room: room} do
+    npc = %{id: 10, name: "Bandit"}
+    {:noreply, _state} = Room.handle_cast({:enter, {:npc, npc}}, %{room: room, players: [{:user, self(), user}], npcs: []})
+    assert_receive {:"$gen_cast", {:notify, {"room/entered", {:npc, ^npc}}}}
   end
 
   test "leaving a room - user", %{user: user, room: room} do
@@ -29,16 +30,16 @@ defmodule Game.RoomTest do
     assert state.players == []
   end
 
-  test "leaving a room sends a gmcp message - npc", %{user: user, room: room} do
-    npc = %{id: 10, name: "Bandit"}
-    {:noreply, _state} = Room.handle_cast({:leave, {:npc, npc}}, %{room: room, npcs: [npc], players: [{:user, self(), user}]})
-    assert_receive {:"$gen_cast", {:gmcp, "Room.Character.Leave", %{type: :npc, id: 10, name: "Bandit"}}}
-  end
-
-  test "leaving a room sends a gmcp message - user", %{user: user, room: room} do
+  test "leaving a room sends notifications - user", %{user: user, room: room} do
     state = %{room: room, players: [{:user, self(), %{id: 11}}], npcs: []}
     {:noreply, _state} = Room.handle_cast({:leave, {:user, :session, user}}, state)
-    assert_receive {:"$gen_cast", {:gmcp, "Room.Character.Leave", %{type: :player, id: 10, name: "user"}}}
+    assert_receive {:"$gen_cast", {:notify, {"room/leave", {:user, ^user}}}}
+  end
+
+  test "leaving a room sends notifications - npc", %{user: user, room: room} do
+    npc = %{id: 10, name: "Bandit"}
+    {:noreply, _state} = Room.handle_cast({:leave, {:npc, npc}}, %{room: room, npcs: [npc], players: [{:user, self(), user}]})
+    assert_receive {:"$gen_cast", {:notify, {"room/leave", {:npc, ^npc}}}}
   end
 
   test "leaving a room - npc", %{room: room} do
