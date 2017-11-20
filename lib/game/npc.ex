@@ -25,7 +25,7 @@ defmodule Game.NPC do
     State for the NPC GenServer
     """
 
-    defstruct [:npc_spawner, :npc, :is_targeting, :target, :last_controlled_at]
+    defstruct [:npc_spawner, :npc, :room_id, :is_targeting, :target, :last_controlled_at]
 
     @type t :: %__MODULE__{}
   end
@@ -141,7 +141,7 @@ defmodule Game.NPC do
     Logger.info("Starting NPC #{npc.id}", type: :npc)
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
-    {:ok, %State{npc_spawner: npc_spawner, npc: npc, is_targeting: MapSet.new()}, target: nil}
+    {:ok, %State{npc_spawner: npc_spawner, npc: npc, room_id: npc_spawner.room_id, is_targeting: MapSet.new()}, target: nil}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -159,8 +159,8 @@ defmodule Game.NPC do
     {:noreply, %{state | last_controlled_at: nil}}
   end
 
-  def handle_cast(:enter, state = %{npc_spawner: npc_spawner, npc: npc}) do
-    @room.enter(npc_spawner.room_id, {:npc, npc})
+  def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
+    @room.enter(room_id, {:npc, npc})
     {:noreply, state}
   end
 
@@ -180,22 +180,22 @@ defmodule Game.NPC do
     end
   end
 
-  def handle_cast({:update, npc_spawner}, state) do
+  def handle_cast({:update, npc_spawner}, state = %{room_id: room_id}) do
     state = state
     |> Map.put(:npc_spawner, npc_spawner)
     |> Map.put(:npc, %{npc_spawner.npc | id: npc_spawner.id})
-    @room.update_character(npc_spawner.room_id, {:npc, state.npc})
+    @room.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
     {:noreply, state}
   end
 
-  def handle_cast({:say, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
-    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
+  def handle_cast({:say, message}, state = %{npc: npc, room_id: room_id}) do
+    room_id |> @room.say(npc, Message.npc(npc, message))
     {:noreply, state}
   end
 
-  def handle_cast({:emote, message}, state = %{npc_spawner: npc_spawner, npc: npc}) do
-    npc_spawner.room_id |> @room.emote(npc, Message.npc_emote(npc, message))
+  def handle_cast({:emote, message}, state = %{npc: npc, room_id: room_id}) do
+    room_id |> @room.emote(npc, Message.npc_emote(npc, message))
     {:noreply, state}
   end
 
@@ -231,9 +231,9 @@ defmodule Game.NPC do
     end
   end
 
-  def handle_cast(:terminate, state = %{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
+  def handle_cast(:terminate, state = %{room_id: room_id, npc: npc, is_targeting: is_targeting}) do
     Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
-    npc_spawner.room_id |> @room.leave({:npc, npc})
+    room_id |> @room.leave({:npc, npc})
     {:stop, :normal, state}
   end
 end

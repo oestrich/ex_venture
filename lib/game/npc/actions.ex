@@ -23,11 +23,11 @@ defmodule Game.NPC.Actions do
   end
   def tick(_state, _time), do: :ok
 
-  defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc, npc_spawner: npc_spawner}, time) when respawn_at != nil do
+  defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc, room_id: room_id}, time) when respawn_at != nil do
     case Timex.after?(time, respawn_at) do
       true ->
         npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
-        npc_spawner.room_id |> @room.enter({:npc, npc})
+        room_id |> @room.enter({:npc, npc})
         %{state | npc: npc, respawn_at: nil}
       false -> state
     end
@@ -48,15 +48,15 @@ defmodule Game.NPC.Actions do
   The NPC died, send out messages
   """
   @spec died(state :: map) :: :ok
-  def died(state = %{npc_spawner: npc_spawner, npc: npc, is_targeting: is_targeting}) do
+  def died(state = %{room_id: room_id, npc: npc, is_targeting: is_targeting}) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, "I died!"))
+    room_id |> @room.say(npc, Message.npc(npc, "I died!"))
     Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
-    npc_spawner.room_id |> @room.leave({:npc, npc})
+    room_id |> @room.leave({:npc, npc})
 
-    drop_currency(npc_spawner.room_id, npc, npc.currency)
-    drop_items(npc_spawner.room_id, npc, npc.item_ids)
+    drop_currency(room_id, npc, npc.currency)
+    drop_items(room_id, npc, npc.item_ids)
 
     state
     |> Map.put(:target, nil)

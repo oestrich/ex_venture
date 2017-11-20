@@ -4,7 +4,6 @@ defmodule Game.NPC.EventsTest do
   @room Test.Game.Room
 
   alias Game.Message
-  alias Game.NPC
   alias Game.NPC.Events
   alias Game.NPC.State
   alias Game.Session.Registry
@@ -28,9 +27,8 @@ defmodule Game.NPC.EventsTest do
         },
       }
 
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
-      state = %State{npc_spawner: npc_spawner, npc: npc}
+      state = %State{room_id: 1, npc: npc}
 
       @room._room()
       |> Map.put(:npcs, [npc])
@@ -49,7 +47,7 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "does nothing if target no longer in the room, and removes target", %{state: state, event: event} do
-      state = %{state | target: {:user, 2}}
+      state = %State{state | target: {:user, 2}}
 
       {:update, state} = Events.act_on(state, event)
 
@@ -60,7 +58,7 @@ defmodule Game.NPC.EventsTest do
 
     test "calculates the effects and then applies them to the target", %{state: state, event: event} do
       Registry.register(%{id: 1})
-      state = %{state | target: {:user, 1}}
+      state = %State{state | target: {:user, 1}}
 
       {:update, state} = Events.act_on(state, event)
 
@@ -73,10 +71,9 @@ defmodule Game.NPC.EventsTest do
 
   describe "room/entered" do
     test "say something to the room when a player enters it" do
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
+      state = %State{room_id: 1, npc: npc}
 
-      state = %{npc_spawner: npc_spawner, npc: npc}
       {:update, ^state} = Events.act_on(state, {"room/entered", {:user, :session, %{name: "Player"}}})
 
       [{_, message}] = @room.get_says()
@@ -84,10 +81,9 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "do nothing when an NPC enters the room" do
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
+      state = %State{room_id: 1, npc: npc}
 
-      state = %{npc_spawner: npc_spawner, npc: npc}
       {:update, ^state} = Events.act_on(state, {"room/entered", {:npc, %{name: "Bandit"}}})
 
       assert @room.get_says() |> length() == 0
@@ -96,10 +92,9 @@ defmodule Game.NPC.EventsTest do
     test "target the player when they entered" do
       Registry.register(%{id: 2})
 
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
+      state = %State{room_id: 1, npc: npc}
 
-      state = %NPC.State{npc_spawner: npc_spawner, npc: npc}
       {:update, state} = Events.act_on(state, {"room/entered", {:user, :session, %{id: 2, name: "Player"}}})
       assert state.target == {:user, 2}
 
@@ -109,29 +104,26 @@ defmodule Game.NPC.EventsTest do
 
   describe "room/leave" do
     test "clears the target when player leaves" do
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: []}
+      state = %State{room_id: 1, npc: npc, target: {:user, 2}}
 
-      state = %NPC.State{npc_spawner: npc_spawner, npc: npc, target: {:user, 2}}
       {:update, state} = Events.act_on(state, {"room/leave", {:user, :session, %{id: 2, name: "Player"}}})
       assert is_nil(state.target)
     end
 
     test "leaves the target if another player leaves" do
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: []}
+      state = %State{room_id: 1, npc: npc, target: {:user, 2}}
 
-      state = %NPC.State{npc_spawner: npc_spawner, npc: npc, target: {:user, 2}}
       :ok = Events.act_on(state, {"room/leave", {:user, :session, %{id: 3, name: "Player"}}})
     end
   end
 
   describe "room/heard" do
     test "matches condition" do
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/heard", condition: %{regex: "hi"}, action: %{type: "say", message: "Hello"}}]}
+      state = %State{room_id: 1, npc: npc}
 
-      state = %{npc_spawner: npc_spawner, npc: npc}
       :ok = Events.act_on(state, {"room/heard", Message.new(%{name: "name"}, "Hi")})
 
       [{_, message}] = @room.get_says()
@@ -139,20 +131,18 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "does not match condition" do
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/heard", condition: %{regex: "hi"}, action: %{type: "say", message: "Hello"}}]}
+      state = %State{room_id: 1, npc: npc}
 
-      state = %{npc_spawner: npc_spawner, npc: npc}
       :ok = Events.act_on(state, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
 
       assert [] = @room.get_says()
     end
 
     test "no condition" do
-      npc_spawner = %{room_id: 1}
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/heard", condition: nil, action: %{type: "say", message: "Hello"}}]}
+      state = %State{room_id: 1, npc: npc}
 
-      state = %{npc_spawner: npc_spawner, npc: npc}
       :ok = Events.act_on(state, {"room/heard", Message.new(%{name: "name"}, "Howdy")})
 
       [{_, message}] = @room.get_says()

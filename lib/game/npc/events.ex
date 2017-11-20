@@ -42,7 +42,7 @@ defmodule Game.NPC.Events do
       _ -> :ok
     end
   end
-  def act_on(%{npc_spawner: npc_spawner, npc: npc}, {"room/heard", message}) do
+  def act_on(%{room_id: room_id, npc: npc}, {"room/heard", message}) do
     broadcast(npc, "room/heard", %{
       type: message.type,
       name: message.sender.name,
@@ -52,7 +52,7 @@ defmodule Game.NPC.Events do
 
     npc.events
     |> Enum.filter(&(&1.type == "room/heard"))
-    |> Enum.each(&(act_on_room_heard(npc_spawner, npc, &1, message)))
+    |> Enum.each(&(act_on_room_heard(room_id, npc, &1, message)))
 
     :ok
   end
@@ -63,8 +63,8 @@ defmodule Game.NPC.Events do
   def act_on(_, _), do: :ok
 
   def act_on_combat_tick(%{target: nil}), do: :ok
-  def act_on_combat_tick(state = %{npc_spawner: npc_spawner, npc: npc, target: target}) do
-    room = @room.look(npc_spawner.room_id)
+  def act_on_combat_tick(state = %{room_id: room_id, npc: npc, target: target}) do
+    room = @room.look(room_id)
 
     case find_target(room, target) do
       nil -> {:update, %{state | target: nil}}
@@ -91,8 +91,8 @@ defmodule Game.NPC.Events do
   @spec act_on_room_entered(state :: NPC.State.t, character :: Character.t, event :: Event.t) :: NPC.State.t
   def act_on_room_entered(state, character, event)
   def act_on_room_entered(state, {:user, _, _}, %{action: %{type: "say", message: message}}) do
-    %{npc_spawner: npc_spawner, npc: npc} = state
-    npc_spawner.room_id |> @room.say(npc, Message.npc(npc, message))
+    %{room_id: room_id, npc: npc} = state
+    room_id |> @room.say(npc, Message.npc(npc, message))
     state
   end
   def act_on_room_entered(state = %{npc: npc}, {:user, _, user}, %{action: %{type: "target"}}) do
@@ -102,17 +102,17 @@ defmodule Game.NPC.Events do
   end
   def act_on_room_entered(state, _character, _event), do: state
 
-  defp act_on_room_heard(npc_spawner, npc, event, message) do
+  defp act_on_room_heard(room_id, npc, event, message) do
     case event do
       %{condition: %{regex: condition}, action: %{type: "say", message: event_message}} when condition != nil ->
         case Regex.match?(~r/#{condition}/i, message.message) do
           true ->
-            npc_spawner.room_id |> @room.say(npc, Message.npc(npc, event_message))
+            room_id |> @room.say(npc, Message.npc(npc, event_message))
           false ->
             :ok
         end
       %{action: %{type: "say", message: event_message}} ->
-        npc_spawner.room_id |> @room.say(npc, Message.npc(npc, event_message))
+        room_id |> @room.say(npc, Message.npc(npc, event_message))
       _ -> :ok
     end
   end
