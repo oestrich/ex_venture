@@ -64,8 +64,8 @@ defmodule Game.Session.Tick do
   """
   @spec handle_regen(state :: map, count :: integer) :: map
   def handle_regen(state = %{regen: %{count: count}, user: user = %{class: class}, save: save}, count) do
-    stats = Stats.regen(:health, save.stats, class.regen_health)
-    stats = Stats.regen(:skill_points, stats, class.regen_skill_points)
+    stats = Stats.regen(:health, save.stats, class.regen_health * save.level)
+    stats = Stats.regen(:skill_points, stats, class.regen_skill_points * save.level)
 
     echo_health(save.stats, stats, class)
 
