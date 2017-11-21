@@ -172,7 +172,7 @@ defmodule Game.NPC.Events do
     @room.leave(old_room.id, {:npc, npc})
     @room.enter(new_room.id, {:npc, npc})
 
-    Enum.map(new_room.players, fn (player) ->
+    Enum.each(new_room.players, fn (player) ->
       GenServer.cast(self(), {:notify, {"room/entered", {:user, player}}})
     end)
 
