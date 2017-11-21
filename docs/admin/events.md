@@ -93,3 +93,16 @@ When a game tick occurs, this event will be triggered. The only action is `move`
 ### move
 
 The move action takes a `max_distance` that the NPC will stray from their original spawn point. `chance` is the percent chance that the NPC will move to a random exit.
+
+## character/targeted
+
+```
+{
+  "type": "character/targeted",
+  "action": {
+    "type": "target"
+  }
+}
+```
+
+This event triggers whenever it is targeted, this allows the NPC to target whoever targeted them.
