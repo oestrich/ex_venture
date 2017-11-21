@@ -2,7 +2,7 @@ defmodule Test.Game.Room do
   alias Data.Room
 
   def start_link() do
-    Agent.start_link(fn () -> %{room: _room()} end, name: __MODULE__)
+    Agent.start_link(fn () -> %{room: _room(), rooms: %{}} end, name: __MODULE__)
   end
 
   def _room() do
@@ -15,17 +15,37 @@ defmodule Test.Game.Room do
       players: [],
       items: [%Data.Item{id: 15, name: "Short Sword", description: "A simple blade", keywords: ["sword"]}],
       shops: [],
+      x: 0,
+      y: 0,
+      map_layer: 0,
     }
   end
 
-  def set_room(room) do
+  def set_room(room, opts \\ []) do
     start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :room, room) end)
+
+    Agent.update(__MODULE__, fn (state) ->
+      rooms =
+        case Keyword.get(opts, :multiple, false) do
+          true ->
+            state
+            |> Map.get(:rooms, %{})
+            |> Map.put(room.id, room)
+          false ->
+            %{}
+        end
+
+      state
+      |> Map.put(:room, room)
+      |> Map.put(:rooms, rooms)
+    end)
   end
 
-  def look(_id) do
+  def look(id) do
     start_link()
-    Agent.get(__MODULE__, &(&1.room))
+    Agent.get(__MODULE__, fn (state) ->
+      Map.get(state.rooms, id, state.room)
+    end)
   end
 
   def enter(id, who) do

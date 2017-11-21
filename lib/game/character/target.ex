@@ -10,6 +10,9 @@ defmodule Game.Character.Target do
   """
   @spec clear_target(state :: map, who :: {atom, map}) :: :ok
   def clear_target(state, who)
+  def clear_target(%{target: target}, who = {:npc, _}) when target != nil do
+    Character.remove_target(target, who)
+  end
   def clear_target(state = %{target: target}, who) when target != nil do
     state |> GMCP.clear_target()
     Character.remove_target(target, who)

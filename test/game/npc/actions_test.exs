@@ -74,11 +74,11 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "will drop an item if the chance is below the item's drop rate" do
-      assert Actions.drop_item?(%{drop_rate: 50}, Test.DropChanceSuccess)
+      assert Actions.drop_item?(%{drop_rate: 50}, Test.ChanceSuccess)
     end
 
     test "will not drop an item if the chance is above the item's drop rate" do
-      refute Actions.drop_item?(%{drop_rate: 50}, Test.DropChanceFail)
+      refute Actions.drop_item?(%{drop_rate: 50}, Test.ChanceFail)
     end
   end
 end

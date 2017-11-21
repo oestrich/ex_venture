@@ -19,7 +19,7 @@ config :ex_venture, :game,
   room: Test.Game.Room,
   shop: Test.Game.Shop,
   zone: Test.Game.Zone,
-  rand: Test.DropChanceSuccess,
+  rand: Test.ChanceSuccess,
   continue_wait: 10
 
 config :comeonin, :bcrypt_log_rounds, 4
