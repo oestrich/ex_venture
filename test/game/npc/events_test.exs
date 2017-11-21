@@ -220,6 +220,31 @@ defmodule Game.NPC.EventsTest do
       assert state.room_id == 1
     end
 
+    test "does nothing if the NPC has no health", %{state: state, event: event} do
+      stats = %{state.npc.stats | health: 0}
+      npc = %{state.npc | stats: stats}
+      state = %{state | npc: npc}
+
+      {:update, state} = Events.act_on(state, event)
+
+      assert state.room_id == 1
+    end
+
+    test "will send a `room/entered` for each player already in the room", %{state: state, event: event} do
+      @room._room()
+      |> Map.put(:id, 2)
+      |> Map.put(:y, 0)
+      |> Map.put(:players, [%{id: 10}])
+      |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
+      |> @room.set_room(multiple: true)
+
+      {:update, state} = Events.act_on(state, event)
+
+      assert state.room_id == 2
+
+      assert_receive {:"$gen_cast", {:notify, {"room/entered", {:user, %{id: 10}}}}}
+    end
+
     test "will move if the random number is below chance" do
       assert Events.move_room?(%{action: %{chance: 50}}, Test.ChanceSuccess)
     end

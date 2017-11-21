@@ -103,12 +103,15 @@ defmodule Game.NPC.Events do
   """
   @spec act_on_room_entered(state :: NPC.State.t, character :: Character.t, event :: Event.t) :: NPC.State.t
   def act_on_room_entered(state, character, event)
-  def act_on_room_entered(state, {:user, _, _}, %{action: %{type: "say", message: message}}) do
+  def act_on_room_entered(state, {:user, _, user}, event) do
+    act_on_room_entered(state, {:user, user}, event)
+  end
+  def act_on_room_entered(state, {:user, _}, %{action: %{type: "say", message: message}}) do
     %{room_id: room_id, npc: npc} = state
     room_id |> @room.say(npc, Message.npc(npc, message))
     state
   end
-  def act_on_room_entered(state = %{npc: npc}, {:user, _, user}, %{action: %{type: "target"}}) do
+  def act_on_room_entered(state = %{npc: npc}, {:user, user}, %{action: %{type: "target"}}) do
     Character.being_targeted({:user, user}, {:npc, npc})
     notify_delayed({"combat/tick"}, 1500)
     %{state | target: Character.who({:user, user})}
@@ -133,6 +136,7 @@ defmodule Game.NPC.Events do
   @doc """
   Act on a tick event
   """
+  def act_on_tick(state = %{npc: %{stats: %{health: health}}}, _event) when health < 1, do: state
   def act_on_tick(state, event = %{action: %{type: "move"}}) do
     case move_room?(event) do
       true -> maybe_move_room(state, event)
@@ -167,6 +171,10 @@ defmodule Game.NPC.Events do
   def move_room(state = %{npc: npc}, old_room, new_room) do
     @room.leave(old_room.id, {:npc, npc})
     @room.enter(new_room.id, {:npc, npc})
+
+    Enum.map(new_room.players, fn (player) ->
+      GenServer.cast(self(), {:notify, {"room/entered", {:user, player}}})
+    end)
 
     state
     |> Map.put(:room_id, new_room.id)
