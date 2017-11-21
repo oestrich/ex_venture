@@ -20,6 +20,12 @@ Click `Add Room` to start filling in the zone.
 
 Fill in the required information. Most fields will default to good values for a first room. Pay attention to the `x`, `y`, and `map_layer` fields. These can be any number but must be relative to other future rooms. Starting with `{0, 0, 1}` (x, y, map_layer) is a good start. The zone exit field is important as checking that will allow you to create an exit to it from other zones.
 
+### Creating a new room after rooms exist
+
+Once rooms exist, `New Room` buttons will show up on the map. Clicking one of these will prefill the `{x, y, map_layer}` fields in the form for quick creation.
+
+![Zone with rooms](/images/admin-zones-with-rooms.png)
+
 ## Creating Exits
 
 Once you have created a few rooms, you will need to connect them.
