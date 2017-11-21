@@ -33,4 +33,5 @@ pages:
     - NPCs: admin/npcs.md
     - NPC Events: admin/events.md
     - Races: admin/races.md
+    - Users: admin/users.md
   - Metrics: metrics.md
