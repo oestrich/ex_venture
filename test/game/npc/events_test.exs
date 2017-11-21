@@ -279,6 +279,21 @@ defmodule Game.NPC.EventsTest do
       assert [] = @room.get_leaves()
     end
 
+    test "will not move if the chosen room is in a new zone", %{state: state, event: event} do
+      @room._room()
+      |> Map.put(:id, 2)
+      |> Map.put(:zone_id, 2)
+      |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
+      |> @room.set_room(multiple: true)
+
+      {:update, state} = Events.act_on(state, event)
+
+      assert state.room_id == 1
+
+      assert [] = @room.get_enters()
+      assert [] = @room.get_leaves()
+    end
+
     test "room is not too far if old.x - new.x <= max and old.y - new.y <= max" do
       action = %{max_distance: 3}
       old_room = %{x: 0, y: 0}

@@ -158,10 +158,16 @@ defmodule Game.NPC.Events do
     room_exit = room |> Exit.exit_to(direction)
     new_room = @room.look(Map.get(room_exit, String.to_atom("#{direction}_id")))
 
-    case no_door_or_open?(room_exit) && under_maximum_move?(event.action, starting_room, new_room) do
+    case can_move?(event.action, starting_room, room_exit, new_room) do
       true -> move_room(state, room, new_room)
       false -> state
     end
+  end
+
+  def can_move?(action, old_room, room_exit, new_room) do
+    no_door_or_open?(room_exit) &&
+      under_maximum_move?(action, old_room, new_room) &&
+      new_room.zone_id == old_room.zone_id
   end
 
   def no_door_or_open?(room_exit) do
