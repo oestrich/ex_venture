@@ -33,3 +33,15 @@ From the details page, click an exit direction you wish to connect. In this case
 You can select the room from the select box or click the room on the map that you wish to connect. Click `Create` to create the exit. You can also add a door by checking the box.
 
 ![Room with exit](/images/admin-zones-room-with-exit.png)
+
+## Room Items
+
+You can add items from the room show page. Click `Add Item`, select the item from the list and it will be placed in the room for pickup. Also available is an item spawner. This will place the item back in the room after the spawner detects it missing.
+
+## Shops
+
+Shops can be created in a room. Each room can have multiple shops. They will be referred to by their name if multiple are in the same room. After creating a shop you can add items to the shop.
+
+![New Shop Item](/images/admin-zones-shop-new-item.png)
+
+Select an item, which has the sell price listed in parens, and give it a price and quantity. -1 quantity will have an unlimited quantity. You can delete items from the shop later.
