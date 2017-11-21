@@ -9,8 +9,8 @@ defmodule Game.NPC.ActionsTest do
   describe "tick - respawning the npc" do
     setup do
       @room.clear_enters()
-
-      %{time: Timex.now(), npc_spawner: %{spawn_interval: 10}, room_id: 1, npc: %{id: 1, stats: %{health: 10, max_health: 15}}}
+      npc = %{id: 1, stats: %{health: 10, max_health: 15}}
+      %{time: Timex.now(), npc_spawner: %{room_id: 1, spawn_interval: 10}, room_id: 2, npc: npc}
     end
 
     test "does nothing if the npc is alive", %{time: time, npc: npc} do
@@ -31,9 +31,13 @@ defmodule Game.NPC.ActionsTest do
 
     test "respawns the npc", %{time: time, npc_spawner: npc_spawner, room_id: room_id, npc: npc} do
       respawn_at = time |> Timex.shift(seconds: -31)
-      {:update, state} = Actions.tick(%{npc: put_in(npc, [:stats, :health], 0), npc_spawner: npc_spawner, room_id: room_id, respawn_at: respawn_at}, time)
+      state = %{npc: put_in(npc, [:stats, :health], 0), npc_spawner: npc_spawner, room_id: room_id, respawn_at: respawn_at}
+
+      {:update, state} = Actions.tick(state, time)
+
       assert is_nil(state.respawn_at)
       assert state.npc.stats.health == 15
+      assert state.room_id == 1
       assert [{1, {:npc, _}}] = @room.get_enters()
     end
   end

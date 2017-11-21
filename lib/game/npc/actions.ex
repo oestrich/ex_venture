@@ -23,12 +23,12 @@ defmodule Game.NPC.Actions do
   end
   def tick(_state, _time), do: :ok
 
-  defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc, room_id: room_id}, time) when respawn_at != nil do
+  defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc, npc_spawner: npc_spawner}, time) when respawn_at != nil do
     case Timex.after?(time, respawn_at) do
       true ->
         npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
-        room_id |> @room.enter({:npc, npc})
-        %{state | npc: npc, respawn_at: nil}
+        npc_spawner.room_id |> @room.enter({:npc, npc})
+        %{state | npc: npc, room_id: npc_spawner.room_id, respawn_at: nil}
       false -> state
     end
   end
