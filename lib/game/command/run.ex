@@ -40,6 +40,7 @@ defmodule Game.Command.Run do
       _ -> :ok
     end
   end
+  def run({}, _session, _state), do: :ok # run without directions
 
   @doc """
   Move in the first direction of the list

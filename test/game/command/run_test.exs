@@ -65,5 +65,9 @@ defmodule Game.Command.RunTest do
     test "handles bad input" do
       assert Command.Run.parse_run("2ed3s") == [:east, :east, :south, :south, :south]
     end
+
+    test "handles no directions" do
+      assert Command.Run.parse_run("") == []
+    end
   end
 end
