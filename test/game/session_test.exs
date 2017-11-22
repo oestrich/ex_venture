@@ -12,7 +12,7 @@ defmodule Game.SessionTest do
     socket = :socket
     @socket.clear_messages
 
-    user = %{name: "user"}
+    user = %{id: 1, name: "user"}
     {:ok, %{socket: socket, user: user, save: %{}}}
   end
 
@@ -212,13 +212,23 @@ defmodule Game.SessionTest do
     Session.Registry.unregister()
   end
 
-  test "being targeted tracks the targeter", %{socket: socket} do
-    targeter = {:user, %{id: 10, name: "Player"}}
+  describe "targeted" do
+    test "being targeted tracks the targeter", %{socket: socket, user: user} do
+      targeter = {:user, %{id: 10, name: "Player"}}
 
-    {:noreply, state} = Session.handle_cast({:targeted, targeter}, %{socket: socket, is_targeting: MapSet.new})
+      {:noreply, state} = Session.handle_cast({:targeted, targeter}, %{socket: socket, user: user, target: nil, is_targeting: MapSet.new})
 
-    assert state.is_targeting |> MapSet.size() == 1
-    assert state.is_targeting |> MapSet.member?({:user, 10})
+      assert state.is_targeting |> MapSet.size() == 1
+      assert state.is_targeting |> MapSet.member?({:user, 10})
+    end
+
+    test "if your target is empty, set to the targeter", %{socket: socket, user: user} do
+      targeter = {:user, %{id: 10, name: "Player"}}
+
+      {:noreply, state} = Session.handle_cast({:targeted, targeter}, %{socket: socket, user: user, target: nil, is_targeting: MapSet.new})
+
+      assert state.target == {:user, 10}
+    end
   end
 
   test "a player removing a target stops tracking them", %{socket: socket} do

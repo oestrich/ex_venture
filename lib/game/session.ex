@@ -229,9 +229,14 @@ defmodule Game.Session do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, player}, state) do
-    echo(self(), "You are being targeted by #{Format.name(player)}.")
-    state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, Character.who(player)))
+  def handle_cast({:targeted, player}, state = %{socket: socket}) do
+    socket |> @socket.echo("You are being targeted by #{Format.name(player)}.")
+
+    state =
+      state
+      |> maybe_target(player)
+      |> Map.put(:is_targeting, MapSet.put(state.is_targeting, Character.who(player)))
+
     {:noreply, state}
   end
 
@@ -283,6 +288,17 @@ defmodule Game.Session do
       false -> {:noreply, state}
     end
   end
+
+  @doc """
+  Maybe target the character who targeted you, only if your own target is empty
+  """
+  def maybe_target(state = %{socket: socket, target: nil, user: user}, player) do
+    socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
+    player = Character.who(player)
+    Character.being_targeted(player, {:user, user})
+    Map.put(state, :target, player)
+  end
+  def maybe_target(state, _player), do: state
 
   defp apply_experience(state, {:user, _user}), do: state
   defp apply_experience(state, {:npc, npc}) do
