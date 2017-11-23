@@ -19,18 +19,19 @@ defmodule Game.Command.WieldTest do
 
   describe "wielding" do
     test "wield an item", %{session: session, socket: socket} do
-      save = %Save{item_ids: [1], wielding: %{}}
+      sword = item_instance(1)
+      save = %Save{items: [sword], wielding: %{}}
       {:update, state} = Command.Wield.run({:wield, "sword"}, session, %{socket: socket, save: save})
 
-      assert state.save.wielding == %{right: 1}
-      assert state.save.item_ids == []
+      assert state.save.wielding == %{right: sword}
+      assert state.save.items == []
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Sword is now in your right hand), look)
     end
 
     test "can only wield a weapon", %{session: session, socket: socket} do
-      save = %Save{item_ids: [3]}
+      save = %Save{items: [item_instance(3)]}
       :ok = Command.Wield.run({:wield, "potion"}, session, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
@@ -38,18 +39,21 @@ defmodule Game.Command.WieldTest do
     end
 
     test "wield an item - puts current item back in inventory", %{session: session, socket: socket} do
-      save = %Save{wielding: %{right: 1}, item_ids: [2]}
+      sword = item_instance(1)
+      axe = item_instance(2)
+
+      save = %Save{wielding: %{right: sword}, items: [axe]}
       {:update, state} = Command.Wield.run({:wield, "axe"}, session, %{socket: socket, save: save})
 
-      assert state.save.wielding == %{right: 2}
-      assert state.save.item_ids == [1]
+      assert state.save.wielding == %{right: axe}
+      assert state.save.items == [sword]
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Axe is now in your right hand), look)
     end
 
     test "item not found", %{session: session, socket: socket} do
-      save = %Save{item_ids: [1]}
+      save = %Save{items: [item_instance(1)]}
       Command.Wield.run({:wield, "polearm"}, session, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
@@ -59,29 +63,31 @@ defmodule Game.Command.WieldTest do
 
   describe "unwielding" do
     test "unwield right hand", %{session: session, socket: socket} do
-      save = %Save{wielding: %{right: 1}, item_ids: []}
+      sword = item_instance(1)
+      save = %Save{wielding: %{right: sword}, items: []}
       {:update, state} = Command.Wield.run({:unwield, "right"}, session, %{socket: socket, save: save})
 
       assert state.save.wielding == %{}
-      assert state.save.item_ids == [1]
+      assert state.save.items == [sword]
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Your right hand is now empty), look)
     end
 
     test "unwield left hand", %{session: session, socket: socket} do
-      save = %Save{wielding: %{left: 1}, item_ids: []}
+      sword = item_instance(1)
+      save = %Save{wielding: %{left: sword}, items: []}
       {:update, state} = Command.Wield.run({:unwield, "left"}, session, %{socket: socket, save: save})
 
       assert state.save.wielding == %{}
-      assert state.save.item_ids == [1]
+      assert state.save.items == [sword]
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Your left hand is now empty), look)
     end
 
     test "unknown hand", %{session: session, socket: socket} do
-      save = %Save{wielding: %{left: 1}, item_ids: []}
+      save = %Save{wielding: %{left: item_instance(1)}, items: []}
       :ok = Command.Wield.run({:unwield, "down"}, session, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()

@@ -5,6 +5,7 @@ defmodule Data.Save do
 
   import Data.Type
 
+  alias Data.Item
   alias Data.Stats
 
   @type t :: %{
@@ -14,7 +15,7 @@ defmodule Data.Save do
     experience_points: integer,
     stats: map,
     currency: integer,
-    item_ids: [integer],
+    items: [Item.instance()],
     wearing: %{
       chest: integer,
     },
@@ -24,7 +25,7 @@ defmodule Data.Save do
     },
   }
 
-  defstruct [:room_id, :channels, :level, :experience_points, :stats, :currency, :item_ids, :wearing, :wielding]
+  defstruct [:room_id, :channels, :level, :experience_points, :stats, :currency, :items, :wearing, :wielding]
 
   @behaviour Ecto.Type
 
@@ -100,7 +101,7 @@ defmodule Data.Save do
       iex> Data.Save.valid?(base_save())
       true
 
-      iex> Data.Save.valid?(%Data.Save{room_id: 1, item_ids: [], wearing: %{}, wielding: %{}})
+      iex> Data.Save.valid?(%Data.Save{room_id: 1, items: [], wearing: %{}, wielding: %{}})
       false
 
       iex> Data.Save.valid?(%Data.Save{})
@@ -108,11 +109,11 @@ defmodule Data.Save do
   """
   @spec valid?(save :: Save.t) :: boolean
   def valid?(save) do
-    keys(save) == [:channels, :currency, :experience_points, :item_ids, :level, :room_id, :stats, :wearing, :wielding]
+    keys(save) == [:channels, :currency, :experience_points, :items, :level, :room_id, :stats, :wearing, :wielding]
       && valid_channels?(save)
       && valid_currency?(save)
       && valid_stats?(save)
-      && valid_item_ids?(save)
+      && valid_items?(save)
       && valid_room_id?(save)
       && valid_wearing?(save)
       && valid_wielding?(save)
@@ -167,23 +168,28 @@ defmodule Data.Save do
   end
 
   @doc """
-  Validate item_ids is correct
+  Validate items is correct
 
-      iex> Data.Save.valid_item_ids?(%{item_ids: [1]})
+      iex> item = Data.Item.instantiate(%{id: 1})
+      iex> Data.Save.valid_items?(%Data.Save{items: [item]})
       true
 
-      iex> Data.Save.valid_item_ids?(%{item_ids: [1, :anything]})
+      iex> item = Data.Item.instantiate(%{id: 1})
+      iex> Data.Save.valid_items?(%{items: [item, :anything]})
       false
 
-      iex> Data.Save.valid_item_ids?(%{item_ids: :anything})
+      iex> Data.Save.valid_items?(%{items: :anything})
       false
   """
-  @spec valid_item_ids?(save :: Save.t) :: boolean
-  def valid_item_ids?(save)
-  def valid_item_ids?(%{item_ids: item_ids}) when is_list(item_ids) do
-    item_ids |> Enum.all?(&(is_integer(&1)))
+  @spec valid_items?(save :: Save.t) :: boolean
+  def valid_items?(save)
+  def valid_items?(%{items: items}) when is_list(items) do
+    items
+    |> Enum.all?(fn (instance) ->
+      is_map(instance) && instance.__struct__ == Item.Instance
+    end)
   end
-  def valid_item_ids?(_), do: false
+  def valid_items?(_), do: false
 
   @doc """
   Validate room_id is correct

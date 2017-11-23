@@ -25,11 +25,11 @@ defmodule Game.Command.Examine do
   """
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
-  def run({item_name}, _session, %{socket: socket, save: %{wearing: wearing, wielding: wielding, item_ids: item_ids}}) do
-    wearing_ids = Enum.map(wearing, fn ({_, item_id}) -> item_id end)
-    wielding_ids = Enum.map(wielding, fn ({_, item_id}) -> item_id end)
+  def run({item_name}, _session, %{socket: socket, save: %{wearing: wearing, wielding: wielding, items: items}}) do
+    wearing_instances = Enum.map(wearing, &(elem(&1, 1)))
+    wielding_instances = Enum.map(wielding, &(elem(&1, 1)))
 
-    items = Items.items(wearing_ids ++ wielding_ids ++ item_ids)
+    items = Items.items(wearing_instances ++ wielding_instances ++ items)
     case Enum.find(items, &(Game.Item.matches_lookup?(&1, item_name))) do
       nil -> nil
       item -> socket |> @socket.echo(Format.item(item))

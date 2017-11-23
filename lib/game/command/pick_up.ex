@@ -8,6 +8,8 @@ defmodule Game.Command.PickUp do
 
   require Logger
 
+  alias Data.Item
+
   @must_be_alive true
 
   commands [{"pick up", ["get"]}]
@@ -55,7 +57,7 @@ defmodule Game.Command.PickUp do
     case @room.pick_up(room.id, item) do
       {:ok, item} ->
         Logger.info("Session (#{inspect(self())}) picking up item (#{item.id}) from room (#{room.id})", type: :player)
-        save = %{save | item_ids: [item.id | save.item_ids]}
+        save = %{save | items: [Item.instantiate(item) | save.items]}
         socket |> @socket.echo("You picked up the #{item.name}")
         {:update, Map.put(state, :save, save)}
       _ ->

@@ -34,7 +34,8 @@ defmodule Game.Shop.Action do
       currency when currency < 0 -> {:error, :not_enough_currency, item}
       currency ->
         ShopInstrumenter.buy(shop_item.price)
-        save = %{save | currency: currency, item_ids: [item.id | save.item_ids]}
+        instance = Data.Item.instantiate(item)
+        save = %{save | currency: currency, items: [instance | save.items]}
         shop_item = change_quantity(shop_item)
         shop_items = [shop_item | shop.shop_items] |> Enum.uniq_by(&(&1.id))
         {:ok, save, item, %{shop | shop_items: shop_items}}
@@ -46,16 +47,16 @@ defmodule Game.Shop.Action do
   """
   @spec sell(shop :: Shop.t, item_name :: String.t, save :: map) :: {:ok, save :: map, item :: Item.t, shop :: Shop.t}
   def sell(shop, item_name, save) do
-    items = Enum.map(save.item_ids, &Items.item/1)
+    items = Enum.map(save.items, &Items.item/1)
     item = Enum.find(items, &(Item.matches_lookup?(&1, item_name)))
 
     case item do
       nil -> {:error, :item_not_found}
       item ->
         ShopInstrumenter.sell(item.cost)
-        item_ids = List.delete(save.item_ids, item.id)
+        {_, items} = Item.remove(save.items, item)
         currency = save.currency + item.cost
-        save = %{save | item_ids: item_ids, currency: currency}
+        save = %{save | items: items, currency: currency}
         {:ok, save, item, shop}
     end
   end

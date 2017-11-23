@@ -47,10 +47,10 @@ defmodule Game.Command.Wield do
   """
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
-  def run({:wield, item_name}, _session, state = %{socket: socket, save: %{item_ids: item_ids}}) do
+  def run({:wield, item_name}, _session, state = %{socket: socket, save: %{items: items}}) do
     {hand, item_name} = pick_hand(item_name)
 
-    items = Items.items(item_ids)
+    items = Items.items(items)
     case Item.find_item(items, item_name) do
       nil -> socket |> item_not_found(item_name)
       item -> socket |> item_found(hand, item, state)
@@ -75,11 +75,12 @@ defmodule Game.Command.Wield do
   # Wield the new item, removing from inventory
   defp item_found(socket, hand, item = %{type: "weapon"}, state) do
     %{save: save} = state
-    %{item_ids: item_ids} = save
+    %{items: items} = save
 
-    {wielding, item_ids} =  unwield(hand, save.wielding, item_ids)
-    wielding = Map.put(wielding, hand, item.id)
-    save = %{save | item_ids: List.delete(item_ids, item.id), wielding: wielding}
+    {wielding, items} =  unwield(hand, save.wielding, items)
+    {instance, items} = Item.remove(items, item)
+    wielding = Map.put(wielding, hand, instance)
+    save = %{save | items: items, wielding: wielding}
 
     socket |> @socket.echo(~s(#{item.name} is now in your #{hand} hand.))
     {:update, Map.put(state, :save, save)}
@@ -91,10 +92,10 @@ defmodule Game.Command.Wield do
 
   defp run_unwield(hand, state) do
     %{save: save, socket: socket} = state
-    %{item_ids: item_ids} = save
+    %{items: items} = save
 
-    {wielding, item_ids} =  unwield(hand, save.wielding, item_ids)
-    save = %{save | item_ids: item_ids, wielding: wielding}
+    {wielding, items} =  unwield(hand, save.wielding, items)
+    save = %{save | items: items, wielding: wielding}
     socket |> @socket.echo(~s(Your #{hand} hand is now empty.))
     {:update, Map.put(state, :save, save)}
   end
@@ -148,16 +149,16 @@ defmodule Game.Command.Wield do
       iex> Game.Command.Wield.unwield(:left, nil, [])
       {%{}, []}
   """
-  @spec unwield(hand :: atom, wielding :: map, item_ids :: [integer]) :: {wielding :: map, inventory :: [integer]}
-  def unwield(hand, wielding, item_ids)
-  def unwield(:right, wielding = %{right: id}, item_ids) do
+  @spec unwield(hand :: atom, wielding :: map, items :: [Item.instance()]) :: {wielding :: map, inventory :: [Item.instance()]}
+  def unwield(hand, wielding, items)
+  def unwield(:right, wielding = %{right: instance}, items) do
     wielding = Map.delete(wielding, :right)
-    {wielding, [id | item_ids]}
+    {wielding, [instance | items]}
   end
-  def unwield(:left, wielding = %{left: id}, item_ids) do
+  def unwield(:left, wielding = %{left: instance}, items) do
     wielding = Map.delete(wielding, :left)
-    {wielding, [id | item_ids]}
+    {wielding, [instance | items]}
   end
-  def unwield(_hand, nil, item_ids), do: {%{}, item_ids}
-  def unwield(_hand, wielding, item_ids), do: {wielding, item_ids}
+  def unwield(_hand, nil, items), do: {%{}, items}
+  def unwield(_hand, wielding, items), do: {wielding, items}
 end

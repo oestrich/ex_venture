@@ -40,7 +40,7 @@ defmodule TestHelpers do
       level: 1,
       experience_points: 0,
       currency: 0,
-      item_ids: [],
+      items: [],
       stats: base_stats(),
       wearing: %{},
       wielding: %{},
@@ -104,6 +104,10 @@ defmodule TestHelpers do
       stats: %{},
       effects: [],
     }, attributes)
+  end
+
+  def item_instance(id) when is_integer(id) do
+    Item.instantiate(%Item{id: id})
   end
 
   def create_item(attributes \\ %{}) do

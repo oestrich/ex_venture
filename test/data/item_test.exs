@@ -132,4 +132,13 @@ defmodule Data.ItemTest do
       assert changeset.errors[:effects]
     end
   end
+
+  test "create an instance of an item" do
+    item = create_item()
+
+    instance = Item.instantiate(item)
+
+    assert instance.id == item.id
+    assert instance.created_at
+  end
 end

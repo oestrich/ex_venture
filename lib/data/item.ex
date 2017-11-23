@@ -7,8 +7,11 @@ defmodule Data.Item do
 
   alias Data.Effect
   alias __MODULE__
+  alias Data.Item.Instance
   alias Data.ItemTagging
   alias Data.Stats
+
+  @type instance :: %Instance{}
 
   @types ["basic", "weapon", "armor"]
 
@@ -55,6 +58,14 @@ defmodule Data.Item do
   end
   def basic_stats(:basic), do: %{}
   def basic_stats(:weapon), do: %{}
+
+  @doc """
+  Create an instance of an item
+  """
+  @spec instantiate(item :: t()) :: instance()
+  def instantiate(item) do
+    %Instance{id: item.id, created_at: Timex.now()}
+  end
 
   def changeset(struct, params) do
     struct

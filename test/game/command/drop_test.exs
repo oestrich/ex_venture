@@ -17,10 +17,10 @@ defmodule Game.Command.DropTest do
   test "drop an item in a room", %{session: session, socket: socket} do
     @room.clear_drops()
 
-    state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, item_ids: [1]}}
+    state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, items: [item_instance(1)]}}
     {:update, state} = Game.Command.Drop.run({"sword"}, session, state)
 
-    assert state.save.item_ids |> length == 0
+    assert state.save.items |> length == 0
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You dropped), look)
@@ -53,7 +53,7 @@ defmodule Game.Command.DropTest do
   end
 
   test "item not found in your inventory", %{session: session, socket: socket} do
-    :ok = Game.Command.Drop.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, item_ids: [2]}})
+    :ok = Game.Command.Drop.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, items: [item_instance(2)]}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Could not find), look)

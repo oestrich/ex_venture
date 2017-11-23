@@ -56,4 +56,18 @@ defmodule Game.Item do
     wearing |> Enum.flat_map(fn ({_slot, item_id}) -> Items.item(item_id).effects end)
   end
   def effects_from_wearing(_), do: []
+
+  @doc """
+  Remove an item from a list of instantiated items
+
+      iex> item = %Data.Item{id: 1}
+      iex> instance = Data.Item.instantiate(item)
+      iex> Game.Item.remove([instance], item) == {instance, []}
+      true
+  """
+  @spec remove(items :: [Item.instance()], item :: Item.t) :: {Item.instance(), [Item.instance()]}
+  def remove(items, item) do
+    instance = items |> Enum.find(&(&1.id == item.id))
+    {instance, List.delete(items, instance)}
+  end
 end
