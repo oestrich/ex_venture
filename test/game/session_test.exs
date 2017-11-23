@@ -241,26 +241,50 @@ defmodule Game.SessionTest do
     refute state.is_targeting |> MapSet.member?({:user, 10})
   end
 
-  test "a died message is sent", %{socket: socket} do
-    target = {:user, %{id: 10, name: "Player"}}
-    user = %{id: 10, class: %{points_abbreviation: "SP"}}
+  describe "target dying" do
+    setup %{socket: socket} do
+      target = {:user, %{id: 10, name: "Player"}}
+      user = %{id: 10, class: class_attributes(%{})}
 
-    state = %{socket: socket, state: "active", user: user, save: %{stats: %{}}, target: {:user, 10}}
-    {:noreply, state} = Session.handle_cast({:died, target}, state)
+      state = %{
+        socket: socket,
+        state: "active",
+        user: user,
+        save: base_save(),
+        target: {:user, 10},
+        is_targeting: MapSet.new(),
+      }
 
-    assert is_nil(state.target)
-  end
+      %{state: state, target: target}
+    end
 
-  test "npc - a died message is sent and experience is applied", %{socket: socket} do
-    target = {:npc, %{id: 10, name: "Bandit", level: 1, experience_points: 1200}}
-    user = %{id: 10, class: class_attributes(%{})}
-    save = base_save()
+    test "clears your target", %{state: state, target: target} do
+      {:noreply, state} = Session.handle_cast({:died, target}, state)
 
-    state = %{socket: socket, state: "active", user: user, save: save, target: {:npc, 10}}
-    {:noreply, state} = Session.handle_cast({:died, target}, state)
+      assert is_nil(state.target)
+    end
 
-    assert is_nil(state.target)
-    assert state.save.level == 2
+    test "if other things are tracking you, select one to track", %{state: state, target: target} do
+      is_targeting = MapSet.new() |> MapSet.put({:npc, 2})
+      state = %{state | is_targeting: is_targeting}
+
+      npc_spawner = %Data.NPCSpawner{id: 2, npc: struct(Data.NPC, npc_attributes(%{}))}
+      Game.NPC.start_link(npc_spawner)
+
+      {:noreply, state} = Session.handle_cast({:died, target}, state)
+
+      assert state.target == {:npc, 2}
+    end
+
+    test "npc - a died message is sent and experience is applied", %{state: state} do
+      target = {:npc, %{id: 10, name: "Bandit", level: 1, experience_points: 1200}}
+      state = %{state | target: {:npc, 10}}
+
+      {:noreply, state} = Session.handle_cast({:died, target}, state)
+
+      assert is_nil(state.target)
+      assert state.save.level == 2
+    end
   end
 
   describe "channels" do

@@ -155,6 +155,10 @@ defmodule Game.NPC do
     end
   end
 
+  def handle_call(:info, _from, state) do
+    {:reply, {:npc, state.npc}, state}
+  end
+
   def handle_cast(:release, state) do
     {:noreply, %{state | last_controlled_at: nil}}
   end

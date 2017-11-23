@@ -284,14 +284,41 @@ defmodule Game.Session do
     case Character.who(target) == Character.who(who) do
       true ->
         Character.remove_target(target, {:user, user})
-        {:noreply, Map.put(state, :target, nil)}
+
+        state =
+          state
+          |> Map.put(:target, nil)
+          |> maybe_target(possible_new_target(state, target))
+
+        {:noreply, state}
       false -> {:noreply, state}
     end
   end
 
   @doc """
+  Get a possible new target from the list
+  """
+  @spec possible_new_target(state :: map, target :: {atom(), integer()}) :: {atom(), map()}
+  def possible_new_target(state, target) do
+    state.is_targeting
+    |> MapSet.delete(Character.who(target))
+    |> MapSet.to_list()
+    |> List.first()
+    |> character_info()
+  end
+
+  @doc """
+  Get a character's information, handles nil
+  """
+  def character_info(nil), do: nil
+  def character_info(player), do: Character.info(player)
+
+  @doc """
   Maybe target the character who targeted you, only if your own target is empty
   """
+  @spec maybe_target(state :: map, player :: {atom(), integer()} | {atom(), map()} | nil) :: map
+  def maybe_target(state, player)
+  def maybe_target(state, nil), do: state
   def maybe_target(state = %{socket: socket, target: nil, user: user}, player) do
     socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
     player = Character.who(player)
@@ -303,6 +330,10 @@ defmodule Game.Session do
   defp apply_experience(state, {:user, _user}), do: state
   defp apply_experience(state, {:npc, npc}) do
     Experience.apply(state, level: npc.level, experience_points: npc.experience_points)
+  end
+
+  def handle_call(:info, _from, state) do
+    {:reply, {:user, state.user}, state}
   end
 
   #

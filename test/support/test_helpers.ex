@@ -223,7 +223,7 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  defp npc_attributes(attributes) do
+  def npc_attributes(attributes) do
     Map.merge(%{
       name: "Bandit",
       hostile: false,

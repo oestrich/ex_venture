@@ -49,6 +49,14 @@ defmodule Game.Character do
   end
 
   @doc """
+  Get character information about the character
+  """
+  @spec info(who :: {atom, integer}) :: {atom, map}
+  def info(target) do
+    GenServer.call({:via, Via, who(target)}, :info)
+  end
+
+  @doc """
   Converts a tuple with a struct to a tuple with an id
   """
   def who({:npc, id}) when is_integer(id), do: {:npc, id}
