@@ -44,6 +44,7 @@ defmodule TestHelpers do
       stats: base_stats(),
       wearing: %{},
       wielding: %{},
+      version: 2,
     }
   end
 

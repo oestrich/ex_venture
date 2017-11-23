@@ -64,6 +64,7 @@ defmodule Data.Save do
     |> atomize_wearing()
     |> atomize_wielding()
     |> migrate()
+    |> load_items()
 
     {:ok, struct(__MODULE__, save)}
   end
@@ -92,6 +93,21 @@ defmodule Data.Save do
     %{save | wielding: wielding}
   end
   defp atomize_wielding(save), do: save
+
+  defp load_items(save = %{items: items}) when is_list(items) do
+    items =
+      items
+      |> Enum.map(fn (item) ->
+        case Item.Instance.load(item) do
+          {:ok, instance} -> instance
+          _ -> nil
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
+
+    %{save | items: items}
+  end
+  defp load_items(save), do: save
 
   @impl Ecto.Type
   def dump(save) when is_map(save), do: {:ok, Map.delete(save, :__struct__)}
@@ -135,7 +151,7 @@ defmodule Data.Save do
   """
   @spec valid?(save :: Save.t) :: boolean
   def valid?(save) do
-    keys(save) == [:channels, :currency, :experience_points, :items, :level, :room_id, :stats, :wearing, :wielding]
+    keys(save) == [:channels, :currency, :experience_points, :items, :level, :room_id, :stats, :version, :wearing, :wielding]
       && valid_channels?(save)
       && valid_currency?(save)
       && valid_stats?(save)
