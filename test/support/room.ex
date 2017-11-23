@@ -1,5 +1,4 @@
 defmodule Test.Game.Room do
-  alias Data.Item
   alias Data.Room
 
   def start_link() do
