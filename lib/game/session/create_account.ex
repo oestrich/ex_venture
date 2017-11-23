@@ -12,6 +12,7 @@ defmodule Game.Session.CreateAccount do
   alias Game.Race
   alias Game.Session.Login
   alias Metrics.PlayerInstrumenter
+  alias Web.ErrorHelpers
 
   @doc """
   Start text for creating an account
@@ -31,8 +32,8 @@ defmodule Game.Session.CreateAccount do
       {:ok, user} ->
         PlayerInstrumenter.new_character()
         user |> Login.login(session, socket, state |> Map.delete(:create))
-      {:error, _changeset} ->
-        socket |> @socket.echo("There was a problem creating your account.\nPlease start over.")
+      {:error, changeset} ->
+        socket |> @socket.echo("There was a problem creating your account.\nPlease start over.\n#{changeset_errors(changeset)}")
         socket |> @socket.prompt("Name: ")
         state |> Map.delete(:create)
     end
@@ -85,5 +86,14 @@ defmodule Game.Session.CreateAccount do
 
     socket |> @socket.echo("Now to pick a class. Your options are:\n#{classes}")
     socket |> @socket.prompt("Class: ")
+  end
+
+  defp changeset_errors(%{errors: errors}) do
+    errors
+    |> Enum.reject(&(elem(&1, 0) == :password_hash))
+    |> Enum.map(fn ({field, errors}) ->
+      "#{field}: #{ErrorHelpers.translate_error(errors)}"
+    end)
+    |> Enum.join("\n")
   end
 end
