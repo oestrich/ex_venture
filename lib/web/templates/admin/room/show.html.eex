@@ -221,7 +221,7 @@
               </tr>
             </thead>
             <tbody>
-              <%= Enum.map @room.item_ids |> Items.items(), fn (item) -> %>
+              <%= Enum.map @room.items |> Items.items(), fn (item) -> %>
                 <tr>
                   <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
                 </tr>

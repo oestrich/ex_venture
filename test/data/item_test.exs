@@ -2,6 +2,7 @@ defmodule Data.ItemTest do
   use Data.ModelCase
 
   doctest Data.Item.Compiled
+  doctest Data.Item.Instance
 
   alias Data.Item
 
@@ -131,5 +132,14 @@ defmodule Data.ItemTest do
       changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage/type", types: [:slashing]}]})
       assert changeset.errors[:effects]
     end
+  end
+
+  test "create an instance of an item" do
+    item = create_item()
+
+    instance = Item.instantiate(item)
+
+    assert instance.id == item.id
+    assert instance.created_at
   end
 end

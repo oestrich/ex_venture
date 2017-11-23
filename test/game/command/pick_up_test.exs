@@ -4,10 +4,14 @@ defmodule Game.Command.PickUpTest do
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
+  alias Data.Item
   alias Data.Save
 
   setup do
-    @room.set_room(@room._room())
+    start_and_clear_items()
+    item = create_item(%{name: "Short Sword", description: "A simple blade", keywords: ["sword"]})
+    insert_item(item)
+    @room.set_room(Map.merge(@room._room(), %{items: [Item.instantiate(item)]}))
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket}}
   end
@@ -15,16 +19,16 @@ defmodule Game.Command.PickUpTest do
   test "pick up an item from a room", %{session: session, socket: socket} do
     @room.clear_pick_up()
 
-    {:update, state} = Game.Command.PickUp.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
+    {:update, state} = Game.Command.PickUp.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, items: []}})
 
-    assert state.save.item_ids |> length == 1
+    assert state.save.items |> length == 1
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You picked up), look)
   end
 
   test "item does not exist in the room", %{session: session, socket: socket} do
-    :ok = Game.Command.PickUp.run({"shield"}, session, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
+    :ok = Game.Command.PickUp.run({"shield"}, session, %{socket: socket, save: %Save{room_id: 1, items: []}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r("shield" could not be found), look)
@@ -35,7 +39,7 @@ defmodule Game.Command.PickUpTest do
 
     item = %Data.Item{id: 15, name: "shield"}
     room = %Data.Room{id: 1}
-    :ok = Game.Command.PickUp.pick_up(item, room, %{socket: socket, save: %Save{room_id: 1, item_ids: []}})
+    :ok = Game.Command.PickUp.pick_up(item, room, %{socket: socket, save: %Save{room_id: 1, items: []}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r("shield" could not be found), look)

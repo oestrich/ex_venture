@@ -103,8 +103,8 @@ defmodule Game.Format do
   @doc """
   Format full text for a room
   """
-  @spec room(room :: Game.Room.t, map :: String.t) :: String.t
-  def room(room, map) do
+  @spec room(room :: Game.Room.t, items :: [Item.t], map :: String.t) :: String.t
+  def room(room, items, map) do
     """
 {green}#{room.name}{/green}
 #{underline(room.name)}
@@ -113,7 +113,7 @@ defmodule Game.Format do
 
 #{who_is_here(room)}
 Exits: #{exits(room)}
-Items: #{items(room)}
+Items: #{items(room, items)}
 #{shops(room)}
     """
     |> String.trim
@@ -229,14 +229,14 @@ Items: #{items(room)}
   end
   def npcs(_), do: ""
 
-  def items(room = %{items: items}) when is_list(items) do
+  def items(room, items) when is_list(items) do
     items = items |> Enum.map(fn (item) -> "{cyan}#{item.name}{/cyan}" end)
 
     items ++ [currency(room)]
     |> Enum.reject(&(&1 == ""))
     |> Enum.join(", ")
   end
-  def items(_), do: ""
+  def items(_, _), do: ""
 
   @doc """
   Format currency

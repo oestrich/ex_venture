@@ -6,6 +6,7 @@ defmodule Data.Room do
   use Data.Schema
 
   alias Data.Exit
+  alias Data.Item
   alias Data.Shop
   alias Data.Zone
 
@@ -23,10 +24,9 @@ defmodule Data.Room do
     field :name, :string
     field :description, :string
     field :currency, :integer
-    field :item_ids, {:array, :integer}
+    field :items, {:array, Item.Instance}
 
     field :players, {:array, :tuple}, virtual: true
-    field :items, {:array, :map}, virtual: true
 
     field :x, :integer
     field :y, :integer
@@ -49,8 +49,8 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :x, :y, :map_layer, :is_zone_exit, :ecology, :currency, :item_ids])
-    |> ensure_item_ids
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :map_layer, :is_zone_exit, :ecology, :currency, :items])
+    |> ensure_items
     |> ensure(:currency, 0)
     |> ensure(:ecology, "default")
     |> validate_required([:zone_id, :name, :description, :currency, :x, :y, :map_layer, :ecology])
@@ -64,11 +64,11 @@ defmodule Data.Room do
     end)
   end
 
-  defp ensure_item_ids(changeset) do
+  defp ensure_items(changeset) do
     case changeset do
-      %{changes: %{item_ids: _ids}} -> changeset
-      %{data: %{item_ids: ids}} when ids != nil -> changeset
-      _ -> put_change(changeset, :item_ids, [])
+      %{changes: %{items: _ids}} -> changeset
+      %{data: %{items: ids}} when ids != nil -> changeset
+      _ -> put_change(changeset, :items, [])
     end
   end
 end

@@ -1,4 +1,5 @@
 defmodule Test.Game.Room do
+  alias Data.Item
   alias Data.Room
 
   def start_link() do
@@ -13,7 +14,7 @@ defmodule Test.Game.Room do
       exits: [%{north_id: 2, south_id: 1}],
       zone_id: 1,
       players: [],
-      items: [%Data.Item{id: 15, name: "Short Sword", description: "A simple blade", keywords: ["sword"]}],
+      items: [],
       shops: [],
       x: 0,
       y: 0,

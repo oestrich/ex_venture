@@ -6,6 +6,7 @@ defmodule Game.Command.Drop do
   use Game.Command
   use Game.Currency
 
+  alias Game.Item
   alias Game.Items
 
   @must_be_alive true
@@ -37,10 +38,11 @@ defmodule Game.Command.Drop do
   end
 
   defp drop_currency(amount_to_drop, state = %{socket: socket, save: %{currency: currency}}) do
-    amount = amount_to_drop
-    |> String.split(" ")
-    |> List.first
-    |> String.to_integer()
+    amount =
+      amount_to_drop
+      |> String.split(" ")
+      |> List.first
+      |> String.to_integer()
 
     case currency - amount >= 0 do
       true -> _drop_currency(amount, state)
@@ -57,9 +59,9 @@ defmodule Game.Command.Drop do
     {:update, Map.put(state, :save, save)}
   end
 
-  defp drop_item(item_name, state = %{socket: socket, save: %{item_ids: item_ids}}) do
-    items = Items.items(item_ids)
-    case Enum.find(items, &(Game.Item.matches_lookup?(&1, item_name))) do
+  defp drop_item(item_name, state = %{socket: socket, save: %{items: items}}) do
+    items = Items.items(items)
+    case Enum.find(items, &(Item.matches_lookup?(&1, item_name))) do
       nil ->
         socket |> @socket.echo(~s(Could not find "#{item_name}"))
         :ok
@@ -68,9 +70,10 @@ defmodule Game.Command.Drop do
   end
 
   defp _drop_item(item, state = %{socket: socket, user: user, save: save}) do
-    save = %{save | item_ids: List.delete(save.item_ids, item.id)}
+    {instance, items} = Item.remove(save.items, item)
+    save = %{save | items: items}
     socket |> @socket.echo("You dropped #{item.name}")
-    @room.drop(save.room_id, {:user, user}, item)
+    @room.drop(save.room_id, {:user, user}, instance)
     {:update, Map.put(state, :save, save)}
   end
 end

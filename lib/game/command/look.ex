@@ -7,6 +7,7 @@ defmodule Game.Command.Look do
   use Game.Zone
 
   alias Data.Exit
+  alias Game.Items
   alias Game.Session.GMCP
 
   commands ["look at", {"look", ["l"]}]
@@ -29,7 +30,6 @@ defmodule Game.Command.Look do
   def run(command, session, state)
   def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    state |> GMCP.room(room)
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     room_map =
       mini_map
@@ -37,7 +37,9 @@ defmodule Game.Command.Look do
       |> Enum.slice(2..-1)
       |> Enum.join("\n")
 
-    socket |> @socket.echo(Format.room(room, room_map))
+    items = room_items(room)
+    state |> GMCP.room(room, items)
+    socket |> @socket.echo(Format.room(room, items, room_map))
     state |> GMCP.map(mini_map)
 
     :ok
@@ -58,11 +60,22 @@ defmodule Game.Command.Look do
   def run({item_name}, _session, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
-    case Enum.find(room.items, &(Game.Item.matches_lookup?(&1, item_name))) do
+    item =
+      room.items
+      |> Enum.find_value(fn (instance) ->
+        item = Items.item(instance)
+        if Game.Item.matches_lookup?(item, item_name), do: item
+      end)
+
+    case item do
       nil -> nil
-      item -> socket |> @socket.echo(Format.item(item))
+      item ->
+        socket |> @socket.echo(Format.item(item))
     end
 
     :ok
   end
+
+  defp room_items(%{items: nil}), do: []
+  defp room_items(%{items: items}), do: Enum.map(items, &Items.item/1)
 end

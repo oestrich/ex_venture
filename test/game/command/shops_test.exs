@@ -197,7 +197,7 @@ defmodule Game.Command.ShopsTest do
   end
 
   test "sell an item to a shop", %{session: session, socket: socket} do
-    save = %{base_save() | room_id: 1, currency: 20, item_ids: [1]}
+    save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
 
     {:update, state} = Command.Shops.run({:sell, "sword", :to, "tree stand"}, session, %{socket: socket, save: save})
@@ -215,7 +215,7 @@ defmodule Game.Command.ShopsTest do
     room = %{room | shops: [tree_stand]}
     @room.set_room(room)
 
-    save = %{base_save() | room_id: 1, currency: 20, item_ids: [1]}
+    save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
 
     {:update, state} = Command.Shops.run({:sell, "sword"}, session, %{socket: socket, save: save})
@@ -253,7 +253,7 @@ defmodule Game.Command.ShopsTest do
   end
 
   test "sell an item to a shop - shop not found", %{session: session, socket: socket} do
-    save = %{base_save() | room_id: 1, currency: 20, item_ids: [1]}
+    save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     :ok = Command.Shops.run({:sell, "sword", :to, "treestand"}, session, %{socket: socket, save: save})
 
     assert [] = @shop.get_sells()
@@ -265,7 +265,7 @@ defmodule Game.Command.ShopsTest do
   test "sell an item to a shop - item not found", %{session: session, socket: socket} do
     @shop.set_sell({:error, :item_not_found})
 
-    save = %{base_save() | room_id: 1, currency: 20, item_ids: [1]}
+    save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     :ok = Command.Shops.run({:sell, "swrd", :to, "tree stand"}, session, %{socket: socket, save: save})
 
     assert [{_, "swrd", _}] = @shop.get_sells()

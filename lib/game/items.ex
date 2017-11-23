@@ -18,22 +18,20 @@ defmodule Game.Items do
   end
 
   @spec item(id :: integer) :: Item.t | nil
-  def item(id) do
+  def item(instance = %Item.Instance{}) do
+    item(instance.id)
+  end
+  def item(id) when is_integer(id) do
     case :ets.lookup(@ets_table, id) do
       [{_, item}] -> item
       _ -> nil
     end
   end
 
-  @spec items(ids :: [integer]) :: [Item.t]
-  def items(ids) do
-    ids
-    |> Enum.map(fn (id) ->
-      case :ets.lookup(@ets_table, id) do
-        [{_, item}] -> item
-        _ -> nil
-      end
-    end)
+  @spec items(instances :: [Item.instance()]) :: [Item.t]
+  def items(instances) do
+    instances
+    |> Enum.map(&item/1)
     |> Enum.reject(&is_nil/1)
   end
 

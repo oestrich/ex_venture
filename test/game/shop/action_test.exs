@@ -1,6 +1,7 @@
 defmodule Game.Shop.ActionTest do
   use Data.ModelCase
 
+  alias Data.Item
   alias Data.Shop
   alias Game.Shop.Action
 
@@ -22,7 +23,7 @@ defmodule Game.Shop.ActionTest do
       {:ok, save, ^item, shop} = Action.buy(shop, "sword", save)
 
       assert save.currency == 90
-      assert save.item_ids == [item.id]
+      assert [%Item.Instance{}] = save.items
       assert [%{quantity: 9}] = shop.shop_items
     end
 
@@ -58,7 +59,7 @@ defmodule Game.Shop.ActionTest do
     setup do
       shop = %Shop{name: "Tree Top Shop"}
       item = item_attributes(%{id: 1, name: "Sword", keywords: [], cost: 10})
-      save = %{base_save() | currency: 100, item_ids: [1]}
+      save = %{base_save() | currency: 100, items: [item_instance(1)]}
 
       start_and_clear_items()
       insert_item(item)
@@ -70,7 +71,7 @@ defmodule Game.Shop.ActionTest do
       {:ok, save, ^item, ^shop} = Action.sell(shop, "sword", save)
 
       assert save.currency == 110
-      assert save.item_ids == []
+      assert save.items == []
     end
 
     test "item not found", %{shop: shop, save: save} do

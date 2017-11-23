@@ -14,7 +14,7 @@ defmodule Game.Command.InventoryTest do
   end
 
   test "view your inventory", %{session: session, socket: socket} do
-    state = %{socket: socket, save: %{currency: 10, item_ids: [1], wearing: %{chest: 3}, wielding: %{right: 2}}}
+    state = %{socket: socket, save: %{currency: 10, items: [item_instance(1)], wearing: %{chest: item_instance(3)}, wielding: %{right: item_instance(2)}}}
     {:paginate, inv, _} = Game.Command.Inventory.run({}, session, state)
 
     assert Regex.match?(~r(Sword), inv)
