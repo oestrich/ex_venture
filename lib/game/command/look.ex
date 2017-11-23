@@ -77,7 +77,5 @@ defmodule Game.Command.Look do
   end
 
   defp room_items(%{items: nil}), do: []
-  defp room_items(%{items: items}) do
-    Enum.map(items, &Items.item/1)
-  end
+  defp room_items(%{items: items}), do: Enum.map(items, &Items.item/1)
 end

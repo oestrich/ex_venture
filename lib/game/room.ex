@@ -8,12 +8,12 @@ defmodule Game.Room do
   require Logger
 
   alias Data.Room
-
-  alias Game.Room.Actions
-  alias Game.Room.Repo
   alias Game.Format
+  alias Game.Items
   alias Game.Message
   alias Game.NPC
+  alias Game.Room.Actions
+  alias Game.Room.Repo
   alias Game.Session
   alias Game.Zone
 
@@ -267,9 +267,10 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:drop, who, item}, state = %{room: room, players: players}) do
-    case Actions.drop(room, item) do
+  def handle_cast({:drop, who, instance}, state = %{room: room, players: players}) do
+    case Actions.drop(room, instance) do
       {:ok, room} ->
+        item = Items.item(instance)
         Logger.info("Character (#{elem(who, 0)}, #{elem(who, 1).id}) dropped item (#{item.id})", type: :room)
         players |> echo_to_players(Format.dropped(who, item))
         {:noreply, Map.put(state, :room, room)}

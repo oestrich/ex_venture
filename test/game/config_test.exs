@@ -43,7 +43,7 @@ defmodule Game.ConfigTest do
   describe "starting save" do
     test "finding the config value" do
       create_config("starting_save", %{} |> Poison.encode!())
-      assert Config.starting_save() == %Data.Save{channels: [], currency: 0}
+      assert Config.starting_save() == %Data.Save{channels: [], items: [], currency: 0, version: 2}
     end
   end
 end

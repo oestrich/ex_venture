@@ -25,7 +25,7 @@ defmodule Data.Save do
     },
   }
 
-  defstruct [:room_id, :channels, :level, :experience_points, :stats, :currency, :items, :wearing, :wielding]
+  defstruct [:version, :room_id, :channels, :level, :experience_points, :stats, :currency, :items, :wearing, :wielding]
 
   @behaviour Ecto.Type
 
@@ -40,16 +40,16 @@ defmodule Data.Save do
   Load a save from the database
 
       iex> Data.Save.load(%{"room_id" => 1})
-      {:ok, %Data.Save{room_id: 1, channels: [], currency: 0}}
+      {:ok, %Data.Save{room_id: 1, channels: [], currency: 0, items: [], version: 2}}
 
       iex> Data.Save.load(%{"stats" => %{"health" => 50, "strength" => 10, "dexterity" => 10}})
-      {:ok, %Data.Save{channels: [], currency: 0, stats: %{health: 50, strength: 10, dexterity: 10}}}
+      {:ok, %Data.Save{channels: [], currency: 0, items: [], version: 2, stats: %{health: 50, strength: 10, dexterity: 10}}}
 
       iex> Data.Save.load(%{"wearing" => %{"chest" => 1}})
-      {:ok, %Data.Save{channels: [], currency: 0, wearing: %{chest: 1}}}
+      {:ok, %Data.Save{channels: [], currency: 0, items: [], version: 2, wearing: %{chest: 1}}}
 
       iex> Data.Save.load(%{"wielding" => %{"right" => 1}})
-      {:ok, %Data.Save{channels: [], currency: 0, wielding: %{right: 1}}}
+      {:ok, %Data.Save{channels: [], currency: 0, items: [], version: 2, wielding: %{right: 1}}}
   """
   @spec load(save :: map) :: {:ok, Data.Save.t}
   @impl Ecto.Type
@@ -59,9 +59,11 @@ defmodule Data.Save do
     save = save
     |> ensure(:channels, [])
     |> ensure(:currency, 0)
+    |> ensure(:items, [])
     |> atomize_stats()
     |> atomize_wearing()
     |> atomize_wielding()
+    |> migrate()
 
     {:ok, struct(__MODULE__, save)}
   end
@@ -94,6 +96,30 @@ defmodule Data.Save do
   @impl Ecto.Type
   def dump(save) when is_map(save), do: {:ok, Map.delete(save, :__struct__)}
   def dump(_), do: :error
+
+  @doc """
+  Migrate an old save
+  """
+  def migrate(save) do
+    case Map.has_key?(save, :version) do
+      true -> save |> _migrate()
+      false -> save |> Map.put(:version, 1) |> _migrate()
+    end
+  end
+
+  defp _migrate(save = %{version: 1}) do
+    items =
+      save
+      |> Map.get(:item_ids, [])
+      |> Enum.map(&(Item.instantiate(%Data.Item{id: &1})))
+
+    save
+    |> Map.put(:items, items)
+    |> Map.delete(:item_ids)
+    |> Map.put(:version, 2)
+    |> _migrate()
+  end
+  defp _migrate(save), do: save
 
   @doc """
   Validate a save struct

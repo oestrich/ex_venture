@@ -70,10 +70,10 @@ defmodule Game.Command.Drop do
   end
 
   defp _drop_item(item, state = %{socket: socket, user: user, save: save}) do
-    {_, items} = Item.remove(save.items, item)
+    {instance, items} = Item.remove(save.items, item)
     save = %{save | items: items}
     socket |> @socket.echo("You dropped #{item.name}")
-    @room.drop(save.room_id, {:user, user}, item)
+    @room.drop(save.room_id, {:user, user}, instance)
     {:update, Map.put(state, :save, save)}
   end
 end

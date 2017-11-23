@@ -106,6 +106,10 @@ defmodule Web.Room do
   Add an item to a room
   """
   @spec add_item(room :: Room.t, item_id :: integer) :: {:ok, Room.t} | {:error, changeset :: map}
+  def add_item(room, item_id) when is_binary(item_id) do
+    {item_id, _} = Integer.parse(item_id)
+    add_item(room, item_id)
+  end
   def add_item(room, item_id) do
     item = Items.item(item_id)
     instance = Item.instantiate(item)
