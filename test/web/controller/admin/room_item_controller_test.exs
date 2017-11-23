@@ -1,10 +1,14 @@
 defmodule Web.Controller.RoomItemControllerTest do
   use Web.AuthConnCase
+  import Test.ItemsHelper
 
   setup do
     zone = create_zone()
     room = create_room(zone)
     item = create_item()
+
+    start_and_clear_items()
+    insert_item(item)
 
     %{item: item, room: room}
   end

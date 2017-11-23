@@ -2,6 +2,7 @@ defmodule Data.ItemTest do
   use Data.ModelCase
 
   doctest Data.Item.Compiled
+  doctest Data.Item.Instance
 
   alias Data.Item
 

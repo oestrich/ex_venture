@@ -9,6 +9,7 @@ defmodule Game.NPC.Actions do
 
   require Logger
 
+  alias Data.Item
   alias Game.Character
   alias Game.Items
   alias Game.Message
@@ -97,7 +98,7 @@ defmodule Game.NPC.Actions do
     |> Items.items()
     |> Enum.filter(&drop_item?/1)
     |> Enum.each(fn (item) ->
-      room_id |> @room.drop({:npc, npc}, item)
+      room_id |> @room.drop({:npc, npc}, Item.instantiate(item))
     end)
   end
 

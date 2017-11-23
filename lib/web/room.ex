@@ -6,12 +6,14 @@ defmodule Web.Room do
   import Ecto.Query
 
   alias Data.Exit
+  alias Data.Item
   alias Data.NPCSpawner
   alias Data.Room
   alias Data.RoomItem
   alias Data.Repo
   alias Data.Zone
   alias Game.Door
+  alias Game.Items
   alias Game.Room.Repo, as: RoomRepo
 
   @doc """
@@ -105,7 +107,9 @@ defmodule Web.Room do
   """
   @spec add_item(room :: Room.t, item_id :: integer) :: {:ok, Room.t} | {:error, changeset :: map}
   def add_item(room, item_id) do
-    changeset = room |> Room.changeset(%{item_ids: [item_id | room.item_ids]})
+    item = Items.item(item_id)
+    instance = Item.instantiate(item)
+    changeset = room |> Room.changeset(%{items: [instance | room.items]})
     case changeset |> Repo.update() do
       {:ok, room} ->
         Game.Room.update(room.id, room)

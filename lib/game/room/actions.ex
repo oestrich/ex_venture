@@ -6,19 +6,26 @@ defmodule Game.Room.Actions do
   require Logger
 
   alias Game.Item
+  alias Game.Items
   alias Game.Room
   alias Game.Room.Repo
 
   def pick_up(room, item) do
-    case item.id in room.item_ids do
+    case has_item?(room, item) do
       true -> _pick_up(room, item)
       false -> {room, :error}
     end
   end
 
+  defp has_item?(room, item) do
+    room.items |> Enum.any?(&(&1.id == item.id))
+  end
+
   defp _pick_up(room, item) do
-    case Repo.update(room, %{item_ids: List.delete(room.item_ids, item.id)}) do
-      {:ok, room} -> {room, {:ok, item}}
+    {instance, items} = Item.remove(room.items, item)
+
+    case Repo.update(room, %{items: items}) do
+      {:ok, room} -> {room, {:ok, instance}}
       _ -> {room, :error}
     end
   end
@@ -37,9 +44,9 @@ defmodule Game.Room.Actions do
   @doc """
   Drop an item into a room
   """
-  @spec drop(room :: Room.t, item :: Item.t) :: {:ok, Room.t}
-  def drop(room, item) do
-    room |> Repo.update(%{item_ids: [item.id | room.item_ids]})
+  @spec drop(room :: Room.t, item :: Item.instance()) :: {:ok, Room.t}
+  def drop(room, instance) do
+    room |> Repo.update(%{items: [instance | room.items]})
   end
 
   @doc """
@@ -70,7 +77,7 @@ defmodule Game.Room.Actions do
 
   # Respawn only if the item is not present
   defp need_respawn?(room_item, room) do
-    !(room_item.item_id in room.item_ids)
+    Enum.all?(room.items, &(&1.id != room_item.item_id))
   end
 
   defp respawn(room_item, state = %{respawn: respawn}) do
@@ -97,7 +104,9 @@ defmodule Game.Room.Actions do
   end
 
   defp respawn_item(room_item, state = %{room: room, respawn: respawn}) do
-    case Repo.update(room, %{item_ids: [room_item.item_id | room.item_ids]}) do
+    item = Items.item(room_item.item_id)
+    instance = Data.Item.instantiate(item)
+    case Repo.update(room, %{items: [instance | room.items]}) do
       {:ok, room} ->
         respawn = Map.delete(respawn, room_item.item_id)
         %{state | room: room, respawn: respawn}

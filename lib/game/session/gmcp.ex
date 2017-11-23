@@ -29,9 +29,9 @@ defmodule Game.Session.GMCP do
   @doc """
   Push Room.Info data
   """
-  @spec room(state :: map, room :: Room.t) :: :ok
-  def room(%{socket: socket}, room) do
-    socket |> @socket.push_gmcp("Room.Info", room |> room_info() |> Poison.encode!())
+  @spec room(state :: map, room :: Room.t, items :: [Item.t]) :: :ok
+  def room(%{socket: socket}, room, items) do
+    socket |> @socket.push_gmcp("Room.Info", room |> room_info(items) |> Poison.encode!())
   end
 
   @doc """
@@ -87,11 +87,11 @@ defmodule Game.Session.GMCP do
     socket |> @socket.push_gmcp("Zone.Map", %{map: map} |> Poison.encode!())
   end
 
-  defp room_info(room) do
+  defp room_info(room, items) do
     room
     |> Map.take([:name, :description, :ecology, :zone_id, :x, :y])
     |> Map.merge(%{
-      items: render_many(room, :items),
+      items: render_many(items),
       players: render_many(room, :players),
       npcs: render_many(room, :npcs),
       shops: render_many(room, :shops),
@@ -123,10 +123,13 @@ defmodule Game.Session.GMCP do
     }
   end
 
+  defp render_many(data) when is_list(data) do
+    Enum.map(data, &(%{id: &1.id, name: &1.name}))
+  end
   defp render_many(struct, key) do
     case struct do
       %{^key => data} when data != nil ->
-        Enum.map(data, &(%{id: &1.id, name: &1.name}))
+        render_many(data)
       _ -> []
     end
   end

@@ -19,7 +19,7 @@ defmodule Helpers do
     changeset = %RoomItem{} |> RoomItem.changeset(Map.merge(attributes, %{room_id: room.id, item_id: item.id}))
     case changeset |> Repo.insert do
       {:ok, _room_item} ->
-        room |> update_room(%{item_ids: [item.id | room.item_ids]})
+        room |> update_room(%{items: [Item.instantiate(item) | room.items]})
       _ ->
         raise "Error creating room item"
     end
@@ -293,7 +293,7 @@ defmodule Seeds do
       channels: ["global", "newbie"],
       level: 1,
       experience_points: 0,
-      item_ids: [sword.id],
+      item_ids: [Item.instantiate(sword)],
       wearing: %{},
       wielding: %{},
     }

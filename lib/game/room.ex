@@ -168,8 +168,7 @@ defmodule Game.Room do
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
     players = Enum.map(players, &(elem(&1, 2)))
-    items = Game.Items.items(room.item_ids)
-    {:reply, Map.merge(room, %{players: players, npcs: npcs, items: items}), state}
+    {:reply, Map.merge(room, %{players: players, npcs: npcs}), state}
   end
 
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do

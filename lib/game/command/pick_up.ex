@@ -8,7 +8,7 @@ defmodule Game.Command.PickUp do
 
   require Logger
 
-  alias Data.Item
+  alias Game.Items
 
   @must_be_alive true
 
@@ -44,20 +44,29 @@ defmodule Game.Command.PickUp do
   end
   def run({item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    case Enum.find(room.items, &(Game.Item.matches_lookup?(&1, item_name))) do
+
+    instance =
+      room.items
+      |> Enum.find(fn (instance) ->
+        item = Items.item(instance)
+        Game.Item.matches_lookup?(item, item_name)
+      end)
+
+    case instance do
       nil ->
         socket |> @socket.echo(~s("#{item_name}" could not be found))
         :ok
-      item ->
-        pick_up(item, room, state)
+      instance ->
+        pick_up(instance, room, state)
     end
   end
 
   def pick_up(item, room, state = %{socket: socket, save: save}) do
     case @room.pick_up(room.id, item) do
-      {:ok, item} ->
+      {:ok, instance} ->
+        item = Items.item(instance)
         Logger.info("Session (#{inspect(self())}) picking up item (#{item.id}) from room (#{room.id})", type: :player)
-        save = %{save | items: [Item.instantiate(item) | save.items]}
+        save = %{save | items: [instance | save.items]}
         socket |> @socket.echo("You picked up the #{item.name}")
         {:update, Map.put(state, :save, save)}
       _ ->

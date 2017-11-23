@@ -4,8 +4,13 @@ defmodule Game.Command.LookTest do
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
+  alias Data.Item
+
   setup do
-    @room.set_room(@room._room())
+    start_and_clear_items()
+    item = create_item(%{name: "Short Sword", description: "A simple blade", keywords: ["sword"]})
+    insert_item(item)
+    @room.set_room(Map.merge(@room._room(), %{items: [Item.instantiate(item)]}))
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket}}
   end
