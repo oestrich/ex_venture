@@ -209,7 +209,7 @@ defmodule Game.NPC.Events do
     broadcast(npc, action, %{})
   end
   defp broadcast(%{id: id}, action, message) do
-    Web.Endpoint.broadcast!("npc:#{id}", action, message)
+    Web.Endpoint.broadcast("npc:#{id}", action, message)
   end
 
   defp who({:npc, npc}), do: %{type: :npc, name: npc.name}

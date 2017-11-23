@@ -13,9 +13,9 @@ defmodule ExVenture.Application do
     # Define workers and child supervisors to be supervised
     children = [
       supervisor(Data.Repo, []),
+      supervisor(Web.Supervisor, []),
       supervisor(Game.Registries, []),
       supervisor(Game.Supervisor, []),
-      supervisor(Web.Supervisor, []),
       listener(),
     ] |> Enum.reject(fn child -> is_nil(child) end)
 
