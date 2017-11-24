@@ -6,6 +6,7 @@ defmodule Game.Command.Skills do
   use Game.Command
 
   alias Game.Character
+  alias Game.Command.Target
   alias Game.Effect
   alias Game.Item
   alias Game.Skill
@@ -19,7 +20,8 @@ defmodule Game.Command.Skills do
   def help(:full) do
     """
     #{help(:short)}. To use a skill you must also be
-    targeting something.
+    targeting something. Optionally pass in a target after your skill to switch or set
+    a target before using a skill.
 
     Example:
     [ ] > {white}skills{/white}
@@ -38,13 +40,18 @@ defmodule Game.Command.Skills do
     socket |> @socket.echo(Format.skills(user.class, skills))
     :ok
   end
-  def run({_skill, _command}, _session, %{socket: socket, target: target}) when is_nil(target) do
+  def run({%{command: command} , command}, _session, %{socket: socket, target: target}) when is_nil(target) do
     socket |> @socket.echo("You don't have a target.")
     :ok
   end
-  def run({skill, _command}, _session, state = %{socket: socket, save: %{room_id: room_id}, target: target}) do
+  def run({skill, command}, _session, state = %{socket: socket, save: %{room_id: room_id}, target: target}) do
+    new_target =
+      command
+      |> String.replace(skill.command, "")
+      |> String.trim()
+
     room = @room.look(room_id)
-    case find_target(room, target) do
+    case find_target(room, target, new_target) do
       nil ->
         socket |> @socket.echo("Your target could not be found.")
         :ok
@@ -59,8 +66,8 @@ defmodule Game.Command.Skills do
     socket |> @socket.echo("You are not high enough level to use this skill.")
     :ok
   end
-  defp use_skill(skill, target, state = %{socket: socket, user: user, save: %{stats: stats}}) do
-    %{save: save} = state
+  defp use_skill(skill, target, state = %{socket: socket, user: user, save: save = %{stats: stats}}) do
+    {target, state} = maybe_change_target(target, state)
 
     case stats |> Skill.pay(skill) do
       {:ok, stats} ->
@@ -74,7 +81,23 @@ defmodule Game.Command.Skills do
         {:update, %{state | save: save}}
       {:error, _} ->
         socket |> @socket.echo(~s(You don't have enough skill points to use "#{skill.command}"))
-        :ok
+        {:update, state}
+    end
+  end
+
+  def maybe_change_target(target, state) do
+    case Character.who(target) == state.target do
+      true ->
+        {target, state}
+      false ->
+        case target do
+          {:npc, npc} ->
+            {:update, state} = Target.target_npc(npc, state.socket, state)
+            {target, state}
+          {:user, user} ->
+            {:update, state} = Target.target_user(user, state.socket, state)
+            {target, state}
+        end
     end
   end
 
@@ -92,16 +115,22 @@ defmodule Game.Command.Skills do
 
       iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}]}, {:user, 1})
       {:user, %{id: 1, name: "Bandit"}}
+
+      iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}], npcs: []}, {:user, 2}, "bandit")
+      {:user, %{id: 1, name: "Bandit"}}
   """
   @spec find_target(room :: Room.t, target :: {atom, integer}) :: {:npc, map} | {:user, map}
-  def find_target(room, target)
-  def find_target(%{npcs: npcs}, {:npc, id}) do
+  def find_target(room, target, new_target \\ "")
+  def find_target(%{players: players, npcs: npcs}, _, new_target) when new_target != "" do
+    Target.find_target(new_target, players, npcs)
+  end
+  def find_target(%{npcs: npcs}, {:npc, id}, _new_target) do
     case Enum.find(npcs, &(&1.id == id)) do
       nil -> nil
       npc -> {:npc, npc}
     end
   end
-  def find_target(%{players: users}, {:user, id}) do
+  def find_target(%{players: users}, {:user, id}, _new_target) do
     case Enum.find(users, &(&1.id == id)) do
       nil -> nil
       user -> {:user, user}

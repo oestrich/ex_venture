@@ -50,6 +50,28 @@ defmodule Game.Command.SkillsTest do
     assert Regex.match?(~r(Slash), look)
   end
 
+  test "using a skill - set your target", %{session: session, socket: socket, user: user, save: save, slash: slash} do
+    state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: nil}
+
+    {:update, state} = Command.Skills.run({slash, "slash bandit"}, session, state)
+    assert state.save.stats.skill_points == 8
+    assert state.target == {:npc, 1}
+
+    [_, {^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(Slash), look)
+  end
+
+  test "using a skill - change your target", %{session: session, socket: socket, user: user, save: save, slash: slash} do
+    state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: {:user, 3}}
+
+    {:update, state} = Command.Skills.run({slash, "slash bandit"}, session, state)
+    assert state.save.stats.skill_points == 8
+    assert state.target == {:npc, 1}
+
+    [_, {^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(Slash), look)
+  end
+
   test "using a skill - target not found", %{session: session, socket: socket, user: user, save: save, slash: slash} do
     state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1}), target: {:npc, 2}}
     :ok = Command.Skills.run({slash, "slash"}, session, state)
@@ -69,7 +91,7 @@ defmodule Game.Command.SkillsTest do
     stats = %{save.stats | skill_points: 1}
     state = %{socket: socket, user: user, save: Map.merge(save, %{room_id: 1, stats: stats}), target: {:npc, 1}}
 
-    :ok = Command.Skills.run({slash, "slash"}, session, state)
+    {:update, ^state} = Command.Skills.run({slash, "slash"}, session, state)
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You don't have), look)
