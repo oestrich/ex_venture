@@ -34,6 +34,15 @@ defmodule Game.Session do
   @timeout_check 5000
   @timeout_seconds Application.get_env(:ex_venture, :game)[:timeout_seconds]
 
+  defmodule State do
+    @moduledoc """
+    Create a struct for Session state
+    """
+
+    @enforce_keys [:socket, :state, :mode]
+    defstruct [:socket, :state, :session_started_at, :last_recv, :last_tick, :mode, :target, :is_targeting, :regen, :reply_to]
+  end
+
   @doc """
   Start a new session
 
@@ -118,7 +127,7 @@ defmodule Game.Session do
     Logger.info("New session started #{inspect(self())}", type: :session)
     PlayerInstrumenter.session_started()
 
-    state = %{
+    state = %State{
       socket: socket,
       state: "login",
       session_started_at: Timex.now(),
