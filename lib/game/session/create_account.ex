@@ -25,10 +25,10 @@ defmodule Game.Session.CreateAccount do
     socket |> @socket.prompt("Name: ")
   end
 
-  def process(password, session, state = %{socket: socket, create: %{name: name, race: race, class: class}}) do
+  def process(password, session, state = %{socket: socket, create: %{name: name, email: email, race: race, class: class}}) do
     socket |> @socket.tcp_option(:echo, true)
 
-    case Account.create(%{name: name, password: password}, %{race: race, class: class}) do
+    case Account.create(%{name: name, email: email, password: password}, %{race: race, class: class}) do
       {:ok, user} ->
         PlayerInstrumenter.new_character()
         user |> Login.login(session, socket, state |> Map.delete(:create))
@@ -38,17 +38,28 @@ defmodule Game.Session.CreateAccount do
         state |> Map.delete(:create)
     end
   end
+  def process(email, _session, state = %{socket: socket, create: %{name: name, race: race, class: class}}) do
+    case email == "" || Regex.match?(~r/.+@.+\..+/, email) do
+      true ->
+        socket |> @socket.prompt("Password: ")
+        socket |> @socket.tcp_option(:echo, false)
+        Map.merge(state, %{create: %{name: name, email: email, race: race, class: class}})
+      false ->
+        socket |> @socket.echo("Invalid email, please enter again")
+        socket |> email_prompt()
+        Map.merge(state, %{create: %{name: name, race: race, class: class}})
+    end
+  end
   def process(class, _session, state = %{socket: socket, create: %{name: name, race: race}}) do
     class = Class.classes
     |> Enum.find(fn (cls) -> String.downcase(cls.name) == String.downcase(class) end)
 
     case class do
       nil ->
-        socket |> class_prompt
+        socket |> class_prompt()
         state
       class ->
-        socket |> @socket.prompt("Password: ")
-        socket |> @socket.tcp_option(:echo, false)
+        socket |> email_prompt()
         Map.merge(state, %{create: %{name: name, race: race, class: class}})
     end
   end
@@ -86,6 +97,10 @@ defmodule Game.Session.CreateAccount do
 
     socket |> @socket.echo("Now to pick a class. Your options are:\n#{classes}")
     socket |> @socket.prompt("Class: ")
+  end
+
+  defp email_prompt(socket) do
+    socket |> @socket.prompt("Email (optional, enter for blank): ")
   end
 
   defp changeset_errors(%{errors: errors}) do

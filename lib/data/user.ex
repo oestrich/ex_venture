@@ -11,6 +11,7 @@ defmodule Data.User do
 
   schema "users" do
     field :name, :string
+    field :email, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :password_hash, :string
@@ -27,10 +28,11 @@ defmodule Data.User do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :password, :save, :flags, :race_id, :class_id, :seconds_online])
+    |> cast(params, [:name, :email, :password, :save, :flags, :race_id, :class_id, :seconds_online])
     |> validate_required([:name, :save, :race_id, :class_id])
     |> validate_save()
     |> validate_name()
+    |> validate_format(:email, ~r/.+@.+\..+/)
     |> ensure(:flags, [])
     |> ensure(:token, UUID.uuid4())
     |> ensure(:seconds_online, 0)

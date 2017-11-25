@@ -22,6 +22,7 @@ defmodule Data.Item.Instance do
       iex> Data.Item.Instance.load(%{"id" => 1, "created_at" => "2018"})
       {:ok, %Data.Item.Instance{id: 1, created_at: "2018"}}
   """
+  def load(instance = %__MODULE__{}), do: {:ok, instance}
   def load(instance) do
     instance = for {key, val} <- instance, into: %{}, do: {String.to_atom(key), val}
     {:ok, struct(__MODULE__, instance)}

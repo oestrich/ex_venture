@@ -36,7 +36,7 @@ defmodule Game.Session.CreateAccountTest do
     state = CreateAccount.process("fighter", :session, %{socket: socket, create: %{name: "user", race: human}})
 
     assert state.create.class == fighter
-    assert @socket.get_prompts() == [{socket, "Password: "}]
+    assert @socket.get_prompts() == [{socket, "Email (optional, enter for blank): "}]
   end
 
   test "picking a class again if a mistype", %{socket: socket, race: human} do
@@ -46,10 +46,37 @@ defmodule Game.Session.CreateAccountTest do
     assert @socket.get_prompts() == [{socket, "Class: "}]
   end
 
+  test "ask for an optional email", %{socket: socket, race: human, class: fighter} do
+    create_config(:starting_save, base_save() |> Poison.encode!)
+
+    state = CreateAccount.process("user@example.com", :session, %{socket: socket, create: %{name: "user", race: human, class: fighter}})
+
+    assert state.create.email == "user@example.com"
+    assert @socket.get_prompts() == [{socket, "Password: "}]
+  end
+
+  test "ask for an optional email - give none", %{socket: socket, race: human, class: fighter} do
+    create_config(:starting_save, base_save() |> Poison.encode!)
+
+    state = CreateAccount.process("", :session, %{socket: socket, create: %{name: "user", race: human, class: fighter}})
+
+    assert state.create.email == ""
+    assert @socket.get_prompts() == [{socket, "Password: "}]
+  end
+
+  test "request email again if it doesn't have an @ sign", %{socket: socket, race: human, class: fighter} do
+    create_config(:starting_save, base_save() |> Poison.encode!)
+
+    state = CreateAccount.process("userexample.com", :session, %{socket: socket, create: %{name: "user", race: human, class: fighter}})
+
+    refute Map.has_key?(state.create, :email)
+    assert @socket.get_prompts() == [{socket, "Email (optional, enter for blank): "}]
+  end
+
   test "create the account after password is entered", %{socket: socket, race: human, class: fighter} do
     create_config(:starting_save, base_save() |> Poison.encode!)
 
-    state = CreateAccount.process("password", :session, %{socket: socket, create: %{name: "user", race: human, class: fighter}})
+    state = CreateAccount.process("password", :session, %{socket: socket, create: %{name: "user", email: "", race: human, class: fighter}})
 
     refute Map.has_key?(state, :create)
     assert @socket.get_echos() == [{socket, "Welcome, user!"}]
@@ -57,7 +84,7 @@ defmodule Game.Session.CreateAccountTest do
 
   test "failure creating the account after entering the password", %{socket: socket, race: human, class: fighter} do
     create_config(:starting_save, %{} |> Poison.encode!)
-    state = CreateAccount.process("", :session, %{socket: socket, create: %{name: "user", race: human, class: fighter}})
+    state = CreateAccount.process("", :session, %{socket: socket, create: %{name: "user", email: "", race: human, class: fighter}})
 
     refute Map.has_key?(state, :create)
     assert [{^socket, "There was a problem creating your account.\nPlease start over." <> _}] = @socket.get_echos()
