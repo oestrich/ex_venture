@@ -35,6 +35,8 @@ defmodule Web.Router do
 
     resources "/races", RaceController, only: [:index, :show]
 
+    resources "/register", RegistrationController, only: [:new, :create]
+
     delete "/sessions", SessionController, :delete
     resources "/sessions", SessionController, only: [:new, :create]
 

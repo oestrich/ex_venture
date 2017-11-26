@@ -51,7 +51,7 @@
           <%= if Map.has_key?(@conn.assigns, :user) do %>
             <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-primary") %>
           <% else %>
-            <%= link("Sign In", to: public_session_path(@conn, :new), class: "btn btn-primary") %>
+            <%= link("Sign in", to: public_session_path(@conn, :new), class: "btn btn-secondary") %>
           <% end %>
         </div>
       </div>

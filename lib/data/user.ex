@@ -38,7 +38,10 @@ defmodule Data.User do
     |> ensure(:seconds_online, 0)
     |> hash_password
     |> validate_required([:password_hash])
+    |> validate_confirmation(:password)
     |> unique_constraint(:name)
+    |> foreign_key_constraint(:race_id)
+    |> foreign_key_constraint(:class_id)
   end
 
   def password_changeset(struct, params) do

@@ -15,5 +15,7 @@
 
       <%= submit "Sign In", class: "btn btn-primary btn-block btn-flat" %>
     <% end %>
+
+    <%= link("Create an account", to: public_registration_path(@conn, :new)) %>
   </div>
 </div>

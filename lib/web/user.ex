@@ -7,10 +7,13 @@ defmodule Web.User do
 
   alias Data.User
   alias Data.Repo
+  alias Data.Stats
   alias Game.Authentication
+  alias Game.Config
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
   alias Web.Pagination
+  alias Web.Race
 
   @doc """
   Fetch a user from a web token
@@ -40,6 +43,32 @@ defmodule Web.User do
     User
     |> Repo.get(id)
     |> Repo.preload([:class, :race])
+  end
+
+  @doc """
+  Get a changeset for a new page
+  """
+  @spec new() :: changeset :: map
+  def new(), do: %User{} |> User.changeset(%{})
+
+  @doc """
+  Create a new user
+  """
+  @spec create(params :: map) :: {:ok, User.t} | {:error, changeset :: map}
+  def create(params = %{"race_id" => race_id}) do
+    race = Race.get(race_id)
+
+    save =
+      Config.starting_save()
+      |> Map.put(:stats, race.starting_stats() |> Stats.default())
+
+    params =
+      params
+      |> Map.put("save", save)
+
+    %User{}
+    |> User.changeset(params)
+    |> Repo.insert()
   end
 
   @doc """

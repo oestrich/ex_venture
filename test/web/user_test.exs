@@ -9,31 +9,36 @@ defmodule Web.UserTest do
 
   setup do
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
-
-    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
-    {:ok, room} = Room.create(zone, room_attributes(%{}))
-
-    %{user: user, room: room}
+    %{user: user}
   end
 
-  test "teleporting a player", %{user: user, room: room} do
-    Session.Registry.register(user)
+  describe "teleporting players" do
+    setup do
+      {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
+      {:ok, room} = Room.create(zone, room_attributes(%{}))
 
-    {:ok, user} = User.teleport(user, room.id |> Integer.to_string())
+      %{room: room}
+    end
 
-    room_id = room.id
+    test "teleporting a player", %{user: user, room: room} do
+      Session.Registry.register(user)
 
-    assert user.save.room_id == room_id
-    assert_receive {:"$gen_cast", {:teleport, ^room_id}}
-  end
+      {:ok, user} = User.teleport(user, room.id |> Integer.to_string())
 
-  test "teleporting a player - only updates if player not in the game", %{user: user, room: room} do
-    {:ok, user} = User.teleport(user, room.id |> Integer.to_string())
+      room_id = room.id
 
-    room_id = room.id
+      assert user.save.room_id == room_id
+      assert_receive {:"$gen_cast", {:teleport, ^room_id}}
+    end
 
-    assert user.save.room_id == room_id
-    refute_receive {:"$gen_cast", {:teleport, ^room_id}}
+    test "teleporting a player - only updates if player not in the game", %{user: user, room: room} do
+      {:ok, user} = User.teleport(user, room.id |> Integer.to_string())
+
+      room_id = room.id
+
+      assert user.save.room_id == room_id
+      refute_receive {:"$gen_cast", {:teleport, ^room_id}}
+    end
   end
 
   test "changing password", %{user: user} do
@@ -52,5 +57,22 @@ defmodule Web.UserTest do
     User.disconnect()
 
     assert_receive {:"$gen_cast", {:disconnect, [force: true]}}
+  end
+
+  test "create a new player" do
+    create_config(:starting_save, base_save() |> Poison.encode!)
+    class = create_class()
+    race = create_race()
+
+    {:ok, user} = User.create(%{
+      "name" => "player",
+      "email" => "",
+      "password" => "password",
+      "password_confirmation" => "password",
+      "class_id" => class.id,
+      "race_id" => race.id,
+    })
+
+    assert user.name == "player"
   end
 end
