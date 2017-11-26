@@ -1,8 +1,12 @@
 - name: Combat
   short: Basics about combat
   full: |
-    There is no auto combat. You must {white}target{/white} a character before being able to use {white}skills{/white} on them.
+    There is no auto combat. You must {white}target{/white} a character before being able to use {white}skills{/white}
+    on them. You can also use and target at the same time. Your target will be filled
+    automatically when an enemy (player or otherwise) targets you.
 
-    Example:
+    Examples:
     [ ]> {white}target bandit{/white}
     [ ]> {white}slash{/white}
+
+    [ ]> {white}slash bandit{/white}
