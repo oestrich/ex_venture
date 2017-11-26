@@ -149,6 +149,12 @@ defmodule Game.NPC.Events do
       false -> state
     end
   end
+  def act_on_tick(state, event = %{action: %{type: "say"}}) do
+    case say?(event) do
+      true -> say_to_room(state, event)
+      false -> state
+    end
+  end
   def act_on_tick(state, _event), do: state
 
   def maybe_move_room(state = %{target: target}, _event) when target != nil, do: state
@@ -227,6 +233,25 @@ defmodule Game.NPC.Events do
   """
   def emote_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
     room_id |> @room.emote(npc, Message.npc_emote(npc, message))
+    state
+  end
+
+  @doc """
+  Determine if the NPC should say into a room
+
+  Uses `:rand` by default
+  """
+  @spec say?(event :: Event.t, rand :: atom) :: boolean
+  def say?(event, rand \\ @rand)
+  def say?(%{action: %{chance: chance}}, rand) do
+    rand.uniform(100) <= chance
+  end
+
+  @doc """
+  Say the NPC's message to the room
+  """
+  def say_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
+    room_id |> @room.say(npc, Message.npc_say(npc, message))
     state
   end
 

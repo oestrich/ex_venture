@@ -355,4 +355,41 @@ defmodule Game.NPC.EventsTest do
       refute Events.emote?(%{action: %{chance: 50}}, Test.ChanceFail)
     end
   end
+
+  describe "tick - say" do
+    setup do
+      event = %{
+        type: "tick",
+        action: %{
+          type: "say",
+          message: "Can I help you?",
+          chance: 50,
+        },
+      }
+
+      @room.clear_says()
+
+      npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
+      state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
+
+      event = {"tick"}
+
+      %{state: state, event: event}
+    end
+
+    test "will say to the room", %{state: state, event: event} do
+      {:update, ^state} = Events.act_on(state, event)
+
+      [{_, message}] = @room.get_says()
+      assert message.message == "Can I help you?"
+    end
+
+    test "will move if the random number is below chance" do
+      assert Events.say?(%{action: %{chance: 50}}, Test.ChanceSuccess)
+    end
+
+    test "will not move if the random number is over chance" do
+      refute Events.say?(%{action: %{chance: 50}}, Test.ChanceFail)
+    end
+  end
 end

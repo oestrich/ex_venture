@@ -33,6 +33,7 @@ defmodule Game.Message do
     }
   end
 
+  def npc_say(npc, message), do: npc(npc, message)
   def npc(npc, message) do
     %__MODULE__{
       type: :npc,

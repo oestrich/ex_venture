@@ -109,6 +109,21 @@ The move action takes a `max_distance` that the NPC will stray from their origin
 
 The emote action takes a `message` that the NPC will emote into the room. `chance` is the percent chance that the NPC will do this action on each tick.
 
+### say
+
+```
+{
+  "type": "tick",
+  "action": {
+    "type": "say",
+    "message": "Can I help you?",
+    "chance": 50
+  }
+}
+```
+
+The say action takes a `message` that the NPC will say into the room. `chance` is the percent chance that the NPC will do this action on each tick.
+
 ## character/targeted
 
 ```
