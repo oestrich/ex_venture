@@ -263,10 +263,12 @@ defmodule Data.Save do
       iex> Data.Save.valid_wearing?(%{wearing: %{}})
       true
 
-      iex> Data.Save.valid_wearing?(%{wearing: %{chest: 1}})
+      iex> item = Data.Item.instantiate(%Data.Item{id: 1})
+      iex> Data.Save.valid_wearing?(%{wearing: %{chest: item}})
       true
 
-      iex> Data.Save.valid_wearing?(%{wearing: %{eye: 1}})
+      iex> item = Data.Item.instantiate(%Data.Item{id: 1})
+      iex> Data.Save.valid_wearing?(%{wearing: %{eye: item}})
       false
 
       iex> Data.Save.valid_wearing?(%{wearing: %{finger: :anything}})
@@ -278,7 +280,11 @@ defmodule Data.Save do
   @spec valid_wearing?(save :: Save.t) :: boolean
   def valid_wearing?(save)
   def valid_wearing?(%{wearing: wearing}) do
-    is_map(wearing) && Enum.all?(wearing, fn ({key, val}) -> key in Data.Stats.slots() && is_integer(val) end)
+    is_map(wearing) &&
+      Enum.all?(wearing, fn
+        ({key, val = %Item.Instance{}}) -> key in Stats.slots() && is_integer(val.id)
+        (_) -> false
+      end)
   end
 
   @doc """
@@ -287,7 +293,8 @@ defmodule Data.Save do
       iex> Data.Save.valid_wielding?(%{wielding: %{}})
       true
 
-      iex> Data.Save.valid_wielding?(%{wielding: %{right: 1}})
+      iex> item = Data.Item.instantiate(%Data.Item{id: 1})
+      iex> Data.Save.valid_wielding?(%{wielding: %{right: item}})
       true
 
       iex> Data.Save.valid_wielding?(%{wielding: %{right: :anything}})
@@ -299,6 +306,10 @@ defmodule Data.Save do
   @spec valid_wielding?(save :: Save.t) :: boolean
   def valid_wielding?(save)
   def valid_wielding?(%{wielding: wielding}) do
-    is_map(wielding) && Enum.all?(wielding, fn ({key, val}) -> key in [:right, :left] && is_integer(val) end)
+    is_map(wielding) &&
+      Enum.all?(wielding, fn
+        ({key, val = %Item.Instance{}}) -> key in [:right, :left] && is_integer(val.id)
+        (_) -> false
+      end)
   end
 end
