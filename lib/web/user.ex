@@ -70,6 +70,11 @@ defmodule Web.User do
     |> User.changeset(params)
     |> Repo.insert()
   end
+  def create(params) do
+    %User{}
+    |> User.changeset(params)
+    |> Repo.insert()
+  end
 
   @doc """
   List out connected players

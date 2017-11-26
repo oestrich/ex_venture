@@ -6,14 +6,17 @@
       <div class="form-group has-feedback">
         <%= label f, :name %>
         <%= text_input f, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus" %>
+        <%= error_tag f, :name %>
       </div>
 
       <div class="form-group has-feedback">
         <%= label f, :email, "Email (optional)" %>
         <%= text_input f, :email, class: "form-control", placeholder: "Email", autofocus: "autofocus" %>
+        <%= error_tag f, :email %>
       </div>
 
       <h5>Race</h5>
+      <%= error_tag f, :race_id %>
       <%= Enum.map(Race.races, fn (race) -> %>
         <div race="form-check">
           <label race="form-check-label">
@@ -24,6 +27,7 @@
       <% end) %>
 
       <h5>Class</h5>
+      <%= error_tag f, :class_id %>
       <%= Enum.map(Class.classes, fn (class) -> %>
         <div class="form-check">
           <label class="form-check-label">
@@ -36,11 +40,13 @@
       <div class="form-group has-feedback">
         <%= label f, :password %>
         <%= text_input f, :password, type: "password", class: "form-control", placeholder: "Password" %>
+        <%= error_tag f, :password_hash %>
       </div>
 
       <div class="form-group has-feedback">
         <%= label f, :password_confirmation %>
         <%= text_input f, :password_confirmation, type: "password", class: "form-control", placeholder: "Password Confirmation" %>
+        <%= error_tag f, :password_confirmation %>
       </div>
 
       <%= submit "Create Your Account", class: "btn btn-primary btn-block btn-flat" %>
