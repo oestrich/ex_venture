@@ -77,6 +77,10 @@ This action will apply the effects to the target.
 
 ## tick
 
+When a game tick occurs, this event will be triggered.
+
+### move
+
 ```
 {
   "type": "tick",
@@ -88,11 +92,22 @@ This action will apply the effects to the target.
 }
 ```
 
-When a game tick occurs, this event will be triggered. The only action is `move`.
-
-### move
-
 The move action takes a `max_distance` that the NPC will stray from their original spawn point. `chance` is the percent chance that the NPC will move to a random exit.
+
+### emote
+
+```
+{
+  "type": "tick",
+  "action": {
+    "type": "emote",
+    "message": "moves about the store",
+    "chance": 50
+  }
+}
+```
+
+The emote action takes a `message` that the NPC will emote into the room. `chance` is the percent chance that the NPC will do this action on each tick.
 
 ## character/targeted
 

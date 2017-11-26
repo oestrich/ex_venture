@@ -115,6 +115,11 @@ defmodule Test.Game.Room do
     Agent.get(__MODULE__, fn (state) -> Map.get(state, :emote, []) end)
   end
 
+  def clear_emotes() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :emote, []) end)
+  end
+
   def update_character(id, character) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->

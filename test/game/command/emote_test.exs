@@ -7,7 +7,8 @@ defmodule Game.Command.EmoteTest do
   @room Test.Game.Room
 
   setup do
-    {:ok, %{session: :session, socket: :socket, user: %{name: "user"}}}
+    @room.clear_emotes()
+    %{session: :session, socket: :socket, user: %{name: "user"}}
   end
 
   test "send an emote to the room", %{socket: socket, session: session, user: user} do

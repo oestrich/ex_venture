@@ -151,7 +151,7 @@ defmodule Game.NPC.EventsTest do
     end
   end
 
-  describe "tick" do
+  describe "tick - move" do
     setup do
       event = %{
         type: "tick",
@@ -316,6 +316,43 @@ defmodule Game.NPC.EventsTest do
       new_room = %{x: 1, y: 4}
 
       refute Events.under_maximum_move?(action, old_room, new_room)
+    end
+  end
+
+  describe "tick - emote" do
+    setup do
+      event = %{
+        type: "tick",
+        action: %{
+          type: "emote",
+          message: "fidgets",
+          chance: 50,
+        },
+      }
+
+      @room.clear_emotes()
+
+      npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
+      state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
+
+      event = {"tick"}
+
+      %{state: state, event: event}
+    end
+
+    test "will emote to the room", %{state: state, event: event} do
+      {:update, ^state} = Events.act_on(state, event)
+
+      [{_, message}] = @room.get_emotes()
+      assert message.message == "fidgets"
+    end
+
+    test "will move if the random number is below chance" do
+      assert Events.emote?(%{action: %{chance: 50}}, Test.ChanceSuccess)
+    end
+
+    test "will not move if the random number is over chance" do
+      refute Events.emote?(%{action: %{chance: 50}}, Test.ChanceFail)
     end
   end
 end
