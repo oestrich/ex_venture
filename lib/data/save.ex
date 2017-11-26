@@ -38,18 +38,6 @@ defmodule Data.Save do
 
   @doc """
   Load a save from the database
-
-      iex> Data.Save.load(%{"room_id" => 1})
-      {:ok, %Data.Save{room_id: 1, channels: [], currency: 0, items: [], version: 2}}
-
-      iex> Data.Save.load(%{"stats" => %{"health" => 50, "strength" => 10, "dexterity" => 10}})
-      {:ok, %Data.Save{channels: [], currency: 0, items: [], version: 2, stats: %{health: 50, strength: 10, dexterity: 10}}}
-
-      iex> Data.Save.load(%{"wearing" => %{"chest" => 1}})
-      {:ok, %Data.Save{channels: [], currency: 0, items: [], version: 2, wearing: %{chest: 1}}}
-
-      iex> Data.Save.load(%{"wielding" => %{"right" => 1}})
-      {:ok, %Data.Save{channels: [], currency: 0, items: [], version: 2, wielding: %{right: 1}}}
   """
   @spec load(save :: map) :: {:ok, Data.Save.t}
   @impl Ecto.Type
@@ -123,6 +111,29 @@ defmodule Data.Save do
     end
   end
 
+  defp _migrate(save = %{version: 2}) do
+    wielding =
+      save
+      |> Map.get(:wielding, [])
+      |> Enum.reduce(%{}, fn ({key, id}, map) ->
+        item = Item.instantiate(%Data.Item{id: id})
+        Map.put(map, key, item)
+      end)
+
+    wearing =
+      save
+      |> Map.get(:wearing, [])
+      |> Enum.reduce(%{}, fn ({key, id}, map) ->
+        item = Item.instantiate(%Data.Item{id: id})
+        Map.put(map, key, item)
+      end)
+
+    save
+    |> Map.put(:wielding, wielding)
+    |> Map.put(:wearing, wearing)
+    |> Map.put(:version, 3)
+    |> _migrate()
+  end
   defp _migrate(save = %{version: 1}) do
     items =
       save
