@@ -62,7 +62,8 @@ defmodule Game.NPC.Events do
     :ok
   end
   def act_on(state = %{npc: npc}, {"tick"}) do
-    broadcast(npc, "combat/tick")
+    broadcast(npc, "tick")
+
     state =
       npc.events
       |> Enum.filter(&(&1.type == "tick"))
