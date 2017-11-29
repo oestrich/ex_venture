@@ -1,6 +1,7 @@
 defmodule Web.UserTest do
   use Data.ModelCase
 
+  alias Game.Account
   alias Game.Authentication
   alias Game.Session
   alias Web.Room
@@ -74,5 +75,16 @@ defmodule Web.UserTest do
     })
 
     assert user.name == "player"
+  end
+
+  test "reset a user", %{user: user} do
+    create_config(:starting_save, base_save() |> Poison.encode!)
+
+    save = %{user.save | level: 2}
+    {:ok, user} = Account.save(user, save)
+
+    {:ok, user} = User.reset(user.id)
+
+    assert user.save.level == 1
   end
 end

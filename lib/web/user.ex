@@ -8,6 +8,7 @@ defmodule Web.User do
   alias Data.User
   alias Data.Repo
   alias Data.Stats
+  alias Game.Account
   alias Game.Authentication
   alias Game.Config
   alias Game.Session
@@ -56,15 +57,8 @@ defmodule Web.User do
   """
   @spec create(params :: map) :: {:ok, User.t} | {:error, changeset :: map}
   def create(params = %{"race_id" => race_id}) do
-    race = Race.get(race_id)
-
-    save =
-      Config.starting_save()
-      |> Map.put(:stats, race.starting_stats() |> Stats.default())
-
-    params =
-      params
-      |> Map.put("save", save)
+    save = starting_save(race_id)
+    params = Map.put(params, "save", save)
 
     %User{}
     |> User.changeset(params)
@@ -74,6 +68,17 @@ defmodule Web.User do
     %User{}
     |> User.changeset(params)
     |> Repo.insert()
+  end
+
+  @doc """
+  Get a starting save for a user
+  """
+  @spec starting_save(race_id :: integer()) :: Save.t
+  def starting_save(race_id) do
+    race = Race.get(race_id)
+
+    Config.starting_save()
+    |> Map.put(:stats, race.starting_stats() |> Stats.default())
   end
 
   @doc """
@@ -112,6 +117,14 @@ defmodule Web.User do
       nil -> nil
       {pid, _} -> pid |> Session.teleport(room_id)
     end
+  end
+
+  @doc """
+  Reset a player's save file
+  """
+  def reset(user_id) do
+    user = Repo.get(User, user_id)
+    Account.save(user, starting_save(user.race_id))
   end
 
   @doc """

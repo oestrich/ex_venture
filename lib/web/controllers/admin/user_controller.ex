@@ -29,4 +29,13 @@ defmodule Web.Admin.UserController do
       :ok -> conn |> redirect(to: dashboard_path(conn, :index))
     end
   end
+
+  def reset(conn, %{"user_id" => id}) do
+    case User.reset(id) do
+      {:ok, user} ->
+        conn |> redirect(to: user_path(conn, :show, user.id))
+      {:error, _} ->
+        conn |> redirect(to: user_path(conn, :show, id))
+    end
+  end
 end

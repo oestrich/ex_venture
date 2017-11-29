@@ -10,6 +10,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">
