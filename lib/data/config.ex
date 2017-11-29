@@ -20,20 +20,6 @@ defmodule Data.Config do
     |> validate_required([:name, :value])
   end
 
-  def starting_save() do
-    save = __MODULE__
-    |> where([c], c.name == "starting_save")
-    |> select([c], c.value)
-    |> Repo.one
-
-    case save do
-      nil -> nil
-      save ->
-        {:ok, save} = Save.load(Poison.decode!(save))
-        save
-    end
-  end
-
   def find_config(name) do
     __MODULE__
     |> where([c], c.name == ^name)

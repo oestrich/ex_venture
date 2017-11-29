@@ -220,6 +220,7 @@ defmodule Seeds do
       strength: 13,
       intelligence: 10,
       dexterity: 10,
+      wisdom: 10,
     }
 
     bran = create_npc(%{
@@ -289,11 +290,12 @@ defmodule Seeds do
     entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
 
     save =  %Data.Save{
+      version: 1,
       room_id: entrance.id,
       channels: ["global", "newbie"],
       level: 1,
       experience_points: 0,
-      item_ids: [Item.instantiate(sword)],
+      items: [Item.instantiate(sword)],
       wearing: %{},
       wielding: %{},
     }
@@ -309,13 +311,14 @@ defmodule Seeds do
       starting_stats: %{
         health: 15,
         max_health: 15,
-        strength: 10,
-        intelligence: 10,
-        dexterity: 10,
         skill_points: 15,
         max_skill_points: 15,
         move_points: 15,
         max_move_points: 15,
+        strength: 10,
+        dexterity: 10,
+        intelligence: 10,
+        wisdom: 10,
       },
     })
 
@@ -325,13 +328,14 @@ defmodule Seeds do
       starting_stats: %{
         health: 20,
         max_health: 20,
-        strength: 12,
-        intelligence: 10,
-        dexterity: 8,
         skill_points: 15,
         max_skill_points: 15,
         move_points: 15,
         max_move_points: 15,
+        strength: 12,
+        dexterity: 8,
+        intelligence: 10,
+        wisdom: 10,
       },
     })
 
@@ -341,13 +345,14 @@ defmodule Seeds do
       starting_stats: %{
         health: 15,
         max_health: 15,
-        strength: 8,
-        intelligence: 10,
-        dexterity: 12,
         skill_points: 15,
         max_skill_points: 15,
         move_points: 15,
         max_move_points: 15,
+        strength: 8,
+        dexterity: 12,
+        intelligence: 10,
+        wisdom: 10,
       },
     })
 
@@ -361,13 +366,14 @@ defmodule Seeds do
       each_level_stats: %{
         health: 5,
         max_health: 5,
-        strength: 3,
-        intelligence: 1,
-        dexterity: 1,
         skill_points: 2,
         max_skill_points: 2,
         move_points: 3,
         max_move_points: 3,
+        strength: 3,
+        dexterity: 1,
+        intelligence: 1,
+        wisdom: 1,
       },
     })
     fighter
@@ -400,8 +406,9 @@ defmodule Seeds do
         move_points: 3,
         max_move_points: 3,
         strength: 1,
-        intelligence: 3,
         dexterity: 2,
+        intelligence: 3,
+        wisdom: 3,
       },
     })
     mage
@@ -422,10 +429,17 @@ defmodule Seeds do
     create_help_topic(%{name: "Fighter", keywords: ["fighter"], body: "This class uses physical skills"})
     create_help_topic(%{name: "Mage", keywords: ["mage"], body: "This class uses arcane skills"})
 
-    save = Config.starting_save()
+    save = Game.Config.starting_save()
     |> Map.put(:stats, dwarf.starting_stats())
 
-    create_user(%{name: "eric", password: "password", save: save, flags: ["admin"], race_id: dwarf.id, class_id: mage.id})
+    create_user(%{
+      name: "eric",
+      password: "password",
+      save: save,
+      flags: ["admin"],
+      race_id: dwarf.id,
+      class_id: mage.id,
+    })
   end
 end
 

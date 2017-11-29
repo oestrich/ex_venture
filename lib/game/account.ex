@@ -3,11 +3,11 @@ defmodule Game.Account do
   Handle database interactions for a user
   """
 
-  alias Data.Config
   alias Data.Repo
   alias Data.Save
   alias Data.Stats
   alias Data.User
+  alias Game.Config
 
   @doc """
   Create a new user from attributes
