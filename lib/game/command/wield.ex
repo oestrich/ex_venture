@@ -17,7 +17,7 @@ defmodule Game.Command.Wield do
   def help(:full) do
     """
     Put an item from your inventory into your left or right hand.
-    The default hand is your right hand.
+    The default hand is your right hand. You can only wield one weapon.
 
     Example:
     [ ] > {white}wield [left|right] sword{/white}
@@ -78,6 +78,7 @@ defmodule Game.Command.Wield do
     %{items: items} = save
 
     {wielding, items} =  unwield(hand, save.wielding, items)
+    {wielding, items} =  unwield(opposite_hand(hand), wielding, items)
     {instance, items} = Item.remove(items, item)
     wielding = Map.put(wielding, hand, instance)
     save = %{save | items: items, wielding: wielding}
@@ -118,6 +119,25 @@ defmodule Game.Command.Wield do
   def pick_hand("left " <> item), do: {:left, item}
   def pick_hand("right " <> item), do: {:right, item}
   def pick_hand(item), do: {:right, item}
+
+  @doc """
+  Get the opposite hand
+
+  Examples:
+
+      iex> Game.Command.Wield.opposite_hand("left")
+      iex> Game.Command.Wield.opposite_hand(:left)
+      :right
+
+      iex> Game.Command.Wield.opposite_hand("right")
+      iex> Game.Command.Wield.opposite_hand(:right)
+      :left
+  """
+  @spec opposite_hand(hand :: String.t | atom()) :: :right | :left
+  def opposite_hand("left"), do: :right
+  def opposite_hand(:left), do: :right
+  def opposite_hand("right"), do: :left
+  def opposite_hand(:right), do: :left
 
   @doc """
   Remove an item from your hand and place back into the inventory

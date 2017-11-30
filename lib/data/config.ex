@@ -5,8 +5,6 @@ defmodule Data.Config do
 
   use Data.Schema
 
-  alias Data.Save
-
   schema "config" do
     field :name, :string
     field :value, :string
