@@ -71,24 +71,18 @@ defmodule Data.Save do
   defp atomize_stats(save), do: save
 
   defp atomize_wearing(save = %{wearing: wearing}) when wearing != nil do
-    wearing = for {key, val} <- wearing, into: %{} do
-      {:ok, instance} = Item.Instance.load(val)
-      {String.to_atom(key), instance}
-    end
+    wearing = for {key, val} <- wearing, into: %{}, do: {String.to_atom(key), val}
     %{save | wearing: wearing}
   end
   defp atomize_wearing(save), do: save
 
   defp atomize_wielding(save = %{wielding: wielding}) when wielding != nil do
-    wielding = for {key, val} <- wielding, into: %{} do
-      {:ok, instance} = Item.Instance.load(val)
-      {String.to_atom(key), instance}
-    end
+    wielding = for {key, val} <- wielding, into: %{}, do: {String.to_atom(key), val}
     %{save | wielding: wielding}
   end
   defp atomize_wielding(save), do: save
 
-  defp load_items(save = %{items: items}) when is_list(items) do
+  defp load_items(save = %{items: items, wearing: wearing, wielding: wielding}) when is_list(items) do
     items =
       items
       |> Enum.map(fn (item) ->
@@ -99,7 +93,19 @@ defmodule Data.Save do
       end)
       |> Enum.reject(&is_nil/1)
 
-    %{save | items: items}
+    wearing = for {key, item} <- wearing, into: %{} do
+      with {:ok, instance} <- Item.Instance.load(item) do
+        {key, instance}
+      end
+    end
+
+    wielding = for {key, item} <- wielding, into: %{} do
+      with {:ok, instance} <- Item.Instance.load(item) do
+        {key, instance}
+      end
+    end
+
+    %{save | items: items, wearing: wearing, wielding: wielding}
   end
   defp load_items(save), do: save
 
