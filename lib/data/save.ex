@@ -71,13 +71,19 @@ defmodule Data.Save do
   defp atomize_stats(save), do: save
 
   defp atomize_wearing(save = %{wearing: wearing}) when wearing != nil do
-    wearing = for {key, val} <- wearing, into: %{}, do: {String.to_atom(key), val}
+    wearing = for {key, val} <- wearing, into: %{} do
+      {:ok, instance} = Item.Instance.load(val)
+      {String.to_atom(key), instance}
+    end
     %{save | wearing: wearing}
   end
   defp atomize_wearing(save), do: save
 
   defp atomize_wielding(save = %{wielding: wielding}) when wielding != nil do
-    wielding = for {key, val} <- wielding, into: %{}, do: {String.to_atom(key), val}
+    wielding = for {key, val} <- wielding, into: %{} do
+      {:ok, instance} = Item.Instance.load(val)
+      {String.to_atom(key), instance}
+    end
     %{save | wielding: wielding}
   end
   defp atomize_wielding(save), do: save
