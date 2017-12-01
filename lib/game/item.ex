@@ -53,9 +53,18 @@ defmodule Game.Item do
   """
   @spec effects_from_wearing(save :: Save.t) :: [Effect.t]
   def effects_from_wearing(%{wearing: wearing}) do
-    wearing |> Enum.flat_map(fn ({_slot, item_id}) -> Items.item(item_id).effects end)
+    wearing |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
   end
   def effects_from_wearing(_), do: []
+
+  @doc """
+  Find all effects from what the player is wielding
+  """
+  @spec effects_from_wielding(save :: Save.t) :: [Effect.t]
+  def effects_from_wielding(%{wielding: wielding}) do
+    wielding |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
+  end
+  def effects_from_wielding(_), do: []
 
   @doc """
   Remove an item from a list of instantiated items
