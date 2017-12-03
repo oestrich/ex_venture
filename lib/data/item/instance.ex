@@ -19,12 +19,15 @@ defmodule Data.Item.Instance do
   @doc """
   Load an item instance from the database
 
-      iex> Data.Item.Instance.load(%{"id" => 1, "created_at" => "2018"})
-      {:ok, %Data.Item.Instance{id: 1, created_at: "2018"}}
+      iex> {:ok, instance} = Data.Item.Instance.load(%{"id" => 1, "created_at" => "2017-11-29T21:40:51.120579Z"})
+      iex> instance.id
+      1
   """
   def load(instance = %__MODULE__{}), do: {:ok, instance}
   def load(instance) do
     instance = for {key, val} <- instance, into: %{}, do: {String.to_atom(key), val}
+    created_at = Timex.parse!(instance.created_at, "{ISO:Extended}")
+    instance = %{instance | created_at: created_at}
     {:ok, struct(__MODULE__, instance)}
   end
 

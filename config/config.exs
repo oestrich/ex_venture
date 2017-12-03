@@ -4,7 +4,8 @@ use Mix.Config
 
 config :ex_venture,
   ecto_repos: [Data.Repo],
-  namespace: Web
+  namespace: Web,
+  timezone: "America/New_York"
 
 config :ex_venture, :game,
   currency: "gold",

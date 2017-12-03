@@ -11,7 +11,9 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
-            <%= link("Watch", to: user_watch_path(@conn, :watch, @user.id), class: "btn btn-warning") %>
+            <%= if online?(@user) do %>
+              <%= link("Watch", to: user_watch_path(@conn, :watch, @user.id), class: "btn btn-warning") %>
+            <% end %>
             <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
           </div>
         </div>
@@ -40,22 +42,107 @@
               </tr>
               <tr>
                 <th>Created</th>
-                <td><%= @user.inserted_at %></td>
+                <td><%= @user.inserted_at |> time() %></td>
               </tr>
               <tr>
                 <th>Last Saved</th>
-                <td><%= @user.updated_at %></td>
+                <td><%= @user.updated_at |> time() %></td>
               </tr>
               <tr>
                 <th>Play Time</th>
                 <td><%= @user.seconds_online |> Format.play_time() %></td>
               </tr>
-              <tr>
-                <th>Save</th>
-                <td><pre><%= @user.save |> Poison.encode!(pretty: true) %></pre></td>
-              </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%= if online?(@user) do %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Live Stats</h3>
+          </div>
+          <div class="box-body">
+            <table class="table">
+              <tr>
+                <th>Room</th>
+                <td><%= link(live(@user).save.room_id, to: room_path(@conn, :show, live(@user).save.room_id)) %></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Basic Stats</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tr>
+              <th>Level</th>
+              <td><%= @user.save.level %></td>
+            </tr>
+
+            <tr>
+              <th>Experience</th>
+              <td><%= @user.save.experience_points %></td>
+            </tr>
+
+            <%= Enum.map(@user.save.stats, fn ({stat, val}) -> %>
+              <tr>
+                <th><%= stat |> stat_display_name() %></th>
+                <td><%= val %></td>
+              </tr>
+            <% end) %>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Items</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <th>Item</th>
+              <th>Created</th>
+            </thead>
+            <tbody>
+              <%= Enum.map(@user.save.items, fn (instance) -> %>
+                <tr>
+                  <td><%= link(Items.item(instance).name, to: item_path(@conn, :show, instance.id)) %></td>
+                  <td><%= time(instance.created_at) %></td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Save</h3>
+        </div>
+        <div class="box-body">
+          <pre><%= @user.save |> Poison.encode!(pretty: true) %></pre>
         </div>
       </div>
     </div>
