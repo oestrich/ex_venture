@@ -50,4 +50,36 @@ export class NPCSocket {
   }
 }
 
-window.NPCSocket = NPCSocket
+export class UserSocket {
+  constructor(userId) {
+    this.userId = userId
+  }
+
+  connect() {
+    let body = $("body")
+    let userToken = body.data("user-token")
+
+    this.socket = new Socket("/admin/socket", {params: {token: userToken}})
+    this.socket.connect()
+
+    this.channel = this.socket.channel("user:" + this.userId, {})
+
+    this.channel.on("echo", msg => {
+      this.append(format(msg.data))
+    })
+
+    this.append("Connecting...")
+    this.channel.join()
+      .receive("ok", resp => { this.append("Connected") })
+      .receive("error", resp => { this.append(`Failed to connect: ${resp.reason}`) })
+  }
+
+  append(text) {
+    let console = $(".console")
+    console.append(format(`${text}\n`))
+    console.scrollTop(console.prop("scrollHeight"))
+  }
+}
+
+window.NPCSocket = NPCSocket;
+window.UserSocket = UserSocket;

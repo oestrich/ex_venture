@@ -11,6 +11,7 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
+            <%= link("Watch", to: user_watch_path(@conn, :watch, @user.id), class: "btn btn-warning") %>
             <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
           </div>
         </div>

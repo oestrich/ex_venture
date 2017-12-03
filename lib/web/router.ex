@@ -104,6 +104,7 @@ defmodule Web.Router do
     post "/users/disconnect", UserController, :disconnect
     resources "/users", UserController, only: [:index, :show] do
       post "/reset", UserController, :reset, as: :reset
+      get "/watch", UserController, :watch, as: :watch
     end
 
     resources "/zones", ZoneController, only: [:index, :show, :new, :create, :edit, :update] do

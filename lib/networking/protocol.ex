@@ -84,13 +84,22 @@ defmodule Networking.Protocol do
     GenServer.cast(socket, :disconnect)
   end
 
+  @doc """
+  Set the user id of the socket
+  """
+  @spec set_user_id(socket :: pid, user_id :: integer()) :: :ok
+  @impl Networking.Socket
+  def set_user_id(socket, user_id) do
+    GenServer.cast(socket, {:user_id, user_id})
+  end
+
   def init(ref, socket, transport) do
     Logger.info("Player connecting", type: :socket)
 
     :ok = :ranch.accept_ack(ref)
     :ok = transport.setopts(socket, [{:active, true}])
     GenServer.cast(self(), :start_session)
-    :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport, gmcp: false, gmcp_supports: []})
+    :gen_server.enter_loop(__MODULE__, [], %{socket: socket, transport: transport, gmcp: false, gmcp_supports: [], user_id: nil})
   end
 
   @impl GenServer
@@ -114,6 +123,10 @@ defmodule Networking.Protocol do
   end
   def handle_cast({:gmcp, _module, _data}, state) do
     {:noreply, state}
+  end
+
+  def handle_cast({:user_id, user_id}, state) do
+    {:noreply, Map.put(state, :user_id, user_id)}
   end
 
   def handle_cast({:echo, message}, state) do
@@ -266,13 +279,20 @@ defmodule Networking.Protocol do
   end
   defp terminate_zlib_context(_), do: nil
 
-  defp send_data(%{socket: socket, transport: transport, zlib_context: zlib_context}, data) do
+  defp send_data(state = %{socket: socket, transport: transport, zlib_context: zlib_context}, data) do
+    broadcast(state, data)
     data = :zlib.deflate(zlib_context, data, :full)
     transport.send(socket, data)
   end
-  defp send_data(%{socket: socket, transport: transport}, data) do
+  defp send_data(state = %{socket: socket, transport: transport}, data) do
+    broadcast(state, data)
     transport.send(socket, data)
   end
+
+  def broadcast(%{user_id: user_id}, data) when is_integer(user_id) do
+    Web.Endpoint.broadcast("user:#{user_id}", "echo", %{data: data})
+  end
+  def broadcast(_, _), do: :ok
 
   defp remove_version_numbers(supports) do
     supports

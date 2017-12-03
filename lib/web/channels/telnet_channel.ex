@@ -143,6 +143,10 @@ defmodule Web.TelnetChannel do
       end
       {:noreply, state}
     end
+    def handle_cast({:user_id, user_id}, state) do
+      send(state.socket.channel_pid, {:user_id, user_id})
+      {:noreply, state}
+    end
   end
 
   alias Web.TelnetChannel.Server
@@ -169,6 +173,9 @@ defmodule Web.TelnetChannel do
     {:noreply, socket}
   end
 
+  def handle_info({:user_id, user_id}, state) do
+    {:noreply, Map.put(state, :user_id, user_id)}
+  end
   def handle_info({:option, :echo, flag}, socket) do
     push socket, "option", %{type: "echo", echo: flag, sent_at: Timex.now()}
     {:noreply, socket}
@@ -178,10 +185,12 @@ defmodule Web.TelnetChannel do
     {:noreply, socket}
   end
   def handle_info({:echo, message}, socket) do
+    broadcast(socket, message)
     push socket, "echo", %{message: "\n#{message}\n", sent_at: Timex.now()}
     {:noreply, socket}
   end
   def handle_info({:echo, message, :prompt}, socket) do
+    broadcast(socket, message)
     push socket, "prompt", %{message: "\n#{message}", sent_at: Timex.now()}
     {:noreply, socket}
   end
@@ -189,4 +198,9 @@ defmodule Web.TelnetChannel do
     push socket, "disconnect", %{sent_at: Timex.now()}
     {:noreply, socket}
   end
+
+  def broadcast(%{user_id: user_id}, data) when is_integer(user_id) do
+    Web.Endpoint.broadcast("user:#{user_id}", "echo", %{data: data})
+  end
+  def broadcast(_, _), do: :ok
 end

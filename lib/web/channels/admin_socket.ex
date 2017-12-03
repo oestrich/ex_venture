@@ -5,6 +5,7 @@ defmodule Web.AdminSocket do
   alias Web.User
 
   channel "npc:*", Web.NPCChannel
+  channel "user:*", Web.UserChannel
 
   transport :websocket, Phoenix.Transports.WebSocket
 

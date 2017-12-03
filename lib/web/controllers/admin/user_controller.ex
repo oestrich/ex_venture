@@ -16,6 +16,11 @@ defmodule Web.Admin.UserController do
     conn |> render("show.html", user: user)
   end
 
+  def watch(conn, %{"user_id" => id}) do
+    user = User.get(id)
+    conn |> render("watch.html", user: user)
+  end
+
   def teleport(conn, %{"room_id" => room_id}) do
     %{user: user} = conn.assigns
     case User.teleport(user, room_id) do

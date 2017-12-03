@@ -50,6 +50,7 @@ defmodule Game.Session.Login do
       |> Map.put(:state, "active")
 
     socket |> @socket.echo("Welcome, #{user.name}!")
+    socket |> @socket.set_user_id(user.id)
 
     @room.enter(user.save.room_id, {:user, session, user})
     session |> Session.recv("look")

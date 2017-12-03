@@ -1,4 +1,5 @@
 function formatColor(string) {
+  string = string.replace(/\[\d{0,3}m/g, "")
   string = string.replace(/{black}/g, "<span class='black'>")
   string = string.replace(/{red}/g, "<span class='red'>")
   string = string.replace(/{green}/g, "<span class='green'>")

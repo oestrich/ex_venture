@@ -69,4 +69,7 @@ defmodule Test.Networking.Socket do
   def get_push_gmcps() do
     Agent.get(__MODULE__, fn state -> Map.get(state, :push_gmcp, []) end)
   end
+
+  @impl Networking.Socket
+  def set_user_id(_socket, _user_id), do: :ok
 end

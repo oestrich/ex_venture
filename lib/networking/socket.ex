@@ -5,6 +5,7 @@ defmodule Networking.Socket do
   Expected functions for a socket to use.
   """
 
+  @callback set_user_id(socket :: pid, user_id :: integer()) :: :ok
   @callback echo(socket :: pid, message :: String.t) :: :ok
   @callback prompt(socket :: pid, message :: String.t) :: :ok
   @callback disconnect(socket :: pid) :: :ok
