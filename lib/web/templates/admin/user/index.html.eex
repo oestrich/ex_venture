@@ -15,6 +15,10 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Last Saved</th>
+                <th>Level</th>
+                <th>Race</th>
+                <th>Class</th>
+                <th>Play Time</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -24,6 +28,10 @@
                   <td><%= user.id %></td>
                   <td><%= user.name %></td>
                   <td><%= user.updated_at |> time() %></td>
+                  <td><%= user.save.level %></td>
+                  <td><%= link(user.race.name, to: race_path(@conn, :show, user.race_id)) %></td>
+                  <td><%= link(user.class.name, to: class_path(@conn, :show, user.class_id)) %></td>
+                  <td><%= user.seconds_online |> Format.play_time() %></td>
                   <td>
                     <%= link("View", to: user_path(@conn, :show, user.id)) %>
                   </td>
