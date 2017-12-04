@@ -5,7 +5,7 @@ defmodule Web.Plug.FetchPage do
 
   import Plug.Conn
 
-  @per 10
+  @per 20
 
   def init(default), do: default
 

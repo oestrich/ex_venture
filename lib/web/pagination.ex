@@ -35,7 +35,7 @@ defmodule Web.Pagination do
       |> offset(^offset)
       |> Repo.all
 
-    %__MODULE__{page: query, pagination: %{current: page, total: total_pages}}
+    %__MODULE__{page: query, pagination: %{current: page, total: total_pages, empty?: total_pages == 0}}
   end
   def paginate(query, _), do: query |> Repo.all
 end
