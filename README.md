@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/oestrich/ex_venture.svg?branch=master)](https://travis-ci.org/oestrich/ex_venture)
 
-A MUD written in Elixir
+A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
 
 ## Requirements
 
