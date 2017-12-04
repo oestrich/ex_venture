@@ -125,6 +125,10 @@
       <div class="content-wrapper">
         <%= render @view_module, @view_template, assigns %>
       </div>
+
+      <footer class="main-footer">
+        Built with <%= link(ExVenture.version(), to: "http://exventure.org", target: "_blank") %>.
+      </footer>
     </div>
   </body>
 </html>
