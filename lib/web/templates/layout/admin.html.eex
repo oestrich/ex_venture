@@ -45,6 +45,12 @@
                 <span>Home Page &raquo;</span>
               <% end %>
             </li>
+            <li>
+              <%= link(to: public_play_path(@conn, :show), target: "_blank") do %>
+                <i class="fa fa-gamepad"></i>
+                <span>Play Now &raquo;</span>
+              <% end %>
+            </li>
             <li class="header">MAIN NAVIGATION</li>
             <li class="<%= tab_selected(@conn, "bugs") %>">
               <%= link(to: bug_path(@conn, :index)) do %>
