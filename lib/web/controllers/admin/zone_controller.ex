@@ -1,9 +1,9 @@
 defmodule Web.Admin.ZoneController do
   use Web.AdminController
 
-  plug Web.Plug.FetchPage when action in [:index]
-
   alias Web.Zone
+
+  plug Web.Plug.FetchPage when action in [:index]
 
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns

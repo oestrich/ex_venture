@@ -15,7 +15,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-9">
       <div class="box">
         <div class="box-header">
           <div class="box-tools">
@@ -50,7 +50,34 @@
               <% end %>
             </tbody>
           </table>
+
+          <%= render(SharedView, "_pagination.html", path: zone_path(@conn, :index), pagination: @pagination) %>
         </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Filter</h3>
+        </div>
+        <%= form_tag npc_path(@conn, :index), method: :get do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :npc, :tag %>
+              <%= text_input :npc, :tag, value: @filter["tag"], class: "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <%= label :npc, :zone_id %>
+              <%= select :npc, :zone_id, Zone.zone_select(), prompt: "Select Zone", value: @filter["zone_id"], class: "form-control" %>
+            </div>
+          </div>
+          <div class="box-footer">
+            <%= submit "Filter", class: "btn btn-primary" %>
+            <%= link "Clear", to: npc_path(@conn, :index), class: "btn" %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

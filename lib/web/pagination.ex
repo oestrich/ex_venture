@@ -26,6 +26,7 @@ defmodule Web.Pagination do
       |> exclude(:order_by)
       |> exclude(:preload)
       |> Repo.one
+      |> ensure_number()
 
     total_pages = round(Float.ceil(count / per))
 
@@ -38,4 +39,7 @@ defmodule Web.Pagination do
     %__MODULE__{page: query, pagination: %{current: page, total: total_pages, empty?: total_pages == 0}}
   end
   def paginate(query, _), do: query |> Repo.all
+
+  defp ensure_number(nil), do: 0
+  defp ensure_number(count) when is_integer(count), do: count
 end

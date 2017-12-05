@@ -4,6 +4,8 @@ defmodule Web.Admin.NPCView do
 
   alias Data.Event
   alias Data.Stats
+  alias Web.Admin.SharedView
+  alias Web.Zone
 
   import Web.JSONHelper
   import Ecto.Changeset

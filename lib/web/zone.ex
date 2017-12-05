@@ -21,6 +21,15 @@ defmodule Web.Zone do
     query |> Pagination.paginate(opts)
   end
 
+  @spec zone_select() :: [{String.t, integer()}]
+  def zone_select() do
+    Zone
+    |> select([z], [z.name, z.id])
+    |> order_by([z], z.id)
+    |> Repo.all()
+    |> Enum.map(&List.to_tuple/1)
+  end
+
   @doc """
   Get a zone
 

@@ -11,15 +11,38 @@ defmodule Web.NPC do
   alias Data.Stats
   alias Data.Repo
   alias Game.Items
+  alias Web.Pagination
 
   @doc """
   Get all npcs
   """
-  @spec all() :: [NPC.t]
-  def all() do
+  @spec all(filter :: map) :: [NPC.t]
+  def all(opts \\ []) do
     NPC
     |> order_by([n], n.id)
-    |> Repo.all
+    |> _filter(opts[:filter])
+    |> Pagination.paginate(Enum.into(opts, %{}))
+  end
+
+  defp _filter(query, nil), do: query
+  defp _filter(query, filter) do
+    filter
+    |> Enum.reject(&(elem(&1, 1) == ""))
+    |> Enum.reduce(query, &_filter_on_attribute/2)
+  end
+
+  defp _filter_on_attribute({"tag", value}, query) do
+    query
+    |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
+  end
+  defp _filter_on_attribute({"zone_id", value}, query) do
+    query
+    |> join(:left, [n], ns in assoc(n, :npc_spawners))
+    |> where([n, ns], ns.zone_id == ^value)
+    |> group_by([n, ns], n.id)
+  end
+  defp _filter_on_attribute({_, _}, query) do
+    query
   end
 
   @doc """

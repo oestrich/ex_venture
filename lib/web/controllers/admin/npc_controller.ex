@@ -3,9 +3,13 @@ defmodule Web.Admin.NPCController do
 
   alias Web.NPC
 
-  def index(conn, _params) do
-    npcs = NPC.all()
-    conn |> render("index.html", npcs: npcs)
+  plug Web.Plug.FetchPage when action in [:index]
+
+  def index(conn, params) do
+    %{page: page, per: per} = conn.assigns
+    filter = Map.get(params, "npc", %{})
+    %{page: npcs, pagination: pagination} = NPC.all(filter: filter, page: page, per: per)
+    conn |> render("index.html", npcs: npcs, filter: filter, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do
