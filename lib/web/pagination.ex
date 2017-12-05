@@ -25,6 +25,7 @@ defmodule Web.Pagination do
       |> select([u], count(u.id))
       |> exclude(:order_by)
       |> exclude(:preload)
+      |> exclude(:group_by)
       |> Repo.one
       |> ensure_number()
 
