@@ -2,7 +2,7 @@
 
 ![NPCs Index](/images/admin-npc-index.png)
 
-The index lists out all of the NPCs in the game.
+The index lists out all of the NPCs in the game. You can also filter the list by zone and tag.
 
 ## Create a new NPC
 
