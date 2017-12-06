@@ -9,6 +9,7 @@ defmodule Web.Class do
   alias Data.Repo
   alias Data.Skill
   alias Data.Stats
+  alias Web.Pagination
 
   @doc """
   Get all classes
@@ -20,10 +21,12 @@ defmodule Web.Class do
     |> order_by([c], c.name)
     |> Repo.all
   end
-  def all(_) do
+  def all(opts) do
+    opts = Enum.into(opts, %{})
+
     Class
     |> order_by([c], c.id)
-    |> Repo.all
+    |> Pagination.paginate(opts)
   end
 
   @doc """

@@ -3,9 +3,12 @@ defmodule Web.Admin.ClassController do
 
   alias Web.Class
 
+  plug Web.Plug.FetchPage when action in [:index]
+
   def index(conn, _params) do
-    classes = Class.all()
-    conn |> render("index.html", classes: classes)
+    %{page: page, per: per} = conn.assigns
+    %{page: classes, pagination: pagination} = Class.all(page: page, per: per)
+    conn |> render("index.html", classes: classes, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do

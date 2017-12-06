@@ -2,6 +2,7 @@ defmodule Web.Admin.ClassView do
   use Web, :view
 
   alias Data.Stats
+  alias Web.Admin.SharedView
 
   import Ecto.Changeset
 

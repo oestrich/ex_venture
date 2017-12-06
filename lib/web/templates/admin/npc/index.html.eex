@@ -51,7 +51,7 @@
             </tbody>
           </table>
 
-          <%= render(SharedView, "_pagination.html", path: zone_path(@conn, :index), pagination: @pagination) %>
+          <%= render(SharedView, "_pagination.html", path: npc_path(@conn, :index), pagination: @pagination) %>
         </div>
       </div>
     </div>
