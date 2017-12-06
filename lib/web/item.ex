@@ -11,15 +11,18 @@ defmodule Web.Item do
   alias Data.Stats
   alias Data.Repo
   alias Game.Items
+  alias Web.Pagination
 
   @doc """
   Load all items
   """
-  @spec all() :: [Item.t]
-  def all() do
+  @spec all(opts :: Keyword.t) :: [Item.t]
+  def all(opts \\ []) do
+    opts = Enum.into(opts, %{})
+
     Item
     |> order_by([i], i.id)
-    |> Repo.all
+    |> Pagination.paginate(opts)
   end
 
   @doc """

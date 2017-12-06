@@ -3,9 +3,12 @@ defmodule Web.Admin.ItemController do
 
   alias Web.Item
 
+  plug Web.Plug.FetchPage when action in [:index]
+
   def index(conn, _params) do
-    items = Item.all()
-    conn |> render("index.html", items: items)
+    %{page: page, per: per} = conn.assigns
+    %{page: items, pagination: pagination} = Item.all(page: page, per: per)
+    conn |> render("index.html", items: items, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do
