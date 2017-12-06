@@ -3,9 +3,12 @@ defmodule Web.Admin.HelpTopicController do
 
   alias Web.HelpTopic
 
+  plug Web.Plug.FetchPage when action in [:index]
+
   def index(conn, _params) do
-    help_topics = HelpTopic.all()
-    conn |> render("index.html", help_topics: help_topics)
+    %{page: page, per: per} = conn.assigns
+    %{page: help_topics, pagination: pagination} = HelpTopic.all(page: page, per: per)
+    conn |> render("index.html", help_topics: help_topics, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do

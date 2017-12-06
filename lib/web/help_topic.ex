@@ -9,6 +9,7 @@ defmodule Web.HelpTopic do
   alias Data.HelpTopic
   alias Data.Repo
   alias Game.Help.Agent, as: HelpAgent
+  alias Web.Pagination
 
   @doc """
   Get all help_topics
@@ -20,10 +21,12 @@ defmodule Web.HelpTopic do
     |> order_by([ht], ht.name)
     |> Repo.all
   end
-  def all(_) do
+  def all(opts) do
+    opts = Enum.into(opts, %{})
+
     HelpTopic
     |> order_by([ht], ht.id)
-    |> Repo.all
+    |> Pagination.paginate(opts)
   end
 
   def commands() do

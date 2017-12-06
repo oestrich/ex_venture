@@ -45,6 +45,8 @@
               <% end %>
             </tbody>
           </table>
+
+          <%= render(SharedView, "_pagination.html", path: help_topic_path(@conn, :index), pagination: @pagination) %>
         </div>
       </div>
     </div>
