@@ -5,10 +5,11 @@ defmodule Web.Admin.UserController do
 
   alias Web.User
 
-  def index(conn, _params) do
+  def index(conn, params) do
     %{page: page, per: per} = conn.assigns
-    %{page: users, pagination: pagination} = User.all(page: page, per: per)
-    conn |> render("index.html", users: users, pagination: pagination)
+    filter = Map.get(params, "user", %{})
+    %{page: users, pagination: pagination} = User.all(filter: filter, page: page, per: per)
+    conn |> render("index.html", users: users, filter: filter, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do

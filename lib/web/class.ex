@@ -27,6 +27,18 @@ defmodule Web.Class do
   end
 
   @doc """
+  List out all classs for a select box
+  """
+  @spec class_select() :: [{String.t, integer()}]
+  def class_select() do
+    Class
+    |> select([c], [c.name, c.id])
+    |> order_by([c], c.id)
+    |> Repo.all()
+    |> Enum.map(&List.to_tuple/1)
+  end
+
+  @doc """
   Get a class
 
   Preload skills

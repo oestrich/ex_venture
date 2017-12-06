@@ -11,7 +11,10 @@ defmodule Web.NPC do
   alias Data.Stats
   alias Data.Repo
   alias Game.Items
+  alias Web.Filter
   alias Web.Pagination
+
+  @behaviour Filter
 
   @doc """
   Get all npcs
@@ -20,30 +23,22 @@ defmodule Web.NPC do
   def all(opts \\ []) do
     NPC
     |> order_by([n], n.id)
-    |> _filter(opts[:filter])
+    |> Filter.filter(opts[:filter], __MODULE__)
     |> Pagination.paginate(Enum.into(opts, %{}))
   end
 
-  defp _filter(query, nil), do: query
-  defp _filter(query, filter) do
-    filter
-    |> Enum.reject(&(elem(&1, 1) == ""))
-    |> Enum.reduce(query, &_filter_on_attribute/2)
-  end
-
-  defp _filter_on_attribute({"tag", value}, query) do
+  @impl Filter
+  def filter_on_attribute({"tag", value}, query) do
     query
     |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
   end
-  defp _filter_on_attribute({"zone_id", value}, query) do
+  def filter_on_attribute({"zone_id", value}, query) do
     query
     |> join(:left, [n], ns in assoc(n, :npc_spawners))
     |> where([n, ns], ns.zone_id == ^value)
     |> group_by([n, ns], n.id)
   end
-  defp _filter_on_attribute({_, _}, query) do
-    query
-  end
+  def filter_on_attribute(_, query), do: query
 
   @doc """
   Get a npc

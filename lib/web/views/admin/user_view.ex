@@ -4,6 +4,8 @@ defmodule Web.Admin.UserView do
   alias Game.Format
   alias Game.Items
   alias Web.Admin.SharedView
+  alias Web.Class
+  alias Web.Race
   alias Web.User
 
   @timezone Application.get_env(:ex_venture, :timezone)

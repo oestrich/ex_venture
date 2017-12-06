@@ -26,6 +26,18 @@ defmodule Web.Race do
   end
 
   @doc """
+  List out all races for a select box
+  """
+  @spec race_select() :: [{String.t, integer()}]
+  def race_select() do
+    Race
+    |> select([r], [r.name, r.id])
+    |> order_by([r], r.id)
+    |> Repo.all()
+    |> Enum.map(&List.to_tuple/1)
+  end
+
+  @doc """
   Get a races
   """
   @spec get(id :: integer) :: [Race.t]

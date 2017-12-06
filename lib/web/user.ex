@@ -13,8 +13,11 @@ defmodule Web.User do
   alias Game.Config
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
+  alias Web.Filter
   alias Web.Pagination
   alias Web.Race
+
+  @behaviour Filter
 
   @doc """
   Fetch a user from a web token
@@ -33,13 +36,31 @@ defmodule Web.User do
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
 
-    query =
-      User
-      |> order_by([u], desc: u.updated_at)
-      |> preload([:class, :race])
-
-    query |> Pagination.paginate(opts)
+    User
+    |> order_by([u], desc: u.updated_at)
+    |> preload([:class, :race])
+    |> Filter.filter(opts[:filter], __MODULE__)
+    |> Pagination.paginate(opts)
   end
+
+  @impl Filter
+  def filter_on_attribute({"level_from", level}, query) do
+    query
+    |> where([u], fragment("?->>'level' >= ?", u.save, ^to_string(level)))
+  end
+  def filter_on_attribute({"level_to", level}, query) do
+    query
+    |> where([u], fragment("?->>'level' <= ?", u.save, ^to_string(level)))
+  end
+  def filter_on_attribute({"class_id", class_id}, query) do
+    query
+    |> where([u], u.class_id == ^class_id)
+  end
+  def filter_on_attribute({"race_id", race_id}, query) do
+    query
+    |> where([u], u.race_id == ^race_id)
+  end
+  def filter_on_attribute(_, query), do: query
 
   @doc """
   Load a user

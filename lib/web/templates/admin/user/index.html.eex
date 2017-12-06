@@ -6,7 +6,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-9">
       <div class="box">
         <div class="box-body">
           <table class="table">
@@ -42,6 +42,43 @@
 
           <%= render(SharedView, "_pagination.html", path: user_path(@conn, :index), pagination: @pagination) %>
         </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Filter</h3>
+        </div>
+        <%= form_tag user_path(@conn, :index), method: :get do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :user, :level %>
+              <div class="row">
+                <div class="col-md-6">
+                  <%= number_input :user, :level_from, value: @filter["level_from"], placeholder: "From", class: "form-control" %>
+                </div>
+                <div class="col-md-6">
+                  <%= number_input :user, :level_to, value: @filter["level_to"], placeholder: "To", class: "form-control" %>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <%= label :user, :race_id %>
+              <%= select :user, :race_id, Race.race_select(), prompt: "Select Race", value: @filter["race_id"], class: "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <%= label :user, :class_id %>
+              <%= select :user, :class_id, Class.class_select(), prompt: "Select Class", value: @filter["class_id"], class: "form-control" %>
+            </div>
+          </div>
+          <div class="box-footer">
+            <%= submit "Filter", class: "btn btn-primary" %>
+            <%= link "Clear", to: user_path(@conn, :index), class: "btn" %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

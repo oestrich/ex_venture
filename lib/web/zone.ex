@@ -21,6 +21,9 @@ defmodule Web.Zone do
     query |> Pagination.paginate(opts)
   end
 
+  @doc """
+  List out all zones for a select box
+  """
   @spec zone_select() :: [{String.t, integer()}]
   def zone_select() do
     Zone
