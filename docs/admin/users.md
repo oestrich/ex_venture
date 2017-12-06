@@ -2,7 +2,7 @@
 
 ![Users Index](/images/admin-users-index.png)
 
-The user listing lets you see which users have signed up for the game. You can click `View` to view more details about that user.
+The user listing lets you see which users have signed up for the game. You can click `View` to view more details about that user. You can also filter the list by level, class, and race.
 
 ## Viewing a User
 
