@@ -19,7 +19,10 @@ defmodule Game.FormatTest do
     setup do
       wearing = %{chest: %{name: "Leather Armor"}}
       wielding = %{right: %{name: "Short Sword"}, left: %{name: "Shield"}}
-      items = [%{name: "Potion"}, %{name: "Dagger"}]
+      items = %{
+        1 => %{item: %{name: "Potion"}, quantity: 2},
+        2 => %{item: %{name: "Dagger"}, quantity: 1},
+      }
 
       %{currency: 10, wearing: wearing, wielding: wielding, items: items}
     end
@@ -41,7 +44,7 @@ defmodule Game.FormatTest do
 
     test "displays items", %{currency: currency, wearing: wearing, wielding: wielding, items: items} do
       Regex.match?(~r/You are holding:/, Format.inventory(currency, wearing, wielding, items))
-      Regex.match?(~r/- {cyan}Potion{\/cyan}/, Format.inventory(currency, wearing, wielding, items))
+      Regex.match?(~r/- {cyan}Potion x2{\/cyan}/, Format.inventory(currency, wearing, wielding, items))
       Regex.match?(~r/- {cyan}Dagger{\/cyan}/, Format.inventory(currency, wearing, wielding, items))
     end
   end

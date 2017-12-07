@@ -38,7 +38,13 @@ defmodule Game.Command.Inventory do
       Map.put(wielding, hand, Items.item(instance))
     end)
 
-    items = Items.items(items)
+    items =
+      items
+      |> Items.items()
+      |> Enum.reduce(%{}, fn (item, map) ->
+        %{quantity: quantity} = Map.get(map, item.id, %{item: item, quantity: 0})
+        Map.put(map, item.id, %{item: item, quantity: quantity + 1})
+      end)
 
     {:paginate, Format.inventory(currency, wearing, wielding, items), state}
   end

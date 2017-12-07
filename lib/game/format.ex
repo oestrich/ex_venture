@@ -314,9 +314,13 @@ Items: #{items(room, items)}
   """
   @spec inventory(currency :: integer, wearing :: map, wielding :: map, items :: [Item.t]) :: String.t
   def inventory(currency, wearing, wielding, items) do
-    items = items
-    |> Enum.map(fn (item) -> "  - {cyan}#{item.name}{/cyan}" end)
-    |> Enum.join("\n")
+    items =
+      items
+      |> Enum.map(fn
+        ({_, %{item: item, quantity: 1}}) -> "  - {cyan}#{item.name}{/cyan}"
+        ({_, %{item: item, quantity: quantity}}) -> "  - {cyan}#{item.name} x#{quantity}{/cyan}"
+      end)
+      |> Enum.join("\n")
 
     """
     #{equipment(wearing, wielding)}
