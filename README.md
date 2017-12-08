@@ -2,7 +2,11 @@
 
 [![Build Status](https://travis-ci.org/oestrich/ex_venture.svg?branch=master)](https://travis-ci.org/oestrich/ex_venture)
 
-A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
+A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir. 
+
+## Docs
+
+[Elixir Docs](https://exventure.org/elixir/readme.html). [General usage docs](https://exventure.org/).
 
 ## Requirements
 
@@ -80,7 +84,3 @@ stream {
 ## Metrics
 
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
-
-## Documentation
-
-You can get elixir docs by running `mix docs` and open `doc/index.html`. The code base has a lot of doctests to help give examples of how to use the functions.
