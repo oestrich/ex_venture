@@ -45,6 +45,7 @@ defmodule Game.Command.Inventory do
         %{quantity: quantity} = Map.get(map, item.id, %{item: item, quantity: 0})
         Map.put(map, item.id, %{item: item, quantity: quantity + 1})
       end)
+      |> Map.values()
 
     {:paginate, Format.inventory(currency, wearing, wielding, items), state}
   end

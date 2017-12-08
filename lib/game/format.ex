@@ -317,8 +317,8 @@ Items: #{items(room, items)}
     items =
       items
       |> Enum.map(fn
-        ({_, %{item: item, quantity: 1}}) -> "  - {cyan}#{item.name}{/cyan}"
-        ({_, %{item: item, quantity: quantity}}) -> "  - {cyan}#{item.name} x#{quantity}{/cyan}"
+        (%{item: item, quantity: 1}) -> "  - {cyan}#{item.name}{/cyan}"
+        (%{item: item, quantity: quantity}) -> "  - {cyan}#{item.name} x#{quantity}{/cyan}"
       end)
       |> Enum.join("\n")
 

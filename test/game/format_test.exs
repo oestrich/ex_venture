@@ -19,10 +19,10 @@ defmodule Game.FormatTest do
     setup do
       wearing = %{chest: %{name: "Leather Armor"}}
       wielding = %{right: %{name: "Short Sword"}, left: %{name: "Shield"}}
-      items = %{
-        1 => %{item: %{name: "Potion"}, quantity: 2},
-        2 => %{item: %{name: "Dagger"}, quantity: 1},
-      }
+      items = [
+        %{item: %{name: "Potion"}, quantity: 2},
+        %{item: %{name: "Dagger"}, quantity: 1},
+      ]
 
       %{currency: 10, wearing: wearing, wielding: wielding, items: items}
     end
