@@ -29,6 +29,10 @@ defmodule Web.HelpTopic do
     |> Pagination.paginate(opts)
   end
 
+  @doc """
+  Get a list of commands the game has, as a string. From the `Game.Command` module.
+  """
+  @spec commands() :: [String.t]
   def commands() do
     Game.Command.commands
     |> Enum.map(fn (command) ->
