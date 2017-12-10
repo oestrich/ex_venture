@@ -452,6 +452,16 @@ Items: #{items(room, items)}
   end
 
   @doc """
+  Use an item
+
+      iex> Game.Format.use_item(%{name: "Potion"})
+      "You used {blue}Potion{/blue} on yourself."
+  """
+  def use_item(item) do
+    "You used {blue}#{item.name}{/blue} on yourself."
+  end
+
+  @doc """
   Format a target name, blue for user, yellow for npc
 
     iex> Game.Format.target_name({:user, %{name: "Player"}})

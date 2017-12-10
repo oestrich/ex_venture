@@ -51,20 +51,33 @@ defmodule Game.Item do
   @doc """
   Find all effects from what the player is wearing
   """
-  @spec effects_from_wearing(save :: Save.t) :: [Effect.t]
-  def effects_from_wearing(%{wearing: wearing}) do
-    wearing |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
+  @spec effects_from_wearing(save :: Save.t, opts :: Keyword.t) :: [Effect.t]
+  def effects_from_wearing(save, opts \\ [])
+  def effects_from_wearing(%{wearing: wearing}, opts) do
+    wearing
+    |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
+    |> Enum.filter(&(_filter_by_kind(&1, opts)))
   end
-  def effects_from_wearing(_), do: []
+  def effects_from_wearing(_, _), do: []
 
   @doc """
   Find all effects from what the player is wielding
   """
-  @spec effects_from_wielding(save :: Save.t) :: [Effect.t]
-  def effects_from_wielding(%{wielding: wielding}) do
-    wielding |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
+  @spec effects_from_wielding(save :: Save.t, opts :: Keyword.t) :: [Effect.t]
+  def effects_from_wielding(save, opts \\ [])
+  def effects_from_wielding(%{wielding: wielding}, opts) do
+    wielding
+    |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
+    |> Enum.filter(&(_filter_by_kind(&1, opts)))
   end
-  def effects_from_wielding(_), do: []
+  def effects_from_wielding(_, _), do: []
+
+  defp _filter_by_kind(effect, opts) do
+    case Keyword.get(opts, :only, nil) do
+      nil -> true
+      kinds -> effect.kind in kinds
+    end
+  end
 
   @doc """
   Remove an item from a list of instantiated items

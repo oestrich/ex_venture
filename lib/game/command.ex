@@ -87,6 +87,7 @@ defmodule Game.Command do
     Command.Quit,
     Command.Shops,
     Command.Tell,
+    Command.Use,
     Command.Version,
     Command.Wear,
     Command.Who,
