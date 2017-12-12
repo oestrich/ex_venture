@@ -28,7 +28,7 @@ defmodule Game.Session.Effects do
     user_id = user.id
     description =
       case Character.who(from) do
-        {:user, ^user_id} -> Format.effects(effects)
+        {:user, ^user_id} -> []
         _ -> [description | Format.effects(effects)]
       end
     echo(self(), description |> Enum.join("\n"))
