@@ -26,12 +26,13 @@ defmodule Game.Session.Effects do
     save.room_id |> update_character(user)
 
     user_id = user.id
-    description =
-      case Character.who(from) do
-        {:user, ^user_id} -> []
-        _ -> [description | Format.effects(effects)]
-      end
-    echo(self(), description |> Enum.join("\n"))
+    case Character.who(from) do
+      {:user, ^user_id} ->
+        :ok
+      _ ->
+        description = [description | Format.effects(effects)]
+        echo(self(), description |> Enum.join("\n"))
+    end
 
     user |> notify_targeters(stats, is_targeting)
 

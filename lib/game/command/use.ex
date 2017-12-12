@@ -46,8 +46,9 @@ defmodule Game.Command.Use do
     wielding_effects = save |> Item.effects_from_wielding(only: ["stats"])
     effects = save.stats |> Effect.calculate(wearing_effects ++ wielding_effects ++ item.effects)
     Character.apply_effects({:user, user}, effects, {:user, user}, Format.usee_item(item, target: {:user, user}, user: {:user, user}))
-    socket |> @socket.echo(Format.user_item(item, target: {:user, user}, user: {:user, user}))
-    socket |> @socket.echo(effects |> Format.effects() |> Enum.join("\n"))
+
+    description = Format.user_item(item, target: {:user, user}, user: {:user, user})
+    socket |> @socket.echo([description | Format.effects(effects)] |> Enum.join("\n"))
     :ok
   end
 end
