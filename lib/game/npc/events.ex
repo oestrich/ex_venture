@@ -12,6 +12,7 @@ defmodule Game.NPC.Events do
   alias Data.Room
   alias Game.Character
   alias Game.Door
+  alias Game.Format
   alias Game.Effect
   alias Game.Message
   alias Game.NPC
@@ -90,7 +91,7 @@ defmodule Game.NPC.Events do
 
         action = event.action
         effects = npc.stats |> Effect.calculate(action.effects)
-        Character.apply_effects(target, effects, {:npc, npc}, action.text)
+        Character.apply_effects(target, effects, {:npc, npc}, Format.skill_usee(action.text, user: {:npc, npc}))
 
         delay = round(Float.ceil(action.delay * 1000))
         notify_delayed({"combat/tick"}, delay)

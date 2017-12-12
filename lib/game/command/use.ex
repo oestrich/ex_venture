@@ -41,11 +41,12 @@ defmodule Game.Command.Use do
     :ok
   end
 
-  defp use_item(%{user: user, save: save}, item) do
+  defp use_item(%{socket: socket, user: user, save: save}, item) do
     wearing_effects = save |> Item.effects_from_wearing(only: ["stats"])
     wielding_effects = save |> Item.effects_from_wielding(only: ["stats"])
     effects = save.stats |> Effect.calculate(wearing_effects ++ wielding_effects ++ item.effects)
-    Character.apply_effects({:user, user}, effects, {:user, user}, Format.use_item(item))
+    Character.apply_effects({:user, user}, effects, {:user, user}, Format.usee_item(item, target: {:user, user}, user: {:user, user}))
+    socket |> @socket.echo(Format.user_item(item, target: {:user, user}, user: {:user, user}))
     :ok
   end
 end

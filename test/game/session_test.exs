@@ -183,10 +183,10 @@ defmodule Game.SessionTest do
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
     stats = %{health: 25}
-    user = %{name: "user", class: class_attributes(%{})}
+    user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
@@ -199,11 +199,11 @@ defmodule Game.SessionTest do
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
     stats = %{health: 5}
-    user = %{name: "user", class: class_attributes(%{})}
+    user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     is_targeting = MapSet.new() |> MapSet.put({:user, 2})
     state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: is_targeting}
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == -5
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}

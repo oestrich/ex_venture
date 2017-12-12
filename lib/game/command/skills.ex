@@ -77,7 +77,7 @@ defmodule Game.Command.Skills do
         wielding_effects = save |> Item.effects_from_wielding()
 
         effects = stats |> Effect.calculate(wearing_effects ++ wielding_effects ++ skill.effects)
-        Character.apply_effects(target, effects, {:user, user}, skill.usee_text)
+        Character.apply_effects(target, effects, {:user, user}, Format.skill_usee(skill, user: {:user, user}))
         socket |> @socket.echo(Format.skill_user(skill, effects, target))
 
         {:update, %{state | save: save}}

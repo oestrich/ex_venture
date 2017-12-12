@@ -435,30 +435,45 @@ Items: #{items(room, items)}
   @doc """
   Format a skill, from the perspective of a usee
 
-      iex> Game.Format.skill_usee(%{usee_text: "Slash away"}, [], {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_usee(%{usee_text: "Slash away"}, user: {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
-      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by {user}"}, effects, {:npc, %{name: "Bandit"}})
-      "You were slashed at by {yellow}Bandit{/yellow}\\n10 slashing damage is dealt."
+      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by {user}"}, user: {:npc, %{name: "Bandit"}})
+      "You were slashed at by {yellow}Bandit{/yellow}"
   """
-  def skill_usee(skill, skill_effects, skill_user)
-  def skill_usee(%{usee_text: usee_text}, skill_effects, skill_user) do
-    skill_usee(usee_text, skill_effects, skill_user)
+  def skill_usee(skill, opts \\ [])
+  def skill_usee(%{usee_text: usee_text}, opts) do
+    skill_usee(usee_text, opts)
   end
-  def skill_usee(usee_text, skill_effects, skill_user) do
-    usee_text = usee_text |> String.replace("{user}", target_name(skill_user))
-    [usee_text | effects(skill_effects)] |> Enum.join("\n")
+  def skill_usee(usee_text, opts) do
+    usee_text
+    |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
   end
 
   @doc """
-  Use an item
+  Message for users of items
 
-      iex> Game.Format.use_item(%{name: "Potion"})
-      "You used {blue}Potion{/blue} on yourself."
+      iex> Game.Format.user_item(%{name: "Potion", user_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
+      "You used {blue}Potion{/blue} on {yellow}Bandit{/yellow}."
   """
-  def use_item(item) do
-    "You used {blue}#{item.name}{/blue} on yourself."
+  def user_item(item, opts \\ []) do
+    item.user_text
+    |> String.replace("{name}", "{blue}#{item.name}{/blue}")
+    |> String.replace("{target}", target_name(Keyword.get(opts, :target)))
+    |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
+  end
+
+  @doc """
+  Message for usees of items
+
+      iex> Game.Format.usee_item(%{name: "Potion", usee_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
+      "You used {blue}Potion{/blue} on {yellow}Bandit{/yellow}."
+  """
+  def usee_item(item, opts \\ []) do
+    item.usee_text
+    |> String.replace("{name}", "{blue}#{item.name}{/blue}")
+    |> String.replace("{target}", target_name(Keyword.get(opts, :target)))
+    |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
   end
 
   @doc """

@@ -8,23 +8,25 @@ defmodule Game.Command.UseTest do
 
   setup do
     start_and_clear_items()
-    insert_item(%{id: 1, name: "Potion", keywords: [], stats: %{}, effects: []})
+    insert_item(%{id: 1, name: "Potion", keywords: [], stats: %{}, effects: [], user_text: "Used a potion", usee_text: ""})
     insert_item(%{id: 2, name: "Leather Armor", keywords: [], stats: %{}, effects: []})
 
     @socket.clear_messages
 
-    save = 
+    save =
       base_save()
       |> Map.put(:items, [item_instance(1)])
 
-    %{socket: :socket, session: :session, user: %{id: 1}, save: save}
+    %{socket: :socket, session: :session, user: %{id: 1, name: "Player"}, save: save}
   end
 
-  test "use an item", state do
+  test "use an item", state = %{socket: socket} do
     Registry.register(state.user)
 
     :ok = Command.Use.run({"potion"}, state.session, state)
 
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(Used a potion), look)
     assert_receive {:"$gen_cast", {:apply_effects, [], {:user, %{id: 1}}, _}}
   end
 

@@ -25,7 +25,13 @@ defmodule Game.Session.Effects do
     user = Map.put(user, :save, save)
     save.room_id |> update_character(user)
 
-    echo(self(), Format.skill_usee(description, effects, from))
+    user_id = user.id
+    description =
+      case Character.who(from) do
+        {:user, ^user_id} -> Format.effects(effects)
+        _ -> [description | Format.effects(effects)]
+      end
+    echo(self(), description |> Enum.join("\n"))
 
     user |> notify_targeters(stats, is_targeting)
 

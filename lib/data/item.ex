@@ -31,6 +31,8 @@ defmodule Data.Item do
     field :drop_rate, :integer
     field :cost, :integer, default: 0
     field :level, :integer, default: 1
+    field :user_text, :string, default: "You use {name} on {target}."
+    field :usee_text, :string, default: "{user} uses {name} on you."
 
     has_many :item_taggings, ItemTagging
     has_many :item_tags, through: [:item_taggings, :item_tag]
@@ -69,9 +71,9 @@ defmodule Data.Item do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:level, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost])
+    |> cast(params, [:level, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
     |> ensure_keywords
-    |> validate_required([:level, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost])
+    |> validate_required([:level, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
     |> validate_inclusion(:type, @types)
     |> validate_stats()
     |> Effect.validate_effects()
