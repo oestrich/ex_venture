@@ -49,6 +49,16 @@ defmodule Game.Item do
   end
 
   @doc """
+  Get all effects on the player (wearing & wielded)
+  """
+  @spec effects_on_player(save :: Save.t, opts :: Keyword.t) :: [Effect.t]
+  def effects_on_player(save, opts \\ []) do
+    wearing_effects = save |> effects_from_wearing(opts)
+    wielding_effects = save |> effects_from_wielding(opts)
+    wearing_effects ++ wielding_effects
+  end
+
+  @doc """
   Find all effects from what the player is wearing
   """
   @spec effects_from_wearing(save :: Save.t, opts :: Keyword.t) :: [Effect.t]
