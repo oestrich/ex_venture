@@ -50,6 +50,11 @@ defmodule Game.Authentication do
     |> preload([class: [skills: ^(from s in Skill, order_by: [s.level, s.id])]])
   end
 
+  @doc """
+  Ensure that the user's stats include all required fields. Uses `Data.Stats.default/1`.
+  """
+  @spec set_defaults(user :: nil | User.t) :: nil | User.t
+  def set_defaults(user)
   def set_defaults(nil), do: nil
   def set_defaults(user) do
     stats = user.save.stats |> Stats.default()
