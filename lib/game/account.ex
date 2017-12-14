@@ -1,6 +1,6 @@
 defmodule Game.Account do
   @moduledoc """
-  Handle database interactions for a user
+  Handle database interactions for a user's account.
   """
 
   alias Data.Repo
@@ -10,9 +10,9 @@ defmodule Game.Account do
   alias Game.Config
 
   @doc """
-  Create a new user from attributes
+  Create a new user from attributes. Preloads everything required to start playing the game.
   """
-  @spec create(attributes :: map, save_attributes :: map) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
+  @spec create(map, map) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
   def create(attributes, %{race: race, class: class}) do
     save =
       Config.starting_save()
@@ -40,7 +40,7 @@ defmodule Game.Account do
   end
 
   @doc """
-  Update the user's save
+  Update the user's save data.
   """
   @spec save(User.t, Save.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
   def save(user, save) do
@@ -50,12 +50,20 @@ defmodule Game.Account do
     |> Repo.update
   end
 
+  @doc """
+  Update the seconds the player has been online.
+  """
+  @spec update_time_online(User.t, Timex.t, Timex.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
   def update_time_online(user, session_started_at, now) do
     user
     |> User.changeset(%{seconds_online: current_play_time(user, session_started_at, now)})
-    |> Repo.update
+    |> Repo.update()
   end
 
+  @doc """
+  Calculate the current play time, old + current session.
+  """
+  @spec current_play_time(User.t, DateTime.t, DateTime.t) :: integer()
   def current_play_time(user, session_started_at, now) do
     play_time = Timex.diff(now, session_started_at, :seconds)
     user.seconds_online + play_time
