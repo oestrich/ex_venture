@@ -1,7 +1,9 @@
-defmodule Game.Character.Target do
+defmodule Game.Character.Helpers do
   @moduledoc """
-  Helper module for dealing with targets
+  Character helper module, common character functions
   """
+
+  use Game.Room
 
   alias Game.Character
   alias Game.Session.GMCP
@@ -18,4 +20,12 @@ defmodule Game.Character.Target do
     Character.remove_target(target, who)
   end
   def clear_target(_state, _who), do: :ok
+
+  @doc """
+  Update a character's stats in the room
+  """
+  @spec update_character(room_id :: integer, user :: User.t) :: :ok
+  def update_character(room_id, user) do
+    room_id |> @room.update_character({:user, self(), user})
+  end
 end

@@ -13,7 +13,7 @@ defmodule Game.Session do
 
   require Logger
 
-  import Game.Character.Target, only: [clear_target: 2]
+  import Game.Character.Helpers, only: [clear_target: 2]
 
   alias Game.Account
   alias Game.Character

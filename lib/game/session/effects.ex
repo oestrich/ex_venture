@@ -8,7 +8,7 @@ defmodule Game.Session.Effects do
   alias Game.Format
 
   import Game.Session, only: [echo: 2]
-  import Game.Character.Update, only: [update_character: 2]
+  import Game.Character.Helpers, only: [update_character: 2]
 
   @doc """
   Apply effects after receiving them from a targeter

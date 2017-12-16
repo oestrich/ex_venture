@@ -11,8 +11,10 @@ defmodule Game.Character do
   - `{:died, player}`
   """
 
+  alias Data.NPC
   alias Data.User
   alias Game.Character.Via
+  alias Game.Session
 
   @doc """
   Let the target know they are being targeted
@@ -59,6 +61,9 @@ defmodule Game.Character do
   @doc """
   Converts a tuple with a struct to a tuple with an id
   """
+  @spec who({:npc, integer()} | {:npc, NPC.t()}) :: {:npc, integer()}
+  @spec who({:user, integer()} | {:user, User.t()} | {:user, Session.t(), User.t()}) :: {:user, integer()}
+  def who(target)
   def who({:npc, id}) when is_integer(id), do: {:npc, id}
   def who({:npc, npc}), do: {:npc, npc.id}
   def who({:user, id}) when is_integer(id), do: {:user, id}

@@ -10,7 +10,7 @@ defmodule Game.Command.Move do
   alias Game.Door
   alias Game.Session.GMCP
 
-  import Game.Character.Target, only: [clear_target: 2]
+  import Game.Character.Helpers, only: [clear_target: 2]
 
   @must_be_alive true
 

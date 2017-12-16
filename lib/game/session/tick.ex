@@ -6,7 +6,7 @@ defmodule Game.Session.Tick do
   use Game.Room
 
   import Game.Session, only: [echo: 2]
-  import Game.Character.Update, only: [update_character: 2]
+  import Game.Character.Helpers, only: [update_character: 2]
 
   alias Game.Config
   alias Game.Session.GMCP
