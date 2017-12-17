@@ -6,11 +6,13 @@ defmodule Game.Character.Helpers do
   use Game.Room
 
   alias Game.Character
+  alias Game.Session
   alias Game.Session.GMCP
 
   @doc """
+  If the state has a target, send the target a removal message.
   """
-  @spec clear_target(state :: map, who :: {atom, map}) :: :ok
+  @spec clear_target(state :: Session.t(), who :: {atom, map}) :: :ok
   def clear_target(state, who)
   def clear_target(%{target: target}, who = {:npc, _}) when target != nil do
     Character.remove_target(target, who)
