@@ -10,6 +10,7 @@ defmodule Game.Command.Tell do
 
   commands ["tell", "reply"], parse: false
 
+  @impl Game.Command
   def help(:topic), do: "Tell"
   def help(:short), do: "Send a message to one player that is online"
   def help(:full) do
@@ -34,6 +35,7 @@ defmodule Game.Command.Tell do
       iex> Game.Command.Tell.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
+  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("tell " <> message), do: {"tell", message}
@@ -43,6 +45,7 @@ defmodule Game.Command.Tell do
   @doc """
   Send to all connected players
   """
+  @impl Game.Command
   def run(command, session, state)
   def run({"tell", message}, _session, %{socket: socket, user: from}) do
     [player_name | message] = String.split(message, " ")

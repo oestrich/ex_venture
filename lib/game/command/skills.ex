@@ -15,6 +15,7 @@ defmodule Game.Command.Skills do
 
   commands ["skills"]
 
+  @impl Game.Command
   def help(:topic), do: "Skills"
   def help(:short), do: "List out your class skills"
   def help(:full) do
@@ -31,6 +32,7 @@ defmodule Game.Command.Skills do
   @doc """
   Look at your info sheet
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, %{socket: socket, user: user, save: save}) do

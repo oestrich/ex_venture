@@ -11,6 +11,7 @@ defmodule Game.Command.Bug do
 
   commands ["bug"]
 
+  @impl Game.Command
   def help(:topic), do: "Bug"
   def help(:short), do: "Report a bug"
   def help(:full) do
@@ -23,6 +24,7 @@ defmodule Game.Command.Bug do
     """
   end
 
+  @impl Game.Command
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({bug_title}, _session, state = %{socket: socket}) do
@@ -35,6 +37,7 @@ defmodule Game.Command.Bug do
     {:editor, __MODULE__, Map.put(state, :commands, commands)}
   end
 
+  @impl Game.Command.Editor
   def editor({:text, line}, state) do
     bug = get_in(state, [:commands, :bug])
     lines = Map.get(bug, :lines) ++ [line]

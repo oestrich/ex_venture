@@ -7,6 +7,7 @@ defmodule Game.Command.Version do
 
   commands ["version"]
 
+  @impl Game.Command
   def help(:topic), do: "Version"
   def help(:short), do: "View the running MUD version"
   def help(:full) do
@@ -21,6 +22,7 @@ defmodule Game.Command.Version do
   @doc """
   View version information
   """
+  @impl Game.Command
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, %{socket: socket}) do

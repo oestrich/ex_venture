@@ -9,6 +9,7 @@ defmodule Game.Command.Inventory do
 
   commands [{"inventory", ["inv", "i"]}]
 
+  @impl Game.Command
   def help(:topic), do: "Inventory"
   def help(:short), do: "View your character's inventory"
   def help(:full) do
@@ -25,6 +26,7 @@ defmodule Game.Command.Inventory do
   @doc """
   Look at your inventory
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, state = %{save: %{currency: currency, wearing: wearing, wielding: wielding, items: items}}) do

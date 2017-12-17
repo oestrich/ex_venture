@@ -11,6 +11,7 @@ defmodule Game.Command.Map do
 
   commands ["map"]
 
+  @impl Game.Command
   def help(:topic), do: "Map"
   def help(:short), do: "View a map of the zone"
   def help(:full) do
@@ -25,6 +26,7 @@ defmodule Game.Command.Map do
   @doc """
   View a map of the zone
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do

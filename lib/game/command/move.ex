@@ -26,6 +26,7 @@ defmodule Game.Command.Move do
     "close",
   ], parse: false
 
+  @impl Game.Command
   def help(:topic), do: "Move"
   def help(:short), do: "Move in a direction"
   def help(:full) do
@@ -48,6 +49,7 @@ defmodule Game.Command.Move do
   @doc """
   Parse the command into arguments
   """
+  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(commnd)
   def parse("move " <> direction), do: parse(direction)
@@ -80,6 +82,7 @@ defmodule Game.Command.Move do
   @doc """
   Move in the direction provided
   """
+  @impl Game.Command
   @spec run(args :: [atom()], session :: Session.t, state :: map()) :: :ok
   def run(command, session, state)
   def run({:east}, session, state = %{save: %{room_id: room_id}}) do

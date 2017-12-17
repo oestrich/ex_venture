@@ -15,6 +15,7 @@ defmodule Game.Command.Target do
 
   commands [{"target", ["t"]}]
 
+  @impl Game.Command
   def help(:topic), do: "Target"
   def help(:short), do: "Target an enemy"
   def help(:full) do
@@ -29,6 +30,7 @@ defmodule Game.Command.Target do
   @doc """
   Target an enemy
   """
+  @impl Game.Command
   def run(command, session, state)
   def run({target}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)

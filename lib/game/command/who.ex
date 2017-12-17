@@ -7,6 +7,7 @@ defmodule Game.Command.Who do
 
   commands ["who"]
 
+  @impl Game.Command
   def help(:topic), do: "Who"
   def help(:short), do: "See who is online"
   def help(:full) do
@@ -21,6 +22,7 @@ defmodule Game.Command.Who do
   @doc """
   Echo the currently connected players
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, %{socket: socket}) do

@@ -9,6 +9,7 @@ defmodule Game.Command.Examine do
 
   commands ["examine"]
 
+  @impl Game.Command
   def help(:topic), do: "Examine"
   def help(:short), do: "View information about items in your inventory"
   def help(:full) do
@@ -23,6 +24,7 @@ defmodule Game.Command.Examine do
   @doc """
   View information about items in your inventory
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({item_name}, _session, %{socket: socket, save: %{wearing: wearing, wielding: wielding, items: items}}) do

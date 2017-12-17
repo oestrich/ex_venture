@@ -14,6 +14,7 @@ defmodule Game.Command.Run do
 
   commands ["run"]
 
+  @impl Game.Command
   def help(:topic), do: "Run"
   def help(:short), do: "Move around quickly"
   def help(:full) do
@@ -28,6 +29,7 @@ defmodule Game.Command.Run do
   @doc """
   Run the user around
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({directions}, session, state) when is_list(directions) do

@@ -12,6 +12,7 @@ defmodule Game.Command.Wield do
 
   commands ["wield", "unwield"], parse: false
 
+  @impl Game.Command
   def help(:topic), do: "Wield"
   def help(:short), do: "Put an item in your hands"
   def help(:full) do
@@ -37,6 +38,7 @@ defmodule Game.Command.Wield do
       iex> Game.Command.Wield.parse("unweld right sword")
       {:error, :bad_parse, "unweld right sword"}
   """
+  @impl Game.Command
   @spec parse(command :: String.t) :: []
   def parse("wield " <> command), do: {:wield, command}
   def parse("unwield " <> command), do: {:unwield, command}
@@ -45,6 +47,7 @@ defmodule Game.Command.Wield do
   @doc """
   Put an item in your hands
   """
+  @impl Game.Command
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({:wield, item_name}, _session, state = %{socket: socket, save: %{items: items}}) do

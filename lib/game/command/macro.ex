@@ -23,6 +23,8 @@ defmodule Game.Command.Macro do
       @before_compile Game.Command.Macro
 
       @must_be_alive false
+
+      defoverridable Game.Command
     end
   end
 
@@ -39,6 +41,7 @@ defmodule Game.Command.Macro do
       def must_be_alive?(), do: @must_be_alive
 
       # Provide a default bad parse
+      @impl Game.Command
       def parse(command), do: {:error, :bad_parse, command}
     end
   end
@@ -93,6 +96,7 @@ defmodule Game.Command.Macro do
 
   defp command_parse(command) do
     quote do
+      @impl Game.Command
       def parse(unquote(command)), do: {}
       def parse(unquote(command) <> " " <> str), do: {str}
 
@@ -103,6 +107,7 @@ defmodule Game.Command.Macro do
 
   defp alias_parse(command_alias) do
     quote do
+      @impl Game.Command
       def parse(unquote(command_alias)), do: {}
       def parse(unquote(command_alias) <> " " <> str), do: {str}
 

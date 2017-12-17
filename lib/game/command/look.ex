@@ -12,6 +12,7 @@ defmodule Game.Command.Look do
 
   commands ["look at", {"look", ["l"]}]
 
+  @impl Game.Command
   def help(:topic), do: "Look"
   def help(:short), do: "Look around the room"
   def help(:full) do
@@ -26,6 +27,7 @@ defmodule Game.Command.Look do
   @doc """
   Look around the current room
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do

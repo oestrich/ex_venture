@@ -11,6 +11,7 @@ defmodule Game.Command.Channels do
 
   commands ["channels", "global", "newbie"], parse: false
 
+  @impl Game.Command
   def help(:topic), do: "Channels"
   def help(:short), do: "Talk to other players"
   def help(:full) do
@@ -49,6 +50,7 @@ defmodule Game.Command.Channels do
       iex> Game.Command.Channels.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
+  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("channels"), do: {}
@@ -61,6 +63,7 @@ defmodule Game.Command.Channels do
   @doc """
   Send to all connected players
   """
+  @impl Game.Command
   def run(command, session, state)
   def run({}, _session, %{socket: socket}) do
     channels = Channel.subscribed()

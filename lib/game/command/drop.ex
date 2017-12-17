@@ -13,6 +13,7 @@ defmodule Game.Command.Drop do
 
   commands ["drop"]
 
+  @impl Game.Command
   def help(:topic), do: "Drop"
   def help(:short), do: "Drop an item in the same room"
   def help(:full) do
@@ -28,6 +29,7 @@ defmodule Game.Command.Drop do
   @doc """
   Drop an item in the same room
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
   def run(command, session, state)
   def run({item_name}, _session, state) do

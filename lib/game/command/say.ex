@@ -7,6 +7,7 @@ defmodule Game.Command.Say do
 
   commands ["say"]
 
+  @impl Game.Command
   def help(:topic), do: "Say"
   def help(:short), do: "Talk to other players"
   def help(:full) do
@@ -22,6 +23,7 @@ defmodule Game.Command.Say do
   @doc """
   Says to the current room the player is in
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({message}, session, %{socket: socket, user: user, save: %{room_id: room_id}}) do

@@ -12,6 +12,7 @@ defmodule Game.Command.Shops do
 
   commands ["shops", "buy", "sell"], parse: false
 
+  @impl Game.Command
   def help(:topic), do: "Shops"
   def help(:short), do: "View shops and buy from them"
   def help(:full) do
@@ -65,6 +66,7 @@ defmodule Game.Command.Shops do
       iex> Game.Command.Shops.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
+  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("shops"), do: {}
@@ -90,6 +92,7 @@ defmodule Game.Command.Shops do
   @doc """
   View shops and buy from them
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, %{socket: socket, save: %{room_id: room_id}}) do

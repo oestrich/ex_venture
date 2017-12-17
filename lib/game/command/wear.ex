@@ -12,6 +12,7 @@ defmodule Game.Command.Wear do
 
   commands ["wear", "remove"], parse: false
 
+  @impl Game.Command
   def help(:topic), do: "Wear"
   def help(:short), do: "Put on a piece of armor"
   def help(:full) do
@@ -37,6 +38,7 @@ defmodule Game.Command.Wear do
       iex> Game.Command.Wear.parse("remve chest")
       {:error, :bad_parse, "remve chest"}
   """
+  @impl Game.Command
   @spec parse(command :: String.t) :: []
   def parse("wear " <> command), do: {:wear, command}
   def parse("remove " <> command), do: {:remove, command}
@@ -45,6 +47,7 @@ defmodule Game.Command.Wear do
   @doc """
   Put an item in your hands
   """
+  @impl Game.Command
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({:wear, item_name}, _session, state = %{socket: socket, save: %{items: items}}) do

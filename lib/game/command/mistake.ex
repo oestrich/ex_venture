@@ -7,6 +7,7 @@ defmodule Game.Command.Mistake do
 
   commands ["kill", "attack"], parse: false
 
+  @impl Game.Command
   def help(:topic), do: "Mistakes"
   def help(:short), do: "Common command mistakes"
   def help(:full) do
@@ -28,12 +29,14 @@ defmodule Game.Command.Mistake do
       iex> Game.Command.Mistake.parse("unknown")
       {:error, :bad_parse, "unknown"}
   """
+  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("attack" <> _), do: {:auto_combat}
   def parse("kill" <> _), do: {:auto_combat}
   def parse(command), do: {:error, :bad_parse, command}
 
+  @impl Game.Command
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({:auto_combat}, _session, %{socket: socket}) do

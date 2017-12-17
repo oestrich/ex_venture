@@ -7,6 +7,7 @@ defmodule Game.Command.Emote do
 
   commands ["emote"]
 
+  @impl Game.Command
   def help(:topic), do: "Emote"
   def help(:short), do: "Perform an emote"
   def help(:full) do
@@ -22,6 +23,7 @@ defmodule Game.Command.Emote do
   @doc """
   Perform an emote
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({emote}, session, %{socket: socket, user: user, save: %{room_id: room_id}}) do

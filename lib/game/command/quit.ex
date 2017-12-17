@@ -7,6 +7,7 @@ defmodule Game.Command.Quit do
 
   commands ["quit"]
 
+  @impl Game.Command
   def help(:topic), do: "Quit"
   def help(:short), do: "Leave the game"
   def help(:full) do
@@ -21,6 +22,7 @@ defmodule Game.Command.Quit do
   @doc """
   Save and quit the game
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, %{socket: socket}) do

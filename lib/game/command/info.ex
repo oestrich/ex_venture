@@ -11,6 +11,7 @@ defmodule Game.Command.Info do
 
   commands [{"info", ["score"]}]
 
+  @impl Game.Command
   def help(:topic), do: "Info"
   def help(:short), do: "View stats about your character"
   def help(:full) do
@@ -25,6 +26,7 @@ defmodule Game.Command.Info do
   @doc """
   Look at your info sheet
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({}, _session, state = %{socket: socket, user: user, save: save}) do

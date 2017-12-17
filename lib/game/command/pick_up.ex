@@ -14,6 +14,7 @@ defmodule Game.Command.PickUp do
 
   commands [{"pick up", ["get"]}]
 
+  @impl Game.Command
   def help(:topic), do: "Pick Up"
   def help(:short), do: "Pick up an item in the same room"
   def help(:full) do
@@ -28,6 +29,7 @@ defmodule Game.Command.PickUp do
   @doc """
   Pick up an item from a room
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
   def run(command, session, state)
   def run({@currency}, _session, state = %{socket: socket, save: save}) do

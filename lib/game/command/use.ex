@@ -12,6 +12,7 @@ defmodule Game.Command.Use do
 
   commands ["use"]
 
+  @impl Game.Command
   def help(:topic), do: "Use"
   def help(:short), do: "Use an item from your inventory"
   def help(:full) do
@@ -26,6 +27,7 @@ defmodule Game.Command.Use do
   @doc """
   Use an item
   """
+  @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
   def run({item_name}, _session, state = %{socket: socket, save: %{items: items}}) do
