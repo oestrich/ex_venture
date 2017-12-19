@@ -1,4 +1,4 @@
-defmodule Metrics.PipelineInstrumenter do  
+defmodule Metrics.PipelineInstrumenter do
   @moduledoc """
   Pipeline Instrumenter for Plugs
   """
@@ -8,4 +8,4 @@ defmodule Metrics.PipelineInstrumenter do
   def label_value(:request_path, conn) do
     conn.request_path
   end
-end  
+end
