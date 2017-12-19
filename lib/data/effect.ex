@@ -6,6 +6,7 @@ defmodule Data.Effect do
 
   - "damage": Does an amount of damage
   - "damage/type": Halves damage if the type does not align
+  - "damage/over-time": Does damage over time
   - "healing": Heals an amount of damage
   - "stats": Modify base stats for the player
   """
@@ -26,6 +27,15 @@ defmodule Data.Effect do
 
   @type damage_type :: %{
     types: [atom],
+  }
+
+  @typedoc """
+  Damage over time. Does damage every `every` seconds.
+  """
+  @type damage_over_time :: %{
+    type: atom(),
+    amount: integer(),
+    every: integer(),
   }
 
   @type heal :: %{
@@ -58,6 +68,9 @@ defmodule Data.Effect do
       iex> Data.Effect.load(%{"kind" => "damage/type", "types" => ["slashing"]})
       {:ok, %{kind: "damage/type", types: [:slashing]}}
 
+      iex> Data.Effect.load(%{"kind" => "damage/over-time", "type" => "slashing", "amount" => 10, "every" => 3})
+      {:ok, %{kind: "damage/over-time", type: :slashing, amount: 10, every: 3}}
+
       iex> Data.Effect.load(%{"kind" => "stats", "field" => "dexterity"})
       {:ok, %{kind: "stats", field: :dexterity}}
   """
@@ -74,6 +87,9 @@ defmodule Data.Effect do
   defp cast_vals("damage/type", effect) do
     types = Enum.map(effect.types, &String.to_atom/1)
     effect |> Map.put(:types, types)
+  end
+  defp cast_vals("damage/over-time", effect) do
+    effect |> Map.put(:type, String.to_atom(effect.type))
   end
   defp cast_vals("heal", effect) do
     effect |> Map.put(:type, String.to_atom(effect.type))
@@ -98,6 +114,9 @@ defmodule Data.Effect do
   def starting_effect("damage/type") do
     %{kind: "damage/type", types: []}
   end
+  def starting_effect("damage/over-time") do
+    %{kind: "damage/over-time", type: :slashing, amount: 0, every: 10}
+  end
   def starting_effect("healing") do
     %{kind: "healing", amount: 0}
   end
@@ -118,6 +137,11 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "damage/type", types: [:something]})
       false
 
+      iex> Data.Effect.valid?(%{kind: "damage/over-time", type: :slashing, amount: 10, every: 3})
+      true
+      iex> Data.Effect.valid?(%{kind: "damage/over-time", type: :something, amount: 10, every: 3})
+      false
+
       iex> Data.Effect.valid?(%{kind: "healing", amount: 10})
       true
       iex> Data.Effect.valid?(%{kind: "healing", amount: :invalid})
@@ -135,6 +159,9 @@ defmodule Data.Effect do
   end
   def valid?(effect = %{kind: "damage/type"}) do
     keys(effect) == [:kind, :types] && valid_damage_type?(effect)
+  end
+  def valid?(effect = %{kind: "damage/over-time"}) do
+    keys(effect) == [:amount, :every, :kind, :type] && valid_damage_over_time?(effect)
   end
   def valid?(effect = %{kind: "healing"}) do
     keys(effect) == [:amount, :kind] && valid_healing?(effect)
@@ -181,6 +208,28 @@ defmodule Data.Effect do
     Enum.all?(types, &(&1 in Damage.types()))
   end
   def valid_damage_type?(_), do: false
+
+  @doc """
+  Validate if `damage/over-time` is right
+
+      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: 3})
+      true
+
+      iex> Data.Effect.valid_damage_over_time?(%{type: :anything, amount: 10, every: 3})
+      false
+
+      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: :ten, every: 3})
+      false
+
+      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: :three})
+      false
+  """
+  @spec valid_damage_over_time?(effect :: Effect.t) :: boolean
+  def valid_damage_over_time?(effect)
+  def valid_damage_over_time?(%{type: type, amount: amount, every: every}) do
+    type in Damage.types() && is_integer(amount) && is_integer(every) && every > 0
+  end
+  def valid_damage_over_time?(_), do: false
 
   @doc """
   Validate if healing is right
