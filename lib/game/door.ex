@@ -7,6 +7,11 @@ defmodule Game.Door do
 
   alias Data.Exit
 
+  @typedoc """
+  Door status is `open` or `closed`
+  """
+  @type status :: String.t()
+
   @ets_table :doors
   @closed "closed"
   @open "open"
@@ -51,8 +56,9 @@ defmodule Game.Door do
   @doc """
   Set the state of a door, state must be `#{@open}` or `#{@closed}`
   """
-  @spec set(exit_id :: integer, state :: String.t) :: :ok
+  @spec set(room_exit :: Exit.t, state :: status()) :: :ok
   def set(%{id: id}, state) when state in [@open, @closed], do: set(id, state)
+  @spec set(exit_id :: integer, state :: status()) :: :ok
   def set(exit_id, state) when state in [@open, @closed] do
     GenServer.call(__MODULE__, {:set, exit_id, state})
   end
@@ -79,6 +85,11 @@ defmodule Game.Door do
     end
   end
 
+  @doc """
+  Remove an exit from the ETS table after being deleted.
+  """
+  @spec remove(Exit.t()) :: :ok
+  def remove(room_exit)
   def remove(%{id: id}) do
     GenServer.call(__MODULE__, {:remove, id})
   end

@@ -7,6 +7,9 @@ defmodule Game.Currency do
 
   @currency Application.get_env(:ex_venture, :game)[:currency]
 
+  @doc """
+  Sets up `@currency` and imports `currency/0`
+  """
   defmacro __using__(_opts) do
     quote do
       @currency Application.get_env(:ex_venture, :game)[:currency]
@@ -15,5 +18,9 @@ defmodule Game.Currency do
     end
   end
 
+  @doc """
+  Get the currency name
+  """
+  @spec currency() :: String.t()
   def currency(), do: @currency
 end
