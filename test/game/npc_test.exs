@@ -4,6 +4,7 @@ defmodule Game.NPCTest do
   @room Test.Game.Room
 
   alias Game.NPC
+  alias Game.NPC.State
   alias Game.Session.Registry
 
   setup do
@@ -15,7 +16,7 @@ defmodule Game.NPCTest do
     targeter = {:user, %{id: 10, name: "Player"}}
 
     {:noreply, state} =
-      NPC.handle_cast({:targeted, targeter}, %{npc_spawner: %{room_id: 1}, npc: %{name: "NPC"}, is_targeting: MapSet.new()})
+      NPC.handle_cast({:targeted, targeter}, %{npc: %{name: "NPC"}, is_targeting: MapSet.new()})
 
     assert state.is_targeting |> MapSet.size() == 1
     assert state.is_targeting |> MapSet.member?({:user, 10})
@@ -43,9 +44,22 @@ defmodule Game.NPCTest do
   test "applying effects" do
     effect = %{kind: "damage", type: :slashing, amount: 10}
 
-    state = %{npc_spawner: %{room_id: 1}, npc: %{id: 1, name: "NPC", stats: %{health: 25}}, is_targeting: MapSet.new()}
+    state = %State{npc: %{id: 1, name: "NPC", stats: %{health: 25}}, is_targeting: MapSet.new()}
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
     assert state.npc.stats.health == 15
+  end
+
+  test "applying continuous effects - damage over time" do
+    effect = %{kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
+
+    state = %State{npc: %{id: 1, name: "NPC", stats: %{health: 25}}, is_targeting: MapSet.new(), continuous_effects: []}
+    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
+    [effect] = state.continuous_effects
+    assert effect.kind == "damage/over-time"
+    assert effect.id
+
+    effect_id = effect.id
+    assert_receive {:continuous_effect, ^effect_id}
   end
 
   test "applying effects - died" do
@@ -55,7 +69,7 @@ defmodule Game.NPCTest do
 
     is_targeting = MapSet.new |> MapSet.put({:user, 2})
     npc = %{currency: 0, item_ids: [], id: 1, name: "NPC", stats: %{health: 10}}
-    state = %{room_id: 1, npc: npc, is_targeting: is_targeting}
+    state = %State{room_id: 1, npc: npc, is_targeting: is_targeting}
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
     assert state.npc.stats.health == 0
 

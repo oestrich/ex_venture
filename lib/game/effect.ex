@@ -25,13 +25,16 @@ defmodule Game.Effect do
     {damage_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage"))
     damage = damage_effects |> Enum.map(&(calculate_damage(&1, stats)))
 
+    {damage_over_time_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage/over-time"))
+    damage_over_time = damage_over_time_effects |> Enum.map(&(calculate_damage(&1, stats)))
+
     {healing_effects, effects} = effects |> Enum.split_with(&(&1.kind == "healing"))
     healing = healing_effects |> Enum.map(&(calculate_healing(&1, stats)))
 
     {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
     damage = damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
 
-    damage ++ healing
+    damage ++ damage_over_time ++ healing
   end
 
   @doc """
@@ -126,7 +129,7 @@ defmodule Game.Effect do
   end
 
   @doc """
-  Apply effects to stats
+  Apply effects to stats.
 
       iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
       iex> Game.Effect.apply(effects, %{health: 25})
@@ -154,6 +157,10 @@ defmodule Game.Effect do
     %{health: health} = stats
     Map.put(stats, :health, health - effect.amount)
   end
+  def apply_effect(effect = %{kind: "damage/over-time"}, stats) do
+    %{health: health} = stats
+    Map.put(stats, :health, health - effect.amount)
+  end
   def apply_effect(effect = %{kind: "healing"}, stats) do
     %{health: health, max_health: max_health} = stats
 
@@ -166,4 +173,16 @@ defmodule Game.Effect do
     Map.put(stats, :health, health)
   end
   def apply_effect(_effect, stats), do: stats
+
+  @doc """
+  Filters to continuous effects only
+
+  - `damage/over-time`
+  """
+  @spec continuous_effects([Effect.t]) :: [Effect.t]
+  def continuous_effects(effects) do
+    effects
+    |> Enum.filter(&Effect.continuous?/1)
+    |> Enum.map(&Effect.instantiate/1)
+  end
 end

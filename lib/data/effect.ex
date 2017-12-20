@@ -30,7 +30,7 @@ defmodule Data.Effect do
   }
 
   @typedoc """
-  Damage over time. Does damage every `every` seconds.
+  Damage over time. Does damage every `every` milliseconds.
   """
   @type damage_over_time :: %{
     type: atom(),
@@ -116,7 +116,7 @@ defmodule Data.Effect do
     %{kind: "damage/type", types: []}
   end
   def starting_effect("damage/over-time") do
-    %{kind: "damage/over-time", type: :slashing, amount: 0, every: 10}
+    %{kind: "damage/over-time", type: :slashing, amount: 0, every: 10, count: 2}
   end
   def starting_effect("healing") do
     %{kind: "healing", amount: 0}
@@ -285,5 +285,27 @@ defmodule Data.Effect do
       true -> changeset
       false -> add_error(changeset, :effects, "are invalid")
     end
+  end
+
+  @doc """
+  Check if an effect is continuous or not
+
+    iex> Data.Effect.continuous?(%{kind: "damage/over-time"})
+    true
+
+    iex> Data.Effect.continuous?(%{kind: "damage"})
+    false
+  """
+  @spec continuous?(Effect.t) :: boolean()
+  def continuous?(effect)
+  def continuous?(%{kind: "damage/over-time"}), do: true
+  def continuous?(_), do: false
+
+  @doc """
+  Instantiate an effect by giving it an ID to track, for future callbacks
+  """
+  @spec instantiate(Effect.t) :: boolean()
+  def instantiate(effect) do
+    effect |> Map.put(:id, UUID.uuid4())
   end
 end

@@ -1,8 +1,10 @@
 defmodule Game.NPC.ActionsTest do
   use ExUnit.Case
   import Test.ItemsHelper
+  doctest Game.NPC.Actions
 
   alias Game.NPC.Actions
+  alias Game.NPC.State
 
   @room Test.Game.Room
 
@@ -83,6 +85,52 @@ defmodule Game.NPC.ActionsTest do
 
     test "will not drop an item if the chance is above the item's drop rate" do
       refute Actions.drop_item?(%{drop_rate: 50}, Test.ChanceFail)
+    end
+  end
+
+  describe "continuous effects" do
+    setup do
+      effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
+      npc = %{id: 1, name: "NPC", currency: 0, item_ids: [], stats: %{health: 25}}
+      state = %State{room_id: 1, npc: npc, is_targeting: MapSet.new(), continuous_effects: [effect]}
+
+      @room.clear_leaves()
+
+      %{state: state, effect: effect}
+    end
+
+    test "finds the matching effect and applies it as damage, then decrements the counter", %{state: state, effect: effect} do
+      state = Actions.continuous_effects(state, :id)
+
+      effect_id = effect.id
+      assert [%{id: :id, count: 2}] = state.continuous_effects
+      assert state.npc.stats.health == 15
+      assert_receive {:continuous_effect, ^effect_id}
+    end
+
+    test "handles death", %{state: state, effect: effect} do
+      effect = %{effect | amount: 26}
+      state = %{state | continuous_effects: [effect]}
+
+      state = Actions.continuous_effects(state, :id)
+
+      assert [{1, {:npc, _}}] = @room.get_leaves()
+      assert state.continuous_effects == []
+    end
+
+    test "does not send another message if last count", %{state: state, effect: effect} do
+      effect = %{effect | count: 1}
+      state = %{state | continuous_effects: [effect]}
+
+      state = Actions.continuous_effects(state, :id)
+
+      effect_id = effect.id
+      assert [%{id: :id, count: 0}] = state.continuous_effects
+      refute_receive {:continuous_effect, ^effect_id}
+    end
+
+    test "does nothing if effect is not found", %{state: state} do
+      ^state = Actions.continuous_effects(state, :notfound)
     end
   end
 end
