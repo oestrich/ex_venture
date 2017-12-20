@@ -36,6 +36,7 @@ defmodule Data.Effect do
     type: atom(),
     amount: integer(),
     every: integer(),
+    count: integer(),
   }
 
   @type heal :: %{
@@ -137,9 +138,9 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "damage/type", types: [:something]})
       false
 
-      iex> Data.Effect.valid?(%{kind: "damage/over-time", type: :slashing, amount: 10, every: 3})
+      iex> Data.Effect.valid?(%{kind: "damage/over-time", type: :slashing, amount: 10, every: 3, count: 3})
       true
-      iex> Data.Effect.valid?(%{kind: "damage/over-time", type: :something, amount: 10, every: 3})
+      iex> Data.Effect.valid?(%{kind: "damage/over-time", type: :something, amount: 10, every: 3, count: 3})
       false
 
       iex> Data.Effect.valid?(%{kind: "healing", amount: 10})
@@ -161,7 +162,7 @@ defmodule Data.Effect do
     keys(effect) == [:kind, :types] && valid_damage_type?(effect)
   end
   def valid?(effect = %{kind: "damage/over-time"}) do
-    keys(effect) == [:amount, :every, :kind, :type] && valid_damage_over_time?(effect)
+    keys(effect) == [:amount, :count, :every, :kind, :type] && valid_damage_over_time?(effect)
   end
   def valid?(effect = %{kind: "healing"}) do
     keys(effect) == [:amount, :kind] && valid_healing?(effect)
@@ -212,22 +213,26 @@ defmodule Data.Effect do
   @doc """
   Validate if `damage/over-time` is right
 
-      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: 3})
+      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: 3, count: 3})
       true
 
-      iex> Data.Effect.valid_damage_over_time?(%{type: :anything, amount: 10, every: 3})
+      iex> Data.Effect.valid_damage_over_time?(%{type: :anything, amount: 10, every: 3, count: 3})
       false
 
-      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: :ten, every: 3})
+      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: :ten, every: 3, count: 3})
       false
 
-      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: :three})
+      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: :three, count: 3})
+      false
+
+      iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: 3, count: :three})
       false
   """
   @spec valid_damage_over_time?(effect :: Effect.t) :: boolean
   def valid_damage_over_time?(effect)
-  def valid_damage_over_time?(%{type: type, amount: amount, every: every}) do
-    type in Damage.types() && is_integer(amount) && is_integer(every) && every > 0
+  def valid_damage_over_time?(%{type: type, amount: amount, every: every, count: count}) do
+    type in Damage.types() && is_integer(amount) &&
+      is_integer(every) && every > 0 && is_integer(count) && count > 0
   end
   def valid_damage_over_time?(_), do: false
 
