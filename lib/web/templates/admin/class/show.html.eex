@@ -82,7 +82,7 @@
               <%= Enum.map @class.skills, fn (skill) -> %>
                 <tr>
                   <td><%= skill.level %></td>
-                  <td><%= skill.name %></td>
+                  <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
                   <td>
                     <%= link("View", to: skill_path(@conn, :show, skill.id)) %>
                     <%= link("Edit", to: skill_path(@conn, :edit, skill.id)) %>

@@ -36,7 +36,7 @@
               <%= Enum.map @npcs, fn (npc) -> %>
                 <tr>
                   <td><%= npc.id %></td>
-                  <td><%= npc.name %></td>
+                  <td><%= link(npc.name, to: npc_path(@conn, :show, npc.id)) %></td>
                   <td>
                     <%= Enum.map(npc.tags, fn (tag) -> %>
                       <span class="label label-info"><%= tag %></span>

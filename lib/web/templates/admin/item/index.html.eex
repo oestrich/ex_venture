@@ -26,7 +26,7 @@
               <%= Enum.map @items, fn (item) -> %>
                 <tr>
                   <td><%= item.id %></td>
-                  <td><%= item.name %></td>
+                  <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
                   <td>
                     <%= link("View", to: item_path(@conn, :show, item.id)) %>
                     <%= link("Edit", to: item_path(@conn, :edit, item.id)) %>

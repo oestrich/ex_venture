@@ -36,10 +36,11 @@
               <%= Enum.map @help_topics, fn (help_topic) -> %>
                 <tr>
                   <td><%= help_topic.id %></td>
-                  <td><%= help_topic.name %></td>
+                  <td><%= link(help_topic.name, to: help_topic_path(@conn, :show, help_topic.id)) %></td>
                   <td><%= help_topic.keywords |> Enum.join(", ") %></td>
                   <td>
                     <%= link("View", to: help_topic_path(@conn, :show, help_topic.id)) %>
+                    <%= link("Edit", to: help_topic_path(@conn, :edit, help_topic.id)) %>
                   </td>
                 </tr>
               <% end %>

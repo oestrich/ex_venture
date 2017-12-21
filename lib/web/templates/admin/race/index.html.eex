@@ -35,9 +35,10 @@
               <%= Enum.map @races, fn (race) -> %>
                 <tr>
                   <td><%= race.id %></td>
-                  <td><%= race.name %></td>
+                  <td><%= link(race.name, to: race_path(@conn, :show, race.id)) %></td>
                   <td>
                     <%= link("View", to: race_path(@conn, :show, race.id)) %>
+                    <%= link("Edit", to: race_path(@conn, :edit, race.id)) %>
                   </td>
                 </tr>
               <% end %>

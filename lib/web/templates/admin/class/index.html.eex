@@ -35,7 +35,7 @@
               <%= Enum.map @classes, fn (class) -> %>
                 <tr>
                   <td><%= class.id %></td>
-                  <td><%= class.name %></td>
+                  <td><%= link(class.name, to: class_path(@conn, :show, class.id)) %></td>
                   <td>
                     <%= link("View", to: class_path(@conn, :show, class.id)) %>
                     <%= link("Edit", to: class_path(@conn, :edit, class.id)) %>

@@ -35,7 +35,7 @@
               <%= Enum.map @zones, fn (zone) -> %>
                 <tr>
                   <td><%= zone.id %></td>
-                  <td><%= zone.name %></td>
+                  <td><%= link(zone.name, to: zone_path(@conn, :show, zone.id)) %></td>
                   <td>
                     <%= link("View", to: zone_path(@conn, :show, zone.id)) %>
                     <%= link("Edit", to: zone_path(@conn, :edit, zone.id)) %>

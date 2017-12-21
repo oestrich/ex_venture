@@ -101,7 +101,7 @@
               <%= Enum.map @zone.rooms, fn (room) -> %>
                 <tr>
                   <td><%= room.id %></td>
-                  <td><%= room.name %></td>
+                  <td><%= link(room.name, to: room_path(@conn, :show, room.id)) %></td>
                   <td><%= room.ecology %></td>
                   <td>
                     <%= link("View", to: room_path(@conn, :show, room.id)) %>

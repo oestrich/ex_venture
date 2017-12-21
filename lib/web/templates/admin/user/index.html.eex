@@ -26,7 +26,7 @@
               <%= Enum.map @users, fn (user) -> %>
                 <tr>
                   <td><%= user.id %></td>
-                  <td><%= user.name %></td>
+                  <td><%= link(user.name, to: user_path(@conn, :show, user.id)) %></td>
                   <td><%= user.updated_at |> time() %></td>
                   <td><%= user.save.level %></td>
                   <td><%= link(user.race.name, to: race_path(@conn, :show, user.race_id)) %></td>
