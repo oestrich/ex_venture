@@ -16,6 +16,13 @@ defmodule Game.Character do
   alias Game.Character.Via
   alias Game.Session
 
+  @typedoc """
+  Common properties of a character (NPC or User)
+  """
+  @type t :: %{
+    stats: Stats.character(),
+  }
+
   @doc """
   Let the target know they are being targeted
   """

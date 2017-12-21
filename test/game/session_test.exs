@@ -4,6 +4,7 @@ defmodule Game.SessionTest do
 
   alias Game.Command
   alias Game.Session
+  alias Game.Session.State
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -185,13 +186,33 @@ defmodule Game.SessionTest do
     stats = %{health: 25}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
-    state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
     {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
 
     assert [{1, {:user, _,  %{name: "user", save: %{room_id: 1, stats: %{health: 15}}}}}] = @room.get_update_characters()
+  end
+
+  test "applying effects with continuous effects", %{socket: socket} do
+    @room.clear_update_characters()
+
+    effect = %{kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
+    stats = %{health: 25}
+    user = %{id: 2, name: "user", class: class_attributes(%{})}
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}
+
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+
+    assert state.save.stats.health == 15
+    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
+
+    [effect] = state.continuous_effects
+    assert effect.kind == "damage/over-time"
+    assert effect.id
+    effect_id = effect.id
+    assert_receive {:continuous_effect, ^effect_id}
   end
 
   test "applying effects - died", %{socket: socket} do
@@ -202,7 +223,7 @@ defmodule Game.SessionTest do
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     is_targeting = MapSet.new() |> MapSet.put({:user, 2})
-    state = %{socket: socket, state: "active", user: user, save: %{room_id: 1, stats: stats}, is_targeting: is_targeting}
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: is_targeting}
     {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == -5
 

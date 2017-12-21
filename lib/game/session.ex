@@ -40,7 +40,7 @@ defmodule Game.Session do
     """
 
     @enforce_keys [:socket, :state, :mode]
-    defstruct [:socket, :state, :session_started_at, :last_recv, :last_tick, :mode, :target, :is_targeting, :regen, :reply_to]
+    defstruct [:socket, :state, :session_started_at, :user, :save, :last_recv, :last_tick, :target, :is_targeting, :regen, :reply_to, mode: "comands", continuous_effects: []]
   end
 
   @doc """
@@ -397,6 +397,11 @@ defmodule Game.Session do
 
   def handle_info(:inactive_check, state) do
     state |> check_for_inactive()
+    {:noreply, state}
+  end
+
+  def handle_info({:continuous_effect, effect_id}, state) do
+    state = Effects.handle_continuous_effect(state, effect_id)
     {:noreply, state}
   end
 

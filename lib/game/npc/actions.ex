@@ -7,9 +7,12 @@ defmodule Game.NPC.Actions do
 
   use Game.Room
 
+  import Game.Character.Helpers, only: [update_effect_count: 2, is_alive?: 1]
+
   require Logger
 
   alias Data.Item
+  alias Data.NPC
   alias Game.Character
   alias Game.Effect
   alias Game.Items
@@ -116,16 +119,40 @@ defmodule Game.NPC.Actions do
   end
 
   @doc """
+  Apply effects to the NPC
+  """
+  @spec apply_effects(State.t, [Effect.t], tuple()) :: State.t
+  def apply_effects(state = %{npc: npc}, effects, _from) do
+    continuous_effects = effects |> Effect.continuous_effects()
+    stats = effects |> Effect.apply(npc.stats)
+    state = stats |> maybe_died(state)
+    npc = %{npc | stats: stats}
+    state = %{state | npc: npc}
+
+    Enum.each(continuous_effects, fn (effect) ->
+      :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
+    end)
+
+    case is_alive?(npc) do
+      true -> state |> Map.put(:continuous_effects, continuous_effects ++ state.continuous_effects)
+      false -> state |> Map.put(:continuous_effects, [])
+    end
+  end
+
+  @doc """
   Apply a continuous effect to an NPC
   """
-  def continuous_effects(state, effect_id) do
+  def handle_continuous_effect(state, effect_id) do
     case Enum.find(state.continuous_effects, &(&1.id == effect_id)) do
       nil -> state
       effect -> apply_continuous_effect(state, effect)
     end
   end
 
-  defp apply_continuous_effect(state = %{npc: npc}, effect) do
+  @doc """
+  """
+  @spec apply_continuous_effect(State.t, Effect.t) :: State.t
+  def apply_continuous_effect(state = %{npc: npc}, effect) do
     stats = [effect] |> Effect.apply(npc.stats)
     state = stats |> maybe_died(state)
     npc = %{npc | stats: stats}
@@ -133,30 +160,9 @@ defmodule Game.NPC.Actions do
 
     case is_alive?(npc) do
       true ->
-        continuous_effects = List.delete(state.continuous_effects, effect)
-        effect = %{effect | count: effect.count - 1}
-        maybe_send_continuous_effect(effect)
-        state |> Map.put(:continuous_effects, [effect | continuous_effects])
+        state |> update_effect_count(effect)
       false ->
         state
     end
   end
-
-  @doc """
-  Determine if the NPC is alive still
-
-      iex> Game.NPC.Actions.is_alive?(%{stats: %{health: 10}})
-      true
-
-      iex> Game.NPC.Actions.is_alive?(%{stats: %{health: -1}})
-      false
-  """
-  def is_alive?(npc)
-  def is_alive?(%{stats: %{health: health}}) when health > 0, do: true
-  def is_alive?(_), do: false
-
-  defp maybe_send_continuous_effect(%{id: id, every: every, count: count}) when count > 0 do
-    :erlang.send_after(every, self(), {:continuous_effect, id})
-  end
-  defp maybe_send_continuous_effect(_), do: :ok
 end

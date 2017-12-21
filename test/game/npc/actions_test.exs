@@ -100,7 +100,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "finds the matching effect and applies it as damage, then decrements the counter", %{state: state, effect: effect} do
-      state = Actions.continuous_effects(state, :id)
+      state = Actions.handle_continuous_effect(state, :id)
 
       effect_id = effect.id
       assert [%{id: :id, count: 2}] = state.continuous_effects
@@ -112,7 +112,7 @@ defmodule Game.NPC.ActionsTest do
       effect = %{effect | amount: 26}
       state = %{state | continuous_effects: [effect]}
 
-      state = Actions.continuous_effects(state, :id)
+      state = Actions.handle_continuous_effect(state, :id)
 
       assert [{1, {:npc, _}}] = @room.get_leaves()
       assert state.continuous_effects == []
@@ -122,15 +122,15 @@ defmodule Game.NPC.ActionsTest do
       effect = %{effect | count: 1}
       state = %{state | continuous_effects: [effect]}
 
-      state = Actions.continuous_effects(state, :id)
+      state = Actions.handle_continuous_effect(state, :id)
 
       effect_id = effect.id
-      assert [%{id: :id, count: 0}] = state.continuous_effects
+      assert [] = state.continuous_effects
       refute_receive {:continuous_effect, ^effect_id}
     end
 
     test "does nothing if effect is not found", %{state: state} do
-      ^state = Actions.continuous_effects(state, :notfound)
+      ^state = Actions.handle_continuous_effect(state, :notfound)
     end
   end
 end

@@ -14,7 +14,6 @@ defmodule Game.NPC do
   alias Data.Repo
   alias Data.Stats
   alias Game.Character
-  alias Game.Effect
   alias Game.Message
   alias Game.NPC.Actions
   alias Game.NPC.Events
@@ -219,20 +218,7 @@ defmodule Game.NPC do
 
   def handle_cast({:apply_effects, effects, from, _description}, state = %{npc: npc}) do
     Logger.info("Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})", type: :npc)
-    continuous_effects = effects |> Effect.continuous_effects()
-    stats = effects |> Effect.apply(npc.stats)
-    state = stats |> Actions.maybe_died(state)
-    npc = %{npc | stats: stats}
-
-    Enum.each(continuous_effects, fn (effect) ->
-      :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
-    end)
-
-    state =
-      state
-      |> Map.put(:npc, npc)
-      |> Map.put(:continuous_effects, continuous_effects ++ state.continuous_effects)
-
+    state = Actions.apply_effects(state, effects, from)
     {:noreply, state}
   end
 
@@ -253,7 +239,7 @@ defmodule Game.NPC do
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
-    state = Actions.continuous_effects(state, effect_id)
+    state = Actions.handle_continuous_effect(state, effect_id)
     {:noreply, state}
   end
 end

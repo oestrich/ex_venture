@@ -503,6 +503,8 @@ Items: #{items(room, items)}
     case effect do
       %{kind: "damage"} ->
         ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
+      %{kind: "damage/over-time"} ->
+        ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
       %{kind: "healing"} ->
         ["#{effect.amount} damage is healed." | effects(remaining)]
       _ -> effects(remaining)
