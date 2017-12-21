@@ -21,19 +21,19 @@ defmodule Game.Command.Shops do
     [ ] > {white}shops{/white}
 
     List items in a shop:
-    [ ] > {white}shops list shop{/white}
+    [ ] > {white}shops list shop name{/white}
     [ ] > {white}shop list{/white}
 
     View an item in a shop:
-    [ ] > {white}shops show item from shop{/white}
+    [ ] > {white}shops show item from shop name{/white}
     [ ] > {white}shop show item{/white}
 
     Buy an item from a shop:
-    [ ] > {white}buy item from shop{/white}
+    [ ] > {white}buy item from shop name{/white}
     [ ] > {white}buy item{/white}
 
     Sell an item to a shop:
-    [ ] > {white}sell item from shop{/white}
+    [ ] > {white}sell item to shop name{/white}
     [ ] > {white}sell item{/white}
 
     When matching a shop name, you can use the shortest unique string for
