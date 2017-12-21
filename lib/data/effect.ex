@@ -7,7 +7,7 @@ defmodule Data.Effect do
   - "damage": Does an amount of damage
   - "damage/type": Halves damage if the type does not align
   - "damage/over-time": Does damage over time
-  - "healing": Heals an amount of damage
+  - "recover": Heals an amount of health/skill/move points
   - "stats": Modify base stats for the player
   """
 
@@ -40,8 +40,12 @@ defmodule Data.Effect do
   }
 
   @type heal :: %{
-    type: atom,
     amount: integer,
+  }
+
+  @type recover :: %{
+    type: atom(),
+    amount: integer(),
   }
 
   @type stats :: %{
@@ -118,8 +122,8 @@ defmodule Data.Effect do
   def starting_effect("damage/over-time") do
     %{kind: "damage/over-time", type: :slashing, amount: 0, every: 10, count: 2}
   end
-  def starting_effect("healing") do
-    %{kind: "healing", amount: 0}
+  def starting_effect("recover") do
+    %{kind: "recover", type: "health", amount: 0}
   end
   def starting_effect("stats") do
     %{kind: "stats", field: :dexterity, amount: 0}
@@ -143,9 +147,9 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "damage/over-time", type: :something, amount: 10, every: 3, count: 3})
       false
 
-      iex> Data.Effect.valid?(%{kind: "healing", amount: 10})
+      iex> Data.Effect.valid?(%{kind: "recover", type: "skill", amount: 10})
       true
-      iex> Data.Effect.valid?(%{kind: "healing", amount: :invalid})
+      iex> Data.Effect.valid?(%{kind: "recover", type: "skill", amount: :invalid})
       false
 
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: 10})
@@ -164,8 +168,8 @@ defmodule Data.Effect do
   def valid?(effect = %{kind: "damage/over-time"}) do
     keys(effect) == [:amount, :count, :every, :kind, :type] && valid_damage_over_time?(effect)
   end
-  def valid?(effect = %{kind: "healing"}) do
-    keys(effect) == [:amount, :kind] && valid_healing?(effect)
+  def valid?(effect = %{kind: "recover"}) do
+    keys(effect) == [:amount, :kind, :type] && valid_recover?(effect)
   end
   def valid?(effect = %{kind: "stats"}) do
     keys(effect) == [:amount, :field, :kind] && valid_stats?(effect)
@@ -237,18 +241,28 @@ defmodule Data.Effect do
   def valid_damage_over_time?(_), do: false
 
   @doc """
-  Validate if healing is right
+  Validate if recover is right
 
-      iex> Data.Effect.valid_healing?(%{amount: 10})
+      iex> Data.Effect.valid_recover?(%{type: "health", amount: 10})
       true
 
-      iex> Data.Effect.valid_healing?(%{amount: :invalid})
+      iex> Data.Effect.valid_recover?(%{type: "skill", amount: 10})
+      true
+
+      iex> Data.Effect.valid_recover?(%{type: "move", amount: 10})
+      true
+
+      iex> Data.Effect.valid_recover?(%{type: "skill", amount: :invalid})
+      false
+      iex> Data.Effect.valid_recover?(%{type: "other", amount: 10})
       false
   """
-  @spec valid_healing?(effect :: Effect.t) :: boolean
-  def valid_healing?(effect)
-  def valid_healing?(%{amount: amount}), do: is_integer(amount)
-  def valid_healing?(_), do: false
+  @spec valid_recover?(effect :: Effect.t) :: boolean
+  def valid_recover?(effect)
+  def valid_recover?(%{type: type, amount: amount}) do
+    type in ["health", "skill", "move"] && is_integer(amount)
+  end
+  def valid_recover?(_), do: false
 
   @doc """
   Validate if the stats type is right

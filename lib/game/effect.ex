@@ -10,7 +10,7 @@ defmodule Game.Effect do
   @doc """
   Calculate effects based on the user
 
-  Filters out stat boosting effects, then deals with damage & healing
+  Filters out stat boosting effects, then deals with damage & recovery
 
       iex> Game.Effect.calculate(%{}, [])
       []
@@ -28,13 +28,13 @@ defmodule Game.Effect do
     {damage_over_time_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage/over-time"))
     damage_over_time = damage_over_time_effects |> Enum.map(&(calculate_damage(&1, stats)))
 
-    {healing_effects, effects} = effects |> Enum.split_with(&(&1.kind == "healing"))
-    healing = healing_effects |> Enum.map(&(calculate_healing(&1, stats)))
+    {recover_effects, effects} = effects |> Enum.split_with(&(&1.kind == "recover"))
+    recover = recover_effects |> Enum.map(&(calculate_recover(&1, stats)))
 
     {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
     damage = damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
 
-    damage ++ damage_over_time ++ healing
+    damage ++ damage_over_time ++ recover
   end
 
   @doc """
@@ -92,14 +92,14 @@ defmodule Game.Effect do
   end
 
   @doc """
-  Calculate healing
+  Calculate recovery
 
-      iex> effect = %{kind: "healing", amount: 10}
-      iex> Game.Effect.calculate_healing(effect, %{wisdom: 10})
-      %{kind: "healing", amount: 15}
+      iex> effect = %{kind: "recover", type: "health", amount: 10}
+      iex> Game.Effect.calculate_recover(effect, %{wisdom: 10})
+      %{kind: "recover", type: "health", amount: 15}
   """
-  @spec calculate_healing(effect :: Effect.t, stats :: Stats.t) :: map
-  def calculate_healing(effect, stats) do
+  @spec calculate_recover(effect :: Effect.t, stats :: Stats.t) :: map
+  def calculate_recover(effect, stats) do
     wisdom_modifier = 1 + (stats.wisdom / 20.0)
     modified_amount = round(Float.ceil(effect.amount * wisdom_modifier))
     effect |> Map.put(:amount, modified_amount)
@@ -146,33 +146,56 @@ defmodule Game.Effect do
       iex> effect = %{kind: "damage", type: :slashing, amount: 10}
       iex> Game.Effect.apply_effect(effect, %{health: 25})
       %{health: 15}
-
-      iex> effect = %{kind: "healing", amount: 10}
-      iex> Game.Effect.apply_effect(effect, %{health: 25, max_health: 30})
-      %{health: 30, max_health: 30}
   """
   @spec apply_effect(effect :: Effect.t, stats :: Stats.t) :: Stats.t
   def apply_effect(effect, stats)
+
   def apply_effect(effect = %{kind: "damage"}, stats) do
     %{health: health} = stats
     Map.put(stats, :health, health - effect.amount)
   end
+
   def apply_effect(effect = %{kind: "damage/over-time"}, stats) do
     %{health: health} = stats
     Map.put(stats, :health, health - effect.amount)
   end
-  def apply_effect(effect = %{kind: "healing"}, stats) do
+
+  def apply_effect(effect = %{kind: "recover", type: "health"}, stats) do
     %{health: health, max_health: max_health} = stats
-
-    health =
-      case health + effect.amount do
-        health when health > max_health -> max_health
-        health -> health
-      end
-
-    Map.put(stats, :health, health)
+    health = max_recover(health, effect.amount, max_health)
+    %{stats | health: health}
   end
+
+  def apply_effect(effect = %{kind: "recover", type: "skill"}, stats) do
+    %{skill_points: skill_points, max_skill_points: max_skill_points} = stats
+    skill_points = max_recover(skill_points, effect.amount, max_skill_points)
+    %{stats | skill_points: skill_points}
+  end
+
+  def apply_effect(effect = %{kind: "recover", type: "move"}, stats) do
+    %{move_points: move_points, max_move_points: max_move_points} = stats
+    move_points = max_recover(move_points, effect.amount, max_move_points)
+    %{stats | move_points: move_points}
+  end
+
   def apply_effect(_effect, stats), do: stats
+
+  @doc """
+  Limit recovery to the max points
+
+      iex> Game.Effect.max_recover(10, 1, 15)
+      11
+
+      iex> Game.Effect.max_recover(10, 6, 15)
+      15
+  """
+  @spec max_recover(integer(), integer(), integer()) :: integer()
+  def max_recover(current_points, amount, max_points) do
+    case current_points + amount do
+      current_points when current_points > max_points -> max_points
+      current_points -> current_points
+    end
+  end
 
   @doc """
   Filters to continuous effects only

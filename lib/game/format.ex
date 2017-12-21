@@ -505,8 +505,12 @@ Items: #{items(room, items)}
         ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
       %{kind: "damage/over-time"} ->
         ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
-      %{kind: "healing"} ->
+      %{kind: "recover", type: "health"} ->
         ["#{effect.amount} damage is healed." | effects(remaining)]
+      %{kind: "recover", type: "skill"} ->
+        ["#{effect.amount} skill points are recovered." | effects(remaining)]
+      %{kind: "recover", type: "move"} ->
+        ["#{effect.amount} move points are recovered." | effects(remaining)]
       _ -> effects(remaining)
     end
   end

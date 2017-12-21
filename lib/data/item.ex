@@ -16,7 +16,7 @@ defmodule Data.Item do
   @types ["basic", "weapon", "armor"]
 
   @valid_effects %{
-    "basic" => ["healing"],
+    "basic" => ["recover"],
     "weapon" => ["damage", "damage/type", "stats"],
     "armor" => ["stats"],
   }

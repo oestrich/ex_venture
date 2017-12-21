@@ -37,11 +37,12 @@ This helps limit which damage types are used in the application of a skill. If a
 
 This deals damage over time. It will damage every `every` milliseconds. Every time it ticks the `count` will decrement until it hits 0 ending the effect. The effect is also "instantiated" by giving it an id to track with. On dying or `count` reaching 0, the effect will be removed from tracking.
 
-## healing
+## recover
 
 ```
 {
-  'kind': 'healing',
+  'kind': 'recover',
+  'type': 'health',
   'amount': 10,
 }
 ```
