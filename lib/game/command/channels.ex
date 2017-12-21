@@ -29,6 +29,7 @@ defmodule Game.Command.Channels do
     """
   end
 
+  @impl Game.Command
   @doc """
   Parse the command into arguments
 
@@ -50,7 +51,6 @@ defmodule Game.Command.Channels do
       iex> Game.Command.Channels.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
-  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("channels"), do: {}

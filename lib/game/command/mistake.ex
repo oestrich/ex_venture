@@ -17,6 +17,7 @@ defmodule Game.Command.Mistake do
     """
   end
 
+  @impl Game.Command
   @doc """
   Parse out extra information
 
@@ -29,7 +30,6 @@ defmodule Game.Command.Mistake do
       iex> Game.Command.Mistake.parse("unknown")
       {:error, :bad_parse, "unknown"}
   """
-  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("attack" <> _), do: {:auto_combat}

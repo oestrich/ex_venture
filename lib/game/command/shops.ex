@@ -10,7 +10,7 @@ defmodule Game.Command.Shops do
   alias Data.Shop
   alias Game.Items
 
-  commands ["shops", "buy", "sell"], parse: false
+  commands ["shops", "shop", "buy", "sell"], parse: false
 
   @impl Game.Command
   def help(:topic), do: "Shops"
@@ -22,21 +22,26 @@ defmodule Game.Command.Shops do
 
     List items in a shop:
     [ ] > {white}shops list shop{/white}
+    [ ] > {white}shop list{/white}
 
     View an item in a shop:
     [ ] > {white}shops show item from shop{/white}
+    [ ] > {white}shop show item{/white}
 
     Buy an item from a shop:
     [ ] > {white}buy item from shop{/white}
+    [ ] > {white}buy item{/white}
 
     Sell an item to a shop:
     [ ] > {white}sell item from shop{/white}
+    [ ] > {white}sell item{/white}
 
     When matching a shop name, you can use the shortest unique string for
     the shop. So "{magenta}Blacksmith{/magenta}" can be matched with "{white}blac{/white}".
     """
   end
 
+  @impl Game.Command
   @doc """
   Parse the command into arguments
 
@@ -45,6 +50,8 @@ defmodule Game.Command.Shops do
 
       iex> Game.Command.Shops.parse("shops list tree top")
       {:list, "tree top"}
+      iex> Game.Command.Shops.parse("shop list")
+      {:list}
 
       iex> Game.Command.Shops.parse("shops buy sword from tree top")
       {:buy, "sword", :from, "tree top"}
@@ -62,20 +69,23 @@ defmodule Game.Command.Shops do
 
       iex> Game.Command.Shops.parse("shops show sword from tree top")
       {:show, "sword", :from, "tree top"}
+      iex> Game.Command.Shops.parse("shop show sword")
+      {:show, "sword"}
 
       iex> Game.Command.Shops.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
-  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(command)
   def parse("shops"), do: {}
   def parse("shops list " <> shop), do: {:list, shop}
+  def parse("shop list"), do: {:list}
   def parse("shops buy " <> string), do: _parse_shop_command(:buy, string, :from)
   def parse("buy " <> string), do: _parse_shop_command(:buy, string, :from)
   def parse("shops sell " <> string), do: _parse_shop_command(:sell, string, :to)
   def parse("sell " <> string), do: _parse_shop_command(:sell, string, :to)
   def parse("shops show " <> string), do: _parse_shop_command(:show, string, :from)
+  def parse("shop show " <> string), do: {:show, string}
   def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
@@ -106,6 +116,19 @@ defmodule Game.Command.Shops do
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        :ok
+      {:ok, shop} -> list_items(shop, state)
+    end
+  end
+
+  def run({:list}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    case one_shop(room.shops) do
+      {:error, :not_found} ->
+        socket |> @socket.echo("The shop could not be found.")
+        :ok
+      {:error, :more_than_one_shop} ->
+        more_than_one_shop(socket)
         :ok
       {:ok, shop} -> list_items(shop, state)
     end
@@ -201,7 +224,8 @@ defmodule Game.Command.Shops do
 
   defp one_shop(shops) do
     case shops do
-      [shop] -> {:ok, shop}
+      [shop] ->
+        {:ok, @shop.list(shop.id)}
       [_ | _tail] -> {:error, :more_than_one_shop}
       _ -> {:error, :not_found}
     end

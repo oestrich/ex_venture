@@ -26,6 +26,7 @@ defmodule Game.Command.Wear do
     """
   end
 
+  @impl Game.Command
   @doc """
   Parse the command to determine wield or unwield
 
@@ -38,7 +39,6 @@ defmodule Game.Command.Wear do
       iex> Game.Command.Wear.parse("remve chest")
       {:error, :bad_parse, "remve chest"}
   """
-  @impl Game.Command
   @spec parse(command :: String.t) :: []
   def parse("wear " <> command), do: {:wear, command}
   def parse("remove " <> command), do: {:remove, command}

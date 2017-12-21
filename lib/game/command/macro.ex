@@ -41,7 +41,6 @@ defmodule Game.Command.Macro do
       def must_be_alive?(), do: @must_be_alive
 
       # Provide a default bad parse
-      @impl Game.Command
       def parse(command), do: {:error, :bad_parse, command}
     end
   end

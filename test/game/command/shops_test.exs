@@ -41,6 +41,34 @@ defmodule Game.Command.ShopsTest do
     assert Regex.match?(~r(Sword), list)
   end
 
+  test "view items in a shop - one shop", %{session: session, socket: socket, room: room, tree_stand: tree_stand} do
+    room = %{room | shops: [tree_stand]}
+    @room.set_room(room)
+
+    Command.Shops.run({:list}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, list}] = @socket.get_echos()
+    assert Regex.match?(~r(Tree Stand Shop), list)
+    assert Regex.match?(~r(Sword), list)
+  end
+
+  test "view items in a shop - one shop - more than one shop", %{session: session, socket: socket} do
+    Command.Shops.run({:list}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, list}] = @socket.get_echos()
+    assert Regex.match?(~r(more than one shop), list)
+  end
+
+  test "view items in a shop - one shop - no shop found", %{session: session, socket: socket, room: room} do
+    room = %{room | shops: []}
+    @room.set_room(room)
+
+    Command.Shops.run({:list}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, list}] = @socket.get_echos()
+    assert Regex.match?(~r(could not), list)
+  end
+
   test "view items in a shop - bad shop name", %{session: session, socket: socket} do
     Command.Shops.run({:list, "stand"}, session, %{socket: socket, save: %{room_id: 1}})
 

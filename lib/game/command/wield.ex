@@ -26,6 +26,7 @@ defmodule Game.Command.Wield do
     """
   end
 
+  @impl Game.Command
   @doc """
   Parse the command to determine wield or unwield
 
@@ -38,7 +39,6 @@ defmodule Game.Command.Wield do
       iex> Game.Command.Wield.parse("unweld right sword")
       {:error, :bad_parse, "unweld right sword"}
   """
-  @impl Game.Command
   @spec parse(command :: String.t) :: []
   def parse("wield " <> command), do: {:wield, command}
   def parse("unwield " <> command), do: {:unwield, command}

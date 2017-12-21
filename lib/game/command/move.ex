@@ -46,10 +46,10 @@ defmodule Game.Command.Move do
     """
   end
 
+  @impl Game.Command
   @doc """
   Parse the command into arguments
   """
-  @impl Game.Command
   @spec parse(command :: String.t) :: {atom}
   def parse(commnd)
   def parse("move " <> direction), do: parse(direction)
