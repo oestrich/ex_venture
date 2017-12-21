@@ -402,6 +402,7 @@ defmodule Game.Session do
 
   def handle_info({:continuous_effect, effect_id}, state) do
     state = Effects.handle_continuous_effect(state, effect_id)
+    state |> GMCP.vitals()
     {:noreply, state}
   end
 

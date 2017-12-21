@@ -222,6 +222,9 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
+  def handle_cast({:died, _who}, state = %{target: nil}) do
+    {:noreply, state}
+  end
   def handle_cast({:died, who}, state = %{target: target, npc: npc}) do
     case Character.who(target) == Character.who(who) do
       true ->
