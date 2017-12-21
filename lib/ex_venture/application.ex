@@ -17,7 +17,7 @@ defmodule ExVenture.Application do
       supervisor(Game.Registries, []),
       supervisor(Game.Supervisor, []),
       listener(),
-    ] |> Enum.reject(fn child -> is_nil(child) end)
+    ] |> Enum.reject(&is_nil/1)
 
     Metrics.Setup.setup()
 
