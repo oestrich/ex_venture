@@ -3,6 +3,8 @@ defmodule Game.Session.Effects do
   Handle effects on a user
   """
 
+  use Networking.Socket
+
   alias Game.Character
   alias Game.Effect
   alias Game.Format
@@ -82,7 +84,7 @@ defmodule Game.Session.Effects do
   """
   @spec apply_continuous_effect(State.t, Effect.t) :: State.t
   def apply_continuous_effect(state, effect) do
-    %{user: user, save: save, is_targeting: is_targeting} = state
+    %{socket: socket, user: user, save: save, is_targeting: is_targeting} = state
 
     stats = [effect] |> Effect.apply(save.stats)
     save = Map.put(save, :stats, stats)
@@ -90,7 +92,7 @@ defmodule Game.Session.Effects do
     save.room_id |> update_character(user)
     state = %{state | user: user, save: save}
 
-    echo(self(), [effect] |> Format.effects() |> Enum.join("\n"))
+    socket |> @socket.echo([effect] |> Format.effects() |> Enum.join("\n"))
 
     user |> notify_targeters(stats, is_targeting)
 

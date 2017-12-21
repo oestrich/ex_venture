@@ -50,6 +50,6 @@ defmodule Game.Command.Use do
 
     description = Format.user_item(item, target: {:user, user}, user: {:user, user})
     socket |> @socket.echo([description | Format.effects(effects)] |> Enum.join("\n"))
-    :ok
+    {:skip, :prompt}
   end
 end

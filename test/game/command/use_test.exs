@@ -23,7 +23,7 @@ defmodule Game.Command.UseTest do
   test "use an item", state = %{socket: socket} do
     Registry.register(state.user)
 
-    :ok = Command.Use.run({"potion"}, state.session, state)
+    {:skip, :prompt} = Command.Use.run({"potion"}, state.session, state)
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Used a potion), look)

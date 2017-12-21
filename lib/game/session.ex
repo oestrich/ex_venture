@@ -257,7 +257,7 @@ defmodule Game.Session do
 
   def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active"}) do
     state = Effects.apply(effects, from, description, state)
-    state |> GMCP.vitals()
+    state |> prompt()
     {:noreply, state}
   end
 
@@ -402,7 +402,7 @@ defmodule Game.Session do
 
   def handle_info({:continuous_effect, effect_id}, state) do
     state = Effects.handle_continuous_effect(state, effect_id)
-    state |> GMCP.vitals()
+    state |> prompt()
     {:noreply, state}
   end
 
@@ -429,6 +429,8 @@ defmodule Game.Session do
           |> Map.put(:editor_module, module)
 
         {:noreply, state}
+      {:skip, :prompt} ->
+        {:noreply, Map.put(state, :mode, "commands")}
       _ ->
         state |> prompt()
         {:noreply, Map.put(state, :mode, "commands")}

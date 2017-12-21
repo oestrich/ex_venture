@@ -29,7 +29,7 @@ defmodule Game.Session.EffectsTest do
       state = Effects.handle_continuous_effect(state, effect.id)
 
       assert state.save.stats.health == 15
-      assert_received {:"$gen_cast", {:echo, ~s(10 slashing damage is dealt.)}}
+      [{:socket, ~s(10 slashing damage is dealt.)}] = @socket.get_echos()
 
       [%{id: :id, count: 2}] = state.continuous_effects
 
