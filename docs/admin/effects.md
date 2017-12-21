@@ -23,6 +23,20 @@ This subtracts from the health field of the target. `type` must be one of those 
 
 This helps limit which damage types are used in the application of a skill. If a damage effect's type is not in the list of it's `type` then the damage is halved. For example, if a `slashing` damage effect was matched with a `bludgeoning` `damage/type` effect, then the slashing damage is halved.
 
+## damage/over-time
+
+```
+{
+  'kind': 'damage/over-time',
+  'type': 'slashing',
+  'amount': 10,
+  'every': 1000,
+  'count': 4
+}
+```
+
+This deals damage over time. It will damage every `every` milliseconds. Every time it ticks the `count` will decrement until it hits 0 ending the effect. The effect is also "instantiated" by giving it an id to track with. On dying or `count` reaching 0, the effect will be removed from tracking.
+
 ## healing
 
 ```

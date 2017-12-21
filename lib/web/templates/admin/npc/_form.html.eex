@@ -45,14 +45,14 @@
 
       <div class="form-group">
         <%= label f, :stats %>
-        <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 10 %>
+        <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 12 %>
         <%= error_tag f, :stats %>
         <span class="help-block">Enter in valid JSON</span>
       </div>
 
       <div class="form-group">
         <%= label f, :events %>
-        <%= textarea f, :events, value: @changeset |> events(), class: "form-control", rows: 10 %>
+        <%= textarea f, :events, value: @changeset |> events(), class: "form-control", rows: 15 %>
         <%= error_tag f, :events %>
         <span class="help-block">Enter in valid JSON</span>
         <%= render("_events.html", id: "npc_events") %>

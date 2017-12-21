@@ -30,3 +30,6 @@ $(function() {
   <%= link("Add 'healing'", to: "#", class: "btn btn-default add-effect", data: [type: "healing"]) %>
   <%= link("Add 'stats'", to: "#", class: "btn btn-default add-effect", data: [type: "stats"]) %>
 </span>
+<span class="help-block">
+  <%= link("View effect documentation", to: "https://exventure.org/admin/effects/", target: "_blank", class: "btn btn-default") %>
+</span>

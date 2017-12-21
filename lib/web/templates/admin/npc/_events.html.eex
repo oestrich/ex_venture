@@ -28,3 +28,7 @@ $(function() {
   <%= link("Add 'room/heard'", to: "#", class: "btn btn-default add-event", data: [type: "room/heard"]) %>
   <%= link("Add 'tick'", to: "#", class: "btn btn-default add-event", data: [type: "tick"]) %>
 </span>
+<span class="help-block">
+  <%= link("View event documentation", to: "https://exventure.org/admin/events/", target: "_blank", class: "btn btn-default") %>
+  <%= link("View effect documentation", to: "https://exventure.org/admin/effects/", target: "_blank", class: "btn btn-default") %>
+</span>
