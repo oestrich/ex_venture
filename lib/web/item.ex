@@ -22,6 +22,7 @@ defmodule Web.Item do
 
     Item
     |> order_by([i], i.id)
+    |> preload([:item_tags])
     |> Pagination.paginate(opts)
   end
 
