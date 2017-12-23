@@ -88,10 +88,10 @@
                 <span>Items</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "item_tags") %>">
-              <%= link(to: item_tag_path(@conn, :index)) do %>
+            <li class="<%= tab_selected(@conn, "item_aspects") %>">
+              <%= link(to: item_aspect_path(@conn, :index)) do %>
                 <i class="fa fa-archive"></i>
-                <span>Item Tags</span>
+                <span>Item Aspects</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "npcs") %>">

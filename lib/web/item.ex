@@ -22,7 +22,7 @@ defmodule Web.Item do
 
     Item
     |> order_by([i], i.id)
-    |> preload([:item_tags])
+    |> preload([:item_aspects])
     |> Pagination.paginate(opts)
   end
 
@@ -33,7 +33,7 @@ defmodule Web.Item do
   def get(id) do
     Item
     |> Repo.get(id)
-    |> Repo.preload([item_taggings: [:item_tag]])
+    |> Repo.preload([item_aspectings: [:item_aspect]])
   end
 
   @doc """

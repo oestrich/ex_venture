@@ -1,6 +1,6 @@
 defmodule Data.Item.Compiled do
   @moduledoc """
-  An item is compiled after the item tags are rolled together and merged
+  An item is compiled after the item aspects are rolled together and merged
   with the base item's stats.
   """
 
@@ -13,8 +13,8 @@ defmodule Data.Item.Compiled do
   @type t :: %__MODULE__{}
 
   @doc """
-  The item's item tags should be preloaded
-      Repo.preload(item, [item_taggings: [:item_tag]])
+  The item's item aspects should be preloaded
+      Repo.preload(item, [item_aspectings: [:item_aspect]])
   """
   def compile(item) do
     __MODULE__
@@ -27,12 +27,12 @@ defmodule Data.Item.Compiled do
   Merge stats together
   """
   @spec merge_stats(compiled_item :: t(), item :: Item.t) :: t()
-  def merge_stats(compiled_item, %{item_taggings: item_taggings}) do
-    stats = Enum.reduce(item_taggings, compiled_item.stats, &(_merge_stats(&1, &2, compiled_item.level)))
+  def merge_stats(compiled_item, %{item_aspectings: item_aspectings}) do
+    stats = Enum.reduce(item_aspectings, compiled_item.stats, &(_merge_stats(&1, &2, compiled_item.level)))
     %{compiled_item | stats: stats}
   end
 
-  defp _merge_stats(%{item_tag: %{type: "armor", stats: stats}}, acc_stats, level) do
+  defp _merge_stats(%{item_aspect: %{type: "armor", stats: stats}}, acc_stats, level) do
     armor = scale_for_level(level, stats.armor)
     %{acc_stats | armor: acc_stats.armor + armor}
   end
@@ -42,12 +42,12 @@ defmodule Data.Item.Compiled do
   Concatenate effects of the item and all of its tags
   """
   @spec merge_effects(compiled_item :: t(), item :: Item.t) :: t()
-  def merge_effects(compiled_item, %{item_taggings: item_taggings}) do
-    effects = Enum.flat_map(item_taggings, &(_scale_effects(&1, compiled_item.level)))
+  def merge_effects(compiled_item, %{item_aspectings: item_aspectings}) do
+    effects = Enum.flat_map(item_aspectings, &(_scale_effects(&1, compiled_item.level)))
     %{compiled_item | effects: compiled_item.effects ++ effects}
   end
 
-  defp _scale_effects(%{item_tag: %{effects: effects}}, level) do
+  defp _scale_effects(%{item_aspect: %{effects: effects}}, level) do
     Enum.map(effects, &(_scale_effect(&1, level)))
   end
 

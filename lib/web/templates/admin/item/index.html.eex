@@ -19,7 +19,7 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Item Tags</th>
+                <th>Item Aspects</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -29,8 +29,8 @@
                   <td><%= item.id %></td>
                   <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
                   <td>
-                    <%= Enum.map(item.item_tags, fn (item_tag) -> %>
-                      <%= link(item_tag.name, to: item_tag_path(@conn, :show, item_tag.id)) %>
+                    <%= Enum.map(item.item_aspects, fn (item_aspect) -> %>
+                      <%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %>
                     <% end) %>
                   </td>
                   <td>

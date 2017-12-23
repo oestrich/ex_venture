@@ -27,10 +27,10 @@ defmodule Data.ItemTest do
 
   describe "compiling an item from its tags" do
     test "merges stats together" do
-      item_tag = create_item_tag(%{type: "armor", stats: %{slot: :chest, armor: 11}})
+      item_aspect = create_item_aspect(%{type: "armor", stats: %{slot: :chest, armor: 11}})
       item = create_item(%{type: "armor", stats: %{slot: :chest, armor: 10}})
-      create_item_tagging(item, item_tag)
-      item = Repo.preload(item, [item_taggings: [:item_tag]])
+      create_item_aspecting(item, item_aspect)
+      item = Repo.preload(item, [item_aspectings: [:item_aspect]])
 
       compiled_item = Item.compile(item)
 
@@ -39,10 +39,10 @@ defmodule Data.ItemTest do
     end
 
     test "stats scale with levels" do
-      item_tag = create_item_tag(%{type: "armor", stats: %{slot: :chest, armor: 11}})
+      item_aspect = create_item_aspect(%{type: "armor", stats: %{slot: :chest, armor: 11}})
       item = create_item(%{level: 10, type: "armor", stats: %{slot: :chest, armor: 10}})
-      create_item_tagging(item, item_tag)
-      item = Repo.preload(item, [item_taggings: [:item_tag]])
+      create_item_aspecting(item, item_aspect)
+      item = Repo.preload(item, [item_aspectings: [:item_aspect]])
 
       compiled_item = Item.compile(item)
 
@@ -51,10 +51,10 @@ defmodule Data.ItemTest do
     end
 
     test "merges effects together" do
-      item_tag = create_item_tag(%{effects: [%{kind: "damage/type", types: [:slashing]}]})
+      item_aspect = create_item_aspect(%{effects: [%{kind: "damage/type", types: [:slashing]}]})
       item = create_item(%{effects: [%{kind: "damage", type: :slashing, amount: 30}]})
-      create_item_tagging(item, item_tag)
-      item = Repo.preload(item, [item_taggings: [:item_tag]])
+      create_item_aspecting(item, item_aspect)
+      item = Repo.preload(item, [item_aspectings: [:item_aspect]])
 
       compiled_item = Item.compile(item)
 
@@ -66,7 +66,7 @@ defmodule Data.ItemTest do
     end
 
     test "effects scale with levels" do
-      item_tag = create_item_tag(%{
+      item_aspect = create_item_aspect(%{
         effects: [
           %{kind: "damage/type", types: [:slashing]},
           %{kind: "damage", type: :slashing, amount: 10},
@@ -74,8 +74,8 @@ defmodule Data.ItemTest do
       })
 
       item = create_item(%{level: 11})
-      create_item_tagging(item, item_tag)
-      item = Repo.preload(item, [item_taggings: [:item_tag]])
+      create_item_aspecting(item, item_aspect)
+      item = Repo.preload(item, [item_aspectings: [:item_aspect]])
 
       compiled_item = Item.compile(item)
 

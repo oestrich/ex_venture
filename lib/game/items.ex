@@ -69,7 +69,7 @@ defmodule Game.Items do
   def handle_cast(:load_items, state) do
     items =
       Item
-      |> preload([:item_tags])
+      |> preload([:item_aspects])
       |> Repo.all
 
     Enum.each(items, fn (item) ->
@@ -83,7 +83,7 @@ defmodule Game.Items do
   def handle_call({:insert, item = %Item{}}, _from, state) do
     item =
       item
-      |> Repo.preload([:item_tags])
+      |> Repo.preload([:item_aspects])
       |> Item.compile()
 
     :ets.insert(@ets_table, {item.id, item})

@@ -22,27 +22,27 @@ After creating an item or from the index page, you can see the details of an ite
 
 You can edit the item by clicking `Edit` in the attribute table. Items will immediately update in the game on saving.
 
-## Item Tags
+## Item Aspects
 
-Items can be quickly created by Item Tags. These are common snippets of stats and effects that are added to items and compiled into the final item stats the game will use.
+Items can be quickly created by Item Aspects. These are common snippets of stats and effects that are added to items and compiled into the final item stats the game will use.
 
-![Item Tags Index](/images/admin-item-tag-index.png)
+![Item Aspects Index](/images/admin-item-tag-index.png)
 
-### New Item Tag
+### New Item Aspect
 
-Click `New Item Tag` from the index listing. The information is similar to what the items new page asks for.
+Click `New Item Aspect` from the index listing. The information is similar to what the items new page asks for.
 
-![Item Tags New](/images/admin-item-tag-new.png)
+![Item Aspects New](/images/admin-item-tag-new.png)
 
-After saving you'll be redirected to the details page for an item tag.
+After saving you'll be redirected to the details page for an item aspect.
 
-![Item Tags Show](/images/admin-item-tag-show.png)
+![Item Aspects Show](/images/admin-item-tag-show.png)
 
-### Add an Item Tag to an Item
+### Add an Item Aspect to an Item
 
 From the item detail page click `Add Tag`.
 
-![Adding an item tag](/images/admin-items-add-tag.png)
+![Adding an item aspect](/images/admin-items-add-tag.png)
 
 After selecting the tag to add, you can see what the compiled item looks like. All changes will be made live to the game immediately.
 

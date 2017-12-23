@@ -8,7 +8,7 @@ defmodule Data.Item do
   alias Data.Effect
   alias __MODULE__
   alias Data.Item.Instance
-  alias Data.ItemTagging
+  alias Data.ItemAspecting
   alias Data.Stats
 
   @type instance :: %Instance{}
@@ -34,8 +34,8 @@ defmodule Data.Item do
     field :user_text, :string, default: "You use {name} on {target}."
     field :usee_text, :string, default: "{user} uses {name} on you."
 
-    has_many :item_taggings, ItemTagging
-    has_many :item_tags, through: [:item_taggings, :item_tag]
+    has_many :item_aspectings, ItemAspecting
+    has_many :item_aspects, through: [:item_aspectings, :item_aspect]
 
     timestamps()
   end

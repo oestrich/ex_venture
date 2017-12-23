@@ -63,12 +63,12 @@ defmodule Web.Router do
     resources "/insights", InsightController, only: [:index]
 
     resources "/items", ItemController, only: [:index, :show, :edit, :update, :new, :create] do
-      resources "/tags", ItemTaggingController, only: [:new, :create], as: :tagging
+      resources "/aspects", ItemAspectingController, only: [:new, :create], as: :aspecting
     end
 
-    resources "/item_tags", ItemTagController, only: [:index, :show, :edit, :update, :new, :create]
+    resources "/item_aspects", ItemAspectController, only: [:index, :show, :edit, :update, :new, :create]
 
-    resources "/item_taggings", ItemTaggingController, only: [:delete]
+    resources "/item_aspectings", ItemAspectingController, only: [:delete]
 
     resources "/npcs", NPCController, only: [:index, :show, :edit, :update, :new, :create] do
       resources "/items", NPCItemController, only: [:new, :create, :delete], as: :item

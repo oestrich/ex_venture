@@ -5,8 +5,8 @@ defmodule TestHelpers do
   alias Data.Exit
   alias Data.HelpTopic
   alias Data.Item
-  alias Data.ItemTag
-  alias Data.ItemTagging
+  alias Data.ItemAspect
+  alias Data.ItemAspecting
   alias Data.NPC
   alias Data.NPCSpawner
   alias Data.Race
@@ -91,13 +91,13 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  def create_item_tag(attributes \\ %{}) do
-    %ItemTag{}
-    |> ItemTag.changeset(item_tag_attributes(attributes))
+  def create_item_aspect(attributes \\ %{}) do
+    %ItemAspect{}
+    |> ItemAspect.changeset(item_aspect_attributes(attributes))
     |> Repo.insert!
   end
 
-  def item_tag_attributes(attributes) do
+  def item_aspect_attributes(attributes) do
     Map.merge(%{
       name: "Swords",
       description: "Tag for swords",
@@ -128,10 +128,10 @@ defmodule TestHelpers do
     }, attributes)
   end
 
-  def create_item_tagging(item, item_tag) do
+  def create_item_aspecting(item, item_aspect) do
     item
-    |> Ecto.build_assoc(:item_taggings)
-    |> ItemTagging.changeset(%{"item_tag_id" => item_tag.id})
+    |> Ecto.build_assoc(:item_aspectings)
+    |> ItemAspecting.changeset(%{"item_aspect_id" => item_aspect.id})
     |> Repo.insert!()
   end
 

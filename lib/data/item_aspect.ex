@@ -1,24 +1,24 @@
-defmodule Data.ItemTag do
+defmodule Data.ItemAspect do
   @moduledoc """
-  Item Schema
+  Item Aspect Schema
   """
 
   use Data.Schema
 
   alias Data.Effect
   alias Data.Item
-  alias Data.ItemTagging
+  alias Data.ItemAspecting
   alias Data.Stats
 
-  schema "item_tags" do
+  schema "item_aspects" do
     field :name, :string
     field :description, :string
     field :type, :string
     field :stats, Stats
     field :effects, {:array, Effect}
 
-    has_many :item_taggings, ItemTagging
-    has_many :items, through: [:item_taggings, :item]
+    has_many :item_aspectings, ItemAspecting
+    has_many :items, through: [:item_aspectings, :item]
 
     timestamps()
   end

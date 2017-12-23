@@ -1,4 +1,4 @@
-defmodule Web.Admin.ItemTagView do
+defmodule Web.Admin.ItemAspectView do
   use Web, :view
 
   alias Data.Item

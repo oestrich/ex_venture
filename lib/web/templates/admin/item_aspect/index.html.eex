@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    Item Tags
+    Item Aspects
   </h1>
 </section>
 
@@ -10,7 +10,7 @@
       <div class="box">
         <div class="box-header">
           <div class="box-tools">
-            <%= link("New Item Tag", to: item_tag_path(@conn, :new), class: "btn btn-primary") %>
+            <%= link("New Item Aspect", to: item_aspect_path(@conn, :new), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
@@ -23,13 +23,13 @@
               </tr>
             </thead>
             <tbody>
-              <%= Enum.map @item_tags, fn (item_tag) -> %>
+              <%= Enum.map @item_aspects, fn (item_aspect) -> %>
                 <tr>
-                  <td><%= item_tag.id %></td>
-                  <td><%= link(item_tag.name, to: item_tag_path(@conn, :show, item_tag.id)) %></td>
+                  <td><%= item_aspect.id %></td>
+                  <td><%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %></td>
                   <td>
-                    <%= link("View", to: item_tag_path(@conn, :show, item_tag.id)) %>
-                    <%= link("Edit", to: item_tag_path(@conn, :edit, item_tag.id)) %>
+                    <%= link("View", to: item_aspect_path(@conn, :show, item_aspect.id)) %>
+                    <%= link("Edit", to: item_aspect_path(@conn, :edit, item_aspect.id)) %>
                   </td>
                 </tr>
               <% end %>

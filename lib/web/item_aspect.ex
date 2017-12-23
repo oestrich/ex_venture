@@ -1,11 +1,11 @@
-defmodule Web.ItemTag do
+defmodule Web.ItemAspect do
   @moduledoc """
   Bounded context for the Phoenix app talking to the data layer
   """
 
   import Ecto.Query
 
-  alias Data.ItemTag
+  alias Data.ItemAspect
   alias Data.Repo
   alias Game.Items
   alias Web.Item
@@ -13,9 +13,9 @@ defmodule Web.ItemTag do
   @doc """
   Load all items
   """
-  @spec all() :: [ItemTag.t]
+  @spec all() :: [ItemAspect.t]
   def all() do
-    ItemTag
+    ItemAspect
     |> order_by([i], i.id)
     |> Repo.all
   end
@@ -23,48 +23,48 @@ defmodule Web.ItemTag do
   @doc """
   Get a single item
   """
-  @spec get(id :: integer) :: ItemTag.t
+  @spec get(id :: integer) :: ItemAspect.t
   def get(id) do
-    ItemTag |> Repo.get(id)
+    ItemAspect |> Repo.get(id)
   end
 
   @doc """
   Get a changeset for a new page
   """
   @spec new() :: changeset :: map
-  def new(), do: %ItemTag{} |> ItemTag.changeset(%{})
+  def new(), do: %ItemAspect{} |> ItemAspect.changeset(%{})
 
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(item :: ItemTag.t) :: changeset :: map
-  def edit(item), do: item |> ItemTag.changeset(%{})
+  @spec edit(item :: ItemAspect.t) :: changeset :: map
+  def edit(item), do: item |> ItemAspect.changeset(%{})
 
   @doc """
   Create an item module
   """
-  @spec create(params :: map) :: {:ok, ItemTag.t} | {:error, changeset :: map}
+  @spec create(params :: map) :: {:ok, ItemAspect.t} | {:error, changeset :: map}
   def create(params) do
-    %ItemTag{}
-    |> ItemTag.changeset(Item.cast_params(params))
+    %ItemAspect{}
+    |> ItemAspect.changeset(Item.cast_params(params))
     |> Repo.insert()
   end
 
   @doc """
   Update an item
   """
-  @spec update(id :: integer, params :: map) :: {:ok, ItemTag.t} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) :: {:ok, ItemAspect.t} | {:error, changeset :: map}
   def update(id, params) do
-    item_tag = id |> get()
-    changeset = item_tag |> ItemTag.changeset(Item.cast_params(params))
+    item_aspect = id |> get()
+    changeset = item_aspect |> ItemAspect.changeset(Item.cast_params(params))
     case changeset |> Repo.update do
-      {:ok, item_tag} ->
-        item_tag
+      {:ok, item_aspect} ->
+        item_aspect
         |> Repo.preload([:items])
         |> Map.get(:items)
         |> Enum.each(&Items.reload/1)
 
-        {:ok, item_tag}
+        {:ok, item_aspect}
       error -> error
     end
   end

@@ -1,0 +1,13 @@
+<section class="content-header">
+  <h1>
+    <%= @item_aspect.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: item_aspect_path(@conn, :update, @item_aspect.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+    </div>
+  </div>
+</section>

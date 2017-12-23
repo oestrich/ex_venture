@@ -29,7 +29,7 @@
         <%= error_tag f, :stats %>
         <span class="help-block">Enter in valid JSON</span>
         <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
-        <%= render(SharedView, "_stats.html", stats_id: "item_tag_stats", type_id: "item_tag_type") %>
+        <%= render(SharedView, "_stats.html", stats_id: "item_aspect_stats", type_id: "item_aspect_type") %>
       </div>
 
       <div class="form-group">
@@ -37,7 +37,7 @@
         <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
         <%= error_tag f, :effects %>
         <span class="help-block">Enter in valid JSON</span>
-        <%= render(SharedView, "_effects.html", id: "item_tag_effects") %>
+        <%= render(SharedView, "_effects.html", id: "item_aspect_effects") %>
       </div>
     </div>
 

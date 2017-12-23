@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    <%= @item_tag.name %>
+    <%= @item_aspect.name %>
   </h1>
 </section>
 
@@ -11,7 +11,7 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
-            <%= link("Edit", to: item_tag_path(@conn, :edit, @item_tag.id), class: "btn btn-primary") %>
+            <%= link("Edit", to: item_aspect_path(@conn, :edit, @item_aspect.id), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
@@ -19,23 +19,23 @@
             <tbody>
               <tr>
                 <th>Type</th>
-                <td><%= @item_tag.type %></td>
+                <td><%= @item_aspect.type %></td>
               </tr>
               <tr>
                 <th>Name</th>
-                <td><%= @item_tag.name %></td>
+                <td><%= @item_aspect.name %></td>
               </tr>
               <tr>
                 <th>Description</th>
-                <td><%= @item_tag.description %></td>
+                <td><%= @item_aspect.description %></td>
               </tr>
               <tr>
                 <th>Stats</th>
-                <td><pre><%= @item_tag |> json_field(:stats) %></pre></td>
+                <td><pre><%= @item_aspect |> json_field(:stats) %></pre></td>
               </tr>
               <tr>
                 <th>Effects</th>
-                <td><pre><%= @item_tag |> json_field(:effects) %></pre></td>
+                <td><pre><%= @item_aspect |> json_field(:effects) %></pre></td>
               </tr>
             </tbody>
           </table>

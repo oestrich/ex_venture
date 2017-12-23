@@ -1,7 +1,7 @@
-defmodule Web.ItemTagTest do
+defmodule Web.ItemAspectTest do
   use Data.ModelCase
 
-  alias Web.ItemTag
+  alias Web.ItemAspect
 
   test "create a new item module" do
     params = %{
@@ -12,7 +12,7 @@ defmodule Web.ItemTagTest do
       "effects" => ~s([{"kind":"stats","field":"strength","amount":10}]),
     }
 
-    {:ok, item_module} = ItemTag.create(params)
+    {:ok, item_module} = ItemAspect.create(params)
 
     assert item_module.name == "Helmet"
   end
@@ -26,8 +26,8 @@ defmodule Web.ItemTagTest do
       "effects" => ~s([{"kind":"stats","field":"strength","amount":10}]),
     }
 
-    {:ok, item_module} = ItemTag.create(params)
-    {:ok, item_module} = ItemTag.update(item_module.id, %{"name" => "Full Plate Helmet"})
+    {:ok, item_module} = ItemAspect.create(params)
+    {:ok, item_module} = ItemAspect.update(item_module.id, %{"name" => "Full Plate Helmet"})
 
     assert item_module.name == "Full Plate Helmet"
   end

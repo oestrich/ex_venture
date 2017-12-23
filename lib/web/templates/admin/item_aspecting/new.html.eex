@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    Add Item Tag for <%= @item.name %>
+    Add Item Aspect for <%= @item.name %>
   </h1>
 
   <ol class="breadcrumb">
@@ -11,7 +11,7 @@
     </li>
     <li><%= link("Items", to: item_path(@conn, :index)) %></li>
     <li><%= link(@item.name, to: item_path(@conn, :show, @item.id)) %></li>
-    <li class="active">Add Item Tag</li>
+    <li class="active">Add Item Aspect</li>
   </ol>
 </section>
 
@@ -19,12 +19,12 @@
   <div class="row">
     <div class="col-md-12">
       <div class="box">
-        <%= form_for @changeset, item_tagging_path(@conn, :create, @item.id), fn (f) -> %>
+        <%= form_for @changeset, item_aspecting_path(@conn, :create, @item.id), fn (f) -> %>
           <div class="box-body">
             <div class="form-group">
-              <%= label f, :item_tag_id, "Item Tag" %>
-              <%= select f, :item_tag_id, @item_tags |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
-              <%= error_tag f, :item_tag_id %>
+              <%= label f, :item_aspect_id, "Item Aspect" %>
+              <%= select f, :item_aspect_id, @item_aspects |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+              <%= error_tag f, :item_aspect_id %>
             </div>
           </div>
 
