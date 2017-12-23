@@ -18,7 +18,9 @@ function formatColor(string) {
 }
 
 function formatLines(string) {
-  return string.replace(/\n/g, "<br />")
+  string = string.replace(/\n/g, "<br />")
+  string = string.replace(/\r/g, "")
+  return string;
 }
 
 function format(string) {
