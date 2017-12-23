@@ -24,5 +24,9 @@ defmodule Web.ItemTest do
     test "parses effects - bad json" do
       assert Item.cast_params(%{"effects" => ~s({"slot":"ches)})["effects"] == ~s({"slot":"ches)
     end
+
+    test "parses tags into an array" do
+      assert Item.cast_params(%{"tags" => "slashing, sword"})["tags"] == ["slashing", "sword"]
+    end
   end
 end

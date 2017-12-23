@@ -25,6 +25,7 @@ defmodule Data.Item do
     field :name, :string
     field :description, :string
     field :type, :string
+    field :tags, {:array, :string}, default: []
     field :keywords, {:array, :string}
     field :stats, Data.Stats
     field :effects, {:array, Data.Effect}
@@ -71,9 +72,9 @@ defmodule Data.Item do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:level, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
+    |> cast(params, [:level, :name, :description, :type, :tags, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
     |> ensure_keywords
-    |> validate_required([:level, :name, :description, :type, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
+    |> validate_required([:level, :name, :description, :type, :tags, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
     |> validate_inclusion(:type, @types)
     |> validate_stats()
     |> Effect.validate_effects()

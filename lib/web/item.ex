@@ -118,6 +118,7 @@ defmodule Web.Item do
     |> split_keywords()
     |> parse_stats()
     |> parse_effects()
+    |> parse_tags()
   end
 
   defp parse_stats(params = %{"stats" => stats}) do
@@ -156,4 +157,15 @@ defmodule Web.Item do
 
     Map.put(params, "effects", effects)
   end
+
+  def parse_tags(params = %{"tags" => tags}) do
+    tags =
+      tags
+      |> String.split(",")
+      |> Enum.map(&String.trim/1)
+
+    params
+    |> Map.put("tags", tags)
+  end
+  def parse_tags(params), do: params
 end

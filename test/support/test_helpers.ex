@@ -121,6 +121,7 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "Short Sword",
       description: "A slender sword",
+      tags: [],
       type: "weapon",
       stats: %{},
       effects: [],

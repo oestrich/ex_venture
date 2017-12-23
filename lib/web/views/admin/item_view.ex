@@ -9,6 +9,14 @@ defmodule Web.Admin.ItemView do
 
   import Web.KeywordsHelper
   import Web.JSONHelper
+  import Ecto.Changeset
+
+  def tags(changeset) do
+    case get_field(changeset, :tags) do
+      nil -> ""
+      tags -> tags |> Enum.join(", ")
+    end
+  end
 
   def types(), do: Item.types()
 

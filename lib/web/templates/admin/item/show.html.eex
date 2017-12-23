@@ -30,6 +30,14 @@
                 <td><%= @item.description %></td>
               </tr>
               <tr>
+                <th>Tags</th>
+                <td>
+                  <%= Enum.map(@item.tags, fn (tag) -> %>
+                    <span class="label label-info"><%= tag %></span>
+                  <% end) %>
+                </td>
+              </tr>
+              <tr>
                 <th>Keywords</th>
                 <td><%= @item |> keywords() %></td>
               </tr>

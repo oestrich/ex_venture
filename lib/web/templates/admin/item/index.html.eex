@@ -21,7 +21,8 @@
                 <th>Level</th>
                 <th>Name</th>
                 <th>Type</th>
-                <th>Item Aspects</th>
+                <th>Tags</th>
+                <th>Aspects</th>
                 <th>Cost</th>
                 <th>Actions</th>
               </tr>
@@ -33,6 +34,11 @@
                   <td><%= item.level %></td>
                   <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
                   <td><%= item.type %></td>
+                  <td>
+                    <%= Enum.map(item.tags, fn (tag) -> %>
+                      <span class="label label-info"><%= tag %></span>
+                    <% end) %>
+                  </td>
                   <td>
                     <%= Enum.map(item.item_aspects, fn (item_aspect) -> %>
                       <%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %>

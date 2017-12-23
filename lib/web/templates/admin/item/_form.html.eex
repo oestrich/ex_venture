@@ -30,6 +30,12 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :tags %>
+        <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
+        <%= error_tag f, :tags %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :keywords %>
         <%= text_input f, :keywords, value: @changeset |> keywords(), class: "form-control" %>
         <%= error_tag f, :keywords %>
