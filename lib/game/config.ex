@@ -11,14 +11,20 @@ defmodule Game.Config do
     Agent.start_link(fn () -> %{} end, name: __MODULE__)
   end
 
+  @doc """
+  Reload a config from the database
+  """
+  @spec reload(String.t()) :: any()
+  def reload(name) do
+    value = Config.find_config(name)
+    Agent.update(__MODULE__, &(Map.put(&1, name, value)))
+    value
+  end
+
   def find_config(name) do
     case Agent.get(__MODULE__, &(Map.get(&1, name, nil))) do
-      nil ->
-        value = Config.find_config(name)
-        Agent.update(__MODULE__, &(Map.put(&1, name, value)))
-        value
-      value ->
-        value
+      nil -> reload(name)
+      value -> value
     end
   end
 

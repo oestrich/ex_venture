@@ -21,12 +21,16 @@
               <tr>
                 <th>Game Name</th>
                 <td><%= Config.game_name() %></td>
-                <td></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "game_name")) %>
+                </td>
               </tr>
               <tr>
                 <th>Message of the day</th>
                 <td><pre><%= Config.motd("Not set") %></pre></td>
-                <td></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "motd")) %>
+                </td>
               </tr>
               <tr>
                 <th>Regen tick vount</th>

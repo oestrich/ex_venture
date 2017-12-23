@@ -54,7 +54,7 @@ defmodule Web.Router do
       resources "/skills", SkillController, only: [:new, :create]
     end
 
-    resources "/config", ConfigController, only: [:index]
+    resources "/config", ConfigController, only: [:index, :edit, :update]
 
     resources "/exits", RoomExitController, only: [:delete], as: :exit
 

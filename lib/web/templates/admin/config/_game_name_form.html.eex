@@ -1,0 +1,5 @@
+<div class="form-group">
+  <%= label @f, :value %>
+  <%= text_input @f, :value, class: "form-control" %>
+  <%= error_tag @f, :value %>
+</div>
