@@ -11,7 +11,16 @@ defmodule Web.Item do
   alias Data.Stats
   alias Data.Repo
   alias Game.Items
+  alias Web.Filter
   alias Web.Pagination
+
+  @behaviour Filter
+
+  @doc """
+  Delegate to the Data item for types
+  """
+  @spec types() :: [String.t]
+  def types(), do: Item.types()
 
   @doc """
   Load all items
@@ -23,7 +32,30 @@ defmodule Web.Item do
     Item
     |> order_by([i], i.id)
     |> preload([:item_aspects])
+    |> Filter.filter(opts[:filter], __MODULE__)
     |> Pagination.paginate(opts)
+  end
+
+  @impl Filter
+  def filter_on_attribute({"cost_from", cost}, query) do
+    query |> where([i], i.cost >= ^cost)
+  end
+  def filter_on_attribute({"cost_to", cost}, query) do
+    query |> where([i], i.cost <= ^cost)
+  end
+  def filter_on_attribute({"level_from", level}, query) do
+    query |> where([i], i.level >= ^level)
+  end
+  def filter_on_attribute({"level_to", level}, query) do
+    query |> where([i], i.level <= ^level)
+  end
+  def filter_on_attribute({"type", type}, query) do
+    query |> where([i], i.type == ^type)
+  end
+  def filter_on_attribute({"item_aspect_id", item_aspect_id}, query) do
+    query
+    |> join(:left, [i], ia in assoc(i, :item_aspectings))
+    |> where([i, ia], ia.item_aspect_id == ^item_aspect_id)
   end
 
   @doc """

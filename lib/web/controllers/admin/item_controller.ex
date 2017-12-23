@@ -5,10 +5,11 @@ defmodule Web.Admin.ItemController do
 
   plug Web.Plug.FetchPage when action in [:index]
 
-  def index(conn, _params) do
+  def index(conn, params) do
     %{page: page, per: per} = conn.assigns
-    %{page: items, pagination: pagination} = Item.all(page: page, per: per)
-    conn |> render("index.html", items: items, pagination: pagination)
+    filter = Map.get(params, "item", %{})
+    %{page: items, pagination: pagination} = Item.all(filter: filter, page: page, per: per)
+    conn |> render("index.html", items: items, filter: filter, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do

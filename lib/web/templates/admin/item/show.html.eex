@@ -70,7 +70,7 @@
         <div class="box-header">
           <h3 class="box-title">Item Aspects</h3>
           <div class="box-tools">
-            <%= link("Add Tag", to: item_aspecting_path(@conn, :new, @item.id), class: "btn btn-primary") %>
+            <%= link("Add Aspect", to: item_aspecting_path(@conn, :new, @item.id), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
