@@ -72,6 +72,11 @@ defmodule Game.Command.Shops do
       iex> Game.Command.Shops.parse("shop show sword")
       {:show, "sword"}
 
+      iex> Game.Command.Shops.parse("shops bad")
+      {:help}
+      iex> Game.Command.Shops.parse("shop bad")
+      {:help}
+
       iex> Game.Command.Shops.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
@@ -86,6 +91,7 @@ defmodule Game.Command.Shops do
   def parse("sell " <> string), do: _parse_shop_command(:sell, string, :to)
   def parse("shops show " <> string), do: _parse_shop_command(:show, string, :from)
   def parse("shop show " <> string), do: {:show, string}
+  def parse("shop" <> _string), do: {:help}
   def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
@@ -107,7 +113,17 @@ defmodule Game.Command.Shops do
   def run(command, session, state)
   def run({}, _session, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
-    socket |> @socket.echo(Format.shops(room, label: false))
+    case length(room.shops) do
+      0 ->
+        socket |> @socket.echo("There are no shops here.")
+      _ ->
+        socket |> @socket.echo(Format.shops(room, label: false))
+    end
+    :ok
+  end
+
+  def run({:help}, _session, %{socket: socket}) do
+    socket |> @socket.echo("Unknown usage of the shop(s) command. Please see {white}help shops{/white} for more information.")
     :ok
   end
 

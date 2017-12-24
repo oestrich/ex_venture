@@ -25,12 +25,29 @@ defmodule Game.Command.ShopsTest do
     {:ok, %{session: :session, socket: :socket, room: room, tree_stand: tree_stand}}
   end
 
+  test "a bad shop command displays help", %{session: session, socket: socket} do
+    Command.Shops.run({:help}, session, %{socket: socket})
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(see {white}help shops{/white}), look)
+  end
+
   test "view shops in the room", %{session: session, socket: socket} do
     Command.Shops.run({}, session, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Tree Stand Shop), look)
     assert Regex.match?(~r(Hole in the Wall), look)
+  end
+
+  test "view shops in the room - no shops", %{session: session, socket: socket} do
+    room = %{@room._room() | shops: []}
+    @room.set_room(room)
+
+    Command.Shops.run({}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(no shops), look)
   end
 
   test "view items in a shop", %{session: session, socket: socket} do
