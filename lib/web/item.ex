@@ -49,6 +49,10 @@ defmodule Web.Item do
   def filter_on_attribute({"level_to", level}, query) do
     query |> where([i], i.level <= ^level)
   end
+  def filter_on_attribute({"tag", value}, query) do
+    query
+    |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
+  end
   def filter_on_attribute({"type", type}, query) do
     query |> where([i], i.type == ^type)
   end

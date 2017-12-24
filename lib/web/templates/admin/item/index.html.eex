@@ -72,6 +72,11 @@
             </div>
 
             <div class="form-group">
+              <%= label :item, :tag %>
+              <%= text_input :item, :tag, value: @filter["tag"], class: "form-control" %>
+            </div>
+
+            <div class="form-group">
               <%= label :item, :item_aspect_id, "Item Aspect" %>
               <%= select :item, :item_aspect_id, item_aspects(), prompt: "Select Item Aspect", value: @filter["item_aspect_id"], class: "form-control" %>
             </div>
