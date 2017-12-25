@@ -48,6 +48,7 @@
                   <td>
                     <%= link("View", to: item_path(@conn, :show, item.id)) %>
                     <%= link("Edit", to: item_path(@conn, :edit, item.id)) %>
+                    <%= link("Clone", to: item_path(@conn, :new, clone_id: item.id)) %>
                   </td>
                 </tr>
               <% end %>

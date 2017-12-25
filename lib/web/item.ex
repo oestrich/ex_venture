@@ -85,6 +85,15 @@ defmodule Web.Item do
   def edit(item), do: item |> Item.changeset(%{})
 
   @doc """
+  Clone an item (remove the id)
+  """
+  @spec clone(item :: Item.t) :: changeset :: map
+  def clone(item) do
+    item = item |> Map.take(Item.fields())
+    struct(Item, item)
+  end
+
+  @doc """
   Create an item
   """
   @spec create(params :: map) :: {:ok, Item.t} | {:error, changeset :: map}

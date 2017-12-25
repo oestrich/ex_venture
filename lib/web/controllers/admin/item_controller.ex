@@ -33,6 +33,11 @@ defmodule Web.Admin.ItemController do
     end
   end
 
+  def new(conn, %{"clone_id" => clone_id}) do
+    item = clone_id |> Item.get() |> Item.clone()
+    changeset = Item.edit(item)
+    conn |> render("new.html", changeset: changeset)
+  end
   def new(conn, _params) do
     changeset = Item.new()
     conn |> render("new.html", changeset: changeset)

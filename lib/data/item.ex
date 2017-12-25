@@ -21,6 +21,11 @@ defmodule Data.Item do
     "armor" => ["stats"],
   }
 
+  @fields [
+    :level, :name, :description, :type, :tags, :keywords, :stats, :effects,
+    :drop_rate, :cost, :user_text, :usee_text,
+  ]
+
   schema "items" do
     field :name, :string
     field :description, :string
@@ -50,6 +55,12 @@ defmodule Data.Item do
   def types(), do: @types
 
   @doc """
+  List out item fields
+  """
+  @spec fields() :: [atom()]
+  def fields(), do: @fields
+
+  @doc """
   Provide a starting point for the web panel to edit new statistics
   """
   @spec basic_stats(type :: atom) :: map
@@ -72,9 +83,9 @@ defmodule Data.Item do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:level, :name, :description, :type, :tags, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
+    |> cast(params, @fields)
     |> ensure_keywords
-    |> validate_required([:level, :name, :description, :type, :tags, :keywords, :stats, :effects, :drop_rate, :cost, :user_text, :usee_text])
+    |> validate_required(@fields)
     |> validate_inclusion(:type, @types)
     |> validate_stats()
     |> Effect.validate_effects()
