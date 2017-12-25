@@ -21,6 +21,7 @@ defmodule Data.NPCItem do
     struct
     |> cast(params, [:npc_id, :item_id, :drop_rate])
     |> validate_required([:npc_id, :item_id, :drop_rate])
+    |> validate_inclusion(:drop_rate, 0..100)
     |> foreign_key_constraint(:npc_id)
     |> foreign_key_constraint(:item_id)
   end
@@ -29,5 +30,6 @@ defmodule Data.NPCItem do
     struct
     |> cast(params, [:drop_rate])
     |> validate_required([:drop_rate])
+    |> validate_inclusion(:drop_rate, 0..100)
   end
 end
