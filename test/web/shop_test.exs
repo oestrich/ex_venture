@@ -44,18 +44,35 @@ defmodule Web.ShopTest do
     item = create_item()
     {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
 
-    {:ok, shop} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
+    {:ok, _shop_item} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
 
+    shop = Shop.get(shop.id)
     assert shop.shop_items |> length() == 1
 
     state = Game.Shop._get_state(shop.id)
     assert state.shop.shop_items |> length() == 1
   end
 
+  test "updating an item to a shop", %{room: room} do
+    item = create_item()
+    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
+
+    {:ok, shop_item} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
+    {:ok, _shop_item} = Shop.update_item(shop_item.id, %{"price" => 200})
+
+    shop = Shop.get(shop.id)
+    [%{price: 200}] = shop.shop_items
+
+    state = Game.Shop._get_state(shop.id)
+    [%{price: 200}] = state.shop.shop_items
+  end
+
   test "removing an item from a shop", %{room: room} do
     item = create_item()
     {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
-    {:ok, shop} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
+    {:ok, _shop_item} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
+
+    shop = Shop.get(shop.id)
     shop_item = shop.shop_items |> List.first()
 
     {:ok, _shop_item} = Shop.delete_item(shop_item.id)

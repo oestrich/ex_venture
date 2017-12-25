@@ -78,7 +78,15 @@ defmodule Web.Shop do
   #
 
   @doc """
-  Get a changeset for a new room new
+  Get a shop item
+  """
+  @spec get_item(integer()) :: ShopItem.t()
+  def get_item(id) do
+    ShopItem |> Repo.get(id)
+  end
+
+  @doc """
+  Get a changeset for a new shop item
   """
   @spec new_item(shop :: Shop.t) :: changeset :: map
   def new_item(shop) do
@@ -88,19 +96,45 @@ defmodule Web.Shop do
   end
 
   @doc """
+  Get a changeset for editing a shop item
+  """
+  @spec edit_item(ShopItem.t()) :: map()
+  def edit_item(shop_item) do
+    shop_item
+    |> ShopItem.update_changeset(%{})
+  end
+
+  @doc """
   Add an item to a shop
   """
-  @spec add_item(shop :: Shop.t, item :: Item.t, params :: map) :: {:ok, Shop.t}
+  @spec add_item(shop :: Shop.t, item :: Item.t, params :: map) :: {:ok, ShopItem.t}
   def add_item(shop, item, params) do
     changeset = shop
     |> Ecto.build_assoc(:shop_items)
     |> ShopItem.changeset(Map.merge(params, %{"item_id" => item.id}))
 
     case changeset |> Repo.insert() do
-      {:ok, _shop_item} ->
+      {:ok, shop_item} ->
         shop = shop.id |> get()
         push_update(shop)
-        {:ok, shop}
+        {:ok, shop_item}
+      anything -> anything
+    end
+  end
+
+  @doc """
+  Update an item in a shop
+  """
+  @spec update_item(integer(), map) :: {:ok, ShopItem.t()}
+  def update_item(id, params) do
+    shop_item = id |> get_item()
+    changeset = shop_item |> ShopItem.update_changeset(params)
+
+    case changeset |> Repo.update() do
+      {:ok, shop_item} ->
+        shop = shop_item.shop_id |> get()
+        push_update(shop)
+        {:ok, shop_item}
       anything -> anything
     end
   end

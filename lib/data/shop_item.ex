@@ -25,4 +25,10 @@ defmodule Data.ShopItem do
     |> foreign_key_constraint(:shop_id)
     |> foreign_key_constraint(:item_id)
   end
+
+  def update_changeset(struct, params) do
+    struct
+    |> cast(params, [:price, :quantity])
+    |> validate_required([:price, :quantity])
+  end
 end

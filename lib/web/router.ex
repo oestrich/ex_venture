@@ -92,7 +92,7 @@ defmodule Web.Router do
 
     resources "/sessions", SessionController, only: [:new, :create]
 
-    resources "/shop_items", ShopItemController, only: [:delete]
+    resources "/shop_items", ShopItemController, only: [:edit, :update, :delete]
 
     resources "/shops", ShopController, only: [:show, :edit, :update] do
       resources "/items", ShopItemController, only: [:new, :create]

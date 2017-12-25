@@ -15,6 +15,13 @@ defmodule Web.Controller.ShopItemControllerTest do
     assert html_response(conn, 302)
   end
 
+  test "update a shop item", %{conn: conn, shop: shop, item: item} do
+    shop_item = create_shop_item(shop, item, %{price: 15, quantity: 10})
+
+    conn = put conn, shop_item_path(conn, :update, shop_item.id), shop_item: %{price: 15}
+    assert html_response(conn, 302)
+  end
+
   test "delete a shop item", %{conn: conn, shop: shop, item: item} do
     shop_item = create_shop_item(shop, item, %{price: 15, quantity: 10})
 

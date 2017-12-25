@@ -5,10 +5,12 @@
 
   <%= form_for @changeset, @path, fn (f) -> %>
     <div class="box-body">
-      <div class="form-group">
-        <%= label :item, :id %>
-        <%= select :item, :id, @items |> Enum.map(&item_option/1), class: "form-control" %>
-      </div>
+      <%= if assigns[:items] do %>
+        <div class="form-group">
+          <%= label :item, :id %>
+          <%= select :item, :id, @items |> Enum.map(&item_option/1), class: "form-control" %>
+        </div>
+      <% end %>
 
       <div class="form-group">
         <%= label f, :price %>
