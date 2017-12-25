@@ -19,6 +19,7 @@ defmodule Web.Shop do
   def get(id) do
     Shop
     |> where([s], s.id == ^id)
+    |> preload([shop_items: ^(from si in ShopItem, join: i in assoc(si, :item), order_by: [i.name])])
     |> preload([shop_items: [:item]])
     |> Repo.one
   end
