@@ -68,7 +68,7 @@ defmodule Game.NPCTest do
     effect = %{kind: "damage", type: :slashing, amount: 10}
 
     is_targeting = MapSet.new |> MapSet.put({:user, 2})
-    npc = %{currency: 0, item_ids: [], id: 1, name: "NPC", stats: %{health: 10}}
+    npc = %{currency: 0, npc_items: [], id: 1, name: "NPC", stats: %{health: 10}}
     state = %State{room_id: 1, npc: npc, is_targeting: is_targeting}
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
     assert state.npc.stats.health == 0

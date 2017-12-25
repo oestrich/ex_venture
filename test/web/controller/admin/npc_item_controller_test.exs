@@ -1,5 +1,4 @@
-
-defmodule Web.Controller.RoomItemControllerTest do
+defmodule Web.Controller.NPCItemControllerTest do
   use Web.AuthConnCase
 
   setup do

@@ -6,7 +6,6 @@ defmodule Data.NPC do
   use Data.Schema
 
   alias Data.Event
-  alias Data.Item
   alias Data.Stats
   alias Data.NPCItem
   alias Data.NPCSpawner
@@ -21,8 +20,6 @@ defmodule Data.NPC do
     field :tags, {:array, :string}, default: []
 
     field :currency, :integer, default: 0
-    field :item_ids, {:array, :integer}
-    field :items, {:array, Item}, virtual: true
 
     has_many :npc_items, NPCItem
     has_many :npc_spawners, NPCSpawner
@@ -32,9 +29,8 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :item_ids, :notes, :tags, :events])
-    |> ensure(:item_ids, [])
-    |> validate_required([:name, :level, :experience_points, :stats, :currency, :item_ids, :tags, :events])
+    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :notes, :tags, :events])
+    |> validate_required([:name, :level, :experience_points, :stats, :currency, :tags, :events])
     |> validate_stats()
     |> Event.validate_events()
   end

@@ -126,7 +126,6 @@ defmodule TestHelpers do
       type: "weapon",
       stats: %{},
       effects: [],
-      drop_rate: 50,
     }, attributes)
   end
 

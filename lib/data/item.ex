@@ -23,7 +23,7 @@ defmodule Data.Item do
 
   @fields [
     :level, :name, :description, :type, :tags, :keywords, :stats, :effects,
-    :drop_rate, :cost, :user_text, :usee_text,
+    :cost, :user_text, :usee_text,
   ]
 
   schema "items" do
@@ -34,7 +34,6 @@ defmodule Data.Item do
     field :keywords, {:array, :string}
     field :stats, Data.Stats
     field :effects, {:array, Data.Effect}
-    field :drop_rate, :integer
     field :cost, :integer, default: 0
     field :level, :integer, default: 1
     field :user_text, :string, default: "You use {name} on {target}."

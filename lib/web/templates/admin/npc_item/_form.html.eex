@@ -15,6 +15,7 @@
         <%= label f, :drop_rate, "Drop Rate" %>
         <%= number_input f, :drop_rate, class: "form-control" %>
         <%= error_tag f, :drop_rate %>
+        <span class="help-block">Enter a number from 0-100</span>
       </div>
     </div>
 

@@ -50,10 +50,15 @@ defmodule Game.NPC.ActionsTest do
       @room.clear_drops()
 
       start_and_clear_items()
-      insert_item(%{id: 1, name: "Sword", keywords: [], drop_rate: 50})
-      insert_item(%{id: 2, name: "Shield", keywords: [], drop_rate: 50})
+      insert_item(%{id: 1, name: "Sword", keywords: []})
+      insert_item(%{id: 2, name: "Shield", keywords: []})
 
-      %{room_id: 1, npc: %{id: 1, name: "NPC", currency: 100, item_ids: [1, 2]}, is_targeting: [], target: nil}
+      npc_items = [
+        %{item_id: 1, drop_rate: 50},
+        %{item_id: 2, drop_rate: 50},
+      ]
+
+      %{room_id: 1, npc: %{id: 1, name: "NPC", currency: 100, npc_items: npc_items}, is_targeting: [], target: nil}
     end
 
     test "drops currency in the room", state do
@@ -91,7 +96,7 @@ defmodule Game.NPC.ActionsTest do
   describe "continuous effects" do
     setup do
       effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
-      npc = %{id: 1, name: "NPC", currency: 0, item_ids: [], stats: %{health: 25}}
+      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health: 25}}
       state = %State{room_id: 1, npc: npc, is_targeting: MapSet.new(), continuous_effects: [effect]}
 
       @room.clear_leaves()

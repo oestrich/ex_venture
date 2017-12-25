@@ -42,13 +42,6 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :drop_rate %>
-        <%= number_input f, :drop_rate, class: "form-control" %>
-        <%= error_tag f, :drop_rate %>
-        <span class="help-block">Enter a number from 0-100</span>
-      </div>
-
-      <div class="form-group">
         <%= label f, :cost %>
         <%= number_input f, :cost, class: "form-control" %>
         <%= error_tag f, :cost %>

@@ -61,7 +61,7 @@ defmodule Game.NPC.Actions do
     room_id |> @room.leave({:npc, npc})
 
     drop_currency(room_id, npc, npc.currency)
-    drop_items(room_id, npc, npc.item_ids)
+    npc |> drop_items(room_id)
 
     state
     |> Map.put(:target, nil)
@@ -97,12 +97,12 @@ defmodule Game.NPC.Actions do
   @doc """
   Drop items into the room with a random chance
   """
-  @spec drop_items(room_id :: integer, npc :: NPC.t, item_ids :: [integer]) :: :ok
-  def drop_items(room_id, npc, item_ids) do
-    item_ids
-    |> Items.items()
+  @spec drop_items(NPC.t(), integer()) :: :ok
+  def drop_items(npc, room_id) do
+    npc.npc_items
     |> Enum.filter(&drop_item?/1)
-    |> Enum.each(fn (item) ->
+    |> Enum.map(fn (npc_item) ->
+      item = Items.item(npc_item.item_id)
       room_id |> @room.drop({:npc, npc}, Item.instantiate(item))
     end)
   end
@@ -112,8 +112,8 @@ defmodule Game.NPC.Actions do
 
   Uses `:rand` by default
   """
-  @spec drop_item?(item :: Item.t, rand :: atom) :: boolean
-  def drop_item?(item, rand \\ @rand)
+  @spec drop_item?(NPCItem.t(), rand :: atom) :: boolean
+  def drop_item?(npc_item, rand \\ @rand)
   def drop_item?(%{drop_rate: drop_rate}, rand) do
     rand.uniform(100) <= drop_rate
   end

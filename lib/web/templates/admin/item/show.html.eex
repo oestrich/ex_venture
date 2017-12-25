@@ -42,10 +42,6 @@
                 <td><%= @item |> keywords() %></td>
               </tr>
               <tr>
-                <th>Drop Rate</th>
-                <td><%= @item.drop_rate %>%</td>
-              </tr>
-              <tr>
                 <th>Cost</th>
                 <td><%= @item.cost %> <%= currency() %></td>
               </tr>

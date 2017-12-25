@@ -25,8 +25,11 @@ defmodule Helpers do
     end
   end
 
-  def add_item_to_npc(npc, item) do
-    npc |> update_npc(%{item_ids: [item.id | npc.item_ids]})
+  def add_item_to_npc(npc, item, params) do
+    npc
+    |> Ecto.build_assoc(:npc_items)
+    |> NPCItem.changeset(Map.put(params, :item_id, item.id))
+    |> Repo.insert!()
   end
 
   def add_npc_to_zone(zone, npc, attributes) do
@@ -260,7 +263,6 @@ defmodule Seeds do
       stats: %{},
       effects: [],
       keywords: ["sword"],
-      drop_rate: 100,
     })
     entrance = entrance |> add_item_to_room(sword, %{spawn_interval: 15})
 
@@ -271,10 +273,9 @@ defmodule Seeds do
       stats: %{slot: :chest, armor: 5},
       effects: [],
       keywords: ["leather"],
-      drop_rate: 100,
     })
     entrance = entrance |> add_item_to_room(leather_armor, %{spawn_interval: 15})
-    _bandit = bandit |> add_item_to_npc(leather_armor)
+    _bandit = bandit |> add_item_to_npc(leather_armor, %{drop_rate: 100})
 
     elven_armor = create_item(%{
       name: "Elven armor",
@@ -283,7 +284,6 @@ defmodule Seeds do
       stats: %{slot: :chest, armor: 10},
       effects: [%{kind: "stats", field: :dexterity, amount: 5}, %{kind: "stats", field: :strength, amount: 5}],
       keywords: ["elven"],
-      drop_rate: 100,
     })
     entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
 

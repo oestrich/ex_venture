@@ -18,7 +18,6 @@ defmodule Web.Admin.ItemControllerTest do
       stats: ~s({"slot":"head","armor":10}),
       effects: ~s([{"kind":"stats","field":"strength","amount":10}]),
       keywords: "helmet",
-      drop_rate: 80,
     }
 
     conn = post conn, item_path(conn, :create), item: item
