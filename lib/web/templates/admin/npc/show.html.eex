@@ -94,7 +94,8 @@
                   <td><%= link(npc_item.item.name, to: item_path(@conn, :show, npc_item.item_id)) %></td>
                   <td><%= npc_item.drop_rate %></td>
                   <td>
-                    <%= link(to: npc_item_path(@conn, :delete, npc_item.id), method: "delete", data: [confirm: "Are you sure?"]) do %>
+                    <%= link("Edit", to: npc_item_path(@conn, :edit, npc_item.id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: npc_item_path(@conn, :delete, npc_item.id), method: "delete", data: [confirm: "Are you sure?"], class: "btn btn-default btn-xs") do %>
                       <i class="fa fa-times"></i>
                     <% end %>
                   </td>

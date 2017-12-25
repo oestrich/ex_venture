@@ -13,11 +13,17 @@ defmodule Web.Controller.NPCItemControllerTest do
     assert html_response(conn, 302)
   end
 
+  test "update a npc item", %{conn: conn, npc: npc, item: item} do
+    npc_item = create_npc_item(npc, item, %{drop_rate: 10})
+
+    conn = put conn, npc_item_path(conn, :update, npc_item.id), npc_item: %{drop_rate: 15}
+    assert html_response(conn, 302)
+  end
+
   test "delete a npc item", %{conn: conn, npc: npc, item: item} do
     npc_item = create_npc_item(npc, item, %{drop_rate: 10})
 
     conn = delete conn, npc_item_path(conn, :delete, npc_item.id)
-
     assert html_response(conn, 302)
   end
 end

@@ -120,6 +120,26 @@ defmodule Web.NPCTest do
     assert state.npc.npc_items |> length() == 1
   end
 
+  test "updating an item on an npc" do
+    npc = create_npc(%{name: "Fighter"})
+    armor = create_item(%{name: "Armor"})
+
+    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
+    {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
+    {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
+
+    {:ok, npc_item} = NPC.add_item(npc, %{"item_id" => armor.id, "drop_rate" => 10})
+    {:ok, npc_item} = NPC.update_item(npc_item.id, %{"drop_rate" => 15})
+
+    assert npc_item.drop_rate == 15
+
+    npc = NPC.get(npc.id)
+    [%{drop_rate: 15}] = npc.npc_items
+
+    state = Game.NPC._get_state(npc_spawner.id)
+    [%{drop_rate: 15}] = state.npc.npc_items
+  end
+
   test "deleting an item npc an NPC" do
     npc = create_npc(%{name: "Fighter"})
     armor = create_item(%{name: "Armor"})

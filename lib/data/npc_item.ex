@@ -24,4 +24,10 @@ defmodule Data.NPCItem do
     |> foreign_key_constraint(:npc_id)
     |> foreign_key_constraint(:item_id)
   end
+
+  def update_changeset(struct, params) do
+    struct
+    |> cast(params, [:drop_rate])
+    |> validate_required([:drop_rate])
+  end
 end

@@ -282,6 +282,23 @@ defmodule Web.NPC do
   end
 
   @doc """
+  Update an item on an npc
+  """
+  @spec update_item(integer(), map) :: {:ok, NPCItem.t()}
+  def update_item(id, params) do
+    npc_item = id |> get_item()
+    changeset = npc_item |> NPCItem.update_changeset(params)
+
+    case changeset |> Repo.update() do
+      {:ok, npc_item} ->
+        npc = npc_item.npc_id |> get()
+        push_update(npc)
+        {:ok, npc_item}
+      anything -> anything
+    end
+  end
+
+  @doc """
   Delete an Item from an NPC
   """
   @spec delete_item(integer()) :: {:ok, NPCItem.t()} | {:error, changeset :: map}
