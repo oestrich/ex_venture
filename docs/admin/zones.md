@@ -48,6 +48,8 @@ You can add items from the room show page. Click `Add Item`, select the item fro
 
 Shops can be created in a room. Each room can have multiple shops. They will be referred to by their name if multiple are in the same room. After creating a shop you can add items to the shop.
 
-![New Shop Item](/images/admin-zones-shop-new-item.png)
+![New Shop Show](/images/admin-zones-shop-items.png)
 
-Select an item, which has the sell price listed in parens, and give it a price and quantity. -1 quantity will have an unlimited quantity. You can delete items from the shop later.
+Select an item, which has the sell price listed in parens, and give it a price and quantity. -1 quantity will have an unlimited quantity. You can delete items from the shop later and adjust the price/quanity.
+
+![New Shop Item](/images/admin-zones-shop-new-item.png)
