@@ -56,6 +56,7 @@
                 <th>Name</th>
                 <th>Price</th>
                 <th>Quantity</th>
+                <th>Sell Price (Item Cost)</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -65,9 +66,11 @@
                   <td><%= link(shop_item.item.name, to: item_path(@conn, :show, shop_item.item_id)) %></td>
                   <td><%= shop_item.price %></td>
                   <td><%= shop_item.quantity %></td>
+                  <td><%= shop_item.item.cost %></td>
                   <td>
-                    <%= link("Edit", to: shop_item_path(@conn, :edit, shop_item.id)) %>
-                    <%= link("Delete", to: shop_item_path(@conn, :delete, shop_item.id), method: :delete) %>
+                    <%= link("Edit", to: shop_item_path(@conn, :edit, shop_item.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit (Item)", to: item_path(@conn, :edit, shop_item.item_id), class: "btn btn-default btn-xs") %>
+                    <%= link("Delete", to: shop_item_path(@conn, :delete, shop_item.id), method: :delete, class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

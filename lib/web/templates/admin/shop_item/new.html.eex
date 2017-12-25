@@ -20,7 +20,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render "_form.html", path: shop_shop_item_path(@conn, :create, @shop.id), items: @items, changeset: @changeset, title: "Add Item Spawn", submit: "Create" %>
+      <%= render "_form.html", path: shop_shop_item_path(@conn, :create, @shop.id), items: @items, changeset: @changeset, title: "Add Item", submit: "Create" %>
     </div>
   </div>
 </section>
