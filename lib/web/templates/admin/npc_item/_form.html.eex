@@ -3,11 +3,18 @@
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, [method: :post], fn (_) -> %>
+  <%= form_for @changeset, @path, fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
-        <%= label :item, :id, "Item" %>
-        <%= select :item, :id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+        <%= label f, :item_id, "Item" %>
+        <%= select f, :item_id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+        <%= error_tag f, :item_id %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :drop_rate, "Drop Rate" %>
+        <%= number_input f, :drop_rate, class: "form-control" %>
+        <%= error_tag f, :drop_rate %>
       </div>
     </div>
 

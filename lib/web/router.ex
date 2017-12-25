@@ -71,10 +71,12 @@ defmodule Web.Router do
     resources "/item_aspectings", ItemAspectingController, only: [:delete]
 
     resources "/npcs", NPCController, only: [:index, :show, :edit, :update, :new, :create] do
-      resources "/items", NPCItemController, only: [:new, :create, :delete], as: :item
+      resources "/items", NPCItemController, only: [:new, :create], as: :item
 
       resources "/spawners", NPCSpawnerController, only: [:new, :create], as: :spawner
     end
+
+    resources "/npc_items", NPCItemController, only: [:delete]
 
     resources "/npc_spawners", NPCSpawnerController, only: [:show, :edit, :update, :delete]
 

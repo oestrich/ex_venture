@@ -53,7 +53,7 @@ defmodule Game.NPC do
   def for_zone(zone) do
     NPCSpawner
     |> where([ns], ns.zone_id == ^zone.id)
-    |> preload([:npc])
+    |> preload([npc: [:npc_items]])
     |> Repo.all
   end
 

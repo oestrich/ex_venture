@@ -8,6 +8,7 @@ defmodule TestHelpers do
   alias Data.ItemAspect
   alias Data.ItemAspecting
   alias Data.NPC
+  alias Data.NPCItem
   alias Data.NPCSpawner
   alias Data.Race
   alias Data.Room
@@ -262,6 +263,13 @@ defmodule TestHelpers do
     npc
     |> Ecto.build_assoc(:npc_spawners)
     |> NPCSpawner.changeset(attributes)
+    |> Repo.insert!
+  end
+
+  def create_npc_item(npc, item, attributes \\ %{}) do
+    npc
+    |> Ecto.build_assoc(:npc_items)
+    |> NPCItem.changeset(Map.merge(attributes, %{item_id: item.id}))
     |> Repo.insert!
   end
 

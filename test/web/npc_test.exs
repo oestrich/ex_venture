@@ -109,12 +109,15 @@ defmodule Web.NPCTest do
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    {:ok, npc} = NPC.add_item(npc, armor.id)
+    {:ok, npc_item} = NPC.add_item(npc, %{"item_id" => armor.id, "drop_rate" => 10})
 
-    assert npc.item_ids == [armor.id]
+    assert npc_item.drop_rate == 10
+
+    npc = NPC.get(npc.id)
+    assert npc.npc_items |> length() == 1
 
     state = Game.NPC._get_state(npc_spawner.id)
-    assert state.npc.item_ids == [armor.id]
+    assert state.npc.npc_items |> length() == 1
   end
 
   test "deleting an item npc an NPC" do
@@ -125,12 +128,13 @@ defmodule Web.NPCTest do
     {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    {:ok, npc} = NPC.add_item(npc, armor.id)
-    {:ok, npc} = NPC.delete_item(npc, armor.id |> Integer.to_string())
+    {:ok, npc_item} = NPC.add_item(npc, %{"item_id" => armor.id, "drop_rate" => 10})
+    {:ok, _npc_item} = NPC.delete_item(npc_item.id)
 
-    assert npc.item_ids == []
+    npc = NPC.get(npc.id)
+    assert npc.npc_items == []
 
     state = Game.NPC._get_state(npc_spawner.id)
-    assert state.npc.item_ids == []
+    assert state.npc.npc_items == []
   end
 end

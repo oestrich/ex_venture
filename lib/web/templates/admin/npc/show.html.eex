@@ -88,13 +88,13 @@
               </tr>
             </thead>
             <tbody>
-              <%= Enum.map @npc.items, fn (item) -> %>
+              <%= Enum.map @npc.npc_items, fn (npc_item) -> %>
                 <tr>
-                  <td><%= item.id %></td>
-                  <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
-                  <td><%= item.drop_rate %></td>
+                  <td><%= npc_item.id %></td>
+                  <td><%= link(npc_item.item.name, to: item_path(@conn, :show, npc_item.item_id)) %></td>
+                  <td><%= npc_item.drop_rate %></td>
                   <td>
-                    <%= link(to: npc_item_path(@conn, :delete, @npc.id, item.id), method: "delete", data: [confirm: "Are you sure?"]) do %>
+                    <%= link(to: npc_item_path(@conn, :delete, npc_item.id), method: "delete", data: [confirm: "Are you sure?"]) do %>
                       <i class="fa fa-times"></i>
                     <% end %>
                   </td>

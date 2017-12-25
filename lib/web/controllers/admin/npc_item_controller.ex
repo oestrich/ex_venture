@@ -10,21 +10,22 @@ defmodule Web.Admin.NPCItemController do
     conn |> render("new.html", items: Item.all(), npc: npc, changeset: changeset)
   end
 
-  def create(conn, %{"npc_id" => npc_id, "item" => %{"id" => item_id}}) do
+  def create(conn, %{"npc_id" => npc_id, "npc_item" => params}) do
     npc = NPC.get(npc_id)
-    case NPC.add_item(npc, item_id) do
-      {:ok, npc} -> conn |> redirect(to: npc_path(conn, :show, npc.id))
-      {:error, _changeset} -> conn |> render("add-item.html", items: Item.all(), npc: npc)
+    case NPC.add_item(npc, params) do
+      {:ok, npc_item} -> conn |> redirect(to: npc_path(conn, :show, npc_item.npc_id))
+      {:error, changeset} ->
+        conn |> render("new.html", items: Item.all(), npc: npc, changeset: changeset)
     end
   end
 
-  def delete(conn, %{"npc_id" => npc_id, "id" => item_id}) do
-    npc = NPC.get(npc_id)
-    case NPC.delete_item(npc, item_id) do
-      {:ok, npc} ->
-        conn |> redirect(to: npc_path(conn, :show, npc.id))
+  def delete(conn, %{"id" => id}) do
+    case NPC.delete_item(id) do
+      {:ok, npc_item} ->
+        conn |> redirect(to: npc_path(conn, :show, npc_item.npc_id))
       _ ->
-        conn |> redirect(to: npc_path(conn, :show, npc.id))
+        npc_item = NPC.get_item(id)
+        conn |> redirect(to: npc_path(conn, :show, npc_item.npc_id))
     end
   end
 end

@@ -8,6 +8,7 @@ defmodule Data.NPC do
   alias Data.Event
   alias Data.Item
   alias Data.Stats
+  alias Data.NPCItem
   alias Data.NPCSpawner
 
   schema "npcs" do
@@ -23,6 +24,7 @@ defmodule Data.NPC do
     field :item_ids, {:array, :integer}
     field :items, {:array, Item}, virtual: true
 
+    has_many :npc_items, NPCItem
     has_many :npc_spawners, NPCSpawner
 
     timestamps()

@@ -7,6 +7,7 @@ defmodule Web.NPC do
 
   alias Data.Event
   alias Data.NPC
+  alias Data.NPCItem
   alias Data.NPCSpawner
   alias Data.Stats
   alias Data.Repo
@@ -47,7 +48,7 @@ defmodule Web.NPC do
   def get(id) do
     NPC
     |> where([c], c.id == ^id)
-    |> preload([npc_spawners: [:zone, :room]])
+    |> preload([npc_items: [:item], npc_spawners: [:zone, :room]])
     |> Repo.one
     |> load_items()
   end
@@ -93,8 +94,14 @@ defmodule Web.NPC do
   end
 
   defp push_update(npc) do
-    npc = npc |> Repo.preload([npc_spawners: [:npc]])
+    npc = npc |> Repo.preload([:npc_spawners])
     Enum.map(npc.npc_spawners, fn (npc_spawner) ->
+      npc_spawner =
+        NPCSpawner
+        |> where([ns], ns.id == ^npc_spawner.id)
+        |> preload([npc: [:npc_items]])
+        |> Repo.one()
+
       Game.NPC.update(npc_spawner.id, npc_spawner)
     end)
   end
@@ -236,18 +243,46 @@ defmodule Web.NPC do
   # Items
   #
 
-  def new_item(npc), do: npc |> edit()
+  @doc """
+  Get an NPC Item
+  """
+  @spec get_item(integer()) :: NPCItem.t()
+  def get_item(id) do
+    NPCItem |> Repo.get(id)
+  end
+
+  @doc """
+  Get a changeset for a new npc item
+  """
+  @spec new_item(NPC.t()) :: Ecto.Changeset.t()
+  def new_item(npc) do
+    npc
+    |> Ecto.build_assoc(:npc_items)
+    |> NPCItem.changeset(%{})
+  end
+
+  @doc """
+  Get a changeset for editing a shop item
+  """
+  @spec edit_item(NPCItem.t()) :: map()
+  def edit_item(npc_item) do
+    npc_item |> NPCItem.changeset(%{})
+  end
 
   @doc """
   Add an Item to an NPC
   """
-  @spec add_item(npc :: NPC.t, item_id :: integer) :: {:ok, NPC.t} | {:error, changeset :: map}
-  def add_item(npc, item_id) do
-    changeset = npc |> NPC.changeset(%{item_ids: [item_id | npc.item_ids]})
-    case changeset |> Repo.update() do
-      {:ok, npc} ->
+  @spec add_item(NPC.t(), map()) :: {:ok, NPC.t()} | {:error, map()}
+  def add_item(npc, params) do
+    changeset =
+      npc
+      |> Ecto.build_assoc(:npc_items)
+      |> NPCItem.changeset(params)
+
+    case changeset |> Repo.insert() do
+      {:ok, npc_item} ->
         push_update(npc)
-        {:ok, npc}
+        {:ok, npc_item}
       anything -> anything
     end
   end
@@ -255,15 +290,14 @@ defmodule Web.NPC do
   @doc """
   Delete an Item from an NPC
   """
-  @spec delete_item(npc :: NPC.t, item_id :: integer) :: {:ok, NPC.t} | {:error, changeset :: map}
-  def delete_item(npc, item_id) do
-    item_id = String.to_integer(item_id)
-    item_ids = List.delete(npc.item_ids, item_id)
-    changeset = npc |> NPC.changeset(%{item_ids: item_ids})
-    case changeset |> Repo.update() do
-      {:ok, npc} ->
+  @spec delete_item(integer()) :: {:ok, NPCItem.t()} | {:error, changeset :: map}
+  def delete_item(item_id) do
+    npc_item = item_id |> get_item()
+    case npc_item |> Repo.delete() do
+      {:ok, npc_item} ->
+        npc = npc_item.npc_id |> get()
         push_update(npc)
-        {:ok, npc}
+        {:ok, npc_item}
       anything -> anything
     end
   end
