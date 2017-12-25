@@ -12,7 +12,6 @@ defmodule Data.NPC do
 
   schema "npcs" do
     field :name, :string
-    field :hostile, :boolean
     field :level, :integer, default: 1
     field :experience_points, :integer, default: 0 # given after defeat
     field :stats, Data.Stats
@@ -31,9 +30,9 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids, :notes, :tags, :events])
+    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :item_ids, :notes, :tags, :events])
     |> ensure(:item_ids, [])
-    |> validate_required([:name, :hostile, :level, :experience_points, :stats, :currency, :item_ids, :tags, :events])
+    |> validate_required([:name, :level, :experience_points, :stats, :currency, :item_ids, :tags, :events])
     |> validate_stats()
     |> Event.validate_events()
   end

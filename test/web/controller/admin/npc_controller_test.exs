@@ -4,7 +4,6 @@ defmodule Web.Admin.NPCControllerTest do
   test "new npc", %{conn: conn} do
     params = %{
       "name" => "Bandit",
-      "hostile" => "false",
       "level" => "1",
       "experience_points" => "124",
       "currency" => "10",

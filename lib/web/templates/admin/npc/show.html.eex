@@ -51,10 +51,6 @@
               <td><%= @npc.currency %></td>
             </tr>
             <tr>
-              <th>Hostile</th>
-              <td><%= @npc.hostile %></td>
-            </tr>
-            <tr>
               <th>Notes</th>
               <td><%= @npc.notes %></td>
             </tr>

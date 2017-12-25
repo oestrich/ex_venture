@@ -232,7 +232,6 @@ defmodule TestHelpers do
   def npc_attributes(attributes) do
     Map.merge(%{
       name: "Bandit",
-      hostile: false,
       level: 1,
       experience_points: 124,
       currency: 0,

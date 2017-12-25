@@ -225,7 +225,6 @@ defmodule Seeds do
 
     bran = create_npc(%{
       name: "Bran",
-      hostile: false,
       level: 1,
       currency: 0,
       experience_points: 124,
@@ -239,7 +238,6 @@ defmodule Seeds do
 
     bandit = create_npc(%{
       name: "Bandit",
-      hostile: true,
       level: 2,
       currency: 100,
       experience_points: 230,

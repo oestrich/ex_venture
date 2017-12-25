@@ -8,7 +8,6 @@ defmodule Web.NPCTest do
   test "create a new npc" do
     params = %{
       "name" => "Bandit",
-      "hostile" => "false",
       "level" => "1",
       "experience_points" => "124",
       "currency" => "10",
