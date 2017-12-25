@@ -26,25 +26,25 @@ You can edit the item by clicking `Edit` in the attribute table. Items will imme
 
 Items can be quickly created by Item Aspects. These are common snippets of stats and effects that are added to items and compiled into the final item stats the game will use.
 
-![Item Aspects Index](/images/admin-item-tag-index.png)
+![Item Aspects Index](/images/admin-item-aspect-index.png)
 
 ### New Item Aspect
 
 Click `New Item Aspect` from the index listing. The information is similar to what the items new page asks for.
 
-![Item Aspects New](/images/admin-item-tag-new.png)
+![Item Aspects New](/images/admin-item-aspect-new.png)
 
 After saving you'll be redirected to the details page for an item aspect.
 
-![Item Aspects Show](/images/admin-item-tag-show.png)
+![Item Aspects Show](/images/admin-item-aspect-show.png)
 
 ### Add an Item Aspect to an Item
 
 From the item detail page click `Add Tag`.
 
-![Adding an item aspect](/images/admin-items-add-tag.png)
+![Adding an item aspect](/images/admin-items-add-aspect.png)
 
-After selecting the tag to add, you can see what the compiled item looks like. All changes will be made live to the game immediately.
+After selecting the aspect to add, you can see what the compiled item looks like. All changes will be made live to the game immediately.
 
 ![Compiled item](/images/admin-items-compiled.png)
 

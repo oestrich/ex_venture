@@ -28,8 +28,8 @@
                   <td><%= item_aspect.id %></td>
                   <td><%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %></td>
                   <td>
-                    <%= link("View", to: item_aspect_path(@conn, :show, item_aspect.id)) %>
-                    <%= link("Edit", to: item_aspect_path(@conn, :edit, item_aspect.id)) %>
+                    <%= link("View", to: item_aspect_path(@conn, :show, item_aspect.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: item_aspect_path(@conn, :edit, item_aspect.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>
