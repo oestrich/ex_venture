@@ -76,6 +76,10 @@ defmodule Game.Command.Wield do
 
   # Unwield the current item in your hand, adding to inventory
   # Wield the new item, removing from inventory
+  defp item_found(socket, _, item = %{level: item_level, type: "weapon"}, %{save: %{level: level}}) when level < item_level do
+    socket |> @socket.echo("You cannot wield \"#{Format.item_name(item)}\", you are not high enough level.")
+    :ok
+  end
   defp item_found(socket, hand, item = %{type: "weapon"}, state) do
     %{save: save} = state
     %{items: items} = save

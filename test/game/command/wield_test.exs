@@ -9,9 +9,10 @@ defmodule Game.Command.WieldTest do
 
   setup do
     start_and_clear_items()
-    insert_item(%{id: 1, name: "Sword", keywords: [], type: "weapon"})
-    insert_item(%{id: 2, name: "Axe", keywords: [], type: "weapon"})
-    insert_item(%{id: 3, name: "Potion", keywords: [], type: "basic"})
+    insert_item(%{id: 1, level: 1, name: "Sword", keywords: [], type: "weapon"})
+    insert_item(%{id: 2, level: 1, name: "Axe", keywords: [], type: "weapon"})
+    insert_item(%{id: 3, level: 1, name: "Potion", keywords: [], type: "basic"})
+    insert_item(%{id: 4, level: 2, name: "Long Sword", keywords: [], type: "weapon"})
 
     @socket.clear_messages
     {:ok, %{session: :session, socket: :socket}}
@@ -20,7 +21,7 @@ defmodule Game.Command.WieldTest do
   describe "wielding" do
     test "wield an item", %{session: session, socket: socket} do
       sword = item_instance(1)
-      save = %Save{items: [sword], wielding: %{}}
+      save = %Save{level: 1, items: [sword], wielding: %{}}
       {:update, state} = Command.Wield.run({:wield, "sword"}, session, %{socket: socket, save: save})
 
       assert state.save.wielding == %{right: sword}
@@ -31,7 +32,7 @@ defmodule Game.Command.WieldTest do
     end
 
     test "can only wield a weapon", %{session: session, socket: socket} do
-      save = %Save{items: [item_instance(3)]}
+      save = %Save{level: 1, items: [item_instance(3)]}
       :ok = Command.Wield.run({:wield, "potion"}, session, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
@@ -42,7 +43,7 @@ defmodule Game.Command.WieldTest do
       sword = item_instance(1)
       axe = item_instance(2)
 
-      save = %Save{wielding: %{right: sword}, items: [axe]}
+      save = %Save{level: 1, wielding: %{right: sword}, items: [axe]}
       {:update, state} = Command.Wield.run({:wield, "axe"}, session, %{socket: socket, save: save})
 
       assert state.save.wielding == %{right: axe}
@@ -56,7 +57,7 @@ defmodule Game.Command.WieldTest do
       sword = item_instance(1)
       axe = item_instance(2)
 
-      save = %Save{wielding: %{left: sword}, items: [axe]}
+      save = %Save{level: 1, wielding: %{left: sword}, items: [axe]}
       {:update, state} = Command.Wield.run({:wield, "axe"}, session, %{socket: socket, save: save})
 
       assert state.save.wielding == %{right: axe}
@@ -66,8 +67,17 @@ defmodule Game.Command.WieldTest do
       assert Regex.match?(~r(Axe is now in your right hand), look)
     end
 
+    test "cannot wield higher level weapons", %{session: session, socket: socket} do
+      instance = item_instance(4)
+      save = %Save{level: 1, items: [instance], wearing: %{}}
+      :ok = Command.Wield.run({:wield, "long sword"}, session, %{socket: socket, save: save})
+
+      [{^socket, look}] = @socket.get_echos()
+      assert Regex.match?(~r(You cannot wield), look)
+    end
+
     test "item not found", %{session: session, socket: socket} do
-      save = %Save{items: [item_instance(1)]}
+      save = %Save{level: 1, items: [item_instance(1)]}
       Command.Wield.run({:wield, "polearm"}, session, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
