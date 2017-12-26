@@ -230,7 +230,7 @@ Items: #{items(room, items)}
   def npcs(_), do: ""
 
   def items(room, items) when is_list(items) do
-    items = items |> Enum.map(fn (item) -> "{cyan}#{item.name}{/cyan}" end)
+    items = items |> Enum.map(&item_name/1)
 
     items ++ [currency(room)]
     |> Enum.reject(&(&1 == ""))
@@ -286,7 +286,7 @@ Items: #{items(room, items)}
   @spec item(item :: Item.t) :: String.t
   def item(item) do
     """
-    {cyan}#{item.name}{/cyan}
+    #{item |> item_name()}
     #{item.name |> underline}
     #{item.description}
     #{item_stats(item)}
@@ -317,7 +317,7 @@ Items: #{items(room, items)}
     items =
       items
       |> Enum.map(fn
-        (%{item: item, quantity: 1}) -> "  - {cyan}#{item.name}{/cyan}"
+        (%{item: item, quantity: 1}) -> "  - #{item_name(item)}"
         (%{item: item, quantity: quantity}) -> "  - {cyan}#{item.name} x#{quantity}{/cyan}"
       end)
       |> Enum.join("\n")
@@ -345,13 +345,13 @@ Items: #{items(room, items)}
     wearing = wearing
     |> Map.to_list
     |> Enum.sort_by(&(elem(&1, 0)))
-    |> Enum.map(fn ({part, item}) -> "  - {cyan}#{item.name}{/cyan} on your #{part}" end)
+    |> Enum.map(fn ({part, item}) -> "  - #{item_name(item)} on your #{part}" end)
     |> Enum.join("\n")
 
     wielding = wielding
     |> Map.to_list
     |> Enum.sort_by(&(elem(&1, 0)))
-    |> Enum.map(fn ({hand, item}) -> "  - a {cyan}#{item.name}{/cyan} in your #{hand} hand" end)
+    |> Enum.map(fn ({hand, item}) -> "  - a #{item_name(item)} in your #{hand} hand" end)
     |> Enum.join("\n")
 
     ["You are wearing:", wearing, "You are wielding:", wielding]
@@ -454,11 +454,11 @@ Items: #{items(room, items)}
   Message for users of items
 
       iex> Game.Format.user_item(%{name: "Potion", user_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
-      "You used {blue}Potion{/blue} on {yellow}Bandit{/yellow}."
+      "You used {cyan}Potion{/cyan} on {yellow}Bandit{/yellow}."
   """
   def user_item(item, opts \\ []) do
     item.user_text
-    |> String.replace("{name}", "{blue}#{item.name}{/blue}")
+    |> String.replace("{name}", item_name(item))
     |> String.replace("{target}", target_name(Keyword.get(opts, :target)))
     |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
   end
@@ -467,11 +467,11 @@ Items: #{items(room, items)}
   Message for usees of items
 
       iex> Game.Format.usee_item(%{name: "Potion", usee_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
-      "You used {blue}Potion{/blue} on {yellow}Bandit{/yellow}."
+      "You used {cyan}Potion{/cyan} on {yellow}Bandit{/yellow}."
   """
   def usee_item(item, opts \\ []) do
     item.usee_text
-    |> String.replace("{name}", "{blue}#{item.name}{/blue}")
+    |> String.replace("{name}", item_name(item))
     |> String.replace("{target}", target_name(Keyword.get(opts, :target)))
     |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
   end
@@ -494,6 +494,17 @@ Items: #{items(room, items)}
   end
 
   def name(who), do: target_name(who)
+
+  @doc """
+  Format an items name, cyan
+
+    iex> Game.Format.item_name(%{name: "Potion"})
+    "{cyan}Potion{/cyan}"
+  """
+  @spec item_name(Item.t()) :: String.t
+  def item_name(item) do
+    "{cyan}#{item.name}{/cyan}"
+  end
 
   @doc """
   Format effects for display.
