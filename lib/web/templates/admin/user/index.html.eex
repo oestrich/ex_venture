@@ -33,7 +33,7 @@
                   <td><%= link(user.class.name, to: class_path(@conn, :show, user.class_id)) %></td>
                   <td><%= user.seconds_online |> Format.play_time() %></td>
                   <td>
-                    <%= link("View", to: user_path(@conn, :show, user.id)) %>
+                    <%= link("View", to: user_path(@conn, :show, user.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

@@ -194,7 +194,7 @@
                 <tr>
                   <td><%= shop.id %></td>
                   <td><%= shop.name %></td>
-                  <td><%= link("View", to: shop_path(@conn, :show, shop.id)) %></td>
+                  <td><%= link("View", to: shop_path(@conn, :show, shop.id), class: "btn btn-default btn-xs") %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -256,7 +256,11 @@
                 <tr>
                   <td><%= link(room_item.item.name, to: item_path(@conn, :show, room_item.item_id)) %></td>
                   <td><%= room_item.spawn_interval %></td>
-                  <td><%= link("Delete", to: room_item_path(@conn, :delete, room_item.id), method: :delete) %></td>
+                  <td>
+                    <%= link(to: room_item_path(@conn, :delete, room_item.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
                 </tr>
               <% end %>
             </tbody>

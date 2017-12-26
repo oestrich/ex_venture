@@ -37,8 +37,8 @@
                   <td><%= race.id %></td>
                   <td><%= link(race.name, to: race_path(@conn, :show, race.id)) %></td>
                   <td>
-                    <%= link("View", to: race_path(@conn, :show, race.id)) %>
-                    <%= link("Edit", to: race_path(@conn, :edit, race.id)) %>
+                    <%= link("View", to: race_path(@conn, :show, race.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: race_path(@conn, :edit, race.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

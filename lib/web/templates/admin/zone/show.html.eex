@@ -104,8 +104,8 @@
                   <td><%= link(room.name, to: room_path(@conn, :show, room.id)) %></td>
                   <td><%= room.ecology %></td>
                   <td>
-                    <%= link("View", to: room_path(@conn, :show, room.id)) %>
-                    <%= link("Edit", to: room_path(@conn, :edit, room.id)) %>
+                    <%= link("View", to: room_path(@conn, :show, room.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: room_path(@conn, :edit, room.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

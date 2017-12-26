@@ -84,8 +84,8 @@
                   <td><%= skill.level %></td>
                   <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
                   <td>
-                    <%= link("View", to: skill_path(@conn, :show, skill.id)) %>
-                    <%= link("Edit", to: skill_path(@conn, :edit, skill.id)) %>
+                    <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

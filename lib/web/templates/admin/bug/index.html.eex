@@ -34,7 +34,7 @@
                   <td><%= bug.title %></td>
                   <td><%= link(bug.reporter.name, to: user_path(@conn, :show, bug.reporter.id)) %></td>
                   <td>
-                    <%= link("View", to: bug_path(@conn, :show, bug.id)) %>
+                    <%= link("View", to: bug_path(@conn, :show, bug.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

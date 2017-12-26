@@ -37,8 +37,8 @@
                   <td><%= zone.id %></td>
                   <td><%= link(zone.name, to: zone_path(@conn, :show, zone.id)) %></td>
                   <td>
-                    <%= link("View", to: zone_path(@conn, :show, zone.id)) %>
-                    <%= link("Edit", to: zone_path(@conn, :edit, zone.id)) %>
+                    <%= link("View", to: zone_path(@conn, :show, zone.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: zone_path(@conn, :edit, zone.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

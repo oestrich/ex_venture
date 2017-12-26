@@ -92,7 +92,7 @@
                   <td><%= item_aspecting.id %></td>
                   <td><%= link(item_aspecting.item_aspect.name, to: item_aspect_path(@conn, :show, item_aspecting.item_aspect_id)) %></td>
                   <td>
-                    <%= link(to: item_aspecting_path(@conn, :delete, item_aspecting.id), method: :delete) do %>
+                    <%= link(to: item_aspecting_path(@conn, :delete, item_aspecting.id), method: :delete, class: "btn btn-default btn-xs") do %>
                       <i class="fa fa-times"></i>
                     <% end %>
                   </td>

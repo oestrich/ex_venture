@@ -22,14 +22,14 @@
                 <th>Game Name</th>
                 <td><%= Config.game_name() %></td>
                 <td>
-                  <%= link("Edit", to: config_path(@conn, :edit, "game_name")) %>
+                  <%= link("Edit", to: config_path(@conn, :edit, "game_name"), class: "btn btn-default btn-xs") %>
                 </td>
               </tr>
               <tr>
                 <th>Message of the day</th>
                 <td><pre><%= Config.motd("Not set") %></pre></td>
                 <td>
-                  <%= link("Edit", to: config_path(@conn, :edit, "motd")) %>
+                  <%= link("Edit", to: config_path(@conn, :edit, "motd"), class: "btn btn-default btn-xs") %>
                 </td>
               </tr>
               <tr>

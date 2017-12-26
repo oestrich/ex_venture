@@ -39,8 +39,8 @@
                   <td><%= link(help_topic.name, to: help_topic_path(@conn, :show, help_topic.id)) %></td>
                   <td><%= help_topic.keywords |> Enum.join(", ") %></td>
                   <td>
-                    <%= link("View", to: help_topic_path(@conn, :show, help_topic.id)) %>
-                    <%= link("Edit", to: help_topic_path(@conn, :edit, help_topic.id)) %>
+                    <%= link("View", to: help_topic_path(@conn, :show, help_topic.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: help_topic_path(@conn, :edit, help_topic.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>
