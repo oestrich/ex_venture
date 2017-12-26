@@ -250,6 +250,7 @@ defmodule Game.SessionTest do
 
     assert state.save.stats.health == -5
 
+    assert_receive :resurrect
     assert_receive {:"$gen_cast", {:teleport, 2}}
   after
     Session.Registry.unregister()
@@ -395,6 +396,27 @@ defmodule Game.SessionTest do
     test "teleports the user", %{socket: socket, user: user, room: room} do
       {:noreply, state} = Session.handle_cast({:teleport, room.id}, %{socket: socket, user: user, save: user.save})
       assert state.save.room_id == room.id
+    end
+  end
+
+  describe "resurrection" do
+    test "sets health to 1 if < 0", state do
+      save = %{stats: %{health: -1}}
+      state = %{state | save: save}
+
+      {:noreply, state} = Session.handle_info(:resurrect, state)
+
+      assert state.save.stats.health == 1
+      assert state.user.save.stats.health == 1
+    end
+
+    test "does not touch health if > 0", state do
+      save = %{stats: %{health: 2}}
+      state = %{state | save: save}
+
+      {:noreply, state} = Session.handle_info(:resurrect, state)
+
+      assert state.save.stats.health == 2
     end
   end
 

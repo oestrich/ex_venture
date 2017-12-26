@@ -406,6 +406,26 @@ defmodule Game.Session do
     {:noreply, state}
   end
 
+  def handle_info(:resurrect, state) do
+    %{save: %{stats: stats}} = state
+
+    case stats.health do
+      health when health < 1 ->
+        stats = Map.put(stats, :health, 1)
+        save = Map.put(state.save, :stats, stats)
+        user = Map.put(state.user, :save, save)
+
+        state =
+          state
+          |> Map.put(:save, save)
+          |> Map.put(:user, user)
+
+        {:noreply, state}
+      _ ->
+        {:noreply, state}
+    end
+  end
+
   def run_command(command, session, state) do
     case command |> Command.run(session, state) do
       {:update, state} ->
