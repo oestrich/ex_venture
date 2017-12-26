@@ -259,6 +259,7 @@ defmodule Game.Room do
   def handle_cast({:update_character, {:npc, npc}}, state = %{npcs: npcs}) do
     case Enum.find(npcs, &(&1.id == npc.id)) do
       nil ->
+        GenServer.cast(self(), {:enter, {:npc, npc}})
         {:noreply, state}
       _npc ->
         npcs = npcs |> Enum.reject(&(&1.id == npc.id))
