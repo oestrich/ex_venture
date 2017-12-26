@@ -42,6 +42,7 @@ defmodule Web.Zone do
   def get(id) do
     Zone
     |> where([z], z.id == ^id)
+    |> preload([:graveyard])
     |> preload([rooms: ^(from r in Room, order_by: r.id)])
     |> Repo.one
   end
@@ -103,5 +104,19 @@ defmodule Web.Zone do
 
   defp rooms_query(zone) do
     from r in Room, order_by: r.id, where: r.is_zone_exit == true, or_where: r.zone_id == ^zone.id
+  end
+
+  @doc """
+  Helper for selecting a zone graveyard
+  """
+  def graveyards() do
+    Zone
+    |> order_by([z], z.id)
+    |> preload([rooms: ^(from r in Room, order_by: r.id, where: r.is_graveyard == true)])
+    |> Repo.all
+    |> Enum.map(fn (zone) ->
+      rooms = Enum.map(zone.rooms, &({"#{&1.id} - #{&1.name}", &1.id}))
+      {zone.name, rooms}
+    end)
   end
 end

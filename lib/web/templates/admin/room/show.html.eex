@@ -54,6 +54,10 @@
                 <td><%= @room.is_zone_exit %></td>
               </tr>
               <tr>
+                <th>Is a graveyard?</th>
+                <td><%= @room.is_graveyard %></td>
+              </tr>
+              <tr>
                 <th>Ecology</th>
                 <td><%= @room.ecology %></td>
               </tr>

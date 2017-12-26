@@ -16,6 +16,12 @@
         <%= textarea f, :description, class: "form-control" %>
         <%= error_tag f, :description %>
       </div>
+
+      <div class="form-group">
+        <%= label f, :graveyard_id %>
+        <%= select f, :graveyard_id, Zone.graveyards(), class: "form-control" %>
+        <%= error_tag f, :graveyard_id %>
+      </div>
     </div>
 
     <div class="box-footer">

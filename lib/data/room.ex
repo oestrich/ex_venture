@@ -32,6 +32,7 @@ defmodule Data.Room do
     field :y, :integer
     field :map_layer, :integer
     field :is_zone_exit, :boolean
+    field :is_graveyard, :boolean, default: false
     field :ecology, :string
 
     field :exits, {:array, Exit}, virtual: true
@@ -49,11 +50,11 @@ defmodule Data.Room do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :name, :description, :x, :y, :map_layer, :is_zone_exit, :ecology, :currency, :items])
+    |> cast(params, [:zone_id, :name, :description, :x, :y, :map_layer, :is_zone_exit, :is_graveyard, :ecology, :currency, :items])
     |> ensure_items
     |> ensure(:currency, 0)
     |> ensure(:ecology, "default")
-    |> validate_required([:zone_id, :name, :description, :currency, :x, :y, :map_layer, :ecology])
+    |> validate_required([:zone_id, :name, :description, :currency, :x, :y, :map_layer, :ecology, :is_graveyard])
     |> validate_inclusion(:ecology, @ecologies)
   end
 

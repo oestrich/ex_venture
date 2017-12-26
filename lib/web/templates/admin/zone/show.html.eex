@@ -34,6 +34,16 @@
               <th>Description</th>
               <td><%= @zone.description %></td>
             </tr>
+            <tr>
+              <th>Resurrection Room</th>
+              <td>
+                <%= if @zone.graveyard != nil do %>
+                  <%= link(@zone.graveyard.name, to: room_path(@conn, :show, @zone.graveyard.id)) %>
+                <% else %>
+                  No graveyard is set.
+                <% end %>
+              </td>
+            </tr>
           </table>
         </div>
       </div>
