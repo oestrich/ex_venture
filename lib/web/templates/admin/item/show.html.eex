@@ -128,4 +128,70 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">NPCs</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Drop Rate</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@item.npc_items, fn (npc_item) -> %>
+                <tr>
+                  <td><%= npc_item.npc.name %></td>
+                  <td><%= npc_item.drop_rate %></td>
+                  <td>
+                    <%= link("View NPC", to: npc_path(@conn, :show, npc_item.npc_id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Shops</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@item.shop_items, fn (shop_item) -> %>
+                <tr>
+                  <td><%= shop_item.shop.name %></td>
+                  <td><%= shop_item.price %></td>
+                  <td><%= shop_item.quantity %></td>
+                  <td>
+                    <%= link("View Shop", to: shop_path(@conn, :show, shop_item.shop_id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

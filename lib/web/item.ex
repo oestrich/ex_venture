@@ -69,7 +69,7 @@ defmodule Web.Item do
   def get(id) do
     Item
     |> Repo.get(id)
-    |> Repo.preload([item_aspectings: [:item_aspect]])
+    |> Repo.preload([shop_items: [:shop], npc_items: [:npc], item_aspectings: [:item_aspect]])
   end
 
   @doc """

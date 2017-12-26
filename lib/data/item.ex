@@ -9,6 +9,8 @@ defmodule Data.Item do
   alias __MODULE__
   alias Data.Item.Instance
   alias Data.ItemAspecting
+  alias Data.NPCItem
+  alias Data.ShopItem
   alias Data.Stats
 
   @type instance :: %Instance{}
@@ -41,6 +43,8 @@ defmodule Data.Item do
 
     has_many :item_aspectings, ItemAspecting
     has_many :item_aspects, through: [:item_aspectings, :item_aspect]
+    has_many :npc_items, NPCItem
+    has_many :shop_items, ShopItem
 
     timestamps()
   end
