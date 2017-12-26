@@ -5,6 +5,7 @@ defmodule Game.Command.Wear do
 
   use Game.Command
 
+  alias Game.Format
   alias Game.Item
   alias Game.Items
 
@@ -18,7 +19,8 @@ defmodule Game.Command.Wear do
   def help(:full) do
     """
     Put on a peice of armor, or remove it from a slot. {white}Wear{/white} takes the item
-    name, and {white}remove{/white} takes the slot or item name.
+    name, and {white}remove{/white} takes the slot or item name. You must be of the same
+    or greater level than the item to wear it.
 
     Example:
     [ ] > {white}wear chest piece{/white}
@@ -71,6 +73,10 @@ defmodule Game.Command.Wear do
     :ok
   end
 
+  defp item_found(socket, item = %{level: item_level, type: "armor"}, %{save: %{level: level}}) when level < item_level do
+    socket |> @socket.echo("You cannot wear \"#{Format.item_name(item)}\", you are not high enough level.")
+    :ok
+  end
   defp item_found(socket, item = %{type: "armor"}, state) do
     %{save: save} = state
     %{items: items} = save
