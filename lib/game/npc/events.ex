@@ -120,6 +120,8 @@ defmodule Game.NPC.Events do
   end
   def act_on_room_entered(state, _character, _event), do: state
 
+  def act_on_room_heard(room_id, npc, event, message)
+  def act_on_room_heard(_, %{id: id}, _, %{type: :npc, sender: %{id: id}}), do: :ok
   def act_on_room_heard(room_id, npc, event, message) do
     case event do
       %{condition: %{regex: condition}, action: %{type: "say", message: event_message}} when condition != nil ->

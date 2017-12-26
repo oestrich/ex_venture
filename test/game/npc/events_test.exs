@@ -149,6 +149,15 @@ defmodule Game.NPC.EventsTest do
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"
     end
+
+    test "does not consider it's own messages" do
+      npc = %{id: 1, name: "Mayor", events: [%{type: "room/heard", condition: nil, action: %{type: "say", message: "Hello"}}]}
+      state = %State{room_id: 1, npc: npc}
+
+      :ok = Events.act_on(state, {"room/heard", Message.npc_say(npc, "Hello")})
+
+      assert [] = @room.get_says()
+    end
   end
 
   describe "tick - move" do
