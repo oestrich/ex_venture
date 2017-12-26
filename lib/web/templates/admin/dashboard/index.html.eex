@@ -68,5 +68,29 @@
         </div>
       </div>
     </div>
+
+    <div class="col-md-6">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="info-box">
+            <span class="info-box-icon bg-aqua"><i class="fa fa-address-card"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">NPCs</span>
+              <span class="info-box-number"><%= Stats.npc_count() %></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="info-box">
+            <span class="info-box-icon bg-aqua"><i class="fa fa-bug"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Bugs</span>
+              <span class="info-box-number"><%= Stats.bug_count() %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
