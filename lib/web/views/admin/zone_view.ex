@@ -17,6 +17,7 @@ defmodule Web.Admin.ZoneView do
     end
   end
 
+  def room_color(%{is_graveyard: true}), do: "btn-danger"
   def room_color(%{is_zone_exit: true}), do: "btn-warning"
   def room_color(_room), do: "btn-success"
 end

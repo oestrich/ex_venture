@@ -143,6 +143,13 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Get the graveyard for a zone
+  """
+  def graveyard(id) do
+    GenServer.call(pid(id), :graveyard)
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -159,6 +166,15 @@ defmodule Game.Zone do
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call(:graveyard, _from, state) do
+    case state.zone do
+      %{graveyard_id: graveyard_id} when graveyard_id != nil ->
+        {:reply, {:ok, graveyard_id}, state}
+      _ ->
+        {:reply, {:error, :no_graveyard}, state}
+    end
   end
 
   def handle_call({:map, player_at, opts}, _from, state = %{zone: zone}) do

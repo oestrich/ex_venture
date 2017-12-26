@@ -37,4 +37,12 @@ defmodule Game.ZoneTest do
 
     assert Door.closed?(1)
   end
+
+  test "returns the graveyard when one is set" do
+    {:reply, {:ok, 2}, _state} = Zone.handle_call(:graveyard, {self(), make_ref()}, %{zone: %{graveyard_id: 2}})
+  end
+
+  test "returns an error when no graveyard is set" do
+    {:reply, {:error, :no_graveyard}, _state} = Zone.handle_call(:graveyard, {self(), make_ref()}, %{zone: %{}})
+  end
 end

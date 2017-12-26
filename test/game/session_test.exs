@@ -8,6 +8,7 @@ defmodule Game.SessionTest do
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
+  @zone Test.Game.Zone
 
   setup do
     socket = :socket
@@ -229,6 +230,49 @@ defmodule Game.SessionTest do
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
     assert_received {:"$gen_cast", {:died, {:user, _}}}
+  after
+    Session.Registry.unregister()
+  end
+
+  test "applying effects - died with zone graveyard", %{socket: socket} do
+    Session.Registry.register(%{id: 2})
+
+    @room.set_room(@room._room())
+    @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, 2))
+
+    effect = %{kind: "damage", type: :slashing, amount: 10}
+    stats = %{health: 5}
+    user = %{id: 2, name: "user", class: class_attributes(%{})}
+    save = %{room_id: 1, stats: stats}
+
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: save, is_targeting: MapSet.new()}
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+
+    assert state.save.stats.health == -5
+
+    assert_receive {:"$gen_cast", {:teleport, 2}}
+  after
+    Session.Registry.unregister()
+  end
+
+  test "applying effects - died with no zone graveyard", %{socket: socket} do
+    Session.Registry.register(%{id: 2})
+
+    @room.set_room(@room._room())
+    @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, nil))
+    @zone.set_graveyard({:error, :no_graveyard})
+
+    effect = %{kind: "damage", type: :slashing, amount: 10}
+    stats = %{health: 5}
+    user = %{id: 2, name: "user", class: class_attributes(%{})}
+    save = %{room_id: 1, stats: stats}
+
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: save, is_targeting: MapSet.new()}
+    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+
+    assert state.save.stats.health == -5
+
+    refute_receive {:"$gen_cast", {:teleport, _}}
   after
     Session.Registry.unregister()
   end
