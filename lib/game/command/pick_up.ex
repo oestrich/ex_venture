@@ -12,7 +12,7 @@ defmodule Game.Command.PickUp do
 
   @must_be_alive true
 
-  commands [{"pick up", ["get"]}]
+  commands [{"pick up", ["get", "take"]}]
 
   @impl Game.Command
   def help(:topic), do: "Pick Up"

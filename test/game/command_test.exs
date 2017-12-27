@@ -135,6 +135,8 @@ defmodule CommandTest do
 
     test "pick up something", %{user: user} do
       assert %Command{module: Command.PickUp, args: {"sword"}} = Command.parse("pick up sword", user)
+      assert %Command{module: Command.PickUp, args: {"sword"}} = Command.parse("get sword", user)
+      assert %Command{module: Command.PickUp, args: {"sword"}} = Command.parse("take sword", user)
     end
 
     test "drop something", %{user: user} do
