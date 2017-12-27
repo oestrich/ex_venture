@@ -13,6 +13,12 @@ defmodule Game.FormatTest do
       assert Format.wrap("this line will be split up into two lines because it is longer than 80 characters") ==
         "this line will be split up into two lines because it is longer than 80\ncharacters"
     end
+
+    test "wraps at 80 chars - ignores {color} codes when counting" do
+      line = "{blue}this{/blue} line {yellow}will be{/yellow} split up into two lines because it is longer than 80 characters"
+      assert Format.wrap(line) ==
+        "{blue}this{/blue} line {yellow}will be{/yellow} split up into two lines because it is longer than 80\ncharacters"
+    end
   end
 
   describe "inventory formatting" do

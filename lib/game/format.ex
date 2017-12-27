@@ -12,6 +12,7 @@ defmodule Game.Format do
   alias Data.User
   alias Data.Save
   alias Data.Skill
+  alias Game.Color
   alias Game.Format.Table
   alias Game.Door
 
@@ -159,7 +160,8 @@ Items: #{items(room, items)}
 
   defp _wrap([], line, string), do: join(string, line, "\n")
   defp _wrap([word | left], line, string) do
-    case String.length("#{line} #{word}") do
+    test_line = "#{line} #{word}" |> Color.strip_color()
+    case String.length(test_line) do
       len when len < 80 -> _wrap(left, join(line, word, " "), string)
       _ -> _wrap(left, word, join(string, line, "\n"))
     end
