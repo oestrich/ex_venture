@@ -60,6 +60,12 @@
         <% end %>
         <%= error_tag f, :is_graveyard %>
       </div>
+
+      <div class="form-group">
+        <%= label f, :notes %>
+        <%= textarea f, :notes, class: "form-control", rows: 10 %>
+        <%= error_tag f, :notes %>
+      </div>
     </div>
 
     <div class="box-footer">

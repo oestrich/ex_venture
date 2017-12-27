@@ -62,6 +62,10 @@
                 <td><%= @room.ecology %></td>
               </tr>
               <tr>
+                <th>Notes</th>
+                <td><%= @room.notes %></td>
+              </tr>
+              <tr>
                 <th>Last Save</th>
                 <td><%= @room.updated_at %></td>
               </tr>
