@@ -28,6 +28,8 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Starting Level</th>
+                <th>Ending Level</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -36,6 +38,8 @@
                 <tr>
                   <td><%= zone.id %></td>
                   <td><%= link(zone.name, to: zone_path(@conn, :show, zone.id)) %></td>
+                  <td><%= zone.starting_level %></td>
+                  <td><%= zone.ending_level %></td>
                   <td>
                     <%= link("View", to: zone_path(@conn, :show, zone.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: zone_path(@conn, :edit, zone.id), class: "btn btn-default btn-xs") %>

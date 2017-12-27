@@ -22,6 +22,18 @@
         <%= select f, :graveyard_id, Zone.graveyards(), class: "form-control" %>
         <%= error_tag f, :graveyard_id %>
       </div>
+
+      <div class="form-group">
+        <%= label f, :starting_level %>
+        <%= number_input f, :starting_level, class: "form-control" %>
+        <%= error_tag f, :starting_level %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :ending_level %>
+        <%= number_input f, :ending_level, class: "form-control" %>
+        <%= error_tag f, :ending_level %>
+      </div>
     </div>
 
     <div class="box-footer">

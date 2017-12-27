@@ -44,6 +44,14 @@
                 <% end %>
               </td>
             </tr>
+            <tr>
+              <th>Starting Level</th>
+              <td><%= @zone.starting_level %></td>
+            </tr>
+            <tr>
+              <th>Ending Level</th>
+              <td><%= @zone.ending_level %></td>
+            </tr>
           </table>
         </div>
       </div>
