@@ -158,12 +158,13 @@ defmodule Game.Command.Move do
   They require at least 1 movement point to proceed
   """
   def maybe_move_to(session, state, room_id, room_exit \\ %{})
-  def maybe_move_to(session, state = %{socket: socket}, room_id, %{id: exit_id, has_door: true}) do
+  def maybe_move_to(session, state = %{socket: socket}, room_id, room_exit = %{id: exit_id, has_door: true}) do
     case Door.get(exit_id) do
       "open" -> maybe_move_to(session, state, room_id, %{})
       "closed" ->
-        socket |> @socket.echo("The door is closed. Open the door first.")
-        {:error, :door_closed}
+        Door.set(exit_id, "open")
+        socket |> @socket.echo("You opened the door.")
+        maybe_move_to(session, state, room_id, room_exit)
     end
   end
   def maybe_move_to(session, state = %{save: %{stats: stats}}, room_id, _) do

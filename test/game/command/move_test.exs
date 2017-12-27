@@ -54,11 +54,13 @@ defmodule Game.Command.MoveTest do
       Door.set(room_exit, "closed")
 
       command = %Command{module: Command.Move, args: {:north}}
-      {:error, :door_closed} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+      {:update, state} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+
+      assert state.save.room_id == 2
+      assert state.save.stats.move_points == 9
 
       socket = state.socket
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door is closed), error)
+      [{^socket, "You opened the door."}, {^socket, _}] = @socket.get_echos()
     end
 
     test "north - door is open", %{session: session, state: state} do
@@ -107,11 +109,13 @@ defmodule Game.Command.MoveTest do
       Door.set(room_exit, "closed")
 
       command = %Command{module: Command.Move, args: {:east}}
-      {:error, :door_closed} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+      {:update, state} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+
+      assert state.save.room_id == 2
+      assert state.save.stats.move_points == 9
 
       socket = state.socket
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door is closed), error)
+      [{^socket, "You opened the door."}, {^socket, _}] = @socket.get_echos()
     end
 
     test "east - door is open", %{session: session, state: state} do
@@ -160,11 +164,13 @@ defmodule Game.Command.MoveTest do
       Door.set(room_exit, "closed")
 
       command = %Command{module: Command.Move, args: {:south}}
-      {:error, :door_closed} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+      {:update, state} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+
+      assert state.save.room_id == 2
+      assert state.save.stats.move_points == 9
 
       socket = state.socket
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door is closed), error)
+      [{^socket, "You opened the door."}, {^socket, _}] = @socket.get_echos()
     end
 
     test "south - door is open", %{session: session, state: state} do
@@ -214,11 +220,13 @@ defmodule Game.Command.MoveTest do
       Door.set(room_exit, "closed")
 
       command = %Command{module: Command.Move, args: {:west}}
-      {:error, :door_closed} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+      {:update, state} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+
+      assert state.save.room_id == 2
+      assert state.save.stats.move_points == 9
 
       socket = state.socket
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door is closed), error)
+      [{^socket, "You opened the door."}, {^socket, _}] = @socket.get_echos()
     end
 
     test "west - door is open", %{session: session, state: state} do
@@ -268,11 +276,13 @@ defmodule Game.Command.MoveTest do
       Door.set(room_exit, "closed")
 
       command = %Command{module: Command.Move, args: {:up}}
-      {:error, :door_closed} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+      {:update, state} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+
+      assert state.save.room_id == 2
+      assert state.save.stats.move_points == 9
 
       socket = state.socket
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door is closed), error)
+      [{^socket, "You opened the door."}, {^socket, _}] = @socket.get_echos()
     end
 
     test "up - door is open", %{session: session, state: state} do
@@ -322,11 +332,13 @@ defmodule Game.Command.MoveTest do
       Door.set(room_exit, "closed")
 
       command = %Command{module: Command.Move, args: {:down}}
-      {:error, :door_closed} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+      {:update, state} = Command.run(command, session, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 10}}}))
+
+      assert state.save.room_id == 2
+      assert state.save.stats.move_points == 9
 
       socket = state.socket
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door is closed), error)
+      [{^socket, "You opened the door."}, {^socket, _}] = @socket.get_echos()
     end
 
     test "down - door is open", %{session: session, state: state} do
