@@ -21,13 +21,15 @@ defmodule Game.Session.LoginTest do
   end
 
   test "verifies the user's name and password", %{socket: socket} do
+    create_config("after_sign_in_message", "Hi")
+
     user = create_user(%{name: "user", password: "password", class_id: create_class().id})
 
     state = Login.process("password", :session, %{socket: socket, room_id: 1, login: %{name: "user"}})
 
     assert state.user.id == user.id
-    assert state.state == "active"
-    [{^socket, "Welcome, user!"} | _] = @socket.get_echos()
+    assert state.state == "after_sign_in"
+    [{^socket, "Welcome, user!"}, {^socket, "Hi"}] = @socket.get_echos()
   end
 
   test "verifies the user's name and password - failure", %{socket: socket} do

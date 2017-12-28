@@ -25,6 +25,17 @@ defmodule Game.ConfigTest do
     end
   end
 
+  describe "after_sign_in_message" do
+    test "finding the config value" do
+      create_config("after_sign_in_message", "ExVenture")
+      assert Config.after_sign_in_message(:default) == "ExVenture"
+    end
+
+    test "using the default" do
+      assert Config.after_sign_in_message(:default) == :default
+    end
+  end
+
   describe "game name" do
     test "finding the config value" do
       create_config("game_name", "ExVenture")

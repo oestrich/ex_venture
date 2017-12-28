@@ -33,6 +33,13 @@
                 </td>
               </tr>
               <tr>
+                <th>After Sign In Message</th>
+                <td><pre><%= Config.after_sign_in_message("Not set") %></pre></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "after_sign_in_message"), class: "btn btn-default btn-xs") %>
+                </td>
+              </tr>
+              <tr>
                 <th>Regen tick vount</th>
                 <td><%= Config.regen_tick_count("Not set") %></td>
                 <td></td>

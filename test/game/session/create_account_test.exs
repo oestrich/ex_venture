@@ -75,11 +75,12 @@ defmodule Game.Session.CreateAccountTest do
 
   test "create the account after password is entered", %{socket: socket, race: human, class: fighter} do
     create_config(:starting_save, base_save() |> Poison.encode!)
+    create_config(:after_sign_in_message, "Hi")
 
     state = CreateAccount.process("password", :session, %{socket: socket, create: %{name: "user", email: "", race: human, class: fighter}})
 
     refute Map.has_key?(state, :create)
-    assert @socket.get_echos() == [{socket, "Welcome, user!"}]
+    assert @socket.get_echos() == [{socket, "Welcome, user!"}, {socket, "Hi"}]
   end
 
   test "failure creating the account after entering the password", %{socket: socket, race: human, class: fighter} do

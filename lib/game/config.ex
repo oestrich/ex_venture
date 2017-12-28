@@ -75,6 +75,18 @@ defmodule Game.Config do
   end
 
   @doc """
+  Message after signing into the game
+
+  Used during sign in
+  """
+  def after_sign_in_message(default \\ "") do
+    case find_config("after_sign_in_message") do
+      nil -> default
+      motd -> motd
+    end
+  end
+
+  @doc """
   Starting save
 
   Which room, etc the player will start out with

@@ -1,0 +1,5 @@
+<div class="form-group">
+  <%= label @f, :value %>
+  <%= textarea @f, :value, class: "form-control", rows: 15 %>
+  <%= error_tag @f, :value %>
+</div>

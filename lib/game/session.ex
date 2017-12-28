@@ -186,6 +186,12 @@ defmodule Game.Session do
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
+  # Handle displaying message after signing in
+  def handle_cast({:recv, _name}, state = %{state: "after_sign_in"}) do
+    state = Session.Login.after_sign_in(state, self())
+    {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
+  end
+
   # Handle creating an account
   def handle_cast({:recv, name}, state = %{state: "create"}) do
     state = Session.CreateAccount.process(name, self(), state)

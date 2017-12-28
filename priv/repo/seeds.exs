@@ -300,6 +300,7 @@ defmodule Seeds do
 
     {:ok, _} = create_config("game_name", "ExVenture MUD")
     {:ok, _} = create_config("motd", "Welcome to the {white}MUD{/white}")
+    {:ok, _} = create_config("after_sign_in_message", "Thanks for checking out the game!")
     {:ok, _} = create_config("starting_save", save |> Poison.encode!)
     {:ok, _} = create_config("regen_tick_count", "7")
 

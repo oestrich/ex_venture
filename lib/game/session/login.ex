@@ -14,7 +14,6 @@ defmodule Game.Session.Login do
   alias Game.Authentication
   alias Game.Config
   alias Game.Channel
-  alias Game.Format
   alias Game.Session
   alias Game.Session.GMCP
   alias Metrics.PlayerInstrumenter
@@ -38,7 +37,7 @@ defmodule Game.Session.Login do
   Edit the state to be signed in and active
   """
   @spec login(user :: map, session :: pid, socket :: pid, state :: map) :: map
-  def login(user, session, socket, state) do
+  def login(user, _session, socket, state) do
     Session.Registry.register(user)
 
     PlayerInstrumenter.login(user)
@@ -47,20 +46,27 @@ defmodule Game.Session.Login do
       state
       |> Map.put(:user, user)
       |> Map.put(:save, user.save)
-      |> Map.put(:state, "active")
+      |> Map.put(:state, "after_sign_in")
 
     socket |> @socket.echo("Welcome, #{user.name}!")
     socket |> @socket.set_user_id(user.id)
 
+    socket |> @socket.echo(Config.after_sign_in_message())
+    socket |> @socket.echo("[Press enter to continue]")
+
+    state
+  end
+
+  def after_sign_in(state = %{user: user}, session) do
     @room.enter(user.save.room_id, {:user, session, user})
     session |> Session.recv("look")
+    state |> GMCP.character()
 
     Enum.each(user.save.channels, &Channel.join/1)
     Channel.join_tell(user)
 
-    state |> GMCP.character()
-
     state
+    |> Map.put(:state, "active")
   end
 
   def sign_in(user_id, session, state = %{socket: socket}) do
@@ -102,9 +108,7 @@ defmodule Game.Session.Login do
         socket |> @socket.disconnect()
         state
       false ->
-        state = user |> login(session, socket, state |> Map.delete(:login))
-        socket |> @socket.prompt(Format.prompt(user, user.save))
-        state
+        user |> login(session, socket, state |> Map.delete(:login))
     end
   end
 
