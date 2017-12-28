@@ -29,7 +29,7 @@ defmodule Game.Session.LoginTest do
 
     assert state.user.id == user.id
     assert state.state == "after_sign_in"
-    [{^socket, "Welcome, user!"}, {^socket, "Hi"}] = @socket.get_echos()
+    [{^socket, "Welcome, user!"}, {^socket, "Hi"}, {^socket, "[Press enter to continue]"}] = @socket.get_echos()
   end
 
   test "verifies the user's name and password - failure", %{socket: socket} do
