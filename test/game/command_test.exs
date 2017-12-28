@@ -202,6 +202,10 @@ defmodule CommandTest do
       assert %Command{module: Command.Bug, args: {"a bug title"}} = Command.parse("bug a bug title", user)
     end
 
+    test "typo", %{user: user} do
+      assert %Command{module: Command.Typo, args: {"a typo title"}} = Command.parse("typo a typo title", user)
+    end
+
     test "version", %{user: user} do
       assert %Command{module: Command.Version, args: {}} = Command.parse("version", user)
     end

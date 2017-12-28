@@ -40,7 +40,7 @@ defmodule Game.Session do
     """
 
     @enforce_keys [:socket, :state, :mode]
-    defstruct [:socket, :state, :session_started_at, :user, :save, :last_recv, :last_tick, :target, :is_targeting, :regen, :reply_to, mode: "comands", continuous_effects: []]
+    defstruct [:socket, :state, :session_started_at, :user, :save, :last_recv, :last_tick, :target, :is_targeting, :regen, :reply_to, :commands, mode: "comands", continuous_effects: []]
   end
 
   @doc """
@@ -138,6 +138,7 @@ defmodule Game.Session do
       is_targeting: MapSet.new,
       regen: %{count: 0},
       reply_to: nil,
+      commands: %{},
     }
 
     {:ok, state}

@@ -102,6 +102,8 @@ defmodule Web.Router do
 
     resources "/skills", SkillController, only: [:show, :edit, :update]
 
+    resources "/typos", TypoController, only: [:index, :show]
+
     post "/users/teleport", UserController, :teleport
     post "/users/disconnect", UserController, :disconnect
     resources "/users", UserController, only: [:index, :show] do

@@ -1,0 +1,51 @@
+<section class="content-header">
+  <h1>
+    Typos
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Typos</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Reporter</th>
+                <th>Room</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @typos, fn (typo) -> %>
+                <tr>
+                  <td><%= typo.id %></td>
+                  <td><%= typo.title %></td>
+                  <td><%= link(typo.reporter.name, to: user_path(@conn, :show, typo.reporter.id)) %></td>
+                  <td><%= link(typo.room.name, to: room_path(@conn, :show, typo.room.id)) %></td>
+                  <td>
+                    <%= link("View", to: typo_path(@conn, :show, typo.id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+          <%= render(SharedView, "_pagination.html", path: typo_path(@conn, :index), pagination: @pagination) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

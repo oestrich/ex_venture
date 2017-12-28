@@ -106,6 +106,12 @@
                 <span>Races</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "typos") %>">
+              <%= link(to: typo_path(@conn, :index)) do %>
+                <i class="fa fa-font"></i>
+                <span>Typos</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "users") %>">
               <%= link(to: user_path(@conn, :index)) do %>
                 <i class="fa fa-users"></i>

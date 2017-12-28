@@ -3,6 +3,7 @@ defmodule Game.Command.BugTest do
   import Ecto.Query
 
   alias Game.Command.Bug
+  alias Game.Session.State
 
   @socket Test.Networking.Socket
 
@@ -21,8 +22,9 @@ defmodule Game.Command.BugTest do
     assert Regex.match?(~r(enter in any more), echo)
   end
 
-  test "add lines together in the editor" do
-    {:update, state} = Bug.editor({:text, "line"}, %{commands: %{bug: %{lines: []}}})
+  test "add lines together in the editor", %{socket: socket} do
+    state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: %{lines: []}}}
+    {:update, state} = Bug.editor({:text, "line"}, state)
     assert state.commands.bug.lines == ["line"]
   end
 
@@ -30,7 +32,8 @@ defmodule Game.Command.BugTest do
     user = create_user(%{name: "user", password: "password"})
 
     bug = %{title: "A bug", lines: ["line 1", "line 2"]}
-    {:update, state} = Bug.editor(:complete, %{socket: socket, commands: %{bug: bug}, user: user})
+    state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: bug}, user: user}
+    {:update, state} = Bug.editor(:complete, state)
 
     assert state.commands == %{}
 
@@ -39,7 +42,8 @@ defmodule Game.Command.BugTest do
 
   test "complete the editor creates a bug - a bug with bugs", %{socket: socket} do
     bug = %{title: "A bug", lines: ["line 1", "line 2"]}
-    {:update, state} = Bug.editor(:complete, %{socket: socket, commands: %{bug: bug}, user: %{id: -1}})
+    state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: bug}, user: %{id: -1}}
+    {:update, state} = Bug.editor(:complete, state)
 
     assert state.commands == %{}
 
