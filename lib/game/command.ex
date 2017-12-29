@@ -81,6 +81,7 @@ defmodule Game.Command do
     Command.Equipment,
     Command.Examine,
     Command.Help,
+    Command.Mail,
     Command.Map,
     Command.Mistake,
     Command.PickUp,

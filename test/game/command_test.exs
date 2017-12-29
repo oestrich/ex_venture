@@ -217,6 +217,10 @@ defmodule CommandTest do
     test "using items", %{user: user} do
       assert %Command{module: Command.Use, args: {"potion"}} = Command.parse("use potion", user)
     end
+
+    test "mail", %{user: user} do
+      assert %Command{module: Command.Mail, args: {}} = Command.parse("mail", user)
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do

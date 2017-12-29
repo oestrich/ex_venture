@@ -8,6 +8,7 @@ defmodule Game.Format do
   alias Data.Class
   alias Data.Exit
   alias Data.Item
+  alias Data.Mail
   alias Data.Room
   alias Data.User
   alias Data.Save
@@ -140,10 +141,13 @@ Items: #{items(room, items)}
 
       iex> Game.Format.underline("Room Name")
       "-------------"
+
+      iex> Game.Format.underline("{blue}Player{/blue}")
+      "----------"
   """
   def underline(nil), do: ""
   def underline(string) do
-    (1..(String.length(string) + 4))
+    (1..(String.length(Color.strip_color(string)) + 4))
     |> Enum.map(fn (_) -> "-" end)
     |> Enum.join("")
   end
@@ -570,5 +574,32 @@ Items: #{items(room, items)}
   end
   def dropped(who, item) do
     "#{name(who)} dropped a #{item.name}."
+  end
+
+  @doc """
+  Format mail for a user
+
+      iex> Game.Format.list_mail([%{id: 1, sender: %{name: "Player"}, title: "hello"}])
+      "1 - {blue}Player{/blue} - hello"
+  """
+  @spec list_mail([Mail.t()]) :: String.t()
+  def list_mail(mail) do
+    mail
+    |> Enum.map(fn (mail) ->
+      "#{mail.id} - #{name({:user, mail.sender})} - #{mail.title}"
+    end)
+    |> Enum.join("\n")
+  end
+
+  @doc """
+  Format a single piece of mail for a user
+
+      iex> Game.Format.display_mail(%{id: 1,sender: %{name: "Player"}, title: "hello", body: "A\\nlong message"})
+      "1 - {blue}Player{/blue} - hello\\n----------------------\\n\\nA\\nlong message"
+  """
+  @spec display_mail(Mail.t()) :: String.t()
+  def display_mail(mail) do
+    title = "#{mail.id} - #{name({:user, mail.sender})} - #{mail.title}"
+    "#{title}\n#{underline(title)}\n\n#{mail.body}"
   end
 end

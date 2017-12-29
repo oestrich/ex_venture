@@ -7,6 +7,7 @@ defmodule TestHelpers do
   alias Data.Item
   alias Data.ItemAspect
   alias Data.ItemAspecting
+  alias Data.Mail
   alias Data.NPC
   alias Data.NPCItem
   alias Data.NPCSpawner
@@ -295,6 +296,12 @@ defmodule TestHelpers do
     shop
     |> Ecto.build_assoc(:shop_items)
     |> ShopItem.changeset(Map.merge(attributes, %{item_id: item.id}))
+    |> Repo.insert!
+  end
+
+  def create_mail(sender, receiver, params) do
+    %Mail{}
+    |> Mail.changeset(Map.merge(params, %{sender_id: sender.id, receiver_id: receiver.id}))
     |> Repo.insert!
   end
 end
