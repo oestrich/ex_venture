@@ -27,7 +27,7 @@ defmodule Game.Command.Mail do
   Parse the command into arguments
 
       iex> Game.Command.Mail.parse("mail")
-      {}
+      {:unread}
 
       iex> Game.Command.Mail.parse("mail read 1")
       {:read, "1"}
@@ -37,7 +37,7 @@ defmodule Game.Command.Mail do
   """
   @spec parse(String.t) :: {any()}
   def parse(command)
-  def parse("mail"), do: {}
+  def parse("mail"), do: {:unread}
   def parse("mail read " <> id), do: {:read, id}
   def parse(command), do: {:error, :bad_parse, command}
 
@@ -46,10 +46,10 @@ defmodule Game.Command.Mail do
   """
   @impl Game.Command
   def run(command, session, state)
-  def run({}, _session, state = %{socket: socket, user: user}) do
-    case Mail.mail_for(user) do
+  def run({:unread}, _session, state = %{socket: socket, user: user}) do
+    case Mail.unread_mail_for(user) do
       [] ->
-        socket |> @socket.echo("You have no mail.")
+        socket |> @socket.echo("You have no unread mail.")
         :ok
       mail ->
         socket |> @socket.echo("You have #{length(mail)} piece of mail.")
@@ -63,6 +63,7 @@ defmodule Game.Command.Mail do
         socket |> @socket.echo("The mail requested could not be found. Please try again.")
         :ok
       mail ->
+        Mail.mark_read!(mail)
         {:paginate, Format.display_mail(mail), state}
     end
   end

@@ -12,9 +12,10 @@ defmodule Game.Mail do
   @doc """
   Get mail for a user
   """
-  @spec mail_for(User.t()) :: [Mail.t()]
-  def mail_for(user) do
+  @spec unread_mail_for(User.t()) :: [Mail.t()]
+  def unread_mail_for(user) do
     Mail
+    |> where([m], m.is_read == false)
     |> where([m], m.receiver_id == ^user.id)
     |> preload([:sender])
     |> Repo.all()
@@ -28,5 +29,15 @@ defmodule Game.Mail do
     Mail
     |> Repo.get_by(receiver_id: receiver.id, id: id)
     |> Repo.preload([:sender])
+  end
+
+  @doc """
+  Mark a piece of mail as read
+  """
+  @spec mark_read!(Mail.t()) :: {:ok, Mail.t()}
+  def mark_read!(mail) do
+    mail
+    |> Mail.changeset(%{is_read: true})
+    |> Repo.update()
   end
 end

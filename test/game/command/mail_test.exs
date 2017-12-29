@@ -14,10 +14,10 @@ defmodule Game.Command.MailTest do
 
   describe "list out messages" do
     test "no messages", %{session: session, state: state} do
-      :ok = Mail.run({}, session, state)
+      :ok = Mail.run({:unread}, session, state)
 
       [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(no mail), mail)
+      assert Regex.match?(~r(no unread mail), mail)
     end
 
     test "includes messages", %{session: session, state: state} do
@@ -25,7 +25,7 @@ defmodule Game.Command.MailTest do
 
       create_mail(sender, state.user, %{title: "hello"})
 
-      {:paginate, mail, _state} = Mail.run({}, session, state)
+      {:paginate, mail, _state} = Mail.run({:unread}, session, state)
 
       assert Regex.match?(~r(hello), mail)
     end
@@ -37,12 +37,14 @@ defmodule Game.Command.MailTest do
       %{sender: sender}
     end
 
-    test "displays it", %{session: session, sender: sender, state: state} do
+    test "displays it and marks as read", %{session: session, sender: sender, state: state} do
       mail = create_mail(sender, state.user, %{title: "hello"})
 
-      {:paginate, mail, _state} = Mail.run({:read, mail.id}, session, state)
+      {:paginate, mail_text, _state} = Mail.run({:read, mail.id}, session, state)
 
-      assert Regex.match?(~r(hello), mail)
+      assert Regex.match?(~r(hello), mail_text)
+      mail = Data.Repo.get(Data.Mail, mail.id)
+      assert mail.is_read
     end
 
     test "could not find mail", %{session: session, state: state} do

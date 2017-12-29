@@ -10,6 +10,7 @@ defmodule Data.Mail do
   schema "mail" do
     field :title, :string
     field :body, :string
+    field :is_read, :boolean, default: false
 
     belongs_to :sender, User
     belongs_to :receiver, User
@@ -19,8 +20,8 @@ defmodule Data.Mail do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:title, :body, :sender_id, :receiver_id])
-    |> validate_required([:title, :sender_id, :receiver_id])
+    |> cast(params, [:title, :body, :is_read, :sender_id, :receiver_id])
+    |> validate_required([:title, :is_read, :sender_id, :receiver_id])
     |> foreign_key_constraint(:sender_id)
     |> foreign_key_constraint(:receiver_id)
   end
