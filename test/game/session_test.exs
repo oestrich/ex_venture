@@ -139,7 +139,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "player", password: "password"})
     save = %{user.save | stats: %{user.save.stats | health: 10}}
 
-    {:noreply, _state} = Session.handle_info(:save, %{user: user, save: save, session_started_at: Timex.now()})
+    {:noreply, _state} = Session.handle_info(:save, %{state: "active", user: user, save: save, session_started_at: Timex.now()})
 
     user = Data.User |> Data.Repo.get(user.id)
     assert user.save.stats.health == 10

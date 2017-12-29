@@ -391,7 +391,7 @@ defmodule Game.Session do
     command |> run_command(self(), state)
   end
 
-  def handle_info(:save, state = %{user: user, save: save, session_started_at: session_started_at}) do
+  def handle_info(:save, state = %{state: "active", user: user, save: save, session_started_at: session_started_at}) do
     user |> Account.save(save)
     user |> Account.update_time_online(session_started_at, Timex.now())
     self() |> schedule_save()
