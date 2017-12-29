@@ -219,7 +219,7 @@ defmodule CommandTest do
     end
 
     test "mail", %{user: user} do
-      assert %Command{module: Command.Mail, args: {}} = Command.parse("mail", user)
+      assert %Command{module: Command.Mail, args: {:unread}} = Command.parse("mail", user)
     end
   end
 
