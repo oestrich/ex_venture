@@ -11,11 +11,17 @@ defmodule Game.Session.CreateAccountTest do
     %{race: human, class: fighter}
   end
 
-  test "start creating an account", %{socket: socket} do
+  test "start creating an account by entering a name", %{socket: socket} do
     state = CreateAccount.process("user", :session, %{socket: socket})
 
     assert state.create.name == "user"
     assert @socket.get_prompts() == [{socket, "Race: "}]
+  end
+
+  test "displays an error if name has a space", %{socket: socket} do
+    %{socket: socket} = CreateAccount.process("user name", :session, %{socket: socket})
+
+    assert @socket.get_prompts() == [{socket, "Name: "}]
   end
 
   test "pick a race", %{socket: socket, race: human} do

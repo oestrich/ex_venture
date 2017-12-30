@@ -77,8 +77,15 @@ defmodule Game.Session.CreateAccount do
     end
   end
   def process(name, _session, state = %{socket: socket}) do
-    socket |> race_prompt()
-    Map.merge(state, %{create: %{name: name}})
+    case String.contains?(name, " ") do
+      true ->
+        socket |> @socket.echo("Your name cannot contain spaces. Please pick a new one")
+        socket |> @socket.prompt("Name: ")
+        state
+      false ->
+        socket |> race_prompt()
+        Map.merge(state, %{create: %{name: name}})
+    end
   end
 
   defp race_prompt(socket) do
