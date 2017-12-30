@@ -40,6 +40,7 @@ defmodule Data.User do
     |> validate_required([:password_hash])
     |> validate_confirmation(:password)
     |> unique_constraint(:name)
+    |> unique_constraint(:email)
     |> foreign_key_constraint(:race_id)
     |> foreign_key_constraint(:class_id)
   end
