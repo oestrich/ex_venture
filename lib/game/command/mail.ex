@@ -19,6 +19,9 @@ defmodule Game.Command.Mail do
 
     View mail
     [ ] > mail
+
+    Read a piece of mail
+    [ ] > mail read 10
     """
   end
 
