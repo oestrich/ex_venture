@@ -139,6 +139,34 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
+          <h3 class="box-title">Sessions</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Started At</th>
+                <th>Seconds Online</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@user.sessions, fn (session) -> %>
+                <tr>
+                  <td><%= session.started_at %></td>
+                  <td><%= session.seconds_online %></td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
           <h3 class="box-title">Save</h3>
         </div>
         <div class="box-body">

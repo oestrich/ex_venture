@@ -68,8 +68,9 @@ defmodule Web.User do
   @spec get(id :: integer) :: User.t
   def get(id) do
     User
-    |> Repo.get(id)
-    |> Repo.preload([:class, :race])
+    |> where([u], u.id == ^id)
+    |> preload([:class, :race, sessions: ^(from s in User.Session, order_by: [desc: s.started_at])])
+    |> Repo.one()
   end
 
   @doc """

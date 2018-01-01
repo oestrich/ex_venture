@@ -7,6 +7,7 @@ defmodule Game.Account do
   alias Data.Save
   alias Data.Stats
   alias Data.User
+  alias Data.User.Session
   alias Game.Config
 
   @doc """
@@ -40,6 +41,21 @@ defmodule Game.Account do
   end
 
   @doc """
+  Save the final session data for a play
+  """
+  @spec save_session(User.t(), Save.t(), Timex.t(), Timex.t()) :: {:ok, User.t()}
+  def save_session(user, save, session_started_at, now) do
+    case user |> save(save) do
+      {:ok, user} ->
+        user |> update_time_online(session_started_at, now)
+        user |> create_session(session_started_at, now)
+
+        {:ok, user}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  @doc """
   Update the user's save data.
   """
   @spec save(User.t, Save.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
@@ -67,5 +83,13 @@ defmodule Game.Account do
   def current_play_time(user, session_started_at, now) do
     play_time = Timex.diff(now, session_started_at, :seconds)
     user.seconds_online + play_time
+  end
+
+  def create_session(user, session_started_at, now) do
+    play_time = Timex.diff(now, session_started_at, :seconds)
+    user
+    |> Ecto.build_assoc(:sessions)
+    |> Session.changeset(%{started_at: session_started_at, seconds_online: play_time})
+    |> Repo.insert
   end
 end

@@ -8,6 +8,7 @@ defmodule Data.User do
   alias Data.Class
   alias Data.Race
   alias Data.Save
+  alias Data.User.Session
 
   schema "users" do
     field :name, :string
@@ -22,6 +23,8 @@ defmodule Data.User do
 
     belongs_to :class, Class
     belongs_to :race, Race
+
+    has_many :sessions, Session
 
     timestamps()
   end

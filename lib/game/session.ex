@@ -155,8 +155,7 @@ defmodule Game.Session do
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, self(), user})
     clear_target(state, {:user, user})
-    user |> Account.save(save)
-    user |> Account.update_time_online(session_started_at, Timex.now())
+    user |> Account.save_session(save, session_started_at, Timex.now())
     {:stop, :normal, state}
   end
 
