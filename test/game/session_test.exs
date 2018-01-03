@@ -81,7 +81,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    state = %{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{}}}
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{}}}
     {:noreply, state} = Session.handle_cast({:recv, "quit"}, state)
 
     assert @socket.get_echos() == [{socket, "Good bye."}]
@@ -95,7 +95,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-    state = %{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
     {:noreply, state} = Session.handle_cast({:recv, "run 2n"}, state)
 
     assert state.mode == "continuing"
@@ -109,7 +109,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-    state = %{socket: socket, user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
+    state = %State{socket: socket, state: "active", mode: "continuing", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
     command = %Command{module: Command.Run, args: {[:north, :north]}}
     {:noreply, _state} = Session.handle_info({:continue, command}, state)
 
@@ -162,7 +162,7 @@ defmodule Game.SessionTest do
       user = %Data.User{name: "user", seconds_online: 0}
       Session.Registry.register(user)
 
-      state = %{user: user, save: %{room_id: 1}, session_started_at: Timex.now()}
+      state = %{user: user, save: %{room_id: 1}, session_started_at: Timex.now(), stats: %{}}
       {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
       assert Session.Registry.connected_players == []
     after
@@ -171,7 +171,7 @@ defmodule Game.SessionTest do
 
     test "adds the time played" do
       user = create_user(%{name: "user", password: "password"})
-      state = %{user: user, save: user.save, session_started_at: Timex.now() |> Timex.shift(hours: -3)}
+      state = %{user: user, save: user.save, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}}
 
       {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
 

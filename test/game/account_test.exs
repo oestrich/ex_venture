@@ -30,7 +30,7 @@ defmodule Game.AccountTest do
       user = create_user(%{name: "user", password: "password"})
 
       started_at = Timex.now() |> Timex.shift(minutes: -5)
-      Account.save_session(user, user.save, started_at, Timex.now())
+      Account.save_session(user, user.save, started_at, Timex.now(), %{commands: %{Game.Command.Look => 1}})
 
       user =
         User
@@ -40,6 +40,7 @@ defmodule Game.AccountTest do
 
       assert session.seconds_online == 300
       assert session.started_at == started_at
+      assert session.commands == %{"Elixir.Game.Command.Look" => 1}
     end
   end
 end

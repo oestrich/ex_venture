@@ -33,4 +33,10 @@ defmodule Web.Admin.UserView do
     |> Enum.map(&String.capitalize/1)
     |> Enum.join(" ")
   end
+
+  def command_name(command) do
+    command
+    |> String.split(".")
+    |> List.last()
+  end
 end

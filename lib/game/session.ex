@@ -39,8 +39,10 @@ defmodule Game.Session do
     Create a struct for Session state
     """
 
+    @type t :: %__MODULE__{}
+
     @enforce_keys [:socket, :state, :mode]
-    defstruct [:socket, :state, :session_started_at, :user, :save, :last_recv, :last_tick, :target, :is_targeting, :regen, :reply_to, :commands, mode: "comands", continuous_effects: []]
+    defstruct [:socket, :state, :session_started_at, :user, :save, :last_recv, :last_tick, :target, :is_targeting, :regen, :reply_to, :commands, mode: "comands", continuous_effects: [], stats: %{}]
   end
 
   @doc """
@@ -139,6 +141,9 @@ defmodule Game.Session do
       regen: %{count: 0},
       reply_to: nil,
       commands: %{},
+      stats: %{
+        commands: %{},
+      },
     }
 
     {:ok, state}
@@ -151,11 +156,11 @@ defmodule Game.Session do
   def handle_cast(:disconnect, state = %{state: "create"}) do
     {:stop, :normal, state}
   end
-  def handle_cast(:disconnect, state = %{user: user, save: save, session_started_at: session_started_at}) do
+  def handle_cast(:disconnect, state = %{user: user, save: save, session_started_at: session_started_at, stats: stats}) do
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, self(), user})
     clear_target(state, {:user, user})
-    user |> Account.save_session(save, session_started_at, Timex.now())
+    user |> Account.save_session(save, session_started_at, Timex.now(), stats)
     {:stop, :normal, state}
   end
 
@@ -433,6 +438,8 @@ defmodule Game.Session do
   end
 
   def run_command(command, session, state) do
+    state = record_command(state, command)
+
     case command |> Command.run(session, state) do
       {:update, state} ->
         Session.Registry.update(%{state.user | save: state.save})
@@ -461,6 +468,17 @@ defmodule Game.Session do
         state |> prompt()
         {:noreply, Map.put(state, :mode, "commands")}
     end
+  end
+
+  @doc """
+  Record a command to run
+  """
+  @spec record_command(State.t(), Command.t()) :: State.t()
+  def record_command(state = %{stats: stats}, command) do
+    commands = Map.get(stats, :commands, %{})
+    count = Map.get(commands, command.module, 0)
+    commands = Map.put(commands, command.module, count + 1)
+    %{state | stats: %{commands: commands}}
   end
 
   @doc """

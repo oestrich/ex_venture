@@ -147,6 +147,7 @@
               <tr>
                 <th>Started At</th>
                 <th>Seconds Online</th>
+                <th>Commands</th>
               </tr>
             </thead>
             <tbody>
@@ -154,6 +155,11 @@
                 <tr>
                   <td><%= session.started_at %></td>
                   <td><%= session.seconds_online %></td>
+                  <td>
+                    <%= Enum.map(session.commands, fn ({command, count}) -> %>
+                      <%= command_name(command) %>: <%= count %><br />
+                    <% end) %>
+                  </td>
                 </tr>
               <% end) %>
             </tbody>

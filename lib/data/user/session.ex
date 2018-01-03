@@ -10,6 +10,7 @@ defmodule Data.User.Session do
   schema "sessions" do
     field :started_at, Timex.Ecto.DateTime
     field :seconds_online, :integer
+    field :commands, :map, default: %{}
 
     belongs_to :user, User
 
@@ -18,7 +19,7 @@ defmodule Data.User.Session do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:started_at, :seconds_online, :user_id])
-    |> validate_required([:started_at, :seconds_online, :user_id])
+    |> cast(params, [:started_at, :seconds_online, :commands, :user_id])
+    |> validate_required([:started_at, :seconds_online, :commands, :user_id])
   end
 end
