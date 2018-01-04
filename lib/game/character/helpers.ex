@@ -64,7 +64,7 @@ defmodule Game.Character.Helpers do
       iex> Game.Character.Helpers.is_alive?(%{stats: %{health: -1}})
       false
   """
-  @spec is_alive?(Character.t()) :: boolean()
+  @spec is_alive?(map()) :: boolean()
   def is_alive?(save)
   def is_alive?(%{stats: %{health: health}}) when health > 0, do: true
   def is_alive?(_), do: false

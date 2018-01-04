@@ -17,11 +17,14 @@ defmodule Game.Character do
   alias Game.Session
 
   @typedoc """
-  Common properties of a character (NPC or User)
+  Tagged tuple of a user or npc struct
+
+  Valid options:
+  - `{:user, user}`
+  - `{:user, session, user}`
+  - `{:npc, npc}`
   """
-  @type t :: %{
-    stats: Stats.character(),
-  }
+  @type t :: tuple()
 
   @doc """
   Let the target know they are being targeted
