@@ -16,13 +16,13 @@ defmodule Game.Session do
   import Game.Character.Helpers, only: [clear_target: 2]
 
   alias Game.Account
-  alias Game.Character
-  alias Game.Command
   alias Game.Command.Move
   alias Game.Command.Pager
-  alias Game.Experience
   alias Game.Format
   alias Game.Session
+  alias Game.Session.Channels
+  alias Game.Session.Character, as: SessionCharacter
+  alias Game.Session.Commands
   alias Game.Session.Effects
   alias Game.Session.GMCP
   alias Game.Session.SessionStats
@@ -191,10 +191,8 @@ defmodule Game.Session do
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
-  # Receives afterwards should forward the message to the other clients
-  def handle_cast({:recv, message}, state = %{state: "active", mode: "commands", user: user}) do
-    state = Map.merge(state, %{last_recv: Timex.now()})
-    message |> Command.parse(user) |> run_command(self(), state)
+  def handle_cast({:recv, message}, state = %{state: "active", mode: "commands"}) do
+    state |> Commands.process_command(message)
   end
   def handle_cast({:recv, message}, state = %{state: "active", mode: "paginate"}) do
     {:noreply, Pager.paginate(state, command: message)}
@@ -238,107 +236,24 @@ defmodule Game.Session do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, player}, state = %{socket: socket}) do
-    socket |> @socket.echo("You are being targeted by #{Format.name(player)}.")
-
-    state =
-      state
-      |> maybe_target(player)
-      |> Map.put(:is_targeting, MapSet.put(state.is_targeting, Character.who(player)))
-
-    {:noreply, state}
+  def handle_cast({:targeted, player}, state) do
+    {:noreply, SessionCharacter.targeted(state, player)}
   end
 
   def handle_cast({:remove_target, character}, state) do
-    echo(self(), "You are no longer being targeted by #{Format.name(character)}.")
-    state = Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Character.who(character)))
-    {:noreply, state}
+    {:noreply, SessionCharacter.remove_target(state, character)}
   end
 
   def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active"}) do
-    state = Effects.apply(effects, from, description, state)
-    state |> prompt()
-    {:noreply, state}
+    {:noreply, SessionCharacter.apply_effects(state, effects, from, description)}
   end
 
-  def handle_cast({:notify, {"room/entered", character}}, state) do
-    echo(self(), "#{Format.name(character)} enters")
-    state |> GMCP.character_enter(character)
-    {:noreply, state}
-  end
-  def handle_cast({:notify, {"room/leave", character}}, state) do
-    echo(self(), "#{Format.name(character)} leaves")
-    state |> GMCP.character_leave(character)
-
-    target = Map.get(state, :target, nil)
-    case Character.who(character) do
-      ^target -> {:noreply, %{state | target: nil}}
-      _ -> {:noreply, state}
-    end
-  end
-  # generic fall through case
-  def handle_cast({:notify, _}, state) do
-    {:noreply, state}
+  def handle_cast({:notify, event}, state) do
+    {:noreply, SessionCharacter.notify(state, event)}
   end
 
-  def handle_cast({:died, who}, state = %{state: "active", target: target}) when is_nil(target) do
-    echo(self(), "#{Format.target_name(who)} has died.")
-    {:noreply, state}
-  end
-  def handle_cast({:died, who}, state = %{socket: socket, state: "active", user: user, target: target}) do
-    socket |> @socket.echo("#{Format.target_name(who)} has died.")
-    state = apply_experience(state, who)
-    state |> prompt()
-
-    case Character.who(target) == Character.who(who) do
-      true ->
-        Character.remove_target(target, {:user, user})
-
-        state =
-          state
-          |> Map.put(:target, nil)
-          |> maybe_target(possible_new_target(state, target))
-
-        {:noreply, state}
-      false -> {:noreply, state}
-    end
-  end
-
-  @doc """
-  Get a possible new target from the list
-  """
-  @spec possible_new_target(state :: map, target :: {atom(), integer()}) :: {atom(), map()}
-  def possible_new_target(state, target) do
-    state.is_targeting
-    |> MapSet.delete(Character.who(target))
-    |> MapSet.to_list()
-    |> List.first()
-    |> character_info()
-  end
-
-  @doc """
-  Get a character's information, handles nil
-  """
-  def character_info(nil), do: nil
-  def character_info(player), do: Character.info(player)
-
-  @doc """
-  Maybe target the character who targeted you, only if your own target is empty
-  """
-  @spec maybe_target(state :: map, player :: {atom(), integer()} | {atom(), map()} | nil) :: map
-  def maybe_target(state, player)
-  def maybe_target(state, nil), do: state
-  def maybe_target(state = %{socket: socket, target: nil, user: user}, player) do
-    socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
-    player = Character.who(player)
-    Character.being_targeted(player, {:user, user})
-    Map.put(state, :target, player)
-  end
-  def maybe_target(state, _player), do: state
-
-  defp apply_experience(state, {:user, _user}), do: state
-  defp apply_experience(state, {:npc, npc}) do
-    Experience.apply(state, level: npc.level, experience_points: npc.experience_points)
+  def handle_cast({:died, who}, state = %{state: "active"}) do
+    {:noreply, SessionCharacter.died(state, who)}
   end
 
   def handle_call(:info, _from, state) do
@@ -349,31 +264,20 @@ defmodule Game.Session do
   # Channels
   #
 
-  def handle_info({:channel, {:joined, channel}}, state = %{save: save}) do
-    channels = [channel | save.channels]
-    |> Enum.into(MapSet.new)
-    |> Enum.into([])
-
-    save = %{save | channels: channels}
-    state = %{state | save: save}
-    {:noreply, state}
+  def handle_info({:channel, {:joined, channel}}, state) do
+    {:noreply, Channels.joined(state, channel)}
   end
 
-  def handle_info({:channel, {:left, channel}}, state = %{save: save}) do
-    channels = Enum.reject(save.channels, &(&1 == channel))
-    save = %{save | channels: channels}
-    state = %{state | save: save}
-    {:noreply, state}
+  def handle_info({:channel, {:left, channel}}, state) do
+    {:noreply, Channels.left(state, channel)}
   end
 
-  def handle_info({:channel, {:broadcast, message}}, state = %{socket: socket}) do
-    socket |> @socket.echo(message)
-    {:noreply, state}
+  def handle_info({:channel, {:broadcast, message}}, state) do
+    {:noreply, Channels.broadcast(state, message)}
   end
 
-  def handle_info({:channel, {:tell, from, message}}, state = %{socket: socket}) do
-    socket |> @socket.echo(message)
-    {:noreply, Map.put(state, :reply_to, from)}
+  def handle_info({:channel, {:tell, from, message}}, state) do
+    {:noreply, Channels.tell(state, from, message)}
   end
 
   #
@@ -381,7 +285,7 @@ defmodule Game.Session do
   #
 
   def handle_info({:continue, command}, state) do
-    command |> run_command(self(), state)
+    command |> Commands.run_command(self(), state)
   end
 
   def handle_info(:save, state = %{state: "active", user: user, save: save, session_started_at: session_started_at}) do
@@ -424,50 +328,6 @@ defmodule Game.Session do
       _ ->
         {:noreply, state}
     end
-  end
-
-  def run_command(command, session, state) do
-    state = record_command(state, command)
-
-    case command |> Command.run(session, state) do
-      {:update, state} ->
-        Session.Registry.update(%{state.user | save: state.save})
-        state |> prompt()
-        {:noreply, Map.put(state, :mode, "commands")}
-      {:update, state, {command = %Command{}, send_in}} ->
-        Session.Registry.update(%{state.user | save: state.save})
-        :erlang.send_after(send_in, self(), {:continue, command})
-        {:noreply, Map.put(state, :mode, "continuing")}
-      {:paginate, text, state} ->
-        state =
-          state
-          |> Map.put(:pagination, %{text: text})
-
-        {:noreply, Pager.paginate(state)}
-      {:editor, module, state} ->
-        state =
-          state
-          |> Map.put(:mode, "editor")
-          |> Map.put(:editor_module, module)
-
-        {:noreply, state}
-      {:skip, :prompt} ->
-        {:noreply, Map.put(state, :mode, "commands")}
-      _ ->
-        state |> prompt()
-        {:noreply, Map.put(state, :mode, "commands")}
-    end
-  end
-
-  @doc """
-  Record a command to run
-  """
-  @spec record_command(State.t(), Command.t()) :: State.t()
-  def record_command(state = %{stats: stats}, command) do
-    commands = Map.get(stats, :commands, %{})
-    count = Map.get(commands, command.module, 0)
-    commands = Map.put(commands, command.module, count + 1)
-    %{state | stats: %{commands: commands}}
   end
 
   @doc """
