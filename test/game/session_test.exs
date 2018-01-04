@@ -4,6 +4,7 @@ defmodule Game.SessionTest do
 
   alias Game.Command
   alias Game.Session
+  alias Game.Session.Process
   alias Game.Session.State
 
   @socket Test.Networking.Socket
@@ -19,7 +20,7 @@ defmodule Game.SessionTest do
   end
 
   test "echoing messages", state = %{socket: socket} do
-    {:noreply, ^state} = Session.handle_cast({:echo, "a message"}, state)
+    {:noreply, ^state} = Process.handle_cast({:echo, "a message"}, state)
 
     assert @socket.get_echos() == [{socket, "a message"}]
   end
@@ -32,13 +33,13 @@ defmodule Game.SessionTest do
     end
 
     test "updates last tick", state do
-      {:noreply, %{last_tick: :time}} = Session.handle_cast({:tick, :time}, state)
+      {:noreply, %{last_tick: :time}} = Process.handle_cast({:tick, :time}, state)
     end
 
     test "regens stats", state do
       @room.clear_update_characters()
 
-      {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, state)
+      {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Process.handle_cast({:tick, :time}, state)
 
       assert stats.health == 12
       assert stats.skill_points == 11
@@ -53,7 +54,7 @@ defmodule Game.SessionTest do
       stats = %{health: 15, max_health: 15, skill_points: 12, max_skill_points: 12, move_points: 10, max_move_points: 10}
       save = %{room_id: 1, level: 2, stats: stats}
 
-      {:noreply, %{save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, %{state | save: save})
+      {:noreply, %{save: %{stats: stats}}} = Process.handle_cast({:tick, :time}, %{state | save: save})
 
       assert stats.health == 15
       assert stats.skill_points == 12
@@ -63,7 +64,7 @@ defmodule Game.SessionTest do
     end
 
     test "does not regen, only increments count if not high enough", state do
-      {:noreply, %{regen: %{count: 2}, save: %{stats: stats}}} = Session.handle_cast({:tick, :time}, %{state | regen: %{count: 1}})
+      {:noreply, %{regen: %{count: 2}, save: %{stats: stats}}} = Process.handle_cast({:tick, :time}, %{state | regen: %{count: 1}})
 
       assert stats.health == 10
       assert stats.skill_points == 9
@@ -71,7 +72,7 @@ defmodule Game.SessionTest do
   end
 
   test "recv'ing messages - the first", %{socket: socket} do
-    {:noreply, state} = Session.handle_cast({:recv, "name"}, %{socket: socket, state: "login"})
+    {:noreply, state} = Process.handle_cast({:recv, "name"}, %{socket: socket, state: "login"})
 
     assert @socket.get_prompts() == [{socket, "Password: "}]
     assert state.last_recv
@@ -82,7 +83,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{}}}
-    {:noreply, state} = Session.handle_cast({:recv, "quit"}, state)
+    {:noreply, state} = Process.handle_cast({:recv, "quit"}, state)
 
     assert @socket.get_echos() == [{socket, "Good bye."}]
     assert state.last_recv
@@ -96,7 +97,7 @@ defmodule Game.SessionTest do
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
-    {:noreply, state} = Session.handle_cast({:recv, "run 2n"}, state)
+    {:noreply, state} = Process.handle_cast({:recv, "run 2n"}, state)
 
     assert state.mode == "continuing"
     assert_receive {:continue, %Command{module: Command.Run, args: {[:north]}}}
@@ -111,7 +112,7 @@ defmodule Game.SessionTest do
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
     state = %State{socket: socket, state: "active", mode: "continuing", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
     command = %Command{module: Command.Run, args: {[:north, :north]}}
-    {:noreply, _state} = Session.handle_info({:continue, command}, state)
+    {:noreply, _state} = Process.handle_info({:continue, command}, state)
 
     assert_receive {:continue, %Command{module: Command.Run, args: {[:north]}}}
   after
@@ -123,7 +124,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     state = %{socket: socket, state: "active", mode: "continuing", user: user, save: %{room_id: 1}}
-    {:noreply, state} = Session.handle_cast({:recv, "say Hello"}, state)
+    {:noreply, state} = Process.handle_cast({:recv, "say Hello"}, state)
 
     assert state.mode == "continuing"
     assert @socket.get_echos() == []
@@ -132,27 +133,27 @@ defmodule Game.SessionTest do
   end
 
   test "user is not signed in yet does not save" do
-    assert {:noreply, %{}} = Session.handle_info(:save, %{})
+    assert {:noreply, %{}} = Process.handle_info(:save, %{})
   end
 
   test "save the user's save" do
     user = create_user(%{name: "player", password: "password"})
     save = %{user.save | stats: %{user.save.stats | health: 10}}
 
-    {:noreply, _state} = Session.handle_info(:save, %{state: "active", user: user, save: save, session_started_at: Timex.now()})
+    {:noreply, _state} = Process.handle_info(:save, %{state: "active", user: user, save: save, session_started_at: Timex.now()})
 
     user = Data.User |> Data.Repo.get(user.id)
     assert user.save.stats.health == 10
   end
 
   test "checking for inactive players - not inactive", %{socket: socket} do
-    {:noreply, _state} = Session.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now()})
+    {:noreply, _state} = Process.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now()})
 
     assert @socket.get_disconnects() == []
   end
 
   test "checking for inactive players - inactive", %{socket: socket} do
-    {:noreply, _state} = Session.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now() |> Timex.shift(minutes: -66)})
+    {:noreply, _state} = Process.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now() |> Timex.shift(minutes: -66)})
 
     assert @socket.get_disconnects() == [socket]
   end
@@ -163,7 +164,7 @@ defmodule Game.SessionTest do
       Session.Registry.register(user)
 
       state = %{user: user, save: %{room_id: 1}, session_started_at: Timex.now(), stats: %{}}
-      {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
+      {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
       assert Session.Registry.connected_players == []
     after
       Session.Registry.unregister()
@@ -173,7 +174,7 @@ defmodule Game.SessionTest do
       user = create_user(%{name: "user", password: "password"})
       state = %{user: user, save: user.save, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}}
 
-      {:stop, :normal, _state} = Session.handle_cast(:disconnect, state)
+      {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
 
       user = Repo.get(Data.User, user.id)
       assert user.seconds_online == 10800
@@ -188,7 +189,7 @@ defmodule Game.SessionTest do
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
@@ -204,7 +205,7 @@ defmodule Game.SessionTest do
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}
 
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
 
     assert state.save.stats.health == 15
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
@@ -225,7 +226,7 @@ defmodule Game.SessionTest do
 
     is_targeting = MapSet.new() |> MapSet.put({:user, 2})
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: is_targeting}
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == -5
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
@@ -246,7 +247,7 @@ defmodule Game.SessionTest do
     save = %{room_id: 1, stats: stats}
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: save, is_targeting: MapSet.new()}
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
 
     assert state.save.stats.health == -5
 
@@ -269,7 +270,7 @@ defmodule Game.SessionTest do
     save = %{room_id: 1, stats: stats}
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: save, is_targeting: MapSet.new()}
-    {:noreply, state} = Session.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
 
     assert state.save.stats.health == -5
 
@@ -282,7 +283,7 @@ defmodule Game.SessionTest do
     test "being targeted tracks the targeter", %{socket: socket, user: user} do
       targeter = {:user, %{id: 10, name: "Player"}}
 
-      {:noreply, state} = Session.handle_cast({:targeted, targeter}, %{socket: socket, user: user, target: nil, is_targeting: MapSet.new})
+      {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{socket: socket, user: user, target: nil, is_targeting: MapSet.new})
 
       assert state.is_targeting |> MapSet.size() == 1
       assert state.is_targeting |> MapSet.member?({:user, 10})
@@ -291,7 +292,7 @@ defmodule Game.SessionTest do
     test "if your target is empty, set to the targeter", %{socket: socket, user: user} do
       targeter = {:user, %{id: 10, name: "Player"}}
 
-      {:noreply, state} = Session.handle_cast({:targeted, targeter}, %{socket: socket, user: user, target: nil, is_targeting: MapSet.new})
+      {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{socket: socket, user: user, target: nil, is_targeting: MapSet.new})
 
       assert state.target == {:user, 10}
     end
@@ -301,7 +302,7 @@ defmodule Game.SessionTest do
     targeter = {:user, %{id: 10, name: "Player"}}
     is_targeting = MapSet.new() |> MapSet.put({:user, 10})
 
-    {:noreply, state} = Session.handle_cast({:remove_target, targeter}, %{socket: socket, is_targeting: is_targeting})
+    {:noreply, state} = Process.handle_cast({:remove_target, targeter}, %{socket: socket, is_targeting: is_targeting})
 
     assert state.is_targeting |> MapSet.size() == 0
     refute state.is_targeting |> MapSet.member?({:user, 10})
@@ -325,7 +326,7 @@ defmodule Game.SessionTest do
     end
 
     test "clears your target", %{state: state, target: target} do
-      {:noreply, state} = Session.handle_cast({:died, target}, state)
+      {:noreply, state} = Process.handle_cast({:died, target}, state)
 
       assert is_nil(state.target)
     end
@@ -337,7 +338,7 @@ defmodule Game.SessionTest do
       npc_spawner = %Data.NPCSpawner{id: 2, npc: struct(Data.NPC, npc_attributes(%{}))}
       Game.NPC.start_link(npc_spawner)
 
-      {:noreply, state} = Session.handle_cast({:died, target}, state)
+      {:noreply, state} = Process.handle_cast({:died, target}, state)
 
       assert state.target == {:npc, 2}
     end
@@ -346,7 +347,7 @@ defmodule Game.SessionTest do
       target = {:npc, %{id: 10, name: "Bandit", level: 1, experience_points: 1200}}
       state = %{state | target: {:npc, 10}}
 
-      {:noreply, state} = Session.handle_cast({:died, target}, state)
+      {:noreply, state} = Process.handle_cast({:died, target}, state)
 
       assert is_nil(state.target)
       assert state.save.level == 2
@@ -361,24 +362,24 @@ defmodule Game.SessionTest do
     end
 
     test "receiving a tell", %{socket: socket, from: from} do
-      {:noreply, state} = Session.handle_info({:channel, {:tell, from, "howdy"}}, %{socket: socket})
+      {:noreply, state} = Process.handle_info({:channel, {:tell, from, "howdy"}}, %{socket: socket})
 
       assert @socket.get_echos() == [{socket, "howdy"}]
       assert state.reply_to == from
     end
 
     test "receiving a join" do
-      {:noreply, state} = Session.handle_info({:channel, {:joined, "global"}}, %{save: %{channels: ["newbie"]}})
+      {:noreply, state} = Process.handle_info({:channel, {:joined, "global"}}, %{save: %{channels: ["newbie"]}})
       assert state.save.channels == ["global", "newbie"]
     end
 
     test "does not duplicate channels list" do
-      {:noreply, state} = Session.handle_info({:channel, {:joined, "newbie"}}, %{save: %{channels: ["newbie"]}})
+      {:noreply, state} = Process.handle_info({:channel, {:joined, "newbie"}}, %{save: %{channels: ["newbie"]}})
       assert state.save.channels == ["newbie"]
     end
 
     test "receiving a leave" do
-      {:noreply, state} = Session.handle_info({:channel, {:left, "global"}}, %{save: %{channels: ["global", "newbie"]}})
+      {:noreply, state} = Process.handle_info({:channel, {:left, "global"}}, %{save: %{channels: ["global", "newbie"]}})
       assert state.save.channels == ["newbie"]
     end
   end
@@ -394,7 +395,7 @@ defmodule Game.SessionTest do
     end
 
     test "teleports the user", %{socket: socket, user: user, room: room} do
-      {:noreply, state} = Session.handle_cast({:teleport, room.id}, %{socket: socket, user: user, save: user.save})
+      {:noreply, state} = Process.handle_cast({:teleport, room.id}, %{socket: socket, user: user, save: user.save})
       assert state.save.room_id == room.id
     end
   end
@@ -404,7 +405,7 @@ defmodule Game.SessionTest do
       save = %{stats: %{health: -1}}
       state = %{state | save: save}
 
-      {:noreply, state} = Session.handle_info(:resurrect, state)
+      {:noreply, state} = Process.handle_info(:resurrect, state)
 
       assert state.save.stats.health == 1
       assert state.user.save.stats.health == 1
@@ -414,7 +415,7 @@ defmodule Game.SessionTest do
       save = %{stats: %{health: 2}}
       state = %{state | save: save}
 
-      {:noreply, state} = Session.handle_info(:resurrect, state)
+      {:noreply, state} = Process.handle_info(:resurrect, state)
 
       assert state.save.stats.health == 2
     end
@@ -422,36 +423,36 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", state do
-      {:noreply, ^state} = Session.handle_cast({:notify, {"room/entered", {:user, %{id: 1, name: "Player"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {:user, %{id: 1, name: "Player"}}}}, state)
 
       assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} enters"}}
     end
 
     test "npc enters the room", state do
-      {:noreply, ^state} = Session.handle_cast({:notify, {"room/entered", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {:npc, %{id: 1, name: "Bandit"}}}}, state)
 
       assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} enters"}}
     end
 
     test "player leaves the room", state do
-      {:noreply, ^state} = Session.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
       assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} leaves"}}
     end
 
     test "player leaves the room and they were the target", %{socket: socket} do
       state = %{target: {:user, 1}, socket: socket}
-      {:noreply, state} = Session.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
       assert is_nil(state.target)
     end
 
     test "npc leaves the room", state do
-      {:noreply, ^state} = Session.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
       assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} leaves"}}
     end
 
     test "npc leaves the room and they were the target", %{socket: socket} do
       state = %{target: {:npc, 1}, socket: socket}
-      {:noreply, state} = Session.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
       assert is_nil(state.target)
     end
   end

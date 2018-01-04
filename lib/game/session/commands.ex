@@ -27,7 +27,7 @@ defmodule Game.Session.Commands do
     case command |> Command.run(session, state) do
       {:update, state} ->
         Session.Registry.update(%{state.user | save: state.save})
-        state |> Session.prompt()
+        state |> Session.Process.prompt()
         {:noreply, Map.put(state, :mode, "commands")}
 
       {:update, state, {command = %Command{}, send_in}} ->
@@ -54,7 +54,7 @@ defmodule Game.Session.Commands do
         {:noreply, Map.put(state, :mode, "commands")}
 
       _ ->
-        state |> Session.prompt()
+        state |> Session.Process.prompt()
         {:noreply, Map.put(state, :mode, "commands")}
     end
   end

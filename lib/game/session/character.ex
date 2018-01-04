@@ -36,7 +36,7 @@ defmodule Game.Session.Character do
   """
   def apply_effects(state, effects, from, description) do
     state = Effects.apply(effects, from, description, state)
-    state |> Session.prompt()
+    state |> Session.Process.prompt()
     state
   end
 
@@ -70,7 +70,7 @@ defmodule Game.Session.Character do
   def died(state = %{socket: socket, user: user, target: target}, who) do
     socket |> @socket.echo("#{Format.target_name(who)} has died.")
     state = apply_experience(state, who)
-    state |> Session.prompt()
+    state |> Session.Process.prompt()
 
     case Character.who(target) == Character.who(who) do
       true ->

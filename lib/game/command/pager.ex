@@ -7,7 +7,7 @@ defmodule Game.Command.Pager do
 
   @default_lines 20
 
-  import Game.Session, only: [prompt: 1]
+  import Game.Session.Process, only: [prompt: 1]
 
   @doc """
   Paginate text
