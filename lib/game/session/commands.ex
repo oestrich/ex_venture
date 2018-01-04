@@ -63,10 +63,11 @@ defmodule Game.Session.Commands do
   Record a command to run
   """
   @spec record_command(State.t(), Command.t()) :: State.t()
-  def record_command(state = %{stats: stats}, command) do
+  def record_command(state = %{stats: stats}, command = %Command{}) do
     commands = Map.get(stats, :commands, %{})
     count = Map.get(commands, command.module, 0)
     commands = Map.put(commands, command.module, count + 1)
     %{state | stats: %{commands: commands}}
   end
+  def record_command(state, _), do: state
 end
