@@ -24,7 +24,7 @@ defmodule Game.NPC do
     State for the NPC GenServer
     """
 
-    defstruct [:npc_spawner, :npc, :room_id, :is_targeting, :target, :last_controlled_at, continuous_effects: []]
+    defstruct [:npc_spawner, :npc, :room_id, :is_targeting, :target, :last_controlled_at, events: %{}, continuous_effects: []]
 
     @type t :: %__MODULE__{}
   end
@@ -140,7 +140,17 @@ defmodule Game.NPC do
     Logger.info("Starting NPC #{npc.id}", type: :npc)
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
-    {:ok, %State{npc_spawner: npc_spawner, npc: npc, room_id: npc_spawner.room_id, is_targeting: MapSet.new()}, target: nil}
+
+    state = %State{
+      npc_spawner: npc_spawner,
+      npc: npc,
+      room_id: npc_spawner.room_id,
+      is_targeting: MapSet.new(),
+      target: nil,
+      events: %{},
+    }
+
+    {:ok, state}
   end
 
   def handle_call(:get_state, _from, state) do

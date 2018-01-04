@@ -102,12 +102,13 @@ The move action takes a `max_distance` that the NPC will stray from their origin
   "action": {
     "type": "emote",
     "message": "moves about the store",
-    "chance": 50
+    "chance": 50,
+    "wait": 15
   }
 }
 ```
 
-The emote action takes a `message` that the NPC will emote into the room. `chance` is the percent chance that the NPC will do this action on each tick.
+The emote action takes a `message` that the NPC will emote into the room. `chance` is the percent chance that the NPC will do this action on each tick. `wait` is optional and will enforce a delay of `wait` seconds since the last emote. Multiple emote ticks update the same timestamp of when an emote occured.
 
 ### say
 
@@ -117,12 +118,13 @@ The emote action takes a `message` that the NPC will emote into the room. `chanc
   "action": {
     "type": "say",
     "message": "Can I help you?",
-    "chance": 50
+    "chance": 50,
+    "wait": 10,
   }
 }
 ```
 
-The say action takes a `message` that the NPC will say into the room. `chance` is the percent chance that the NPC will do this action on each tick.
+The say action takes a `message` that the NPC will say into the room. `chance` is the percent chance that the NPC will do this action on each tick. `wait` is optional and will enforce a delay of `wait` seconds since the last say. Multiple say ticks update the same timestamp of when a say tick occured.
 
 ## character/targeted
 

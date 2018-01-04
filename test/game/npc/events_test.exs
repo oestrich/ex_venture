@@ -336,6 +336,7 @@ defmodule Game.NPC.EventsTest do
           type: "emote",
           message: "fidgets",
           chance: 50,
+          wait: 10,
         },
       }
 
@@ -350,10 +351,17 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "will emote to the room", %{state: state, event: event} do
-      {:update, ^state} = Events.act_on(state, event)
+      {:update, %{events: %{emote_tick: _}}} = Events.act_on(state, event)
 
       [{_, message}] = @room.get_emotes()
       assert message.message == "fidgets"
+    end
+
+    test "will limit the amount of acting on the event", %{state: state, event: event} do
+      state = %{state | events: %{emote_tick: Timex.now()}}
+      {:update, ^state} = Events.act_on(state, event)
+
+      [] = @room.get_emotes()
     end
 
     test "will move if the random number is below chance" do
@@ -373,6 +381,7 @@ defmodule Game.NPC.EventsTest do
           type: "say",
           message: "Can I help you?",
           chance: 50,
+          wait: 10,
         },
       }
 
@@ -387,10 +396,17 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "will say to the room", %{state: state, event: event} do
-      {:update, ^state} = Events.act_on(state, event)
+      {:update, %{events: %{say_tick: _}}} = Events.act_on(state, event)
 
       [{_, message}] = @room.get_says()
       assert message.message == "Can I help you?"
+    end
+
+    test "will limit the amount of acting on the event", %{state: state, event: event} do
+      state = %{state | events: %{say_tick: Timex.now()}}
+      {:update, ^state} = Events.act_on(state, event)
+
+      [] = @room.get_emotes()
     end
 
     test "will move if the random number is below chance" do

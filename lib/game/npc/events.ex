@@ -148,13 +148,13 @@ defmodule Game.NPC.Events do
     end
   end
   def act_on_tick(state, event = %{action: %{type: "emote"}}) do
-    case emote?(event) do
+    case emote?(event) && !delay_emote?(state, event) do
       true -> emote_to_room(state, event)
       false -> state
     end
   end
   def act_on_tick(state, event = %{action: %{type: "say"}}) do
-    case say?(event) do
+    case say?(event) && !delay_say?(state, event) do
       true -> say_to_room(state, event)
       false -> state
     end
@@ -233,11 +233,21 @@ defmodule Game.NPC.Events do
   end
 
   @doc """
+  Check if enough time has passed to emote again.
+  """
+  @spec delay_emote?(State.t(), Event.t) :: boolean()
+  def delay_emote?(state, event)
+  def delay_emote?(%{events: %{emote_tick: emote_tick}}, %{action: %{wait: wait_seconds}}) do
+    Timex.diff(Timex.now(), emote_tick, :seconds) < wait_seconds
+  end
+  def delay_emote?(_, _), do: false
+
+  @doc """
   Emote the NPC's message to the room
   """
   def emote_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
     room_id |> @room.emote(npc, Message.npc_emote(npc, message))
-    state
+    state |> Map.put(:events, Map.put(state.events, :emote_tick, Timex.now()))
   end
 
   @doc """
@@ -252,11 +262,21 @@ defmodule Game.NPC.Events do
   end
 
   @doc """
+  Check if enough time has passed to say again.
+  """
+  @spec delay_say?(State.t(), Event.t) :: boolean()
+  def delay_say?(state, event)
+  def delay_say?(%{events: %{say_tick: say_tick}}, %{action: %{wait: wait_seconds}}) do
+    Timex.diff(Timex.now(), say_tick, :seconds) < wait_seconds
+  end
+  def delay_say?(_, _), do: false
+
+  @doc """
   Say the NPC's message to the room
   """
   def say_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
     room_id |> @room.say(npc, Message.npc_say(npc, message))
-    state
+    state |> Map.put(:events, Map.put(state.events, :say_tick, Timex.now()))
   end
 
   defp broadcast(npc, action) do

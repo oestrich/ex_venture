@@ -178,8 +178,12 @@ defmodule Data.Event do
       true
       iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50})
       true
+      iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50, wait: 20})
+      true
 
-      iex> Data.Event.valid_action?(%{type: "emote", message: "hi", chance: 50})
+      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50})
+      true
+      iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50})
       true
 
       iex> Data.Event.valid_action?(%{type: "target"})
@@ -198,21 +202,24 @@ defmodule Data.Event do
   """
   @spec valid_action?(event_type :: String.t(), action :: map()) :: boolean()
   def valid_action?(event_type \\ nil, action)
-  def valid_action?(_, %{type: "emote", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && chance < 100
+  def valid_action?(_, action = %{type: "emote", message: string, chance: chance}) do
+    is_binary(string) && is_integer(chance) && chance < 100 && maybe_wait?(action)
   end
   def valid_action?(_, %{type: "move", max_distance: max_distance, chance: chance}) do
     is_integer(max_distance) && is_integer(chance) && chance < 100
   end
   def valid_action?(_, %{type: "say", message: string}) when is_binary(string), do: true
-  def valid_action?("tick", %{type: "say", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && chance < 100
+  def valid_action?("tick", action = %{type: "say", message: string, chance: chance}) do
+    is_binary(string) && is_integer(chance) && chance < 100 && maybe_wait?(action)
   end
   def valid_action?(_, %{type: "target"}), do: true
   def valid_action?(_, %{type: "target/effects", text: text, delay: delay, weight: weight, effects: effects}) do
     is_integer(weight) && is_binary(text) && is_float(delay) && Enum.all?(effects, &Effect.valid?/1)
   end
   def valid_action?(_, _), do: false
+
+  defp maybe_wait?(%{wait: wait}), do: is_integer(wait)
+  defp maybe_wait?(_), do: true
 
   @doc """
   Validate events of the NPC
