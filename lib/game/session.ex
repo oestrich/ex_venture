@@ -25,6 +25,8 @@ defmodule Game.Session do
   alias Game.Session
   alias Game.Session.Effects
   alias Game.Session.GMCP
+  alias Game.Session.SessionStats
+  alias Game.Session.State
   alias Game.Session.Tick
   alias Metrics.PlayerInstrumenter
 
@@ -33,17 +35,6 @@ defmodule Game.Session do
 
   @timeout_check 5000
   @timeout_seconds Application.get_env(:ex_venture, :game)[:timeout_seconds]
-
-  defmodule State do
-    @moduledoc """
-    Create a struct for Session state
-    """
-
-    @type t :: %__MODULE__{}
-
-    @enforce_keys [:socket, :state, :mode]
-    defstruct [:socket, :state, :session_started_at, :user, :save, :last_recv, :last_tick, :target, :is_targeting, :regen, :reply_to, :commands, mode: "comands", continuous_effects: [], stats: %{}]
-  end
 
   @doc """
   Start a new session
@@ -141,9 +132,7 @@ defmodule Game.Session do
       regen: %{count: 0},
       reply_to: nil,
       commands: %{},
-      stats: %{
-        commands: %{},
-      },
+      stats: %SessionStats{},
     }
 
     {:ok, state}
