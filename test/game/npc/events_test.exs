@@ -386,6 +386,7 @@ defmodule Game.NPC.EventsTest do
       }
 
       @room.clear_says()
+      @room.clear_emotes()
 
       npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
