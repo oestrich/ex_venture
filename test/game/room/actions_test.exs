@@ -4,9 +4,14 @@ defmodule Game.Room.ActionsTest do
   alias Game.Room
 
   setup do
+    start_and_clear_items()
+
     item = create_item(%{name: "Short Sword"})
+    insert_item(item)
+
     village = create_zone(%{name: "Village"})
-    room = create_room(village, %{currency: 100, items: [item_instance(item.id)]})
+    room = create_room(village, %{currency: 100, items: [item_instance(item)]})
+
     {:ok, %{room: room, item: item}}
   end
 

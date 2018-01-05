@@ -112,6 +112,9 @@ defmodule TestHelpers do
   def item_instance(id) when is_integer(id) do
     Item.instantiate(%Item{id: id})
   end
+  def item_instance(item = %Item{}) do
+    Item.instantiate(item)
+  end
 
   def create_item(attributes \\ %{}) do
     %Item{}
