@@ -61,6 +61,14 @@
                 <th>Usee Text</th>
                 <td><code><%= @item.usee_text %></code></td>
               </tr>
+              <tr>
+                <th>Usable?</th>
+                <td><%= @item.is_usable %></td>
+              </tr>
+              <tr>
+                <th>Amount</th>
+                <td><%= @item.amount %></td>
+              </tr>
             </tbody>
           </table>
         </div>

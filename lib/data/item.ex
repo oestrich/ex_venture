@@ -25,7 +25,7 @@ defmodule Data.Item do
 
   @fields [
     :level, :name, :description, :type, :tags, :keywords, :stats, :effects,
-    :cost, :user_text, :usee_text,
+    :cost, :user_text, :usee_text, :is_usable, :amount,
   ]
 
   schema "items" do
@@ -40,6 +40,8 @@ defmodule Data.Item do
     field :level, :integer, default: 1
     field :user_text, :string, default: "You use {name} on {target}."
     field :usee_text, :string, default: "{user} uses {name} on you."
+    field :is_usable, :boolean, default: false
+    field :amount, :integer, default: 1
 
     has_many :item_aspectings, ItemAspecting
     has_many :item_aspects, through: [:item_aspectings, :item_aspect]
@@ -81,7 +83,12 @@ defmodule Data.Item do
   """
   @spec instantiate(item :: t()) :: instance()
   def instantiate(item) do
-    %Instance{id: item.id, created_at: Timex.now()}
+    case item.is_usable do
+      true ->
+        %Instance{id: item.id, created_at: Timex.now(), amount: item.amount}
+      false ->
+        %Instance{id: item.id, created_at: Timex.now()}
+    end
   end
 
   def changeset(struct, params) do

@@ -235,11 +235,11 @@ defmodule Data.Save do
   @doc """
   Validate items is correct
 
-      iex> item = Data.Item.instantiate(%{id: 1})
+      iex> item = Data.Item.instantiate(%{id: 1, is_usable: false})
       iex> Data.Save.valid_items?(%Data.Save{items: [item]})
       true
 
-      iex> item = Data.Item.instantiate(%{id: 1})
+      iex> item = Data.Item.instantiate(%{id: 1, is_usable: false})
       iex> Data.Save.valid_items?(%{items: [item, :anything]})
       false
 

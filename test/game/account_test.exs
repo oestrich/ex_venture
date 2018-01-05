@@ -1,6 +1,7 @@
 defmodule Game.AccountTest do
   use Data.ModelCase
 
+  alias Data.Item
   alias Data.User
   alias Game.Account
 
@@ -39,8 +40,28 @@ defmodule Game.AccountTest do
       session = List.first(user.sessions)
 
       assert session.seconds_online == 300
-      assert session.started_at == started_at
+      assert Timex.diff(session.started_at, started_at, :seconds) < 1 # account for microseconds
       assert session.commands == %{"Elixir.Game.Command.Look" => 1}
+    end
+  end
+
+  describe "migrating item instances on load" do
+    setup do
+      user = create_user(%{name: "user", password: "password"})
+
+      start_and_clear_items()
+      potion = create_item(%{name: "Potion", is_usable: true, amount: 3})
+      insert_item(potion)
+
+      %{user: user, potion: potion}
+    end
+
+    test "add amount to the instance if the item is usable", %{user: user, potion: potion} do
+      user = %{user | save: %{user.save | items: [%Item.Instance{id: potion.id, created_at: Timex.now()}]}}
+
+      user = Account.migrate_items(user)
+
+      assert [%Item.Instance{id: _, amount: 3} | _] = user.save.items
     end
   end
 end

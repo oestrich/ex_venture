@@ -142,4 +142,14 @@ defmodule Data.ItemTest do
     assert instance.id == item.id
     assert instance.created_at
   end
+
+  test "create an instance of an item that is usable" do
+    item = create_item(%{is_usable: true, amount: 10})
+
+    instance = Item.instantiate(item)
+
+    assert instance.id == item.id
+    assert instance.created_at
+    assert instance.amount == 10
+  end
 end

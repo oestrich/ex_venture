@@ -8,6 +8,7 @@ defmodule Game.Authentication do
   alias Data.Skill
   alias Data.Stats
   alias Data.User
+  alias Game.Account
 
   @doc """
   Attempt to find a user and validate their password
@@ -27,7 +28,10 @@ defmodule Game.Authentication do
   end
   defp _find_and_validate(user, password) do
     case Comeonin.Bcrypt.checkpw(password, user.password_hash) do
-      true -> user |> set_defaults()
+      true ->
+        user
+        |> set_defaults()
+        |> Account.migrate_items()
       _ -> {:error, :invalid}
     end
   end
@@ -42,6 +46,7 @@ defmodule Game.Authentication do
     |> preloads()
     |> Repo.one
     |> set_defaults()
+    |> Account.migrate_items()
   end
 
   defp preloads(query) do

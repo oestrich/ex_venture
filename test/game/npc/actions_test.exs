@@ -50,8 +50,8 @@ defmodule Game.NPC.ActionsTest do
       @room.clear_drops()
 
       start_and_clear_items()
-      insert_item(%{id: 1, name: "Sword", keywords: []})
-      insert_item(%{id: 2, name: "Shield", keywords: []})
+      insert_item(%{id: 1, name: "Sword", keywords: [], is_usable: false})
+      insert_item(%{id: 2, name: "Shield", keywords: [], is_usable: false})
 
       npc_items = [
         %{item_id: 1, drop_rate: 50},

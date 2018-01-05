@@ -6,7 +6,7 @@ defmodule Data.Item.Instance do
   @behaviour Ecto.Type
 
   @enforce_keys [:id, :created_at]
-  defstruct [:id, :created_at]
+  defstruct [:id, :created_at, :amount]
 
   @impl Ecto.Type
   def type, do: :map

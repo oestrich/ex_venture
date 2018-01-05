@@ -127,6 +127,8 @@ defmodule TestHelpers do
       type: "weapon",
       stats: %{},
       effects: [],
+      is_usable: false,
+      amount: 1,
     }, attributes)
   end
 

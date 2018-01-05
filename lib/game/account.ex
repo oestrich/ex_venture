@@ -9,6 +9,7 @@ defmodule Game.Account do
   alias Data.User
   alias Data.User.Session
   alias Game.Config
+  alias Game.Items
 
   @doc """
   Create a new user from attributes. Preloads everything required to start playing the game.
@@ -85,6 +86,10 @@ defmodule Game.Account do
     user.seconds_online + play_time
   end
 
+  @doc """
+  Create a new session record
+  """
+  @spec create_session(User.t, Timex.t(), Timex.t(), map) :: {:ok, User.Session.t()}
   def create_session(user, session_started_at, now, stats) do
     commands = Map.get(stats, :commands, %{})
     play_time = Timex.diff(now, session_started_at, :seconds)
@@ -94,4 +99,28 @@ defmodule Game.Account do
     |> Session.changeset(%{started_at: session_started_at, seconds_online: play_time, commands: commands})
     |> Repo.insert
   end
+
+  @doc """
+  Migrate items after load
+
+  - Ensure usable items have an amount, checks item state
+  """
+  @spec migrate_items(User.t()) :: User.t()
+  def migrate_items(user) do
+    items = user.save.items |> Enum.map(&migrate_item/1)
+    %{user | save: %{user.save | items: items}}
+  end
+
+  defp migrate_item(instance) do
+    item = Items.item(instance)
+    case item.is_usable do
+      true -> ensure_amount(instance, item)
+      false -> instance
+    end
+  end
+
+  defp ensure_amount(instance = %{amount: nil}, item) do
+    %{instance | amount: item.amount}
+  end
+  defp ensure_amount(instance, _item), do: instance
 end

@@ -6,7 +6,10 @@ defmodule Data.Item.Compiled do
 
   alias Data.Item
 
-  @fields [:id, :level, :name, :description, :type, :keywords, :stats, :effects, :cost, :user_text, :usee_text]
+  @fields [
+    :id, :level, :name, :description, :type, :keywords, :stats,
+    :effects, :cost, :user_text, :usee_text, :is_usable, :amount,
+  ]
 
   defstruct @fields
 
