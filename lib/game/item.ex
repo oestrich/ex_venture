@@ -45,7 +45,10 @@ defmodule Game.Item do
   """
   @spec find_item(items :: [Item.t], item_name :: String.t) :: Item.t | nil
   def find_item(items, item_name) do
-    Enum.find(items, &(Game.Item.matches_lookup?(&1, item_name)))
+    Enum.find(items, fn
+      ({_instance, item}) -> matches_lookup?(item, item_name)
+      (item) -> matches_lookup?(item, item_name)
+    end)
   end
 
   @doc """
@@ -102,4 +105,21 @@ defmodule Game.Item do
     instance = items |> Enum.find(&(&1.id == item.id))
     {instance, List.delete(items, instance)}
   end
+
+  @doc """
+  Migrate an instance of an item
+  """
+  @spec migrate_instance(Item.instance()) :: Item.instance()
+  def migrate_instance(instance) do
+    item = Items.item(instance)
+    case item.is_usable do
+      true -> ensure_amount(instance, item)
+      false -> instance
+    end
+  end
+
+  defp ensure_amount(instance = %{amount: nil}, item) do
+    %{instance | amount: item.amount}
+  end
+  defp ensure_amount(instance, _item), do: instance
 end

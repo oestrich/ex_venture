@@ -9,7 +9,7 @@ defmodule Game.Account do
   alias Data.User
   alias Data.User.Session
   alias Game.Config
-  alias Game.Items
+  alias Game.Item
 
   @doc """
   Create a new user from attributes. Preloads everything required to start playing the game.
@@ -107,20 +107,7 @@ defmodule Game.Account do
   """
   @spec migrate_items(User.t()) :: User.t()
   def migrate_items(user) do
-    items = user.save.items |> Enum.map(&migrate_item/1)
+    items = user.save.items |> Enum.map(&Item.migrate_instance/1)
     %{user | save: %{user.save | items: items}}
   end
-
-  defp migrate_item(instance) do
-    item = Items.item(instance)
-    case item.is_usable do
-      true -> ensure_amount(instance, item)
-      false -> instance
-    end
-  end
-
-  defp ensure_amount(instance = %{amount: nil}, item) do
-    %{instance | amount: item.amount}
-  end
-  defp ensure_amount(instance, _item), do: instance
 end

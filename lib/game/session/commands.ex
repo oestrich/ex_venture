@@ -53,6 +53,9 @@ defmodule Game.Session.Commands do
       {:skip, :prompt} ->
         {:noreply, Map.put(state, :mode, "commands")}
 
+      {:skip, :prompt, state} ->
+        {:noreply, Map.put(state, :mode, "commands")}
+
       _ ->
         state |> Session.Process.prompt()
         {:noreply, Map.put(state, :mode, "commands")}

@@ -35,6 +35,17 @@ defmodule Game.Items do
     |> Enum.reject(&is_nil/1)
   end
 
+  @spec items_keep_instance(instances :: [Item.instance()]) :: [{Item.instance(), Item.t()}]
+  def items_keep_instance(instances) do
+    instances
+    |> Enum.map(fn (instance) ->
+      {instance, item(instance)}
+    end)
+    |> Enum.reject(fn ({_, item}) ->
+      is_nil(item)
+    end)
+  end
+
   @doc """
   Insert a new item into the loaded data
   """
