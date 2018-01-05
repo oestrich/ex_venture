@@ -8,7 +8,6 @@ defmodule Game.Room.Repo do
   alias Data.Exit
   alias Data.Room
   alias Data.Repo
-  alias Game.Item
 
   @doc """
   Load all rooms
@@ -40,7 +39,6 @@ defmodule Game.Room.Repo do
     |> where([r], r.zone_id == ^zone_id)
     |> preload([:room_items, :shops])
     |> Repo.all
-    |> Enum.map(&migrate_items/1)
     |> Enum.map(&Exit.load_exits/1)
   end
 
@@ -48,16 +46,5 @@ defmodule Game.Room.Repo do
     room
     |> Room.changeset(params)
     |> Repo.update
-  end
-
-  @doc """
-  Migrate items after load
-
-  - Ensure usable items have an amount, checks item state
-  """
-  @spec migrate_items(Room.t()) :: Room.t()
-  def migrate_items(room) do
-    items = room.items |> Enum.map(&Item.migrate_instance/1)
-    %{room | items: items}
   end
 end

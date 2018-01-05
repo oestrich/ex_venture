@@ -63,6 +63,7 @@ defmodule Game.Command.Use do
   end
   defp spend_item(state = %{save: %{items: items}}, instance) do
     items = List.delete(items, instance)
+    instance = Item.migrate_instance(instance) # ensure item is good to go
     instance = %{instance | amount: instance.amount - 1}
 
     items =

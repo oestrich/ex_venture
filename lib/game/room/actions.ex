@@ -25,7 +25,9 @@ defmodule Game.Room.Actions do
     {instance, items} = Item.remove(room.items, item)
 
     case Repo.update(room, %{items: items}) do
-      {:ok, room} -> {room, {:ok, instance}}
+      {:ok, room} ->
+        instance = Item.migrate_instance(instance)
+        {room, {:ok, instance}}
       _ -> {room, :error}
     end
   end
