@@ -74,7 +74,7 @@
                 </li>
               <% end)%>
             </ul>
-            <div class="tab-content">
+            <div class="tab-content" style="overflow: scroll">
               <%= Enum.map(layers(@zone), fn (layer) -> %>
                 <div class="tab-pane <%= layer_class(@room.map_layer, layer) %>" id="layer-<%= layer %>">
                   <table class="table">
