@@ -212,7 +212,7 @@ defmodule Web.NPC do
     changeset = id |> get_spawner() |> NPCSpawner.update_changeset(params)
     case changeset |> Repo.update do
       {:ok, npc_spawner} ->
-        npc_spawner = npc_spawner |> Repo.preload([:npc])
+        npc_spawner = npc_spawner |> Repo.preload([npc: [:npc_items]])
         Game.NPC.update(npc_spawner.id, npc_spawner)
         {:ok, npc_spawner}
       anything -> anything

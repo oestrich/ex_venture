@@ -267,7 +267,6 @@ defmodule Game.NPC do
   defp maybe_copy_name(npc, %{name: name}) do
     case name do
       nil -> npc
-      "" -> npc
       _ -> npc |> Map.put(:name, name)
     end
   end
