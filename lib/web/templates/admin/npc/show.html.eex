@@ -124,6 +124,7 @@
                 <th>ID</th>
                 <th>Zone</th>
                 <th>Room</th>
+                <th>Name</th>
                 <th>Interval</th>
                 <td>Actions</th>
               </tr>
@@ -134,6 +135,13 @@
                   <td><%= npc_spawner.id %></td>
                   <td><%= link(npc_spawner.zone.name, to: zone_path(@conn, :show, npc_spawner.zone_id)) %></td>
                   <td><%= link(npc_spawner.room.name, to: room_path(@conn, :show, npc_spawner.room_id)) %></td>
+                  <td>
+                    <%= if custom_name?(npc_spawner) do %>
+                      <%= npc_spawner.name %>
+                    <% else %>
+                      <%= @npc.name %>
+                    <% end %>
+                  </td>
                   <td><%= npc_spawner.spawn_interval %></td>
                   <td>
                     <%= link("Control", to: npc_spawner_path(@conn, :show, npc_spawner.id), class: "btn btn-default btn-xs") %>

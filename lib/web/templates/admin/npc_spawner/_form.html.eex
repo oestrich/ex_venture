@@ -20,6 +20,13 @@
       <% end %>
 
       <div class="form-group">
+        <%= label f, :name %>
+        <%= text_input f, :name, class: "form-control", rows: 10 %>
+        <%= error_tag f, :name %>
+        <span class="help-block">If empty the base NPC will be used, fill this in to create similar NPCs with different names to customize</span>
+      </div>
+
+      <div class="form-group">
         <%= label f, :spawn_interval %>
         <%= number_input f, :spawn_interval, class: "form-control", rows: 10 %>
         <%= error_tag f, :spawn_interval %>

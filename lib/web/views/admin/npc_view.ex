@@ -30,4 +30,8 @@ defmodule Web.Admin.NPCView do
       events -> events |> Poison.encode!(pretty: true)
     end
   end
+
+  def custom_name?(%{name: name}) do
+    name != "" && !is_nil(name)
+  end
 end

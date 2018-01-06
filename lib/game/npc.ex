@@ -135,7 +135,7 @@ defmodule Game.NPC do
   #
 
   def init(npc_spawner) do
-    npc = %{npc_spawner.npc | id: npc_spawner.id}
+    npc = customize_npc(npc_spawner, npc_spawner.npc)
     npc = %{npc | stats: Stats.default(npc.stats)}
     Logger.info("Starting NPC #{npc.id}", type: :npc)
     npc_spawner.zone_id |> Zone.npc_online(npc)
@@ -194,9 +194,11 @@ defmodule Game.NPC do
   end
 
   def handle_cast({:update, npc_spawner}, state = %{room_id: room_id}) do
-    state = state
-    |> Map.put(:npc_spawner, npc_spawner)
-    |> Map.put(:npc, %{npc_spawner.npc | id: npc_spawner.id})
+    state =
+      state
+      |> Map.put(:npc_spawner, npc_spawner)
+      |> Map.put(:npc, customize_npc(npc_spawner, npc_spawner.npc))
+
     @room.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
     {:noreply, state}
@@ -254,5 +256,19 @@ defmodule Game.NPC do
   def handle_info({:continuous_effect, effect_id}, state) do
     state = Actions.handle_continuous_effect(state, effect_id)
     {:noreply, state}
+  end
+
+  defp customize_npc(npc_spawner, npc) do
+    npc
+    |> Map.put(:id, npc_spawner.id)
+    |> maybe_copy_name(npc_spawner)
+  end
+
+  defp maybe_copy_name(npc, %{name: name}) do
+    case name do
+      nil -> npc
+      "" -> npc
+      _ -> npc |> Map.put(:name, name)
+    end
   end
 end

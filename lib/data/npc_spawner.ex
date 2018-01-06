@@ -10,6 +10,7 @@ defmodule Data.NPCSpawner do
   alias Data.Zone
 
   schema "npc_spawners" do
+    field :name, :string
     field :spawn_interval, :integer, default: 60
 
     belongs_to :zone, Zone
@@ -21,7 +22,7 @@ defmodule Data.NPCSpawner do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:zone_id, :npc_id, :room_id, :spawn_interval])
+    |> cast(params, [:zone_id, :npc_id, :room_id, :spawn_interval, :name])
     |> validate_required([:zone_id, :npc_id, :room_id, :spawn_interval])
     |> validate_room_in_zone()
     |> foreign_key_constraint(:zone_id)
@@ -31,7 +32,7 @@ defmodule Data.NPCSpawner do
 
   def update_changeset(struct, params) do
     struct
-    |> cast(params, [:spawn_interval])
+    |> cast(params, [:name, :spawn_interval])
     |> validate_required([:spawn_interval])
   end
 
