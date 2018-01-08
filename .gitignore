@@ -23,3 +23,5 @@ assets/node_modules/
 priv/static/
 .tool-versions
 /docs/site
+/backups
+/schema.sql
