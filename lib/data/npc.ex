@@ -18,6 +18,7 @@ defmodule Data.NPC do
     field :events, {:array, Event}
     field :notes, :string
     field :tags, {:array, :string}, default: []
+    field :status_line, :string, default: "{name} is here."
 
     field :currency, :integer, default: 0
 
@@ -29,10 +30,11 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :notes, :tags, :events])
-    |> validate_required([:name, :level, :experience_points, :stats, :currency, :tags, :events])
+    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :notes, :tags, :events, :status_line])
+    |> validate_required([:name, :level, :experience_points, :stats, :currency, :tags, :events, :status_line])
     |> validate_stats()
     |> Event.validate_events()
+    |> validate_status_line()
   end
 
   defp validate_stats(changeset) do
@@ -43,6 +45,26 @@ defmodule Data.NPC do
           false -> add_error(changeset, :stats, "are invalid")
         end
       _ -> changeset
+    end
+  end
+
+  defp validate_status_line(changeset) do
+    changeset
+    |> validate_status_line_ends_in_period()
+    |> validate_status_line_includes_name()
+  end
+
+  defp validate_status_line_ends_in_period(changeset) do
+    case Regex.match?(~r/\.$/, get_field(changeset, :status_line)) do
+      true -> changeset
+      false -> add_error(changeset, :status_line, "must end with a period.")
+    end
+  end
+
+  defp validate_status_line_includes_name(changeset) do
+    case Regex.match?(~r/{name}/, get_field(changeset, :status_line)) do
+      true -> changeset
+      false -> add_error(changeset, :status_line, "must include `{name}`")
     end
   end
 end

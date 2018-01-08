@@ -194,7 +194,7 @@ Items: #{items(room, items)}
 
   Example:
 
-      iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur"}]})
+      iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", status_line: "{name} is here."}]})
       "{blue}Mordred{/blue} is here. {yellow}Arthur{/yellow} is here."
   """
   def who_is_here(room) do
@@ -224,13 +224,16 @@ Items: #{items(room, items)}
 
   Example:
 
-      iex> Game.Format.npcs(%{npcs: [%{name: "Mordred"}, %{name: "Arthur"}]})
-      "{yellow}Mordred{/yellow} is here. {yellow}Arthur{/yellow} is here."
+      iex> Game.Format.npcs(%{npcs: [%{name: "Mordred", status_line: "{name} is in the room."}, %{name: "Arthur", status_line: "{name} is here."}]})
+      "{yellow}Mordred{/yellow} is in the room. {yellow}Arthur{/yellow} is here."
   """
   @spec npcs(room :: Game.Room.t) :: String.t
   def npcs(%{npcs: npcs}) do
     npcs
-    |> Enum.map(fn (npc) -> "{yellow}#{npc.name}{/yellow} is here." end)
+    |> Enum.map(fn (npc) ->
+      npc.status_line
+      |> String.replace("{name}", name({:npc, npc}))
+    end)
     |> Enum.join(" ")
   end
   def npcs(_), do: ""

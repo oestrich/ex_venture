@@ -27,4 +27,15 @@ defmodule Data.NPCTest do
     changeset = %NPC{} |> NPC.changeset(%{events: [%{type: "room/entered"}]})
     assert changeset.errors[:events]
   end
+
+  test "validates status line has a period and a name" do
+    changeset = %NPC{} |> NPC.changeset(%{status_line: nil})
+    assert changeset.errors[:status_line]
+
+    changeset = %NPC{} |> NPC.changeset(%{status_line: "hi."})
+    assert changeset.errors[:status_line]
+
+    changeset = %NPC{} |> NPC.changeset(%{status_line: "{name}"})
+    assert changeset.errors[:status_line]
+  end
 end

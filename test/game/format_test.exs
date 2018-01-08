@@ -63,7 +63,7 @@ defmodule Game.FormatTest do
         description: "A hallway",
         currency: 100,
         players: [%{name: "Player"}],
-        npcs: [%{name: "Bandit"}],
+        npcs: [%{name: "Bandit", status_line: "{name} is here."}],
         exits: [%{south_id: 1}, %{west_id: 1}],
         shops: [%{name: "Hole in the Wall"}],
       }
