@@ -59,6 +59,10 @@
               <td><pre><%= @npc.status_line %></pre></td>
             </tr>
             <tr>
+              <th>Description</th>
+              <td><pre><%= @npc.description %></pre></td>
+            </tr>
+            <tr>
               <th>Stats</th>
               <td><pre><%= @npc.stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
             </tr>

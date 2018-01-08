@@ -19,6 +19,7 @@ defmodule Data.NPC do
     field :notes, :string
     field :tags, {:array, :string}, default: []
     field :status_line, :string, default: "{name} is here."
+    field :description, :string, default: "{status_line}"
 
     field :currency, :integer, default: 0
 
@@ -30,8 +31,8 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :notes, :tags, :events, :status_line])
-    |> validate_required([:name, :level, :experience_points, :stats, :currency, :tags, :events, :status_line])
+    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :notes, :tags, :events, :status_line, :description])
+    |> validate_required([:name, :level, :experience_points, :stats, :currency, :tags, :events, :status_line, :description])
     |> validate_stats()
     |> Event.validate_events()
     |> validate_status_line()

@@ -31,6 +31,13 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :description %>
+        <%= textarea f, :description, class: "form-control", rows: 3 %>
+        <%= error_tag f, :description %>
+        <span class="help-block">Valid template replacements: <code>status_line</code></span>
+      </div>
+
+      <div class="form-group">
         <%= label f, :experience_points %>
         <%= number_input f, :experience_points, class: "form-control" %>
         <%= error_tag f, :experience_points %>
