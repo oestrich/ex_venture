@@ -67,6 +67,7 @@ defmodule Game.Command.Look do
     room
     |> maybe_look_item(name, state)
     |> maybe_look_npc(name, state)
+    |> maybe_look_player(name, state)
 
     :ok
   end
@@ -96,6 +97,18 @@ defmodule Game.Command.Look do
       nil -> room
       npc ->
         socket |> @socket.echo(Format.npc_full(npc))
+        :ok
+    end
+  end
+
+  defp maybe_look_player(:ok, _name, _state), do: :ok
+  defp maybe_look_player(room, player_name, %{socket: socket}) do
+    player = room.players |> Enum.find(&(Utility.matches?(&1, player_name)))
+
+    case player do
+      nil -> room
+      player ->
+        socket |> @socket.echo(Format.player_full(player))
         :ok
     end
   end

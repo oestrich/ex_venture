@@ -50,7 +50,7 @@ defmodule TestHelpers do
     }
   end
 
-  defp user_attributes(attributes) do
+  def user_attributes(attributes) do
     Map.merge(%{
       save: base_save(),
       race_id: create_race().id,

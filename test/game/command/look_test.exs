@@ -14,6 +14,7 @@ defmodule Game.Command.LookTest do
     room = %{
       items: [Item.instantiate(item)],
       npcs: [npc_attributes(%{id: 1, name: "Bandit", description: "bandit description"})],
+      players: [user_attributes(%{id: 1, name: "Player"})],
     }
     @room.set_room(Map.merge(@room._room(), room))
 
@@ -45,6 +46,13 @@ defmodule Game.Command.LookTest do
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(bandit description), look)
+  end
+
+  test "looking at a player", %{session: session, socket: socket} do
+    Game.Command.Look.run({"player"}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(Player), look)
   end
 
   test "looking in a direction", %{session: session, socket: socket} do

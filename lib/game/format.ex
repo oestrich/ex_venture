@@ -233,6 +233,15 @@ Items: #{items(room, items)}
   def players(_), do: ""
 
   @doc """
+  Look at a Player
+  """
+  @spec player_full(User.t()) :: String.t()
+  def player_full(user) do
+    "{name} is here."
+    |> template(%{name: user_name(user)})
+  end
+
+  @doc """
   Format NPC text for who is in the room
 
   Example:
