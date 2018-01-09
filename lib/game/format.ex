@@ -127,9 +127,7 @@ defmodule Game.Format do
 #{map}
 
 #{who_is_here(room)}
-Exits: #{exits(room)}
-Items: #{items(room, items)}
-#{shops(room)}
+#{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
     """
     |> String.trim
   end
@@ -186,6 +184,14 @@ Items: #{items(room, items)}
 
   defp join(str1, str2, joiner) do
     Enum.join([str1, str2] |> Enum.reject(&(&1 == "")), joiner)
+  end
+
+  defp maybe_exits(room) do
+    case room |> Room.exits() do
+      [] -> ""
+      _ ->
+        "Exits: #{exits(room)}\n"
+    end
   end
 
   defp exits(room) do
@@ -273,6 +279,11 @@ Items: #{items(room, items)}
     |> template(%{name: npc_name(npc), status_line: npc_status(npc)})
   end
 
+  def maybe_items(_room, []), do: ""
+  def maybe_items(room, items) do
+    "Items: #{items(room, items)}\n"
+  end
+
   def items(room, items) when is_list(items) do
     items = items |> Enum.map(&item_name/1)
 
@@ -295,7 +306,7 @@ Items: #{items(room, items)}
   Example:
 
       iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]})
-      "Shops: {magenta}Hole in the Wall{/magenta}"
+      "Shops: {magenta}Hole in the Wall{/magenta}\\n"
 
       iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]}, label: false)
       "  - {magenta}Hole in the Wall{/magenta}"
@@ -312,7 +323,7 @@ Items: #{items(room, items)}
     shops = shops
     |> Enum.map(fn (shop) -> "{magenta}#{shop.name}{/magenta}" end)
     |> Enum.join(", ")
-    "Shops: #{shops}"
+    "Shops: #{shops}\n"
   end
   def shops(_, _), do: ""
 
