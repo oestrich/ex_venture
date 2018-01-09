@@ -18,6 +18,19 @@ defmodule Game.Format do
   alias Game.Door
 
   @doc """
+  Template a string
+
+      iex> Game.Format.template("{name} says hello", %{name: "Player"})
+      "Player says hello"
+  """
+  def template(string, map) do
+    map
+    |> Enum.reduce(string, fn ({key, val}, string) ->
+      String.replace(string, "{#{key}}", val)
+    end)
+  end
+
+  @doc """
   Format a channel message
 
   Example:
@@ -230,13 +243,26 @@ Items: #{items(room, items)}
   @spec npcs(room :: Game.Room.t) :: String.t
   def npcs(%{npcs: npcs}) do
     npcs
-    |> Enum.map(fn (npc) ->
-      npc.status_line
-      |> String.replace("{name}", name({:npc, npc}))
-    end)
+    |> Enum.map(&npc_status/1)
     |> Enum.join(" ")
   end
   def npcs(_), do: ""
+
+  @doc """
+  The status of an NPC
+  """
+  def npc_status(npc) do
+    template(npc.status_line, %{name: npc_name(npc)})
+  end
+
+  @doc """
+  Look at an NPC
+  """
+  @spec npc_full(Npc.t()) :: String.t()
+  def npc_full(npc) do
+    npc.description
+    |> template(%{name: npc_name(npc), status_line: npc_status(npc)})
+  end
 
   def items(room, items) when is_list(items) do
     items = items |> Enum.map(&item_name/1)
@@ -495,14 +521,22 @@ Items: #{items(room, items)}
     "{yellow}Bandit{/yellow}"
   """
   @spec target_name({atom, map}) :: String.t
-  def target_name({:npc, npc}) do
-    "{yellow}#{npc.name}{/yellow}"
-  end
-  def target_name({:user, user}) do
-    "{blue}#{user.name}{/blue}"
-  end
+  def target_name({:npc, npc}), do: npc_name(npc)
+  def target_name({:user, user}), do: user_name(user)
 
   def name(who), do: target_name(who)
+
+  @doc """
+  Colorize a user's name
+  """
+  @spec user_name(User.t()) :: String.t()
+  def user_name(user), do: "{blue}#{user.name}{/blue}"
+
+  @doc """
+  Colorize an npc's name
+  """
+  @spec npc_name(NPC.t()) :: String.t()
+  def npc_name(npc), do: "{yellow}#{npc.name}{/yellow}"
 
   @doc """
   Format an items name, cyan
@@ -589,7 +623,7 @@ Items: #{items(room, items)}
   def list_mail(mail) do
     mail
     |> Enum.map(fn (mail) ->
-      "#{mail.id} - #{name({:user, mail.sender})} - #{mail.title}"
+      "#{mail.id} - #{user_name(mail.sender)} - #{mail.title}"
     end)
     |> Enum.join("\n")
   end
@@ -602,7 +636,7 @@ Items: #{items(room, items)}
   """
   @spec display_mail(Mail.t()) :: String.t()
   def display_mail(mail) do
-    title = "#{mail.id} - #{name({:user, mail.sender})} - #{mail.title}"
+    title = "#{mail.id} - #{user_name(mail.sender)} - #{mail.title}"
     "#{title}\n#{underline(title)}\n\n#{mail.body}"
   end
 end

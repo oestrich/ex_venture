@@ -7,8 +7,10 @@ defmodule Game.Command.Look do
   use Game.Zone
 
   alias Data.Exit
+  alias Game.Item
   alias Game.Items
   alias Game.Session.GMCP
+  alias Game.Utility
 
   commands ["look at", {"look", ["l"]}]
 
@@ -59,25 +61,42 @@ defmodule Game.Command.Look do
 
     :ok
   end
-  def run({item_name}, _session, %{socket: socket, save: %{room_id: room_id}}) do
+  def run({name}, _session, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
-    item =
-      room.items
-      |> Enum.find_value(fn (instance) ->
-        item = Items.item(instance)
-        if Game.Item.matches_lookup?(item, item_name), do: item
-      end)
-
-    case item do
-      nil -> nil
-      item ->
-        socket |> @socket.echo(Format.item(item))
-    end
+    room
+    |> maybe_look_item(name, state)
+    |> maybe_look_npc(name, state)
 
     :ok
   end
 
   defp room_items(%{items: nil}), do: []
   defp room_items(%{items: items}), do: Enum.map(items, &Items.item/1)
+
+  defp maybe_look_item(room, item_name, %{socket: socket}) do
+    item =
+      room.items
+      |> Items.items_keep_instance()
+      |> Item.find_item(item_name)
+
+    case item do
+      nil -> room
+      {_instance, item} ->
+        socket |> @socket.echo(Format.item(item))
+        :ok
+    end
+  end
+
+  defp maybe_look_npc(:ok, _name, _state), do: :ok
+  defp maybe_look_npc(room, npc_name, %{socket: socket}) do
+    npc = room.npcs |> Enum.find(&(Utility.matches?(&1, npc_name)))
+
+    case npc do
+      nil -> room
+      npc ->
+        socket |> @socket.echo(Format.npc_full(npc))
+        :ok
+    end
+  end
 end

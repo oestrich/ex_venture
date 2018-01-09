@@ -243,6 +243,8 @@ defmodule TestHelpers do
       currency: 0,
       item_ids: [],
       events: [],
+      status_line: "{name} is here.",
+      description: "{status_line}",
       stats: %{
         health: 25,
         max_health: 25,

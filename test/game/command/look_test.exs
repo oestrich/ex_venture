@@ -10,8 +10,15 @@ defmodule Game.Command.LookTest do
     start_and_clear_items()
     item = create_item(%{name: "Short Sword", description: "A simple blade", keywords: ["sword"]})
     insert_item(item)
-    @room.set_room(Map.merge(@room._room(), %{items: [Item.instantiate(item)]}))
+
+    room = %{
+      items: [Item.instantiate(item)],
+      npcs: [npc_attributes(%{id: 1, name: "Bandit", description: "bandit description"})],
+    }
+    @room.set_room(Map.merge(@room._room(), room))
+
     @socket.clear_messages
+
     {:ok, %{session: :session, socket: :socket}}
   end
 
@@ -31,6 +38,13 @@ defmodule Game.Command.LookTest do
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(A simple blade), look)
+  end
+
+  test "looking at an npc", %{session: session, socket: socket} do
+    Game.Command.Look.run({"bandit"}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(bandit description), look)
   end
 
   test "looking in a direction", %{session: session, socket: socket} do
