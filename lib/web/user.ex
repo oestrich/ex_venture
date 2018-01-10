@@ -69,7 +69,7 @@ defmodule Web.User do
   def get(id) do
     User
     |> where([u], u.id == ^id)
-    |> preload([:class, :race, sessions: ^(from s in User.Session, order_by: [desc: s.started_at])])
+    |> preload([:class, :race, sessions: ^(from s in User.Session, order_by: [desc: s.started_at], limit: 10)])
     |> Repo.one()
   end
 
