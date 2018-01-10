@@ -68,6 +68,7 @@ defmodule Game.Command.Look do
     |> maybe_look_item(name, state)
     |> maybe_look_npc(name, state)
     |> maybe_look_player(name, state)
+    |> could_not_find(name, state)
 
     :ok
   end
@@ -111,5 +112,11 @@ defmodule Game.Command.Look do
         socket |> @socket.echo(Format.player_full(player))
         :ok
     end
+  end
+
+  defp could_not_find(:ok, _name, _state), do: :ok
+  defp could_not_find(_, name, %{socket: socket}) do
+    socket |> @socket.echo("Could not find \"#{name}\"")
+    :ok
   end
 end

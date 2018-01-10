@@ -61,4 +61,11 @@ defmodule Game.Command.LookTest do
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Hallway), look)
   end
+
+  test "could not find the name", %{session: session, socket: socket} do
+    Game.Command.Look.run({"unknown"}, session, %{socket: socket, save: %{room_id: 1}})
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(Could not find), look)
+  end
 end
