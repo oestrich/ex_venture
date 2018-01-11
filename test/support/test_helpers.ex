@@ -1,5 +1,5 @@
 defmodule TestHelpers do
-  alias Data.Repo
+  alias Data.Bug
   alias Data.Class
   alias Data.Config
   alias Data.Exit
@@ -12,6 +12,7 @@ defmodule TestHelpers do
   alias Data.NPCItem
   alias Data.NPCSpawner
   alias Data.Race
+  alias Data.Repo
   alias Data.Room
   alias Data.RoomItem
   alias Data.Shop
@@ -309,6 +310,12 @@ defmodule TestHelpers do
   def create_mail(sender, receiver, params) do
     %Mail{}
     |> Mail.changeset(Map.merge(params, %{sender_id: sender.id, receiver_id: receiver.id}))
+    |> Repo.insert!
+  end
+
+  def create_bug(reporter, params) do
+    %Bug{}
+    |> Bug.changeset(Map.merge(params, %{reporter_id: reporter.id}))
     |> Repo.insert!
   end
 end

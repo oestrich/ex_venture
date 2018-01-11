@@ -7,31 +7,49 @@ defmodule Web.Bug do
 
   alias Data.Bug
   alias Data.Repo
+  alias Web.Filter
   alias Web.Pagination
+
+  @behaviour Filter
 
   @doc """
   Get all bugs
   """
-  @spec all(opts :: Keyword.t) :: [Bug.t]
+  @spec all(Keyword.t()) :: [Bug.t()]
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
 
-    query =
-      Bug
-      |> order_by([b], desc: b.id)
-      |> preload([:reporter])
+    Bug
+    |> order_by([b], desc: b.id)
+    |> preload([:reporter])
+    |> Filter.filter(opts[:filter], __MODULE__)
+    |> Pagination.paginate(opts)
+  end
 
-    query |> Pagination.paginate(opts)
+  @impl Filter
+  def filter_on_attribute({"is_completed", is_completed}, query) do
+    query |> where([b], b.is_completed == ^is_completed)
   end
 
   @doc """
   Get a bug
   """
-  @spec get(id :: integer) :: [Class.t]
+  @spec get(integer()) :: [Bug.t()]
   def get(id) do
     Bug
     |> where([b], b.id == ^id)
     |> preload([:reporter])
     |> Repo.one
+  end
+
+  @doc """
+  Mark a bug as completed
+  """
+  @spec complete(integer()) :: {:ok, Bug.t()}
+  def complete(bug_id) do
+    bug_id
+    |> get()
+    |> Bug.completed_changeset(%{is_completed: true})
+    |> Repo.update()
   end
 end

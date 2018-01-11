@@ -48,7 +48,9 @@ defmodule Web.Router do
 
     get "/", DashboardController, :index
 
-    resources "/bugs", BugController, only: [:index, :show]
+    resources "/bugs", BugController, only: [:index, :show] do
+      post "/complete", BugController, :complete, as: :complete
+    end
 
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
       resources "/skills", SkillController, only: [:new, :create]

@@ -28,6 +28,10 @@
               <td><%= @bug.title %></td>
             </tr>
             <tr>
+              <th>Is Completed?</th>
+              <td><%= @bug.is_completed %></td>
+            </tr>
+            <tr>
               <th>Body</th>
               <td><%= @bug.body %></td>
             </tr>

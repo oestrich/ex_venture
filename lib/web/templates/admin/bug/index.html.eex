@@ -15,7 +15,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-9">
       <div class="box">
         <div class="box-body">
           <table class="table">
@@ -24,6 +24,7 @@
                 <th>ID</th>
                 <th>Title</th>
                 <th>Reporter</th>
+                <th>Is Completed?</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -33,8 +34,10 @@
                   <td><%= bug.id %></td>
                   <td><%= bug.title %></td>
                   <td><%= link(bug.reporter.name, to: user_path(@conn, :show, bug.reporter.id)) %></td>
+                  <td><%= bug.is_completed %></td>
                   <td>
                     <%= link("View", to: bug_path(@conn, :show, bug.id), class: "btn btn-default btn-xs") %>
+                    <%= button("Mark Complete", to: bug_complete_path(@conn, :complete, bug.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>
@@ -43,6 +46,27 @@
 
           <%= render(SharedView, "_pagination.html", path: bug_path(@conn, :index), pagination: @pagination) %>
         </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Filter</h3>
+        </div>
+        <%= form_tag bug_path(@conn, :index), method: :get do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :bug, :is_completed %>
+              <%= select :bug, :is_completed, [{"True", true}, {"False", false}], prompt: "Any", value: @filter["is_completed"], class: "form-control" %>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Filter", class: "btn btn-primary" %>
+            <%= link "Clear", to: bug_path(@conn, :index), class: "btn" %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

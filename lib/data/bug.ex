@@ -10,6 +10,7 @@ defmodule Data.Bug do
   schema "bugs" do
     field :title, :string
     field :body, :string
+    field :is_completed, :boolean, default: false
 
     belongs_to :reporter, User
 
@@ -21,5 +22,11 @@ defmodule Data.Bug do
     |> cast(params, [:title, :body, :reporter_id])
     |> validate_required([:title, :reporter_id])
     |> foreign_key_constraint(:reporter_id)
+  end
+
+  def completed_changeset(struct, params) do
+    struct
+    |> cast(params, [:is_completed])
+    |> validate_required([:is_completed])
   end
 end

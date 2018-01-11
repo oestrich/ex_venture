@@ -5,14 +5,24 @@ defmodule Web.Admin.BugController do
 
   plug Web.Plug.FetchPage when action in [:index]
 
-  def index(conn, _params) do
+  def index(conn, params) do
     %{page: page, per: per} = conn.assigns
-    %{page: bugs, pagination: pagination} = Bug.all(page: page, per: per)
-    conn |> render("index.html", bugs: bugs, pagination: pagination)
+    filter = Map.get(params, "bug", %{})
+    %{page: bugs, pagination: pagination} = Bug.all(filter: filter, page: page, per: per)
+    conn |> render("index.html", bugs: bugs, filter: filter, pagination: pagination)
   end
 
   def show(conn, %{"id" => id}) do
     bug = Bug.get(id)
     conn |> render("show.html", bug: bug)
+  end
+
+  def complete(conn, %{"bug_id" => id}) do
+    case Bug.complete(id) do
+      {:ok, bug} ->
+        conn |> redirect(to: bug_path(conn, :show, bug))
+      _ ->
+        conn |> redirect(to: bug_path(conn, :index))
+    end
   end
 end
