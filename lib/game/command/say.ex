@@ -31,4 +31,5 @@ defmodule Game.Command.Say do
     room_id |> @room.say(session, Message.new(user, message))
     :ok
   end
+  def run({}, _session, _), do: :ok
 end
