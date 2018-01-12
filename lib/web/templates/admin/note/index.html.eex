@@ -36,7 +36,7 @@
               <%= Enum.map @notes, fn (note) -> %>
                 <tr>
                   <td><%= note.id %></td>
-                  <td><%= note.name %></td>
+                  <td><%= link(note.name, to: note_path(@conn, :show, note.id)) %></td>
                   <td>
                     <%= Enum.map(note.tags, fn (tag) -> %>
                       <span class="label label-info"><%= tag %></span>
