@@ -8,6 +8,7 @@ defmodule TestHelpers do
   alias Data.ItemAspect
   alias Data.ItemAspecting
   alias Data.Mail
+  alias Data.Note
   alias Data.NPC
   alias Data.NPCItem
   alias Data.NPCSpawner
@@ -317,5 +318,19 @@ defmodule TestHelpers do
     %Bug{}
     |> Bug.changeset(Map.merge(params, %{reporter_id: reporter.id}))
     |> Repo.insert!
+  end
+
+  def create_note(params) do
+    %Note{}
+    |> Note.changeset(note_attributes(params))
+    |> Repo.insert!
+  end
+
+  def note_attributes(params) do
+    Map.merge(%{
+      name: "Gods",
+      body: "There are gods in this world.",
+      tags: ["gods", "magic"],
+    }, params)
   end
 end

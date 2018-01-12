@@ -72,6 +72,8 @@ defmodule Web.Router do
 
     resources "/item_aspectings", ItemAspectingController, only: [:delete]
 
+    resources "/notes", NoteController, only: [:index, :show, :new, :create, :edit, :update]
+
     resources "/npcs", NPCController, only: [:index, :show, :edit, :update, :new, :create] do
       resources "/items", NPCItemController, only: [:new, :create], as: :item
 

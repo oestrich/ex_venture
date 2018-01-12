@@ -1,0 +1,80 @@
+<section class="content-header">
+  <h1>
+    Notes
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Notes</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-9">
+      <div class="box">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Note", to: note_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Tags</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @notes, fn (note) -> %>
+                <tr>
+                  <td><%= note.id %></td>
+                  <td><%= note.name %></td>
+                  <td>
+                    <%= Enum.map(note.tags, fn (tag) -> %>
+                      <span class="label label-info"><%= tag %></span>
+                    <% end) %>
+                  </td>
+                  <td>
+                    <%= link("View", to: note_path(@conn, :show, note.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: note_path(@conn, :edit, note.id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+          <%= render(SharedView, "_pagination.html", path: note_path(@conn, :index), pagination: @pagination) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Filter</h3>
+        </div>
+        <%= form_tag note_path(@conn, :index), method: :get do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :note, :tag %>
+              <%= text_input :note, :tag, value: @filter["tag"], class: "form-control" %>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Filter", class: "btn btn-primary" %>
+            <%= link "Clear", to: note_path(@conn, :index), class: "btn" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

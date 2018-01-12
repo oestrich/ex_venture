@@ -52,6 +52,7 @@ defmodule ExVenture.Mixfile do
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:distillery, "~> 1.4", runtime: false},
+      {:earmark, "~> 1.2.3"},
       {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:logger_file_backend, "~> 0.0.10"},
