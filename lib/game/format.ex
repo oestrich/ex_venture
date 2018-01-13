@@ -97,6 +97,16 @@ defmodule Game.Format do
   end
 
   @doc """
+  Format a tell message, for display of the sender
+
+      iex> Game.Format.send_tell(%{name: "Player"}, "secret message")
+      ~s[You tell {blue}Player{/blue}, {green}"secret message"{/green}]
+  """
+  def send_tell(player, message) do
+    ~s[You tell #{player_name(player)}, {green}"#{message}"{/green}]
+  end
+
+  @doc """
   Format an emote message
 
   Example:
@@ -244,7 +254,7 @@ defmodule Game.Format do
   @spec player_full(User.t()) :: String.t()
   def player_full(user) do
     "{name} is here."
-    |> template(%{name: user_name(user)})
+    |> template(%{name: player_name(user)})
   end
 
   @doc """
@@ -542,15 +552,15 @@ defmodule Game.Format do
   """
   @spec target_name({atom, map}) :: String.t
   def target_name({:npc, npc}), do: npc_name(npc)
-  def target_name({:user, user}), do: user_name(user)
+  def target_name({:user, user}), do: player_name(user)
 
   def name(who), do: target_name(who)
 
   @doc """
   Colorize a user's name
   """
-  @spec user_name(User.t()) :: String.t()
-  def user_name(user), do: "{blue}#{user.name}{/blue}"
+  @spec player_name(User.t()) :: String.t()
+  def player_name(user), do: "{blue}#{user.name}{/blue}"
 
   @doc """
   Colorize an npc's name
@@ -643,7 +653,7 @@ defmodule Game.Format do
   def list_mail(mail) do
     mail
     |> Enum.map(fn (mail) ->
-      "#{mail.id} - #{user_name(mail.sender)} - #{mail.title}"
+      "#{mail.id} - #{player_name(mail.sender)} - #{mail.title}"
     end)
     |> Enum.join("\n")
   end
@@ -656,7 +666,7 @@ defmodule Game.Format do
   """
   @spec display_mail(Mail.t()) :: String.t()
   def display_mail(mail) do
-    title = "#{mail.id} - #{user_name(mail.sender)} - #{mail.title}"
+    title = "#{mail.id} - #{player_name(mail.sender)} - #{mail.title}"
     "#{title}\n#{underline(title)}\n\n#{mail.body}"
   end
 end

@@ -60,6 +60,7 @@ defmodule Game.Command.Tell do
       nil ->
         socket |> @socket.echo(~s["#{player_name}" is not online])
       {_, user} ->
+        socket |> @socket.echo(Format.send_tell(user, message))
         Channel.tell(user, from, Format.tell(from, message))
     end
 
