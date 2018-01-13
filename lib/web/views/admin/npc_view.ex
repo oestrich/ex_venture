@@ -31,6 +31,13 @@ defmodule Web.Admin.NPCView do
     end
   end
 
+  def conversations(changeset) do
+    case get_field(changeset, :conversations) do
+      nil -> [] |> Poison.encode!(pretty: true)
+      conversations -> conversations |> Poison.encode!(pretty: true)
+    end
+  end
+
   def custom_name?(%{name: name}) do
     name != "" && !is_nil(name)
   end

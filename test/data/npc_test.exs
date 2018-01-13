@@ -1,6 +1,7 @@
 defmodule Data.NPCTest do
   use Data.ModelCase
 
+  alias Data.Conversation
   alias Data.NPC
 
   test "validates stats" do
@@ -26,6 +27,20 @@ defmodule Data.NPCTest do
 
     changeset = %NPC{} |> NPC.changeset(%{events: [%{type: "room/entered"}]})
     assert changeset.errors[:events]
+  end
+
+  test "validate conversations" do
+    changeset = %NPC{} |> NPC.changeset(%{})
+    refute changeset.errors[:conversations]
+
+    changeset = %NPC{} |> NPC.changeset(%{conversations: []})
+    assert changeset.errors[:conversations]
+
+    changeset = %NPC{} |> NPC.changeset(%{conversations: [%Conversation{key: "start", message: "Hi"}]})
+    refute changeset.errors[:conversations]
+
+    changeset = %NPC{} |> NPC.changeset(%{conversations: [%Conversation{key: "end", message: nil}]})
+    assert changeset.errors[:conversations]
   end
 
   test "validates status line has a period and a name" do

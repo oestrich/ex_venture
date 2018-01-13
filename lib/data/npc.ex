@@ -5,6 +5,7 @@ defmodule Data.NPC do
 
   use Data.Schema
 
+  alias Data.Conversation
   alias Data.Event
   alias Data.Stats
   alias Data.NPCItem
@@ -16,6 +17,7 @@ defmodule Data.NPC do
     field :experience_points, :integer, default: 0 # given after defeat
     field :stats, Data.Stats
     field :events, {:array, Event}
+    field :conversations, {:array, Conversation}
     field :notes, :string
     field :tags, {:array, :string}, default: []
     field :status_line, :string, default: "{name} is here."
@@ -31,10 +33,11 @@ defmodule Data.NPC do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :notes, :tags, :events, :status_line, :description])
+    |> cast(params, [:name, :level, :experience_points, :stats, :currency, :notes, :tags, :events, :conversations, :status_line, :description])
     |> validate_required([:name, :level, :experience_points, :stats, :currency, :tags, :events, :status_line, :description])
     |> validate_stats()
     |> Event.validate_events()
+    |> Conversation.validate_conversations()
     |> validate_status_line()
   end
 

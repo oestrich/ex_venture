@@ -5,6 +5,7 @@ defmodule Web.NPC do
 
   import Ecto.Query
 
+  alias Data.Conversation
   alias Data.Event
   alias Data.NPC
   alias Data.NPCItem
@@ -108,6 +109,7 @@ defmodule Web.NPC do
     params
     |> parse_stats()
     |> parse_events()
+    |> parse_conversations()
     |> parse_tags()
   end
 
@@ -147,6 +149,28 @@ defmodule Web.NPC do
       |> Enum.reject(&is_nil/1)
 
     Map.put(params, "events", events)
+  end
+
+  defp parse_conversations(params = %{"conversations" => conversations}) do
+    case Poison.decode(conversations) do
+      {:ok, conversations} -> conversations |> cast_conversations(params)
+      _ -> params
+    end
+  end
+  defp parse_conversations(params), do: params
+
+  defp cast_conversations(conversations, params) do
+    conversations =
+      conversations
+      |> Enum.map(fn (conversation) ->
+        case Conversation.load(conversation) do
+          {:ok, conversation} -> conversation
+          _ -> nil
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
+
+    Map.put(params, "conversations", conversations)
   end
 
   def parse_tags(params = %{"tags" => tags}) do

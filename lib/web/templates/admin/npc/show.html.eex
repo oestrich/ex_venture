@@ -70,6 +70,10 @@
               <th>Events</th>
               <td><pre><%= @npc.events |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
+            <tr>
+              <th>Conversations</th>
+              <td><pre><%= @npc.conversations |> Poison.encode!(pretty: true) %></pre></td>
+            </tr>
           </table>
         </div>
       </div>
