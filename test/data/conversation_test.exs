@@ -15,13 +15,13 @@ defmodule Data.ConversationTest do
 
     test "each key must be present" do
       conversations = [
-        %Conversation{key: "start", message: "Hi", listen: [%{phrase: "yes", key: "continue"}]},
+        %Conversation{key: "start", message: "Hi", listeners: [%{phrase: "yes", key: "continue"}]},
         %Conversation{key: "continue", message: "Hi"},
       ]
       assert Conversation.valid_conversations?(conversations)
 
       conversations = [
-        %Conversation{key: "start", message: "Hi", listen: [%{phrase: "yes", key: "continue"}]},
+        %Conversation{key: "start", message: "Hi", listeners: [%{phrase: "yes", key: "continue"}]},
       ]
       refute Conversation.valid_conversations?(conversations)
     end

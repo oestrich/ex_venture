@@ -7,7 +7,7 @@ defmodule Data.Conversation do
   import Ecto.Changeset
 
   @enforce_keys [:key, :message]
-  defstruct [:key, :message, :unknown, listen: []]
+  defstruct [:key, :message, :unknown, listeners: []]
 
   @type t() :: map()
 
@@ -28,26 +28,26 @@ defmodule Data.Conversation do
       iex> Data.Conversation.load(%{"key" => "start", "message" => "How are you?"})
       {:ok, %Data.Conversation{key: "start", message: "How are you?"}}
 
-      iex> Data.Conversation.load(%{"key" => "start", "message" => "How are you?", "listen" => [%{"phrase" => "good", "key" => "next"}]})
-      {:ok, %Data.Conversation{key: "start", message: "How are you?", listen: [%{phrase: "good", key: "next"}]}}
+      iex> Data.Conversation.load(%{"key" => "start", "message" => "How are you?", "listeners" => [%{"phrase" => "good", "key" => "next"}]})
+      {:ok, %Data.Conversation{key: "start", message: "How are you?", listeners: [%{phrase: "good", key: "next"}]}}
   """
   @impl Ecto.Type
   def load(conversation) do
     conversation = for {key, val} <- conversation, into: %{}, do: {String.to_atom(key), val}
-    conversation = conversation |> load_listen()
+    conversation = conversation |> load_listeners()
     {:ok, struct(__MODULE__, conversation)}
   end
 
-  defp load_listen(event = %{listen: listen}) when listen != nil do
-    listen =
-      listen
+  defp load_listeners(event = %{listeners: listeners}) when listeners != nil do
+    listeners =
+      listeners
       |> Enum.map(fn (map) ->
         for {key, val} <- map, into: %{}, do: {String.to_atom(key), val}
       end)
 
-    %{event | listen: listen}
+    %{event | listeners: listeners}
   end
-  defp load_listen(event), do: event
+  defp load_listeners(event), do: event
 
   @impl Ecto.Type
   def dump(conversation) when is_map(conversation) do
@@ -73,11 +73,11 @@ defmodule Data.Conversation do
 
   Listen is validated, must have `phrase` and `key` if present
 
-      iex> Data.Conversation.valid?(%{key: "start", message: "hi", listen: []})
+      iex> Data.Conversation.valid?(%{key: "start", message: "hi", listeners: []})
       true
-      iex> Data.Conversation.valid?(%{key: "start", message: "hi", listen: [%{phrase: "hi", key: "next"}]})
+      iex> Data.Conversation.valid?(%{key: "start", message: "hi", listeners: [%{phrase: "hi", key: "next"}]})
       true
-      iex> Data.Conversation.valid?(%{key: "start", message: "hi", listen: [%{phrase: "hi"}]})
+      iex> Data.Conversation.valid?(%{key: "start", message: "hi", listeners: [%{phrase: "hi"}]})
       false
 
       iex> Data.Conversation.valid?(%{key: "start"})
@@ -85,17 +85,17 @@ defmodule Data.Conversation do
   """
   @spec valid?(conversation :: t) :: boolean
   def valid?(conversation) do
-    Enum.all?(keys(conversation), fn (key) -> key in [:key, :message, :listen, :unknown] end) &&
+    Enum.all?(keys(conversation), fn (key) -> key in [:key, :message, :listeners, :unknown] end) &&
       Enum.all?([:key, :message], fn (key) -> key in keys(conversation) end) &&
-      valid_listen?(conversation)
+      valid_listeners?(conversation)
   end
 
-  def valid_listen?(%{listen: listens}) do
-    Enum.all?(listens, fn (listen) ->
-      keys(listen) == [:key, :phrase]
+  def valid_listeners?(%{listeners: listeners}) do
+    Enum.all?(listeners, fn (listener) ->
+      keys(listener) == [:key, :phrase]
     end)
   end
-  def valid_listen?(_), do: true
+  def valid_listeners?(_), do: true
 
   @doc """
   Validate conversations of the NPC
@@ -133,9 +133,9 @@ defmodule Data.Conversation do
 
   defp keys_are_all_included?(conversations) do
     Enum.all?(conversations, fn (conversation) ->
-      Enum.all?(conversation.listen, fn (listen) ->
+      Enum.all?(conversation.listeners, fn (listener) ->
         Enum.any?(conversations, fn (conversation) ->
-          listen.key == conversation.key
+          listener.key == conversation.key
         end)
       end)
     end)
