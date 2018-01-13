@@ -63,7 +63,7 @@ defmodule Game.Session.Login do
     state |> GMCP.character()
 
     Enum.each(user.save.channels, &Channel.join/1)
-    Channel.join_tell(user)
+    Channel.join_tell({:user, user})
 
     state
     |> Map.put(:state, "active")

@@ -3,6 +3,7 @@ defmodule Game.SessionTest do
   use Data.ModelCase
 
   alias Game.Command
+  alias Game.Message
   alias Game.Session
   alias Game.Session.Process
   alias Game.Session.State
@@ -362,10 +363,13 @@ defmodule Game.SessionTest do
     end
 
     test "receiving a tell", %{socket: socket, from: from} do
-      {:noreply, state} = Process.handle_info({:channel, {:tell, from, "howdy"}}, %{socket: socket})
+      message = Message.tell(from, "howdy")
 
-      assert @socket.get_echos() == [{socket, "howdy"}]
-      assert state.reply_to == from
+      {:noreply, state} = Process.handle_info({:channel, {:tell, {:user, from}, message}}, %{socket: socket})
+
+      [{^socket, tell}] = @socket.get_echos()
+      assert Regex.match?(~r/howdy/, tell)
+      assert state.reply_to == {:user, from}
     end
 
     test "receiving a join" do

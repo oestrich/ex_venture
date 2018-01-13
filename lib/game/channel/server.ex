@@ -69,9 +69,9 @@ defmodule Game.Channel.Server do
 
   A message will be sent to the user's session in the form of `{:channel, {:tell, from, message}}`.
   """
-  @spec tell(Channel.state(), User.t(), User.t(), Message.t()) :: :ok
-  def tell(%{tells: tells}, user, from, message) do
-    case tells |> Map.get("tells:#{user.id}", nil) do
+  @spec tell(Channel.state(), Character.t(), Character.t(), Message.t()) :: :ok
+  def tell(%{tells: tells}, {type, who}, from, message) do
+    case tells |> Map.get("tells:#{type}:#{who.id}", nil) do
       nil -> nil
       pid -> send(pid, {:channel, {:tell, from, message}})
     end

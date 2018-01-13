@@ -60,8 +60,8 @@ defmodule Game.Command.Tell do
       nil ->
         socket |> @socket.echo(~s["#{player_name}" is not online])
       {_, user} ->
-        socket |> @socket.echo(Format.send_tell(user, message))
-        Channel.tell(user, from, Format.tell(from, message))
+        socket |> @socket.echo(Format.send_tell({:user, user}, message))
+        Channel.tell({:user, user}, {:user, from}, Message.tell(from, message))
     end
 
     :ok
@@ -74,15 +74,16 @@ defmodule Game.Command.Tell do
   defp reply_to(_message, %{socket: socket, reply_to: nil}) do
     socket |> @socket.echo("There is no one to reply to.")
   end
-  defp reply_to(message, %{socket: socket, user: from, reply_to: reply_to}) do
+  defp reply_to(message, %{socket: socket, user: from, reply_to: {:user, reply_to}}) do
     player = Session.Registry.connected_players()
-    |> Enum.find(fn ({_, player}) -> player == reply_to end)
+    |> Enum.find(fn ({_, player}) -> player.id == reply_to.id end)
 
     case player do
       nil ->
         socket |> @socket.echo(~s["#{reply_to.name}" is not online])
       _ ->
-        Channel.tell(reply_to, from, Format.tell(from, message))
+        socket |> @socket.echo(Format.send_tell({:user, reply_to}, message))
+        Channel.tell({:user, reply_to}, {:user, from}, Message.tell(from, message))
     end
   end
 end

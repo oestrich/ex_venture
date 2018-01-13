@@ -4,6 +4,7 @@ defmodule Game.Command.TellTest do
 
   alias Game.Channel
   alias Game.Command.Tell
+  alias Game.Message
   alias Game.Session
 
   @socket Test.Networking.Socket
@@ -14,12 +15,12 @@ defmodule Game.Command.TellTest do
   end
 
   test "send a tell", %{session: session, socket: socket, user: user} do
-    Channel.join_tell(user)
+    Channel.join_tell({:user, user})
     Session.Registry.register(user)
 
     :ok = Tell.run({"tell", "player hello"}, session, %{socket: socket, user: user})
 
-    assert_receive {:channel, {:tell, ^user, ~s[{blue}Player{/blue} tells you, {green}"hello"{/green}]}}
+    assert_receive {:channel, {:tell, {:user, ^user}, %Message{message: "hello"}}}
   end
 
   test "send a tell - player not found", %{session: session, socket: socket, user: user} do
@@ -30,16 +31,16 @@ defmodule Game.Command.TellTest do
   end
 
   test "send a reply", %{session: session, socket: socket, user: user} do
-    Channel.join_tell(user)
+    Channel.join_tell({:user, user})
     Session.Registry.register(user)
 
-    :ok = Tell.run({"reply", "howdy"}, session, %{socket: socket, user: user, reply_to: user})
+    :ok = Tell.run({"reply", "howdy"}, session, %{socket: socket, user: user, reply_to: {:user, user}})
 
-    assert_receive {:channel, {:tell, ^user, ~s[{blue}Player{/blue} tells you, {green}"howdy"{/green}]}}
+    assert_receive {:channel, {:tell, {:user, ^user}, %Message{message: "howdy"}}}
   end
 
   test "send a reply - player not online", %{session: session, socket: socket, user: user} do
-    :ok = Tell.run({"reply", "howdy"}, session, %{socket: socket, user: user, reply_to: user})
+    :ok = Tell.run({"reply", "howdy"}, session, %{socket: socket, user: user, reply_to: {:user, user}})
 
     [{^socket, echo}] = @socket.get_echos()
     assert Regex.match?(~r(not online), echo)

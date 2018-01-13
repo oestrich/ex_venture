@@ -89,21 +89,21 @@ defmodule Game.Format do
   @doc """
   Format a tell message
 
-      iex> Game.Format.tell(%{name: "Player"}, "secret message")
+      iex> Game.Format.tell({:user, %{name: "Player"}}, "secret message")
       ~s[{blue}Player{/blue} tells you, {green}"secret message"{/green}]
   """
-  def tell(%{name: name}, message) do
-    ~s[{blue}#{name}{/blue} tells you, {green}"#{message}"{/green}]
+  def tell(sender, message) do
+    ~s[#{name(sender)} tells you, {green}"#{message}"{/green}]
   end
 
   @doc """
   Format a tell message, for display of the sender
 
-      iex> Game.Format.send_tell(%{name: "Player"}, "secret message")
+      iex> Game.Format.send_tell({:user, %{name: "Player"}}, "secret message")
       ~s[You tell {blue}Player{/blue}, {green}"secret message"{/green}]
   """
-  def send_tell(player, message) do
-    ~s[You tell #{player_name(player)}, {green}"#{message}"{/green}]
+  def send_tell(character, message) do
+    ~s[You tell #{name(character)}, {green}"#{message}"{/green}]
   end
 
   @doc """

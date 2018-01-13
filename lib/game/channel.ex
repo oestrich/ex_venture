@@ -11,7 +11,7 @@ defmodule Game.Channel do
 
   use GenServer
 
-  alias Data.User
+  alias Game.Character
   alias Game.Message
   alias Game.Channel.Server
 
@@ -44,9 +44,9 @@ defmodule Game.Channel do
   @doc """
   Join the user's private tell channel
   """
-  @spec join_tell(User.t) :: :ok
-  def join_tell(user) do
-    GenServer.cast(__MODULE__, {:join_tell, self(), user})
+  @spec join_tell(Character.t()) :: :ok
+  def join_tell(character) do
+    GenServer.cast(__MODULE__, {:join_tell, self(), character})
   end
 
   @doc """
@@ -70,7 +70,7 @@ defmodule Game.Channel do
   @doc """
   Tell a message to a user
   """
-  @spec tell(User.t(), User.t(), Message.t()) :: :ok
+  @spec tell(Character.t(), Character.t(), Message.t()) :: :ok
   def tell(user, from, message) do
     GenServer.cast(__MODULE__, {:tell, user, from, message})
   end
@@ -107,8 +107,8 @@ defmodule Game.Channel do
     {:noreply, state}
   end
 
-  def handle_cast({:join_tell, pid, user}, state = %{tells: tells}) do
-    tells = Map.put(tells, "tells:#{user.id}", pid)
+  def handle_cast({:join_tell, pid, {type, who}}, state = %{tells: tells}) do
+    tells = Map.put(tells, "tells:#{type}:#{who.id}", pid)
     {:noreply, Map.put(state, :tells, tells)}
   end
 

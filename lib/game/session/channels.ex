@@ -44,7 +44,7 @@ defmodule Game.Session.Channels do
   """
   @spec tell(State.t(), Character.t(), Message.t()) :: State.t()
   def tell(state = %{socket: socket}, from, message) do
-    socket |> @socket.echo(message)
+    socket |> @socket.echo(message.formatted)
     Map.put(state, :reply_to, from)
   end
 end

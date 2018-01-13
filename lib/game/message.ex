@@ -15,7 +15,9 @@ defmodule Game.Message do
     formatted: String.t,
   }
 
-  def new(user, message) do
+  def new(user, message), do: say(user, message)
+
+  def say(user, message) do
     %__MODULE__{
       type: :user,
       sender: user,
@@ -33,8 +35,18 @@ defmodule Game.Message do
     }
   end
 
-  def npc_say(npc, message), do: npc(npc, message)
-  def npc(npc, message) do
+  def tell(user, message) do
+    %__MODULE__{
+      type: :user,
+      sender: user,
+      message: message,
+      formatted: Format.tell({:user, user}, message),
+    }
+  end
+
+  def npc(npc, message), do: npc_say(npc, message)
+
+  def npc_say(npc, message) do
     %__MODULE__{
       type: :npc,
       sender: npc,
@@ -49,6 +61,15 @@ defmodule Game.Message do
       sender: npc,
       message: message,
       formatted: Format.emote({:npc, npc}, message),
+    }
+  end
+
+  def npc_tell(npc, message) do
+    %__MODULE__{
+      type: :npc,
+      sender: npc,
+      message: message,
+      formatted: Format.tell({:npc, npc}, message),
     }
   end
 end
