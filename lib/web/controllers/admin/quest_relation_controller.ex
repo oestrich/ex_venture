@@ -17,4 +17,12 @@ defmodule Web.Admin.QuestRelationController do
         conn |> render("new.html", quest: quest, side: side, changeset: changeset)
     end
   end
+
+  def delete(conn, %{"id" => id, "quest_id" => quest_id}) do
+    quest = Quest.get(quest_id)
+    case Quest.delete_relation(id) do
+      {:ok, _relation} -> conn |> redirect(to: quest_path(conn, :show, quest.id))
+      {:error, _changeset} -> conn |> redirect(to: quest_path(conn, :show, quest.id))
+    end
+  end
 end

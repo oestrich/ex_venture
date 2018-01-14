@@ -84,6 +84,8 @@ defmodule Web.Router do
 
     resources "/npc_spawners", NPCSpawnerController, only: [:show, :edit, :update, :delete]
 
+    resources "/quest_relations", QuestRelationController, only: [:delete]
+
     resources "/quest_steps", QuestStepController, only: [:edit, :update]
 
     resources "/quests", QuestController, only: [:index, :show, :new, :create, :edit, :update] do

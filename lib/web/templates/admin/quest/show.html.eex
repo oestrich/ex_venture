@@ -110,9 +110,9 @@
           <div class="col-md-6">
             <h4>Parents</h4>
             <ul>
-              <%= Enum.map(@quest.parents, fn (quest) -> %>
+              <%= Enum.map(@quest.parent_relations, fn (quest_relation) -> %>
                 <li>
-                  <%= link(quest.name, to: quest_path(@conn, :show, quest.id)) %>
+                  <%= link(quest_relation.parent.name, to: quest_path(@conn, :show, quest_relation.parent.id)) %>
                 </li>
               <% end) %>
             </ul>
@@ -120,9 +120,12 @@
           <div class="col-md-6">
             <h4>Children</h4>
             <ul>
-              <%= Enum.map(@quest.children, fn (quest) -> %>
+              <%= Enum.map(@quest.child_relations, fn (quest_relation) -> %>
                 <li>
-                  <%= link(quest.name, to: quest_path(@conn, :show, quest.id)) %>
+                  <%= link(quest_relation.child.name, to: quest_path(@conn, :show, quest_relation.child.id)) %>
+                  <%= link(to: quest_relation_path(@conn, :delete, quest_relation.id, quest_id: @quest.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                    <i class="fa fa-times"></i>
+                  <% end %>
                 </li>
               <% end) %>
             </ul>

@@ -64,7 +64,7 @@ defmodule Web.Quest do
   def get(id) do
     Quest
     |> where([c], c.id == ^id)
-    |> preload([:giver, :parents, :children, quest_steps: [:item, :npc]])
+    |> preload([:giver, parent_relations: [:parent], child_relations: [:child], quest_steps: [:item, :npc]])
     |> Repo.one
   end
 
@@ -180,5 +180,15 @@ defmodule Web.Quest do
     |> Ecto.build_assoc(:parent_relations)
     |> QuestRelation.changeset(params)
     |> Repo.insert()
+  end
+
+  @doc """
+  Delete a quest relation
+  """
+  @spec delete_relation(integer()) :: {:ok, QuestRelation.t} | {:error, Ecto.Changeset.t()}
+  def delete_relation(id) do
+    QuestRelation
+    |> Repo.get(id)
+    |> Repo.delete()
   end
 end
