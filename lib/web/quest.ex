@@ -6,6 +6,7 @@ defmodule Web.Quest do
   import Ecto.Query
 
   alias Data.Quest
+  alias Data.QuestStep
   alias Data.Repo
   alias Web.Filter
   alias Web.Pagination
@@ -41,7 +42,7 @@ defmodule Web.Quest do
   def get(id) do
     Quest
     |> where([c], c.id == ^id)
-    |> preload([:giver])
+    |> preload([:giver, quest_steps: [:item, :npc]])
     |> Repo.one
   end
 
@@ -76,5 +77,58 @@ defmodule Web.Quest do
     |> get()
     |> Quest.changeset(params)
     |> Repo.update
+  end
+
+  #
+  # Steps
+  #
+
+  @doc """
+  Get a quest step
+  """
+  @spec get_step(integer()) :: QuestStep.t()
+  def get_step(id) do
+    QuestStep
+    |> where([c], c.id == ^id)
+    |> preload([:quest])
+    |> Repo.one()
+  end
+
+  @doc """
+  Get a changeset for a new page
+  """
+  @spec new_step(Quest.t()) :: Ecto.Changeset.t()
+  def new_step(quest) do
+    quest
+    |> Ecto.build_assoc(:quest_steps)
+    |> QuestStep.changeset(%{})
+  end
+
+  @doc """
+  Get a changeset for an edit page
+  """
+  @spec edit_step(QuestStep.t) :: Ecto.Changeset.t()
+  def edit_step(step), do: step |> QuestStep.changeset(%{})
+
+  @doc """
+  Create a quest step
+  """
+  @spec create_step(Quest.t(), map()) :: {:ok, QuestStep.t()} | {:error, Ecto.Changeset.t()}
+  def create_step(quest, params) do
+    quest
+    |> Ecto.build_assoc(:quest_steps)
+    |> QuestStep.changeset(params)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update a quest step
+  """
+  @spec update_step(integer(), map()) :: {:ok, QuestStep.t()} | {:error, Ecto.Changeset.t()}
+  def update_step(step_id, params) do
+    step_id
+    |> get_step()
+    |> QuestStep.changeset(params)
+    |> Repo.update()
   end
 end

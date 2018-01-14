@@ -63,6 +63,18 @@ defmodule Web.Item do
   end
 
   @doc """
+  List out all items for a select box
+  """
+  @spec for_select() :: [{String.t, integer()}]
+  def for_select() do
+    Item
+    |> select([i], [i.name, i.id])
+    |> order_by([i], i.id)
+    |> Repo.all()
+    |> Enum.map(&List.to_tuple/1)
+  end
+
+  @doc """
   Get a single item
   """
   @spec get(id :: integer) :: Item.t

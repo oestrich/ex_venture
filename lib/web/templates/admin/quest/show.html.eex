@@ -47,4 +47,58 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Steps</h3>
+          <div class="box-tools">
+            <%= link("New Step", to: quest_step_path(@conn, :new, @quest.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Requirements</th>
+              <th>Actions</th>
+            </thead>
+            <tbody>
+              <%= Enum.map(@quest.quest_steps, fn (quest_step) -> %>
+                <tr>
+                  <td><%= quest_step.id %></td>
+                  <td><%= quest_step.type %></td>
+                  <td>
+                    <%= case quest_step.type do %>
+                      <% "item/collect" -> %>
+                        <dl>
+                          <dt>Count</dt>
+                          <dd><%= quest_step.count %></dd>
+
+                          <dt>Item</dt>
+                          <dd><%= link(quest_step.item.name, to: item_path(@conn, :show, quest_step.item_id)) %></dd>
+                        </dl>
+                      <% "npc/kill" -> %>
+                        <dl>
+                          <dt>Count</dt>
+                          <dd><%= quest_step.count %></dd>
+
+                          <dt>NPC</dt>
+                          <dd><%= link(quest_step.npc.name, to: npc_path(@conn, :show, quest_step.npc_id)) %></dd>
+                        </dl>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link("Edit", to: quest_step_path(@conn, :edit, quest_step.id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

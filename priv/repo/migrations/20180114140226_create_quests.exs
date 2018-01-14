@@ -31,6 +31,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
     create table(:player_quests) do
       add :quest_id, references(:quests), null: false
       add :user_id, references(:users), null: false
+      add :status, :string, null: false
       add :progress, :jsonb, default: fragment("'{}'"), null: false
 
       timestamps()

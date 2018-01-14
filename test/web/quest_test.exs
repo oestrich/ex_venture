@@ -26,4 +26,27 @@ defmodule Web.QuestTest do
 
     assert quest.name == "Kill a Guard"
   end
+
+  describe "quest steps" do
+    setup do
+      npc = create_npc()
+      quest = create_quest(npc, %{name: "Finding a Guard"})
+      %{quest: quest, npc: npc}
+    end
+
+    test "add a quest step", %{quest: quest, npc: npc} do
+      {:ok, step} = Quest.create_step(quest, %{type: "npc/kill", count: 3, npc_id: npc.id})
+
+      assert step.type == "npc/kill"
+      assert step.npc_id == npc.id
+    end
+
+    test "update a quest step", %{quest: quest, npc: npc} do
+      step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: npc.id})
+
+      {:ok, step} = Quest.update_step(step.id, %{count: 4})
+
+      assert step.count == 4
+    end
+  end
 end

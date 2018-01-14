@@ -6,6 +6,7 @@ defmodule Data.Quest do
   use Data.Schema
 
   alias Data.NPC
+  alias Data.QuestStep
 
   schema "quests" do
     field :name, :string
@@ -13,6 +14,7 @@ defmodule Data.Quest do
     field :level, :integer
 
     belongs_to :giver, NPC
+    has_many :quest_steps, QuestStep
 
     timestamps()
   end

@@ -13,6 +13,7 @@ defmodule TestHelpers do
   alias Data.NPCItem
   alias Data.NPCSpawner
   alias Data.Quest
+  alias Data.QuestStep
   alias Data.Race
   alias Data.Repo
   alias Data.Room
@@ -346,6 +347,18 @@ defmodule TestHelpers do
       description: "You must find and talk to a guard",
       level: 1,
       giver_id: giver.id,
+    }, params)
+  end
+
+  def create_quest_step(quest, params) do
+    %QuestStep{}
+    |> QuestStep.changeset(quest_step_attributes(quest, params))
+    |> Repo.insert!
+  end
+
+  def quest_step_attributes(quest, params) do
+    Map.merge(%{
+      quest_id: quest.id,
     }, params)
   end
 end

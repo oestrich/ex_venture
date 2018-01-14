@@ -1,0 +1,28 @@
+<section class="content-header">
+  <h1>
+    Add Step
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Quests", to: quest_path(@conn, :index)) %></li>
+    <li><%= link(@quest.name, to: quest_path(@conn, :show, @quest.id)) %></li>
+    <li class="active">Add Step</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= if @type == nil do %>
+        <%= render "_type.html", path: quest_step_path(@conn, :new, @quest.id), changeset: @changeset, title: "Add Step", submit: "Next" %>
+      <% else %>
+        <%= render "_form.html", type: @type, path: quest_step_path(@conn, :create, @quest.id), changeset: @changeset, title: "Add Step", submit: "Create" %>
+      <% end %>
+    </div>
+  </div>
+</section>
