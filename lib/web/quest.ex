@@ -34,6 +34,9 @@ defmodule Web.Quest do
   def filter_on_attribute({"level_to", level}, query) do
     query |> where([q], q.level <= ^level)
   end
+  def filter_on_attribute({"giver_id", npc_id}, query) do
+    query |> where([q], q.giver_id == ^npc_id)
+  end
   def filter_on_attribute(_, query), do: query
 
   @doc """
