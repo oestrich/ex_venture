@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    <%= @race.name %>
+    New Quest
   </h1>
 
   <ol class="breadcrumb">
@@ -9,16 +9,15 @@
         <i class="fa fa-dashboard"></i> Home
       <% end %>
     </li>
-    <li><%= link("Races", to: race_path(@conn, :index)) %></li>
-    <li><%= link(@race.name, to: race_path(@conn, :show, @race.id)) %></li>
-    <li class="active">Edit</li>
+    <li><%= link("Quests", to: quest_path(@conn, :index)) %></li>
+    <li class="active">New</li>
   </ol>
 </section>
 
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render "_form.html", path: race_path(@conn, :update, @race.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+      <%= render "_form.html", path: quest_path(@conn, :create), changeset: @changeset, title: "New", submit: "Create" %>
     </div>
   </div>
 </section>
