@@ -28,6 +28,8 @@ defmodule Data.Repo.Migrations.CreateQuests do
       timestamps()
     end
 
+    create index(:quest_relations, [:parent_id, :child_id], unique: true)
+
     create table(:player_quests) do
       add :quest_id, references(:quests), null: false
       add :user_id, references(:users), null: false

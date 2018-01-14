@@ -87,6 +87,8 @@ defmodule Web.Router do
     resources "/quest_steps", QuestStepController, only: [:edit, :update]
 
     resources "/quests", QuestController, only: [:index, :show, :new, :create, :edit, :update] do
+      resources "/relations", QuestRelationController, only: [:new, :create], as: :relation
+
       resources "/steps", QuestStepController, only: [:new, :create], as: :step
     end
 

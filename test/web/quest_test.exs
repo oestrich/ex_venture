@@ -49,4 +49,20 @@ defmodule Web.QuestTest do
       assert step.count == 4
     end
   end
+
+  describe "quest relations" do
+    setup do
+      %{npc: create_npc()}
+    end
+
+    test "add a quest step", %{npc: npc} do
+      quest1 = create_quest(npc, %{name: "Finding a Guard 1"})
+      quest2 = create_quest(npc, %{name: "Finding a Guard 2"})
+
+      {:ok, relation} = Quest.create_relation(quest1, "parent", %{child_id: quest2.id})
+
+      assert relation.parent_id == quest1.id
+      assert relation.child_id == quest2.id
+    end
+  end
 end

@@ -6,6 +6,7 @@ defmodule Web.Quest do
   import Ecto.Query
 
   alias Data.Quest
+  alias Data.QuestRelation
   alias Data.QuestStep
   alias Data.Repo
   alias Web.Filter
@@ -36,13 +37,31 @@ defmodule Web.Quest do
   def filter_on_attribute(_, query), do: query
 
   @doc """
+  List out all quests for a select box
+  """
+  @spec for_select(Quest.t()) :: [{String.t, integer()}]
+  def for_select(quest) do
+    Quest
+    |> select([q], [q.name, q.id])
+    |> order_by([q], q.id)
+    |> maybe_filter_quest(quest)
+    |> Repo.all()
+    |> Enum.map(&List.to_tuple/1)
+  end
+
+  defp maybe_filter_quest(query, nil), do: query
+  defp maybe_filter_quest(query, quest) do
+    query |> where([q], q.id != ^quest.id)
+  end
+
+  @doc """
   Get a quest
   """
   @spec get(integer()) :: Quest.t
   def get(id) do
     Quest
     |> where([c], c.id == ^id)
-    |> preload([:giver, quest_steps: [:item, :npc]])
+    |> preload([:giver, :parents, :children, quest_steps: [:item, :npc]])
     |> Repo.one
   end
 
@@ -59,7 +78,7 @@ defmodule Web.Quest do
   def edit(quest), do: quest |> Quest.changeset(%{})
 
   @doc """
-  Create a race
+  Create a quest
   """
   @spec create(map) :: {:ok, Quest.t} | {:error, Ecto.Changeset.t()}
   def create(params) do
@@ -130,5 +149,33 @@ defmodule Web.Quest do
     |> get_step()
     |> QuestStep.changeset(params)
     |> Repo.update()
+  end
+
+  #
+  # Relations
+  #
+
+  @doc """
+  Get a changeset for a new page
+  """
+  @spec new_relation() :: Ecto.Changeset.t()
+  def new_relation(), do: %QuestRelation{} |> QuestRelation.changeset(%{})
+
+  @doc """
+  Create a quest relation
+  """
+  @spec create_relation(Quest.t(), String.t(), map()) :: {:ok, QuestRelation.t} | {:error, Ecto.Changeset.t()}
+  def create_relation(quest, side, params)
+  def create_relation(quest, "parent", params) do
+    quest
+    |> Ecto.build_assoc(:child_relations)
+    |> QuestRelation.changeset(params)
+    |> Repo.insert()
+  end
+  def create_relation(quest, "child", params) do
+    quest
+    |> Ecto.build_assoc(:parent_relations)
+    |> QuestRelation.changeset(params)
+    |> Repo.insert()
   end
 end

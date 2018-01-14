@@ -1,0 +1,24 @@
+<section class="content-header">
+  <h1>
+    Add Relation
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Quests", to: quest_path(@conn, :index)) %></li>
+    <li><%= link(@quest.name, to: quest_path(@conn, :show, @quest.id)) %></li>
+    <li class="active">Add Relation</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", quest: @quest, side: @side, path: quest_relation_path(@conn, :create, @quest.id), changeset: @changeset, title: "Add Relation", submit: "Create" %>
+    </div>
+  </div>
+</section>

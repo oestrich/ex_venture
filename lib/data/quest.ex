@@ -6,6 +6,7 @@ defmodule Data.Quest do
   use Data.Schema
 
   alias Data.NPC
+  alias Data.QuestRelation
   alias Data.QuestStep
 
   schema "quests" do
@@ -14,7 +15,14 @@ defmodule Data.Quest do
     field :level, :integer
 
     belongs_to :giver, NPC
+
     has_many :quest_steps, QuestStep
+
+    has_many :parent_relations, QuestRelation, foreign_key: :child_id
+    has_many :parents, through: [:parent_relations, :parent]
+
+    has_many :child_relations, QuestRelation, foreign_key: :parent_id
+    has_many :children, through: [:child_relations, :child]
 
     timestamps()
   end

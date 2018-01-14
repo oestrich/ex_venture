@@ -74,19 +74,13 @@
                     <%= case quest_step.type do %>
                       <% "item/collect" -> %>
                         <dl>
-                          <dt>Count</dt>
-                          <dd><%= quest_step.count %></dd>
-
-                          <dt>Item</dt>
-                          <dd><%= link(quest_step.item.name, to: item_path(@conn, :show, quest_step.item_id)) %></dd>
+                          <b>Count:</b> <%= quest_step.count %><br />
+                          <b>Item:</b> <%= link(quest_step.item.name, to: item_path(@conn, :show, quest_step.item_id)) %>
                         </dl>
                       <% "npc/kill" -> %>
                         <dl>
-                          <dt>Count</dt>
-                          <dd><%= quest_step.count %></dd>
-
-                          <dt>NPC</dt>
-                          <dd><%= link(quest_step.npc.name, to: npc_path(@conn, :show, quest_step.npc_id)) %></dd>
+                          <b>Count:</b> <%= quest_step.count %><br />
+                          <b>NPC:</b> <%= link(quest_step.npc.name, to: npc_path(@conn, :show, quest_step.npc_id)) %>
                         </dl>
                     <% end %>
                   </td>
@@ -97,6 +91,42 @@
               <% end) %>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Relations</h3>
+          <div class="box-tools">
+            <%= link("Add Parent", to: quest_relation_path(@conn, :new, @quest.id, side: "child"), class: "btn btn-primary") %>
+            <%= link("Add Child", to: quest_relation_path(@conn, :new, @quest.id, side: "parent"), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="col-md-6">
+            <h4>Parents</h4>
+            <ul>
+              <%= Enum.map(@quest.parents, fn (quest) -> %>
+                <li>
+                  <%= link(quest.name, to: quest_path(@conn, :show, quest.id)) %>
+                </li>
+              <% end) %>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>Children</h4>
+            <ul>
+              <%= Enum.map(@quest.children, fn (quest) -> %>
+                <li>
+                  <%= link(quest.name, to: quest_path(@conn, :show, quest.id)) %>
+                </li>
+              <% end) %>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

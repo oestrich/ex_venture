@@ -1,0 +1,42 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <input type="hidden" name="side" value="<%= @side %>" />
+
+      <%= case @side do %>
+        <% "parent" -> %>
+          <div class="form-group">
+            <%= label f, :parent_id %>
+            <%= select f, :parent_id, quests(), value: @quest.id, disabled: true, class: "form-control" %>
+            <%= error_tag f, :parent_id %>
+          </div>
+
+          <div class="form-group">
+            <%= label f, :child_id %>
+            <%= select f, :child_id, quests(@quest), class: "form-control" %>
+            <%= error_tag f, :child_id %>
+          </div>
+        <% "child" -> %>
+          <div class="form-group">
+            <%= label f, :parent_id %>
+            <%= select f, :parent_id, quests(@quest), class: "form-control" %>
+            <%= error_tag f, :parent_id %>
+          </div>
+
+          <div class="form-group">
+            <%= label f, :child_id %>
+            <%= select f, :child_id, quests(), value: @quest.id, disabled: true, class: "form-control" %>
+            <%= error_tag f, :child_id %>
+          </div>
+      <% end %>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
