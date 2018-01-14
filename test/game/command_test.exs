@@ -221,6 +221,11 @@ defmodule CommandTest do
     test "mail", %{user: user} do
       assert %Command{module: Command.Mail, args: {:unread}} = Command.parse("mail", user)
     end
+
+    test "greet", %{user: user} do
+      assert %Command{module: Command.Greet, args: {:greet, "guard"}} = Command.parse("greet guard", user)
+      assert %Command{module: Command.Greet, args: {:greet, "guard"}} = Command.parse("talk to guard", user)
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do

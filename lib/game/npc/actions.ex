@@ -22,11 +22,34 @@ defmodule Game.NPC.Actions do
   Respawn the NPC as a tick happens
   """
   @spec tick(state :: map, time :: DateTime.t) :: :ok | {:update, map}
-  def tick(state = %{npc: %{stats: %{health: health}}}, time) when health < 1 do
-    state = state |> handle_respawn(time)
+  def tick(state, time) do
+    state =
+      state
+      |> maybe_respawn(time)
+      |> clean_conversations(time)
+
     {:update, state}
   end
-  def tick(_state, _time), do: :ok
+
+  @doc """
+  Clean up conversation state, after 5 minutes remove the state of the user
+  """
+  def clean_conversations(state, time) do
+    conversations =
+      state.conversations
+      |> Enum.filter(fn ({_user, conversation}) ->
+        Timex.after?(conversation.started_at, time |> Timex.shift(minutes: -5))
+      end)
+      |> Enum.into(%{})
+
+    %{state | conversations: conversations}
+  end
+
+  defp maybe_respawn(state = %{npc: %{stats: %{health: health}}}, time) when health < 1 do
+    state
+    |> handle_respawn(time)
+  end
+  defp maybe_respawn(state, _time), do: state
 
   defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc, npc_spawner: npc_spawner}, time) when respawn_at != nil do
     case Timex.after?(time, respawn_at) do

@@ -60,7 +60,7 @@ defmodule TestHelpers do
     }, attributes)
   end
 
-  def create_user(attributes) do
+  def create_user(attributes \\ %{name: "player", password: "password"}) do
     %User{}
     |> User.changeset(user_attributes(attributes))
     |> Repo.insert!
@@ -243,7 +243,6 @@ defmodule TestHelpers do
       level: 1,
       experience_points: 124,
       currency: 0,
-      item_ids: [],
       events: [],
       status_line: "{name} is here.",
       description: "{status_line}",

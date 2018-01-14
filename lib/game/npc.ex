@@ -13,18 +13,37 @@ defmodule Game.NPC do
   alias Data.NPCSpawner
   alias Data.Repo
   alias Data.Stats
+  alias Game.Channel
   alias Game.Character
   alias Game.Message
   alias Game.NPC.Actions
+  alias Game.NPC.Conversation
   alias Game.NPC.Events
   alias Game.Zone
+
+  defmacro __using__(_opts) do
+    quote do
+      @npc Application.get_env(:ex_venture, :game)[:npc]
+    end
+  end
 
   defmodule State do
     @moduledoc """
     State for the NPC GenServer
     """
 
-    defstruct [:npc_spawner, :npc, :room_id, :is_targeting, :target, :last_controlled_at, events: %{}, continuous_effects: []]
+    defstruct [
+      :npc_spawner,
+      :npc,
+      :room_id,
+      :is_targeting,
+      :target,
+      :last_controlled_at,
+      :respawn_at,
+      events: %{},
+      conversations: %{},
+      continuous_effects: [],
+    ]
 
     @type t :: %__MODULE__{}
   end
@@ -124,6 +143,14 @@ defmodule Game.NPC do
   end
 
   @doc """
+  Greet an NPC
+  """
+  @spec greet(integer(), User.t()) :: :ok
+  def greet(id, user) do
+    GenServer.cast(pid(id), {:greet, user})
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -173,7 +200,13 @@ defmodule Game.NPC do
   end
 
   def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
+    Channel.join_tell({:npc, npc})
     @room.enter(room_id, {:npc, npc})
+    {:noreply, state}
+  end
+
+  def handle_cast({:greet, user}, state) do
+    state = Conversation.greet(state, user)
     {:noreply, state}
   end
 
@@ -255,6 +288,14 @@ defmodule Game.NPC do
 
   def handle_info({:continuous_effect, effect_id}, state) do
     state = Actions.handle_continuous_effect(state, effect_id)
+    {:noreply, state}
+  end
+
+  def handle_info({:channel, {:tell, {:user, user}, message}}, state) do
+    state = Conversation.recv(state, user, message.message)
+    {:noreply, state}
+  end
+  def handle_info({:channel, {:tell, _, _message}}, state) do
     {:noreply, state}
   end
 

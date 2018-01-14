@@ -21,6 +21,7 @@ config :ex_venture, :networking,
   socket_module: Networking.Protocol
 
 config :ex_venture, :game,
+  npc: Game.NPC,
   room: Game.Room,
   shop: Game.Shop,
   zone: Game.Zone,

@@ -80,6 +80,7 @@ defmodule Game.Command do
     Command.Emote,
     Command.Equipment,
     Command.Examine,
+    Command.Greet,
     Command.Help,
     Command.Mail,
     Command.Map,

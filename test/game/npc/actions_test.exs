@@ -11,29 +11,38 @@ defmodule Game.NPC.ActionsTest do
   describe "tick - respawning the npc" do
     setup do
       @room.clear_enters()
+
       npc = %{id: 1, stats: %{health: 10, max_health: 15}}
-      %{time: Timex.now(), npc_spawner: %{room_id: 1, spawn_interval: 10}, room_id: 2, npc: npc}
+      npc_spawner = %{room_id: 1, spawn_interval: 10}
+
+      state = %State{npc: npc, npc_spawner: npc_spawner, room_id: 2}
+
+      %{time: Timex.now(), state: state, npc: npc}
     end
 
-    test "does nothing if the npc is alive", %{time: time, npc: npc} do
-      :ok = Actions.tick(%{npc: npc}, time)
+    test "does nothing if the npc is alive", %{time: time, state: state} do
+      assert {:update, ^state} = Actions.tick(state, time)
     end
 
-    test "detecting death", %{time: time, npc_spawner: npc_spawner, npc: npc, room_id: room_id} do
-      {:update, state} = Actions.tick(%{npc: put_in(npc, [:stats, :health], 0), npc_spawner: npc_spawner, room_id: room_id}, time)
+    test "detecting death", %{time: time, state: state, npc: npc} do
+      {:update, state} = Actions.tick(%{state | npc: put_in(npc, [:stats, :health], 0)}, time)
+
       assert state.respawn_at == time |> Timex.shift(seconds: 10)
     end
 
-    test "doesn't spawn until time", %{time: time, npc_spawner: npc_spawner, room_id: room_id, npc: npc} do
+    test "doesn't spawn until time", %{time: time, state: state, npc: npc} do
       respawn_at = time |> Timex.shift(seconds: 2)
-      {:update, state} = Actions.tick(%{npc: put_in(npc, [:stats, :health], 0), npc_spawner: npc_spawner, room_id: room_id, respawn_at: respawn_at}, time)
+
+      {:update, state} = Actions.tick(%{state | npc: put_in(npc, [:stats, :health], 0), respawn_at: respawn_at}, time)
+
       assert state.respawn_at == respawn_at
       assert state.npc.stats.health == 0
     end
 
-    test "respawns the npc", %{time: time, npc_spawner: npc_spawner, room_id: room_id, npc: npc} do
+    test "respawns the npc", %{time: time, state: state, npc: npc} do
       respawn_at = time |> Timex.shift(seconds: -31)
-      state = %{npc: put_in(npc, [:stats, :health], 0), npc_spawner: npc_spawner, room_id: room_id, respawn_at: respawn_at}
+
+      state = %{state | npc: put_in(npc, [:stats, :health], 0), respawn_at: respawn_at}
 
       {:update, state} = Actions.tick(state, time)
 
@@ -41,6 +50,30 @@ defmodule Game.NPC.ActionsTest do
       assert state.npc.stats.health == 15
       assert state.room_id == 1
       assert [{1, {:npc, _}}] = @room.get_enters()
+    end
+  end
+
+  describe "tick - cleaning up conversation state" do
+    setup do
+      npc = %{id: 1}
+
+      time = Timex.now()
+
+      state = %State{
+        npc: npc,
+        conversations: %{
+          10 => %{key: "start", started_at: time |> Timex.shift(minutes: -10)},
+          11 => %{key: "start", started_at: time |> Timex.shift(minutes: -1)},
+        },
+      }
+
+      %{time: time, npc: npc, state: state}
+    end
+
+    test "cleans out conversations after 5 minutes", %{state: state, time: time} do
+      {:update, state} = Actions.tick(state, time)
+
+      assert Map.keys(state.conversations) == [11]
     end
   end
 

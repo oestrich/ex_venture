@@ -7,6 +7,7 @@ defmodule Game.Command.Tell do
 
   alias Game.Channel
   alias Game.Session
+  alias Game.Utility
 
   commands ["tell", "reply"], parse: false
 
@@ -20,6 +21,8 @@ defmodule Game.Command.Tell do
 
     Example:
     [ ] > {white}tell player Hello{/white}
+
+    [ ] > {white}reply Hello{/white}
     """
   end
 
@@ -47,7 +50,23 @@ defmodule Game.Command.Tell do
   """
   @impl Game.Command
   def run(command, session, state)
-  def run({"tell", message}, _session, %{socket: socket, user: from}) do
+  def run({"tell", message}, _session, state) do
+    state
+    |> maybe_tell_player(message)
+    |> maybe_tell_npc(message)
+    |> maybe_fail_tell(message)
+  end
+  def run({"reply", message}, _session, state = %{socket: socket, reply_to: reply_to}) do
+    case reply_to do
+      nil -> socket |> @socket.echo("There is no one to reply to.")
+      {:user, user} -> message |> reply_to_player(user, state)
+      {:npc, npc} -> message |> reply_to_npc(npc, state)
+    end
+
+    :ok
+  end
+
+  defp maybe_tell_player(state = %{socket: socket, user: from}, message) do
     [player_name | message] = String.split(message, " ")
     message = Enum.join(message, " ")
 
@@ -57,24 +76,44 @@ defmodule Game.Command.Tell do
     end)
 
     case player do
-      nil ->
-        socket |> @socket.echo(~s["#{player_name}" is not online])
+      nil -> state
       {_, user} ->
         socket |> @socket.echo(Format.send_tell({:user, user}, message))
         Channel.tell({:user, user}, {:user, from}, Message.tell(from, message))
+        {:update, %{state | reply_to: {:user, user}}}
     end
-
-    :ok
-  end
-  def run({"reply", message}, _session, state) do
-    reply_to(message, state)
-    :ok
   end
 
-  defp reply_to(_message, %{socket: socket, reply_to: nil}) do
-    socket |> @socket.echo("There is no one to reply to.")
+  defp maybe_tell_npc(:ok, _message), do: :ok
+  defp maybe_tell_npc({:update, state}, _message), do: {:update, state}
+  defp maybe_tell_npc(state = %{socket: socket, save: %{room_id: room_id}, user: from}, message) do
+    room = @room.look(room_id)
+
+    npc =
+      room.npcs
+      |> Enum.find(fn (npc) ->
+        Utility.name_matches?(npc, message)
+      end)
+
+    case npc do
+      nil -> state
+      _ ->
+        message = Utility.strip_name(npc, message)
+        socket |> @socket.echo(Format.send_tell({:npc, npc}, message))
+        Channel.tell({:npc, npc}, {:user, from}, Message.tell(from, message))
+        {:update, %{state | reply_to: {:npc, npc}}}
+    end
   end
-  defp reply_to(message, %{socket: socket, user: from, reply_to: {:user, reply_to}}) do
+
+  defp maybe_fail_tell(:ok, _message), do: :ok
+  defp maybe_fail_tell({:update, state}, _message), do: {:update, state}
+  defp maybe_fail_tell(%{socket: socket}, message) do
+    [name | _] = String.split(message, " ")
+    socket |> @socket.echo(~s("#{name}" is not online.))
+    :ok
+  end
+
+  defp reply_to_player(message, reply_to, %{socket: socket, user: from}) do
     player = Session.Registry.connected_players()
     |> Enum.find(fn ({_, player}) -> player.id == reply_to.id end)
 
@@ -84,6 +123,19 @@ defmodule Game.Command.Tell do
       _ ->
         socket |> @socket.echo(Format.send_tell({:user, reply_to}, message))
         Channel.tell({:user, reply_to}, {:user, from}, Message.tell(from, message))
+    end
+  end
+
+  defp reply_to_npc(message, reply_to, %{socket: socket, user: from, save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+    npc = room.npcs |> Enum.find(&(Utility.matches?(&1, reply_to.name)))
+
+    case npc do
+      nil ->
+        socket |> @socket.echo("Could not find #{Format.npc_name(reply_to)}")
+      _ ->
+        socket |> @socket.echo(Format.send_tell({:npc, reply_to}, message))
+        Channel.tell({:npc, reply_to}, {:user, from}, Message.tell(from, message))
     end
   end
 end
