@@ -74,6 +74,10 @@ defmodule Game.NPC.Conversation do
     end
   end
 
+  @doc """
+  Send a tell to a user
+  """
+  @spec send_message(NPC.t(), User.t(), String.t()) :: :ok
   def send_message(npc, user, key) do
     case conversation_from_key(npc, key) do
       nil -> :ok
@@ -87,6 +91,7 @@ defmodule Game.NPC.Conversation do
   Get a conversation struct by key
   """
   @spec conversation_from_key(NPC.t(), String.t()) :: Conversation.t()
+  def conversation_from_key(%{conversations: nil}, _), do: nil
   def conversation_from_key(npc, key) do
     Enum.find(npc.conversations, fn (conversation) ->
       conversation.key == key
