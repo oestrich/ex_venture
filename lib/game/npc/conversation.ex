@@ -15,13 +15,13 @@ defmodule Game.NPC.Conversation do
   """
   @spec greet(State.t(), User.t()) :: State.t()
   def greet(state = %{npc: npc}, user) do
+    npc |> send_message(user, "start")
+
     conversations =
       state.conversations
       |> Map.put(user.id, %{key: "start", started_at: Timex.now()})
-
-    npc |> send_message(user, "start")
-
-    %{state | conversations: conversations}
+    state = %{state | conversations: conversations}
+    update_conversation_state(state, "start", user)
   end
 
   @doc """
@@ -63,14 +63,8 @@ defmodule Game.NPC.Conversation do
 
         state
       %{key: key} ->
-        conversation =
-          state.conversations
-          |> Map.get(user.id)
-          |> Map.put(:key, key)
-
         npc |> send_message(user, key)
-
-        %{state | conversations: Map.put(state.conversations, user.id, conversation)}
+        state |> update_conversation_state(key, user)
     end
   end
 
@@ -105,5 +99,23 @@ defmodule Game.NPC.Conversation do
     Enum.find(conversation.listeners, fn (listener) ->
       Regex.match?(~r/#{listener.phrase}/, message)
     end)
+  end
+
+  @doc """
+  Update conversation state, possibly clearing out if the conversation ended
+  """
+  @spec update_conversation_state(State.t(), String.t(), User.t()) :: State.t()
+  def update_conversation_state(state, key, user) do
+    conversation =
+      state.conversations
+      |> Map.get(user.id)
+      |> Map.put(:key, key)
+
+    case conversation_from_key(state.npc, key) do
+      %{listeners: []} ->
+        %{state | conversations: Map.delete(state.conversations, user.id)}
+      _ ->
+        %{state | conversations: Map.put(state.conversations, user.id, conversation)}
+    end
   end
 end

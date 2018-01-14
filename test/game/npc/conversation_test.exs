@@ -12,7 +12,17 @@ defmodule Game.NPC.ConversationTest do
       npc = create_npc(%{
         name: "Store Owner",
         conversations: [
-          %Data.Conversation{key: "start", message: "hello"},
+          %Data.Conversation{
+            key: "start",
+            message: "hello",
+            listeners: [
+              %{phrase: "next", key: "next"},
+            ],
+          },
+          %Data.Conversation{
+            key: "next",
+            message: "hello",
+          },
         ],
       })
 
@@ -40,11 +50,19 @@ defmodule Game.NPC.ConversationTest do
             unknown: "unknown",
             listeners: [
               %{phrase: "bandit", key: "bandits"},
+              %{phrase: "done", key: "done"},
             ],
           },
           %Data.Conversation{
             key: "bandits",
             message: "there are bandits near by",
+            listeners: [
+              %{phrase: "done", key: "done"},
+            ],
+          },
+          %Data.Conversation{
+            key: "done",
+            message: "conversation is over",
           },
         ],
       })
@@ -80,6 +98,13 @@ defmodule Game.NPC.ConversationTest do
 
       assert %{key: "start"} = Map.get(state.conversations, user.id)
       assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "hello"}}}
+    end
+
+    test "'finishing' a conversation clears out their key", %{user: user, state: state} do
+      state = Conversation.recv(state, user, "done")
+
+      refute Map.has_key?(state.conversations, user.id)
+      assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "conversation is over"}}}
     end
   end
 end
