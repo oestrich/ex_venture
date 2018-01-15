@@ -70,6 +70,18 @@
               <%= label :quest, :giver_id, "Giver NPC" %>
               <%= select :quest, :giver_id, NPC.for_select(), value: @filter["giver_id"], class: "form-control" %>
             </div>
+
+            <div class="form-group">
+              <%= label :quest, :experience %>
+              <div class="row">
+                <div class="col-md-6">
+                  <%= number_input :quest, :experience_from, value: @filter["experience_from"], placeholder: "From", class: "form-control" %>
+                </div>
+                <div class="col-md-6">
+                  <%= number_input :quest, :experience_to, value: @filter["experience_to"], placeholder: "To", class: "form-control" %>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="box-footer">

@@ -28,6 +28,12 @@ defmodule Web.Quest do
   end
 
   @impl Filter
+  def filter_on_attribute({"experience_from", experience}, query) do
+    query |> where([q], q.experience >= ^experience)
+  end
+  def filter_on_attribute({"experience_to", experience}, query) do
+    query |> where([q], q.experience <= ^experience)
+  end
   def filter_on_attribute({"level_from", level}, query) do
     query |> where([q], q.level >= ^level)
   end
