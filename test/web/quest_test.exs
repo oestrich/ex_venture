@@ -11,6 +11,7 @@ defmodule Web.QuestTest do
       "description" => "You must go find and talk to a guard",
       "giver_id" => npc.id,
       "level" => 1,
+      "experience" => 100,
     }
 
     {:ok, quest} = Quest.create(params)

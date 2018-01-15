@@ -8,6 +8,7 @@ defmodule Web.Admin.QuestControllerTest do
       "name" => "Fighter",
       "description" => "A fighter",
       "level" => 1,
+      "experience" => 100,
       "giver_id" => npc.id,
     }
 

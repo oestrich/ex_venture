@@ -24,6 +24,12 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :experience %>
+        <%= number_input f, :experience, class: "form-control" %>
+        <%= error_tag f, :experience %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :giver_id %>
         <%= select f, :giver_id, NPC.for_select(), prompt: "Select NPC", class: "form-control" %>
         <%= error_tag f, :giver_id %>

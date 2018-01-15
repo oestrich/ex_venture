@@ -39,6 +39,10 @@
               <td><%= @quest.description %></td>
             </tr>
             <tr>
+              <th>Experience</th>
+              <td><%= @quest.experience %></td>
+            </tr>
+            <tr>
               <th>Giver</th>
               <td><%= link(@quest.giver.name, to: npc_path(@conn, :show, @quest.giver.id)) %></td>
             </tr>

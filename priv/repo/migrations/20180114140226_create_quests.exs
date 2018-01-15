@@ -7,6 +7,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
       add :name, :string, null: false
       add :description, :text, null: false
       add :level, :integer, null: false
+      add :experience, :integer, null: false
 
       timestamps()
     end

@@ -346,6 +346,7 @@ defmodule TestHelpers do
       name: "Finding a Guard",
       description: "You must find and talk to a guard",
       level: 1,
+      experience: 100,
       giver_id: giver.id,
     }, params)
   end

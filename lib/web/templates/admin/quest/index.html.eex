@@ -21,6 +21,7 @@
                 <th>Name</th>
                 <th>Level</th>
                 <th>Giver</th>
+                <th>Experience</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -31,6 +32,7 @@
                   <td><%= link(quest.name, to: quest_path(@conn, :show, quest.id)) %></td>
                   <td><%= quest.level %></td>
                   <td><%= link(quest.giver.name, to: npc_path(@conn, :show, quest.giver.id)) %></td>
+                  <td><%= quest.experience %></td>
                   <td>
                     <%= link("View", to: quest_path(@conn, :show, quest.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: quest_path(@conn, :edit, quest.id), class: "btn btn-default btn-xs") %>

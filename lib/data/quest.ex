@@ -13,6 +13,7 @@ defmodule Data.Quest do
     field :name, :string
     field :description, :string
     field :level, :integer
+    field :experience, :integer
 
     belongs_to :giver, NPC
 
@@ -29,8 +30,8 @@ defmodule Data.Quest do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :level, :giver_id])
-    |> validate_required([:name, :description, :level, :giver_id])
+    |> cast(params, [:name, :description, :level, :experience, :giver_id])
+    |> validate_required([:name, :description, :level, :experience, :giver_id])
     |> foreign_key_constraint(:giver_id)
   end
 end
