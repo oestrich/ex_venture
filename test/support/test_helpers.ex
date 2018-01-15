@@ -12,6 +12,8 @@ defmodule TestHelpers do
   alias Data.NPC
   alias Data.NPCItem
   alias Data.NPCSpawner
+  alias Data.Quest
+  alias Data.QuestStep
   alias Data.Race
   alias Data.Repo
   alias Data.Room
@@ -330,6 +332,34 @@ defmodule TestHelpers do
       name: "Gods",
       body: "There are gods in this world.",
       tags: ["gods", "magic"],
+    }, params)
+  end
+
+  def create_quest(giver, params) do
+    %Quest{}
+    |> Quest.changeset(quest_attributes(giver, params))
+    |> Repo.insert!
+  end
+
+  def quest_attributes(giver, params) do
+    Map.merge(%{
+      name: "Finding a Guard",
+      description: "You must find and talk to a guard",
+      level: 1,
+      experience: 100,
+      giver_id: giver.id,
+    }, params)
+  end
+
+  def create_quest_step(quest, params) do
+    %QuestStep{}
+    |> QuestStep.changeset(quest_step_attributes(quest, params))
+    |> Repo.insert!
+  end
+
+  def quest_step_attributes(quest, params) do
+    Map.merge(%{
+      quest_id: quest.id,
     }, params)
   end
 end

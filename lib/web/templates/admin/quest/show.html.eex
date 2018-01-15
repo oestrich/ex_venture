@@ -1,0 +1,147 @@
+<section class="content-header">
+  <h1>
+    <%= @quest.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Quests", to: quest_path(@conn, :index)) %></li>
+    <li class="active"><%= @quest.name %></li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: quest_path(@conn, :edit, @quest.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tr>
+              <th>Level</th>
+              <td><%= @quest.level %></td>
+            </tr>
+            <tr>
+              <th>Name</th>
+              <td><%= @quest.name %></td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td><%= @quest.description %></td>
+            </tr>
+            <tr>
+              <th>Experience</th>
+              <td><%= @quest.experience %></td>
+            </tr>
+            <tr>
+              <th>Giver</th>
+              <td><%= link(@quest.giver.name, to: npc_path(@conn, :show, @quest.giver.id)) %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Steps</h3>
+          <div class="box-tools">
+            <%= link("New Step", to: quest_step_path(@conn, :new, @quest.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Requirements</th>
+              <th>Actions</th>
+            </thead>
+            <tbody>
+              <%= Enum.map(@quest.quest_steps, fn (quest_step) -> %>
+                <tr>
+                  <td><%= quest_step.id %></td>
+                  <td><%= quest_step.type %></td>
+                  <td>
+                    <%= case quest_step.type do %>
+                      <% "item/collect" -> %>
+                        <dl>
+                          <b>Count:</b> <%= quest_step.count %><br />
+                          <b>Item:</b> <%= link(quest_step.item.name, to: item_path(@conn, :show, quest_step.item_id)) %>
+                        </dl>
+                      <% "npc/kill" -> %>
+                        <dl>
+                          <b>Count:</b> <%= quest_step.count %><br />
+                          <b>NPC:</b> <%= link(quest_step.npc.name, to: npc_path(@conn, :show, quest_step.npc_id)) %>
+                        </dl>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link("Edit", to: quest_step_path(@conn, :edit, quest_step.id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: quest_step_path(@conn, :delete, quest_step.id, quest_id: @quest.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Relations</h3>
+          <div class="box-tools">
+            <%= link("Add Parent", to: quest_relation_path(@conn, :new, @quest.id, side: "child"), class: "btn btn-primary") %>
+            <%= link("Add Child", to: quest_relation_path(@conn, :new, @quest.id, side: "parent"), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="col-md-6">
+            <h4>Parents</h4>
+            <ul>
+              <%= Enum.map(@quest.parent_relations, fn (quest_relation) -> %>
+                <li>
+                  <%= link(quest_relation.parent.name, to: quest_path(@conn, :show, quest_relation.parent.id)) %>
+                  <%= link(to: quest_relation_path(@conn, :delete, quest_relation.id, quest_id: @quest.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                    <i class="fa fa-times"></i>
+                  <% end %>
+                </li>
+              <% end) %>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>Children</h4>
+            <ul>
+              <%= Enum.map(@quest.child_relations, fn (quest_relation) -> %>
+                <li>
+                  <%= link(quest_relation.child.name, to: quest_path(@conn, :show, quest_relation.child.id)) %>
+                  <%= link(to: quest_relation_path(@conn, :delete, quest_relation.id, quest_id: @quest.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                    <i class="fa fa-times"></i>
+                  <% end %>
+                </li>
+              <% end) %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

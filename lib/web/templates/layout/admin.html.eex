@@ -106,6 +106,12 @@
                 <span>NPCs</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "quests") %>">
+              <%= link(to: quest_path(@conn, :index)) do %>
+                <i class="fa fa-compass"></i>
+                <span>Quests</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "races") %>">
               <%= link(to: race_path(@conn, :index)) do %>
                 <i class="fa fa-eye"></i>

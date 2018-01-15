@@ -42,6 +42,18 @@ defmodule Web.NPC do
   def filter_on_attribute(_, query), do: query
 
   @doc """
+  List out all npcs for a select box
+  """
+  @spec for_select() :: [{String.t, integer()}]
+  def for_select() do
+    NPC
+    |> select([n], [n.name, n.id])
+    |> order_by([n], n.id)
+    |> Repo.all()
+    |> Enum.map(&List.to_tuple/1)
+  end
+
+  @doc """
   Get a npc
   """
   @spec get(id :: integer) :: [NPC.t]
