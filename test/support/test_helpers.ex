@@ -13,6 +13,7 @@ defmodule TestHelpers do
   alias Data.NPCItem
   alias Data.NPCSpawner
   alias Data.Quest
+  alias Data.QuestProgress
   alias Data.QuestStep
   alias Data.Race
   alias Data.Repo
@@ -360,6 +361,21 @@ defmodule TestHelpers do
   def quest_step_attributes(quest, params) do
     Map.merge(%{
       quest_id: quest.id,
+    }, params)
+  end
+
+  def create_quest_progress(user, quest, params \\ %{}) do
+    %QuestProgress{}
+    |> QuestProgress.changeset(quest_progress_attributes(user, quest, params))
+    |> Repo.insert!
+  end
+
+  def quest_progress_attributes(user, quest, params) do
+    Map.merge(%{
+      user_id: user.id,
+      quest_id: quest.id,
+      status: "active",
+      progress: %{},
     }, params)
   end
 end

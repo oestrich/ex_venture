@@ -213,4 +213,47 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r/unlimited/, Format.list_shop(shop, items))
     end
   end
+
+  describe "quest details" do
+    setup do
+      guard = %{name: "Guard"}
+      goblin = %{name: "Goblin"}
+      potion = %{name: "Potion"}
+
+      step1 = %{id: 1, type: "npc/kill", count: 3, npc: goblin}
+      step2 = %{id: 2, type: "item/collect", count: 4, item: potion}
+
+      quest = %{
+        id: 1,
+        name: "Into the Dungeon",
+        description: "Dungeon delving",
+        giver: guard,
+        quest_steps: [step1, step2],
+      }
+
+      progress = %{status: "active", progress: %{step1.id => 2, step2.id => 3}, quest: quest}
+
+      %{quest: quest, progress: progress}
+    end
+
+    test "includes quest name", %{progress: progress} do
+      assert Regex.match?(~r/Into the Dungeon/, Format.quest_detail(progress))
+    end
+
+    test "includes quest description", %{progress: progress} do
+      assert Regex.match?(~r/Dungeon delving/, Format.quest_detail(progress))
+    end
+
+    test "includes quest status", %{progress: progress} do
+      assert Regex.match?(~r/active/, Format.quest_detail(progress))
+    end
+
+    test "includes npc step", %{progress: progress} do
+      assert Regex.match?(~r(Collect {cyan}Potion{/cyan} - 3/4), Format.quest_detail(progress))
+    end
+
+    test "includes item step", %{progress: progress} do
+      assert Regex.match?(~r(Kill {yellow}Goblin{/yellow} - 2/3), Format.quest_detail(progress))
+    end
+  end
 end

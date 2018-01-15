@@ -14,8 +14,9 @@ defmodule Game.Format do
   alias Data.Save
   alias Data.Skill
   alias Game.Color
-  alias Game.Format.Table
   alias Game.Door
+  alias Game.Format.Table
+  alias Game.Quest
 
   @doc """
   Template a string
@@ -668,5 +669,49 @@ defmodule Game.Format do
   def display_mail(mail) do
     title = "#{mail.id} - #{player_name(mail.sender)} - #{mail.title}"
     "#{title}\n#{underline(title)}\n\n#{mail.body}"
+  end
+
+  @doc """
+  Format the status of a user's quests
+  """
+  @spec quest_progress([QuestProgress.t()]) :: String.t()
+  def quest_progress(quests) do
+    rows =
+      quests
+      |> Enum.map(fn (%{status: status, quest: quest}) ->
+        [to_string(quest.id), quest.name, quest.giver.name, status]
+      end)
+
+    Table.format("You have #{length(quests)} active quests.", rows, [5, 30, 20, 10])
+  end
+
+  @doc """
+  Format the status of a user's quest
+  """
+  @spec quest_detail(QuestProgress.t()) :: String.t()
+  def quest_detail(progress) do
+    %{quest: quest} = progress
+    steps = quest.quest_steps |> Enum.map(&(quest_step(&1, progress)))
+    header = "#{quest.name} - #{progress.status}"
+
+    """
+    #{header}
+    #{header |> underline()}
+
+    #{quest.description |> wrap()}
+
+    #{steps |> Enum.join("\n")}
+    """ |> String.trim()
+  end
+
+  defp quest_step(step, progress) do
+    case step.type do
+      "item/collect" ->
+        current_step_progress = Quest.current_step_progress(step, progress)
+        " - Collect #{item_name(step.item)} - #{current_step_progress}/#{step.count}"
+      "npc/kill" ->
+        current_step_progress = Quest.current_step_progress(step, progress)
+        " - Kill #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
+    end
   end
 end

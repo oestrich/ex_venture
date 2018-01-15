@@ -31,7 +31,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
 
     create index(:quest_relations, [:parent_id, :child_id], unique: true)
 
-    create table(:player_quests) do
+    create table(:quest_progress) do
       add :quest_id, references(:quests), null: false
       add :user_id, references(:users), null: false
       add :status, :string, null: false
@@ -39,5 +39,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
 
       timestamps()
     end
+
+    create index(:quest_progress, [:user_id, :quest_id], unique: true)
   end
 end
