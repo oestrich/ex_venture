@@ -86,6 +86,9 @@
                   </td>
                   <td>
                     <%= link("Edit", to: quest_step_path(@conn, :edit, quest_step.id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: quest_step_path(@conn, :delete, quest_step.id, quest_id: @quest.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
                   </td>
                 </tr>
               <% end) %>
@@ -113,6 +116,9 @@
               <%= Enum.map(@quest.parent_relations, fn (quest_relation) -> %>
                 <li>
                   <%= link(quest_relation.parent.name, to: quest_path(@conn, :show, quest_relation.parent.id)) %>
+                  <%= link(to: quest_relation_path(@conn, :delete, quest_relation.id, quest_id: @quest.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                    <i class="fa fa-times"></i>
+                  <% end %>
                 </li>
               <% end) %>
             </ul>

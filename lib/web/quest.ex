@@ -154,6 +154,16 @@ defmodule Web.Quest do
     |> Repo.update()
   end
 
+  @doc """
+  Delete a quest step
+  """
+  @spec delete_step(integer()) :: {:ok, QuestRelation.t} | {:error, Ecto.Changeset.t()}
+  def delete_step(step_id) do
+    step_id
+    |> get_step()
+    |> Repo.delete()
+  end
+
   #
   # Relations
   #

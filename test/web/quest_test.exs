@@ -48,6 +48,12 @@ defmodule Web.QuestTest do
 
       assert step.count == 4
     end
+
+    test "delete a quest step", %{quest: quest, npc: npc} do
+      step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: npc.id})
+
+      {:ok, _step} = Quest.delete_step(step.id)
+    end
   end
 
   describe "quest relations" do

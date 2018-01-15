@@ -36,4 +36,13 @@ defmodule Web.Admin.QuestStepController do
         conn |> render("edit.html", quest: step.quest, step: step, changeset: changeset)
     end
   end
+
+  def delete(conn, %{"id" => id}) do
+    case Quest.delete_step(id) do
+      {:ok, step} -> conn |> redirect(to: quest_path(conn, :show, step.quest_id))
+      {:error, _changeset} ->
+        step = Quest.get_step(id)
+        conn |> redirect(to: quest_path(conn, :show, step.quest_id))
+    end
+  end
 end
