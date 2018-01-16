@@ -8,11 +8,35 @@ defmodule Data.QuestProgress do
   alias Data.Quest
   alias Data.User
 
-  @statuses ["active"]
+  @statuses ["active", "complete"]
+
+  defmodule Progress do
+    @behaviour Ecto.Type
+
+    @impl Ecto.Type
+    def type, do: :map
+
+    @impl Ecto.Type
+    def cast(progress) when is_map(progress), do: {:ok, progress}
+    def cast(_), do: :error
+
+    @doc """
+    Load progress from the database
+    """
+    @impl Ecto.Type
+    def load(event) do
+      event = for {key, val} <- event, into: %{}, do: {String.to_integer(key), val}
+      {:ok, event}
+    end
+
+    @impl Ecto.Type
+    def dump(progress) when is_map(progress), do: {:ok, Map.delete(progress, :__struct__)}
+    def dump(_), do: :error
+  end
 
   schema "quest_progress" do
     field :status, :string, default: "active"
-    field :progress, :map, default: %{}
+    field :progress, Progress, default: %{}
 
     belongs_to :quest, Quest
     belongs_to :user, User

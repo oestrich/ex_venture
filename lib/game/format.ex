@@ -184,6 +184,16 @@ defmodule Game.Format do
     |> _wrap("", "")
   end
 
+  @doc """
+  Wraps a list of text
+  """
+  @spec wrap_lines([String.t]) :: String.t
+  def wrap_lines(lines) do
+    lines
+    |> Enum.join(" ")
+    |> wrap()
+  end
+
   defp _wrap([], line, string), do: join(string, line, "\n")
   defp _wrap([word | left], line, string) do
     test_line = "#{line} #{word}" |> Color.strip_color()
@@ -688,10 +698,10 @@ defmodule Game.Format do
   @doc """
   Format the status of a user's quest
   """
-  @spec quest_detail(QuestProgress.t()) :: String.t()
-  def quest_detail(progress) do
+  @spec quest_detail(QuestProgress.t(), Save.t()) :: String.t()
+  def quest_detail(progress, save) do
     %{quest: quest} = progress
-    steps = quest.quest_steps |> Enum.map(&(quest_step(&1, progress)))
+    steps = quest.quest_steps |> Enum.map(&(quest_step(&1, progress, save)))
     header = "#{quest.name} - #{progress.status}"
 
     """
@@ -704,13 +714,13 @@ defmodule Game.Format do
     """ |> String.trim()
   end
 
-  defp quest_step(step, progress) do
+  defp quest_step(step, progress, save) do
     case step.type do
       "item/collect" ->
-        current_step_progress = Quest.current_step_progress(step, progress)
+        current_step_progress = Quest.current_step_progress(step, progress, save)
         " - Collect #{item_name(step.item)} - #{current_step_progress}/#{step.count}"
       "npc/kill" ->
-        current_step_progress = Quest.current_step_progress(step, progress)
+        current_step_progress = Quest.current_step_progress(step, progress, save)
         " - Kill #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
     end
   end

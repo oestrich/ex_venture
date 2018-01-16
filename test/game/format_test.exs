@@ -218,10 +218,10 @@ defmodule Game.FormatTest do
     setup do
       guard = %{name: "Guard"}
       goblin = %{name: "Goblin"}
-      potion = %{name: "Potion"}
+      potion = %{id: 5, name: "Potion"}
 
       step1 = %{id: 1, type: "npc/kill", count: 3, npc: goblin}
-      step2 = %{id: 2, type: "item/collect", count: 4, item: potion}
+      step2 = %{id: 2, type: "item/collect", count: 4, item: potion, item_id: potion.id}
 
       quest = %{
         id: 1,
@@ -231,29 +231,30 @@ defmodule Game.FormatTest do
         quest_steps: [step1, step2],
       }
 
-      progress = %{status: "active", progress: %{step1.id => 2, step2.id => 3}, quest: quest}
+      progress = %{status: "active", progress: %{step1.id => 2}, quest: quest}
+      save = %{items: [%{id: potion.id}, %{id: potion.id}]}
 
-      %{quest: quest, progress: progress}
+      %{quest: quest, progress: progress, save: save}
     end
 
-    test "includes quest name", %{progress: progress} do
-      assert Regex.match?(~r/Into the Dungeon/, Format.quest_detail(progress))
+    test "includes quest name", %{progress: progress, save: save} do
+      assert Regex.match?(~r/Into the Dungeon/, Format.quest_detail(progress, save))
     end
 
-    test "includes quest description", %{progress: progress} do
-      assert Regex.match?(~r/Dungeon delving/, Format.quest_detail(progress))
+    test "includes quest description", %{progress: progress, save: save} do
+      assert Regex.match?(~r/Dungeon delving/, Format.quest_detail(progress, save))
     end
 
-    test "includes quest status", %{progress: progress} do
-      assert Regex.match?(~r/active/, Format.quest_detail(progress))
+    test "includes quest status", %{progress: progress, save: save} do
+      assert Regex.match?(~r/active/, Format.quest_detail(progress, save))
     end
 
-    test "includes npc step", %{progress: progress} do
-      assert Regex.match?(~r(Collect {cyan}Potion{/cyan} - 3/4), Format.quest_detail(progress))
+    test "includes npc step", %{progress: progress, save: save} do
+      assert Regex.match?(~r(Collect {cyan}Potion{/cyan} - 2/4), Format.quest_detail(progress, save))
     end
 
-    test "includes item step", %{progress: progress} do
-      assert Regex.match?(~r(Kill {yellow}Goblin{/yellow} - 2/3), Format.quest_detail(progress))
+    test "includes item step", %{progress: progress, save: save} do
+      assert Regex.match?(~r(Kill {yellow}Goblin{/yellow} - 2/3), Format.quest_detail(progress, save))
     end
   end
 end
