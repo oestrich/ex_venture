@@ -17,6 +17,7 @@ defmodule Game.Quest do
   def for(user) do
     QuestProgress
     |> where([qp], qp.user_id == ^user.id)
+    |> where([qp], qp.status == "active")
     |> preloads()
     |> Repo.all()
   end
@@ -69,7 +70,7 @@ defmodule Game.Quest do
   """
   @spec requirement_complete?(QuestStep.t(), QuestProgress.t(), Save.t()) :: boolean()
   def requirement_complete?(step, progress, save) do
-    step.count == current_step_progress(step, progress, save)
+    current_step_progress(step, progress, save) >= step.count
   end
 
   @doc """
