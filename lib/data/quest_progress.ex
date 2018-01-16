@@ -11,6 +11,10 @@ defmodule Data.QuestProgress do
   @statuses ["active", "complete"]
 
   defmodule Progress do
+    @moduledoc """
+    Convert progress keys into integers
+    """
+
     @behaviour Ecto.Type
 
     @impl Ecto.Type
