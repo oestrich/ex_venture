@@ -12,6 +12,7 @@ defmodule Data.Quest do
   schema "quests" do
     field :name, :string
     field :description, :string
+    field :completed_message, :string
     field :level, :integer
     field :experience, :integer
 
@@ -30,8 +31,8 @@ defmodule Data.Quest do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :level, :experience, :giver_id])
-    |> validate_required([:name, :description, :level, :experience, :giver_id])
+    |> cast(params, [:name, :description, :completed_message, :level, :experience, :giver_id])
+    |> validate_required([:name, :description, :completed_message, :level, :experience, :giver_id])
     |> foreign_key_constraint(:giver_id)
   end
 end

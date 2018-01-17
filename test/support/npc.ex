@@ -35,4 +35,22 @@ defmodule Test.Game.NPC do
     start_link()
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :greet, []) end)
   end
+
+  def notify(id, action) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) ->
+      notifys = Map.get(state, :notify, [])
+      Map.put(state, :notify, notifys ++ [{id, action}])
+    end)
+  end
+
+  def get_notifies() do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :notify, []) end)
+  end
+
+  def clear_notifies() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :notify, []) end)
+  end
 end

@@ -5,8 +5,9 @@ defmodule Web.Admin.QuestControllerTest do
     npc = create_npc()
 
     params = %{
-      "name" => "Fighter",
-      "description" => "A fighter",
+      "name" => "Quest",
+      "description" => "A quest",
+      "completed_message" => "The quest is done",
       "level" => 1,
       "experience" => 100,
       "giver_id" => npc.id,

@@ -6,6 +6,7 @@ defmodule Game.Command.QuestTest do
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
+  @npc Test.Game.NPC
 
   setup do
     @socket.clear_messages
@@ -80,6 +81,7 @@ defmodule Game.Command.QuestTest do
         npcs: [Map.put(guard, :original_id, guard.id)],
       })
       @room.set_room(room)
+      @npc.clear_notifies()
 
       state = state |> Map.put(:save, %{room_id: 1, level: 1, experience_points: 20})
 
@@ -96,6 +98,18 @@ defmodule Game.Command.QuestTest do
       [{_, quest}, {_, _experience}] = @socket.get_echos()
       assert Regex.match?(~r/quest complete/i, quest)
       assert state.save.experience_points == 220
+    end
+
+    test "completing a quest - notifies the npc", %{session: session, state: state, quest: quest} do
+      goblin = create_npc(%{name: "Goblin"})
+      npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
+      create_quest_progress(state.user, quest, %{progress: %{npc_step.id => 3}})
+
+      {:update, _state} = Quest.run({:complete, to_string(quest.id)}, session, state)
+
+      giver_id = quest.giver_id
+      quest_id = quest.id
+      assert [{^giver_id, {"quest/completed", _, %{id: ^quest_id}}}] = @npc.get_notifies()
     end
 
     test "giver is not in your room", %{session: session, state: state, quest: quest} do

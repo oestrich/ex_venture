@@ -4,6 +4,7 @@ defmodule Game.Command.Quest do
   """
 
   use Game.Command
+  use Game.NPC
 
   alias Game.Experience
   alias Game.Quest
@@ -115,30 +116,32 @@ defmodule Game.Command.Quest do
   @spec check_npc_is_in_room(QuestProgress.t(), State.t()) :: :ok | QuestProgress.t()
   def check_npc_is_in_room(:ok, _state), do: :ok
   def check_npc_is_in_room(progress, %{socket: socket, save: save}) do
-    npc_ids =
+    npc =
       save.room_id
       |> @room.look()
       |> Map.get(:npcs)
-      |> Enum.map(&(Map.get(&1, :original_id)))
+      |> Enum.find(fn (npc) ->
+        npc.original_id == progress.quest.giver_id
+      end)
 
-    case progress.quest.giver_id in npc_ids do
-      true ->
-        progress
-      false ->
+    case npc do
+      nil ->
         socket |> @socket.echo("The quest giver #{Format.npc_name(progress.quest.giver)} cannot be found.")
         :ok
+      _ ->
+        {progress, npc}
     end
   end
 
   @doc """
   Verify the quest is complete
   """
-  @spec check_steps_are_complete(QuestProgress.t(), State.t()) :: :ok | QuestProgress.t()
+  @spec check_steps_are_complete({QuestProgress.t(), NPC.t()}, State.t()) :: :ok | QuestProgress.t()
   def check_steps_are_complete(:ok, _state), do: :ok
-  def check_steps_are_complete(progress, state) do
+  def check_steps_are_complete({progress, npc}, state) do
     case Quest.requirements_complete?(progress, state.save) do
       true ->
-        progress
+        {progress, npc}
       false ->
         response = Format.wrap_lines([
           "You have not completed the requirements for the quest.",
@@ -150,9 +153,9 @@ defmodule Game.Command.Quest do
     end
   end
 
-  @spec complete_quest(QuestProgress.t(), State.t()) :: QuestProgress.t()
+  @spec complete_quest({QuestProgress.t(), NPC.t()}, State.t()) :: QuestProgress.t()
   def complete_quest(:ok, _state), do: :ok
-  def complete_quest(progress, state = %{socket: socket, user: user, save: save}) do
+  def complete_quest({progress, npc}, state = %{socket: socket, user: user, save: save}) do
     %{quest: quest} = progress
 
     case Quest.complete(progress, save) do
@@ -163,6 +166,8 @@ defmodule Game.Command.Quest do
         state = %{state | user: user, save: save}
 
         state = Experience.apply(state, level: quest.level, experience_points: quest.experience)
+
+        npc.id |> @npc.notify({"quest/completed", user, quest})
 
         {:update, state}
       _ ->

@@ -346,6 +346,7 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "Finding a Guard",
       description: "You must find and talk to a guard",
+      completed_message: "You did it!",
       level: 1,
       experience: 100,
       giver_id: giver.id,

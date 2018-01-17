@@ -9,6 +9,7 @@ defmodule Web.QuestTest do
     params = %{
       "name" => "Finding a Guard",
       "description" => "You must go find and talk to a guard",
+      "completed_message" => "Thank goodness you did it",
       "giver_id" => npc.id,
       "level" => 1,
       "experience" => 100,

@@ -6,6 +6,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
       add :giver_id, references(:npcs), null: false
       add :name, :string, null: false
       add :description, :text, null: false
+      add :completed_message, :text, null: false
       add :level, :integer, null: false
       add :experience, :integer, null: false
 

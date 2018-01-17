@@ -3,6 +3,7 @@ defmodule Game.NPC.EventsTest do
 
   @room Test.Game.Room
 
+  alias Game.Channel
   alias Game.Door
   alias Game.Message
   alias Game.NPC.Events
@@ -416,6 +417,26 @@ defmodule Game.NPC.EventsTest do
 
     test "will not move if the random number is over chance" do
       refute Events.say?(%{action: %{chance: 50}}, Test.ChanceFail)
+    end
+  end
+
+  describe "quest/completed" do
+    setup do
+      user = create_user()
+      quest = %{id: 1, completed_message: "Hello"}
+      npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
+      state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
+      event = {"quest/completed", user, quest}
+
+      Channel.join_tell({:user, user})
+
+      %{state: state, event: event}
+    end
+
+    test "sends a tell to the user with the after message", %{state: state, event: event} do
+      :ok = Events.act_on(state, event)
+
+      assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "Hello"}}}
     end
   end
 end
