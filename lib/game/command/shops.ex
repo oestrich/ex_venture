@@ -92,7 +92,6 @@ defmodule Game.Command.Shops do
   def parse("shops show " <> string), do: _parse_shop_command(:show, string, :from)
   def parse("shop show " <> string), do: {:show, string}
   def parse("shop" <> _string), do: {:help}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Handle the common parsing code for an item name and then the shop

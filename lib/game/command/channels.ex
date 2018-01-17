@@ -58,7 +58,6 @@ defmodule Game.Command.Channels do
   def parse("channels on " <> channel), do: {:join, channel}
   def parse("global " <> message), do: {"global", message}
   def parse("newbie " <> message), do: {"newbie", message}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Send to all connected players

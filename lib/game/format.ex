@@ -131,13 +131,13 @@ defmodule Game.Format do
   @spec room(room :: Game.Room.t, items :: [Item.t], map :: String.t) :: String.t
   def room(room, items, map) do
     """
-{green}#{room.name}{/green}
-#{underline(room.name)}
-#{room.description |> wrap()}\n
-#{map}
+    {green}#{room.name}{/green}
+    #{underline(room.name)}
+    #{room.description |> wrap()}\n
+    #{map}
 
-#{who_is_here(room)}
-#{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
+    #{who_is_here(room)}
+    #{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
     """
     |> String.trim
   end

@@ -77,7 +77,6 @@ defmodule Game.Command.Move do
       _ -> {:error, :bad_parse, "close #{direction}"}
     end
   end
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Move in the direction provided

@@ -34,7 +34,6 @@ defmodule Game.Command.Mistake do
   def parse(command)
   def parse("attack" <> _), do: {:auto_combat}
   def parse("kill" <> _), do: {:auto_combat}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @impl Game.Command
   @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok

@@ -43,7 +43,6 @@ defmodule Game.Command.Tell do
   def parse(command)
   def parse("tell " <> message), do: {"tell", message}
   def parse("reply " <> message), do: {"reply", message}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Send to all connected players

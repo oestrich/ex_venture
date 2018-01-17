@@ -44,7 +44,6 @@ defmodule Game.Command.Wear do
   @spec parse(command :: String.t) :: []
   def parse("wear " <> command), do: {:wear, command}
   def parse("remove " <> command), do: {:remove, command}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Put an item in your hands

@@ -11,12 +11,12 @@ defmodule Game.Format.TableTest do
     table = Table.format("Legend", [row1, row2], column_sizes)
 
     assert table == """
-+-----------------------------------+
-| Legend                            |
-+-----------------------------------+
-| Thing      | 5/5   | Column 3     |
-| Another Th | 15/15 |              |
-+-----------------------------------+
+    +-----------------------------------+
+    | Legend                            |
+    +-----------------------------------+
+    | Thing      | 5/5   | Column 3     |
+    | Another Th | 15/15 |              |
+    +-----------------------------------+
     """ |> String.trim
   end
 

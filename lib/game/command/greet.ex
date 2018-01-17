@@ -42,7 +42,6 @@ defmodule Game.Command.Greet do
   def parse(command)
   def parse("greet " <> character), do: {:greet, character}
   def parse("talk to " <> character), do: {:greet, character}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Greet another player

@@ -103,6 +103,9 @@ defmodule Networking.Protocol do
   end
 
   @impl GenServer
+  def init(_), do: {:error, "should not be called"}
+
+  @impl GenServer
   def handle_cast({:command, message, _}, state) do
     send_data(state, message)
     {:noreply, state}

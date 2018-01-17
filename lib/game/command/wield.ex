@@ -42,7 +42,6 @@ defmodule Game.Command.Wield do
   @spec parse(command :: String.t) :: []
   def parse("wield " <> command), do: {:wield, command}
   def parse("unwield " <> command), do: {:unwield, command}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Put an item in your hands

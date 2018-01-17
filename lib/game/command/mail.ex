@@ -42,7 +42,6 @@ defmodule Game.Command.Mail do
   def parse(command)
   def parse("mail"), do: {:unread}
   def parse("mail read " <> id), do: {:read, id}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Send to all connected players

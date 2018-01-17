@@ -17,11 +17,11 @@ defmodule Game.Format.Table do
     |> Enum.join("\n")
 
     """
-#{horizontal_line(width)}
-| #{pad_trailing(legend, width - 4)} |
-#{horizontal_line(width)}
-#{rows}
-#{horizontal_line(width)}
+    #{horizontal_line(width)}
+    | #{pad_trailing(legend, width - 4)} |
+    #{horizontal_line(width)}
+    #{rows}
+    #{horizontal_line(width)}
     """ |> String.trim
   end
 
