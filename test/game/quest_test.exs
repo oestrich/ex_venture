@@ -81,4 +81,40 @@ defmodule Game.QuestTest do
       assert save.items |> length() == 3
     end
   end
+
+  describe "track progress - npc kill" do
+    setup do
+      user = create_user()
+      goblin = create_npc(%{name: "Goblin"})
+      %{user: user, goblin: goblin}
+    end
+
+    test "no current quest that matches", %{user: user, goblin: goblin} do
+      assert :ok = Quest.track_progress(user, {:npc, goblin})
+    end
+
+    test "updates any quest progresses that match the user and the npc", %{user: user, goblin: goblin} do
+      guard = create_npc(%{name: "Guard"})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
+      quest_progress = create_quest_progress(user, quest)
+
+      assert :ok = Quest.track_progress(user, {:npc, goblin})
+
+      quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
+      assert quest_progress.progress == %{npc_step.id => 1}
+    end
+
+    test "ignores steps if they do not match the npc being passed in", %{user: user, goblin: goblin} do
+      guard = create_npc(%{name: "Guard"})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
+      quest_progress = create_quest_progress(user, quest)
+
+      assert :ok = Quest.track_progress(user, {:npc, guard})
+
+      quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
+      assert quest_progress.progress == %{}
+    end
+  end
 end

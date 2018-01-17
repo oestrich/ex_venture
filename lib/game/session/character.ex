@@ -8,6 +8,7 @@ defmodule Game.Session.Character do
   alias Game.Character
   alias Game.Experience
   alias Game.Format
+  alias Game.Quest
   alias Game.Session
   alias Game.Session.Effects
   alias Game.Session.GMCP
@@ -69,7 +70,12 @@ defmodule Game.Session.Character do
   end
   def died(state = %{socket: socket, user: user, target: target}, who) do
     socket |> @socket.echo("#{Format.target_name(who)} has died.")
-    state = apply_experience(state, who)
+
+    state =
+      state
+      |> apply_experience(who)
+      |> track_quest_progress(who)
+
     state |> Session.Process.prompt()
 
     case Character.who(target) == Character.who(who) do
@@ -121,5 +127,14 @@ defmodule Game.Session.Character do
   def apply_experience(state, {:user, _user}), do: state
   def apply_experience(state, {:npc, npc}) do
     Experience.apply(state, level: npc.level, experience_points: npc.experience_points)
+  end
+
+  @doc """
+  Track quest progress if an npc was killed
+  """
+  def track_quest_progress(state, {:user, _user}), do: state
+  def track_quest_progress(state, {:npc, npc}) do
+    Quest.track_progress(state.user, {:npc, npc})
+    state
   end
 end

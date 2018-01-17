@@ -108,4 +108,34 @@ defmodule Game.Quest do
       %{save | items: items}
     end)
   end
+
+  @doc """
+  Track quest progress for the user
+  """
+  @spec track_progress(User.t(), any()) :: :ok
+  def track_progress(user, {:npc, npc}) do
+    QuestProgress
+    |> join(:left, [qp], q in assoc(qp, :quest))
+    |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
+    |> where([qp, q, qs], qp.user_id == ^user.id and qs.type == "npc/kill" and qs.npc_id == ^npc.id)
+    |> select([qp, q, qs], [qp.id, qs.id])
+    |> Repo.all()
+    |> Enum.each(&track_step/1)
+
+    :ok
+  end
+
+  defp track_step([progress_id, step_id]) do
+    quest_progress = Repo.get(QuestProgress, progress_id)
+    step = Repo.get(QuestStep, step_id)
+    step_progress = Map.get(quest_progress.progress, step.id, 0)
+    case step_progress < step.count do
+      false -> :ok
+      true ->
+        progress = quest_progress.progress |> Map.put(step_id, step_progress + 1)
+        quest_progress
+        |> QuestProgress.changeset(%{progress: progress})
+        |> Repo.update()
+    end
+  end
 end
