@@ -54,7 +54,6 @@ defmodule Game.Command.Quest do
   def parse("quest show " <> quest_id), do: {:show, quest_id}
   def parse("quest info " <> quest_id), do: {:show, quest_id}
   def parse("quest complete " <> quest_id), do: {:complete, quest_id}
-  def parse(command), do: {:error, :bad_parse, command}
 
   @doc """
   Questing
