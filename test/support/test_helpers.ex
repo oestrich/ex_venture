@@ -14,6 +14,7 @@ defmodule TestHelpers do
   alias Data.NPCSpawner
   alias Data.Quest
   alias Data.QuestProgress
+  alias Data.QuestRelation
   alias Data.QuestStep
   alias Data.Race
   alias Data.Repo
@@ -363,6 +364,19 @@ defmodule TestHelpers do
     Map.merge(%{
       quest_id: quest.id,
     }, params)
+  end
+
+  def create_quest_relation(quest, parent) do
+    %QuestRelation{}
+    |> QuestRelation.changeset(quest_relation_attributes(quest, parent))
+    |> Repo.insert!
+  end
+
+  def quest_relation_attributes(quest, parent) do
+    %{
+      child_id: quest.id,
+      parent_id: parent.id,
+    }
   end
 
   def create_quest_progress(user, quest, params \\ %{}) do

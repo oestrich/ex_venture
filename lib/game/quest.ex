@@ -5,6 +5,7 @@ defmodule Game.Quest do
 
   import Ecto.Query
 
+  alias Data.Quest
   alias Data.QuestProgress
   alias Data.QuestStep
   alias Data.Repo
@@ -137,5 +138,85 @@ defmodule Game.Quest do
         |> QuestProgress.changeset(%{progress: progress})
         |> Repo.update()
     end
+  end
+
+  @doc """
+  Get the next available quest from the npc
+
+  This will continue to look down all available quests that the NPC could give out until
+  an available one is found.
+  """
+  @spec next_available_quest_from(NPC.t(), User.t()) :: {:ok, Quest.t()} | {:error, :no_quests} | {:error, :in_progress}
+  def next_available_quest_from(npc, user) do
+    Quest
+    |> where([q], q.giver_id == ^npc.id)
+    |> join(:left, [q], qr in assoc(q, :parents))
+    |> having([q, qr], count(qr.id) == 0)
+    |> group_by([q, qr], q.id)
+    |> order_by([q, qr], q.id)
+    |> preload([:children])
+    |> Repo.all()
+    |> _find_next_quest(user)
+  end
+
+  defp _find_next_quest(quests, user) do
+    case _check_quests(quests, user) do
+      nil ->
+        case _check_child_quests(quests, user) do
+          nil ->
+            {:error, :no_quests}
+
+          {:error, :in_progress} ->
+            {:error, :in_progress}
+
+          {:ok, quest} ->
+            {:ok, quest}
+        end
+
+      {:error, :in_progress} ->
+        {:error, :in_progress}
+
+      {:ok, quest} ->
+        {:ok, quest}
+    end
+  end
+
+  defp _check_child_quests(quests, user) do
+    quests = Enum.map(quests, fn (quest) ->
+      quest |> Repo.preload(:children)
+    end)
+
+    quest =
+      Enum.find_value(quests, fn (quest) ->
+        _check_quests(quest.children, user)
+      end)
+
+    case quest do
+      nil ->
+        Enum.find_value(quests, fn (quest) ->
+          _check_child_quests(quest.children, user)
+        end)
+
+      {:error, :in_progress} ->
+        {:error, :in_progress}
+
+      {:ok, quest} ->
+        {:ok, quest}
+    end
+  end
+
+  defp _check_quests(quests, user) do
+    Enum.find_value(quests, fn (quest) ->
+      case progress_for(user, quest.id) do
+        nil ->
+          {:ok, quest}
+
+        %{status: "complete"} ->
+          nil
+
+        %{status: "active"} ->
+          {:error, :in_progress}
+      end
+    end)
   end
 end

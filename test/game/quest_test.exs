@@ -117,4 +117,64 @@ defmodule Game.QuestTest do
       assert quest_progress.progress == %{}
     end
   end
+
+  describe "next available quest" do
+    test "find the next quest available from an NPC" do
+      guard = create_npc(%{name: "Guard"})
+
+      quest1 = create_quest(guard, %{name: "Root 1"})
+      quest2 = create_quest(guard, %{name: "Root 2"})
+      quest3 = create_quest(guard, %{name: "Child Root 1"})
+      create_quest_relation(quest3, quest1)
+      quest4 = create_quest(guard, %{name: "Child Root 2"})
+      create_quest_relation(quest4, quest2)
+      quest5 = create_quest(guard, %{name: "Child Child Root 1"})
+      create_quest_relation(quest5, quest3)
+
+      user = create_user()
+
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      assert next_quest.id == quest1.id
+
+      create_quest_progress(user, quest1, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      assert next_quest.id == quest2.id
+
+      create_quest_progress(user, quest2, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      assert next_quest.id == quest3.id
+
+      create_quest_progress(user, quest3, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      assert next_quest.id == quest4.id
+
+      create_quest_progress(user, quest4, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      assert next_quest.id == quest5.id
+
+      create_quest_progress(user, quest5, %{status: "complete"})
+      assert {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+    end
+
+    test "stops if it hits an in progress quest" do
+      guard = create_npc(%{name: "Guard"})
+
+      quest1 = create_quest(guard, %{name: "Root 1"})
+      quest2 = create_quest(guard, %{name: "Root 2"})
+      quest3 = create_quest(guard, %{name: "Child Root 1"})
+      create_quest_relation(quest3, quest1)
+
+      user = create_user()
+
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      assert next_quest.id == quest1.id
+
+      create_quest_progress(user, quest1, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      assert next_quest.id == quest2.id
+
+      create_quest_progress(user, quest2, %{status: "active"})
+      assert {:error, :in_progress} = Quest.next_available_quest_from(guard, user)
+    end
+  end
 end
