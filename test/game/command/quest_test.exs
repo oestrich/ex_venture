@@ -16,7 +16,7 @@ defmodule Game.Command.QuestTest do
 
   describe "listing out quests" do
     setup do
-      npc = create_npc()
+      npc = create_npc(%{is_quest_giver: true})
       quest = create_quest(npc, %{name: "Into the Dungeon"})
 
       %{npc: npc, quest: quest}
@@ -42,7 +42,7 @@ defmodule Game.Command.QuestTest do
 
   describe "view a quest in more detail" do
     setup do
-      guard = create_npc(%{name: "Guard"})
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
       goblin = create_npc(%{name: "Goblin"})
       quest = create_quest(guard, %{name: "Into the Dungeon"})
       potion = create_item(%{name: "Potion"})
@@ -74,7 +74,7 @@ defmodule Game.Command.QuestTest do
 
   describe "complete a quest" do
     setup %{state: state} do
-      guard = create_npc(%{name: "Guard"})
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
 
       room = Map.merge(@room._room(), %{

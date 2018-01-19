@@ -39,6 +39,14 @@
               <td><%= @quest.description %></td>
             </tr>
             <tr>
+              <th>Completed Message</th>
+              <td><%= @quest.completed_message %></td>
+            </tr>
+            <tr>
+              <th>Conversations</th>
+              <td><pre><%= @quest.conversations |> Poison.encode!(pretty: true) %></pre></td>
+            </tr>
+            <tr>
               <th>Experience</th>
               <td><%= @quest.experience %></td>
             </tr>

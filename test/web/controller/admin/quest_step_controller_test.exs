@@ -2,7 +2,7 @@ defmodule Web.Admin.QuestStepControllerTest do
   use Web.AuthConnCase
 
   test "create a quest step", %{conn: conn} do
-    npc = create_npc()
+    npc = create_npc(%{is_quest_giver: true})
     quest = create_quest(npc, %{name: "Finding a Guard"})
 
     params = %{
@@ -16,7 +16,7 @@ defmodule Web.Admin.QuestStepControllerTest do
   end
 
   test "update a quest step", %{conn: conn} do
-    npc = create_npc()
+    npc = create_npc(%{is_quest_giver: true})
     quest = create_quest(npc, %{name: "Finding a Guard"})
     step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: npc.id})
 
@@ -25,7 +25,7 @@ defmodule Web.Admin.QuestStepControllerTest do
   end
 
   test "delete a quest step", %{conn: conn} do
-    npc = create_npc()
+    npc = create_npc(%{is_quest_giver: true})
     quest = create_quest(npc, %{name: "Finding a Guard"})
     step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: npc.id})
 

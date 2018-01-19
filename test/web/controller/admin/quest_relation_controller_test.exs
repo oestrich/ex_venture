@@ -4,7 +4,7 @@ defmodule Web.Admin.QuestRelationControllerTest do
   alias Web.Quest
 
   test "create a quest relation", %{conn: conn} do
-    npc = create_npc()
+    npc = create_npc(%{is_quest_giver: true})
     quest1 = create_quest(npc, %{name: "Finding a Guard 1"})
     quest2 = create_quest(npc, %{name: "Finding a Guard 2"})
 
@@ -17,7 +17,7 @@ defmodule Web.Admin.QuestRelationControllerTest do
   end
 
   test "delete a quest relation", %{conn: conn} do
-    npc = create_npc()
+    npc = create_npc(%{is_quest_giver: true})
     quest1 = create_quest(npc, %{name: "Finding a Guard 1"})
     quest2 = create_quest(npc, %{name: "Finding a Guard 2"})
 

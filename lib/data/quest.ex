@@ -5,6 +5,7 @@ defmodule Data.Quest do
 
   use Data.Schema
 
+  alias Data.Conversation
   alias Data.NPC
   alias Data.QuestRelation
   alias Data.QuestStep
@@ -15,6 +16,7 @@ defmodule Data.Quest do
     field :completed_message, :string
     field :level, :integer
     field :experience, :integer
+    field :conversations, {:array, Conversation}
 
     belongs_to :giver, NPC
 
@@ -31,8 +33,20 @@ defmodule Data.Quest do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :completed_message, :level, :experience, :giver_id])
-    |> validate_required([:name, :description, :completed_message, :level, :experience, :giver_id])
+    |> cast(params, [:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
+    |> validate_required([:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
+    |> validate_giver_is_a_giver()
     |> foreign_key_constraint(:giver_id)
+  end
+
+  defp validate_giver_is_a_giver(changeset) do
+    case get_field(changeset, :giver_id) do
+      nil -> changeset
+      giver_id ->
+        case Repo.get(NPC, giver_id) do
+          %{is_quest_giver: true} -> changeset
+          _ -> add_error(changeset, :giver_id, "must be marked as a quest giver")
+        end
+    end
   end
 end
