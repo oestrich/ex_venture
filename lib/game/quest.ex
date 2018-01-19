@@ -146,76 +146,40 @@ defmodule Game.Quest do
   This will continue to look down all available quests that the NPC could give out until
   an available one is found.
   """
-  @spec next_available_quest_from(NPC.t(), User.t()) :: {:ok, Quest.t()} | {:error, :no_quests} | {:error, :in_progress}
+  @spec next_available_quest_from(NPC.t(), User.t()) :: {:ok, Quest.t()} | {:error, :no_quests}
   def next_available_quest_from(npc, user) do
+    case find_available_quests(npc, user) do
+      [] ->
+        {:error, :no_quests}
+
+      [quest | _] ->
+        {:ok, quest}
+    end
+  end
+
+  defp find_available_quests(npc, user) do
     Quest
     |> where([q], q.giver_id == ^npc.id)
-    |> join(:left, [q], qr in assoc(q, :parents))
-    |> having([q, qr], count(qr.id) == 0)
-    |> group_by([q, qr], q.id)
-    |> order_by([q, qr], q.id)
-    |> preload([:children])
+    |> preload([:parent_relations])
     |> Repo.all()
-    |> _find_next_quest(user)
+    |> Enum.filter(&filter_progress(&1, user))
+    |> Enum.filter(&filter_parent_not_complete(&1, user))
   end
 
-  defp _find_next_quest(quests, user) do
-    case _check_quests(quests, user) do
-      nil ->
-        case _check_child_quests(quests, user) do
-          nil ->
-            {:error, :no_quests}
-
-          {:error, :in_progress} ->
-            {:error, :in_progress}
-
-          {:ok, quest} ->
-            {:ok, quest}
-        end
-
-      {:error, :in_progress} ->
-        {:error, :in_progress}
-
-      {:ok, quest} ->
-        {:ok, quest}
+  # filter out quests with progress
+  defp filter_progress(quest, user) do
+    case progress_for(user, quest.id) do
+      nil -> true
+      _ -> false
     end
   end
 
-  defp _check_child_quests(quests, user) do
-    quests = Enum.map(quests, fn (quest) ->
-      quest |> Repo.preload(:children)
-    end)
-
-    quest =
-      Enum.find_value(quests, fn (quest) ->
-        _check_quests(quest.children, user)
-      end)
-
-    case quest do
-      nil ->
-        Enum.find_value(quests, fn (quest) ->
-          _check_child_quests(quest.children, user)
-        end)
-
-      {:error, :in_progress} ->
-        {:error, :in_progress}
-
-      {:ok, quest} ->
-        {:ok, quest}
-    end
-  end
-
-  defp _check_quests(quests, user) do
-    Enum.find_value(quests, fn (quest) ->
-      case progress_for(user, quest.id) do
-        nil ->
-          {:ok, quest}
-
-        %{status: "complete"} ->
-          nil
-
-        %{status: "active"} ->
-          {:error, :in_progress}
+  # filter out quests that have incomplete parents
+  defp filter_parent_not_complete(quest, user) do
+    Enum.all?(quest.parent_relations, fn parent_relation ->
+      case progress_for(user, parent_relation.parent_id) do
+        %{status: "complete"} -> true
+        _ -> false
       end
     end)
   end

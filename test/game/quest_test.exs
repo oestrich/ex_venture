@@ -156,13 +156,14 @@ defmodule Game.QuestTest do
       assert {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
     end
 
-    test "stops if it hits an in progress quest" do
+    test "stops if a parent quest is not complete" do
       guard = create_npc(%{name: "Guard"})
 
       quest1 = create_quest(guard, %{name: "Root 1"})
       quest2 = create_quest(guard, %{name: "Root 2"})
       quest3 = create_quest(guard, %{name: "Child Root 1"})
       create_quest_relation(quest3, quest1)
+      create_quest_relation(quest3, quest2)
 
       user = create_user()
 
@@ -174,7 +175,27 @@ defmodule Game.QuestTest do
       assert next_quest.id == quest2.id
 
       create_quest_progress(user, quest2, %{status: "active"})
-      assert {:error, :in_progress} = Quest.next_available_quest_from(guard, user)
+      assert {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+    end
+
+    test "can find a quest that is in the middle of a quest chain" do
+      guard = create_npc(%{name: "Guard"})
+      captain = create_npc(%{name: "Captain"})
+
+      quest1 = create_quest(guard, %{name: "Root 1"})
+      quest2 = create_quest(guard, %{name: "Root 2"})
+      quest3 = create_quest(captain, %{name: "Child Root 1"})
+      create_quest_relation(quest3, quest1)
+
+      user = create_user()
+
+      create_quest_progress(user, quest1, %{status: "complete"})
+      create_quest_progress(user, quest2, %{status: "complete"})
+
+      {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+
+      {:ok, next_quest} = Quest.next_available_quest_from(captain, user)
+      assert next_quest.id == quest3.id
     end
   end
 end
