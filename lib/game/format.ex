@@ -288,7 +288,7 @@ defmodule Game.Format do
   The status of an NPC
   """
   def npc_status(npc) do
-    template(npc.status_line, %{name: npc_name(npc)})
+    template(npc.status_line, %{name: npc_name_for_status(npc)})
   end
 
   @doc """
@@ -578,6 +578,13 @@ defmodule Game.Format do
   """
   @spec npc_name(NPC.t()) :: String.t()
   def npc_name(npc), do: "{yellow}#{npc.name}{/yellow}"
+
+  def npc_name_for_status(npc) do
+    case Map.get(npc, :is_quest_giver, false) do
+      true -> "#{npc_name(npc)} ({yellow}!{/yellow})"
+      false -> npc_name(npc)
+    end
+  end
 
   @doc """
   Format an items name, cyan

@@ -257,4 +257,23 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r(Kill {yellow}Goblin{/yellow} - 2/3), Format.quest_detail(progress, save))
     end
   end
+
+  describe "npc status line" do
+    setup do
+      npc = %{name: "Guard", is_quest_giver: false, status_line: "{name} is here."}
+
+      %{npc: npc}
+    end
+
+    test "templates the name in", %{npc: npc} do
+      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow}"
+      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} is here."
+    end
+
+    test "if a quest giver it includes a quest mark", %{npc: npc} do
+      npc = %{npc | is_quest_giver: true}
+      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow} (!)"
+      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} (!) is here."
+    end
+  end
 end
