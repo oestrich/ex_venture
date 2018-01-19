@@ -272,8 +272,8 @@ defmodule Game.FormatTest do
 
     test "if a quest giver it includes a quest mark", %{npc: npc} do
       npc = %{npc | is_quest_giver: true}
-      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow} (!)"
-      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} (!) is here."
+      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow} ({yellow}!{/yellow})"
+      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} ({yellow}!{/yellow}) is here."
     end
   end
 end
