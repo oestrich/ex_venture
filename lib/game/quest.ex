@@ -32,11 +32,12 @@ defmodule Game.Quest do
     QuestProgress
     |> where([qp], qp.user_id == ^user.id and qp.quest_id == ^quest_id)
     |> preloads()
-    |> preload([quest: [quest_steps: [:item, :npc]]])
     |> Repo.one()
   end
 
-  defp preloads(quest), do: quest |> preload([quest: [:giver]])
+  defp preloads(quest) do
+    quest |> preload([quest: [:giver, quest_steps: [:item, :npc]]])
+  end
 
   @doc """
   Start a quest for a user

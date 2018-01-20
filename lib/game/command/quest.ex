@@ -44,6 +44,8 @@ defmodule Game.Command.Quest do
 
       iex> Game.Command.Quest.parse("quest complete 10")
       {:complete, "10"}
+      iex> Game.Command.Quest.parse("quest complete")
+      {:complete, :any}
 
       iex> Game.Command.Channels.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
@@ -54,6 +56,7 @@ defmodule Game.Command.Quest do
   def parse("quests"), do: {:list, :active}
   def parse("quest show " <> quest_id), do: {:show, quest_id}
   def parse("quest info " <> quest_id), do: {:show, quest_id}
+  def parse("quest complete"), do: {:complete, :any}
   def parse("quest complete " <> quest_id), do: {:complete, quest_id}
 
   @doc """
@@ -80,6 +83,18 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo(Format.quest_detail(progress, save))
     end
     :ok
+  end
+
+  # find quests that are completed and see if npc in the room
+  def run({:complete, :any}, session, state = %{socket: socket, user: user, save: save}) do
+    room = @room.look(save.room_id)
+    npc_ids = Enum.map(room.npcs, &(&1.original_id))
+
+    user
+    |> Quest.for()
+    |> find_active_quests_for_room(npc_ids, socket)
+    |> filter_for_ready_to_complete(save)
+    |> maybe_complete(session, state)
   end
 
   def run({:complete, quest_id}, _session, state = %{socket: socket, user: user}) do
@@ -175,4 +190,27 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo("Something went wrong, please contact the administrators if you encounter a problem again.")
     end
   end
+
+  defp find_active_quests_for_room([], _npc_ids, socket) do
+    socket |> @socket.echo("You have no quests to complete")
+    :ok
+  end
+  defp find_active_quests_for_room(quest_progress, npc_ids, _) do
+    Enum.filter(quest_progress, fn progress ->
+      progress.quest.giver_id in npc_ids
+    end)
+  end
+
+  defp filter_for_ready_to_complete(:ok, _), do: :ok
+  defp filter_for_ready_to_complete(quest_progress, save) do
+    Enum.find(quest_progress, fn progress ->
+      Quest.requirements_complete?(progress, save)
+    end)
+  end
+
+  defp maybe_complete(:ok, _, _), do: :ok
+  defp maybe_complete(nil, _, %{socket: socket}) do
+    socket |> @socket.echo("You cannot complete a quest in this room. Find the quest giver.")
+  end
+  defp maybe_complete(progress, session, state), do: run({:complete, progress.quest_id}, session, state)
 end

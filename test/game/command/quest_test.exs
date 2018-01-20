@@ -152,5 +152,65 @@ defmodule Game.Command.QuestTest do
       [{_, quest}] = @socket.get_echos()
       assert Regex.match?(~r/You have not started this quest/, quest)
     end
+
+    test "completing a quest with a shortcut command", %{session: session, state: state, quest: quest} do
+      create_quest_progress(state.user, quest)
+
+      {:update, _state} = Quest.run({:complete, :any}, session, state)
+
+      [{_, quest}, {_, _experience}] = @socket.get_echos()
+      assert Regex.match?(~r/quest complete/i, quest)
+      assert Regex.match?(~r/25 gold/i, quest)
+    end
+  end
+
+  describe "completing a quest with a shortcut" do
+    setup %{state: state} do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
+
+      room = Map.merge(@room._room(), %{
+        npcs: [Map.put(guard, :original_id, guard.id)],
+      })
+      @room.set_room(room)
+      @npc.clear_notifies()
+
+      state = state |> Map.put(:save, %{room_id: 1, level: 1, experience_points: 20, currency: 15})
+
+      %{quest: quest, guard: guard, state: state}
+    end
+
+    test "finds any ready to finish quest with an NPC in the room", %{session: session, state: state, quest: quest, guard: guard} do
+      second_quest = create_quest(guard)
+
+      goblin = create_npc(%{name: "Goblin"})
+      create_quest_step(second_quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
+
+      create_quest_progress(state.user, quest)
+      create_quest_progress(state.user, second_quest)
+
+      {:update, _state} = Quest.run({:complete, :any}, session, state)
+
+      [{_, quest}, {_, _experience}] = @socket.get_echos()
+      assert Regex.match?(~r/quest complete/i, quest)
+      assert Regex.match?(~r/25 gold/i, quest)
+    end
+
+    test "responds if you have no quests available to complete", %{session: session, state: state} do
+      :ok = Quest.run({:complete, :any}, session, state)
+
+      [{_, quest}] = @socket.get_echos()
+      assert Regex.match?(~r/no quests/i, quest)
+    end
+
+    test "handles no npc in the room to hand in to", %{session: session, state: state, quest: quest} do
+      create_quest_progress(state.user, quest)
+      @room.set_room(Map.merge(@room._room(), %{npcs: []}))
+
+      :ok = Quest.run({:complete, :any}, session, state)
+
+      [{_, quest}] = @socket.get_echos()
+      assert Regex.match?(~r/find the quest giver/i, quest)
+    end
   end
 end
