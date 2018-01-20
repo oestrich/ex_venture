@@ -4,7 +4,6 @@ defmodule Data.Script.Line do
   """
 
   import Data.Type
-  import Ecto.Changeset
 
   @enforce_keys [:key, :message]
   defstruct [:key, :message, :unknown, :trigger, listeners: []]
