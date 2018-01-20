@@ -6,6 +6,7 @@ defmodule Data.User do
   use Data.Schema
 
   alias Data.Class
+  alias Data.QuestProgress
   alias Data.Race
   alias Data.Save
   alias Data.User.Session
@@ -25,6 +26,7 @@ defmodule Data.User do
     belongs_to :race, Race
 
     has_many :sessions, Session
+    has_many :quest_progress, QuestProgress
 
     timestamps()
   end

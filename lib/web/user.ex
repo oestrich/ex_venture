@@ -71,6 +71,7 @@ defmodule Web.User do
     User
     |> where([u], u.id == ^id)
     |> preload([:class, :race, sessions: ^(from s in User.Session, order_by: [desc: s.started_at], limit: 10)])
+    |> preload([quest_progress: [:quest]])
     |> Repo.one()
   end
 
