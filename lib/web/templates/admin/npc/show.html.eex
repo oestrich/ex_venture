@@ -51,6 +51,10 @@
               <td><%= @npc.currency %></td>
             </tr>
             <tr>
+              <th>Is a quest giver?</th>
+              <td><%= @npc.is_quest_giver %></td>
+            </tr>
+            <tr>
               <th>Notes</th>
               <td><%= @npc.notes %></td>
             </tr>

@@ -13,6 +13,8 @@ defmodule TestHelpers do
   alias Data.NPCItem
   alias Data.NPCSpawner
   alias Data.Quest
+  alias Data.QuestProgress
+  alias Data.QuestRelation
   alias Data.QuestStep
   alias Data.Race
   alias Data.Repo
@@ -345,6 +347,8 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "Finding a Guard",
       description: "You must find and talk to a guard",
+      completed_message: "You did it!",
+      conversations: [%Data.Conversation{key: "start", message: "hello", trigger: "quest"}],
       level: 1,
       experience: 100,
       giver_id: giver.id,
@@ -360,6 +364,34 @@ defmodule TestHelpers do
   def quest_step_attributes(quest, params) do
     Map.merge(%{
       quest_id: quest.id,
+    }, params)
+  end
+
+  def create_quest_relation(quest, parent) do
+    %QuestRelation{}
+    |> QuestRelation.changeset(quest_relation_attributes(quest, parent))
+    |> Repo.insert!
+  end
+
+  def quest_relation_attributes(quest, parent) do
+    %{
+      child_id: quest.id,
+      parent_id: parent.id,
+    }
+  end
+
+  def create_quest_progress(user, quest, params \\ %{}) do
+    %QuestProgress{}
+    |> QuestProgress.changeset(quest_progress_attributes(user, quest, params))
+    |> Repo.insert!
+  end
+
+  def quest_progress_attributes(user, quest, params) do
+    Map.merge(%{
+      user_id: user.id,
+      quest_id: quest.id,
+      status: "active",
+      progress: %{},
     }, params)
   end
 end

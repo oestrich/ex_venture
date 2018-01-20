@@ -7,7 +7,7 @@ defmodule Data.Conversation do
   import Ecto.Changeset
 
   @enforce_keys [:key, :message]
-  defstruct [:key, :message, :unknown, listeners: []]
+  defstruct [:key, :message, :unknown, :trigger, listeners: []]
 
   @type t() :: map()
 
@@ -80,12 +80,17 @@ defmodule Data.Conversation do
       iex> Data.Conversation.valid?(%{key: "start", message: "hi", listeners: [%{phrase: "hi"}]})
       false
 
+  For a quest
+
+      iex> Data.Conversation.valid?(%{key: "start", message: "Hello", trigger: "quest"})
+      true
+
       iex> Data.Conversation.valid?(%{key: "start"})
       false
   """
   @spec valid?(conversation :: t) :: boolean
   def valid?(conversation) do
-    Enum.all?(keys(conversation), fn (key) -> key in [:key, :message, :listeners, :unknown] end) &&
+    Enum.all?(keys(conversation), fn (key) -> key in [:key, :message, :listeners, :unknown, :trigger] end) &&
       Enum.all?([:key, :message], fn (key) -> key in keys(conversation) end) &&
       valid_listeners?(conversation)
   end
@@ -96,6 +101,40 @@ defmodule Data.Conversation do
     end)
   end
   def valid_listeners?(_), do: true
+
+  @doc """
+  Validate that the conversation is good to use for an npc. None of the conversations
+  can have a `trigger: "quest"` in them.
+
+      iex> Data.Conversation.valid_for_npc?([%Data.Conversation{key: "start", message: "Hello", trigger: "quest"}])
+      false
+
+      iex> Data.Conversation.valid_for_npc?([%Data.Conversation{key: "start", message: "Hello"}])
+      true
+  """
+  @spec valid_for_npc?([t()]) :: boolean()
+  def valid_for_npc?(conversations) do
+    Enum.all?(conversations, fn conversation ->
+      conversation.trigger != "quest"
+    end)
+  end
+
+  @doc """
+  Validate that the conversation is good to use for a quest. Any of the conversations
+  must have a `trigger: "quest"` in them.
+
+      iex> Data.Conversation.valid_for_quest?([%Data.Conversation{key: "start", message: "Hello", trigger: "quest"}])
+      true
+
+      iex> Data.Conversation.valid_for_quest?([%Data.Conversation{key: "start", message: "Hello"}])
+      false
+  """
+  @spec valid_for_quest?([t()]) :: boolean()
+  def valid_for_quest?(conversations) do
+    Enum.any?(conversations, fn conversation ->
+      conversation.trigger == "quest"
+    end)
+  end
 
   @doc """
   Validate conversations of the NPC

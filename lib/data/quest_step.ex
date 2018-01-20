@@ -33,6 +33,8 @@ defmodule Data.QuestStep do
     |> foreign_key_constraint(:quest_id)
     |> foreign_key_constraint(:item_id)
     |> foreign_key_constraint(:npc_id)
+    |> unique_constraint(:item_id, name: :quest_steps_quest_id_item_id_index)
+    |> unique_constraint(:npc_id, name: :quest_steps_quest_id_npc_id_index)
   end
 
   def validate_type(changeset) do

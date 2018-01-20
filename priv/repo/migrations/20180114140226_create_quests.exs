@@ -6,6 +6,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
       add :giver_id, references(:npcs), null: false
       add :name, :string, null: false
       add :description, :text, null: false
+      add :completed_message, :text, null: false
       add :level, :integer, null: false
       add :experience, :integer, null: false
 
@@ -22,6 +23,9 @@ defmodule Data.Repo.Migrations.CreateQuests do
       timestamps()
     end
 
+    create index(:quest_steps, [:quest_id, :npc_id], unique: true)
+    create index(:quest_steps, [:quest_id, :item_id], unique: true)
+
     create table(:quest_relations) do
       add :parent_id, references(:quests), null: false
       add :child_id, references(:quests), null: false
@@ -31,7 +35,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
 
     create index(:quest_relations, [:parent_id, :child_id], unique: true)
 
-    create table(:player_quests) do
+    create table(:quest_progress) do
       add :quest_id, references(:quests), null: false
       add :user_id, references(:users), null: false
       add :status, :string, null: false
@@ -39,5 +43,7 @@ defmodule Data.Repo.Migrations.CreateQuests do
 
       timestamps()
     end
+
+    create index(:quest_progress, [:user_id, :quest_id], unique: true)
   end
 end

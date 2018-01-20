@@ -68,7 +68,7 @@
 
             <div class="form-group">
               <%= label :quest, :giver_id, "Giver NPC" %>
-              <%= select :quest, :giver_id, NPC.for_select(), value: @filter["giver_id"], class: "form-control" %>
+              <%= select :quest, :giver_id, NPC.for_quest_select(), value: @filter["giver_id"], class: "form-control" %>
             </div>
 
             <div class="form-group">

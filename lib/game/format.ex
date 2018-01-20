@@ -14,8 +14,9 @@ defmodule Game.Format do
   alias Data.Save
   alias Data.Skill
   alias Game.Color
-  alias Game.Format.Table
   alias Game.Door
+  alias Game.Format.Table
+  alias Game.Quest
 
   @doc """
   Template a string
@@ -183,6 +184,16 @@ defmodule Game.Format do
     |> _wrap("", "")
   end
 
+  @doc """
+  Wraps a list of text
+  """
+  @spec wrap_lines([String.t]) :: String.t
+  def wrap_lines(lines) do
+    lines
+    |> Enum.join(" ")
+    |> wrap()
+  end
+
   defp _wrap([], line, string), do: join(string, line, "\n")
   defp _wrap([word | left], line, string) do
     test_line = "#{line} #{word}" |> Color.strip_color()
@@ -277,7 +288,7 @@ defmodule Game.Format do
   The status of an NPC
   """
   def npc_status(npc) do
-    template(npc.status_line, %{name: npc_name(npc)})
+    template(npc.status_line, %{name: npc_name_for_status(npc)})
   end
 
   @doc """
@@ -568,6 +579,23 @@ defmodule Game.Format do
   @spec npc_name(NPC.t()) :: String.t()
   def npc_name(npc), do: "{yellow}#{npc.name}{/yellow}"
 
+  def npc_name_for_status(npc) do
+    case Map.get(npc, :is_quest_giver, false) do
+      true -> "#{npc_name(npc)} ({yellow}!{/yellow})"
+      false -> npc_name(npc)
+    end
+  end
+
+  @doc """
+  Format a quest name
+
+    iex> Game.Format.quest_name(%{name: "Into the Dungeon"})
+    "{yellow}Into the Dungeon{/yellow}"
+  """
+  def quest_name(quest) do
+    "{yellow}#{quest.name}{/yellow}"
+  end
+
   @doc """
   Format an items name, cyan
 
@@ -668,5 +696,49 @@ defmodule Game.Format do
   def display_mail(mail) do
     title = "#{mail.id} - #{player_name(mail.sender)} - #{mail.title}"
     "#{title}\n#{underline(title)}\n\n#{mail.body}"
+  end
+
+  @doc """
+  Format the status of a user's quests
+  """
+  @spec quest_progress([QuestProgress.t()]) :: String.t()
+  def quest_progress(quests) do
+    rows =
+      quests
+      |> Enum.map(fn (%{status: status, quest: quest}) ->
+        [to_string(quest.id), quest.name, quest.giver.name, status]
+      end)
+
+    Table.format("You have #{length(quests)} active quests.", rows, [5, 30, 20, 10])
+  end
+
+  @doc """
+  Format the status of a user's quest
+  """
+  @spec quest_detail(QuestProgress.t(), Save.t()) :: String.t()
+  def quest_detail(progress, save) do
+    %{quest: quest} = progress
+    steps = quest.quest_steps |> Enum.map(&(quest_step(&1, progress, save)))
+    header = "#{quest.name} - #{progress.status}"
+
+    """
+    #{header}
+    #{header |> underline()}
+
+    #{quest.description |> wrap()}
+
+    #{steps |> Enum.join("\n")}
+    """ |> String.trim()
+  end
+
+  defp quest_step(step, progress, save) do
+    case step.type do
+      "item/collect" ->
+        current_step_progress = Quest.current_step_progress(step, progress, save)
+        " - Collect #{item_name(step.item)} - #{current_step_progress}/#{step.count}"
+      "npc/kill" ->
+        current_step_progress = Quest.current_step_progress(step, progress, save)
+        " - Kill #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
+    end
   end
 end

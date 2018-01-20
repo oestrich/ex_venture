@@ -10,6 +10,7 @@ defmodule Game.NPC.Events do
   alias Data.Event
   alias Data.Exit
   alias Data.Room
+  alias Game.Channel
   alias Game.Character
   alias Game.Door
   alias Game.Format
@@ -71,6 +72,17 @@ defmodule Game.NPC.Events do
       |> Enum.reduce(state, (&(act_on_tick(&2, &1))))
 
     {:update, state}
+  end
+  def act_on(%{npc: npc}, {"quest/completed", user, quest}) do
+    broadcast(npc, "quest/completed", %{
+      user: %{id: user.id, name: user.name},
+      quest: %{id: quest.id},
+    })
+
+    message = Message.npc_tell(npc, quest.completed_message)
+    Channel.tell({:user, user}, {:npc, npc}, message)
+
+    :ok
   end
   def act_on(_, _), do: :ok
 

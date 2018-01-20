@@ -86,6 +86,7 @@ defmodule Game.Command do
     Command.Map,
     Command.Mistake,
     Command.PickUp,
+    Command.Quest,
     Command.Quit,
     Command.Shops,
     Command.Tell,

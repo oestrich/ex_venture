@@ -54,6 +54,19 @@ defmodule Web.NPC do
   end
 
   @doc """
+  List out all npcs for a select box, that are quest givers
+  """
+  @spec for_quest_select() :: [{String.t, integer()}]
+  def for_quest_select() do
+    NPC
+    |> select([n], [n.name, n.id])
+    |> where([n], n.is_quest_giver == true)
+    |> order_by([n], n.id)
+    |> Repo.all()
+    |> Enum.map(&List.to_tuple/1)
+  end
+
+  @doc """
   Get a npc
   """
   @spec get(id :: integer) :: [NPC.t]

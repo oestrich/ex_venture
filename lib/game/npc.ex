@@ -301,6 +301,7 @@ defmodule Game.NPC do
 
   defp customize_npc(npc_spawner, npc) do
     npc
+    |> Map.put(:original_id, npc.id)
     |> Map.put(:id, npc_spawner.id)
     |> maybe_copy_name(npc_spawner)
   end

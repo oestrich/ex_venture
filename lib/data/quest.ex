@@ -5,6 +5,7 @@ defmodule Data.Quest do
 
   use Data.Schema
 
+  alias Data.Conversation
   alias Data.NPC
   alias Data.QuestRelation
   alias Data.QuestStep
@@ -12,8 +13,10 @@ defmodule Data.Quest do
   schema "quests" do
     field :name, :string
     field :description, :string
+    field :completed_message, :string
     field :level, :integer
     field :experience, :integer
+    field :conversations, {:array, Conversation}
 
     belongs_to :giver, NPC
 
@@ -30,8 +33,36 @@ defmodule Data.Quest do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :level, :experience, :giver_id])
-    |> validate_required([:name, :description, :level, :experience, :giver_id])
+    |> cast(params, [:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
+    |> validate_required([:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
+    |> validate_giver_is_a_giver()
+    |> Conversation.validate_conversations()
+    |> validate_conversations()
     |> foreign_key_constraint(:giver_id)
+  end
+
+  defp validate_giver_is_a_giver(changeset) do
+    case get_field(changeset, :giver_id) do
+      nil -> changeset
+      giver_id ->
+        case Repo.get(NPC, giver_id) do
+          %{is_quest_giver: true} -> changeset
+          _ -> add_error(changeset, :giver_id, "must be marked as a quest giver")
+        end
+    end
+  end
+
+  defp validate_conversations(changeset) do
+    case get_field(changeset, :conversations) do
+      nil -> changeset
+      conversations -> _validate_conversations(changeset, conversations)
+    end
+  end
+
+  defp _validate_conversations(changeset, conversations) do
+    case Conversation.valid_for_quest?(conversations) do
+      true -> changeset
+      false -> add_error(changeset, :conversations, "must include one conversation that has a trigger with quest")
+    end
   end
 end

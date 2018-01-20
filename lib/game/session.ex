@@ -6,6 +6,7 @@ defmodule Game.Session do
   @type t :: pid
 
   alias Data.User
+  alias Game.Session
   alias Game.Session.Supervisor
 
   @doc """
@@ -62,6 +63,19 @@ defmodule Game.Session do
   Notify the session of an event, e.g. someone left the room
   """
   @spec notify(pid, action :: tuple()) :: :ok
+  def notify(user = %User{}, action) do
+    player =
+      Session.Registry.connected_players()
+      |> Enum.find(fn ({_, connected_user}) ->
+        connected_user.id == user.id
+      end)
+
+    case player do
+      nil -> :ok
+      {pid, _} ->
+        GenServer.cast(pid, {:notify, action})
+    end
+  end
   def notify(pid, action) do
     GenServer.cast(pid, {:notify, action})
   end

@@ -213,4 +213,67 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r/unlimited/, Format.list_shop(shop, items))
     end
   end
+
+  describe "quest details" do
+    setup do
+      guard = %{name: "Guard"}
+      goblin = %{name: "Goblin"}
+      potion = %{id: 5, name: "Potion"}
+
+      step1 = %{id: 1, type: "npc/kill", count: 3, npc: goblin}
+      step2 = %{id: 2, type: "item/collect", count: 4, item: potion, item_id: potion.id}
+
+      quest = %{
+        id: 1,
+        name: "Into the Dungeon",
+        description: "Dungeon delving",
+        giver: guard,
+        quest_steps: [step1, step2],
+      }
+
+      progress = %{status: "active", progress: %{step1.id => 2}, quest: quest}
+      save = %{items: [%{id: potion.id}, %{id: potion.id}]}
+
+      %{quest: quest, progress: progress, save: save}
+    end
+
+    test "includes quest name", %{progress: progress, save: save} do
+      assert Regex.match?(~r/Into the Dungeon/, Format.quest_detail(progress, save))
+    end
+
+    test "includes quest description", %{progress: progress, save: save} do
+      assert Regex.match?(~r/Dungeon delving/, Format.quest_detail(progress, save))
+    end
+
+    test "includes quest status", %{progress: progress, save: save} do
+      assert Regex.match?(~r/active/, Format.quest_detail(progress, save))
+    end
+
+    test "includes npc step", %{progress: progress, save: save} do
+      assert Regex.match?(~r(Collect {cyan}Potion{/cyan} - 2/4), Format.quest_detail(progress, save))
+    end
+
+    test "includes item step", %{progress: progress, save: save} do
+      assert Regex.match?(~r(Kill {yellow}Goblin{/yellow} - 2/3), Format.quest_detail(progress, save))
+    end
+  end
+
+  describe "npc status line" do
+    setup do
+      npc = %{name: "Guard", is_quest_giver: false, status_line: "{name} is here."}
+
+      %{npc: npc}
+    end
+
+    test "templates the name in", %{npc: npc} do
+      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow}"
+      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} is here."
+    end
+
+    test "if a quest giver it includes a quest mark", %{npc: npc} do
+      npc = %{npc | is_quest_giver: true}
+      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow} ({yellow}!{/yellow})"
+      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} ({yellow}!{/yellow}) is here."
+    end
+  end
 end

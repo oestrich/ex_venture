@@ -4,11 +4,15 @@ defmodule Web.QuestTest do
   alias Web.Quest
 
   test "creating a quest" do
-    npc = create_npc()
+    npc = create_npc(%{is_quest_giver: true})
 
     params = %{
       "name" => "Finding a Guard",
       "description" => "You must go find and talk to a guard",
+      "completed_message" => "Thank goodness you did it",
+      "conversations" => [
+        %{"key" => "start", "message" => "Hi", "trigger" => "quest"},
+      ] |> Poison.encode!(),
       "giver_id" => npc.id,
       "level" => 1,
       "experience" => 100,
@@ -20,7 +24,7 @@ defmodule Web.QuestTest do
   end
 
   test "updating a quest" do
-    npc = create_npc()
+    npc = create_npc(%{is_quest_giver: true})
     quest = create_quest(npc, %{name: "Finding a Guard"})
 
     {:ok, quest} = Quest.update(quest.id, %{name: "Kill a Guard"})
@@ -30,7 +34,7 @@ defmodule Web.QuestTest do
 
   describe "quest steps" do
     setup do
-      npc = create_npc()
+      npc = create_npc(%{is_quest_giver: true})
       quest = create_quest(npc, %{name: "Finding a Guard"})
       %{quest: quest, npc: npc}
     end
@@ -59,7 +63,7 @@ defmodule Web.QuestTest do
 
   describe "quest relations" do
     setup do
-      %{npc: create_npc()}
+      %{npc: create_npc(%{is_quest_giver: true})}
     end
 
     test "add a quest relation", %{npc: npc} do

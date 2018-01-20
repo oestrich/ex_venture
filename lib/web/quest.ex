@@ -5,6 +5,7 @@ defmodule Web.Quest do
 
   import Ecto.Query
 
+  alias Data.Conversation
   alias Data.Quest
   alias Data.QuestRelation
   alias Data.QuestStep
@@ -92,7 +93,7 @@ defmodule Web.Quest do
   @spec create(map) :: {:ok, Quest.t} | {:error, Ecto.Changeset.t()}
   def create(params) do
     %Quest{}
-    |> Quest.changeset(params)
+    |> Quest.changeset(cast_params(params))
     |> Repo.insert()
   end
 
@@ -103,8 +104,39 @@ defmodule Web.Quest do
   def update(id, params) do
     id
     |> get()
-    |> Quest.changeset(params)
+    |> Quest.changeset(cast_params(params))
     |> Repo.update
+  end
+
+  @doc """
+  Cast params into what `Data.Quest` expects
+  """
+  @spec cast_params(params :: map) :: map
+  def cast_params(params) do
+    params
+    |> parse_conversations()
+  end
+
+  defp parse_conversations(params = %{"conversations" => conversations}) do
+    case Poison.decode(conversations) do
+      {:ok, conversations} -> conversations |> cast_conversations(params)
+      _ -> params
+    end
+  end
+  defp parse_conversations(params), do: params
+
+  defp cast_conversations(conversations, params) do
+    conversations =
+      conversations
+      |> Enum.map(fn (conversation) ->
+        case Conversation.load(conversation) do
+          {:ok, conversation} -> conversation
+          _ -> nil
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
+
+    Map.put(params, "conversations", conversations)
   end
 
   #

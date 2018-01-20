@@ -52,6 +52,13 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :is_quest_giver do %>
+          <%= checkbox f, :is_quest_giver %> Is a quest giver?
+        <% end %>
+        <%= error_tag f, :is_quest_giver %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :stats %>
         <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 12 %>
         <%= error_tag f, :stats %>
