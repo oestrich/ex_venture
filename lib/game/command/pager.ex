@@ -54,7 +54,7 @@ defmodule Game.Command.Pager do
       0 ->
         state |> quit()
       _ ->
-        socket |> @socket.prompt("Pager: [Enter, All, Quit] > ")
+        socket |> @socket.prompt("Pager: [{white}Enter{/white}, {white}All{/white}, {white}Quit{/white}] > ")
 
         to_save = Enum.join(to_save, "\n")
 
