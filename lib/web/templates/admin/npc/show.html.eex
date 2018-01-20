@@ -56,7 +56,11 @@
             </tr>
             <tr>
               <th>Notes</th>
-              <td><%= @npc.notes %></td>
+              <td>
+                <%= if @npc.notes != nil do %>
+                  <%= Earmark.as_html!(@npc.notes) |> raw() %>
+                <% end %>
+              </td>
             </tr>
             <tr>
               <th>Status Line</th>
