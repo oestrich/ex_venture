@@ -36,6 +36,8 @@ defmodule Data.Quest do
     |> cast(params, [:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
     |> validate_required([:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
     |> validate_giver_is_a_giver()
+    |> Conversation.validate_conversations()
+    |> validate_conversations()
     |> foreign_key_constraint(:giver_id)
   end
 
@@ -47,6 +49,20 @@ defmodule Data.Quest do
           %{is_quest_giver: true} -> changeset
           _ -> add_error(changeset, :giver_id, "must be marked as a quest giver")
         end
+    end
+  end
+
+  defp validate_conversations(changeset) do
+    case get_field(changeset, :conversations) do
+      nil -> changeset
+      conversations -> _validate_conversations(changeset, conversations)
+    end
+  end
+
+  defp _validate_conversations(changeset, conversations) do
+    case Conversation.valid_for_quest?(conversations) do
+      true -> changeset
+      false -> add_error(changeset, :conversations, "must include one conversation that has a trigger with quest")
     end
   end
 end

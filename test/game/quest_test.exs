@@ -5,6 +5,19 @@ defmodule Game.QuestTest do
   alias Data.QuestStep
   alias Game.Quest
 
+  describe "start tracking a quest" do
+    test "creates a new quest progress record" do
+      guard = create_npc(%{is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon"})
+
+      user = create_user()
+
+      assert :ok = Quest.start_quest(user, quest)
+
+      assert Quest.progress_for(user, quest.id)
+    end
+  end
+
   describe "current step progress" do
     test "item/collect - no progress on a step yet" do
       step = %QuestStep{type: "item/collect", item_id: 1}

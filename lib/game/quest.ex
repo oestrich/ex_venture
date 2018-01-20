@@ -10,6 +10,7 @@ defmodule Game.Quest do
   alias Data.QuestStep
   alias Data.Repo
   alias Data.User
+  alias Game.Session
 
   @doc """
   Get quests for a user, loads from their quest progress.
@@ -36,6 +37,31 @@ defmodule Game.Quest do
   end
 
   defp preloads(quest), do: quest |> preload([quest: [:giver]])
+
+  @doc """
+  Start a quest for a user
+  """
+  @spec start_quest(User.t(), Quest.t()) :: :ok
+  def start_quest(user, quest_id) when is_integer(quest_id) do
+    quest = Quest |> Repo.get(quest_id)
+    start_quest(user, quest)
+  end
+  def start_quest(user, quest) do
+    changeset =
+      %QuestProgress{}
+      |> QuestProgress.changeset(%{
+        user_id: user.id,
+        quest_id: quest.id,
+        status: "active",
+      })
+
+    case changeset |> Repo.insert() do
+      {:ok, _} ->
+        Session.notify(user, {"quest/new", quest})
+        :ok
+      {:error, _} -> :error
+    end
+  end
 
   @doc """
   Get the current progress of a user on a given step of a quest

@@ -104,7 +104,7 @@ defmodule Web.Quest do
   def update(id, params) do
     id
     |> get()
-    |> Quest.changeset(params)
+    |> Quest.changeset(cast_params(params))
     |> Repo.update
   end
 

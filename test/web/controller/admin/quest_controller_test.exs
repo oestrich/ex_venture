@@ -9,7 +9,7 @@ defmodule Web.Admin.QuestControllerTest do
       "description" => "A quest",
       "completed_message" => "The quest is done",
       "conversations" => [
-        %{"key" => "start", "message" => "Hi"},
+        %{"key" => "start", "message" => "Hi", "trigger" => "quest"},
       ] |> Poison.encode!(),
       "level" => 1,
       "experience" => 100,

@@ -5,6 +5,7 @@ defmodule Game.NPC.ConversationTest do
   alias Game.Message
   alias Game.NPC.Conversation
   alias Game.NPC.State
+  alias Game.Quest
 
   describe "starting a new conversation" do
     setup do
@@ -71,7 +72,7 @@ defmodule Game.NPC.ConversationTest do
 
       state = %State{
         npc: npc,
-        conversations: %{user.id => %{key: "start"}}
+        conversations: %{user.id => %{key: "start", conversations: npc.conversations}}
       }
 
       %{user: user, npc: npc, state: state}
@@ -105,6 +106,61 @@ defmodule Game.NPC.ConversationTest do
 
       refute Map.has_key?(state.conversations, user.id)
       assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "conversation is over"}}}
+    end
+  end
+
+  describe "quest giving npcs" do
+    setup do
+      user = create_user()
+      npc = create_npc(%{
+        name: "Store Owner",
+        is_quest_giver: true,
+        conversations: [%Data.Conversation{key: "start", message: "hello"}],
+      })
+
+      quest = create_quest(npc, %{
+        conversations: [
+          %Data.Conversation{
+            key: "start",
+            message: "a quest opener",
+            listeners: [
+              %{phrase: "bandit", key: "bandits"},
+            ],
+          },
+          %Data.Conversation{
+            key: "bandits",
+            message: "there are bandits near by",
+            trigger: "quest",
+          },
+        ],
+      })
+
+      Channel.join_tell({:user, user})
+
+      state = %State{
+        npc: npc,
+        conversations: %{user.id => %{key: "start", conversations: quest.conversations, quest_id: quest.id}},
+      }
+
+      %{user: user, npc: npc, state: state, quest: quest}
+    end
+
+    test "starting a new conversation and the npc is a quest giver with a new quest", %{user: user, state: state} do
+      state = %{state | conversations: %{}}
+
+      state = Conversation.greet(state, user)
+
+      assert %{key: "start", started_at: _} = Map.get(state.conversations, user.id)
+      assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "a quest opener"}}}
+    end
+
+    test "gives the quest out when the conversation dictates it", %{user: user, state: state, quest: quest} do
+      state = Conversation.recv(state, user, "bandit")
+
+      assert is_nil(Map.get(state.conversations, user.id))
+      assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "there are bandits near by"}}}
+
+      assert Quest.progress_for(user, quest.id)
     end
   end
 end

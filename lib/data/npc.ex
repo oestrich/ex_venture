@@ -63,6 +63,7 @@ defmodule Data.NPC do
     |> validate_stats()
     |> Event.validate_events()
     |> Conversation.validate_conversations()
+    |> validate_conversations()
     |> validate_status_line()
   end
 
@@ -94,6 +95,20 @@ defmodule Data.NPC do
     case Regex.match?(~r/{name}/, get_field(changeset, :status_line)) do
       true -> changeset
       false -> add_error(changeset, :status_line, "must include `{name}`")
+    end
+  end
+
+  defp validate_conversations(changeset) do
+    case get_field(changeset, :conversations) do
+      nil -> changeset
+      conversations -> _validate_conversations(changeset, conversations)
+    end
+  end
+
+  defp _validate_conversations(changeset, conversations) do
+    case Conversation.valid_for_npc?(conversations) do
+      true -> changeset
+      false -> add_error(changeset, :conversations, "cannot include a conversation that has a trigger with quest")
     end
   end
 end

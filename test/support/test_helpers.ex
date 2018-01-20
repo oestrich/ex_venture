@@ -348,7 +348,7 @@ defmodule TestHelpers do
       name: "Finding a Guard",
       description: "You must find and talk to a guard",
       completed_message: "You did it!",
-      conversations: [%Data.Conversation{key: "start", message: "hello"}],
+      conversations: [%Data.Conversation{key: "start", message: "hello", trigger: "quest"}],
       level: 1,
       experience: 100,
       giver_id: giver.id,

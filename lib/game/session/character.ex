@@ -59,6 +59,10 @@ defmodule Game.Session.Character do
       _ -> state
     end
   end
+  def notify(state, {"quest/new", quest}) do
+    Session.echo(self(), "You have a new quest available, #{Format.quest_name(quest)} (#{quest.id})")
+    state
+  end
   def notify(state, _), do: state
 
   @doc """

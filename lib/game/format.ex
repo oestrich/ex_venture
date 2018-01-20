@@ -587,6 +587,16 @@ defmodule Game.Format do
   end
 
   @doc """
+  Format a quest name
+
+    iex> Game.Format.quest_name(%{name: "Into the Dungeon"})
+    "{yellow}Into the Dungeon{/yellow}"
+  """
+  def quest_name(quest) do
+    "{yellow}#{quest.name}{/yellow}"
+  end
+
+  @doc """
   Format an items name, cyan
 
     iex> Game.Format.item_name(%{name: "Potion"})

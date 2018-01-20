@@ -11,7 +11,7 @@ defmodule Web.QuestTest do
       "description" => "You must go find and talk to a guard",
       "completed_message" => "Thank goodness you did it",
       "conversations" => [
-        %{"key" => "start", "message" => "Hi"},
+        %{"key" => "start", "message" => "Hi", "trigger" => "quest"},
       ] |> Poison.encode!(),
       "giver_id" => npc.id,
       "level" => 1,
