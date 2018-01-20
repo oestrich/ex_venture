@@ -12,6 +12,7 @@ defmodule Data.NPC do
   alias Data.NPCSpawner
 
   schema "npcs" do
+    field :original_id, :integer, virtual: true
     field :name, :string
     field :level, :integer, default: 1
     field :experience_points, :integer, default: 0 # given after defeat

@@ -19,6 +19,7 @@ defmodule Game.NPC.Conversation do
   """
   @spec greet(State.t(), User.t()) :: State.t()
   def greet(state = %{npc: npc}, user) do
+    npc = %{npc | id: npc.original_id}
 
     with true <- npc.is_quest_giver,
          {:ok, quest} <- Quest.next_available_quest_from(npc, user)

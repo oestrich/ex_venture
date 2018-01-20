@@ -30,6 +30,7 @@ defmodule Game.NPC.ConversationTest do
 
       Channel.join_tell({:user, user})
 
+      npc = %{npc | original_id: npc.id}
       %{user: user, npc: npc, state: %State{npc: npc}}
     end
 
@@ -139,7 +140,7 @@ defmodule Game.NPC.ConversationTest do
       Channel.join_tell({:user, user})
 
       state = %State{
-        npc: npc,
+        npc: %{npc | original_id: npc.id},
         conversations: %{user.id => %{key: "start", script: quest.script, quest_id: quest.id}},
       }
 
