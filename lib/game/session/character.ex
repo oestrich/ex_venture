@@ -138,7 +138,7 @@ defmodule Game.Session.Character do
   """
   def track_quest_progress(state, {:user, _user}), do: state
   def track_quest_progress(state, {:npc, npc}) do
-    Quest.track_progress(state.user, {:npc, npc})
+    Quest.track_progress(state.user, {:npc, %{npc | id: npc.original_id}})
     state
   end
 end
