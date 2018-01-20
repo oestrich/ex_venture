@@ -75,8 +75,8 @@
               <td><pre><%= @npc.events |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
             <tr>
-              <th>Conversations</th>
-              <td><pre><%= @npc.conversations |> Poison.encode!(pretty: true) %></pre></td>
+              <th>Script</th>
+              <td><pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
           </table>
         </div>

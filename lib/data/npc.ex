@@ -5,7 +5,7 @@ defmodule Data.NPC do
 
   use Data.Schema
 
-  alias Data.Conversation
+  alias Data.Script
   alias Data.Event
   alias Data.Stats
   alias Data.NPCItem
@@ -17,7 +17,7 @@ defmodule Data.NPC do
     field :experience_points, :integer, default: 0 # given after defeat
     field :stats, Data.Stats
     field :events, {:array, Event}
-    field :conversations, {:array, Conversation}
+    field :script, {:array, Script.Line}
     field :notes, :string
     field :tags, {:array, :string}, default: []
     field :status_line, :string, default: "{name} is here."
@@ -43,7 +43,7 @@ defmodule Data.NPC do
       :notes,
       :tags,
       :events,
-      :conversations,
+      :script,
       :status_line,
       :description,
       :is_quest_giver,
@@ -62,8 +62,8 @@ defmodule Data.NPC do
     ])
     |> validate_stats()
     |> Event.validate_events()
-    |> Conversation.validate_conversations()
-    |> validate_conversations()
+    |> Script.validate_script()
+    |> validate_script()
     |> validate_status_line()
   end
 
@@ -98,17 +98,17 @@ defmodule Data.NPC do
     end
   end
 
-  defp validate_conversations(changeset) do
-    case get_field(changeset, :conversations) do
+  defp validate_script(changeset) do
+    case get_field(changeset, :script) do
       nil -> changeset
-      conversations -> _validate_conversations(changeset, conversations)
+      script -> _validate_script(changeset, script)
     end
   end
 
-  defp _validate_conversations(changeset, conversations) do
-    case Conversation.valid_for_npc?(conversations) do
+  defp _validate_script(changeset, script) do
+    case Script.valid_for_npc?(script) do
       true -> changeset
-      false -> add_error(changeset, :conversations, "cannot include a conversation that has a trigger with quest")
+      false -> add_error(changeset, :script, "cannot include a conversation that has a trigger with quest")
     end
   end
 end

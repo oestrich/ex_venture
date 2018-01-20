@@ -15,7 +15,7 @@ defmodule Web.NPCTest do
       "events" => [
         %{"type" => "room/entered", "action" => %{"type" => "say", "message" => "Hi"}},
       ] |> Poison.encode!(),
-      "conversations" => [
+      "script" => [
         %{"key" => "start", "message" => "Hi"},
       ] |> Poison.encode!(),
       "stats" => %{
@@ -37,7 +37,7 @@ defmodule Web.NPCTest do
     assert npc.name == "Bandit"
     assert npc.tags == ["enemy", "dungeon"]
     assert npc.events |> length() == 1
-    assert npc.conversations |> length() == 1
+    assert npc.script |> length() == 1
   end
 
   test "updating a npc" do

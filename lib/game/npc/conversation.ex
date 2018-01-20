@@ -3,13 +3,16 @@ defmodule Game.NPC.Conversation do
   NPC conversation module, talk with players
   """
 
-  alias Data.Conversation
+  alias Data.Script
+  alias Data.Script.Line
   alias Data.NPC
   alias Data.User
   alias Game.Channel
   alias Game.Message
   alias Game.NPC.State
   alias Game.Quest
+
+  @type metadata :: map()
 
   @doc """
   Start a conversation by greeting the NPC
@@ -20,24 +23,24 @@ defmodule Game.NPC.Conversation do
     with true <- npc.is_quest_giver,
          {:ok, quest} <- Quest.next_available_quest_from(npc, user)
     do
-      _greet(state, user, quest.conversations, %{quest_id: quest.id})
+      _greet(state, user, quest.script, %{quest_id: quest.id})
     else
       _ ->
-        _greet(state, user, npc.conversations)
+        _greet(state, user, npc.script)
     end
   end
 
-  defp _greet(state = %{npc: npc}, user, conversations, metadata \\ %{}) do
+  defp _greet(state = %{npc: npc}, user, script, metadata \\ %{}) do
     metadata = Map.merge(metadata, %{
       key: "start",
       started_at: Timex.now(),
-      conversations: conversations,
+      script: script,
     })
 
     npc |> send_message(user, metadata, "start")
 
     state = %{state | conversations: Map.put(state.conversations, user.id, metadata)}
-    update_conversation_state(state, "start", conversations, user)
+    update_conversation_state(state, "start", script, user)
   end
 
   @doc """
@@ -58,9 +61,9 @@ defmodule Game.NPC.Conversation do
   @doc """
   Continue a found conversation
   """
-  @spec continue_conversation(State.t(), map(), User.t(), String.t()) :: State.t()
+  @spec continue_conversation(State.t(), metadata(), User.t(), String.t()) :: State.t()
   def continue_conversation(state, metadata, user, message) do
-    case conversation_from_key(metadata.conversations, metadata.key) do
+    case line_from_key(metadata.script, metadata.key) do
       nil -> state
       conversation ->
         respond(state, metadata, conversation, user, message)
@@ -70,7 +73,7 @@ defmodule Game.NPC.Conversation do
   @doc """
   Respond to a user's message
   """
-  @spec respond(State.t(), map(), Conversation.t(), User.t(), String.t()) :: String.t()
+  @spec respond(State.t(), metadata(), Line.t(), User.t(), String.t()) :: String.t()
   def respond(state = %{npc: npc}, metadata, conversation, user, message) do
     case find_listener(conversation, message) do
       nil ->
@@ -80,26 +83,26 @@ defmodule Game.NPC.Conversation do
         state
       %{key: key} ->
         npc |> send_message(user, metadata, key)
-        state |> update_conversation_state(key, metadata.conversations, user)
+        state |> update_conversation_state(key, metadata.script, user)
     end
   end
 
   @doc """
   Send a tell to a user
   """
-  @spec send_message(NPC.t(), User.t(), map(), String.t()) :: :ok
+  @spec send_message(NPC.t(), User.t(), metadata(), String.t()) :: :ok
   def send_message(npc, user, metadata, key) do
-    case conversation_from_key(metadata.conversations, key) do
+    case line_from_key(metadata.script, key) do
       nil -> :ok
-      conversation ->
-        message = Message.npc_tell(npc, conversation.message)
+      line ->
+        message = Message.npc_tell(npc, line.message)
         Channel.tell({:user, user}, {:npc, npc}, message)
-        handle_trigger(conversation, user, metadata)
+        handle_trigger(line, user, metadata)
     end
   end
 
   @doc """
-  Handle the trigger for a conversation
+  Handle the trigger for a line
   """
   def handle_trigger(%{trigger: nil}, _, _), do: :ok
   def handle_trigger(%{trigger: "quest"}, user, metadata) do
@@ -107,22 +110,22 @@ defmodule Game.NPC.Conversation do
   end
 
   @doc """
-  Get a conversation struct by key
+  Get a line struct by key
   """
-  @spec conversation_from_key([Conversation.t()], String.t()) :: Conversation.t()
-  def conversation_from_key(nil, _), do: nil
-  def conversation_from_key(conversations, key) do
-    Enum.find(conversations, fn (conversation) ->
-      conversation.key == key
+  @spec line_from_key(Script.t(), String.t()) :: Line.t()
+  def line_from_key(nil, _), do: nil
+  def line_from_key(script, key) do
+    Enum.find(script, fn (line) ->
+      line.key == key
     end)
   end
 
   @doc """
-  Find a listener on a conversation
+  Find a listener on a line
   """
-  @spec find_listener(Conversation.t(), String.t()) :: map()
-  def find_listener(conversation, message) do
-    Enum.find(conversation.listeners, fn (listener) ->
+  @spec find_listener(Line.t(), String.t()) :: map()
+  def find_listener(line, message) do
+    Enum.find(line.listeners, fn (listener) ->
       Regex.match?(~r/#{listener.phrase}/, message)
     end)
   end
@@ -130,14 +133,14 @@ defmodule Game.NPC.Conversation do
   @doc """
   Update conversation state, possibly clearing out if the conversation ended
   """
-  @spec update_conversation_state(State.t(), String.t(), [Conversation.t()], User.t()) :: State.t()
-  def update_conversation_state(state, key, conversations, user) do
+  @spec update_conversation_state(State.t(), String.t(), Script.t(), User.t()) :: State.t()
+  def update_conversation_state(state, key, script, user) do
     conversation =
       state.conversations
       |> Map.get(user.id)
       |> Map.put(:key, key)
 
-    case conversation_from_key(conversations, key) do
+    case line_from_key(script, key) do
       %{listeners: []} ->
         %{state | conversations: Map.delete(state.conversations, user.id)}
       _ ->

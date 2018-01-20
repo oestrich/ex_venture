@@ -31,10 +31,10 @@ defmodule Web.Admin.NPCView do
     end
   end
 
-  def conversations(changeset) do
-    case get_field(changeset, :conversations) do
+  def script(changeset) do
+    case get_field(changeset, :script) do
       nil -> [] |> Poison.encode!(pretty: true)
-      conversations -> conversations |> Poison.encode!(pretty: true)
+      script -> script |> Poison.encode!(pretty: true)
     end
   end
 

@@ -10,7 +10,7 @@ defmodule Web.QuestTest do
       "name" => "Finding a Guard",
       "description" => "You must go find and talk to a guard",
       "completed_message" => "Thank goodness you did it",
-      "conversations" => [
+      "script" => [
         %{"key" => "start", "message" => "Hi", "trigger" => "quest"},
       ] |> Poison.encode!(),
       "giver_id" => npc.id,

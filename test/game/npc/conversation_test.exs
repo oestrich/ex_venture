@@ -1,6 +1,7 @@
 defmodule Game.NPC.ConversationTest do
   use Data.ModelCase
 
+  alias Data.Script.Line
   alias Game.Channel
   alias Game.Message
   alias Game.NPC.Conversation
@@ -12,15 +13,15 @@ defmodule Game.NPC.ConversationTest do
       user = create_user()
       npc = create_npc(%{
         name: "Store Owner",
-        conversations: [
-          %Data.Conversation{
+        script: [
+          %Line{
             key: "start",
             message: "hello",
             listeners: [
               %{phrase: "next", key: "next"},
             ],
           },
-          %Data.Conversation{
+          %Line{
             key: "next",
             message: "hello",
           },
@@ -44,8 +45,8 @@ defmodule Game.NPC.ConversationTest do
     setup do
       user = create_user()
       npc = create_npc(%{
-        conversations: [
-          %Data.Conversation{
+        script: [
+          %Line{
             key: "start",
             message: "hello",
             unknown: "unknown",
@@ -54,14 +55,14 @@ defmodule Game.NPC.ConversationTest do
               %{phrase: "done", key: "done"},
             ],
           },
-          %Data.Conversation{
+          %Line{
             key: "bandits",
             message: "there are bandits near by",
             listeners: [
               %{phrase: "done", key: "done"},
             ],
           },
-          %Data.Conversation{
+          %Line{
             key: "done",
             message: "conversation is over",
           },
@@ -72,7 +73,7 @@ defmodule Game.NPC.ConversationTest do
 
       state = %State{
         npc: npc,
-        conversations: %{user.id => %{key: "start", conversations: npc.conversations}}
+        conversations: %{user.id => %{key: "start", script: npc.script}}
       }
 
       %{user: user, npc: npc, state: state}
@@ -115,19 +116,19 @@ defmodule Game.NPC.ConversationTest do
       npc = create_npc(%{
         name: "Store Owner",
         is_quest_giver: true,
-        conversations: [%Data.Conversation{key: "start", message: "hello"}],
+        script: [%Line{key: "start", message: "hello"}],
       })
 
       quest = create_quest(npc, %{
-        conversations: [
-          %Data.Conversation{
+        script: [
+          %Line{
             key: "start",
             message: "a quest opener",
             listeners: [
               %{phrase: "bandit", key: "bandits"},
             ],
           },
-          %Data.Conversation{
+          %Line{
             key: "bandits",
             message: "there are bandits near by",
             trigger: "quest",
@@ -139,7 +140,7 @@ defmodule Game.NPC.ConversationTest do
 
       state = %State{
         npc: npc,
-        conversations: %{user.id => %{key: "start", conversations: quest.conversations, quest_id: quest.id}},
+        conversations: %{user.id => %{key: "start", script: quest.script, quest_id: quest.id}},
       }
 
       %{user: user, npc: npc, state: state, quest: quest}

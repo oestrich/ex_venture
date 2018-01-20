@@ -74,9 +74,9 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :conversations %>
-        <%= textarea f, :conversations, value: @changeset |> conversations(), class: "form-control", rows: 15 %>
-        <%= error_tag f, :conversations %>
+        <%= label f, :script %>
+        <%= textarea f, :script, value: @changeset |> script(), class: "form-control", rows: 15 %>
+        <%= error_tag f, :script %>
         <span class="help-block">Enter in valid JSON</span>
       </div>
 

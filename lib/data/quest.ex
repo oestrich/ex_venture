@@ -5,7 +5,7 @@ defmodule Data.Quest do
 
   use Data.Schema
 
-  alias Data.Conversation
+  alias Data.Script
   alias Data.NPC
   alias Data.QuestRelation
   alias Data.QuestStep
@@ -17,7 +17,7 @@ defmodule Data.Quest do
     field :level, :integer
     field :experience, :integer
     field :currency, :integer, default: 0
-    field :conversations, {:array, Conversation}
+    field :script, {:array, Script.Line}
 
     belongs_to :giver, NPC
 
@@ -34,11 +34,11 @@ defmodule Data.Quest do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :completed_message, :level, :experience, :currency, :conversations, :giver_id])
-    |> validate_required([:name, :description, :completed_message, :level, :experience, :currency, :conversations, :giver_id])
+    |> cast(params, [:name, :description, :completed_message, :level, :experience, :currency, :script, :giver_id])
+    |> validate_required([:name, :description, :completed_message, :level, :experience, :currency, :script, :giver_id])
     |> validate_giver_is_a_giver()
-    |> Conversation.validate_conversations()
-    |> validate_conversations()
+    |> Script.validate_script()
+    |> validate_script()
     |> foreign_key_constraint(:giver_id)
   end
 
@@ -53,17 +53,17 @@ defmodule Data.Quest do
     end
   end
 
-  defp validate_conversations(changeset) do
-    case get_field(changeset, :conversations) do
+  defp validate_script(changeset) do
+    case get_field(changeset, :script) do
       nil -> changeset
-      conversations -> _validate_conversations(changeset, conversations)
+      script-> _validate_script(changeset, script)
     end
   end
 
-  defp _validate_conversations(changeset, conversations) do
-    case Conversation.valid_for_quest?(conversations) do
+  defp _validate_script(changeset, script) do
+    case Script.valid_for_quest?(script) do
       true -> changeset
-      false -> add_error(changeset, :conversations, "must include one conversation that has a trigger with quest")
+      false -> add_error(changeset, :script, "must include one conversation that has a trigger with quest")
     end
   end
 end
