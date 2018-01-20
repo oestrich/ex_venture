@@ -51,6 +51,10 @@
               <td><%= @quest.experience %></td>
             </tr>
             <tr>
+              <th><%= currency() |> String.capitalize() %></th>
+              <td><%= @quest.currency %></td>
+            </tr>
+            <tr>
               <th>Giver</th>
               <td><%= link(@quest.giver.name, to: npc_path(@conn, :show, @quest.giver.id)) %></td>
             </tr>

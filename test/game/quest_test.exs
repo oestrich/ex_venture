@@ -76,7 +76,7 @@ defmodule Game.QuestTest do
     test "marks the quest progress as complete" do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       goblin = create_npc(%{name: "Goblin"})
-      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      quest = create_quest(guard, %{name: "Into the Dungeon"})
       potion = create_item(%{name: "Potion"})
 
       npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
@@ -84,7 +84,7 @@ defmodule Game.QuestTest do
 
       user = create_user()
       items = [item_instance(potion.id), item_instance(potion.id), item_instance(potion), item_instance(3)]
-      user = %{user | save: %{user.save | items: items, experience_points: 20}}
+      user = %{user | save: %{user.save | items: items}}
       create_quest_progress(user, quest, %{progress: %{npc_step.id => 3}})
       progress = Quest.progress_for(user, quest.id) # get preloads
 

@@ -1,5 +1,6 @@
 defmodule Web.Admin.QuestView do
   use Web, :view
+  use Game.Currency
 
   alias Web.Admin.SharedView
   alias Web.NPC

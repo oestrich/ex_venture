@@ -16,6 +16,7 @@ defmodule Data.Quest do
     field :completed_message, :string
     field :level, :integer
     field :experience, :integer
+    field :currency, :integer, default: 0
     field :conversations, {:array, Conversation}
 
     belongs_to :giver, NPC
@@ -33,8 +34,8 @@ defmodule Data.Quest do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
-    |> validate_required([:name, :description, :completed_message, :level, :experience, :conversations, :giver_id])
+    |> cast(params, [:name, :description, :completed_message, :level, :experience, :currency, :conversations, :giver_id])
+    |> validate_required([:name, :description, :completed_message, :level, :experience, :currency, :conversations, :giver_id])
     |> validate_giver_is_a_giver()
     |> Conversation.validate_conversations()
     |> validate_conversations()

@@ -4,6 +4,7 @@ defmodule Game.Command.Quest do
   """
 
   use Game.Command
+  use Game.Currency
   use Game.NPC
 
   alias Game.Experience
@@ -159,8 +160,9 @@ defmodule Game.Command.Quest do
 
     case Quest.complete(progress, save) do
       {:ok, save} ->
-        socket |> @socket.echo("Quest completed!")
+        socket |> @socket.echo("Quest completed!\n\nYou gain #{quest.currency} #{currency()}.")
 
+        save = %{save | currency: save.currency + quest.currency}
         user = %{user | save: save}
         state = %{state | user: user, save: save}
 

@@ -75,7 +75,7 @@ defmodule Game.Command.QuestTest do
   describe "complete a quest" do
     setup %{state: state} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
-      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
 
       room = Map.merge(@room._room(), %{
         npcs: [Map.put(guard, :original_id, guard.id)],
@@ -83,7 +83,7 @@ defmodule Game.Command.QuestTest do
       @room.set_room(room)
       @npc.clear_notifies()
 
-      state = state |> Map.put(:save, %{room_id: 1, level: 1, experience_points: 20})
+      state = state |> Map.put(:save, %{room_id: 1, level: 1, experience_points: 20, currency: 15})
 
       %{quest: quest, state: state}
     end
@@ -97,6 +97,8 @@ defmodule Game.Command.QuestTest do
 
       [{_, quest}, {_, _experience}] = @socket.get_echos()
       assert Regex.match?(~r/quest complete/i, quest)
+      assert Regex.match?(~r/25 gold/i, quest)
+      assert state.save.currency == 40
       assert state.save.experience_points == 220
     end
 
