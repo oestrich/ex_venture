@@ -16,7 +16,8 @@ defmodule Game.Command.Greet do
   def help(:full) do
     """
     #{help(:short)}. A way to greet another player or NPC. If you are
-    greeting an NPC it will start a conversation with them.
+    greeting an NPC it will start a conversation with them. You may also get a quest
+    from them if they are a quest giver.
 
     Example:
     [ ] > {white}greet guard{/white}

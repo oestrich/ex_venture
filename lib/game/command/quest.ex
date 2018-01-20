@@ -17,14 +17,25 @@ defmodule Game.Command.Quest do
   def help(:short), do: "View information about your current quests"
   def help(:full) do
     """
-    #{help(:short)}.
+    #{help(:short)}. Quests are handed out by NPCs that
+    have a "({yellow}!{/yellow})" next to their name.
 
-    Example:
+    Viewing all active quests:
+
     [ ] > {white}quest{/white}
 
-    Example:
+    View the requirements for a quest:
+
     [ ] > {white}quest show 1{/white}
     [ ] > {white}quest info 1{/white}
+
+    Completing quests:
+
+    You can complete a quest after all the quest requirements are fulfilled. Go back
+    to the quest giver and use the {white}quest complete{/white} command.
+
+    [ ] > {white}quest complete{/white}
+    [ ] > {white}quest complete 1{/white}
     """
   end
 
