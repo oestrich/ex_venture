@@ -337,7 +337,7 @@ defmodule TestHelpers do
     }, params)
   end
 
-  def create_quest(giver, params) do
+  def create_quest(giver, params \\ %{}) do
     %Quest{}
     |> Quest.changeset(quest_attributes(giver, params))
     |> Repo.insert!

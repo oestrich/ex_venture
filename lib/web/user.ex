@@ -5,9 +5,10 @@ defmodule Web.User do
 
   import Ecto.Query
 
-  alias Data.User
+  alias Data.QuestProgress
   alias Data.Repo
   alias Data.Stats
+  alias Data.User
   alias Game.Account
   alias Game.Authentication
   alias Game.Config
@@ -147,10 +148,15 @@ defmodule Web.User do
   end
 
   @doc """
-  Reset a player's save file
+  Reset a player's save file, and quest progress
   """
   def reset(user_id) do
     user = Repo.get(User, user_id)
+
+    QuestProgress
+    |> where([qp], qp.user_id == ^user.id)
+    |> Repo.delete_all()
+
     Account.save(user, starting_save(user.race_id))
   end
 

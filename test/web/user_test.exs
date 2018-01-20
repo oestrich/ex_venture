@@ -1,6 +1,7 @@
 defmodule Web.UserTest do
   use Data.ModelCase
 
+  alias Data.QuestProgress
   alias Game.Account
   alias Game.Authentication
   alias Game.Session
@@ -77,14 +78,29 @@ defmodule Web.UserTest do
     assert user.name == "player"
   end
 
-  test "reset a user", %{user: user} do
-    create_config(:starting_save, base_save() |> Poison.encode!)
+  describe "reset a user" do
+    setup do
+      create_config(:starting_save, base_save() |> Poison.encode!)
+      :ok
+    end
 
-    save = %{user.save | level: 2}
-    {:ok, user} = Account.save(user, save)
+    test "resets the save", %{user: user} do
+      save = %{user.save | level: 2}
+      {:ok, user} = Account.save(user, save)
 
-    {:ok, user} = User.reset(user.id)
+      {:ok, user} = User.reset(user.id)
 
-    assert user.save.level == 1
+      assert user.save.level == 1
+    end
+
+    test "resets quests", %{user: user} do
+      guard = create_npc(%{is_quest_giver: true})
+      quest = create_quest(guard)
+      create_quest_progress(user, quest)
+
+      {:ok, _user} = User.reset(user.id)
+
+      assert Data.Repo.all(QuestProgress) == []
+    end
   end
 end
