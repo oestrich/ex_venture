@@ -14,9 +14,7 @@ Fill out the information for the item, name, description, etc. The stats field w
 
 ![NPC Events](/images/admin-npc-events.png)
 
-The events field has buttons to help fill out events. Get more information [about events here][events].
-
-[events]: /admin/events/
+The events field has buttons to help fill out events. Get more information [about events here][events]. The `script` field should be empty or filled in with script JSON. See [Scripts][scripts] for more information.
 
 ## Control an NPC
 
@@ -29,3 +27,6 @@ Click `Control` to start controlling an NPC.
 ![NPC Control](/images/admin-npc-control.png)
 
 You will be able to make the NPC say and emote things from this panel. The chat box will contain characters entering and leaving, and anything the NPC can hear, such as what a player says.
+
+[events]: /admin/events/
+[scripts]: /admin/scripts/

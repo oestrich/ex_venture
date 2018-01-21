@@ -32,7 +32,9 @@ pages:
     - Items: admin/items.md
     - NPCs: admin/npcs.md
     - NPC Events: admin/events.md
+    - Quests: admin/quests.md
     - Races: admin/races.md
+    - Scripts: admin/scripts.md
     - Users: admin/users.md
     - Zones: admin/zones.md
   - Metrics: metrics.md
