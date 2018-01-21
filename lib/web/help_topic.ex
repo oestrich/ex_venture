@@ -38,6 +38,7 @@ defmodule Web.HelpTopic do
     |> Enum.map(fn (command) ->
       command |> to_string |> String.split(".") |> List.last
     end)
+    |> Enum.sort()
   end
 
   def command(topic) do
