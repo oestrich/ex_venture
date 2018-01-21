@@ -23,6 +23,10 @@ defmodule Game.Command.Look do
 
     Example:
     [ ] > {white}look{/white}
+    [ ] > {white}look at guard{/white}
+    [ ] > {white}look at player{/white}
+    [ ] > {white}look at sword{/white}
+    [ ] > {white}look north{/white}
     """
   end
 

@@ -19,7 +19,7 @@ defmodule Game.Command.Channels do
     #{help(:short)}
 
     Talk to players in a channel
-    [ ] > global Hello!
+    [ ] > {white}global Hello!{/white}
 
     Turn a channel on:
     [ ] > {white}channel on global{/white}
