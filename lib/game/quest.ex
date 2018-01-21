@@ -187,6 +187,7 @@ defmodule Game.Quest do
   defp find_available_quests(npc, user) do
     Quest
     |> where([q], q.giver_id == ^npc.id)
+    |> where([q], q.level <= ^user.save.level)
     |> order_by([q], q.id)
     |> preload([:parent_relations])
     |> Repo.all()

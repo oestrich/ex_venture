@@ -210,5 +210,15 @@ defmodule Game.QuestTest do
       {:ok, next_quest} = Quest.next_available_quest_from(captain, user)
       assert next_quest.id == quest3.id
     end
+
+    test "does not give out a quest if you are below its level" do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+
+      create_quest(guard, %{level: 2})
+
+      user = create_user()
+
+      {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+    end
   end
 end
