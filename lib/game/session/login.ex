@@ -58,7 +58,7 @@ defmodule Game.Session.Login do
   end
 
   def after_sign_in(state = %{user: user}, session) do
-    @room.enter(user.save.room_id, {:user, session, user})
+    @room.enter(user.save.room_id, {:user, user})
     session |> Session.recv("look")
     state |> GMCP.character()
 

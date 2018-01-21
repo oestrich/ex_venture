@@ -195,7 +195,7 @@ defmodule Game.SessionTest do
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
 
-    assert [{1, {:user, _,  %{name: "user", save: %{room_id: 1, stats: %{health: 15}}}}}] = @room.get_update_characters()
+    assert [{1, {:user,  %{name: "user", save: %{room_id: 1, stats: %{health: 15}}}}}] = @room.get_update_characters()
   end
 
   test "applying effects with continuous effects", %{socket: socket} do

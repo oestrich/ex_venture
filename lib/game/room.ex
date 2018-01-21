@@ -65,11 +65,8 @@ defmodule Game.Room do
   """
   @spec enter(integer(), Character.t(), atom()) :: :ok
   def enter(id, character, reason \\ :enter)
-  def enter(id, {:user, session, user}, reason) do
-    GenServer.cast(pid(id), {:enter, {:user, session, user}, reason})
-  end
-  def enter(id, {:npc, npc}, reason) do
-    GenServer.cast(pid(id), {:enter, {:npc, npc}, reason})
+  def enter(id, character, reason) do
+    GenServer.cast(pid(id), {:enter, character, reason})
   end
 
   @doc """
@@ -79,11 +76,8 @@ defmodule Game.Room do
   """
   @spec leave(integer(), Character.t(), atom()) :: :ok
   def leave(id, character, reason \\ :leave)
-  def leave(id, {:user, session, user}, reason) do
-    GenServer.cast(pid(id), {:leave, {:user, session, user}, reason})
-  end
-  def leave(id, {:npc, npc}, reason) do
-    GenServer.cast(pid(id), {:leave, {:npc, npc}, reason})
+  def leave(id, character, reason) do
+    GenServer.cast(pid(id), {:leave, character, reason})
   end
 
   @doc """
@@ -97,7 +91,7 @@ defmodule Game.Room do
   @doc """
   Emote to the players in the room
   """
-  @spec emote(id :: integer, sender :: pid, message :: Message.t) :: :ok
+  @spec emote(integer(), pid(), Message.t()) :: :ok
   def emote(id, sender, message) do
     GenServer.cast(pid(id), {:emote, sender, message})
   end
@@ -172,7 +166,6 @@ defmodule Game.Room do
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
-    players = Enum.map(players, &(elem(&1, 2)))
     {:reply, Map.merge(room, %{players: players, npcs: npcs}), state}
   end
 
@@ -203,38 +196,47 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:enter, player = {:user, _, user}, reason}, state = %{room: room, players: players, npcs: npcs}) do
+  def handle_cast({:enter, {:user, user}, reason}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) entered room (#{room.id})", type: :room)
+
     players |> inform_players({"room/entered", {{:user, user}, reason}})
-    npcs |> inform_npcs({"room/entered", {player, reason}})
-    {:noreply, Map.put(state, :players, [player | players])}
+    npcs |> inform_npcs({"room/entered", {{:user, user}, reason}})
+
+    {:noreply, Map.put(state, :players, [user | players])}
   end
+
   def handle_cast({:enter, {:npc, npc}, reason}, state = %{room: room, npcs: npcs, players: players}) do
     Logger.info("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
+
     players |> inform_players({"room/entered", {{:npc, npc}, reason}})
     npcs |> inform_npcs({"room/entered", {{:npc, npc}, reason}})
+
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
-  def handle_cast({:leave, {:user, _, user}, reason}, state = %{room: room, players: players, npcs: npcs}) do
+  def handle_cast({:leave, {:user, user}, reason}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) left room (#{room.id})", type: :room)
-    players = Enum.reject(players, &(elem(&1, 2).id == user.id))
+
+    players = Enum.reject(players, &(&1.id == user.id))
     players |> inform_players({"room/leave", {{:user, user}, reason}})
     npcs |> inform_npcs({"room/leave", {{:user, user}, reason}})
+
     {:noreply, Map.put(state, :players, players)}
   end
 
   def handle_cast({:leave, {:npc, npc}, reason}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("NPC (#{npc.id}) left room (#{room.id})", type: :room)
+
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
     players |> inform_players({"room/leave", {{:npc, npc}, reason}})
     npcs |> inform_npcs({"room/leave", {{:npc, npc}, reason}})
+
     {:noreply, Map.put(state, :npcs, npcs)}
   end
 
-  def handle_cast({:say, sender, message}, state = %{players: players, npcs: npcs}) do
+  def handle_cast({:say, {:user, sender}, message}, state = %{players: players, npcs: npcs}) do
     players
-    |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
+    |> Enum.reject(&(&1.id == sender.id)) # don't send to the sender
     |> echo_to_players(message.formatted)
 
     npcs |> inform_npcs({"room/heard", message})
@@ -242,21 +244,40 @@ defmodule Game.Room do
     {:noreply, state}
   end
 
-  def handle_cast({:emote, sender, message}, state = %{players: players, npcs: npcs}) do
+  def handle_cast({:say, {:npc, sender}, message}, state = %{players: players, npcs: npcs}) do
+    players |> echo_to_players(message.formatted)
+
+    npcs
+    |> Enum.reject(&(&1.id == sender.id)) # don't send to the sender
+    |> inform_npcs({"room/heard", message})
+
+    {:noreply, state}
+  end
+
+  def handle_cast({:emote, {:user, sender}, message}, state = %{players: players, npcs: npcs}) do
     players
-    |> Enum.reject(&(elem(&1, 1) == sender)) # don't send to the sender
+    |> Enum.reject(&(&1.id == sender.id)) # don't send to the sender
     |> echo_to_players(message.formatted)
 
     npcs |> inform_npcs({"room/heard", message})
 
     {:noreply, state}
   end
+  def handle_cast({:emote, {:npc, sender}, message}, state = %{players: players, npcs: npcs}) do
+    players |> echo_to_players(message.formatted)
 
-  def handle_cast({:update_character, player = {:user, session, _user}}, state = %{players: players}) do
-    case Enum.member?(Enum.map(players, &(elem(&1, 1))), session) do
+    npcs
+    |> Enum.reject(&(&1.id == sender.id)) # don't send to the sender
+    |> inform_npcs({"room/heard", message})
+
+    {:noreply, state}
+  end
+
+  def handle_cast({:update_character, {:user, user}}, state = %{players: players}) do
+    case Enum.member?(Enum.map(players, &(&1.id)), user.id) do
       true ->
-        players = players |> Enum.reject(&(elem(&1, 1) == session))
-        players = [player | players]
+        players = players |> Enum.reject(&(&1.id == user.id))
+        players = [user | players]
         {:noreply, Map.put(state, :players, players)}
       false ->
         {:noreply, state}
@@ -305,14 +326,14 @@ defmodule Game.Room do
   end
 
   defp echo_to_players(players, message) do
-    Enum.each(players, fn ({:user, session, _user}) ->
-      Session.echo(session, message)
+    Enum.each(players, fn (user) ->
+      Session.echo(user, message)
     end)
   end
 
   defp inform_players(players, action) do
-    Enum.each(players, fn ({:user, session, _user}) ->
-      Session.notify(session, action)
+    Enum.each(players, fn (user) ->
+      Session.notify(user, action)
     end)
   end
 

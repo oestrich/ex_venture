@@ -47,6 +47,12 @@ defmodule Game.Session do
   Echo to the socket
   """
   @spec echo(pid, message :: String.t) :: :ok
+  def echo(user = %User{}, message) do
+    case find_connected_player(user) do
+      nil -> :ok
+      {pid, _} -> echo(pid, message)
+    end
+  end
   def echo(pid, message) do
     GenServer.cast(pid, {:echo, message})
   end
@@ -64,16 +70,9 @@ defmodule Game.Session do
   """
   @spec notify(pid, action :: tuple()) :: :ok
   def notify(user = %User{}, action) do
-    player =
-      Session.Registry.connected_players()
-      |> Enum.find(fn ({_, connected_user}) ->
-        connected_user.id == user.id
-      end)
-
-    case player do
+    case find_connected_player(user) do
       nil -> :ok
-      {pid, _} ->
-        GenServer.cast(pid, {:notify, action})
+      {pid, _} -> notify(pid, action)
     end
   end
   def notify(pid, action) do
@@ -94,5 +93,16 @@ defmodule Game.Session do
   @spec sign_in(pid(), User.t()) :: :ok
   def sign_in(pid, user) do
     GenServer.cast(pid, {:sign_in, user.id})
+  end
+
+  @doc """
+  Find a connected user by their user struct
+  """
+  @spec find_connected_player(User.t()) :: pid()
+  def find_connected_player(user) do
+    Session.Registry.connected_players()
+    |> Enum.find(fn ({_, connected_user}) ->
+      connected_user.id == user.id
+    end)
   end
 end

@@ -122,7 +122,7 @@ defmodule Game.NPC.Events do
   end
   def act_on_room_entered(state, {:user, _}, %{action: %{type: "say", message: message}}) do
     %{room_id: room_id, npc: npc} = state
-    room_id |> @room.say(npc, Message.npc(npc, message))
+    room_id |> @room.say({:npc, npc}, Message.npc(npc, message))
     state
   end
   def act_on_room_entered(state = %{npc: npc}, {:user, user}, %{action: %{type: "target"}}) do
@@ -139,12 +139,12 @@ defmodule Game.NPC.Events do
       %{condition: %{regex: condition}, action: %{type: "say", message: event_message}} when condition != nil ->
         case Regex.match?(~r/#{condition}/i, message.message) do
           true ->
-            room_id |> @room.say(npc, Message.npc(npc, event_message))
+            room_id |> @room.say({:npc, npc}, Message.npc(npc, event_message))
           false ->
             :ok
         end
       %{action: %{type: "say", message: event_message}} ->
-        room_id |> @room.say(npc, Message.npc(npc, event_message))
+        room_id |> @room.say({:npc, npc}, Message.npc(npc, event_message))
       _ -> :ok
     end
   end
@@ -258,7 +258,7 @@ defmodule Game.NPC.Events do
   Emote the NPC's message to the room
   """
   def emote_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
-    room_id |> @room.emote(npc, Message.npc_emote(npc, message))
+    room_id |> @room.emote({:npc, npc}, Message.npc_emote(npc, message))
     state |> Map.put(:events, Map.put(state.events, :emote_tick, Timex.now()))
   end
 
@@ -287,7 +287,7 @@ defmodule Game.NPC.Events do
   Say the NPC's message to the room
   """
   def say_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
-    room_id |> @room.say(npc, Message.npc_say(npc, message))
+    room_id |> @room.say({:npc, npc}, Message.npc_say(npc, message))
     state |> Map.put(:events, Map.put(state.events, :say_tick, Timex.now()))
   end
 

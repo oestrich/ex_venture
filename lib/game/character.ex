@@ -21,7 +21,6 @@ defmodule Game.Character do
 
   Valid options:
   - `{:user, user}`
-  - `{:user, session, user}`
   - `{:npc, npc}`
   """
   @type t :: tuple()

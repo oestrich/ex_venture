@@ -28,7 +28,7 @@ defmodule Game.Character.Helpers do
   """
   @spec update_character(room_id :: integer, user :: User.t) :: :ok
   def update_character(room_id, user) do
-    room_id |> @room.update_character({:user, self(), user})
+    room_id |> @room.update_character({:user, user})
   end
 
   @doc """

@@ -238,12 +238,12 @@ defmodule Game.NPC do
   end
 
   def handle_cast({:say, message}, state = %{npc: npc, room_id: room_id}) do
-    room_id |> @room.say(npc, Message.npc(npc, message))
+    room_id |> @room.say({:npc, npc}, Message.npc(npc, message))
     {:noreply, state}
   end
 
   def handle_cast({:emote, message}, state = %{npc: npc, room_id: room_id}) do
-    room_id |> @room.emote(npc, Message.npc_emote(npc, message))
+    room_id |> @room.emote({:npc, npc}, Message.npc_emote(npc, message))
     {:noreply, state}
   end
 

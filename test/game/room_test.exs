@@ -1,44 +1,76 @@
 defmodule Game.RoomTest do
   use Data.ModelCase
 
-  alias Game.Room
+  alias Data.User
   alias Game.Message
+  alias Game.Room
+  alias Game.Session
 
   setup do
     {:ok, user: %{id: 10, name: "user"}, room: %{id: 11}}
   end
 
-  test "entering a room", %{user: user, room: room} do
-    {:noreply, state} = Room.handle_cast({:enter, {:user, :session, user}, :enter}, %{room: room, players: [], npcs: []})
-    assert state.players == [{:user, :session, user}]
-  end
+  describe "entering a room" do
+    test "entering a room", %{user: user, room: room} do
+      state = %{room: room, players: [], npcs: []}
 
-  test "entering a room sends notifications - user", %{user: user, room: room} do
-    {:noreply, _state} = Room.handle_cast({:enter, {:user, :session, user}, :enter}, %{room: room, players: [{:user, self(), user}], npcs: []})
-    assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:user, ^user}, :enter}}}}
-  end
+      {:noreply, state} = Room.handle_cast({:enter, {:user, user}, :enter}, state)
 
-  test "entering a room sends notifications - npc", %{user: user, room: room} do
-    npc = %{id: 10, name: "Bandit"}
-    {:noreply, _state} = Room.handle_cast({:enter, {:npc, npc}, :enter}, %{room: room, players: [{:user, self(), user}], npcs: []})
-    assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:npc, ^npc}, :enter}}}}
+      assert state.players == [user]
+    end
+
+    test "entering a room sends notifications - user", %{user: user, room: room} do
+      notify_user = %User{id: 11}
+      Session.Registry.register(notify_user)
+
+      state = %{room: room, players: [notify_user], npcs: []}
+
+      {:noreply, _state} = Room.handle_cast({:enter, {:user, user}, :enter}, state)
+
+      assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:user, ^user}, :enter}}}}
+    end
+
+    test "entering a room sends notifications - npc", %{room: room} do
+      notify_user = %User{id: 11}
+      Session.Registry.register(notify_user)
+
+      npc = %{id: 10, name: "Bandit"}
+
+      state = %{room: room, players: [notify_user], npcs: []}
+      {:noreply, _state} = Room.handle_cast({:enter, {:npc, npc}, :enter}, state)
+
+      assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:npc, ^npc}, :enter}}}}
+    end
   end
 
   test "leaving a room - user", %{user: user, room: room} do
-    state = %{room: room, players: [{:user, :session, user}], npcs: []}
-    {:noreply, state} = Room.handle_cast({:leave, {:user, :session, user}, :leave}, state)
+    state = %{room: room, players: [user], npcs: []}
+
+    {:noreply, state} = Room.handle_cast({:leave, {:user, user}, :leave}, state)
+
     assert state.players == []
   end
 
   test "leaving a room sends notifications - user", %{user: user, room: room} do
-    state = %{room: room, players: [{:user, self(), %{id: 11}}], npcs: []}
-    {:noreply, _state} = Room.handle_cast({:leave, {:user, :session, user}, :leave}, state)
+    notify_user = %User{id: 11}
+    Session.Registry.register(notify_user)
+
+    state = %{room: room, players: [notify_user], npcs: []}
+
+    {:noreply, _state} = Room.handle_cast({:leave, {:user, user}, :leave}, state)
+
     assert_receive {:"$gen_cast", {:notify, {"room/leave", {{:user, ^user}, :leave}}}}
   end
 
-  test "leaving a room sends notifications - npc", %{user: user, room: room} do
+  test "leaving a room sends notifications - npc", %{room: room} do
+    notify_user = %User{id: 11}
+    Session.Registry.register(notify_user)
+
     npc = %{id: 10, name: "Bandit"}
-    {:noreply, _state} = Room.handle_cast({:leave, {:npc, npc}, :leave}, %{room: room, npcs: [npc], players: [{:user, self(), user}]})
+    state = %{room: room, npcs: [npc], players: [notify_user]}
+
+    {:noreply, _state} = Room.handle_cast({:leave, {:npc, npc}, :leave}, state)
+
     assert_receive {:"$gen_cast", {:notify, {"room/leave", {{:npc, ^npc}, :leave}}}}
   end
 
@@ -49,19 +81,31 @@ defmodule Game.RoomTest do
   end
 
   test "emoting", %{user: user} do
+    notify_user = %User{id: 11}
+    Session.Registry.register(notify_user)
+
     message = Message.emote(user, "emote")
-    {:noreply, _state} = Room.handle_cast({:emote, :session, message}, %{players: [{:user, self(), :user}], npcs: []})
+    state = %{players: [notify_user], npcs: []}
+
+    {:noreply, _state} = Room.handle_cast({:emote, {:user, user}, message}, state)
+
     assert_received {:"$gen_cast", {:echo, "{blue}user{/blue} {green}emote{/green}"}}
   end
 
   test "updating player data" do
-    {:noreply, state} = Room.handle_cast({:update_character, {:user, self(), :new_user}}, %{players: [{:user, self(), :user}], npcs: []})
-    assert state.players == [{:user, self(), :new_user}]
+    state = %{players: [%User{id: 11, name: "Player"}], npcs: []}
+
+    {:noreply, state} = Room.handle_cast({:update_character, {:user, %User{id: 11, name: "New Name"}}}, state)
+
+    assert state.players == [%User{id: 11, name: "New Name"}]
   end
 
   test "ignores updates to players not in the list already" do
-    {:noreply, state} = Room.handle_cast({:update_character, {:user, self(), :new_user}}, %{players: [{:user, :pid, :user}], npcs: []})
-    assert state.players == [{:user, :pid, :user}]
+    state = %{players: [%User{id: 11, name: "Player"}], npcs: []}
+
+    {:noreply, state} = Room.handle_cast({:update_character, {:user, %User{id: 12, name: "New Name"}}}, state)
+
+    assert state.players == [%User{id: 11, name: "Player"}]
   end
 
   test "updating npc data" do

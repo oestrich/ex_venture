@@ -26,9 +26,9 @@ defmodule Game.Command.Say do
   @impl Game.Command
   @spec run(args :: [], session :: Session.t, state :: map) :: :ok
   def run(command, session, state)
-  def run({message}, session, %{socket: socket, user: user, save: %{room_id: room_id}}) do
+  def run({message}, _session, %{socket: socket, user: user, save: %{room_id: room_id}}) do
     socket |> @socket.echo(Format.say({:user, user}, message))
-    room_id |> @room.say(session, Message.new(user, message))
+    room_id |> @room.say({:user, user}, Message.new(user, message))
     :ok
   end
   def run({}, _session, _), do: :ok
