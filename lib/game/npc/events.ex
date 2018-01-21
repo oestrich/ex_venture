@@ -30,7 +30,7 @@ defmodule Game.NPC.Events do
     broadcast(npc, "combat/tick")
     state |> act_on_combat_tick()
   end
-  def act_on(state = %{npc: npc}, {"room/entered", character}) do
+  def act_on(state = %{npc: npc}, {"room/entered", {character, _reason}}) do
     broadcast(npc, "room/entered", who(character))
 
     state =
@@ -40,7 +40,7 @@ defmodule Game.NPC.Events do
 
     {:update, state}
   end
-  def act_on(state = %{npc: npc}, {"room/leave", character}) do
+  def act_on(state = %{npc: npc}, {"room/leave", {character, _reason}}) do
     broadcast(npc, "room/leave", who(character))
 
     target = Map.get(state, :target, nil)
@@ -207,7 +207,7 @@ defmodule Game.NPC.Events do
     @room.enter(new_room.id, {:npc, npc})
 
     Enum.each(new_room.players, fn (player) ->
-      GenServer.cast(self(), {:notify, {"room/entered", {:user, player}}})
+      GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
     end)
 
     state

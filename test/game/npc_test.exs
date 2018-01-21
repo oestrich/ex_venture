@@ -73,9 +73,7 @@ defmodule Game.NPCTest do
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
     assert state.npc.stats.health == 0
 
-    assert [{1, {:npc, _}}] = @room.get_leaves()
-    [{_, message}] = @room.get_says()
-    assert message.message == "I died!"
+    assert [{1, {:npc, _}, :death}] = @room.get_leaves()
 
     assert_received {:"$gen_cast", {:died, {:npc, _}}}
 

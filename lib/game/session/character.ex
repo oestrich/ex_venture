@@ -44,13 +44,21 @@ defmodule Game.Session.Character do
   @doc """
   Callback for being notified of events
   """
-  def notify(state, {"room/entered", character}) do
-    Session.echo(self(), "#{Format.name(character)} enters")
+  def notify(state, {"room/entered", {character, reason}}) do
+    case reason do
+      :enter -> Session.echo(self(), "#{Format.name(character)} enters")
+      :respawn -> Session.echo(self(), "#{Format.name(character)} respawns")
+    end
+
     state |> GMCP.character_enter(character)
     state
   end
-  def notify(state, {"room/leave", character}) do
-    Session.echo(self(), "#{Format.name(character)} leaves")
+  def notify(state, {"room/leave", {character, reason}}) do
+    case reason do
+      :leave -> Session.echo(self(), "#{Format.name(character)} leaves")
+      :death -> :ok
+    end
+
     state |> GMCP.character_leave(character)
 
     target = Map.get(state, :target, nil)

@@ -16,7 +16,6 @@ defmodule Game.NPC.Actions do
   alias Game.Character
   alias Game.Effect
   alias Game.Items
-  alias Game.Message
 
   @doc """
   Respawn the NPC as a tick happens
@@ -55,7 +54,7 @@ defmodule Game.NPC.Actions do
     case Timex.after?(time, respawn_at) do
       true ->
         npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
-        npc_spawner.room_id |> @room.enter({:npc, npc})
+        npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
         %{state | npc: npc, room_id: npc_spawner.room_id, respawn_at: nil}
       false -> state
     end
@@ -79,9 +78,8 @@ defmodule Game.NPC.Actions do
   def died(state = %{room_id: room_id, npc: npc, is_targeting: is_targeting}) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    room_id |> @room.say(npc, Message.npc(npc, "I died!"))
     Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
-    room_id |> @room.leave({:npc, npc})
+    room_id |> @room.leave({:npc, npc}, :death)
 
     drop_currency(room_id, npc, npc.currency)
     npc |> drop_items(room_id)

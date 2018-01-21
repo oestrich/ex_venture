@@ -427,36 +427,36 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {:user, %{id: 1, name: "Player"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:user, %{id: 1, name: "Player"}}, :enter}}}, state)
 
       assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} enters"}}
     end
 
     test "npc enters the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, :enter}}}, state)
 
       assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} enters"}}
     end
 
     test "player leaves the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, :leave}}}, state)
       assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} leaves"}}
     end
 
     test "player leaves the room and they were the target", %{socket: socket} do
       state = %{target: {:user, 1}, socket: socket}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {:user, %{id: 1, name: "Player"}}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, :leave}}}, state)
       assert is_nil(state.target)
     end
 
     test "npc leaves the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, :leave}}}, state)
       assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} leaves"}}
     end
 
     test "npc leaves the room and they were the target", %{socket: socket} do
       state = %{target: {:npc, 1}, socket: socket}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {:npc, %{id: 1, name: "Bandit"}}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, :leave}}}, state)
       assert is_nil(state.target)
     end
   end

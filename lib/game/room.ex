@@ -60,25 +60,30 @@ defmodule Game.Room do
 
   @doc """
   Enter a room
+
+  Valid enter reasons: `:enter`, `:respawn`
   """
-  @spec enter(id :: integer, {:user, session :: pid, user :: map}) :: :ok
-  @spec enter(id :: integer, {:npc, npc :: map}) :: :ok
-  def enter(id, {:user, session, user}) do
-    GenServer.cast(pid(id), {:enter, {:user, session, user}})
+  @spec enter(integer(), Character.t(), atom()) :: :ok
+  def enter(id, character, reason \\ :enter)
+  def enter(id, {:user, session, user}, reason) do
+    GenServer.cast(pid(id), {:enter, {:user, session, user}, reason})
   end
-  def enter(id, {:npc, npc}) do
-    GenServer.cast(pid(id), {:enter, {:npc, npc}})
+  def enter(id, {:npc, npc}, reason) do
+    GenServer.cast(pid(id), {:enter, {:npc, npc}, reason})
   end
 
   @doc """
   Leave a room
+
+  Valid leave reasons: `:leave`, `:death`
   """
-  @spec leave(id :: integer, user :: {:user, session :: pid, user :: map}) :: :ok
-  def leave(id, {:user, session, user}) do
-    GenServer.cast(pid(id), {:leave, {:user, session, user}})
+  @spec leave(integer(), Character.t(), atom()) :: :ok
+  def leave(id, character, reason \\ :leave)
+  def leave(id, {:user, session, user}, reason) do
+    GenServer.cast(pid(id), {:leave, {:user, session, user}, reason})
   end
-  def leave(id, {:npc, npc}) do
-    GenServer.cast(pid(id), {:leave, {:npc, npc}})
+  def leave(id, {:npc, npc}, reason) do
+    GenServer.cast(pid(id), {:leave, {:npc, npc}, reason})
   end
 
   @doc """
@@ -198,31 +203,32 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:enter, player = {:user, _, user}}, state = %{room: room, players: players, npcs: npcs}) do
+  def handle_cast({:enter, player = {:user, _, user}, reason}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) entered room (#{room.id})", type: :room)
-    players |> inform_players({"room/entered", {:user, user}})
-    npcs |> inform_npcs({"room/entered", player})
+    players |> inform_players({"room/entered", {{:user, user}, reason}})
+    npcs |> inform_npcs({"room/entered", {player, reason}})
     {:noreply, Map.put(state, :players, [player | players])}
   end
-  def handle_cast({:enter, {:npc, npc}}, state = %{room: room, npcs: npcs, players: players}) do
+  def handle_cast({:enter, {:npc, npc}, reason}, state = %{room: room, npcs: npcs, players: players}) do
     Logger.info("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
-    players |> inform_players({"room/entered", {:npc, npc}})
-    npcs |> inform_npcs({"room/entered", {:npc, npc}})
+    players |> inform_players({"room/entered", {{:npc, npc}, reason}})
+    npcs |> inform_npcs({"room/entered", {{:npc, npc}, reason}})
     {:noreply, Map.put(state, :npcs, [npc | npcs])}
   end
 
-  def handle_cast({:leave, {:user, _, user}}, state = %{room: room, players: players, npcs: npcs}) do
+  def handle_cast({:leave, {:user, _, user}, reason}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("Player (#{user.id}) left room (#{room.id})", type: :room)
     players = Enum.reject(players, &(elem(&1, 2).id == user.id))
-    players |> inform_players({"room/leave", {:user, user}})
-    npcs |> inform_npcs({"room/leave", {:user, user}})
+    players |> inform_players({"room/leave", {{:user, user}, reason}})
+    npcs |> inform_npcs({"room/leave", {{:user, user}, reason}})
     {:noreply, Map.put(state, :players, players)}
   end
-  def handle_cast({:leave, {:npc, npc}}, state = %{room: room, players: players, npcs: npcs}) do
+
+  def handle_cast({:leave, {:npc, npc}, reason}, state = %{room: room, players: players, npcs: npcs}) do
     Logger.info("NPC (#{npc.id}) left room (#{room.id})", type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
-    players |> inform_players({"room/leave", {:npc, npc}})
-    npcs |> inform_npcs({"room/leave", {:npc, npc}})
+    players |> inform_players({"room/leave", {{:npc, npc}, reason}})
+    npcs |> inform_npcs({"room/leave", {{:npc, npc}, reason}})
     {:noreply, Map.put(state, :npcs, npcs)}
   end
 

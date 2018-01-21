@@ -76,7 +76,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, ^state} = Events.act_on(state, {"room/entered", {:user, :session, %{name: "Player"}}})
+      {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, :session, %{name: "Player"}}, :enter}})
 
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"
@@ -86,7 +86,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, ^state} = Events.act_on(state, {"room/entered", {:npc, %{name: "Bandit"}}})
+      {:update, ^state} = Events.act_on(state, {"room/entered", {{:npc, %{name: "Bandit"}}, :enter}})
 
       assert @room.get_says() |> length() == 0
     end
@@ -97,7 +97,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {:user, :session, %{id: 2, name: "Player"}}})
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, :session, %{id: 2, name: "Player"}}, :enter}})
       assert state.target == {:user, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
@@ -109,15 +109,15 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: []}
       state = %State{room_id: 1, npc: npc, target: {:user, 2}}
 
-      {:update, state} = Events.act_on(state, {"room/leave", {:user, :session, %{id: 2, name: "Player"}}})
+      {:update, state} = Events.act_on(state, {"room/leave", {{:user, :session, %{id: 2, name: "Player"}}, :leave}})
       assert is_nil(state.target)
     end
 
-    test "leaves the target if another player leaves" do
+    test "does not touch the target if another player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
       state = %State{room_id: 1, npc: npc, target: {:user, 2}}
 
-      :ok = Events.act_on(state, {"room/leave", {:user, :session, %{id: 3, name: "Player"}}})
+      :ok = Events.act_on(state, {"room/leave", {{:user, :session, %{id: 3, name: "Player"}}, :leave}})
     end
   end
 
@@ -203,8 +203,8 @@ defmodule Game.NPC.EventsTest do
 
       assert state.room_id == 2
 
-      assert [{2, {:npc, _npc}}] = @room.get_enters()
-      assert [{1, {:npc, _npc}}] = @room.get_leaves()
+      assert [{2, {:npc, _npc}, _reason}] = @room.get_enters()
+      assert [{1, {:npc, _npc}, _reason}] = @room.get_leaves()
     end
 
     test "does not pick a room that would go further away than the max distance", %{state: state, event: event} do
@@ -252,7 +252,7 @@ defmodule Game.NPC.EventsTest do
 
       assert state.room_id == 2
 
-      assert_receive {:"$gen_cast", {:notify, {"room/entered", {:user, %{id: 10}}}}}
+      assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:user, %{id: 10}}, :enter}}}}
     end
 
     test "will move if the random number is below chance" do

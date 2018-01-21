@@ -49,7 +49,7 @@ defmodule Game.NPC.ActionsTest do
       assert is_nil(state.respawn_at)
       assert state.npc.stats.health == 15
       assert state.room_id == 1
-      assert [{1, {:npc, _}}] = @room.get_enters()
+      assert [{1, {:npc, _}, :respawn}] = @room.get_enters()
     end
   end
 
@@ -152,7 +152,7 @@ defmodule Game.NPC.ActionsTest do
 
       state = Actions.handle_continuous_effect(state, :id)
 
-      assert [{1, {:npc, _}}] = @room.get_leaves()
+      assert [{1, {:npc, _}, :death}] = @room.get_leaves()
       assert state.continuous_effects == []
     end
 

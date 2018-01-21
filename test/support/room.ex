@@ -48,11 +48,11 @@ defmodule Test.Game.Room do
     end)
   end
 
-  def enter(id, who) do
+  def enter(id, who, reason \\ :enter) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
       enters = Map.get(state, :enter, [])
-      Map.put(state, :enter, enters ++ [{id, who}])
+      Map.put(state, :enter, enters ++ [{id, who, reason}])
     end)
   end
 
@@ -66,11 +66,11 @@ defmodule Test.Game.Room do
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :enter, []) end)
   end
 
-  def leave(id, user) do
+  def leave(id, user, reason \\ :leave) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
       leaves = Map.get(state, :leave, [])
-      Map.put(state, :leave, leaves ++ [{id, user}])
+      Map.put(state, :leave, leaves ++ [{id, user, reason}])
     end)
   end
 
