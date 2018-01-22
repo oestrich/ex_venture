@@ -8,7 +8,7 @@ defmodule Game.Config do
 
   @doc false
   def start_link() do
-    Agent.start_link(fn () -> %{} end, name: __MODULE__)
+    Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
 
   @doc """
@@ -17,12 +17,12 @@ defmodule Game.Config do
   @spec reload(String.t()) :: any()
   def reload(name) do
     value = Config.find_config(name)
-    Agent.update(__MODULE__, &(Map.put(&1, name, value)))
+    Agent.update(__MODULE__, &Map.put(&1, name, value))
     value
   end
 
   def find_config(name) do
-    case Agent.get(__MODULE__, &(Map.get(&1, name, nil))) do
+    case Agent.get(__MODULE__, &Map.get(&1, name, nil)) do
       nil -> reload(name)
       value -> value
     end
@@ -93,7 +93,9 @@ defmodule Game.Config do
   """
   def starting_save() do
     case find_config("starting_save") do
-      nil -> nil
+      nil ->
+        nil
+
       save ->
         {:ok, save} = Save.load(Poison.decode!(save))
         save

@@ -9,9 +9,9 @@ defmodule Game.Class do
   @doc """
   List of classes
   """
-  @spec classes() :: [Data.Class.t]
+  @spec classes() :: [Data.Class.t()]
   def classes() do
     Class
-    |> Repo.all
+    |> Repo.all()
   end
 end

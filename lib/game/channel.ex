@@ -36,7 +36,7 @@ defmodule Game.Channel do
 
   The current process PID will join
   """
-  @spec join(String.t) :: :ok
+  @spec join(String.t()) :: :ok
   def join(channel) do
     GenServer.cast(__MODULE__, {:join, channel, self()})
   end
@@ -54,7 +54,7 @@ defmodule Game.Channel do
 
   The current process PID will leave
   """
-  @spec leave(String.t) :: :ok
+  @spec leave(String.t()) :: :ok
   def leave(channel) do
     GenServer.cast(__MODULE__, {:leave, channel, self()})
   end

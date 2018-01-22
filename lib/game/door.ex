@@ -28,7 +28,7 @@ defmodule Game.Door do
   @doc """
   Maybe load a door, only if the exit has a door
   """
-  @spec maybe_load(room_exit :: Exit.t) :: :ok
+  @spec maybe_load(Exit.t()) :: :ok
   def maybe_load(room_exit)
   def maybe_load(%{id: id, has_door: true}), do: load(id)
   def maybe_load(_), do: :ok
@@ -36,8 +36,9 @@ defmodule Game.Door do
   @doc """
   Load a new door into the ETS table
   """
-  @spec load(exit_id :: integer) :: :ok
+  @spec load(integer()) :: :ok
   def load(%{id: id}), do: load(id)
+
   def load(exit_id) do
     GenServer.call(__MODULE__, {:load, exit_id})
   end
@@ -45,7 +46,7 @@ defmodule Game.Door do
   @doc """
   Get the state of a door
   """
-  @spec get(exit_id :: integer) :: String.t
+  @spec get(integer()) :: String.t()
   def get(exit_id) do
     case :ets.lookup(@ets_table, exit_id) do
       [{_, state}] -> state
@@ -56,9 +57,10 @@ defmodule Game.Door do
   @doc """
   Set the state of a door, state must be `#{@open}` or `#{@closed}`
   """
-  @spec set(room_exit :: Exit.t, state :: status()) :: :ok
+  @spec set(Exit.t(), status()) :: :ok
   def set(%{id: id}, state) when state in [@open, @closed], do: set(id, state)
-  @spec set(exit_id :: integer, state :: status()) :: :ok
+
+  @spec set(integer(), status()) :: :ok
   def set(exit_id, state) when state in [@open, @closed] do
     GenServer.call(__MODULE__, {:set, exit_id, state})
   end
@@ -66,7 +68,7 @@ defmodule Game.Door do
   @doc """
   Check if a door is closed
   """
-  @spec closed?(exit_id :: integer) :: boolean
+  @spec closed?(integer()) :: boolean
   def closed?(exit_id) do
     case get(exit_id) do
       nil -> nil
@@ -77,7 +79,7 @@ defmodule Game.Door do
   @doc """
   Check if a door is open
   """
-  @spec open?(exit_id :: integer) :: boolean
+  @spec open?(integer()) :: boolean
   def open?(exit_id) do
     case get(exit_id) do
       nil -> nil
@@ -90,6 +92,7 @@ defmodule Game.Door do
   """
   @spec remove(Exit.t()) :: :ok
   def remove(room_exit)
+
   def remove(%{id: id}) do
     GenServer.call(__MODULE__, {:remove, id})
   end

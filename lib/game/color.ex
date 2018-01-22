@@ -8,7 +8,7 @@ defmodule Game.Color do
   @doc """
   Format a string for colors
   """
-  @spec format(string :: String.t) :: String.t
+  @spec format(String.t()) :: String.t()
   def format(string) do
     string
     |> String.replace("{black}", "\e[30m")
@@ -34,6 +34,7 @@ defmodule Game.Color do
       iex> Game.Color.strip_color("{blue}Item{/blue}")
       "Item"
   """
+  @spec strip_color(String.t()) :: String.t()
   def strip_color(string) do
     string
     |> String.replace("{black}", "")

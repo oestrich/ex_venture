@@ -3,7 +3,13 @@ defmodule Game.Command do
   Parses and runs commands from players
   """
 
-  defstruct [text: "", module: nil, args: {}, system: false, continue: false, parsed_in: nil, ran_in: nil]
+  defstruct text: "",
+            module: nil,
+            args: {},
+            system: false,
+            continue: false,
+            parsed_in: nil,
+            ran_in: nil
 
   @typedoc """
   A tuple with the first element being the command to run
@@ -12,7 +18,7 @@ defmodule Game.Command do
 
       {Game.Command.Run, "Hi there"}
   """
-  @type t :: {module :: atom(), args :: []}
+  @type t :: {atom(), []}
 
   @doc """
   Help text.
@@ -34,7 +40,7 @@ defmodule Game.Command do
 
   Should return `{:error, :bad_parse, command}` on a failed parse.
   """
-  @callback parse(command :: String.t) :: tuple() | {:error, :bad_parse, command :: String.t}
+  @callback parse(command :: String.t()) :: tuple() | {:error, :bad_parse, command :: String.t()}
 
   @doc """
   Run a command
@@ -95,31 +101,34 @@ defmodule Game.Command do
     Command.Version,
     Command.Wear,
     Command.Who,
-    Command.Wield,
+    Command.Wield
   ]
 
   @doc """
   Get all commands that `use Command`
   """
-  @spec commands() :: [atom]
+  @spec commands() :: [atom()]
   def commands(), do: @commands
 
   @doc """
   Parse a string to turn into a command tuple
   """
-  @spec parse(command :: String.t, user :: User.t) :: t
+  @spec parse(String.t(), User.t()) :: t()
   def parse(command, user)
   def parse("", _user), do: {:skip, {}}
+
   def parse(command, %{class: class}) do
     start_parsing_at = Timex.now()
     command = command |> String.replace(~r/  /, " ")
-    class_skill = class.skills |> Enum.find(&(class_parse_command(&1, command)))
+    class_skill = class.skills |> Enum.find(&class_parse_command(&1, command))
+
     case class_skill do
       nil ->
         command
         |> _parse()
         |> maybe_bad_parse(command)
         |> record_parse_time(start_parsing_at)
+
       _ ->
         %__MODULE__{text: command, module: Game.Command.Skills, args: {class_skill, command}}
         |> record_parse_time(start_parsing_at)
@@ -130,6 +139,7 @@ defmodule Game.Command do
     end_parsing_at = Timex.now()
     %{command | parsed_in: Timex.diff(end_parsing_at, start_parsing_at, :microseconds)}
   end
+
   defp record_parse_time(command, _start_parsing_at), do: command
 
   defp class_parse_command(skill, command) do
@@ -138,7 +148,7 @@ defmodule Game.Command do
 
   defp _parse(command) do
     @commands
-    |> Enum.find_value(fn (module) ->
+    |> Enum.find_value(fn module ->
       case module.parse(command) do
         {:error, :bad_parse, _} -> false
         arguments -> %__MODULE__{text: command, module: module, args: arguments}
@@ -151,25 +161,35 @@ defmodule Game.Command do
   defp maybe_bad_parse(command, _), do: command
 
   def run({:skip, {}}, _session, _state), do: :ok
+
   def run({:error, :bad_parse, command}, session, %{socket: socket}) do
     Insight.bad_command(command)
-    Logger.info("Command for session #{inspect(session)} failed to parse #{inspect(command)}", type: :command)
+
+    Logger.info(
+      "Command for session #{inspect(session)} failed to parse #{inspect(command)}",
+      type: :command
+    )
+
     socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
     :ok
   end
+
   def run(command = %__MODULE__{module: module, args: args}, session, state = %{socket: socket}) do
     started_run_at = Timex.now()
+
     case module.must_be_alive? do
       true ->
         case state do
           %{save: %{stats: %{health: health}}} when health <= 0 ->
             socket |> @socket.echo("You are passed out and cannot perform this action.")
             :ok
+
           _ ->
             args
             |> module.run(session, state)
             |> log_command(command, session, started_run_at)
         end
+
       false ->
         args
         |> module.run(session, state)

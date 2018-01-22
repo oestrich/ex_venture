@@ -14,31 +14,36 @@ defmodule Game.Account do
   @doc """
   Create a new user from attributes. Preloads everything required to start playing the game.
   """
-  @spec create(map, map) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
+  @spec create(map, map) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def create(attributes, %{race: race, class: class}) do
     save =
       Config.starting_save()
       |> Map.put(:stats, race.starting_stats() |> Stats.default())
 
-    attributes = attributes
-    |> Map.put(:race_id, race.id)
-    |> Map.put(:class_id, class.id)
-    |> Map.put(:save, save)
+    attributes =
+      attributes
+      |> Map.put(:race_id, race.id)
+      |> Map.put(:class_id, class.id)
+      |> Map.put(:save, save)
 
     case create_account(attributes) do
       {:ok, user} ->
-        user = user
-        |> Repo.preload([:race])
-        |> Repo.preload([class: :skills])
+        user =
+          user
+          |> Repo.preload([:race])
+          |> Repo.preload(class: :skills)
+
         {:ok, user}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   defp create_account(attributes) do
     %User{}
     |> User.changeset(attributes)
-    |> Repo.insert
+    |> Repo.insert()
   end
 
   @doc """
@@ -52,25 +57,29 @@ defmodule Game.Account do
         user |> create_session(session_started_at, now, stats)
 
         {:ok, user}
-      {:error, changeset} -> {:error, changeset}
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 
   @doc """
   Update the user's save data.
   """
-  @spec save(User.t, Save.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
+  @spec save(User.t(), Save.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def save(user, save) do
     user = %{user | save: %{}}
+
     user
     |> User.changeset(%{save: save})
-    |> Repo.update
+    |> Repo.update()
   end
 
   @doc """
   Update the seconds the player has been online.
   """
-  @spec update_time_online(User.t, Timex.t, Timex.t) :: {:ok, User.t} | {:error, Ecto.Changeset.t}
+  @spec update_time_online(User.t(), Timex.t(), Timex.t()) ::
+          {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_time_online(user, session_started_at, now) do
     user
     |> User.changeset(%{seconds_online: current_play_time(user, session_started_at, now)})
@@ -80,7 +89,7 @@ defmodule Game.Account do
   @doc """
   Calculate the current play time, old + current session.
   """
-  @spec current_play_time(User.t, DateTime.t, DateTime.t) :: integer()
+  @spec current_play_time(User.t(), DateTime.t(), DateTime.t()) :: integer()
   def current_play_time(user, session_started_at, now) do
     play_time = Timex.diff(now, session_started_at, :seconds)
     user.seconds_online + play_time
@@ -89,15 +98,19 @@ defmodule Game.Account do
   @doc """
   Create a new session record
   """
-  @spec create_session(User.t, Timex.t(), Timex.t(), map) :: {:ok, User.Session.t()}
+  @spec create_session(User.t(), Timex.t(), Timex.t(), map) :: {:ok, User.Session.t()}
   def create_session(user, session_started_at, now, stats) do
     commands = Map.get(stats, :commands, %{})
     play_time = Timex.diff(now, session_started_at, :seconds)
 
     user
     |> Ecto.build_assoc(:sessions)
-    |> Session.changeset(%{started_at: session_started_at, seconds_online: play_time, commands: commands})
-    |> Repo.insert
+    |> Session.changeset(%{
+      started_at: session_started_at,
+      seconds_online: play_time,
+      commands: commands
+    })
+    |> Repo.insert()
   end
 
   @doc """

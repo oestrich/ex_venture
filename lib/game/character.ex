@@ -28,7 +28,7 @@ defmodule Game.Character do
   @doc """
   Let the target know they are being targeted
   """
-  @spec being_targeted(target :: tuple, player :: {atom, User.t}) :: :ok
+  @spec being_targeted(tuple(), Character.t()) :: :ok
   def being_targeted(target, player) do
     GenServer.cast({:via, Via, who(target)}, {:targeted, player})
   end
@@ -36,7 +36,7 @@ defmodule Game.Character do
   @doc """
   When a player stops targetting a character, let them know
   """
-  @spec remove_target(target :: tuple, player :: {atom, User.t}) :: :ok
+  @spec remove_target(tuple(), Character.t()) :: :ok
   def remove_target(target, player) do
     GenServer.cast({:via, Via, who(target)}, {:remove_target, player})
   end
@@ -44,7 +44,7 @@ defmodule Game.Character do
   @doc """
   Apply effects on the target
   """
-  @spec apply_effects(target :: tuple, effects :: [Effect.t], from :: {atom, map}, description :: String.t) :: :ok
+  @spec apply_effects(tuple(), [Effect.t()], Character.t(), String.t()) :: :ok
   def apply_effects(target, effects, from, description) do
     GenServer.cast({:via, Via, who(target)}, {:apply_effects, effects, from, description})
   end
@@ -54,7 +54,7 @@ defmodule Game.Character do
 
   PC targets NPC, NPC dies, NPC let's the PC know it died. Should clear the target on the PC.
   """
-  @spec died(who :: {atom, map}, to :: {atom, map}) :: :ok
+  @spec died(Character.t(), Character.t()) :: :ok
   def died(target, who) do
     GenServer.cast({:via, Via, who(target)}, {:died, who})
   end
@@ -62,7 +62,7 @@ defmodule Game.Character do
   @doc """
   Get character information about the character
   """
-  @spec info(who :: {atom, integer}) :: {atom, map}
+  @spec info(Character.t()) :: Character.t()
   def info(target) do
     GenServer.call({:via, Via, who(target)}, :info)
   end
@@ -71,7 +71,8 @@ defmodule Game.Character do
   Converts a tuple with a struct to a tuple with an id
   """
   @spec who({:npc, integer()} | {:npc, NPC.t()}) :: {:npc, integer()}
-  @spec who({:user, integer()} | {:user, User.t()} | {:user, Session.t(), User.t()}) :: {:user, integer()}
+  @spec who({:user, integer()} | {:user, User.t()} | {:user, Session.t(), User.t()}) ::
+          {:user, integer()}
   def who(target)
   def who({:npc, id}) when is_integer(id), do: {:npc, id}
   def who({:npc, npc}), do: {:npc, npc.id}
