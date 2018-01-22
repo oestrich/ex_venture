@@ -30,25 +30,25 @@ defmodule Game.Command.Run do
   Run the user around
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({directions}, session, state) when is_list(directions) do
-    move(directions, session, state)
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({directions}, state) when is_list(directions) do
+    move(directions, state)
   end
-  def run({directions}, session, state) do
+  def run({directions}, state) do
     case parse_run(directions) do
       directions when is_list(directions) ->
-        move(directions, session, state)
+        move(directions, state)
       _ -> :ok
     end
   end
-  def run({}, _session, _state), do: :ok # run without directions
+  def run({}, _state), do: :ok # run without directions
 
   @doc """
   Move in the first direction of the list
   """
-  def move([direction | directions], session, state) do
-    case Move.run({direction}, session, state) do
+  def move([direction | directions], state) do
+    case Move.run({direction}, state) do
       {:error, :no_exit} ->
         state.socket |> @socket.echo("Could not move #{direction}, no exit found.")
         :ok

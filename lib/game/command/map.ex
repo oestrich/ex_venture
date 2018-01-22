@@ -27,9 +27,9 @@ defmodule Game.Command.Map do
   View a map of the zone
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer})
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)

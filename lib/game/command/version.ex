@@ -23,9 +23,9 @@ defmodule Game.Command.Version do
   View version information
   """
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, %{socket: socket}) do
+  @spec run(args :: {atom, String.t}, state :: map) :: :ok
+  def run(command, state)
+  def run({}, %{socket: socket}) do
     socket |> @socket.echo("#{ExVenture.version()}\nhttp://exventure.org - https://github.com/oestrich/ex_venture")
     :ok
   end

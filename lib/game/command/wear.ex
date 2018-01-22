@@ -49,16 +49,16 @@ defmodule Game.Command.Wear do
   Put an item in your hands
   """
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({:wear, item_name}, _session, state = %{socket: socket, save: %{items: items}}) do
+  @spec run(args :: {atom, String.t}, state :: map) :: :ok
+  def run(command, state)
+  def run({:wear, item_name}, state = %{socket: socket, save: %{items: items}}) do
     items = Items.items(items)
     case Item.find_item(items, item_name) do
       nil -> socket |> item_not_found(item_name)
       item -> socket |> item_found(item, state)
     end
   end
-  def run({:remove, slot}, _session, state = %{socket: socket}) do
+  def run({:remove, slot}, state = %{socket: socket}) do
     case slot do
       "chest" -> :chest |> run_remove(state)
       _ ->

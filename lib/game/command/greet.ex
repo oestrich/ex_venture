@@ -48,8 +48,8 @@ defmodule Game.Command.Greet do
   Greet another player
   """
   @impl Game.Command
-  def run(command, session, state)
-  def run({:greet, name}, _session, state = %{save: %{room_id: room_id}}) do
+  def run(command, state)
+  def run({:greet, name}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
     room

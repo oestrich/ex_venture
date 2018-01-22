@@ -76,7 +76,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, :session, %{name: "Player"}}, :enter}})
+      {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, %{name: "Player"}}, :enter}})
 
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"
@@ -97,7 +97,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, :session, %{id: 2, name: "Player"}}, :enter}})
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
       assert state.target == {:user, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
@@ -109,7 +109,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: []}
       state = %State{room_id: 1, npc: npc, target: {:user, 2}}
 
-      {:update, state} = Events.act_on(state, {"room/leave", {{:user, :session, %{id: 2, name: "Player"}}, :leave}})
+      {:update, state} = Events.act_on(state, {"room/leave", {{:user, %{id: 2, name: "Player"}}, :leave}})
       assert is_nil(state.target)
     end
 
@@ -117,7 +117,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: []}
       state = %State{room_id: 1, npc: npc, target: {:user, 2}}
 
-      :ok = Events.act_on(state, {"room/leave", {{:user, :session, %{id: 3, name: "Player"}}, :leave}})
+      :ok = Events.act_on(state, {"room/leave", {{:user, %{id: 3, name: "Player"}}, :leave}})
     end
   end
 

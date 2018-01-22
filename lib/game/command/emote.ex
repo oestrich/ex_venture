@@ -24,9 +24,9 @@ defmodule Game.Command.Emote do
   Perform an emote
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({emote}, _session, %{socket: socket, user: user, save: %{room_id: room_id}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({emote}, %{socket: socket, user: user, save: %{room_id: room_id}}) do
     socket |> @socket.echo(Format.emote({:user, user}, emote))
     room_id |> @room.emote({:user, user}, Message.emote(user, emote))
     :ok

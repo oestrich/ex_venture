@@ -30,9 +30,9 @@ defmodule Game.Command.Drop do
   Drop an item in the same room
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
-  def run(command, session, state)
-  def run({item_name}, _session, state) do
+  @spec run(args :: [], state :: map) :: :ok | {:update, map}
+  def run(command, state)
+  def run({item_name}, state) do
     case Regex.match?(~r{#{@currency}}, item_name) do
       true -> drop_currency(item_name, state)
       false -> drop_item(item_name, state)

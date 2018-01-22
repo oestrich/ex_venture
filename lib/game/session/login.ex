@@ -36,8 +36,8 @@ defmodule Game.Session.Login do
 
   Edit the state to be signed in and active
   """
-  @spec login(user :: map, session :: pid, socket :: pid, state :: map) :: map
-  def login(user, _session, socket, state) do
+  @spec login(user :: map, socket :: pid, state :: map) :: map
+  def login(user, socket, state) do
     Session.Registry.register(user)
 
     PlayerInstrumenter.login(user)
@@ -69,21 +69,21 @@ defmodule Game.Session.Login do
     |> Map.put(:state, "active")
   end
 
-  def sign_in(user_id, session, state = %{socket: socket}) do
+  def sign_in(user_id, state = %{socket: socket}) do
     case Authentication.find_user(user_id) do
       nil ->
         socket |> @socket.disconnect()
         state
       user ->
-        user |> process_login(session, state)
+        user |> process_login(state)
     end
   end
 
-  def process("create", _session, state = %{socket: socket}) do
+  def process("create", state = %{socket: socket}) do
     socket |> Session.CreateAccount.start()
     state |> Map.put(:state, "create")
   end
-  def process(password, session, state = %{socket: socket, login: %{name: name}}) do
+  def process(password, state = %{socket: socket, login: %{name: name}}) do
     socket |> @socket.tcp_option(:echo, true)
     case Authentication.find_and_validate(name, password) do
       {:error, :invalid} ->
@@ -92,23 +92,23 @@ defmodule Game.Session.Login do
         socket |> @socket.disconnect()
         state
       user ->
-        user |> process_login(session, state)
+        user |> process_login(state)
     end
   end
-  def process(message, _session, state = %{socket: socket}) do
+  def process(message, state = %{socket: socket}) do
     socket |> @socket.prompt("Password: ")
     socket |> @socket.tcp_option(:echo, false)
     Map.merge(state, %{login: %{name: message}})
   end
 
-  defp process_login(user, session, state = %{socket: socket}) do
+  defp process_login(user, state = %{socket: socket}) do
     case already_signed_in?(user) do
       true ->
         socket |> @socket.echo("Sorry, this player is already logged in.")
         socket |> @socket.disconnect()
         state
       false ->
-        user |> login(session, socket, state |> Map.delete(:login))
+        user |> login(socket, state |> Map.delete(:login))
     end
   end
 

@@ -9,11 +9,11 @@ defmodule Game.Command.BugTest do
 
   setup do
     @socket.clear_messages
-    %{session: :session, socket: :socket}
+    %{socket: :socket}
   end
 
-  test "creating a new bug", %{session: session, socket: socket} do
-    {:editor, Bug, state} = Bug.run({"title"}, session, %{socket: socket})
+  test "creating a new bug", %{socket: socket} do
+    {:editor, Bug, state} = Bug.run({"title"}, %{socket: socket})
 
     assert state.commands.bug.title == "title"
     assert state.commands.bug.lines == []

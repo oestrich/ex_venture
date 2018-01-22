@@ -11,25 +11,25 @@ defmodule Game.Command.ExamineTest do
     insert_item(%{id: 2, name: "Leather Armor", keywords: [], description: "A simple leather chest piece", stats: %{}, effects: []})
 
     @socket.clear_messages
-    {:ok, %{session: :session, socket: :socket}}
+    {:ok, %{socket: :socket}}
   end
 
-  test "looking at an item in inventory", %{session: session, socket: socket} do
-    :ok = Command.Examine.run({"short sword"}, session, %{socket: socket, save: %{wearing: %{}, wielding: %{}, items: [item_instance(1)]}})
+  test "looking at an item in inventory", %{socket: socket} do
+    :ok = Command.Examine.run({"short sword"}, %{socket: socket, save: %{wearing: %{}, wielding: %{}, items: [item_instance(1)]}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(A simple blade), look)
   end
 
-  test "looking at an item in wearing", %{session: session, socket: socket} do
-    :ok = Command.Examine.run({"leather armor"}, session, %{socket: socket, save: %{wearing: %{chest: item_instance(2)}, wielding: %{}, items: []}})
+  test "looking at an item in wearing", %{socket: socket} do
+    :ok = Command.Examine.run({"leather armor"}, %{socket: socket, save: %{wearing: %{chest: item_instance(2)}, wielding: %{}, items: []}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(simple leather), look)
   end
 
-  test "looking at an item in wielding", %{session: session, socket: socket} do
-    :ok = Command.Examine.run({"short sword"}, session, %{socket: socket, save: %{wearing: %{}, wielding: %{right: item_instance(1)}, items: []}})
+  test "looking at an item in wielding", %{socket: socket} do
+    :ok = Command.Examine.run({"short sword"}, %{socket: socket, save: %{wearing: %{}, wielding: %{right: item_instance(1)}, items: []}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(A simple blade), look)

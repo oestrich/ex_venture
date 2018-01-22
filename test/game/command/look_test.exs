@@ -20,11 +20,11 @@ defmodule Game.Command.LookTest do
 
     @socket.clear_messages
 
-    {:ok, %{session: :session, socket: :socket}}
+    {:ok, %{socket: :socket}}
   end
 
-  test "view room information", %{session: session, socket: socket} do
-    Game.Command.Look.run({}, session, %{socket: socket, save: %{room_id: 1}})
+  test "view room information", %{socket: socket} do
+    Game.Command.Look.run({}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Hallway), look)
@@ -34,36 +34,36 @@ defmodule Game.Command.LookTest do
     assert Enum.any?(@socket.get_push_gmcps(), fn ({_socket, module, _}) -> module == "Zone.Map" end)
   end
 
-  test "looking at an item", %{session: session, socket: socket} do
-    Game.Command.Look.run({"short sword"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "looking at an item", %{socket: socket} do
+    Game.Command.Look.run({"short sword"}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(A simple blade), look)
   end
 
-  test "looking at an npc", %{session: session, socket: socket} do
-    Game.Command.Look.run({"bandit"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "looking at an npc", %{socket: socket} do
+    Game.Command.Look.run({"bandit"}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(bandit description), look)
   end
 
-  test "looking at a player", %{session: session, socket: socket} do
-    Game.Command.Look.run({"player"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "looking at a player", %{socket: socket} do
+    Game.Command.Look.run({"player"}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Player), look)
   end
 
-  test "looking in a direction", %{session: session, socket: socket} do
-    Game.Command.Look.run({"north"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "looking in a direction", %{socket: socket} do
+    Game.Command.Look.run({"north"}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Hallway), look)
   end
 
-  test "could not find the name", %{session: session, socket: socket} do
-    Game.Command.Look.run({"unknown"}, session, %{socket: socket, save: %{room_id: 1}})
+  test "could not find the name", %{socket: socket} do
+    Game.Command.Look.run({"unknown"}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Could not find), look)

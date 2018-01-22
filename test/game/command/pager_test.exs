@@ -13,7 +13,6 @@ defmodule Game.Command.PagerTest do
     |> Repo.preload([class: [:skills]])
 
     state = %{
-      session: :session,
       socket: :socket,
       user: user,
       save: base_save(),

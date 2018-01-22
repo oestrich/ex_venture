@@ -33,20 +33,20 @@ defmodule Game.Command.Skills do
   Look at your info sheet
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, %{socket: socket, user: user, save: save}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, %{socket: socket, user: user, save: save}) do
     skills =
       user.class.skills
       |> Enum.filter(&(&1.level <= save.level))
     socket |> @socket.echo(Format.skills(user.class, skills))
     :ok
   end
-  def run({%{command: command} , command}, _session, %{socket: socket, target: target}) when is_nil(target) do
+  def run({%{command: command} , command}, %{socket: socket, target: target}) when is_nil(target) do
     socket |> @socket.echo("You don't have a target.")
     :ok
   end
-  def run({skill, command}, _session, state = %{socket: socket, save: %{room_id: room_id}, target: target}) do
+  def run({skill, command}, state = %{socket: socket, save: %{room_id: room_id}, target: target}) do
     new_target =
       command
       |> String.replace(skill.command, "")

@@ -10,64 +10,64 @@ defmodule Game.Command.ChannelsTest do
   setup do
     @socket.clear_messages
     user = %{id: 10, name: "Player", save: %{channels: ["global"]}}
-    %{session: :session, socket: :socket, user: user}
+    %{socket: :socket, user: user}
   end
 
-  test "list out channels", %{session: session, socket: socket} do
+  test "list out channels", %{socket: socket} do
     :ok = Channel.join("global")
     :ok = Channel.join("newbie")
 
-    :ok = Channels.run({}, session, %{socket: socket})
+    :ok = Channels.run({}, %{socket: socket})
 
     [{^socket, echo}] = @socket.get_echos()
     assert Regex.match?(~r(global), echo)
     assert Regex.match?(~r(newbie), echo)
   end
 
-  test "send a message to a channel", %{session: session, socket: socket, user: user} do
+  test "send a message to a channel", %{socket: socket, user: user} do
     :ok = Channel.join("global")
 
-    :ok = Channels.run({"global", "hello"}, session, %{socket: socket, user: user})
+    :ok = Channels.run({"global", "hello"}, %{socket: socket, user: user})
 
     assert_receive {:channel, {:broadcast, "{red}[global]{/red} {blue}Player{/blue} says, {green}\"hello\"{/green}"}}
   end
 
-  test "does not send a message if the user is not subscribed to the channel", %{session: session, socket: socket, user: user} do
+  test "does not send a message if the user is not subscribed to the channel", %{socket: socket, user: user} do
     :ok = Channel.join("newbie")
 
-    :ok = Channels.run({"newbie", "hello"}, session, %{socket: socket, user: user})
+    :ok = Channels.run({"newbie", "hello"}, %{socket: socket, user: user})
 
     refute_receive {:channel, {:broadcast, "{red}[newbie]{/red} {blue}Player{/blue} says, {green}\"hello\"{/green}"}}
   end
 
-  test "join a channel", %{session: session, socket: socket} do
-    :ok = Channels.run({:join, "global"}, session, %{socket: socket, user: %{save: %{channels: []}}})
+  test "join a channel", %{socket: socket} do
+    :ok = Channels.run({:join, "global"}, %{socket: socket, user: %{save: %{channels: []}}})
 
     assert_receive {:channel, {:joined, "global"}}
   end
 
-  test "join a channel - already joined", %{session: session, socket: socket, user: user} do
-    :ok = Channels.run({:join, "global"}, session, %{socket: socket, user: user})
+  test "join a channel - already joined", %{socket: socket, user: user} do
+    :ok = Channels.run({:join, "global"}, %{socket: socket, user: user})
 
     refute_receive {:channel, {:joined, "global"}}
   end
 
-  test "limit to official channels on a join", %{session: session, socket: socket, user: user} do
-    :ok = Channels.run({:join, "new-channel"}, session, %{socket: socket, user: user})
+  test "limit to official channels on a join", %{socket: socket, user: user} do
+    :ok = Channels.run({:join, "new-channel"}, %{socket: socket, user: user})
 
     refute_receive {:channel, {:joined, "new-channel"}}
   end
 
-  test "leave a channel", %{session: session, socket: socket, user: user} do
+  test "leave a channel", %{socket: socket, user: user} do
     :ok = Channel.join("global")
 
-    :ok = Channels.run({:leave, "global"}, session, %{socket: socket, user: user})
+    :ok = Channels.run({:leave, "global"}, %{socket: socket, user: user})
 
     assert_receive {:channel, {:left, "global"}}
   end
 
-  test "leave a channel - no in channel", %{session: session, socket: socket, user: user} do
-    :ok = Channels.run({:leave, "newbie"}, session, %{socket: socket, user: user})
+  test "leave a channel - no in channel", %{socket: socket, user: user} do
+    :ok = Channels.run({:leave, "newbie"}, %{socket: socket, user: user})
 
     refute_receive {:channel, {:left, "newbie"}}
   end

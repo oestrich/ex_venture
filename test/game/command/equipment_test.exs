@@ -12,12 +12,12 @@ defmodule Game.Command.EquipmentTest do
     insert_item(%{id: 3, name: "Leather Chest"})
 
     @socket.clear_messages
-    {:ok, %{session: :session, socket: :socket}}
+    {:ok, %{socket: :socket}}
   end
 
-  test "view your equipment", %{session: session, socket: socket} do
+  test "view your equipment", %{socket: socket} do
     state = %{socket: socket, save: %{item_ids: [1], wearing: %{chest: 3}, wielding: %{right: 2}}}
-    Equipment.run({}, session, state)
+    Equipment.run({}, state)
 
     [{^socket, look}] = @socket.get_echos()
     refute Regex.match?(~r(Sword), look)

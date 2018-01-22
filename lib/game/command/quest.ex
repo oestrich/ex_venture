@@ -74,9 +74,9 @@ defmodule Game.Command.Quest do
   Questing
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
-  def run(command, session, state)
-  def run({:list, :active}, _session, %{socket: socket, user: user}) do
+  @spec run(args :: [], state :: map) :: :ok | {:update, map}
+  def run(command, state)
+  def run({:list, :active}, %{socket: socket, user: user}) do
     case Quest.for(user) do
       [] ->
         socket |> @socket.echo("You have no active quests.")
@@ -86,7 +86,7 @@ defmodule Game.Command.Quest do
     :ok
   end
 
-  def run({:show, quest_id}, _session, %{socket: socket, user: user, save: save}) do
+  def run({:show, quest_id}, %{socket: socket, user: user, save: save}) do
     case Quest.progress_for(user, quest_id) do
       nil ->
         socket |> @socket.echo("You have not started this quest.")
@@ -97,7 +97,7 @@ defmodule Game.Command.Quest do
   end
 
   # find quests that are completed and see if npc in the room
-  def run({:complete, :any}, session, state = %{socket: socket, user: user, save: save}) do
+  def run({:complete, :any}, state = %{socket: socket, user: user, save: save}) do
     room = @room.look(save.room_id)
     npc_ids = Enum.map(room.npcs, &(&1.original_id))
 
@@ -105,10 +105,10 @@ defmodule Game.Command.Quest do
     |> Quest.for()
     |> find_active_quests_for_room(npc_ids, socket)
     |> filter_for_ready_to_complete(save)
-    |> maybe_complete(session, state)
+    |> maybe_complete(state)
   end
 
-  def run({:complete, quest_id}, _session, state = %{socket: socket, user: user}) do
+  def run({:complete, quest_id}, state = %{socket: socket, user: user}) do
     case Quest.progress_for(user, quest_id) do
       nil ->
         socket |> @socket.echo("You have not started this quest.")
@@ -219,9 +219,9 @@ defmodule Game.Command.Quest do
     end)
   end
 
-  defp maybe_complete(:ok, _, _), do: :ok
-  defp maybe_complete(nil, _, %{socket: socket}) do
+  defp maybe_complete(:ok, _), do: :ok
+  defp maybe_complete(nil, %{socket: socket}) do
     socket |> @socket.echo("You cannot complete a quest in this room. Find the quest giver.")
   end
-  defp maybe_complete(progress, session, state), do: run({:complete, progress.quest_id}, session, state)
+  defp maybe_complete(progress, state), do: run({:complete, progress.quest_id}, state)
 end

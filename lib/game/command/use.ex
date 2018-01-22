@@ -28,9 +28,9 @@ defmodule Game.Command.Use do
   Use an item
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({item_name}, _session, state = %{socket: socket, save: %{items: items}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({item_name}, state = %{socket: socket, save: %{items: items}}) do
     items = Items.items_keep_instance(items)
     case Item.find_item(items, item_name) do
       nil -> socket |> item_not_found(item_name)

@@ -11,10 +11,10 @@ defmodule Game.Command.InfoTest do
     insert_item(armor)
 
     @socket.clear_messages
-    {:ok, %{session: :session, socket: :socket, armor: armor}}
+    {:ok, %{socket: :socket, armor: armor}}
   end
 
-  test "view room information", %{session: session, socket: socket, armor: armor} do
+  test "view room information", %{socket: socket, armor: armor} do
     user = %{
       name: "hero",
       save: base_save(),
@@ -25,7 +25,7 @@ defmodule Game.Command.InfoTest do
     save = %{user.save | wearing: %{chest: armor.id}, stats: base_stats()}
     ten_min_ago = Timex.now() |> Timex.shift(minutes: -10)
 
-    Command.Info.run({}, session, %{socket: socket, user: user, save: save, session_started_at: ten_min_ago})
+    Command.Info.run({}, %{socket: socket, user: user, save: save, session_started_at: ten_min_ago})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(hero), look)

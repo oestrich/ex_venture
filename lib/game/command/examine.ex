@@ -25,9 +25,9 @@ defmodule Game.Command.Examine do
   View information about items in your inventory
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({item_name}, _session, %{socket: socket, save: %{wearing: wearing, wielding: wielding, items: items}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({item_name}, %{socket: socket, save: %{wearing: wearing, wielding: wielding, items: items}}) do
     wearing_instances = Enum.map(wearing, &(elem(&1, 1)))
     wielding_instances = Enum.map(wielding, &(elem(&1, 1)))
 

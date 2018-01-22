@@ -8,11 +8,11 @@ defmodule Game.Command.EmoteTest do
 
   setup do
     @room.clear_emotes()
-    %{session: :session, socket: :socket, user: %{name: "user"}}
+    %{socket: :socket, user: %{name: "user"}}
   end
 
-  test "send an emote to the room", %{socket: socket, session: session, user: user} do
-    :ok = Command.Emote.run({"does something"}, session, %{socket: socket, user: user, save: %{room_id: 1}})
+  test "send an emote to the room", %{socket: socket, user: user} do
+    :ok = Command.Emote.run({"does something"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
     assert @room.get_emotes() == [{1, Message.emote(user, "does something")}]
   end

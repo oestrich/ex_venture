@@ -36,9 +36,9 @@ defmodule Game.Command.Mistake do
   def parse("kill" <> _), do: {:auto_combat}
 
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({:auto_combat}, _session, %{socket: socket}) do
+  @spec run(args :: {atom, String.t}, state :: map) :: :ok
+  def run(command, state)
+  def run({:auto_combat}, %{socket: socket}) do
     socket |> @socket.echo("There is no auto combat. Please read {white}help combat{/white} for more information.")
     :ok
   end

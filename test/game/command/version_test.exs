@@ -7,11 +7,11 @@ defmodule Game.Command.VersionTest do
 
   setup do
     @socket.clear_messages
-    %{session: :session, socket: :socket}
+    %{socket: :socket}
   end
 
-  test "view the version", %{session: session, socket: socket} do
-    :ok = Version.run({}, session, %{socket: socket})
+  test "view the version", %{socket: socket} do
+    :ok = Version.run({}, %{socket: socket})
 
     [{^socket, echo}] = @socket.get_echos()
     assert Regex.match?(~r(ExVenture v), echo)

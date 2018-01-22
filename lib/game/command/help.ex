@@ -26,12 +26,12 @@ defmodule Game.Command.Help do
   View help
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, state) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, state) do
     {:paginate, Help.base(), state}
   end
-  def run({topic}, _session, state) do
+  def run({topic}, state) do
     {:paginate, Help.topic(topic), state}
   end
 end

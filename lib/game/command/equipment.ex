@@ -26,9 +26,9 @@ defmodule Game.Command.Equipment do
   View your character's worn equipment
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, %{socket: socket, save: %{wearing: wearing, wielding: wielding}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, %{socket: socket, save: %{wearing: wearing, wielding: wielding}}) do
     wearing = wearing
     |> Enum.reduce(%{}, fn ({slot, instance}, wearing) ->
       Map.put(wearing, slot, Items.item(instance))

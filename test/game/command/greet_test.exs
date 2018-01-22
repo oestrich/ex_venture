@@ -20,7 +20,7 @@ defmodule Game.Command.GreetTest do
     }
     @room.set_room(Map.merge(@room._room(), room))
 
-    %{session: :session, state: %{socket: :socket, user: user, save: %{room_id: room.id}}}
+    %{state: %{socket: :socket, user: user, save: %{room_id: room.id}}}
   end
 
   describe "greet an NPC" do
@@ -28,8 +28,8 @@ defmodule Game.Command.GreetTest do
       @npc.clear_greets()
     end
 
-    test "npc present", %{session: session, state: state} do
-      :ok = Greet.run({:greet, "guard"}, session, state)
+    test "npc present", %{state: state} do
+      :ok = Greet.run({:greet, "guard"}, state)
 
       [{_, mail}] = @socket.get_echos()
       assert Regex.match?(~r(greet {yellow}Guard{/yellow}), mail)
@@ -39,8 +39,8 @@ defmodule Game.Command.GreetTest do
   end
 
   describe "greet a player" do
-    test "player present", %{session: session, state: state} do
-      :ok = Greet.run({:greet, "player"}, session, state)
+    test "player present", %{state: state} do
+      :ok = Greet.run({:greet, "player"}, state)
 
       [{_, mail}] = @socket.get_echos()
       assert Regex.match?(~r(greet {blue}Player{/blue}), mail)

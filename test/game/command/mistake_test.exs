@@ -8,11 +8,11 @@ defmodule Game.Command.MistakeTest do
 
   setup do
     @socket.clear_messages
-    %{session: :session, socket: :socket}
+    %{socket: :socket}
   end
 
-  test "display a message about auto combat", %{session: session, socket: socket} do
-    :ok = Mistake.run({:auto_combat}, session, %{socket: socket})
+  test "display a message about auto combat", %{socket: socket} do
+    :ok = Mistake.run({:auto_combat}, %{socket: socket})
 
     [{^socket, echo}] = @socket.get_echos()
     assert Regex.match?(~r(read.*help), echo)

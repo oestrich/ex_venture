@@ -47,8 +47,8 @@ defmodule Game.Command.Mail do
   Send to all connected players
   """
   @impl Game.Command
-  def run(command, session, state)
-  def run({:unread}, _session, state = %{socket: socket, user: user}) do
+  def run(command, state)
+  def run({:unread}, state = %{socket: socket, user: user}) do
     case Mail.unread_mail_for(user) do
       [] ->
         socket |> @socket.echo("You have no unread mail.")
@@ -59,7 +59,7 @@ defmodule Game.Command.Mail do
     end
   end
 
-  def run({:read, id}, _session, state = %{socket: socket, user: user}) do
+  def run({:read, id}, state = %{socket: socket, user: user}) do
     case Mail.get(user, id) do
       nil ->
         socket |> @socket.echo("The mail requested could not be found. Please try again.")

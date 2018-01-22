@@ -16,21 +16,21 @@ defmodule Game.Command.TellTest do
     @room.set_room(Map.merge(@room._room(), %{npcs: []}))
     user = %{id: 10, name: "Player"}
     state = %State{socket: :socket, state: "active", mode: "commands", user: user, save: %{room_id: 1}}
-    %{session: :session, state: state}
+    %{state: state}
   end
 
   describe "send a tell - user" do
-    test "send a tell", %{session: session, state: state} do
+    test "send a tell", %{state: state} do
       Channel.join_tell({:user, state.user})
       Session.Registry.register(state.user)
 
-      {:update, %{reply_to: {:user, _}}} = Tell.run({"tell", "player hello"}, session, state)
+      {:update, %{reply_to: {:user, _}}} = Tell.run({"tell", "player hello"}, state)
 
       assert_receive {:channel, {:tell, {:user, _}, %Message{message: "hello"}}}
     end
 
-    test "send a tell - player not found", %{session: session, state: state} do
-      :ok = Tell.run({"tell", "player hello"}, session, state)
+    test "send a tell - player not found", %{state: state} do
+      :ok = Tell.run({"tell", "player hello"}, state)
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(not online), echo)
@@ -47,19 +47,19 @@ defmodule Game.Command.TellTest do
       %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: {:npc, npc}}}
     end
 
-    test "send a tell", %{session: session, state: state, npc: npc} do
+    test "send a tell", %{state: state, npc: npc} do
       Channel.join_tell({:npc, npc})
 
-      {:update, %{reply_to: {:npc, _}}} = Tell.run({"tell", "guard howdy"}, session, state)
+      {:update, %{reply_to: {:npc, _}}} = Tell.run({"tell", "guard howdy"}, state)
 
       assert_receive {:channel, {:tell, {:user, _}, %Message{message: "howdy"}}}
     end
 
-    test "send a reply - npc not in the room", %{session: session, state: state} do
+    test "send a reply - npc not in the room", %{state: state} do
       room = %{id: 1, npcs: []}
       @room.set_room(Map.merge(@room._room(), room))
 
-      :ok = Tell.run({"tell", "guard howdy"}, session, state)
+      :ok = Tell.run({"tell", "guard howdy"}, state)
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(not), echo)
@@ -67,24 +67,24 @@ defmodule Game.Command.TellTest do
   end
 
   describe "send a reply - user" do
-    test "send a reply", %{session: session, state: state} do
+    test "send a reply", %{state: state} do
       Channel.join_tell({:user, state.user})
       Session.Registry.register(state.user)
 
-      :ok = Tell.run({"reply", "howdy"}, session, %{state | reply_to: {:user, state.user}})
+      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:user, state.user}})
 
       assert_receive {:channel, {:tell, {:user, _}, %Message{message: "howdy"}}}
     end
 
-    test "send a reply - player not online", %{session: session, state: state} do
-      :ok = Tell.run({"reply", "howdy"}, session, %{state | reply_to: {:user, state.user}})
+    test "send a reply - player not online", %{state: state} do
+      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:user, state.user}})
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(not online), echo)
     end
 
-    test "send reply - no reply to", %{session: session, state: state} do
-      :ok = Tell.run({"reply", "howdy"}, session, %{state | reply_to: nil})
+    test "send reply - no reply to", %{state: state} do
+      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: nil})
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(no one to reply), echo)
@@ -101,19 +101,19 @@ defmodule Game.Command.TellTest do
       %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: {:npc, npc}}}
     end
 
-    test "send a reply", %{session: session, state: state, npc: npc} do
+    test "send a reply", %{state: state, npc: npc} do
       Channel.join_tell({:npc, npc})
 
-      :ok = Tell.run({"reply", "howdy"}, session, state)
+      :ok = Tell.run({"reply", "howdy"}, state)
 
       assert_receive {:channel, {:tell, {:user, _}, %Message{message: "howdy"}}}
     end
 
-    test "send a reply - npc not in the room", %{session: session, state: state} do
+    test "send a reply - npc not in the room", %{state: state} do
       room = %{id: 1, npcs: []}
       @room.set_room(Map.merge(@room._room(), room))
 
-      :ok = Tell.run({"reply", "howdy"}, session, state)
+      :ok = Tell.run({"reply", "howdy"}, state)
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(not), echo)

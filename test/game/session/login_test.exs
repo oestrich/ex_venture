@@ -14,7 +14,7 @@ defmodule Game.Session.LoginTest do
   end
 
   test "start signing in", %{socket: socket} do
-    state = Login.process("name", :session, %{socket: socket})
+    state = Login.process("name", %{socket: socket})
 
     assert state.login.name == "name"
     assert @socket.get_prompts() == [{socket, "Password: "}]
@@ -25,7 +25,7 @@ defmodule Game.Session.LoginTest do
 
     user = create_user(%{name: "user", password: "password", class_id: create_class().id})
 
-    state = Login.process("password", :session, %{socket: socket, room_id: 1, login: %{name: "user"}})
+    state = Login.process("password", %{socket: socket, room_id: 1, login: %{name: "user"}})
 
     assert state.user.id == user.id
     assert state.state == "after_sign_in"
@@ -35,7 +35,7 @@ defmodule Game.Session.LoginTest do
   test "verifies the user's name and password - failure", %{socket: socket} do
     create_user(%{name: "user", password: "password", class_id: create_class().id})
 
-    state = Login.process("p@ssword", :session, %{socket: socket, login: %{name: "user"}})
+    state = Login.process("p@ssword", %{socket: socket, login: %{name: "user"}})
 
     assert Map.has_key?(state, :user) == false
     assert @socket.get_echos() == [{socket, "Invalid password"}]
@@ -43,7 +43,7 @@ defmodule Game.Session.LoginTest do
   end
 
   test "entering the name as 'create' will make a new account", %{socket: socket} do
-    state = Login.process("create", :session, %{socket: socket})
+    state = Login.process("create", %{socket: socket})
 
     assert state.state == "create"
     assert @socket.get_prompts() == [{socket, "Name: "}]
@@ -53,7 +53,7 @@ defmodule Game.Session.LoginTest do
     user = create_user(%{name: "user", password: "password", class_id: create_class().id})
     Registry.register(user)
 
-    state = Login.process("password", :session, %{socket: socket, login: %{name: "user"}})
+    state = Login.process("password", %{socket: socket, login: %{name: "user"}})
 
     assert Map.has_key?(state, :user) == false
     assert @socket.get_echos() == [{socket, "Sorry, this player is already logged in."}]

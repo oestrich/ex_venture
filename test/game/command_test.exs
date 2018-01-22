@@ -1,4 +1,4 @@
-defmodule CommandTest do
+defmodule Game.CommandTest do
   use Data.ModelCase
   doctest Game.Command
 
@@ -11,7 +11,7 @@ defmodule CommandTest do
 
   setup do
     @socket.clear_messages
-    {:ok, %{session: :session, socket: :socket}}
+    {:ok, %{socket: :socket}}
   end
 
   describe "parsing commands" do
@@ -232,10 +232,10 @@ defmodule CommandTest do
     end
   end
 
-  test "limit commands to be above 0 hp to perform", %{session: session, socket: socket} do
+  test "limit commands to be above 0 hp to perform", %{socket: socket} do
     save = %{stats: %{health: 0}}
     command = %Command{module: Command.Move, args: {:north}}
-    :ok = Command.run(command, session, %{socket: socket, save: save})
+    :ok = Command.run(command, %{socket: socket, save: save})
     assert @socket.get_echos() == [{socket, "You are passed out and cannot perform this action."}]
   end
 
@@ -245,7 +245,7 @@ defmodule CommandTest do
     end
 
     test "an unknown command is run", %{user: user, state: state} do
-      "bad command" |> Command.parse(user) |> Command.run(self(), state)
+      "bad command" |> Command.parse(user) |> Command.run(state)
       assert Insight.bad_commands |> length() > 0
     end
   end
@@ -256,17 +256,17 @@ defmodule CommandTest do
     end
 
     test "an empty command is run", %{user: user, state: state} do
-      assert :ok = "" |> Command.parse(user) |> Command.run(self(), state)
+      assert :ok = "" |> Command.parse(user) |> Command.run(state)
     end
   end
 
   describe "quitting" do
-    test "quit command", %{session: session, socket: socket} do
+    test "quit command", %{socket: socket} do
       user = create_user(%{name: "user", password: "password", class_id: create_class().id})
       save = %{user.save | room_id: 5}
 
       command = %Command{module: Command.Quit}
-      :ok = Command.run(command, session, %{socket: socket, user: user, save: save})
+      :ok = Command.run(command, %{socket: socket, user: user, save: save})
 
       assert @socket.get_echos() == [{socket, "Good bye."}]
       assert @socket.get_disconnects() == [socket]
@@ -274,16 +274,16 @@ defmodule CommandTest do
   end
 
   describe "getting help" do
-    test "base help command", %{session: session, socket: socket} do
+    test "base help command", %{socket: socket} do
       command = %Command{module: Command.Help}
-      {:paginate, text, _state} = Command.run(command, session, %{socket: socket})
+      {:paginate, text, _state} = Command.run(command, %{socket: socket})
 
       assert Regex.match?(~r(The topics you can), text)
     end
 
-    test "loading command help", %{session: session, socket: socket} do
+    test "loading command help", %{socket: socket} do
       command = %Command{module: Command.Help, args: {"say"}}
-      {:paginate, text, _state} = Command.run(command, session, %{socket: socket})
+      {:paginate, text, _state} = Command.run(command, %{socket: socket})
 
       assert Regex.match?(~r(say), text)
     end
@@ -294,9 +294,9 @@ defmodule CommandTest do
       @room.clear_says()
     end
 
-    test "says to the room", %{session: session, socket: socket} do
+    test "says to the room", %{socket: socket} do
       command = %Command{module: Command.Say, args: {"hi"}}
-      Command.run(command, session, %{socket: socket, user: %{name: "user"}, save: %{room_id: 1}})
+      Command.run(command, %{socket: socket, user: %{name: "user"}, save: %{room_id: 1}})
 
       assert @room.get_says() == [{1, Message.new(%{name: "user"}, "hi")}]
     end

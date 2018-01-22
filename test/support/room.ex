@@ -84,7 +84,7 @@ defmodule Test.Game.Room do
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :leave, []) end)
   end
 
-  def say(id, _session, message) do
+  def say(id, _sender, message) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
       says = Map.get(state, :say, [])
@@ -102,7 +102,7 @@ defmodule Test.Game.Room do
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :say, []) end)
   end
 
-  def emote(id, _session, message) do
+  def emote(id, _sender, message) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
       emotes = Map.get(state, :emote, [])

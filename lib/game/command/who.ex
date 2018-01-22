@@ -23,9 +23,9 @@ defmodule Game.Command.Who do
   Echo the currently connected players
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, %{socket: socket}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, %{socket: socket}) do
     players = Session.Registry.connected_players()
 
     names = players

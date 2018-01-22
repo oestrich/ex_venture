@@ -14,17 +14,17 @@ defmodule Game.Session.Commands do
   @spec process_command(State.t(), String.t()) :: tuple()
   def process_command(state = %{user: user}, message) do
     state = Map.merge(state, %{last_recv: Timex.now()})
-    message |> Command.parse(user) |> run_command(self(), state)
+    message |> Command.parse(user) |> run_command(state)
   end
 
   @doc """
   Run a command that has been parsed
   """
-  @spec run_command(Command.t(), pid(), State.t()) :: tuple()
-  def run_command(command, session, state) do
+  @spec run_command(Command.t(), State.t()) :: tuple()
+  def run_command(command, state) do
     state = record_command(state, command)
 
-    case command |> Command.run(session, state) do
+    case command |> Command.run(state) do
       {:update, state} ->
         Session.Registry.update(%{state.user | save: state.save})
         state |> Session.Process.prompt()

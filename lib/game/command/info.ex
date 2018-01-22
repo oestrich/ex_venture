@@ -27,9 +27,9 @@ defmodule Game.Command.Info do
   Look at your info sheet
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, state = %{socket: socket, user: user, save: save}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, state = %{socket: socket, user: user, save: save}) do
     user = %{user | save: cacluate_save(save), seconds_online: seconds_online(user, state)}
     socket |> @socket.echo(Format.info(user))
     :ok

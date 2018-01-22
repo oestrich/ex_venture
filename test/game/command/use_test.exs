@@ -35,13 +35,13 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [%Item.Instance{id: 1, created_at: Timex.now(), amount: 1}])
 
-    %{socket: :socket, session: :session, user: %{id: 1, name: "Player"}, save: save}
+    %{socket: :socket, user: %{id: 1, name: "Player"}, save: save}
   end
 
   test "use an item - removes if amount ends up as 0", state = %{socket: socket} do
     Registry.register(state.user)
 
-    {:skip, :prompt, state} = Command.Use.run({"potion"}, state.session, state)
+    {:skip, :prompt, state} = Command.Use.run({"potion"}, state)
 
     assert [] = state.save.items
 
@@ -57,7 +57,7 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [%Item.Instance{id: 1, created_at: Timex.now(), amount: 2}])
 
-    {:skip, :prompt, state} = Command.Use.run({"potion"}, state.session, %{state | save: save})
+    {:skip, :prompt, state} = Command.Use.run({"potion"}, %{state | save: save})
 
     assert [%Item.Instance{amount: 1}] = state.save.items
   end
@@ -69,7 +69,7 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [%Item.Instance{id: 1, created_at: Timex.now(), amount: -1}])
 
-    assert {:skip, :prompt} = Command.Use.run({"potion"}, state.session, %{state | save: save})
+    assert {:skip, :prompt} = Command.Use.run({"potion"}, %{state | save: save})
   end
 
   test "trying to use a non-usable item", state = %{socket: socket} do
@@ -77,14 +77,14 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [item_instance(2)])
 
-    :ok = Command.Use.run({"leather armor"}, state.session, %{state | save: save})
+    :ok = Command.Use.run({"leather armor"}, %{state | save: save})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(could not be used), look)
   end
 
   test "item not found", state = %{socket: socket} do
-    :ok = Command.Use.run({"poton"}, state.session, state)
+    :ok = Command.Use.run({"poton"}, state)
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(could not be found), look)

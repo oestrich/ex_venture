@@ -79,7 +79,7 @@ defmodule Game.Session.Process do
   end
   def handle_cast(:disconnect, state = %{user: user, save: save, session_started_at: session_started_at, stats: stats}) do
     Session.Registry.unregister()
-    @room.leave(save.room_id, {:user, self(), user})
+    @room.leave(save.room_id, {:user, user})
     clear_target(state, {:user, user})
     user |> Account.save_session(save, session_started_at, Timex.now(), stats)
     {:stop, :normal, state}
@@ -107,7 +107,7 @@ defmodule Game.Session.Process do
 
   # Handle logging in
   def handle_cast({:recv, name}, state = %{state: "login"}) do
-    state = Session.Login.process(name, self(), state)
+    state = Session.Login.process(name, state)
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
@@ -119,7 +119,7 @@ defmodule Game.Session.Process do
 
   # Handle creating an account
   def handle_cast({:recv, name}, state = %{state: "create"}) do
-    state = Session.CreateAccount.process(name, self(), state)
+    state = Session.CreateAccount.process(name, state)
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
@@ -153,14 +153,14 @@ defmodule Game.Session.Process do
   end
 
   def handle_cast({:teleport, room_id}, state) do
-    {:update, state} = self() |> Move.move_to(state, room_id)
+    {:update, state} = Move.move_to(state, room_id)
     state |> prompt()
     {:noreply, state}
   end
 
   # Handle logging in from the web client
   def handle_cast({:sign_in, user_id}, state = %{state: "login"}) do
-    state = Session.Login.sign_in(user_id, self(), state)
+    state = Session.Login.sign_in(user_id, state)
     {:noreply, state}
   end
 
@@ -217,7 +217,7 @@ defmodule Game.Session.Process do
   #
 
   def handle_info({:continue, command}, state) do
-    command |> Commands.run_command(self(), state)
+    command |> Commands.run_command(state)
   end
 
   def handle_info(:save, state = %{state: "active", user: user, save: save, session_started_at: session_started_at}) do

@@ -25,9 +25,9 @@ defmodule Game.Command.Typo do
   end
 
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({typo_title}, _session, state = %{socket: socket}) do
+  @spec run(args :: {atom, String.t}, state :: map) :: :ok
+  def run(command, state)
+  def run({typo_title}, state = %{socket: socket}) do
     socket |> @socket.echo("Please enter in any more information you have (an empty new line will finish entering text): ")
     commands =
       state

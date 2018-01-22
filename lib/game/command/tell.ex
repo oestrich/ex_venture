@@ -48,14 +48,14 @@ defmodule Game.Command.Tell do
   Send to all connected players
   """
   @impl Game.Command
-  def run(command, session, state)
-  def run({"tell", message}, _session, state) do
+  def run(command, state)
+  def run({"tell", message}, state) do
     state
     |> maybe_tell_player(message)
     |> maybe_tell_npc(message)
     |> maybe_fail_tell(message)
   end
-  def run({"reply", message}, _session, state = %{socket: socket, reply_to: reply_to}) do
+  def run({"reply", message}, state = %{socket: socket, reply_to: reply_to}) do
     case reply_to do
       nil -> socket |> @socket.echo("There is no one to reply to.")
       {:user, user} -> message |> reply_to_player(user, state)

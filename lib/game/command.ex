@@ -47,7 +47,7 @@ defmodule Game.Command do
 
   Returns `:ok` or `{:update, new_state}` and the Session server will accept the new state.
   """
-  @callback run(args :: list, session :: pid, state :: map) :: :ok | {:update, state :: map}
+  @callback run(args :: list, state :: map) :: :ok | {:update, state :: map}
 
   @doc """
   Sets up the basic command module. A short cut for `use Game.Command.Macro`.
@@ -160,13 +160,17 @@ defmodule Game.Command do
   defp maybe_bad_parse(nil, command), do: {:error, :bad_parse, command}
   defp maybe_bad_parse(command, _), do: command
 
-  def run({:skip, {}}, _session, _state), do: :ok
+  @doc """
+  Run a command after parsing
+  """
+  @spec run({atom(), tuple()}, State.t()) :: :ok
+  def run({:skip, {}}, _state), do: :ok
 
-  def run({:error, :bad_parse, command}, session, %{socket: socket}) do
+  def run({:error, :bad_parse, command}, %{socket: socket}) do
     Insight.bad_command(command)
 
     Logger.info(
-      "Command for session #{inspect(session)} failed to parse #{inspect(command)}",
+      "Command for session #{inspect(self())} failed to parse #{inspect(command)}",
       type: :command
     )
 
@@ -174,7 +178,7 @@ defmodule Game.Command do
     :ok
   end
 
-  def run(command = %__MODULE__{module: module, args: args}, session, state = %{socket: socket}) do
+  def run(command = %__MODULE__{module: module, args: args}, state = %{socket: socket}) do
     started_run_at = Timex.now()
 
     case module.must_be_alive? do
@@ -186,22 +190,22 @@ defmodule Game.Command do
 
           _ ->
             args
-            |> module.run(session, state)
-            |> log_command(command, session, started_run_at)
+            |> module.run(state)
+            |> log_command(command, started_run_at)
         end
 
       false ->
         args
-        |> module.run(session, state)
-        |> log_command(command, session, started_run_at)
+        |> module.run(state)
+        |> log_command(command, started_run_at)
     end
   end
 
   # Log the command and pass thru the value the command returned
-  defp log_command(pass_thru, command = %Command{}, session, started_run_at) do
+  defp log_command(pass_thru, command = %Command{}, started_run_at) do
     ran_in = Timex.diff(Timex.now(), started_run_at, :microseconds)
     command = %{command | ran_in: ran_in}
-    CommandInstrumenter.command_run(session, command)
+    CommandInstrumenter.command_run(self(), command)
     pass_thru
   end
 end

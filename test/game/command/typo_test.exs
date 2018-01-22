@@ -9,11 +9,11 @@ defmodule Game.Command.TypoTest do
 
   setup do
     @socket.clear_messages
-    %{session: :session, socket: :socket}
+    %{socket: :socket}
   end
 
-  test "creating a new typo", %{session: session, socket: socket} do
-    {:editor, Typo, state} = Typo.run({"title"}, session, %{socket: socket})
+  test "creating a new typo", %{socket: socket} do
+    {:editor, Typo, state} = Typo.run({"title"}, %{socket: socket})
 
     assert state.commands.typo.title == "title"
     assert state.commands.typo.lines == []

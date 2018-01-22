@@ -108,9 +108,9 @@ defmodule Game.Command.Shops do
   View shops and buy from them
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, %{socket: socket, save: %{room_id: room_id}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case length(room.shops) do
       0 ->
@@ -121,12 +121,12 @@ defmodule Game.Command.Shops do
     :ok
   end
 
-  def run({:help}, _session, %{socket: socket}) do
+  def run({:help}, %{socket: socket}) do
     socket |> @socket.echo("Unknown usage of the shop(s) command. Please see {white}help shops{/white} for more information.")
     :ok
   end
 
-  def run({:list, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:list, shop_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -136,7 +136,7 @@ defmodule Game.Command.Shops do
     end
   end
 
-  def run({:list}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:list}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case one_shop(room.shops) do
       {:error, :not_found} ->
@@ -149,7 +149,7 @@ defmodule Game.Command.Shops do
     end
   end
 
-  def run({:show, item_name, :from, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:show, item_name, :from, shop_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -158,7 +158,7 @@ defmodule Game.Command.Shops do
       {:ok, shop} -> show_item(shop, item_name, state)
     end
   end
-  def run({:show, item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:show, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case one_shop(room.shops) do
       {:error, :not_found} ->
@@ -171,7 +171,7 @@ defmodule Game.Command.Shops do
     end
   end
 
-  def run({:buy, item_name, :from, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:buy, item_name, :from, shop_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -180,7 +180,7 @@ defmodule Game.Command.Shops do
       {:ok, shop} -> buy_item(shop, item_name, state)
     end
   end
-  def run({:buy, item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:buy, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case one_shop(room.shops) do
       {:error, :not_found} ->
@@ -193,7 +193,7 @@ defmodule Game.Command.Shops do
     end
   end
 
-  def run({:sell, item_name, :to, shop_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:sell, item_name, :to, shop_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -202,7 +202,7 @@ defmodule Game.Command.Shops do
       {:ok, shop} -> sell_item(shop, item_name, state)
     end
   end
-  def run({:sell, item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:sell, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     case one_shop(room.shops) do
       {:error, :not_found} ->

@@ -47,9 +47,9 @@ defmodule Game.Command.Wield do
   Put an item in your hands
   """
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({:wield, item_name}, _session, state = %{socket: socket, save: %{items: items}}) do
+  @spec run(args :: {atom, String.t}, state :: map) :: :ok
+  def run(command, state)
+  def run({:wield, item_name}, state = %{socket: socket, save: %{items: items}}) do
     {hand, item_name} = pick_hand(item_name)
 
     items = Items.items(items)
@@ -58,7 +58,7 @@ defmodule Game.Command.Wield do
       item -> socket |> item_found(hand, item, state)
     end
   end
-  def run({:unwield, hand}, _session, state = %{socket: socket}) do
+  def run({:unwield, hand}, state = %{socket: socket}) do
     case hand do
       "right" -> run_unwield(:right, state)
       "left" -> run_unwield(:left, state)

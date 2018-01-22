@@ -30,9 +30,9 @@ defmodule Game.Command.PickUp do
   Pick up an item from a room
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok | {:update, map}
-  def run(command, session, state)
-  def run({@currency}, _session, state = %{socket: socket, save: save}) do
+  @spec run(args :: [], state :: map) :: :ok | {:update, map}
+  def run(command, state)
+  def run({@currency}, state = %{socket: socket, save: save}) do
     case @room.pick_up_currency(save.room_id) do
       {:ok, currency} ->
         Logger.info("Session (#{inspect(self())}) picking up #{currency} currency from room (#{save.room_id})", type: :player)
@@ -44,7 +44,7 @@ defmodule Game.Command.PickUp do
         :ok
     end
   end
-  def run({item_name}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
     instance =

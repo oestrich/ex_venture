@@ -13,13 +13,13 @@ defmodule Game.Command.PickUpTest do
     insert_item(item)
     @room.set_room(Map.merge(@room._room(), %{items: [Item.instantiate(item)]}))
     @socket.clear_messages
-    {:ok, %{session: :session, socket: :socket}}
+    {:ok, %{socket: :socket}}
   end
 
-  test "pick up an item from a room", %{session: session, socket: socket} do
+  test "pick up an item from a room", %{socket: socket} do
     @room.clear_pick_up()
 
-    {:update, state} = Game.Command.PickUp.run({"sword"}, session, %{socket: socket, save: %Save{room_id: 1, items: []}})
+    {:update, state} = Game.Command.PickUp.run({"sword"}, %{socket: socket, save: %Save{room_id: 1, items: []}})
 
     assert state.save.items |> length == 1
 
@@ -27,8 +27,8 @@ defmodule Game.Command.PickUpTest do
     assert Regex.match?(~r(You picked up), look)
   end
 
-  test "item does not exist in the room", %{session: session, socket: socket} do
-    :ok = Game.Command.PickUp.run({"shield"}, session, %{socket: socket, save: %Save{room_id: 1, items: []}})
+  test "item does not exist in the room", %{socket: socket} do
+    :ok = Game.Command.PickUp.run({"shield"}, %{socket: socket, save: %Save{room_id: 1, items: []}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r("shield" could not be found), look)
@@ -45,10 +45,10 @@ defmodule Game.Command.PickUpTest do
     assert Regex.match?(~r("shield" could not be found), look)
   end
 
-  test "pick up gold from a room", %{session: session, socket: socket} do
+  test "pick up gold from a room", %{socket: socket} do
     @room.set_pick_up_currency({:ok, 100})
 
-    {:update, state} = Game.Command.PickUp.run({"gold"}, session, %{socket: socket, save: %Save{room_id: 1, currency: 1}})
+    {:update, state} = Game.Command.PickUp.run({"gold"}, %{socket: socket, save: %Save{room_id: 1, currency: 1}})
 
     assert state.save.currency == 101
 

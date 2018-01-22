@@ -63,8 +63,8 @@ defmodule Game.Command.Channels do
   Send to all connected players
   """
   @impl Game.Command
-  def run(command, session, state)
-  def run({}, _session, %{socket: socket}) do
+  def run(command, state)
+  def run({}, %{socket: socket}) do
     channels = Channel.subscribed()
     |> Enum.map(&("  - {red}#{&1}{/red}"))
     |> Enum.join("\n")
@@ -72,18 +72,18 @@ defmodule Game.Command.Channels do
     socket |> @socket.echo("You are subscribed to:\n#{channels}")
     :ok
   end
-  def run({:join, channel}, _session, %{user: user}) do
+  def run({:join, channel}, %{user: user}) do
     join_channel(channel, user)
     :ok
   end
-  def run({:leave, channel}, _session, %{user: user}) do
+  def run({:leave, channel}, %{user: user}) do
     case in_channel?(channel, user) do
       true -> Channel.leave(channel)
       false -> nil
     end
     :ok
   end
-  def run({channel, message}, _session, %{user: user}) do
+  def run({channel, message}, %{user: user}) do
     case in_channel?(channel, user) do
       true -> Channel.broadcast(channel, Format.channel_say(channel, {:user, user}, message))
       false -> nil

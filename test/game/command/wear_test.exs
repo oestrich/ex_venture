@@ -16,14 +16,14 @@ defmodule Game.Command.WearTest do
     insert_item(%{id: 4, level: 2, name: "Plate Chest", keywords: [], type: "armor", stats: %{slot: :chest}})
 
     @socket.clear_messages()
-    {:ok, %{session: :session, socket: :socket}}
+    {:ok, %{socket: :socket}}
   end
 
   describe "wearing" do
-    test "wearing armor", %{session: session, socket: socket} do
+    test "wearing armor", %{socket: socket} do
       instance = item_instance(1)
       save = %Save{level: 1, items: [instance], wearing: %{}}
-      {:update, state} = Command.Wear.run({:wear, "chest"}, session, %{socket: socket, save: save})
+      {:update, state} = Command.Wear.run({:wear, "chest"}, %{socket: socket, save: save})
 
       assert state.save.wearing == %{chest: instance}
       assert state.save.items == []
@@ -32,12 +32,12 @@ defmodule Game.Command.WearTest do
       assert Regex.match?(~r(You are now wearing Leather Chest), look)
     end
 
-    test "wearing armor replaces the old set", %{session: session, socket: socket} do
+    test "wearing armor replaces the old set", %{socket: socket} do
       leather_chest = item_instance(1)
       mail_chest = item_instance(2)
 
       save = %Save{level: 1, items: [leather_chest], wearing: %{chest: mail_chest}}
-      {:update, state} = Command.Wear.run({:wear, "chest"}, session, %{socket: socket, save: save})
+      {:update, state} = Command.Wear.run({:wear, "chest"}, %{socket: socket, save: save})
 
       assert state.save.wearing == %{chest: leather_chest}
       assert state.save.items == [mail_chest]
@@ -46,26 +46,26 @@ defmodule Game.Command.WearTest do
       assert Regex.match?(~r(You are now wearing Leather Chest), look)
     end
 
-    test "wearing only armor", %{session: session, socket: socket} do
+    test "wearing only armor", %{socket: socket} do
       save = %Save{level: 1, items: [item_instance(1), item_instance(3)]}
-      :ok = Command.Wear.run({:wear, "axe"}, session, %{socket: socket, save: save})
+      :ok = Command.Wear.run({:wear, "axe"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(You cannot wear Axe), look)
     end
 
-    test "wearing armor - cannot wear higher level armor", %{session: session, socket: socket} do
+    test "wearing armor - cannot wear higher level armor", %{socket: socket} do
       instance = item_instance(4)
       save = %Save{level: 1, items: [instance], wearing: %{}}
-      :ok = Command.Wear.run({:wear, "plate chest"}, session, %{socket: socket, save: save})
+      :ok = Command.Wear.run({:wear, "plate chest"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(You cannot wear), look)
     end
 
-    test "item not found", %{session: session, socket: socket} do
+    test "item not found", %{socket: socket} do
       save = %Save{items: [item_instance(1)]}
-      :ok = Command.Wear.run({:wear, "bracer"}, session, %{socket: socket, save: save})
+      :ok = Command.Wear.run({:wear, "bracer"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r("bracer" could not be found), look)
@@ -73,11 +73,11 @@ defmodule Game.Command.WearTest do
   end
 
   describe "remove" do
-    test "removing armor", %{session: session, socket: socket} do
+    test "removing armor", %{socket: socket} do
       leather_chest = item_instance(1)
 
       save = %Save{items: [], wearing: %{chest: leather_chest}}
-      {:update, state} = Command.Wear.run({:remove, "chest"}, session, %{socket: socket, save: save})
+      {:update, state} = Command.Wear.run({:remove, "chest"}, %{socket: socket, save: save})
 
       assert state.save.wearing == %{}
       assert state.save.items == [leather_chest]
@@ -86,17 +86,17 @@ defmodule Game.Command.WearTest do
       assert Regex.match?(~r(You removed Leather Chest from your chest), look)
     end
 
-    test "does not fail when removing a slot that is empty", %{session: session, socket: socket} do
+    test "does not fail when removing a slot that is empty", %{socket: socket} do
       save = %Save{items: [item_instance(1)], wearing: %{}}
-      :ok = Command.Wear.run({:remove, "chest"}, session, %{socket: socket, save: save})
+      :ok = Command.Wear.run({:remove, "chest"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Nothing was on your chest.), look)
     end
 
-    test "unknown slot", %{session: session, socket: socket} do
+    test "unknown slot", %{socket: socket} do
       save = %Save{items: [item_instance(1)], wearing: %{}}
-      :ok = Command.Wear.run({:remove, "finger"}, session, %{socket: socket, save: save})
+      :ok = Command.Wear.run({:remove, "finger"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Unknown armor slot), look)

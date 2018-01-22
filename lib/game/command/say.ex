@@ -24,12 +24,12 @@ defmodule Game.Command.Say do
   Says to the current room the player is in
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({message}, _session, %{socket: socket, user: user, save: %{room_id: room_id}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({message}, %{socket: socket, user: user, save: %{room_id: room_id}}) do
     socket |> @socket.echo(Format.say({:user, user}, message))
     room_id |> @room.say({:user, user}, Message.new(user, message))
     :ok
   end
-  def run({}, _session, _), do: :ok
+  def run({}, _), do: :ok
 end

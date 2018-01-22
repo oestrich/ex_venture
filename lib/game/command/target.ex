@@ -31,12 +31,12 @@ defmodule Game.Command.Target do
   Target an enemy
   """
   @impl Game.Command
-  def run(command, session, state)
-  def run({target}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run(command, state)
+  def run({target}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     socket |> target_character(target, room, state)
   end
-  def run({}, _session, %{socket: socket, save: %{room_id: room_id}, target: target}) do
+  def run({}, %{socket: socket, save: %{room_id: room_id}, target: target}) do
     room = @room.look(room_id)
     socket |> display_target(target, room)
     :ok

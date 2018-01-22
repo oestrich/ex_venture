@@ -34,9 +34,9 @@ defmodule Game.Command.Look do
   Look around the current room
   """
   @impl Game.Command
-  @spec run(args :: [], session :: Session.t, state :: map) :: :ok
-  def run(command, session, state)
-  def run({}, _session, state = %{socket: socket, save: %{room_id: room_id}}) do
+  @spec run(args :: [], state :: map) :: :ok
+  def run(command, state)
+  def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     room_map =
@@ -52,7 +52,7 @@ defmodule Game.Command.Look do
 
     :ok
   end
-  def run({direction}, _, %{socket: socket, save: %{room_id: room_id}}) when direction in ["north", "east", "south", "west"] do
+  def run({direction}, %{socket: socket, save: %{room_id: room_id}}) when direction in ["north", "east", "south", "west"] do
     room = @room.look(room_id)
 
     id_key = String.to_atom("#{direction}_id")
@@ -65,7 +65,7 @@ defmodule Game.Command.Look do
 
     :ok
   end
-  def run({name}, _session, state = %{save: %{room_id: room_id}}) do
+  def run({name}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
     room

@@ -9,11 +9,11 @@ defmodule Game.Command.MapTest do
   setup do
     @room.set_room(@room._room())
     @socket.clear_messages
-    %{session: :session, socket: :socket}
+    %{socket: :socket}
   end
 
-  test "view a map of the zone", %{session: session, socket: socket} do
-    :ok = Command.Map.run({}, session, %{socket: socket, save: %{room_id: 1}})
+  test "view a map of the zone", %{socket: socket} do
+    :ok = Command.Map.run({}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, map}] = @socket.get_echos()
     assert Regex.match?(~r([ ]), map)
