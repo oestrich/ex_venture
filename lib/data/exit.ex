@@ -60,7 +60,7 @@ defmodule Data.Exit do
 
   Adds them to the room as `exits`
   """
-  @spec load_exits(room :: Room.t()) :: Room.t()
+  @spec load_exits(Room.t()) :: Room.t()
   def load_exits(room, opts \\ []) do
     query =
       __MODULE__
@@ -113,7 +113,7 @@ defmodule Data.Exit do
       iex> Data.Exit.opposite_id(:down)
       :up_id
   """
-  @spec opposite_id(direction :: String.t() | atom) :: atom
+  @spec opposite_id(String.t() | atom) :: atom
   def opposite_id("north"), do: :south_id
   def opposite_id("east"), do: :west_id
   def opposite_id("south"), do: :north_id
@@ -130,7 +130,7 @@ defmodule Data.Exit do
   @doc """
   Get an exit in a direction
   """
-  @spec exit_to(room :: Room.t(), direction :: String.t() | atom) :: Exit.t() | nil
+  @spec exit_to(Room.t(), String.t() | atom) :: Exit.t() | nil
   def exit_to(room, direction) do
     Enum.find(room.exits, fn room_exit ->
       Map.get(room_exit, opposite_id(direction)) == room.id

@@ -73,7 +73,7 @@ defmodule Data.Event do
   Get a starting event, to fill out in the web interface. Just the structure,
   the values won't mean anyhting.
   """
-  @spec starting_event(type :: String.t()) :: t()
+  @spec starting_event(String.t()) :: t()
   def starting_event("combat/tick") do
     %{
       type: "combat/tick",
@@ -122,7 +122,7 @@ defmodule Data.Event do
       iex> Data.Event.valid?(%{type: "tick", action: %{type: "move"}})
       false
   """
-  @spec valid?(event :: t) :: boolean
+  @spec valid?(t) :: boolean
   def valid?(event) do
     keys(event) == valid_keys(event.type) && valid_action_for_type?(event) &&
       valid_action?(event.type, event.action)

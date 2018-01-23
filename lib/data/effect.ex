@@ -117,7 +117,7 @@ defmodule Data.Effect do
   Get a starting effect, to fill out in the web interface. Just the structure,
   the values won't mean anyhting.
   """
-  @spec starting_effect(type :: String.t()) :: t()
+  @spec starting_effect(String.t()) :: t()
   def starting_effect("damage") do
     %{kind: "damage", type: :slashing, amount: 0}
   end
@@ -166,7 +166,7 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: :invalid})
       false
   """
-  @spec valid?(effect :: Stats.t()) :: boolean
+  @spec valid?(Stats.t()) :: boolean
   def valid?(effect)
 
   def valid?(effect = %{kind: "damage"}) do
@@ -203,7 +203,7 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_damage?(%{type: :finger})
       false
   """
-  @spec valid_damage?(effect :: Effect.t()) :: boolean
+  @spec valid_damage?(Effect.t()) :: boolean
   def valid_damage?(effect)
 
   def valid_damage?(%{type: type, amount: amount}) do
@@ -224,7 +224,7 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_damage_type?(%{types: :slashing})
       false
   """
-  @spec valid_damage_type?(effect :: Effect.t()) :: boolean
+  @spec valid_damage_type?(Effect.t()) :: boolean
   def valid_damage_type?(effect)
 
   def valid_damage_type?(%{types: types}) when is_list(types) do
@@ -251,7 +251,7 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: 3, count: :three})
       false
   """
-  @spec valid_damage_over_time?(effect :: Effect.t()) :: boolean
+  @spec valid_damage_over_time?(Effect.t()) :: boolean
   def valid_damage_over_time?(effect)
 
   def valid_damage_over_time?(%{type: type, amount: amount, every: every, count: count}) do
@@ -278,7 +278,7 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_recover?(%{type: "other", amount: 10})
       false
   """
-  @spec valid_recover?(effect :: Effect.t()) :: boolean
+  @spec valid_recover?(Effect.t()) :: boolean
   def valid_recover?(effect)
 
   def valid_recover?(%{type: type, amount: amount}) do
@@ -302,7 +302,7 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_stats?(%{field: :strength})
       false
   """
-  @spec valid_stats?(effect :: Effect.t()) :: boolean
+  @spec valid_stats?(Effect.t()) :: boolean
   def valid_stats?(effect)
 
   def valid_stats?(%{field: field, amount: amount}) do
