@@ -9,10 +9,10 @@ defmodule Data.NPCItem do
   alias Data.NPC
 
   schema "npc_items" do
-    field :drop_rate, :integer, default: 10
+    field(:drop_rate, :integer, default: 10)
 
-    belongs_to :npc, NPC
-    belongs_to :item, Item
+    belongs_to(:npc, NPC)
+    belongs_to(:item, Item)
 
     timestamps()
   end

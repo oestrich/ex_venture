@@ -12,12 +12,12 @@ defmodule Data.Type do
       iex> Data.Type.keys(%{slot: :chest})
       [:slot]
   """
-  @spec keys(struct) :: [String.t]
+  @spec keys(struct) :: [String.t()]
   def keys(struct) do
     struct
     |> Map.delete(:__struct__)
-    |> Enum.reject(fn ({_key, val}) -> is_nil(val) end)
-    |> Enum.map(&(elem(&1, 0)))
-    |> Enum.sort
+    |> Enum.reject(fn {_key, val} -> is_nil(val) end)
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.sort()
   end
 end

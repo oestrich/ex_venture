@@ -9,13 +9,13 @@ defmodule Data.Stats.Damage do
     :electric,
     :fire,
     :ice,
-    :poison,
+    :poison
   ]
 
   @physical_types [
     :bludgeoning,
     :piercing,
-    :slashing,
+    :slashing
   ]
 
   @all_types @magical_types ++ @physical_types
@@ -41,11 +41,13 @@ defmodule Data.Stats.Damage do
       iex> Data.Stats.Damage.physical?(:anything)
       false
   """
-  @spec physical?(type :: atom) :: boolean
+  @spec physical?(atom()) :: boolean()
   def physical?(type)
-  Enum.map(@physical_types, fn (type) ->
+
+  Enum.map(@physical_types, fn type ->
     def physical?(unquote(type)), do: true
   end)
+
   def physical?(_), do: false
 
   @doc """
@@ -72,10 +74,12 @@ defmodule Data.Stats.Damage do
       iex> Data.Stats.Damage.magical?(:anything)
       false
   """
-  @spec magical?(type :: atom) :: boolean
+  @spec magical?(atom()) :: boolean()
   def magical?(type)
-  Enum.map(@magical_types, fn (type) ->
+
+  Enum.map(@magical_types, fn type ->
     def magical?(unquote(type)), do: true
   end)
+
   def magical?(_), do: false
 end

@@ -12,12 +12,12 @@ defmodule Data.QuestStep do
   @types ["item/collect", "npc/kill"]
 
   schema "quest_steps" do
-    field :type, :string
-    field :count, :integer
+    field(:type, :string)
+    field(:count, :integer)
 
-    belongs_to :quest, Quest
-    belongs_to :item, Item
-    belongs_to :npc, NPC
+    belongs_to(:quest, Quest)
+    belongs_to(:item, Item)
+    belongs_to(:npc, NPC)
 
     timestamps()
   end

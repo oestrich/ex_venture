@@ -8,11 +8,11 @@ defmodule Data.Bug do
   alias Data.User
 
   schema "bugs" do
-    field :title, :string
-    field :body, :string
-    field :is_completed, :boolean, default: false
+    field(:title, :string)
+    field(:body, :string)
+    field(:is_completed, :boolean, default: false)
 
-    belongs_to :reporter, User
+    belongs_to(:reporter, User)
 
     timestamps()
   end

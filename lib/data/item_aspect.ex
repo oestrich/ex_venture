@@ -11,14 +11,14 @@ defmodule Data.ItemAspect do
   alias Data.Stats
 
   schema "item_aspects" do
-    field :name, :string
-    field :description, :string
-    field :type, :string
-    field :stats, Stats
-    field :effects, {:array, Effect}
+    field(:name, :string)
+    field(:description, :string)
+    field(:type, :string)
+    field(:stats, Stats)
+    field(:effects, {:array, Effect})
 
-    has_many :item_aspectings, ItemAspecting
-    has_many :items, through: [:item_aspectings, :item]
+    has_many(:item_aspectings, ItemAspecting)
+    has_many(:items, through: [:item_aspectings, :item])
 
     timestamps()
   end

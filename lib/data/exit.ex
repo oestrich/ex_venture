@@ -8,14 +8,14 @@ defmodule Data.Exit do
   alias Data.Room
 
   schema "exits" do
-    field :has_door, :boolean, default: false
+    field(:has_door, :boolean, default: false)
 
-    belongs_to :north, Room
-    belongs_to :east, Room
-    belongs_to :south, Room
-    belongs_to :west, Room
-    belongs_to :up, Room
-    belongs_to :down, Room
+    belongs_to(:north, Room)
+    belongs_to(:east, Room)
+    belongs_to(:south, Room)
+    belongs_to(:west, Room)
+    belongs_to(:up, Room)
+    belongs_to(:down, Room)
 
     timestamps()
   end
@@ -40,10 +40,16 @@ defmodule Data.Exit do
   end
 
   defp validate_direction(changeset) do
-    case changeset.changes |> Map.keys |> Enum.sort |> List.delete(:has_door) do
-      [:north_id, :south_id] -> changeset
-      [:east_id, :west_id] -> changeset
-      [:down_id, :up_id] -> changeset
+    case changeset.changes |> Map.keys() |> Enum.sort() |> List.delete(:has_door) do
+      [:north_id, :south_id] ->
+        changeset
+
+      [:east_id, :west_id] ->
+        changeset
+
+      [:down_id, :up_id] ->
+        changeset
+
       _ ->
         add_error(changeset, :exits, "are invalid")
     end
@@ -54,22 +60,24 @@ defmodule Data.Exit do
 
   Adds them to the room as `exits`
   """
-  @spec load_exits(room :: Room.t) :: Room.t
+  @spec load_exits(room :: Room.t()) :: Room.t()
   def load_exits(room, opts \\ []) do
-    query = __MODULE__
-    |> where([e], e.north_id == ^room.id)
-    |> or_where([e], e.south_id == ^room.id)
-    |> or_where([e], e.east_id == ^room.id)
-    |> or_where([e], e.west_id == ^room.id)
-    |> or_where([e], e.up_id == ^room.id)
-    |> or_where([e], e.down_id == ^room.id)
+    query =
+      __MODULE__
+      |> where([e], e.north_id == ^room.id)
+      |> or_where([e], e.south_id == ^room.id)
+      |> or_where([e], e.east_id == ^room.id)
+      |> or_where([e], e.west_id == ^room.id)
+      |> or_where([e], e.up_id == ^room.id)
+      |> or_where([e], e.down_id == ^room.id)
 
-    query = case Keyword.get(opts, :preload) do
-      true -> query |> preload([:north, :south, :east, :west, :up, :down])
-      _ -> query
-    end
+    query =
+      case Keyword.get(opts, :preload) do
+        true -> query |> preload([:north, :south, :east, :west, :up, :down])
+        _ -> query
+      end
 
-    %{room | exits: query |> Repo.all}
+    %{room | exits: query |> Repo.all()}
   end
 
   @doc """
@@ -105,7 +113,7 @@ defmodule Data.Exit do
       iex> Data.Exit.opposite_id(:down)
       :up_id
   """
-  @spec opposite_id(direction :: String.t | atom) :: atom
+  @spec opposite_id(direction :: String.t() | atom) :: atom
   def opposite_id("north"), do: :south_id
   def opposite_id("east"), do: :west_id
   def opposite_id("south"), do: :north_id
@@ -122,9 +130,9 @@ defmodule Data.Exit do
   @doc """
   Get an exit in a direction
   """
-  @spec exit_to(room :: Room.t, direction :: String.t | atom) :: Exit.t | nil
+  @spec exit_to(room :: Room.t(), direction :: String.t() | atom) :: Exit.t() | nil
   def exit_to(room, direction) do
-    Enum.find(room.exits, fn (room_exit) ->
+    Enum.find(room.exits, fn room_exit ->
       Map.get(room_exit, opposite_id(direction)) == room.id
     end)
   end

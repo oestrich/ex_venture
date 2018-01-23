@@ -8,20 +8,20 @@ defmodule Data.Stats do
   alias Data.Stats.Damage
 
   @type character :: %{
-    health: integer,
-    max_health: integer,
-    skill_points: integer,
-    max_skill_points: integer,
-    move_points: integer,
-    max_move_points: integer,
-    strength: integer,
-    intelligence: integer,
-    dexterity: integer,
-    wisdom: integer,
-  }
+          health: integer,
+          max_health: integer,
+          skill_points: integer,
+          max_skill_points: integer,
+          move_points: integer,
+          max_move_points: integer,
+          strength: integer,
+          intelligence: integer,
+          dexterity: integer,
+          wisdom: integer
+        }
   @type armor :: %{
-    slot: :atom,
-  }
+          slot: :atom
+        }
   @type weapon :: %{}
 
   @behaviour Ecto.Type
@@ -44,6 +44,7 @@ defmodule Data.Stats do
     case key do
       :slot ->
         {key, String.to_atom(val)}
+
       _ ->
         {key, val}
     end
@@ -59,7 +60,7 @@ defmodule Data.Stats do
   A "migration" of stats to ensure new ones are always available. They should be
   saved back in after the user loads their account.
   """
-  @spec default(Stats.t) :: Stats.t
+  @spec default(Stats.t()) :: Stats.t()
   def default(stats) do
     stats
     |> ensure(:health, 10)
@@ -85,13 +86,26 @@ defmodule Data.Stats do
   Slots on a character
   """
   @spec slots() :: [atom]
-  def slots(), do: [:chest, :head, :shoulders, :neck, :back, :hands, :waist, :legs, :feet, :finger]
+  def slots(),
+    do: [:chest, :head, :shoulders, :neck, :back, :hands, :waist, :legs, :feet, :finger]
 
   @doc """
   Fields in the statistics map
   """
   @spec fields() :: [atom]
-  def fields(), do: [:dexterity, :health, :intelligence, :max_health, :max_move_points, :max_skill_points, :move_points, :skill_points, :strength, :wisdom]
+  def fields(),
+    do: [
+      :dexterity,
+      :health,
+      :intelligence,
+      :max_health,
+      :max_move_points,
+      :max_skill_points,
+      :move_points,
+      :skill_points,
+      :strength,
+      :wisdom
+    ]
 
   @doc """
   Validate a character's stats
@@ -102,17 +116,12 @@ defmodule Data.Stats do
       iex> Data.Stats.valid_character?(%{})
       false
   """
-  @spec valid_character?(stats :: Stats.character) :: boolean
+  @spec valid_character?(Stats.character()) :: boolean()
   def valid_character?(stats) do
-    keys(stats) == fields()
-      && is_integer(stats.dexterity)
-      && is_integer(stats.health)
-      && is_integer(stats.intelligence)
-      && is_integer(stats.max_health)
-      && is_integer(stats.strength)
-      && is_integer(stats.skill_points)
-      && is_integer(stats.max_skill_points)
-      && is_integer(stats.wisdom)
+    keys(stats) == fields() && is_integer(stats.dexterity) && is_integer(stats.health) &&
+      is_integer(stats.intelligence) && is_integer(stats.max_health) && is_integer(stats.strength) &&
+      is_integer(stats.skill_points) && is_integer(stats.max_skill_points) &&
+      is_integer(stats.wisdom)
   end
 
   @doc """
@@ -130,7 +139,7 @@ defmodule Data.Stats do
       iex> Data.Stats.valid_armor?(%{})
       false
   """
-  @spec valid_armor?(stats :: Stats.armor) :: boolean
+  @spec valid_armor?(Stats.armor()) :: boolean()
   def valid_armor?(stats) do
     keys(stats) == [:armor, :slot] && valid_slot?(stats) && is_integer(stats.armor)
   end
@@ -144,7 +153,7 @@ defmodule Data.Stats do
       iex> Data.Stats.valid_weapon?(%{anything: true})
       false
   """
-  @spec valid_weapon?(stats :: Stats.weapon) :: boolean
+  @spec valid_weapon?(Stats.weapon()) :: boolean()
   def valid_weapon?(stats) do
     keys(stats) == []
   end
@@ -157,17 +166,21 @@ defmodule Data.Stats do
       iex> Data.Stats.valid?("basic", %{slot: :chest})
       false
   """
-  @spec valid?(type :: String.t, stats :: Stats.t) :: boolean
+  @spec valid?(String.t(), Stats.t()) :: boolean()
   def valid?(type, stats)
+
   def valid?("armor", stats) do
     valid_armor?(stats)
   end
+
   def valid?("weapon", stats) do
     valid_weapon?(stats)
   end
+
   def valid?("basic", stats) do
     keys(stats) == []
   end
+
   def valid?(_, _), do: false
 
   @doc """
@@ -178,8 +191,9 @@ defmodule Data.Stats do
       iex> Data.Stats.valid_slot?(%{slot: :eye})
       false
   """
-  @spec valid_slot?(stats :: Stats.t) :: boolean
+  @spec valid_slot?(Stats.t()) :: boolean()
   def valid_slot?(stats)
+
   def valid_slot?(%{slot: slot}) do
     slot in slots()
   end
@@ -194,10 +208,12 @@ defmodule Data.Stats do
       iex> Data.Stats.valid_damage?(%{damage_type: :finger})
       false
   """
-  @spec valid_damage?(stats :: Stats.t) :: boolean
+  @spec valid_damage?(Stats.t()) :: boolean()
   def valid_damage?(stats)
+
   def valid_damage?(%{damage_type: damage_type, damage: damage}) do
     damage_type in Damage.types() && is_integer(damage)
   end
+
   def valid_damage?(_), do: false
 end

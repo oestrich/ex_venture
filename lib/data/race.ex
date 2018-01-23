@@ -8,9 +8,9 @@ defmodule Data.Race do
   alias Data.Stats
 
   schema "races" do
-    field :name, :string
-    field :description, :string
-    field :starting_stats, Stats
+    field(:name, :string)
+    field(:description, :string)
+    field(:starting_stats, Stats)
 
     timestamps()
   end
@@ -26,7 +26,9 @@ defmodule Data.Race do
     case changeset do
       %{changes: %{starting_stats: stats}} when stats != nil ->
         _validate_stats(changeset)
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 

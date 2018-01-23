@@ -8,12 +8,12 @@ defmodule Data.Mail do
   alias Data.User
 
   schema "mail" do
-    field :title, :string
-    field :body, :string
-    field :is_read, :boolean, default: false
+    field(:title, :string)
+    field(:body, :string)
+    field(:is_read, :boolean, default: false)
 
-    belongs_to :sender, User
-    belongs_to :receiver, User
+    belongs_to(:sender, User)
+    belongs_to(:receiver, User)
 
     timestamps()
   end

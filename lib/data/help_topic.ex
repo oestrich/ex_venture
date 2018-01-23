@@ -6,9 +6,9 @@ defmodule Data.HelpTopic do
   use Data.Schema
 
   schema "help_topics" do
-    field :name, :string
-    field :keywords, {:array, :string}
-    field :body, :string
+    field(:name, :string)
+    field(:keywords, {:array, :string})
+    field(:body, :string)
 
     timestamps()
   end

@@ -9,23 +9,34 @@ defmodule Data.Save do
   alias Data.Stats
 
   @type t :: %{
-    room_id: integer,
-    channels: [String.t],
-    level: integer,
-    experience_points: integer,
-    stats: map,
-    currency: integer,
-    items: [Item.instance()],
-    wearing: %{
-      chest: integer,
-    },
-    wielding: %{
-      right: integer,
-      left: integer,
-    },
-  }
+          room_id: integer,
+          channels: [String.t()],
+          level: integer,
+          experience_points: integer,
+          stats: map,
+          currency: integer,
+          items: [Item.instance()],
+          wearing: %{
+            chest: integer
+          },
+          wielding: %{
+            right: integer,
+            left: integer
+          }
+        }
 
-  defstruct [:version, :room_id, :channels, :level, :experience_points, :stats, :currency, :items, :wearing, :wielding]
+  defstruct [
+    :version,
+    :room_id,
+    :channels,
+    :level,
+    :experience_points,
+    :stats,
+    :currency,
+    :items,
+    :wearing,
+    :wielding
+  ]
 
   @behaviour Ecto.Type
 
@@ -39,20 +50,21 @@ defmodule Data.Save do
   @doc """
   Load a save from the database
   """
-  @spec load(save :: map) :: {:ok, Data.Save.t}
+  @spec load(map()) :: {:ok, Data.Save.t()}
   @impl Ecto.Type
   def load(save) do
     save = for {key, val} <- save, into: %{}, do: {String.to_atom(key), val}
 
-    save = save
-    |> ensure(:channels, [])
-    |> ensure(:currency, 0)
-    |> ensure(:items, [])
-    |> atomize_stats()
-    |> atomize_wearing()
-    |> atomize_wielding()
-    |> migrate()
-    |> load_items()
+    save =
+      save
+      |> ensure(:channels, [])
+      |> ensure(:currency, 0)
+      |> ensure(:items, [])
+      |> atomize_stats()
+      |> atomize_wearing()
+      |> atomize_wielding()
+      |> migrate()
+      |> load_items()
 
     {:ok, struct(__MODULE__, save)}
   end
@@ -68,24 +80,28 @@ defmodule Data.Save do
     stats = for {key, val} <- stats, into: %{}, do: {String.to_atom(key), val}
     %{save | stats: stats}
   end
+
   defp atomize_stats(save), do: save
 
   defp atomize_wearing(save = %{wearing: wearing}) when wearing != nil do
     wearing = for {key, val} <- wearing, into: %{}, do: {String.to_atom(key), val}
     %{save | wearing: wearing}
   end
+
   defp atomize_wearing(save), do: save
 
   defp atomize_wielding(save = %{wielding: wielding}) when wielding != nil do
     wielding = for {key, val} <- wielding, into: %{}, do: {String.to_atom(key), val}
     %{save | wielding: wielding}
   end
+
   defp atomize_wielding(save), do: save
 
-  defp load_items(save = %{items: items, wearing: wearing, wielding: wielding}) when is_list(items) do
+  defp load_items(save = %{items: items, wearing: wearing, wielding: wielding})
+       when is_list(items) do
     items =
       items
-      |> Enum.map(fn (item) ->
+      |> Enum.map(fn item ->
         case Item.Instance.load(item) do
           {:ok, instance} -> instance
           _ -> nil
@@ -93,20 +109,23 @@ defmodule Data.Save do
       end)
       |> Enum.reject(&is_nil/1)
 
-    wearing = for {key, item} <- wearing, into: %{} do
-      with {:ok, instance} <- Item.Instance.load(item) do
-        {key, instance}
+    wearing =
+      for {key, item} <- wearing, into: %{} do
+        with {:ok, instance} <- Item.Instance.load(item) do
+          {key, instance}
+        end
       end
-    end
 
-    wielding = for {key, item} <- wielding, into: %{} do
-      with {:ok, instance} <- Item.Instance.load(item) do
-        {key, instance}
+    wielding =
+      for {key, item} <- wielding, into: %{} do
+        with {:ok, instance} <- Item.Instance.load(item) do
+          {key, instance}
+        end
       end
-    end
 
     %{save | items: items, wearing: wearing, wielding: wielding}
   end
+
   defp load_items(save), do: save
 
   @impl Ecto.Type
@@ -127,7 +146,7 @@ defmodule Data.Save do
     wielding =
       save
       |> Map.get(:wielding, [])
-      |> Enum.reduce(%{}, fn ({key, id}, map) ->
+      |> Enum.reduce(%{}, fn {key, id}, map ->
         item = Item.instantiate(%Data.Item{id: id})
         Map.put(map, key, item)
       end)
@@ -135,7 +154,7 @@ defmodule Data.Save do
     wearing =
       save
       |> Map.get(:wearing, [])
-      |> Enum.reduce(%{}, fn ({key, id}, map) ->
+      |> Enum.reduce(%{}, fn {key, id}, map ->
         item = Item.instantiate(%Data.Item{id: id})
         Map.put(map, key, item)
       end)
@@ -146,11 +165,12 @@ defmodule Data.Save do
     |> Map.put(:version, 3)
     |> _migrate()
   end
+
   defp _migrate(save = %{version: 1}) do
     items =
       save
       |> Map.get(:item_ids, [])
-      |> Enum.map(&(Item.instantiate(%Data.Item{id: &1})))
+      |> Enum.map(&Item.instantiate(%Data.Item{id: &1}))
 
     save
     |> Map.put(:items, items)
@@ -158,6 +178,7 @@ defmodule Data.Save do
     |> Map.put(:version, 2)
     |> _migrate()
   end
+
   defp _migrate(save), do: save
 
   @doc """
@@ -172,16 +193,21 @@ defmodule Data.Save do
       iex> Data.Save.valid?(%Data.Save{})
       false
   """
-  @spec valid?(save :: Save.t) :: boolean
+  @spec valid?(Save.t()) :: boolean()
   def valid?(save) do
-    keys(save) == [:channels, :currency, :experience_points, :items, :level, :room_id, :stats, :version, :wearing, :wielding]
-      && valid_channels?(save)
-      && valid_currency?(save)
-      && valid_stats?(save)
-      && valid_items?(save)
-      && valid_room_id?(save)
-      && valid_wearing?(save)
-      && valid_wielding?(save)
+    keys(save) == [
+      :channels,
+      :currency,
+      :experience_points,
+      :items,
+      :level,
+      :room_id,
+      :stats,
+      :version,
+      :wearing,
+      :wielding
+    ] && valid_channels?(save) && valid_currency?(save) && valid_stats?(save) &&
+      valid_items?(save) && valid_room_id?(save) && valid_wearing?(save) && valid_wielding?(save)
   end
 
   @doc """
@@ -196,8 +222,9 @@ defmodule Data.Save do
       iex> Data.Save.valid_channels?(%{channels: :anything})
       false
   """
-  @spec valid_channels?(save :: Save.t) :: boolean
+  @spec valid_channels?(Save.t()) :: boolean()
   def valid_channels?(save)
+
   def valid_channels?(%{channels: channels}) do
     is_list(channels) && Enum.all?(channels, &is_binary/1)
   end
@@ -211,8 +238,9 @@ defmodule Data.Save do
       iex> Data.Save.valid_currency?(%{currency: :anything})
       false
   """
-  @spec valid_currency?(save :: Save.t) :: boolean
+  @spec valid_currency?(Save.t()) :: boolean()
   def valid_currency?(save)
+
   def valid_currency?(%{currency: currency}) do
     is_integer(currency)
   end
@@ -226,8 +254,9 @@ defmodule Data.Save do
       iex> Data.Save.valid_stats?(%{stats: :anything})
       false
   """
-  @spec valid_stats?(save :: Save.t) :: boolean
+  @spec valid_stats?(Save.t()) :: boolean()
   def valid_stats?(save)
+
   def valid_stats?(%{stats: stats}) do
     is_map(stats) && Stats.valid_character?(stats)
   end
@@ -246,14 +275,16 @@ defmodule Data.Save do
       iex> Data.Save.valid_items?(%{items: :anything})
       false
   """
-  @spec valid_items?(save :: Save.t) :: boolean
+  @spec valid_items?(Save.t()) :: boolean()
   def valid_items?(save)
+
   def valid_items?(%{items: items}) when is_list(items) do
     items
-    |> Enum.all?(fn (instance) ->
+    |> Enum.all?(fn instance ->
       is_map(instance) && instance.__struct__ == Item.Instance
     end)
   end
+
   def valid_items?(_), do: false
 
   @doc """
@@ -265,7 +296,7 @@ defmodule Data.Save do
       iex> Data.Save.valid_room_id?(%{room_id: :anything})
       false
   """
-  @spec valid_room_id?(save :: Save.t) :: boolean
+  @spec valid_room_id?(Save.t()) :: boolean()
   def valid_room_id?(save)
   def valid_room_id?(%{room_id: room_id}), do: is_integer(room_id)
 
@@ -289,13 +320,14 @@ defmodule Data.Save do
       iex> Data.Save.valid_wearing?(%{wearing: :anything})
       false
   """
-  @spec valid_wearing?(save :: Save.t) :: boolean
+  @spec valid_wearing?(Save.t()) :: boolean()
   def valid_wearing?(save)
+
   def valid_wearing?(%{wearing: wearing}) do
     is_map(wearing) &&
       Enum.all?(wearing, fn
-        ({key, val = %Item.Instance{}}) -> key in Stats.slots() && is_integer(val.id)
-        (_) -> false
+        {key, val = %Item.Instance{}} -> key in Stats.slots() && is_integer(val.id)
+        _ -> false
       end)
   end
 
@@ -315,13 +347,14 @@ defmodule Data.Save do
       iex> Data.Save.valid_wielding?(%{wielding: :anything})
       false
   """
-  @spec valid_wielding?(save :: Save.t) :: boolean
+  @spec valid_wielding?(Save.t()) :: boolean()
   def valid_wielding?(save)
+
   def valid_wielding?(%{wielding: wielding}) do
     is_map(wielding) &&
       Enum.all?(wielding, fn
-        ({key, val = %Item.Instance{}}) -> key in [:right, :left] && is_integer(val.id)
-        (_) -> false
+        {key, val = %Item.Instance{}} -> key in [:right, :left] && is_integer(val.id)
+        _ -> false
       end)
   end
 end

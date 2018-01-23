@@ -12,28 +12,37 @@ defmodule Data.User do
   alias Data.User.Session
 
   schema "users" do
-    field :name, :string
-    field :email, :string
-    field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
-    field :password_hash, :string
-    field :save, Data.Save
-    field :flags, {:array, :string}
-    field :token, Ecto.UUID
-    field :seconds_online, :integer
+    field(:name, :string)
+    field(:email, :string)
+    field(:password, :string, virtual: true)
+    field(:password_confirmation, :string, virtual: true)
+    field(:password_hash, :string)
+    field(:save, Data.Save)
+    field(:flags, {:array, :string})
+    field(:token, Ecto.UUID)
+    field(:seconds_online, :integer)
 
-    belongs_to :class, Class
-    belongs_to :race, Race
+    belongs_to(:class, Class)
+    belongs_to(:race, Race)
 
-    has_many :sessions, Session
-    has_many :quest_progress, QuestProgress
+    has_many(:sessions, Session)
+    has_many(:quest_progress, QuestProgress)
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :email, :password, :save, :flags, :race_id, :class_id, :seconds_online])
+    |> cast(params, [
+      :name,
+      :email,
+      :password,
+      :save,
+      :flags,
+      :race_id,
+      :class_id,
+      :seconds_online
+    ])
     |> validate_required([:name, :save, :race_id, :class_id])
     |> validate_save()
     |> validate_name()
@@ -63,6 +72,7 @@ defmodule Data.User do
     case changeset do
       %{valid?: true, changes: %{password: password}} ->
         put_change(changeset, :password_hash, Comeonin.Bcrypt.hashpwsalt(password))
+
       _ ->
         changeset
     end
@@ -72,7 +82,9 @@ defmodule Data.User do
     case changeset do
       %{changes: %{save: save}} when save != nil ->
         _validate_save(changeset)
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 
@@ -90,7 +102,9 @@ defmodule Data.User do
           true -> add_error(changeset, :name, "cannot contain spaces")
           false -> changeset
         end
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 end

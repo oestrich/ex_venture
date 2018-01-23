@@ -6,9 +6,9 @@ defmodule Data.Note do
   use Data.Schema
 
   schema "notes" do
-    field :name, :string
-    field :body, :string
-    field :tags, {:array, :string}, default: []
+    field(:name, :string)
+    field(:body, :string)
+    field(:tags, {:array, :string}, default: [])
 
     timestamps()
   end

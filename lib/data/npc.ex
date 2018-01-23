@@ -12,23 +12,24 @@ defmodule Data.NPC do
   alias Data.NPCSpawner
 
   schema "npcs" do
-    field :original_id, :integer, virtual: true
-    field :name, :string
-    field :level, :integer, default: 1
-    field :experience_points, :integer, default: 0 # given after defeat
-    field :stats, Data.Stats
-    field :events, {:array, Event}
-    field :script, {:array, Script.Line}
-    field :notes, :string
-    field :tags, {:array, :string}, default: []
-    field :status_line, :string, default: "{name} is here."
-    field :description, :string, default: "{status_line}"
-    field :is_quest_giver, :boolean, default: false
+    field(:original_id, :integer, virtual: true)
+    field(:name, :string)
+    field(:level, :integer, default: 1)
+    # given after defeat
+    field(:experience_points, :integer, default: 0)
+    field(:stats, Data.Stats)
+    field(:events, {:array, Event})
+    field(:script, {:array, Script.Line})
+    field(:notes, :string)
+    field(:tags, {:array, :string}, default: [])
+    field(:status_line, :string, default: "{name} is here.")
+    field(:description, :string, default: "{status_line}")
+    field(:is_quest_giver, :boolean, default: false)
 
-    field :currency, :integer, default: 0
+    field(:currency, :integer, default: 0)
 
-    has_many :npc_items, NPCItem
-    has_many :npc_spawners, NPCSpawner
+    has_many(:npc_items, NPCItem)
+    has_many(:npc_spawners, NPCSpawner)
 
     timestamps()
   end
@@ -47,7 +48,7 @@ defmodule Data.NPC do
       :script,
       :status_line,
       :description,
-      :is_quest_giver,
+      :is_quest_giver
     ])
     |> validate_required([
       :name,
@@ -59,7 +60,7 @@ defmodule Data.NPC do
       :events,
       :status_line,
       :description,
-      :is_quest_giver,
+      :is_quest_giver
     ])
     |> validate_stats()
     |> Event.validate_events()
@@ -75,7 +76,9 @@ defmodule Data.NPC do
           true -> changeset
           false -> add_error(changeset, :stats, "are invalid")
         end
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 
@@ -108,8 +111,15 @@ defmodule Data.NPC do
 
   defp _validate_script(changeset, script) do
     case Script.valid_for_npc?(script) do
-      true -> changeset
-      false -> add_error(changeset, :script, "cannot include a conversation that has a trigger with quest")
+      true ->
+        changeset
+
+      false ->
+        add_error(
+          changeset,
+          :script,
+          "cannot include a conversation that has a trigger with quest"
+        )
     end
   end
 end

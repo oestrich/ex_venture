@@ -9,11 +9,11 @@ defmodule Data.ShopItem do
   alias Data.Shop
 
   schema "shop_items" do
-    field :price, :integer
-    field :quantity, :integer
+    field(:price, :integer)
+    field(:quantity, :integer)
 
-    belongs_to :shop, Shop
-    belongs_to :item, Item
+    belongs_to(:shop, Shop)
+    belongs_to(:item, Item)
 
     timestamps()
   end

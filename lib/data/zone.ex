@@ -9,15 +9,15 @@ defmodule Data.Zone do
   alias Data.Room
 
   schema "zones" do
-    field :name, :string
-    field :description, :string
-    field :starting_level, :integer, default: 1
-    field :ending_level, :integer, default: 1
+    field(:name, :string)
+    field(:description, :string)
+    field(:starting_level, :integer, default: 1)
+    field(:ending_level, :integer, default: 1)
 
-    has_many :rooms, Room
-    has_many :npc_spawners, NPCSpawner
+    has_many(:rooms, Room)
+    has_many(:npc_spawners, NPCSpawner)
 
-    belongs_to :graveyard, Room
+    belongs_to(:graveyard, Room)
 
     timestamps()
   end

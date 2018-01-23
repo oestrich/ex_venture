@@ -6,8 +6,8 @@ defmodule Data.Config do
   use Data.Schema
 
   schema "config" do
-    field :name, :string
-    field :value, :string
+    field(:name, :string)
+    field(:value, :string)
 
     timestamps()
   end
@@ -22,6 +22,6 @@ defmodule Data.Config do
     __MODULE__
     |> where([c], c.name == ^name)
     |> select([c], c.value)
-    |> Repo.one
+    |> Repo.one()
   end
 end

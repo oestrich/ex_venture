@@ -9,11 +9,11 @@ defmodule Data.Shop do
   alias Data.ShopItem
 
   schema "shops" do
-    field :name, :string
+    field(:name, :string)
 
-    has_many :shop_items, ShopItem
+    has_many(:shop_items, ShopItem)
 
-    belongs_to :room, Room
+    belongs_to(:room, Room)
 
     timestamps()
   end
@@ -41,7 +41,7 @@ defmodule Data.Shop do
       iex> Data.Shop.matches?(%{name: "Tree Stand Shop"}, "hole in the")
       false
   """
-  @spec matches?(shop :: __MODULE__.t, lookup :: String.t) :: Item.t | nil
+  @spec matches?(t(), String.t()) :: Item.t() | nil
   def matches?(shop, lookup) do
     String.starts_with?(shop.name |> String.downcase(), lookup |> String.downcase())
   end

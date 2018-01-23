@@ -20,33 +20,44 @@ defmodule Data.Item do
   @valid_effects %{
     "basic" => ["recover"],
     "weapon" => ["damage", "damage/type", "stats"],
-    "armor" => ["stats"],
+    "armor" => ["stats"]
   }
 
   @fields [
-    :level, :name, :description, :type, :tags, :keywords, :stats, :effects,
-    :cost, :user_text, :usee_text, :is_usable, :amount,
+    :level,
+    :name,
+    :description,
+    :type,
+    :tags,
+    :keywords,
+    :stats,
+    :effects,
+    :cost,
+    :user_text,
+    :usee_text,
+    :is_usable,
+    :amount
   ]
 
   schema "items" do
-    field :name, :string
-    field :description, :string
-    field :type, :string
-    field :tags, {:array, :string}, default: []
-    field :keywords, {:array, :string}
-    field :stats, Data.Stats
-    field :effects, {:array, Data.Effect}
-    field :cost, :integer, default: 0
-    field :level, :integer, default: 1
-    field :user_text, :string, default: "You use {name} on {target}."
-    field :usee_text, :string, default: "{user} uses {name} on you."
-    field :is_usable, :boolean, default: false
-    field :amount, :integer, default: 1
+    field(:name, :string)
+    field(:description, :string)
+    field(:type, :string)
+    field(:tags, {:array, :string}, default: [])
+    field(:keywords, {:array, :string})
+    field(:stats, Data.Stats)
+    field(:effects, {:array, Data.Effect})
+    field(:cost, :integer, default: 0)
+    field(:level, :integer, default: 1)
+    field(:user_text, :string, default: "You use {name} on {target}.")
+    field(:usee_text, :string, default: "{user} uses {name} on you.")
+    field(:is_usable, :boolean, default: false)
+    field(:amount, :integer, default: 1)
 
-    has_many :item_aspectings, ItemAspecting
-    has_many :item_aspects, through: [:item_aspectings, :item_aspect]
-    has_many :npc_items, NPCItem
-    has_many :shop_items, ShopItem
+    has_many(:item_aspectings, ItemAspecting)
+    has_many(:item_aspects, through: [:item_aspectings, :item_aspect])
+    has_many(:npc_items, NPCItem)
+    has_many(:shop_items, ShopItem)
 
     timestamps()
   end
@@ -56,7 +67,7 @@ defmodule Data.Item do
   @doc """
   List out item types
   """
-  @spec types() :: [String.t]
+  @spec types() :: [String.t()]
   def types(), do: @types
 
   @doc """
@@ -68,24 +79,26 @@ defmodule Data.Item do
   @doc """
   Provide a starting point for the web panel to edit new statistics
   """
-  @spec basic_stats(type :: atom) :: map
+  @spec basic_stats(atom) :: map
   def basic_stats(:armor) do
     %{
       slot: "",
-      armor: 0,
+      armor: 0
     }
   end
+
   def basic_stats(:basic), do: %{}
   def basic_stats(:weapon), do: %{}
 
   @doc """
   Create an instance of an item
   """
-  @spec instantiate(item :: t()) :: instance()
+  @spec instantiate(t()) :: instance()
   def instantiate(item) do
     case item.is_usable do
       true ->
         %Instance{id: item.id, created_at: Timex.now(), amount: item.amount}
+
       false ->
         %Instance{id: item.id, created_at: Timex.now()}
     end
@@ -113,7 +126,7 @@ defmodule Data.Item do
   @doc """
   Validate item statistics
   """
-  @spec validate_stats(changeset :: Ecto.Changeset.t()) :: Ecto.Changeset.t()
+  @spec validate_stats(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_stats(changeset) do
     case get_change(changeset, :stats) do
       nil -> changeset
@@ -123,6 +136,7 @@ defmodule Data.Item do
 
   defp _validate_stats(changeset, stats) do
     type = get_field(changeset, :type)
+
     case Stats.valid?(type, stats) do
       true -> changeset
       false -> add_error(changeset, :stats, "are invalid")
@@ -132,7 +146,7 @@ defmodule Data.Item do
   @doc """
   Validate effects are for the proper item type
   """
-  @spec validate_effects(changeset :: Ecto.Changeset.t()) :: Ecto.Changeset.t()
+  @spec validate_effects(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_effects(changeset) do
     case get_change(changeset, :effects) do
       nil -> changeset
@@ -142,6 +156,7 @@ defmodule Data.Item do
 
   defp _validate_effects(changeset, effects) do
     type = get_field(changeset, :type)
+
     case effects |> Enum.all?(&(&1.kind in @valid_effects[type])) do
       true -> changeset
       false -> add_error(changeset, :effects, "can only include damage or stats effects")

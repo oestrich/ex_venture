@@ -7,8 +7,19 @@ defmodule Data.Item.Compiled do
   alias Data.Item
 
   @fields [
-    :id, :level, :name, :description, :type, :keywords, :stats,
-    :effects, :cost, :user_text, :usee_text, :is_usable, :amount,
+    :id,
+    :level,
+    :name,
+    :description,
+    :type,
+    :keywords,
+    :stats,
+    :effects,
+    :cost,
+    :user_text,
+    :usee_text,
+    :is_usable,
+    :amount
   ]
 
   defstruct @fields
@@ -29,9 +40,15 @@ defmodule Data.Item.Compiled do
   @doc """
   Merge stats together
   """
-  @spec merge_stats(compiled_item :: t(), item :: Item.t) :: t()
+  @spec merge_stats(t(), Item.t()) :: t()
   def merge_stats(compiled_item, %{item_aspectings: item_aspectings}) do
-    stats = Enum.reduce(item_aspectings, compiled_item.stats, &(_merge_stats(&1, &2, compiled_item.level)))
+    stats =
+      Enum.reduce(
+        item_aspectings,
+        compiled_item.stats,
+        &_merge_stats(&1, &2, compiled_item.level)
+      )
+
     %{compiled_item | stats: stats}
   end
 
@@ -39,24 +56,26 @@ defmodule Data.Item.Compiled do
     armor = scale_for_level(level, stats.armor)
     %{acc_stats | armor: acc_stats.armor + armor}
   end
+
   defp _merge_stats(_, stats, _), do: stats
 
   @doc """
   Concatenate effects of the item and all of its tags
   """
-  @spec merge_effects(compiled_item :: t(), item :: Item.t) :: t()
+  @spec merge_effects(t(), Item.t()) :: t()
   def merge_effects(compiled_item, %{item_aspectings: item_aspectings}) do
-    effects = Enum.flat_map(item_aspectings, &(_scale_effects(&1, compiled_item.level)))
+    effects = Enum.flat_map(item_aspectings, &_scale_effects(&1, compiled_item.level))
     %{compiled_item | effects: compiled_item.effects ++ effects}
   end
 
   defp _scale_effects(%{item_aspect: %{effects: effects}}, level) do
-    Enum.map(effects, &(_scale_effect(&1, level)))
+    Enum.map(effects, &_scale_effect(&1, level))
   end
 
   def _scale_effect(effect = %{kind: "damage"}, level) do
     %{effect | amount: scale_for_level(level, effect.amount)}
   end
+
   def _scale_effect(effect, _level), do: effect
 
   @doc """
@@ -70,6 +89,6 @@ defmodule Data.Item.Compiled do
       20
   """
   def scale_for_level(level, value) do
-    round(Float.ceil(value * (1 + ((level - 1) / 10))))
+    round(Float.ceil(value * (1 + (level - 1) / 10)))
   end
 end

@@ -6,10 +6,10 @@ defmodule Data.RoomItem do
   use Data.Schema
 
   schema "room_items" do
-    belongs_to :room, Data.Room
-    belongs_to :item, Data.Item
+    belongs_to(:room, Data.Room)
+    belongs_to(:item, Data.Item)
 
-    field :spawn_interval, :integer
+    field(:spawn_interval, :integer)
 
     timestamps()
   end

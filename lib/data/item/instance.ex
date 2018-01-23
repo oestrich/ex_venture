@@ -24,6 +24,7 @@ defmodule Data.Item.Instance do
       1
   """
   def load(instance = %__MODULE__{}), do: {:ok, instance}
+
   def load(instance) do
     instance = for {key, val} <- instance, into: %{}, do: {String.to_atom(key), val}
     created_at = Timex.parse!(instance.created_at, "{ISO:Extended}")

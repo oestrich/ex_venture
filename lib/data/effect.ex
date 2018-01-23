@@ -21,37 +21,37 @@ defmodule Data.Effect do
   @type t :: map
 
   @type damage :: %{
-    type: atom,
-    amount: integer,
-  }
+          type: atom,
+          amount: integer
+        }
 
   @type damage_type :: %{
-    types: [atom],
-  }
+          types: [atom]
+        }
 
   @typedoc """
   Damage over time. Does damage every `every` milliseconds.
   """
   @type damage_over_time :: %{
-    type: atom(),
-    amount: integer(),
-    every: integer(),
-    count: integer(),
-  }
+          type: atom(),
+          amount: integer(),
+          every: integer(),
+          count: integer()
+        }
 
   @type heal :: %{
-    amount: integer,
-  }
+          amount: integer
+        }
 
   @type recover :: %{
-    type: atom(),
-    amount: integer(),
-  }
+          type: atom(),
+          amount: integer()
+        }
 
   @type stats :: %{
-    field: atom,
-    amount: integer,
-  }
+          field: atom,
+          amount: integer
+        }
 
   @behaviour Ecto.Type
 
@@ -89,19 +89,24 @@ defmodule Data.Effect do
   defp cast_vals("damage", effect) do
     effect |> Map.put(:type, String.to_atom(effect.type))
   end
+
   defp cast_vals("damage/type", effect) do
     types = Enum.map(effect.types, &String.to_atom/1)
     effect |> Map.put(:types, types)
   end
+
   defp cast_vals("damage/over-time", effect) do
     effect |> Map.put(:type, String.to_atom(effect.type))
   end
+
   defp cast_vals("heal", effect) do
     effect |> Map.put(:type, String.to_atom(effect.type))
   end
+
   defp cast_vals("stats", effect) do
     effect |> Map.put(:field, String.to_atom(effect.field))
   end
+
   defp cast_vals(_type, effect), do: effect
 
   @impl Ecto.Type
@@ -116,15 +121,19 @@ defmodule Data.Effect do
   def starting_effect("damage") do
     %{kind: "damage", type: :slashing, amount: 0}
   end
+
   def starting_effect("damage/type") do
     %{kind: "damage/type", types: []}
   end
+
   def starting_effect("damage/over-time") do
     %{kind: "damage/over-time", type: :slashing, amount: 0, every: 10, count: 2}
   end
+
   def starting_effect("recover") do
     %{kind: "recover", type: "health", amount: 0}
   end
+
   def starting_effect("stats") do
     %{kind: "stats", field: :dexterity, amount: 0}
   end
@@ -157,23 +166,29 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: :invalid})
       false
   """
-  @spec valid?(effect :: Stats.t) :: boolean
+  @spec valid?(effect :: Stats.t()) :: boolean
   def valid?(effect)
+
   def valid?(effect = %{kind: "damage"}) do
     keys(effect) == [:amount, :kind, :type] && valid_damage?(effect)
   end
+
   def valid?(effect = %{kind: "damage/type"}) do
     keys(effect) == [:kind, :types] && valid_damage_type?(effect)
   end
+
   def valid?(effect = %{kind: "damage/over-time"}) do
     keys(effect) == [:amount, :count, :every, :kind, :type] && valid_damage_over_time?(effect)
   end
+
   def valid?(effect = %{kind: "recover"}) do
     keys(effect) == [:amount, :kind, :type] && valid_recover?(effect)
   end
+
   def valid?(effect = %{kind: "stats"}) do
     keys(effect) == [:amount, :field, :kind] && valid_stats?(effect)
   end
+
   def valid?(_), do: false
 
   @doc """
@@ -188,11 +203,13 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_damage?(%{type: :finger})
       false
   """
-  @spec valid_damage?(effect :: Effect.t) :: boolean
+  @spec valid_damage?(effect :: Effect.t()) :: boolean
   def valid_damage?(effect)
+
   def valid_damage?(%{type: type, amount: amount}) do
     type in Damage.types() && is_integer(amount)
   end
+
   def valid_damage?(_), do: false
 
   @doc """
@@ -207,11 +224,13 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_damage_type?(%{types: :slashing})
       false
   """
-  @spec valid_damage_type?(effect :: Effect.t) :: boolean
+  @spec valid_damage_type?(effect :: Effect.t()) :: boolean
   def valid_damage_type?(effect)
+
   def valid_damage_type?(%{types: types}) when is_list(types) do
     Enum.all?(types, &(&1 in Damage.types()))
   end
+
   def valid_damage_type?(_), do: false
 
   @doc """
@@ -232,12 +251,14 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_damage_over_time?(%{type: :slashing, amount: 10, every: 3, count: :three})
       false
   """
-  @spec valid_damage_over_time?(effect :: Effect.t) :: boolean
+  @spec valid_damage_over_time?(effect :: Effect.t()) :: boolean
   def valid_damage_over_time?(effect)
+
   def valid_damage_over_time?(%{type: type, amount: amount, every: every, count: count}) do
-    type in Damage.types() && is_integer(amount) &&
-      is_integer(every) && every > 0 && is_integer(count) && count > 0
+    type in Damage.types() && is_integer(amount) && is_integer(every) && every > 0 &&
+      is_integer(count) && count > 0
   end
+
   def valid_damage_over_time?(_), do: false
 
   @doc """
@@ -257,11 +278,13 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_recover?(%{type: "other", amount: 10})
       false
   """
-  @spec valid_recover?(effect :: Effect.t) :: boolean
+  @spec valid_recover?(effect :: Effect.t()) :: boolean
   def valid_recover?(effect)
+
   def valid_recover?(%{type: type, amount: amount}) do
     type in ["health", "skill", "move"] && is_integer(amount)
   end
+
   def valid_recover?(_), do: false
 
   @doc """
@@ -279,18 +302,22 @@ defmodule Data.Effect do
       iex> Data.Effect.valid_stats?(%{field: :strength})
       false
   """
-  @spec valid_stats?(effect :: Effect.t) :: boolean
+  @spec valid_stats?(effect :: Effect.t()) :: boolean
   def valid_stats?(effect)
+
   def valid_stats?(%{field: field, amount: amount}) do
     field in [:strength, :dexterity] && is_integer(amount)
   end
+
   def valid_stats?(_), do: false
 
   def validate_effects(changeset) do
     case changeset do
       %{changes: %{effects: effects}} when effects != nil ->
         _validate_effects(changeset)
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 
@@ -310,7 +337,7 @@ defmodule Data.Effect do
     iex> Data.Effect.continuous?(%{kind: "damage"})
     false
   """
-  @spec continuous?(Effect.t) :: boolean()
+  @spec continuous?(Effect.t()) :: boolean()
   def continuous?(effect)
   def continuous?(%{kind: "damage/over-time"}), do: true
   def continuous?(_), do: false
@@ -318,7 +345,7 @@ defmodule Data.Effect do
   @doc """
   Instantiate an effect by giving it an ID to track, for future callbacks
   """
-  @spec instantiate(Effect.t) :: boolean()
+  @spec instantiate(Effect.t()) :: boolean()
   def instantiate(effect) do
     effect |> Map.put(:id, UUID.uuid4())
   end

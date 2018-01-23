@@ -39,11 +39,11 @@ defmodule Data.QuestProgress do
   end
 
   schema "quest_progress" do
-    field :status, :string, default: "active"
-    field :progress, Progress, default: %{}
+    field(:status, :string, default: "active")
+    field(:progress, Progress, default: %{})
 
-    belongs_to :quest, Quest
-    belongs_to :user, User
+    belongs_to(:quest, Quest)
+    belongs_to(:user, User)
 
     timestamps()
   end

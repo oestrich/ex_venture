@@ -40,12 +40,13 @@ defmodule Data.Script.Line do
   defp load_listeners(event = %{listeners: listeners}) when listeners != nil do
     listeners =
       listeners
-      |> Enum.map(fn (map) ->
+      |> Enum.map(fn map ->
         for {key, val} <- map, into: %{}, do: {String.to_atom(key), val}
       end)
 
     %{event | listeners: listeners}
   end
+
   defp load_listeners(event), do: event
 
   @impl Ecto.Type
@@ -53,6 +54,7 @@ defmodule Data.Script.Line do
     line = line |> Map.delete(:__struct__)
     {:ok, line}
   end
+
   def dump(_), do: :error
 
   @doc """
@@ -87,17 +89,17 @@ defmodule Data.Script.Line do
       iex> Data.Script.Line.valid?(%{key: "start"})
       false
   """
-  @spec valid?(line :: t) :: boolean
+  @spec valid?(t()) :: boolean()
   def valid?(line) do
-    Enum.all?(keys(line), fn (key) -> key in [:key, :message, :listeners, :unknown, :trigger] end) &&
-      Enum.all?([:key, :message], fn (key) -> key in keys(line) end) &&
-      valid_listeners?(line)
+    Enum.all?(keys(line), fn key -> key in [:key, :message, :listeners, :unknown, :trigger] end) &&
+      Enum.all?([:key, :message], fn key -> key in keys(line) end) && valid_listeners?(line)
   end
 
   def valid_listeners?(%{listeners: listeners}) do
-    Enum.all?(listeners, fn (listener) ->
+    Enum.all?(listeners, fn listener ->
       keys(listener) == [:key, :phrase]
     end)
   end
+
   def valid_listeners?(_), do: true
 end

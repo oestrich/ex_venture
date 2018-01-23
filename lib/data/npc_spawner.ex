@@ -10,12 +10,12 @@ defmodule Data.NPCSpawner do
   alias Data.Zone
 
   schema "npc_spawners" do
-    field :name, :string
-    field :spawn_interval, :integer, default: 60
+    field(:name, :string)
+    field(:spawn_interval, :integer, default: 60)
 
-    belongs_to :zone, Zone
-    belongs_to :npc, NPC
-    belongs_to :room, Room
+    belongs_to(:zone, Zone)
+    belongs_to(:npc, NPC)
+    belongs_to(:room, Room)
 
     timestamps()
   end
@@ -41,11 +41,14 @@ defmodule Data.NPCSpawner do
       %{room_id: room_id} ->
         room = Repo.get(Room, room_id)
         zone_id = get_field(changeset, :zone_id)
+
         case room.zone_id == zone_id do
           true -> changeset
           false -> add_error(changeset, :room_id, "must be in the same zone")
         end
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 end

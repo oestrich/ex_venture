@@ -8,22 +8,38 @@ defmodule Data.Class do
   alias Data.Stats
 
   schema "classes" do
-    field :name, :string
-    field :description, :string
-    field :points_name, :string
-    field :points_abbreviation, :string
-    field :each_level_stats, Stats
+    field(:name, :string)
+    field(:description, :string)
+    field(:points_name, :string)
+    field(:points_abbreviation, :string)
+    field(:each_level_stats, Stats)
 
-    field :regen_health, :integer
-    field :regen_skill_points, :integer
+    field(:regen_health, :integer)
+    field(:regen_skill_points, :integer)
 
-    has_many :skills, Data.Skill
+    has_many(:skills, Data.Skill)
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :points_name, :points_abbreviation, :each_level_stats, :regen_health, :regen_skill_points])
-    |> validate_required([:name, :description, :points_name, :points_abbreviation, :each_level_stats, :regen_health, :regen_skill_points])
+    |> cast(params, [
+      :name,
+      :description,
+      :points_name,
+      :points_abbreviation,
+      :each_level_stats,
+      :regen_health,
+      :regen_skill_points
+    ])
+    |> validate_required([
+      :name,
+      :description,
+      :points_name,
+      :points_abbreviation,
+      :each_level_stats,
+      :regen_health,
+      :regen_skill_points
+    ])
     |> validate_stats()
   end
 
@@ -31,7 +47,9 @@ defmodule Data.Class do
     case changeset do
       %{changes: %{each_level_stats: stats}} when stats != nil ->
         _validate_stats(changeset)
-      _ -> changeset
+
+      _ ->
+        changeset
     end
   end
 

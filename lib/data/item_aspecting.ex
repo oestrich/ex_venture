@@ -9,8 +9,8 @@ defmodule Data.ItemAspecting do
   alias Data.ItemAspect
 
   schema "item_aspectings" do
-    belongs_to :item, Item
-    belongs_to :item_aspect, ItemAspect
+    belongs_to(:item, Item)
+    belongs_to(:item_aspect, ItemAspect)
 
     timestamps()
   end

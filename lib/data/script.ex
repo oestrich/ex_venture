@@ -46,11 +46,11 @@ defmodule Data.Script do
   @doc """
   Validate the script of the NPC
   """
-  @spec validate_script(changeset :: Ecto.Changeset.t) :: Ecto.Changeset.t
+  @spec validate_script(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_script(changeset) do
     case get_change(changeset, :script) do
       nil -> changeset
-      script-> _validate_script(changeset, script)
+      script -> _validate_script(changeset, script)
     end
   end
 
@@ -66,21 +66,20 @@ defmodule Data.Script do
   """
   @spec valid_script?([t()]) :: boolean()
   def valid_script?(script) do
-    Enum.all?(script, &Line.valid?/1) &&
-      contains_start_key?(script) &&
+    Enum.all?(script, &Line.valid?/1) && contains_start_key?(script) &&
       keys_are_all_included?(script)
   end
 
   defp contains_start_key?(script) do
-    Enum.any?(script, fn (line) ->
+    Enum.any?(script, fn line ->
       line.key == "start"
     end)
   end
 
   defp keys_are_all_included?(script) do
-    Enum.all?(script, fn (line) ->
-      Enum.all?(line.listeners, fn (listener) ->
-        Enum.any?(script, fn (line) ->
+    Enum.all?(script, fn line ->
+      Enum.all?(line.listeners, fn listener ->
+        Enum.any?(script, fn line ->
           listener.key == line.key
         end)
       end)

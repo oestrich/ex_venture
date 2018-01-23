@@ -9,11 +9,11 @@ defmodule Data.Typo do
   alias Data.User
 
   schema "typos" do
-    field :title, :string
-    field :body, :string
+    field(:title, :string)
+    field(:body, :string)
 
-    belongs_to :reporter, User
-    belongs_to :room, Room
+    belongs_to(:reporter, User)
+    belongs_to(:room, Room)
 
     timestamps()
   end
