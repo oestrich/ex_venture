@@ -18,7 +18,7 @@ defmodule Game.Insight do
   @doc """
   Log a bad command
   """
-  @spec bad_command(command :: String.t) :: :ok
+  @spec bad_command(String.t()) :: :ok
   def bad_command(command) do
     GenServer.cast(__MODULE__, {:bad_command, command, Timex.now()})
   end
@@ -26,7 +26,7 @@ defmodule Game.Insight do
   @doc """
   Get commands that were logged as bad
   """
-  @spec bad_commands() :: [{String.t, DateTime.t}]
+  @spec bad_commands() :: [{String.t(), DateTime.t()}]
   def bad_commands() do
     GenServer.call(__MODULE__, :bad_commands)
   end

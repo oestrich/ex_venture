@@ -26,7 +26,7 @@ defmodule Game.Format do
   """
   def template(string, map) do
     map
-    |> Enum.reduce(string, fn ({key, val}, string) ->
+    |> Enum.reduce(string, fn {key, val}, string ->
       String.replace(string, "{#{key}}", val)
     end)
   end
@@ -39,7 +39,7 @@ defmodule Game.Format do
       iex> Game.Format.channel_say("global", {:npc, %{name: "NPC"}}, "Hello")
       ~s({red}[global]{/red} {yellow}NPC{/yellow} says, {green}"Hello"{/green})
   """
-  @spec channel_say(channel :: String.t, sender :: {atom, map}, message :: String.t) :: String.t
+  @spec channel_say(String.t(), Character.t(), String.t()) :: String.t()
   def channel_say(channel, sender, message) do
     ~s({red}[#{channel}]{/red} #{say(sender, message)})
   end
@@ -54,10 +54,11 @@ defmodule Game.Format do
       iex> Game.Format.prompt(%{name: "user", class: class}, %{experience_points: 1010, stats: stats})
       "[50/75hp 9/10sp 4/10mv 10xp] > "
   """
-  @spec prompt(user :: User.t, save :: Save.t) :: String.t
+  @spec prompt(User.t(), Save.t()) :: String.t()
   def prompt(user, save)
+
   def prompt(%{class: class}, %{experience_points: exp, stats: stats}) do
-    sp = class.points_abbreviation |> String.downcase
+    sp = class.points_abbreviation |> String.downcase()
     exp = rem(exp, 1000)
 
     health = "#{stats.health}/#{stats.max_health}hp"
@@ -66,6 +67,7 @@ defmodule Game.Format do
 
     "[#{health} #{skill} #{move} #{exp}xp] > "
   end
+
   def prompt(_user, _save), do: "> "
 
   @doc """
@@ -79,10 +81,11 @@ defmodule Game.Format do
       iex> Game.Format.say({:user, %{name: "Player"}}, "Hello")
       ~s[{blue}Player{/blue} says, {green}"Hello"{/green}]
   """
-  @spec say(sender :: map, message :: String.t) :: String.t
+  @spec say(Character.t(), String.t()) :: String.t()
   def say({:npc, %{name: name}}, message) do
     ~s[{yellow}#{name}{/yellow} says, {green}"#{message}"{/green}]
   end
+
   def say({:user, %{name: name}}, message) do
     ~s[{blue}#{name}{/blue} says, {green}"#{message}"{/green}]
   end
@@ -93,6 +96,7 @@ defmodule Game.Format do
       iex> Game.Format.tell({:user, %{name: "Player"}}, "secret message")
       ~s[{blue}Player{/blue} tells you, {green}"secret message"{/green}]
   """
+  @spec tell(Character.t(), String.t()) :: String.t()
   def tell(sender, message) do
     ~s[#{name(sender)} tells you, {green}"#{message}"{/green}]
   end
@@ -103,6 +107,7 @@ defmodule Game.Format do
       iex> Game.Format.send_tell({:user, %{name: "Player"}}, "secret message")
       ~s[You tell {blue}Player{/blue}, {green}"secret message"{/green}]
   """
+  @spec send_tell(Character.t(), String.t()) :: String.t()
   def send_tell(character, message) do
     ~s[You tell #{name(character)}, {green}"#{message}"{/green}]
   end
@@ -118,10 +123,11 @@ defmodule Game.Format do
       iex> Game.Format.emote({:user, %{name: "Player"}}, "does something")
       ~s[{blue}Player{/blue} {green}does something{/green}]
   """
-  @spec emote(sender :: map, message :: String.t) :: String.t
+  @spec emote(Character.t(), String.t()) :: String.t()
   def emote({:npc, %{name: name}}, emote) do
     ~s[{yellow}#{name}{/yellow} {green}#{emote}{/green}]
   end
+
   def emote({:user, %{name: name}}, emote) do
     ~s[{blue}#{name}{/blue} {green}#{emote}{/green}]
   end
@@ -129,7 +135,7 @@ defmodule Game.Format do
   @doc """
   Format full text for a room
   """
-  @spec room(room :: Game.Room.t, items :: [Item.t], map :: String.t) :: String.t
+  @spec room(Room.t(), [Item.t()], Map.t()) :: String.t()
   def room(room, items, map) do
     """
     {green}#{room.name}{/green}
@@ -140,7 +146,7 @@ defmodule Game.Format do
     #{who_is_here(room)}
     #{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
     """
-    |> String.trim
+    |> String.trim()
   end
 
   @doc """
@@ -151,7 +157,7 @@ defmodule Game.Format do
     iex> Game.Format.peak_room(%{name: "Hallway"}, "north")
     "{green}Hallway{/green} is north."
   """
-  @spec peak_room(room :: Game.Room.t, direction :: String.t) :: String.t
+  @spec peak_room(Room.t(), String.t()) :: String.t()
   def peak_room(room, direction) do
     "{green}#{room.name}{/green} is #{direction}."
   end
@@ -168,16 +174,17 @@ defmodule Game.Format do
       "----------"
   """
   def underline(nil), do: ""
+
   def underline(string) do
-    (1..(String.length(Color.strip_color(string)) + 4))
-    |> Enum.map(fn (_) -> "-" end)
+    1..(String.length(Color.strip_color(string)) + 4)
+    |> Enum.map(fn _ -> "-" end)
     |> Enum.join("")
   end
 
   @doc """
   Wraps lines of text
   """
-  @spec wrap(string :: String.t) :: String.t
+  @spec wrap(String.t()) :: String.t()
   def wrap(string) do
     string
     |> String.split()
@@ -187,7 +194,7 @@ defmodule Game.Format do
   @doc """
   Wraps a list of text
   """
-  @spec wrap_lines([String.t]) :: String.t
+  @spec wrap_lines([String.t()]) :: String.t()
   def wrap_lines(lines) do
     lines
     |> Enum.join(" ")
@@ -195,8 +202,10 @@ defmodule Game.Format do
   end
 
   defp _wrap([], line, string), do: join(string, line, "\n")
+
   defp _wrap([word | left], line, string) do
     test_line = "#{line} #{word}" |> Color.strip_color()
+
     case String.length(test_line) do
       len when len < 80 -> _wrap(left, join(line, word, " "), string)
       _ -> _wrap(left, word, join(string, line, "\n"))
@@ -209,7 +218,9 @@ defmodule Game.Format do
 
   defp maybe_exits(room) do
     case room |> Room.exits() do
-      [] -> ""
+      [] ->
+        ""
+
       _ ->
         "Exits: #{exits(room)}\n"
     end
@@ -218,10 +229,11 @@ defmodule Game.Format do
   defp exits(room) do
     room
     |> Room.exits()
-    |> Enum.map(fn (direction) ->
+    |> Enum.map(fn direction ->
       case Exit.exit_to(room, direction) do
         %{id: exit_id, has_door: true} ->
           "{white}#{direction} (#{Door.get(exit_id)}){/white}"
+
         _ ->
           "{white}#{direction}{/white}"
       end
@@ -239,7 +251,7 @@ defmodule Game.Format do
   """
   def who_is_here(room) do
     [players(room), npcs(room)]
-    |> Enum.reject(fn (line) -> line == "" end)
+    |> Enum.reject(fn line -> line == "" end)
     |> Enum.join(" ")
   end
 
@@ -251,12 +263,13 @@ defmodule Game.Format do
       iex> Game.Format.players(%{players: [%{name: "Mordred"}, %{name: "Arthur"}]})
       "{blue}Mordred{/blue} is here. {blue}Arthur{/blue} is here."
   """
-  @spec players(room :: Game.Room.t) :: String.t
+  @spec players(Room.t()) :: String.t()
   def players(%{players: players}) do
     players
-    |> Enum.map(fn (player) -> "{blue}#{player.name}{/blue} is here." end)
+    |> Enum.map(fn player -> "{blue}#{player.name}{/blue} is here." end)
     |> Enum.join(" ")
   end
+
   def players(_), do: ""
 
   @doc """
@@ -276,12 +289,13 @@ defmodule Game.Format do
       iex> Game.Format.npcs(%{npcs: [%{name: "Mordred", status_line: "{name} is in the room."}, %{name: "Arthur", status_line: "{name} is here."}]})
       "{yellow}Mordred{/yellow} is in the room. {yellow}Arthur{/yellow} is here."
   """
-  @spec npcs(room :: Game.Room.t) :: String.t
+  @spec npcs(Room.t()) :: String.t()
   def npcs(%{npcs: npcs}) do
     npcs
     |> Enum.map(&npc_status/1)
     |> Enum.join(" ")
   end
+
   def npcs(_), do: ""
 
   @doc """
@@ -301,6 +315,7 @@ defmodule Game.Format do
   end
 
   def maybe_items(_room, []), do: ""
+
   def maybe_items(room, items) do
     "Items: #{items(room, items)}\n"
   end
@@ -308,16 +323,17 @@ defmodule Game.Format do
   def items(room, items) when is_list(items) do
     items = items |> Enum.map(&item_name/1)
 
-    items ++ [currency(room)]
+    (items ++ [currency(room)])
     |> Enum.reject(&(&1 == ""))
     |> Enum.join(", ")
   end
+
   def items(_, _), do: ""
 
   @doc """
   Format currency
   """
-  @spec currency(Save.t | Room.t) :: String.t
+  @spec currency(Save.t() | Room.t()) :: String.t()
   def currency(%{currency: currency}) when currency == 0, do: ""
   def currency(%{currency: currency}), do: "{cyan}#{currency} #{@currency}{/cyan}"
 
@@ -332,20 +348,25 @@ defmodule Game.Format do
       iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]}, label: false)
       "  - {magenta}Hole in the Wall{/magenta}"
   """
-  @spec shops(room :: Game.Room.t) :: String.t
+  @spec shops(Room.t()) :: String.t()
   def shops(room, opts \\ [])
   def shops(%{shops: []}, _opts), do: ""
-  def shops(%{shops: shops}, [label: false]) do
+
+  def shops(%{shops: shops}, label: false) do
     shops
-    |> Enum.map(fn (shop) -> "  - {magenta}#{shop.name}{/magenta}" end)
+    |> Enum.map(fn shop -> "  - {magenta}#{shop.name}{/magenta}" end)
     |> Enum.join(", ")
   end
+
   def shops(%{shops: shops}, _) do
-    shops = shops
-    |> Enum.map(fn (shop) -> "{magenta}#{shop.name}{/magenta}" end)
-    |> Enum.join(", ")
+    shops =
+      shops
+      |> Enum.map(fn shop -> "{magenta}#{shop.name}{/magenta}" end)
+      |> Enum.join(", ")
+
     "Shops: #{shops}\n"
   end
+
   def shops(_, _), do: ""
 
   def list_shop(shop, items), do: Game.Format.Shop.list(shop, items)
@@ -359,14 +380,15 @@ defmodule Game.Format do
       iex> Regex.match?(~r(Short Sword), string)
       true
   """
-  @spec item(item :: Item.t) :: String.t
+  @spec item(Item.t()) :: String.t()
   def item(item) do
     """
     #{item |> item_name()}
     #{item.name |> underline}
     #{item.description}
     #{item_stats(item)}
-    """ |> String.trim
+    """
+    |> String.trim()
   end
 
   @doc """
@@ -378,23 +400,25 @@ defmodule Game.Format do
       iex> Game.Format.item_stats(%{type: "basic"})
       ""
   """
-  @spec item_stats(Item.t) :: String.t
+  @spec item_stats(Item.t()) :: String.t()
   def item_stats(item)
+
   def item_stats(%{type: "armor", stats: stats}) do
     "Slot: #{stats.slot}"
   end
+
   def item_stats(_), do: ""
 
   @doc """
   Format your inventory
   """
-  @spec inventory(currency :: integer, wearing :: map, wielding :: map, items :: [Item.t]) :: String.t
+  @spec inventory(integer(), map(), map(), [Item.t()]) :: String.t()
   def inventory(currency, wearing, wielding, items) do
     items =
       items
       |> Enum.map(fn
-        (%{item: item, quantity: 1}) -> "  - #{item_name(item)}"
-        (%{item: item, quantity: quantity}) -> "  - {cyan}#{item.name} x#{quantity}{/cyan}"
+        %{item: item, quantity: 1} -> "  - #{item_name(item)}"
+        %{item: item, quantity: quantity} -> "  - {cyan}#{item.name} x#{quantity}{/cyan}"
       end)
       |> Enum.join("\n")
 
@@ -403,7 +427,8 @@ defmodule Game.Format do
     You are holding:
     #{items}
     You have #{currency} #{@currency}.
-    """ |> String.trim
+    """
+    |> String.trim()
   end
 
   @doc """
@@ -416,19 +441,21 @@ defmodule Game.Format do
       iex> Game.Format.equipment(wearing, wielding)
       "You are wearing:\\n  - {cyan}Leather Armor{/cyan} on your chest\\nYou are wielding:\\n  - a {cyan}Shield{/cyan} in your left hand\\n  - a {cyan}Short Sword{/cyan} in your right hand"
   """
-  @spec equipment(wearing :: map, wielding :: map) :: String.t
+  @spec equipment(map(), map()) :: String.t()
   def equipment(wearing, wielding) do
-    wearing = wearing
-    |> Map.to_list
-    |> Enum.sort_by(&(elem(&1, 0)))
-    |> Enum.map(fn ({part, item}) -> "  - #{item_name(item)} on your #{part}" end)
-    |> Enum.join("\n")
+    wearing =
+      wearing
+      |> Map.to_list()
+      |> Enum.sort_by(&elem(&1, 0))
+      |> Enum.map(fn {part, item} -> "  - #{item_name(item)} on your #{part}" end)
+      |> Enum.join("\n")
 
-    wielding = wielding
-    |> Map.to_list
-    |> Enum.sort_by(&(elem(&1, 0)))
-    |> Enum.map(fn ({hand, item}) -> "  - a #{item_name(item)} in your #{hand} hand" end)
-    |> Enum.join("\n")
+    wielding =
+      wielding
+      |> Map.to_list()
+      |> Enum.sort_by(&elem(&1, 0))
+      |> Enum.map(fn {hand, item} -> "  - a #{item_name(item)} in your #{hand} hand" end)
+      |> Enum.join("\n")
 
     ["You are wearing:", wearing, "You are wielding:", wielding]
     |> Enum.reject(&(&1 == ""))
@@ -438,7 +465,7 @@ defmodule Game.Format do
   @doc """
   Format your info sheet
   """
-  @spec info(user :: User.t) :: String.t
+  @spec info(User.t()) :: String.t()
   def info(user = %{save: save}) do
     %{stats: stats} = save
 
@@ -452,7 +479,7 @@ defmodule Game.Format do
       ["Dexterity", stats.dexterity],
       ["Intelligence", stats.intelligence],
       ["Wisdom", stats.wisdom],
-      ["Play Time", play_time(user.seconds_online)],
+      ["Play Time", play_time(user.seconds_online)]
     ]
 
     Table.format("#{user.name} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
@@ -465,12 +492,14 @@ defmodule Game.Format do
       iex> Game.Format.skills(%{name: "Fighter", points_abbreviation: "PP"}, skills)
       "Fighter\\n\\nLevel - Name - Points - Description\\n1 - Slash (slash) - 2PP - Fight your foe\\n"
   """
-  @spec skills(class :: Class.t, skills :: []) :: String.t
+  @spec skills(Class.t(), [Skill.t()]) :: String.t()
   def skills(class, skills)
+
   def skills(%{name: name, points_abbreviation: points_abbreviation}, skills) do
-    skills = skills
-    |> Enum.map(&(skill(&1, points_abbreviation)))
-    |> Enum.join("\n")
+    skills =
+      skills
+      |> Enum.map(&skill(&1, points_abbreviation))
+      |> Enum.join("\n")
 
     """
     #{name}
@@ -487,9 +516,11 @@ defmodule Game.Format do
       iex> Game.Format.skill(skill, "PP")
       "1 - Slash (slash) - 2PP - Fight your foe"
   """
-  @spec skill(skill :: Skill.t, sp_name :: String.t) :: String.t
+  @spec skill(Skill.t(), String.t()) :: String.t()
   def skill(skill, sp_name) do
-    "#{skill.level} - #{skill.name} (#{skill.command}) - #{skill.points}#{sp_name} - #{skill.description}"
+    "#{skill.level} - #{skill.name} (#{skill.command}) - #{skill.points}#{sp_name} - #{
+      skill.description
+    }"
   end
 
   @doc """
@@ -503,6 +534,7 @@ defmodule Game.Format do
       "You slash away at {yellow}Bandit{/yellow}\\n10 slashing damage is dealt."
   """
   def skill_user(skill, effects, target)
+
   def skill_user(%{user_text: user_text}, skill_effects, target) do
     user_text = user_text |> String.replace("{target}", target_name(target))
     [user_text | effects(skill_effects)] |> Enum.join("\n")
@@ -518,9 +550,11 @@ defmodule Game.Format do
       "You were slashed at by {yellow}Bandit{/yellow}"
   """
   def skill_usee(skill, opts \\ [])
+
   def skill_usee(%{usee_text: usee_text}, opts) do
     skill_usee(usee_text, opts)
   end
+
   def skill_usee(usee_text, opts) do
     usee_text
     |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
@@ -561,7 +595,7 @@ defmodule Game.Format do
     iex> Game.Format.target_name({:npc, %{name: "Bandit"}})
     "{yellow}Bandit{/yellow}"
   """
-  @spec target_name({atom, map}) :: String.t
+  @spec target_name(Character.t()) :: String.t()
   def target_name({:npc, npc}), do: npc_name(npc)
   def target_name({:user, user}), do: player_name(user)
 
@@ -602,7 +636,7 @@ defmodule Game.Format do
     iex> Game.Format.item_name(%{name: "Potion"})
     "{cyan}Potion{/cyan}"
   """
-  @spec item_name(Item.t()) :: String.t
+  @spec item_name(Item.t()) :: String.t()
   def item_name(item) do
     "{cyan}#{item.name}{/cyan}"
   end
@@ -611,19 +645,26 @@ defmodule Game.Format do
   Format effects for display.
   """
   def effects([]), do: []
+
   def effects([effect | remaining]) do
     case effect do
       %{kind: "damage"} ->
         ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
+
       %{kind: "damage/over-time"} ->
         ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
+
       %{kind: "recover", type: "health"} ->
         ["#{effect.amount} damage is healed." | effects(remaining)]
+
       %{kind: "recover", type: "skill"} ->
         ["#{effect.amount} skill points are recovered." | effects(remaining)]
+
       %{kind: "recover", type: "move"} ->
         ["#{effect.amount} move points are recovered." | effects(remaining)]
-      _ -> effects(remaining)
+
+      _ ->
+        effects(remaining)
     end
   end
 
@@ -642,7 +683,7 @@ defmodule Game.Format do
       iex> Game.Format.play_time(36700)
       "10h 11m 40s"
   """
-  @spec play_time(seconds :: integer) :: String.t
+  @spec play_time(integer()) :: String.t()
   def play_time(seconds) do
     hours = seconds |> div(3600) |> to_string |> String.pad_leading(2, "0")
     minutes = seconds |> div(60) |> rem(60) |> to_string |> String.pad_leading(2, "0")
@@ -663,10 +704,11 @@ defmodule Game.Format do
       iex> Game.Format.dropped({:user, %{name: "Player"}}, {:currency, 100})
       "{blue}Player{/blue} dropped 100 gold."
   """
-  @spec dropped(who :: {tuple, map}, item :: Item.t) :: String.t
+  @spec dropped(Character.t(), Item.t()) :: String.t()
   def dropped(who, {:currency, amount}) do
     "#{name(who)} dropped #{amount} #{currency()}."
   end
+
   def dropped(who, item) do
     "#{name(who)} dropped a #{item.name}."
   end
@@ -680,7 +722,7 @@ defmodule Game.Format do
   @spec list_mail([Mail.t()]) :: String.t()
   def list_mail(mail) do
     mail
-    |> Enum.map(fn (mail) ->
+    |> Enum.map(fn mail ->
       "#{mail.id} - #{player_name(mail.sender)} - #{mail.title}"
     end)
     |> Enum.join("\n")
@@ -705,7 +747,7 @@ defmodule Game.Format do
   def quest_progress(quests) do
     rows =
       quests
-      |> Enum.map(fn (%{status: status, quest: quest}) ->
+      |> Enum.map(fn %{status: status, quest: quest} ->
         [to_string(quest.id), quest.name, quest.giver.name, status]
       end)
 
@@ -718,7 +760,7 @@ defmodule Game.Format do
   @spec quest_detail(QuestProgress.t(), Save.t()) :: String.t()
   def quest_detail(progress, save) do
     %{quest: quest} = progress
-    steps = quest.quest_steps |> Enum.map(&(quest_step(&1, progress, save)))
+    steps = quest.quest_steps |> Enum.map(&quest_step(&1, progress, save))
     header = "#{quest.name} - #{progress.status}"
 
     """
@@ -728,7 +770,8 @@ defmodule Game.Format do
     #{quest.description |> wrap()}
 
     #{steps |> Enum.join("\n")}
-    """ |> String.trim()
+    """
+    |> String.trim()
   end
 
   defp quest_step(step, progress, save) do
@@ -736,6 +779,7 @@ defmodule Game.Format do
       "item/collect" ->
         current_step_progress = Quest.current_step_progress(step, progress, save)
         " - Collect #{item_name(step.item)} - #{current_step_progress}/#{step.count}"
+
       "npc/kill" ->
         current_step_progress = Quest.current_step_progress(step, progress, save)
         " - Kill #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"

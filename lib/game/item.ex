@@ -22,7 +22,7 @@ defmodule Game.Item do
       iex> Game.Item.matches_lookup?(%{name: "Short Sword", keywords: ["sword"]}, "short")
       false
   """
-  @spec matches_lookup?(item :: Item.t, lookup :: String.t) :: Item.t | nil
+  @spec matches_lookup?(Item.t(), String.t()) :: Item.t() | nil
   def matches_lookup?(item, lookup) do
     [item.name | item.keywords]
     |> Enum.map(&String.downcase/1)
@@ -43,18 +43,18 @@ defmodule Game.Item do
       iex> Game.Item.find_item([%{name: "Sword", keywords: []}], "shield")
       nil
   """
-  @spec find_item(items :: [Item.t], item_name :: String.t) :: Item.t | nil
+  @spec find_item([Item.t()], String.t()) :: Item.t() | nil
   def find_item(items, item_name) do
     Enum.find(items, fn
-      ({_instance, item}) -> matches_lookup?(item, item_name)
-      (item) -> matches_lookup?(item, item_name)
+      {_instance, item} -> matches_lookup?(item, item_name)
+      item -> matches_lookup?(item, item_name)
     end)
   end
 
   @doc """
   Get all effects on the player (wearing & wielded)
   """
-  @spec effects_on_player(save :: Save.t, opts :: Keyword.t) :: [Effect.t]
+  @spec effects_on_player(Save.t(), Keyword.t()) :: [Effect.t()]
   def effects_on_player(save, opts \\ []) do
     wearing_effects = save |> effects_from_wearing(opts)
     wielding_effects = save |> effects_from_wielding(opts)
@@ -64,25 +64,29 @@ defmodule Game.Item do
   @doc """
   Find all effects from what the player is wearing
   """
-  @spec effects_from_wearing(save :: Save.t, opts :: Keyword.t) :: [Effect.t]
+  @spec effects_from_wearing(Save.t(), Keyword.t()) :: [Effect.t()]
   def effects_from_wearing(save, opts \\ [])
+
   def effects_from_wearing(%{wearing: wearing}, opts) do
     wearing
-    |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
-    |> Enum.filter(&(_filter_by_kind(&1, opts)))
+    |> Enum.flat_map(fn {_slot, instance} -> Items.item(instance).effects end)
+    |> Enum.filter(&_filter_by_kind(&1, opts))
   end
+
   def effects_from_wearing(_, _), do: []
 
   @doc """
   Find all effects from what the player is wielding
   """
-  @spec effects_from_wielding(save :: Save.t, opts :: Keyword.t) :: [Effect.t]
+  @spec effects_from_wielding(Save.t(), Keyword.t()) :: [Effect.t()]
   def effects_from_wielding(save, opts \\ [])
+
   def effects_from_wielding(%{wielding: wielding}, opts) do
     wielding
-    |> Enum.flat_map(fn ({_slot, instance}) -> Items.item(instance).effects end)
-    |> Enum.filter(&(_filter_by_kind(&1, opts)))
+    |> Enum.flat_map(fn {_slot, instance} -> Items.item(instance).effects end)
+    |> Enum.filter(&_filter_by_kind(&1, opts))
   end
+
   def effects_from_wielding(_, _), do: []
 
   defp _filter_by_kind(effect, opts) do
@@ -100,7 +104,7 @@ defmodule Game.Item do
       iex> Game.Item.remove([instance], item) == {instance, []}
       true
   """
-  @spec remove(items :: [Item.instance()], item :: Item.t) :: {Item.instance(), [Item.instance()]}
+  @spec remove([Item.instance()], Item.t()) :: {Item.instance(), [Item.instance()]}
   def remove(items, item) do
     instance = items |> Enum.find(&(&1.id == item.id))
     {instance, List.delete(items, instance)}
@@ -112,6 +116,7 @@ defmodule Game.Item do
   @spec migrate_instance(Item.instance()) :: Item.instance()
   def migrate_instance(instance) do
     item = Items.item(instance)
+
     case item.is_usable do
       true -> ensure_amount(instance, item)
       false -> instance
@@ -121,5 +126,6 @@ defmodule Game.Item do
   defp ensure_amount(instance = %{amount: nil}, item) do
     %{instance | amount: item.amount}
   end
+
   defp ensure_amount(instance, _item), do: instance
 end

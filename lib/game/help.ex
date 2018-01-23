@@ -19,20 +19,20 @@ defmodule Game.Help do
   """
   def base() do
     commands =
-      Game.Command.commands
-      |> Enum.map(fn (command) ->
+      Game.Command.commands()
+      |> Enum.map(fn command ->
         key = command.help(:topic)
         "\t{white}#{key}{/white}: #{command.help(:short)}\n"
       end)
 
     built_ins =
       HelpAgent.built_in()
-      |> Enum.map(fn (built_in) ->
+      |> Enum.map(fn built_in ->
         "\t{white}#{built_in.name}{/white}: #{built_in.short}\n"
       end)
 
     topics =
-      commands ++ built_ins
+      (commands ++ built_ins)
       |> Enum.sort()
       |> Enum.join("")
 
@@ -42,10 +42,11 @@ defmodule Game.Help do
   @doc """
   Find a help topic whether a command or a database topic
   """
-  @spec topic(topic :: String.t) :: String.t
+  @spec topic(String.t()) :: String.t()
   def topic(topic) do
     Logger.info("Help looked up for #{inspect(topic)}", type: :topic)
-    topic = topic |> String.upcase
+    topic = topic |> String.upcase()
+
     case find_command(topic) do
       nil -> find_help_topic(topic)
       body -> body
@@ -53,30 +54,32 @@ defmodule Game.Help do
   end
 
   defp find_command(topic) do
-    Game.Command.commands
-    |> Enum.find(&(match_command?(&1, topic)))
+    Game.Command.commands()
+    |> Enum.find(&match_command?(&1, topic))
     |> format_command_help()
   end
 
   defp format_command_help(nil), do: nil
+
   defp format_command_help(command) do
     lines = [
       "Commands: #{command.commands |> Enum.join(", ")}",
       aliases(command),
       " ",
-      command.help(:full),
+      command.help(:full)
     ]
 
     lines
     |> Enum.reject(&(&1 == ""))
     |> Enum.join("\n")
-    |> String.trim
+    |> String.trim()
   end
 
   defp aliases(command) do
     case command.aliases do
       [] ->
         ""
+
       aliases ->
         "Aliases: #{aliases |> Enum.join(", ")}"
     end
@@ -86,15 +89,14 @@ defmodule Game.Help do
     commands = command.commands |> Enum.map(&String.upcase/1)
     aliases = command.aliases |> Enum.map(&String.upcase/1)
 
-    :topic |> command.help() |> String.downcase == topic |> String.downcase
-      || topic in commands
-      || topic in aliases
+    :topic |> command.help() |> String.downcase() == topic |> String.downcase() ||
+      topic in commands || topic in aliases
   end
 
   defp find_help_topic(topic) do
     help_topic =
       HelpAgent.database()
-      |> Enum.find(&(match_help_topic?(&1, topic)))
+      |> Enum.find(&match_help_topic?(&1, topic))
 
     case help_topic do
       nil -> find_built_in_topic(topic)
@@ -108,19 +110,19 @@ defmodule Game.Help do
     Keywords: #{help_topic.keywords |> Enum.join(", ")}
 
     #{help_topic.body}
-    """ |> String.trim
+    """
+    |> String.trim()
   end
 
   defp match_help_topic?(help_topic, topic) do
     keywords = Enum.map(help_topic.keywords, &String.upcase/1)
-    help_topic.name |> String.upcase == topic
-      || topic in keywords
+    help_topic.name |> String.upcase() == topic || topic in keywords
   end
 
   def find_built_in_topic(topic) do
     built_in =
       HelpAgent.built_in()
-      |> Enum.find(&(match_built_in_topic?(&1, topic)))
+      |> Enum.find(&match_built_in_topic?(&1, topic))
 
     case built_in do
       nil -> "Unknown topic"
@@ -129,7 +131,7 @@ defmodule Game.Help do
   end
 
   defp match_built_in_topic?(built_in, topic) do
-    built_in.name |> String.upcase == topic
+    built_in.name |> String.upcase() == topic
   end
 
   defp format_built_in_topic(built_in) do
@@ -137,6 +139,7 @@ defmodule Game.Help do
     #{built_in.name}
 
     #{built_in.full}
-    """ |> String.trim
+    """
+    |> String.trim()
   end
 end

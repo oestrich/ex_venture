@@ -18,18 +18,20 @@ defmodule Game.Effect do
       iex> Game.Effect.calculate(%{strength: 10}, [%{kind: "damage", type: :slashing, amount: 10}])
       [%{kind: "damage", amount: 15, type: :slashing}]
   """
-  @spec calculate(stats :: Stats.t, effects :: [Effect.t]) :: [map]
+  @spec calculate(Stats.t(), [Effect.t()]) :: [map()]
   def calculate(stats, effects) do
     {stats, effects} = stats |> calculate_stats(effects)
 
     {damage_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage"))
-    damage = damage_effects |> Enum.map(&(calculate_damage(&1, stats)))
+    damage = damage_effects |> Enum.map(&calculate_damage(&1, stats))
 
-    {damage_over_time_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage/over-time"))
-    damage_over_time = damage_over_time_effects |> Enum.map(&(calculate_damage(&1, stats)))
+    {damage_over_time_effects, effects} =
+      effects |> Enum.split_with(&(&1.kind == "damage/over-time"))
+
+    damage_over_time = damage_over_time_effects |> Enum.map(&calculate_damage(&1, stats))
 
     {recover_effects, effects} = effects |> Enum.split_with(&(&1.kind == "recover"))
-    recover = recover_effects |> Enum.map(&(calculate_recover(&1, stats)))
+    recover = recover_effects |> Enum.map(&calculate_recover(&1, stats))
 
     {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
     damage = damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
@@ -45,7 +47,7 @@ defmodule Game.Effect do
     iex> Game.Effect.calculate_stats(stats, effects)
     {%{strength: 20}, [%{kind: "damage"}]}
   """
-  @spec calculate_stats(stats :: Stats.t, effects :: [Effect.t]) :: Stats.t
+  @spec calculate_stats(Stats.t(), [Effect.t()]) :: Stats.t()
   def calculate_stats(stats, effects) do
     {stat_effects, effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
     stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
@@ -58,8 +60,9 @@ defmodule Game.Effect do
       iex> Game.Effect.process_stats(%{field: :strength, amount: 10}, %{strength: 10})
       %{strength: 20}
   """
-  @spec process_stats(effect :: Effect.t, stats :: Stats.t) :: Stats.t
+  @spec process_stats(Effect.t(), Stats.t()) :: Stats.t()
   def process_stats(effect, stats)
+
   def process_stats(%{field: field, amount: amount}, stats) do
     stats |> Map.put(field, stats[field] + amount)
   end
@@ -77,15 +80,16 @@ defmodule Game.Effect do
       iex> Game.Effect.calculate_damage(effect, %{intelligence: 10})
       %{kind: "damage", amount: 15, type: :arcane}
   """
-  @spec calculate_damage(effect :: Effect.t, stats :: Stats.t) :: map
+  @spec calculate_damage(Effect.t(), Stats.t()) :: map()
   def calculate_damage(effect, stats) do
     case Damage.physical?(effect.type) do
       true ->
-        strength_modifier = 1 + (stats.strength / 20.0)
+        strength_modifier = 1 + stats.strength / 20.0
         modified_amount = round(Float.ceil(effect.amount * strength_modifier))
         effect |> Map.put(:amount, modified_amount)
+
       false ->
-        intelligence_modifier = 1 + (stats.intelligence / 20.0)
+        intelligence_modifier = 1 + stats.intelligence / 20.0
         modified_amount = round(Float.ceil(effect.amount * intelligence_modifier))
         effect |> Map.put(:amount, modified_amount)
     end
@@ -98,9 +102,9 @@ defmodule Game.Effect do
       iex> Game.Effect.calculate_recover(effect, %{wisdom: 10})
       %{kind: "recover", type: "health", amount: 15}
   """
-  @spec calculate_recover(effect :: Effect.t, stats :: Stats.t) :: map
+  @spec calculate_recover(Effect.t(), Stats.t()) :: map()
   def calculate_recover(effect, stats) do
-    wisdom_modifier = 1 + (stats.wisdom / 20.0)
+    wisdom_modifier = 1 + stats.wisdom / 20.0
     modified_amount = round(Float.ceil(effect.amount * wisdom_modifier))
     effect |> Map.put(:amount, modified_amount)
   end
@@ -114,13 +118,14 @@ defmodule Game.Effect do
       iex> Game.Effect.calculate_damage_type(effect, [damage])
       [%{kind: "damage", amount: 5, type: :bludgeoning}]
   """
-  @spec calculate_damage_type(effect :: Effect.t, stats :: Stats.t) :: map
+  @spec calculate_damage_type(Effect.t(), Stats.t()) :: map()
   def calculate_damage_type(effect, damages) do
     damages
-    |> Enum.map(fn (damage) ->
+    |> Enum.map(fn damage ->
       case damage.type in effect.types do
         true ->
           damage
+
         false ->
           amount = round(Float.ceil(damage.amount / 2.0))
           %{damage | amount: amount}
@@ -135,7 +140,7 @@ defmodule Game.Effect do
       iex> Game.Effect.apply(effects, %{health: 25})
       %{health: 15}
   """
-  @spec apply(effects :: [Effect.t], stats :: Stats.t) :: Stats.t
+  @spec apply([Effect.t()], Stats.t()) :: Stats.t()
   def apply(effects, stats) do
     effects |> Enum.reduce(stats, &apply_effect/2)
   end
@@ -147,7 +152,7 @@ defmodule Game.Effect do
       iex> Game.Effect.apply_effect(effect, %{health: 25})
       %{health: 15}
   """
-  @spec apply_effect(effect :: Effect.t, stats :: Stats.t) :: Stats.t
+  @spec apply_effect(Effect.t(), Stats.t()) :: Stats.t()
   def apply_effect(effect, stats)
 
   def apply_effect(effect = %{kind: "damage"}, stats) do
@@ -202,7 +207,7 @@ defmodule Game.Effect do
 
   - `damage/over-time`
   """
-  @spec continuous_effects([Effect.t]) :: [Effect.t]
+  @spec continuous_effects([Effect.t()]) :: [Effect.t()]
   def continuous_effects(effects) do
     effects
     |> Enum.filter(&Effect.continuous?/1)
