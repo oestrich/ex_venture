@@ -14,7 +14,7 @@ defmodule Game.Session do
 
   Creates a session pointing at a socket
   """
-  @spec start(socket_pid :: pid) :: {:ok, pid}
+  @spec start(pid) :: {:ok, pid}
   def start(socket) do
     Supervisor.start_child(socket)
   end
@@ -30,7 +30,7 @@ defmodule Game.Session do
   @doc """
   Send a disconnect signal to a session with options
   """
-  @spec disconnect(pid, opts :: Keyword.t) :: :ok
+  @spec disconnect(pid, Keyword.t()) :: :ok
   def disconnect(pid, opts) do
     GenServer.cast(pid, {:disconnect, opts})
   end
@@ -38,7 +38,7 @@ defmodule Game.Session do
   @doc """
   Send a recv signal from the socket
   """
-  @spec recv(pid, message :: String.t) :: :ok
+  @spec recv(pid, String.t()) :: :ok
   def recv(pid, message) do
     GenServer.cast(pid, {:recv, message})
   end
@@ -46,13 +46,14 @@ defmodule Game.Session do
   @doc """
   Echo to the socket
   """
-  @spec echo(pid, message :: String.t) :: :ok
+  @spec echo(pid, String.t()) :: :ok
   def echo(user = %User{}, message) do
     case find_connected_player(user) do
       nil -> :ok
       {pid, _} -> echo(pid, message)
     end
   end
+
   def echo(pid, message) do
     GenServer.cast(pid, {:echo, message})
   end
@@ -60,7 +61,7 @@ defmodule Game.Session do
   @doc """
   Send a tick to the session
   """
-  @spec tick(pid, time :: DateTime.t) :: :ok
+  @spec tick(pid, DateTime.t()) :: :ok
   def tick(pid, time) do
     GenServer.cast(pid, {:tick, time})
   end
@@ -68,13 +69,14 @@ defmodule Game.Session do
   @doc """
   Notify the session of an event, e.g. someone left the room
   """
-  @spec notify(pid, action :: tuple()) :: :ok
+  @spec notify(pid, tuple()) :: :ok
   def notify(user = %User{}, action) do
     case find_connected_player(user) do
       nil -> :ok
       {pid, _} -> notify(pid, action)
     end
   end
+
   def notify(pid, action) do
     GenServer.cast(pid, {:notify, action})
   end
@@ -82,7 +84,7 @@ defmodule Game.Session do
   @doc """
   Teleport the user to the room passed in
   """
-  @spec teleport(pid, room_id :: integer) :: :ok
+  @spec teleport(pid, integer) :: :ok
   def teleport(pid, room_id) do
     GenServer.cast(pid, {:teleport, room_id})
   end
@@ -101,7 +103,7 @@ defmodule Game.Session do
   @spec find_connected_player(User.t()) :: pid()
   def find_connected_player(user) do
     Session.Registry.connected_players()
-    |> Enum.find(fn ({_, connected_user}) ->
+    |> Enum.find(fn {_, connected_user} ->
       connected_user.id == user.id
     end)
   end

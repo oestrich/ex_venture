@@ -11,22 +11,23 @@ defmodule Game.Map do
 
   1,1 is top left
   """
-  @spec size_of_map(zone :: Zone.t, layer :: integer) ::
-    {{min_x :: integer, min_y :: integer}, {max_x :: integer, max_y :: integer}, [{{x :: integer, y :: integer}, Room.t}]}
+  @spec size_of_map(Zone.t(), integer) ::
+          {{integer, integer}, {integer, integer}, [{{integer, integer}, Room.t()}]}
   def size_of_map(zone, opts \\ [layer: 1])
   def size_of_map(%{rooms: []}, _), do: {{0, 0}, {0, 0}, []}
+
   def size_of_map(%{rooms: rooms}, opts) do
     layer = Keyword.get(opts, :layer)
 
     map =
       rooms
       |> Enum.filter(&(&1.map_layer == layer))
-      |> Enum.map(&({{&1.x, &1.y}, &1}))
+      |> Enum.map(&{{&1.x, &1.y}, &1})
 
-    min_x = map |> Enum.min_by(fn ({{x, _y}, _room}) -> x end) |> elem(0) |> elem(0)
-    min_y = map |> Enum.min_by(fn ({{_x, y}, _room}) -> y end) |> elem(0) |> elem(1)
-    max_x = map |> Enum.max_by(fn ({{x, _y}, _room}) -> x end) |> elem(0) |> elem(0)
-    max_y = map |> Enum.max_by(fn ({{_x, y}, _room}) -> y end) |> elem(0) |> elem(1)
+    min_x = map |> Enum.min_by(fn {{x, _y}, _room} -> x end) |> elem(0) |> elem(0)
+    min_y = map |> Enum.min_by(fn {{_x, y}, _room} -> y end) |> elem(0) |> elem(1)
+    max_x = map |> Enum.max_by(fn {{x, _y}, _room} -> x end) |> elem(0) |> elem(0)
+    max_y = map |> Enum.max_by(fn {{_x, y}, _room} -> y end) |> elem(0) |> elem(1)
 
     {{min_x, min_y}, {max_x, max_y}, map}
   end
@@ -34,12 +35,13 @@ defmodule Game.Map do
   @doc """
   Generate a sorted list of lists for a zone map
   """
-  @spec map(zone :: Zone.t) :: [[Room.t]]
+  @spec map(Zone.t()) :: [[Room.t()]]
   def map(zone, opts \\ []) do
     layer = Keyword.get(opts, :layer, 1)
     buffer = Keyword.get(opts, :buffer, true)
 
     {{min_x, min_y}, {max_x, max_y}, map} = size_of_map(zone, layer: layer)
+
     {{min_x, min_y}, {max_x, max_y}} =
       case buffer do
         true -> {{min_x - 1, min_y - 1}, {max_x + 1, max_y + 1}}
@@ -48,7 +50,7 @@ defmodule Game.Map do
 
     for y <- min_y..max_y do
       for x <- min_x..max_x do
-        case Enum.find(map, fn ({coords, _room}) -> coords == {x, y} end) do
+        case Enum.find(map, fn {coords, _room} -> coords == {x, y} end) do
           {{^x, ^y}, room} -> {{x, y}, room}
           _ -> {{x, y}, nil}
         end
@@ -59,26 +61,26 @@ defmodule Game.Map do
   @doc """
   Determine which layers are in a map
   """
-  @spec layers_in_map(zone :: Zone.t) :: [integer]
+  @spec layers_in_map(Zone.t()) :: [integer]
   def layers_in_map(zone) do
     zone.rooms
-    |> Enum.map(&(&1.map_layer))
+    |> Enum.map(& &1.map_layer)
     |> Enum.uniq()
   end
 
   @doc """
   Generate a text view of the zone
   """
-  @spec display_map(zone :: Zone.t, {x :: integer, y :: integer, layer :: integer}, opts :: Keyword.t) :: [String.t]
+  @spec display_map(Zone.t(), {integer, integer, integer}, Keyword.t()) :: [String.t()]
   def display_map(zone, {x, y, layer}, opts \\ []) do
     zone
     |> map(layer: layer, buffer: false)
     |> mini_map({x, y}, Keyword.get(opts, :mini, false))
-    |> Enum.map(fn (row) ->
-      row |> Enum.map(&(display_room(&1, {x, y})))
+    |> Enum.map(fn row ->
+      row |> Enum.map(&display_room(&1, {x, y}))
     end)
     |> join_rooms()
-    |> Enum.map(&("   #{&1}"))
+    |> Enum.map(&"   #{&1}")
     |> Enum.join("\n")
     |> String.replace(~r/-\+-/, "---")
   end
@@ -86,20 +88,21 @@ defmodule Game.Map do
   @doc """
   Create a mini map of the whole zone. Restricts to with in 2 spaces of the player
   """
-  @spec mini_map(zone :: [], {integer, integer}, opts :: Keyword.t) :: []
+  @spec mini_map([], {integer, integer}, opts :: Keyword.t()) :: []
   def mini_map(zone, {x, y}, true) do
     {min_x, max_x} = {x - 2, x + 2}
     {min_y, max_y} = {y - 2, y + 2}
 
     zone
-    |> Enum.map(fn (row) ->
+    |> Enum.map(fn row ->
       row
-      |> Enum.filter(fn ({{x, y}, _}) ->
+      |> Enum.filter(fn {{x, y}, _} ->
         min_x <= x && x <= max_x && min_y <= y && y <= max_y
       end)
     end)
     |> Enum.reject(&(&1 == []))
   end
+
   def mini_map(zone, _, false), do: zone
 
   @doc """
@@ -109,9 +112,10 @@ defmodule Game.Map do
     [
       "     ",
       "     ",
-      "     ",
+      "     "
     ]
   end
+
   def display_room({_, room}, coords) do
     room_display =
       room
@@ -121,7 +125,7 @@ defmodule Game.Map do
     [
       exits(room, :north),
       "#{exits(room, :west)}#{room_display}#{exits(room, :east)}",
-      exits(room, :south),
+      exits(room, :south)
     ]
   end
 
@@ -133,24 +137,33 @@ defmodule Game.Map do
 
   defp exits(room, direction) when direction in [:north, :south] do
     case Exit.exit_to(room, direction) do
-      nil -> "+---+"
+      nil ->
+        "+---+"
+
       %{id: exit_id, has_door: true} ->
         case Door.get(exit_id) do
           "open" -> "+ / +"
           "closed" -> "+ = +"
         end
-      _ -> "+   +"
+
+      _ ->
+        "+   +"
     end
   end
+
   defp exits(room, direction) when direction in [:east, :west] do
     case Exit.exit_to(room, direction) do
-      nil -> "|"
+      nil ->
+        "|"
+
       %{id: exit_id, has_door: true} ->
         case Door.get(exit_id) do
           "open" -> "/"
           "closed" -> "="
         end
-      _ -> " "
+
+      _ ->
+        " "
     end
   end
 
@@ -161,7 +174,7 @@ defmodule Game.Map do
   """
   def join_rooms(rows) do
     rows
-    |> Enum.map(fn (row) ->
+    |> Enum.map(fn row ->
       Enum.reduce(row, [], &join_row/2)
     end)
     |> Enum.reduce([], &join_rows/2)
@@ -171,17 +184,18 @@ defmodule Game.Map do
   Join an individual row of rooms together
   """
   def join_row(room, []), do: room
+
   def join_row(room, row) do
     row
     |> Enum.with_index()
-    |> Enum.map(fn ({line, i}) ->
-      [current_point | line] = line |> String.graphemes() |> Enum.reverse
-      line = line |> Enum.reverse
+    |> Enum.map(fn {line, i} ->
+      [current_point | line] = line |> String.graphemes() |> Enum.reverse()
+      line = line |> Enum.reverse()
       [room_point | room_line] = room |> Enum.at(i) |> String.graphemes()
       point = join_point(current_point, room_point)
 
-      line ++ [point] ++ room_line
-      |> Enum.join
+      (line ++ [point] ++ room_line)
+      |> Enum.join()
     end)
   end
 
@@ -192,10 +206,11 @@ defmodule Game.Map do
   will be joined against the last row of the set.
   """
   def join_rows(row, []), do: row
+
   def join_rows(row, rows) do
     [line_1 | [line_2 | [line_3]]] = row
-    [last_line | rows] = rows |> Enum.reverse
-    rows = rows |> Enum.reverse
+    [last_line | rows] = rows |> Enum.reverse()
+    rows = rows |> Enum.reverse()
     last_line = join_line(last_line, line_1)
     rows ++ [last_line | [line_2 | [line_3]]]
   end
@@ -209,7 +224,7 @@ defmodule Game.Map do
     last_line
     |> String.graphemes()
     |> Enum.with_index()
-    |> Enum.map(fn ({point, i}) ->
+    |> Enum.map(fn {point, i} ->
       join_point(point, Enum.at(new_line, i))
     end)
   end
@@ -237,7 +252,7 @@ defmodule Game.Map do
       iex> Game.Map.join_point("|", " ")
       "|"
   """
-  @spec join_point(String.t, String.t) :: String.t
+  @spec join_point(String.t(), String.t()) :: String.t()
   def join_point(" ", " "), do: " "
   def join_point(" ", point), do: point
   def join_point(point, " "), do: point
@@ -249,8 +264,9 @@ defmodule Game.Map do
       iex> Game.Map.room_color(%{ecology: "default"})
       nil
   """
-  @spec room_color(room :: Room.t) :: String.t
+  @spec room_color(room :: Room.t()) :: String.t()
   def room_color(room)
+
   def room_color(%{ecology: ecology}) do
     case ecology do
       ecology when ecology in ["ocean", "lake", "river"] -> "map:blue"
@@ -262,5 +278,6 @@ defmodule Game.Map do
       _ -> nil
     end
   end
+
   def room_color(_room), do: nil
 end

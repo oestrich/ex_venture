@@ -9,10 +9,10 @@ defmodule Game.Registries do
   def init(_) do
     children = [
       worker(Game.Session.Registry, []),
-      supervisor(Registry, [:unique, Game.Zone.Registry], [id: Game.Zone.Registry]),
-      supervisor(Registry, [:unique, Game.Room.Registry], [id: Game.Room.Registry]),
-      supervisor(Registry, [:unique, Game.Shop.Registry], [id: Game.Shop.Registry]),
-      supervisor(Registry, [:unique, Game.NPC.Registry], [id: Game.NPC.Registry]),
+      supervisor(Registry, [:unique, Game.Zone.Registry], id: Game.Zone.Registry),
+      supervisor(Registry, [:unique, Game.Room.Registry], id: Game.Room.Registry),
+      supervisor(Registry, [:unique, Game.Shop.Registry], id: Game.Shop.Registry),
+      supervisor(Registry, [:unique, Game.NPC.Registry], id: Game.NPC.Registry)
     ]
 
     supervise(children, strategy: :one_for_one)

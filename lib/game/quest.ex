@@ -36,7 +36,7 @@ defmodule Game.Quest do
   end
 
   defp preloads(quest) do
-    quest |> preload([quest: [:giver, quest_steps: [:item, :npc]]])
+    quest |> preload(quest: [:giver, quest_steps: [:item, :npc]])
   end
 
   @doc """
@@ -47,20 +47,23 @@ defmodule Game.Quest do
     quest = Quest |> Repo.get(quest_id)
     start_quest(user, quest)
   end
+
   def start_quest(user, quest) do
     changeset =
       %QuestProgress{}
       |> QuestProgress.changeset(%{
         user_id: user.id,
         quest_id: quest.id,
-        status: "active",
+        status: "active"
       })
 
     case changeset |> Repo.insert() do
       {:ok, _} ->
         Session.notify(user, {"quest/new", quest})
         :ok
-      {:error, _} -> :error
+
+      {:error, _} ->
+        :error
     end
   end
 
@@ -72,10 +75,11 @@ defmodule Game.Quest do
     case step.type do
       "item/collect" ->
         save.items
-        |> Enum.filter(fn (item) ->
+        |> Enum.filter(fn item ->
           item.id == step.item_id
         end)
         |> length()
+
       "npc/kill" ->
         Map.get(quest_progress.progress, step.id, 0)
     end
@@ -88,7 +92,7 @@ defmodule Game.Quest do
   def requirements_complete?(quest_progress, save) do
     %{quest_steps: quest_steps} = quest_progress.quest
 
-    Enum.all?(quest_steps, fn (step) ->
+    Enum.all?(quest_steps, fn step ->
       requirement_complete?(step, quest_progress, save)
     end)
   end
@@ -107,11 +111,14 @@ defmodule Game.Quest do
   @spec complete(QuestProgress.t(), Save.t()) :: Save.t()
   def complete(progress, save) do
     changeset = progress |> QuestProgress.changeset(%{status: "complete"})
+
     case changeset |> Repo.update() do
       {:ok, _progress} ->
         save = filter_step_items(progress, save)
         {:ok, save}
-      {:error, _} -> :error
+
+      {:error, _} ->
+        :error
     end
   end
 
@@ -119,17 +126,17 @@ defmodule Game.Quest do
     %{quest_steps: quest_steps} = progress.quest
 
     quest_steps
-    |> Enum.filter(fn (step) ->
+    |> Enum.filter(fn step ->
       step.type == "item/collect"
     end)
-    |> Enum.reduce(save, fn (step, save) ->
+    |> Enum.reduce(save, fn step, save ->
       items =
         save.items
-        |> Enum.filter(fn (item) ->
+        |> Enum.filter(fn item ->
           item.id == step.item_id
         end)
         |> Enum.take(step.count)
-        |> Enum.reduce(save.items, fn (item, items) ->
+        |> Enum.reduce(save.items, fn item, items ->
           List.delete(items, item)
         end)
 
@@ -145,7 +152,10 @@ defmodule Game.Quest do
     QuestProgress
     |> join(:left, [qp], q in assoc(qp, :quest))
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
-    |> where([qp, q, qs], qp.user_id == ^user.id and qs.type == "npc/kill" and qs.npc_id == ^npc.id)
+    |> where(
+      [qp, q, qs],
+      qp.user_id == ^user.id and qs.type == "npc/kill" and qs.npc_id == ^npc.id
+    )
     |> select([qp, q, qs], [qp.id, qs.id])
     |> Repo.all()
     |> Enum.each(&track_step/1)
@@ -157,10 +167,14 @@ defmodule Game.Quest do
     quest_progress = Repo.get(QuestProgress, progress_id)
     step = Repo.get(QuestStep, step_id)
     step_progress = Map.get(quest_progress.progress, step.id, 0)
+
     case step_progress < step.count do
-      false -> :ok
+      false ->
+        :ok
+
       true ->
         progress = quest_progress.progress |> Map.put(step_id, step_progress + 1)
+
         quest_progress
         |> QuestProgress.changeset(%{progress: progress})
         |> Repo.update()

@@ -4,8 +4,8 @@ defmodule Game.Zone do
   """
 
   @type t :: %{
-    name: String.t,
-  }
+          name: String.t()
+        }
 
   use GenServer
 
@@ -45,7 +45,7 @@ defmodule Game.Zone do
   @doc """
   Send a tick to the zone
   """
-  @spec tick(pid, time :: DateTime.t) :: :ok
+  @spec tick(pid, DateTime.t()) :: :ok
   def tick(pid, time) do
     GenServer.cast(pid, {:tick, time})
   end
@@ -71,7 +71,7 @@ defmodule Game.Zone do
   @doc """
   Update a zone definition in the server state
   """
-  @spec update(id :: integer, zone :: Zone.t) :: :ok
+  @spec update(integer, Zone.t()) :: :ok
   def update(id, zone) do
     GenServer.cast(pid(id), {:update, zone})
   end
@@ -79,7 +79,7 @@ defmodule Game.Zone do
   @doc """
   Tell the zone where the room supervisor lives
   """
-  @spec room_supervisor(id :: integer, supervisor_pid :: pid) :: :ok
+  @spec room_supervisor(integer, pid) :: :ok
   def room_supervisor(id, supervisor_pid) do
     GenServer.cast(pid(id), {:room_supervisor, supervisor_pid})
   end
@@ -87,7 +87,7 @@ defmodule Game.Zone do
   @doc """
   Tell the zone where the npc supervisor lives
   """
-  @spec npc_supervisor(id :: integer, supervisor_pid :: pid) :: :ok
+  @spec npc_supervisor(integer, pid) :: :ok
   def npc_supervisor(id, supervisor_pid) do
     GenServer.cast(pid(id), {:npc_supervisor, supervisor_pid})
   end
@@ -95,7 +95,7 @@ defmodule Game.Zone do
   @doc """
   Tell the zone where the shop supervisor lives
   """
-  @spec shop_supervisor(id :: integer, supervisor_pid :: pid) :: :ok
+  @spec shop_supervisor(integer, pid) :: :ok
   def shop_supervisor(id, supervisor_pid) do
     GenServer.cast(pid(id), {:shop_supervisor, supervisor_pid})
   end
@@ -103,7 +103,7 @@ defmodule Game.Zone do
   @doc """
   Start a new room in the supervision tree
   """
-  @spec spawn_room(id :: integer, room :: Data.Room.t) :: :ok
+  @spec spawn_room(integer, Data.Room.t()) :: :ok
   def spawn_room(id, room) do
     GenServer.cast(pid(id), {:spawn_room, room})
   end
@@ -111,7 +111,7 @@ defmodule Game.Zone do
   @doc """
   Start a new npc in the supervision tree
   """
-  @spec spawn_npc(id :: integer, npc_spawner :: Data.Room.t) :: :ok
+  @spec spawn_npc(integer, Data.NPCSpawner.t()) :: :ok
   def spawn_npc(id, npc_spawner) do
     GenServer.cast(pid(id), {:spawn_npc, npc_spawner})
   end
@@ -119,7 +119,7 @@ defmodule Game.Zone do
   @doc """
   Start a new shop in the supervision tree
   """
-  @spec spawn_shop(id :: integer, shop :: Data.Shop.t) :: :ok
+  @spec spawn_shop(integer, Data.Shop.t()) :: :ok
   def spawn_shop(id, shop) do
     GenServer.cast(pid(id), {:spawn_shop, shop})
   end
@@ -129,7 +129,7 @@ defmodule Game.Zone do
 
   For making sure mapping data stays correct on updates
   """
-  @spec update_room(id :: integer, room :: Room.t) :: :ok
+  @spec update_room(integer, Room.t()) :: :ok
   def update_room(id, room) do
     GenServer.cast(pid(id), {:update_room, room})
   end
@@ -137,7 +137,7 @@ defmodule Game.Zone do
   @doc """
   Display a map of the zone
   """
-  @spec map(id :: integer, player_at :: {integer, integer}, opts :: Keyword.t) :: String.t
+  @spec map(integer, {integer, integer}, Keyword.t()) :: String.t()
   def map(id, player_at, opts \\ []) do
     GenServer.call(pid(id), {:map, player_at, opts})
   end
@@ -161,7 +161,15 @@ defmodule Game.Zone do
   #
 
   def init(zone) do
-    {:ok, %{zone: zone, rooms: [], room_supervisor_pid: nil, npcs: [], npc_supervisor_pid: nil, shop_supervisor_pid: nil}}
+    {:ok,
+     %{
+       zone: zone,
+       rooms: [],
+       room_supervisor_pid: nil,
+       npcs: [],
+       npc_supervisor_pid: nil,
+       shop_supervisor_pid: nil
+     }}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -172,6 +180,7 @@ defmodule Game.Zone do
     case state.zone do
       %{graveyard_id: graveyard_id} when graveyard_id != nil ->
         {:reply, {:ok, graveyard_id}, state}
+
       _ ->
         {:reply, {:error, :no_graveyard}, state}
     end
@@ -183,12 +192,13 @@ defmodule Game.Zone do
 
     #{GameMap.display_map(state, player_at, opts)}
     """
+
     {:reply, map |> String.trim(), state}
   end
 
   def handle_cast({:tick, time}, state = %{rooms: rooms, npcs: npcs}) do
-    rooms |> Enum.each(&(Room.tick(&1.id, time)))
-    npcs |> Enum.each(&(NPC.tick(&1.id, time)))
+    rooms |> Enum.each(&Room.tick(&1.id, time))
+    npcs |> Enum.each(&NPC.tick(&1.id, time))
     {:noreply, state}
   end
 

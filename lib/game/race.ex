@@ -9,9 +9,9 @@ defmodule Game.Race do
   @doc """
   List of races
   """
-  @spec races() :: [Race.t]
+  @spec races() :: [Race.t()]
   def races() do
     Race
-    |> Repo.all
+    |> Repo.all()
   end
 end

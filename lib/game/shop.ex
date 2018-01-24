@@ -30,7 +30,7 @@ defmodule Game.Shop do
   @doc """
   Helper for determining an Shops registered process name
   """
-  @spec pid(id :: integer()) :: atom
+  @spec pid(integer()) :: atom
   def pid(id) do
     {:via, Registry, {Game.Shop.Registry, id}}
   end
@@ -38,13 +38,13 @@ defmodule Game.Shop do
   @doc """
   Load Shops in the zone
   """
-  @spec for_zone(zone :: Zone.t) :: [map]
+  @spec for_zone(Zone.t()) :: [map]
   def for_zone(zone) do
     Shop
     |> join(:left, [s], r in assoc(s, :room))
     |> where([s, r], r.zone_id == ^zone.id)
     |> preload([:shop_items])
-    |> Repo.all
+    |> Repo.all()
   end
 
   #
@@ -54,7 +54,7 @@ defmodule Game.Shop do
   @doc """
   Update a shop's data
   """
-  @spec update(id :: integer, shop :: Shop.t) :: :ok
+  @spec update(integer, Shop.t()) :: :ok
   def update(id, shop) do
     GenServer.cast(pid(id), {:update, shop})
   end
@@ -103,6 +103,7 @@ defmodule Game.Shop do
     case Action.buy(shop, item_id, save) do
       {:ok, save, item, shop} ->
         {:reply, {:ok, save, item}, %{state | shop: shop}}
+
       error ->
         {:reply, error, state}
     end
@@ -112,6 +113,7 @@ defmodule Game.Shop do
     case Action.sell(shop, item_name, save) do
       {:ok, save, item, shop} ->
         {:reply, {:ok, save, item}, %{state | shop: shop}}
+
       error ->
         {:reply, error, state}
     end

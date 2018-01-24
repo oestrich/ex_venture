@@ -42,6 +42,7 @@ defmodule Game.Utility do
   end
 
   defp name_match([name], string), do: message_starts_with?(string, name)
+
   defp name_match([name | [second | pieces]], string) do
     case message_starts_with?(string, name) do
       true -> true
@@ -71,12 +72,14 @@ defmodule Game.Utility do
   end
 
   defp _strip_name([], string), do: string
+
   defp _strip_name(pieces, string) do
     case message_starts_with?(string, pieces |> Enum.join(" ")) do
       true ->
         string
         |> String.replace(~r/^#{pieces |> Enum.join(" ")}/i, "")
         |> String.trim()
+
       false ->
         [_ | pieces] = pieces |> Enum.reverse()
         pieces = pieces |> Enum.reverse()

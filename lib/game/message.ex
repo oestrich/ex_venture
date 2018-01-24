@@ -9,11 +9,11 @@ defmodule Game.Message do
   alias Game.Format
 
   @type t :: %{
-    type: :user | :npc,
-    sender: User.t,
-    message: String.t,
-    formatted: String.t,
-  }
+          type: :user | :npc,
+          sender: User.t(),
+          message: String.t(),
+          formatted: String.t()
+        }
 
   def new(user, message), do: say(user, message)
 
@@ -22,7 +22,7 @@ defmodule Game.Message do
       type: :user,
       sender: user,
       message: message,
-      formatted: Format.say({:user, user}, message),
+      formatted: Format.say({:user, user}, message)
     }
   end
 
@@ -31,7 +31,7 @@ defmodule Game.Message do
       type: :user,
       sender: user,
       message: message,
-      formatted: Format.emote({:user, user}, message),
+      formatted: Format.emote({:user, user}, message)
     }
   end
 
@@ -40,7 +40,7 @@ defmodule Game.Message do
       type: :user,
       sender: user,
       message: message,
-      formatted: Format.tell({:user, user}, message),
+      formatted: Format.tell({:user, user}, message)
     }
   end
 
@@ -51,7 +51,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: Format.say({:npc, npc}, message),
+      formatted: Format.say({:npc, npc}, message)
     }
   end
 
@@ -60,7 +60,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: Format.emote({:npc, npc}, message),
+      formatted: Format.emote({:npc, npc}, message)
     }
   end
 
@@ -69,7 +69,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: Format.tell({:npc, npc}, message),
+      formatted: Format.tell({:npc, npc}, message)
     }
   end
 end

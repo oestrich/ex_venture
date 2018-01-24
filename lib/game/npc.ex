@@ -42,7 +42,7 @@ defmodule Game.NPC do
       :respawn_at,
       events: %{},
       conversations: %{},
-      continuous_effects: [],
+      continuous_effects: []
     ]
 
     @type t :: %__MODULE__{}
@@ -60,7 +60,7 @@ defmodule Game.NPC do
   @doc """
   Helper for determining an NPCs registered process name
   """
-  @spec pid(id :: integer()) :: atom
+  @spec pid(integer()) :: atom
   def pid(id) do
     {:via, Registry, {Game.NPC.Registry, id}}
   end
@@ -68,21 +68,22 @@ defmodule Game.NPC do
   @doc """
   Load all NPCs in the database
   """
-  @spec for_zone(zone :: Zone.t) :: [map]
+  @spec for_zone(Zone.t()) :: [map]
   def for_zone(zone) do
     NPCSpawner
     |> where([ns], ns.zone_id == ^zone.id)
-    |> preload([npc: [:npc_items]])
-    |> Repo.all
+    |> preload(npc: [:npc_items])
+    |> Repo.all()
   end
 
   @doc """
   Notify the NPC of an action occurring in the room
   """
-  @spec notify(id :: integer, action :: tuple) :: :ok
+  @spec notify(integer, tuple) :: :ok
   def notify(pid, action) when is_pid(pid) do
     GenServer.cast(pid, {:notify, action})
   end
+
   def notify(id, action) do
     GenServer.cast(pid(id), {:notify, action})
   end
@@ -90,7 +91,7 @@ defmodule Game.NPC do
   @doc """
   Send a tick message
   """
-  @spec tick(id :: integer, time :: DateTime.t) :: :ok
+  @spec tick(integer, DateTime.t()) :: :ok
   def tick(id, time) do
     GenServer.cast(pid(id), {:tick, time})
   end
@@ -98,14 +99,14 @@ defmodule Game.NPC do
   @doc """
   Update a npc's data
   """
-  @spec update(id :: integer, npc_spawner :: NPCSpawner.t) :: :ok
+  @spec update(integer, NPCSpawner.t()) :: :ok
   def update(id, npc_spawner) do
     GenServer.cast(pid(id), {:update, npc_spawner})
   end
 
   @doc """
   """
-  @spec terminate(id :: integer) :: :ok
+  @spec terminate(integer) :: :ok
   def terminate(id) do
     GenServer.cast(pid(id), :terminate)
   end
@@ -113,7 +114,7 @@ defmodule Game.NPC do
   @doc """
   Have an admin take control of an NPC
   """
-  @spec control(id :: integer) :: :ok | {:error, :already_controlled}
+  @spec control(integer) :: :ok | {:error, :already_controlled}
   def control(id) do
     GenServer.call(pid(id), :control)
   end
@@ -121,7 +122,7 @@ defmodule Game.NPC do
   @doc """
   Have an admin release control of an NPC
   """
-  @spec release(id :: integer) :: :ok
+  @spec release(integer) :: :ok
   def release(id) do
     GenServer.cast(pid(id), :release)
   end
@@ -129,7 +130,7 @@ defmodule Game.NPC do
   @doc """
   Make the NPC say something
   """
-  @spec say(id :: integer, message :: String.t) :: :ok
+  @spec say(integer, String.t()) :: :ok
   def say(id, message) do
     GenServer.cast(pid(id), {:say, message})
   end
@@ -137,7 +138,7 @@ defmodule Game.NPC do
   @doc """
   Make the NPC emote something
   """
-  @spec emote(id :: integer, message :: String.t) :: :ok
+  @spec emote(integer, String.t()) :: :ok
   def emote(id, message) do
     GenServer.cast(pid(id), {:emote, message})
   end
@@ -174,7 +175,7 @@ defmodule Game.NPC do
       room_id: npc_spawner.room_id,
       is_targeting: MapSet.new(),
       target: nil,
-      events: %{},
+      events: %{}
     }
 
     {:ok, state}
@@ -252,17 +253,25 @@ defmodule Game.NPC do
   #
 
   def handle_cast({:targeted, player}, state) do
-    state = Map.put(state, :is_targeting, MapSet.put(state.is_targeting, Game.Character.who(player)))
+    state =
+      Map.put(state, :is_targeting, MapSet.put(state.is_targeting, Game.Character.who(player)))
+
     {:noreply, state}
   end
 
   def handle_cast({:remove_target, player}, state) do
-    state = Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Game.Character.who(player)))
+    state =
+      Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Game.Character.who(player)))
+
     {:noreply, state}
   end
 
   def handle_cast({:apply_effects, effects, from, _description}, state = %{npc: npc}) do
-    Logger.info("Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})", type: :npc)
+    Logger.info(
+      "Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})",
+      type: :npc
+    )
+
     state = Actions.apply_effects(state, effects, from)
     {:noreply, state}
   end
@@ -270,18 +279,20 @@ defmodule Game.NPC do
   def handle_cast({:died, _who}, state = %{target: nil}) do
     {:noreply, state}
   end
+
   def handle_cast({:died, who}, state = %{target: target, npc: npc}) do
     case Character.who(target) == Character.who(who) do
       true ->
         Character.remove_target(target, {:npc, npc})
         {:noreply, Map.put(state, :target, nil)}
+
       false ->
         {:noreply, state}
     end
   end
 
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc, is_targeting: is_targeting}) do
-    Enum.each(is_targeting, &(Character.died(&1, {:npc, npc})))
+    Enum.each(is_targeting, &Character.died(&1, {:npc, npc}))
     room_id |> @room.leave({:npc, npc})
     {:stop, :normal, state}
   end
@@ -295,6 +306,7 @@ defmodule Game.NPC do
     state = Conversation.recv(state, user, message.message)
     {:noreply, state}
   end
+
   def handle_info({:channel, {:tell, _, _message}}, state) do
     {:noreply, state}
   end
