@@ -53,6 +53,7 @@ defmodule Game.Session.Character do
     state |> GMCP.character_enter(character)
     state
   end
+
   def notify(state, {"room/leave", {character, reason}}) do
     case reason do
       :leave -> Session.echo(self(), "#{Format.name(character)} leaves")
@@ -62,15 +63,22 @@ defmodule Game.Session.Character do
     state |> GMCP.character_leave(character)
 
     target = Map.get(state, :target, nil)
+
     case Character.who(character) do
       ^target -> %{state | target: nil}
       _ -> state
     end
   end
+
   def notify(state, {"quest/new", quest}) do
-    Session.echo(self(), "You have a new quest available, #{Format.quest_name(quest)} (#{quest.id})")
+    Session.echo(
+      self(),
+      "You have a new quest available, #{Format.quest_name(quest)} (#{quest.id})"
+    )
+
     state
   end
+
   def notify(state, _), do: state
 
   @doc """
@@ -80,6 +88,7 @@ defmodule Game.Session.Character do
     Session.echo(self(), "#{Format.target_name(who)} has died.")
     state
   end
+
   def died(state = %{socket: socket, user: user, target: target}, who) do
     socket |> @socket.echo("#{Format.target_name(who)} has died.")
 
@@ -97,28 +106,32 @@ defmodule Game.Session.Character do
         state
         |> Map.put(:target, nil)
         |> maybe_target(possible_new_target(state, target))
-      false -> state
+
+      false ->
+        state
     end
   end
 
   @doc """
   Maybe target the character who targeted you, only if your own target is empty
   """
-  @spec maybe_target(state :: map, player :: {atom(), integer()} | {atom(), map()} | nil) :: map
+  @spec maybe_target(map, Character.t() | nil) :: map
   def maybe_target(state, player)
   def maybe_target(state, nil), do: state
+
   def maybe_target(state = %{socket: socket, target: nil, user: user}, player) do
     socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
     player = Character.who(player)
     Character.being_targeted(player, {:user, user})
     Map.put(state, :target, player)
   end
+
   def maybe_target(state, _player), do: state
 
   @doc """
   Get a possible new target from the list
   """
-  @spec possible_new_target(state :: map, target :: {atom(), integer()}) :: {atom(), map()}
+  @spec possible_new_target(map, Character.t()) :: Character.t()
   def possible_new_target(state, target) do
     state.is_targeting
     |> MapSet.delete(Character.who(target))
@@ -137,6 +150,7 @@ defmodule Game.Session.Character do
   Apply experience for killing an npc
   """
   def apply_experience(state, {:user, _user}), do: state
+
   def apply_experience(state, {:npc, npc}) do
     Experience.apply(state, level: npc.level, experience_points: npc.experience_points)
   end
@@ -145,6 +159,7 @@ defmodule Game.Session.Character do
   Track quest progress if an npc was killed
   """
   def track_quest_progress(state, {:user, _user}), do: state
+
   def track_quest_progress(state, {:npc, npc}) do
     Quest.track_progress(state.user, {:npc, %{npc | id: npc.original_id}})
     state

@@ -15,7 +15,7 @@ defmodule Game.Session.Registry do
   @doc """
   Register the session PID for the user
   """
-  @spec register(user :: User.t) :: :ok
+  @spec register(User.t()) :: :ok
   def register(user) do
     GenServer.cast(__MODULE__, {:register, self(), user})
   end
@@ -23,7 +23,7 @@ defmodule Game.Session.Registry do
   @doc """
   Update user's information
   """
-  @spec update(user :: User.t) :: :ok
+  @spec update(User.t()) :: :ok
   def update(user) do
     GenServer.cast(__MODULE__, {:update, self(), user})
   end
@@ -39,7 +39,7 @@ defmodule Game.Session.Registry do
   @doc """
   Load all connected players
   """
-  @spec connected_players() :: [{pid, User.t}]
+  @spec connected_players() :: [{pid, User.t()}]
   def connected_players() do
     GenServer.call(__MODULE__, :connected_players)
   end
@@ -54,8 +54,10 @@ defmodule Game.Session.Registry do
   end
 
   def handle_call(:connected_players, _from, state) do
-    players = state.connected_players
-    |> Enum.map(&({&1.pid, &1.user}))
+    players =
+      state.connected_players
+      |> Enum.map(&{&1.pid, &1.user})
+
     {:reply, players, state}
   end
 
@@ -67,17 +69,22 @@ defmodule Game.Session.Registry do
 
   def handle_cast({:update, pid, user}, state = %{connected_players: connected_players}) do
     connected_players = [%{user: user, pid: pid} | connected_players]
-    connected_players = connected_players
-    |> Enum.uniq_by(&(&1.pid))
+
+    connected_players =
+      connected_players
+      |> Enum.uniq_by(& &1.pid)
+
     {:noreply, %{state | connected_players: connected_players}}
   end
 
   def handle_cast({:unregister, pid}, state = %{connected_players: connected_players}) do
-    connected_players = connected_players
-    |> Enum.reject(&(&1.pid == pid))
+    connected_players =
+      connected_players
+      |> Enum.reject(&(&1.pid == pid))
 
-    state = state
-    |> Map.put(:connected_players, connected_players)
+    state =
+      state
+      |> Map.put(:connected_players, connected_players)
 
     {:noreply, state}
   end

@@ -15,28 +15,29 @@ defmodule Game.Room.Supervisor do
   @doc """
   Return all rooms that are currently online
   """
-  @spec rooms(pid :: pid) :: [pid]
+  @spec rooms(pid) :: [pid]
   def rooms(pid) do
     pid
     |> Supervisor.which_children()
-    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.map(&elem(&1, 1))
   end
 
   @doc """
   Start a newly created room in the zone
   """
-  @spec start_child(pid, room :: Room.t) :: :ok
+  @spec start_child(pid, Room.t()) :: :ok
   def start_child(pid, room) do
     child_spec = worker(Room, [room], id: room.id, restart: :permanent)
     Supervisor.start_child(pid, child_spec)
   end
 
   def init(zone) do
-    children = zone.id
-    |> Room.for_zone()
-    |> Enum.map(fn (room) ->
-      worker(Room, [room], id: room.id, restart: :permanent)
-    end)
+    children =
+      zone.id
+      |> Room.for_zone()
+      |> Enum.map(fn room ->
+        worker(Room, [room], id: room.id, restart: :permanent)
+      end)
 
     Zone.room_supervisor(zone.id, self())
 

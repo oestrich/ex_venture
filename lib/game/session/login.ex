@@ -24,7 +24,11 @@ defmodule Game.Session.Login do
   @spec start(socket :: pid) :: :ok
   def start(socket) do
     socket |> @socket.echo("#{ExVenture.version()}\n#{motd()}")
-    socket |> @socket.prompt("What is your player name (Enter {white}create{/white} for a new account)? ")
+
+    socket
+    |> @socket.prompt(
+      "What is your player name (Enter {white}create{/white} for a new account)? "
+    )
   end
 
   defp motd() do
@@ -36,7 +40,7 @@ defmodule Game.Session.Login do
 
   Edit the state to be signed in and active
   """
-  @spec login(user :: map, socket :: pid, state :: map) :: map
+  @spec login(map, pid, map) :: map
   def login(user, socket, state) do
     Session.Registry.register(user)
 
@@ -74,6 +78,7 @@ defmodule Game.Session.Login do
       nil ->
         socket |> @socket.disconnect()
         state
+
       user ->
         user |> process_login(state)
     end
@@ -83,18 +88,22 @@ defmodule Game.Session.Login do
     socket |> Session.CreateAccount.start()
     state |> Map.put(:state, "create")
   end
+
   def process(password, state = %{socket: socket, login: %{name: name}}) do
     socket |> @socket.tcp_option(:echo, true)
+
     case Authentication.find_and_validate(name, password) do
       {:error, :invalid} ->
         PlayerInstrumenter.login_fail()
         socket |> @socket.echo("Invalid password")
         socket |> @socket.disconnect()
         state
+
       user ->
         user |> process_login(state)
     end
   end
+
   def process(message, state = %{socket: socket}) do
     socket |> @socket.prompt("Password: ")
     socket |> @socket.tcp_option(:echo, false)
@@ -107,6 +116,7 @@ defmodule Game.Session.Login do
         socket |> @socket.echo("Sorry, this player is already logged in.")
         socket |> @socket.disconnect()
         state
+
       false ->
         user |> login(socket, state |> Map.delete(:login))
     end

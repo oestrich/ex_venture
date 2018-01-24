@@ -15,28 +15,29 @@ defmodule Game.Shop.Supervisor do
   @doc """
   Return all shops that are currently online
   """
-  @spec shops(pid :: pid) :: [pid]
+  @spec shops(pid) :: [pid]
   def shops(pid) do
     pid
     |> Supervisor.which_children()
-    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.map(&elem(&1, 1))
   end
 
   @doc """
   Start a newly created shop in the zone
   """
-  @spec start_child(pid, shop :: Shop.t) :: :ok
+  @spec start_child(pid, Shop.t()) :: :ok
   def start_child(pid, shop) do
     child_spec = worker(Shop, [shop], id: shop.id, restart: :permanent)
     Supervisor.start_child(pid, child_spec)
   end
 
   def init(zone) do
-    children = zone
-    |> Shop.for_zone()
-    |> Enum.map(fn (shop) ->
-      worker(Shop, [shop], id: shop.id, restart: :transient)
-    end)
+    children =
+      zone
+      |> Shop.for_zone()
+      |> Enum.map(fn shop ->
+        worker(Shop, [shop], id: shop.id, restart: :transient)
+      end)
 
     Zone.shop_supervisor(zone.id, self())
 

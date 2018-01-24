@@ -12,9 +12,10 @@ defmodule Game.Session.Channels do
   """
   @spec joined(State.t(), String.t()) :: State.t()
   def joined(state = %{save: save}, channel) do
-    channels = [channel | save.channels]
-    |> Enum.into(MapSet.new)
-    |> Enum.into([])
+    channels =
+      [channel | save.channels]
+      |> Enum.into(MapSet.new())
+      |> Enum.into([])
 
     save = %{save | channels: channels}
     %{state | save: save}

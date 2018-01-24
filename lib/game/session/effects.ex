@@ -19,7 +19,7 @@ defmodule Game.Session.Effects do
 
   Used from the character callback `{:apply_effects, effects, from, description}`.
   """
-  @spec apply(effects :: [Data.Effect.t], from :: tuple, description :: String.t, state :: Map) :: map
+  @spec apply([Data.Effect.t()], tuple, String.t(), Map) :: map
   def apply(effects, from, description, state) do
     %{user: user, save: save} = state
 
@@ -34,13 +34,14 @@ defmodule Game.Session.Effects do
     user |> echo_effects(from, description, effects)
     user |> maybe_died(state)
 
-    Enum.each(continuous_effects, fn (effect) ->
+    Enum.each(continuous_effects, fn effect ->
       :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
     end)
 
     case is_alive?(state.save) do
       true ->
         state |> Map.put(:continuous_effects, state.continuous_effects ++ continuous_effects)
+
       false ->
         state |> Map.put(:continuous_effects, [])
     end
@@ -51,24 +52,29 @@ defmodule Game.Session.Effects do
   """
   @spec maybe_died(User.t(), State.t()) :: :ok
   def maybe_died(user, state)
+
   def maybe_died(user = %{save: %{stats: %{health: health}}}, state) when health < 1 do
     user |> maybe_transport_to_graveyard()
     user |> notify_targeters(state.is_targeting)
     :ok
   end
+
   def maybe_died(_user, _state), do: :ok
 
   @doc """
   Check if there is a graveyard to teleport to. The zone will have it set
   """
-  @spec maybe_transport_to_graveyard(User.t) :: :ok
+  @spec maybe_transport_to_graveyard(User.t()) :: :ok
   def maybe_transport_to_graveyard(user)
+
   def maybe_transport_to_graveyard(%{save: %{room_id: room_id}}) do
     room = room_id |> @room.look()
+
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->
         send(self(), :resurrect)
         GenServer.cast(self(), {:teleport, graveyard_id})
+
       {:error, :no_graveyard} ->
         :ok
     end
@@ -77,9 +83,9 @@ defmodule Game.Session.Effects do
   @doc """
   Notify targets of death
   """
-  @spec notify_targeters(User.t, []) :: :ok
+  @spec notify_targeters(User.t(), []) :: :ok
   def notify_targeters(user, is_targeting) do
-    Enum.each(is_targeting, &(Character.died(&1, {:user, user})))
+    Enum.each(is_targeting, &Character.died(&1, {:user, user}))
   end
 
   @doc """
@@ -87,9 +93,11 @@ defmodule Game.Session.Effects do
   """
   def echo_effects(user, from, description, effects) do
     user_id = user.id
+
     case Character.who(from) do
       {:user, ^user_id} ->
         :ok
+
       _ ->
         description = [description | Format.effects(effects)]
         echo(self(), description |> Enum.join("\n"))
@@ -99,7 +107,7 @@ defmodule Game.Session.Effects do
   @doc """
   Apply a continuous effect to the user
   """
-  @spec handle_continuous_effect(State.t, String.t) :: State.t
+  @spec handle_continuous_effect(State.t(), String.t()) :: State.t()
   def handle_continuous_effect(state, effect_id) do
     case Enum.find(state.continuous_effects, &(&1.id == effect_id)) do
       nil -> state
@@ -110,7 +118,7 @@ defmodule Game.Session.Effects do
   @doc """
   Apply a continuous effect to the user
   """
-  @spec apply_continuous_effect(State.t, Effect.t) :: State.t
+  @spec apply_continuous_effect(State.t(), Effect.t()) :: State.t()
   def apply_continuous_effect(state, effect) do
     %{socket: socket, user: user, save: save} = state
 
@@ -127,6 +135,7 @@ defmodule Game.Session.Effects do
     case is_alive?(save) do
       true ->
         state |> update_effect_count(effect)
+
       false ->
         state |> Map.put(:continuous_effects, [])
     end

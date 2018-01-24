@@ -19,7 +19,7 @@ defmodule Game.Zone.Supervisor do
       worker(Zone, [zone], id: zone.id, restart: :permanent),
       supervisor(Room.Supervisor, [zone], id: "rooms:#{zone.id}", restart: :permanent),
       supervisor(NPC.Supervisor, [zone], id: "npcs:#{zone.id}", restart: :permanent),
-      supervisor(Shop.Supervisor, [zone], id: "shops:#{zone.id}", restart: :permanent),
+      supervisor(Shop.Supervisor, [zone], id: "shops:#{zone.id}", restart: :permanent)
     ]
 
     supervise(children, strategy: :one_for_all)

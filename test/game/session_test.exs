@@ -164,7 +164,7 @@ defmodule Game.SessionTest do
       user = %Data.User{name: "user", seconds_online: 0}
       Session.Registry.register(user)
 
-      state = %{user: user, save: %{room_id: 1}, session_started_at: Timex.now(), stats: %{}}
+      state = %{state: "active", user: user, save: %{room_id: 1}, session_started_at: Timex.now(), stats: %{}}
       {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
       assert Session.Registry.connected_players == []
     after
@@ -173,7 +173,7 @@ defmodule Game.SessionTest do
 
     test "adds the time played" do
       user = create_user(%{name: "user", password: "password"})
-      state = %{user: user, save: user.save, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}}
+      state = %{state: "active", user: user, save: user.save, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}}
 
       {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
 

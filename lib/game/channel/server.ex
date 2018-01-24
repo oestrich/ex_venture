@@ -12,10 +12,11 @@ defmodule Game.Channel.Server do
   """
   @spec subscribed_channels(Channel.state(), pid()) :: [String.t()]
   def subscribed_channels(state, pid)
+
   def subscribed_channels(%{channels: channels}, pid) do
     channels
-    |> Enum.filter(fn ({_channel, pids}) -> Enum.member?(pids, pid) end)
-    |> Enum.map(fn ({channel, _pids}) -> channel end)
+    |> Enum.filter(fn {_channel, pids} -> Enum.member?(pids, pid) end)
+    |> Enum.map(fn {channel, _pids} -> channel end)
   end
 
   @doc """
@@ -41,9 +42,11 @@ defmodule Game.Channel.Server do
   """
   @spec leave_channel(Channel.state(), String.t(), pid()) :: Channel.state()
   def leave_channel(state = %{channels: channels}, channel, pid) do
-    channel_pids = channels
-    |> Map.get(channel, [])
-    |> Enum.reject(&(&1 == pid))
+    channel_pids =
+      channels
+      |> Map.get(channel, [])
+      |> Enum.reject(&(&1 == pid))
+
     channels = Map.put(channels, channel, channel_pids)
     send(pid, {:channel, {:left, channel}})
     Map.put(state, :channels, channels)
@@ -54,12 +57,13 @@ defmodule Game.Channel.Server do
   """
   @spec broadcast(Channel.state(), String.t(), Message.t()) :: :ok
   def broadcast(state, channel, message)
+
   def broadcast(%{channels: channels}, channel, message) do
     Logger.info("Channel '#{channel}' message: #{inspect(message)}", type: :channel)
 
     channels
     |> Map.get(channel, [])
-    |> Enum.each(fn (pid) ->
+    |> Enum.each(fn pid ->
       send(pid, {:channel, {:broadcast, message}})
     end)
   end
@@ -84,14 +88,16 @@ defmodule Game.Channel.Server do
   """
   @spec process_died(Channel.state(), pid()) :: Channel.state()
   def process_died(state = %{channels: channels, tells: tells}, pid) do
-    channels = Enum.reduce(channels, %{}, fn ({channel, pids}, channels) ->
-      pids = pids |> Enum.reject(&(&1 == pid))
-      Map.put(channels, channel, pids)
-    end)
+    channels =
+      Enum.reduce(channels, %{}, fn {channel, pids}, channels ->
+        pids = pids |> Enum.reject(&(&1 == pid))
+        Map.put(channels, channel, pids)
+      end)
 
-    tells = tells
-    |> Enum.reject(fn ({_, tell_pid}) -> tell_pid == pid end)
-    |> Enum.into(%{})
+    tells =
+      tells
+      |> Enum.reject(fn {_, tell_pid} -> tell_pid == pid end)
+      |> Enum.into(%{})
 
     state
     |> Map.put(:channels, channels)

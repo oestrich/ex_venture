@@ -8,6 +8,6 @@ defmodule Game.Help.Repo do
 
   def all() do
     HelpTopic
-    |> Repo.all
+    |> Repo.all()
   end
 end

@@ -8,9 +8,11 @@ defmodule Game.Format.Shop do
   alias Game.Format.Table
 
   def list(shop, items)
+
   def list(%{name: name}, items) do
-    rows = items
-    |> Enum.map(&item/1)
+    rows =
+      items
+      |> Enum.map(&item/1)
 
     Table.format("{magenta}#{name}{/magenta}", rows, [10, 10, 30])
   end

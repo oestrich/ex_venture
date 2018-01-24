@@ -41,6 +41,6 @@ defmodule Game.Session.State do
     :commands,
     mode: "comands",
     continuous_effects: [],
-    stats: %SessionStats{},
+    stats: %SessionStats{}
   ]
 end

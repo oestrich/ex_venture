@@ -60,11 +60,11 @@ defmodule Game.Session.Process do
       last_tick: last_tick,
       mode: "commands",
       target: nil,
-      is_targeting: MapSet.new,
+      is_targeting: MapSet.new(),
       regen: %{count: 0},
       reply_to: nil,
       commands: %{},
-      stats: %SessionStats{},
+      stats: %SessionStats{}
     }
 
     {:ok, state}
@@ -74,10 +74,13 @@ defmodule Game.Session.Process do
   def handle_cast(:disconnect, state = %{state: "login"}) do
     {:stop, :normal, state}
   end
+
   def handle_cast(:disconnect, state = %{state: "create"}) do
     {:stop, :normal, state}
   end
-  def handle_cast(:disconnect, state = %{user: user, save: save, session_started_at: session_started_at, stats: stats}) do
+
+  def handle_cast(:disconnect, state = %{state: "active"}) do
+    %{user: user, save: save, session_started_at: session_started_at, stats: stats} = state
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, user})
     clear_target(state, {:user, user})
@@ -87,10 +90,12 @@ defmodule Game.Session.Process do
 
   def handle_cast({:disconnect, [force: true]}, state = %{socket: socket}) do
     socket |> @socket.echo("The server will be shutting down shortly.")
-    Task.start(fn () ->
+
+    Task.start(fn ->
       Process.sleep(@force_disconnect_period)
       socket |> @socket.disconnect()
     end)
+
     {:noreply, state}
   end
 
@@ -126,9 +131,11 @@ defmodule Game.Session.Process do
   def handle_cast({:recv, message}, state = %{state: "active", mode: "commands"}) do
     state |> Commands.process_command(message)
   end
+
   def handle_cast({:recv, message}, state = %{state: "active", mode: "paginate"}) do
     {:noreply, Pager.paginate(state, command: message)}
   end
+
   def handle_cast({:recv, _message}, state = %{state: "active", mode: "continuing"}) do
     {:noreply, state}
   end
@@ -145,6 +152,7 @@ defmodule Game.Session.Process do
         {:noreply, Map.put(state, :mode, "commands")}
     end
   end
+
   def handle_cast({:recv, line}, state = %{state: "active", mode: "editor"}) do
     case state.editor_module.editor({:text, line}, state) do
       {:update, state} ->
@@ -220,12 +228,14 @@ defmodule Game.Session.Process do
     command |> Commands.run_command(state)
   end
 
-  def handle_info(:save, state = %{state: "active", user: user, save: save, session_started_at: session_started_at}) do
+  def handle_info(:save, state = %{state: "active"}) do
+    %{user: user, save: save, session_started_at: session_started_at} = state
     user |> Account.save(save)
     user |> Account.update_time_online(session_started_at, Timex.now())
     self() |> schedule_save()
     {:noreply, state}
   end
+
   def handle_info(:save, state) do
     self() |> schedule_save()
     {:noreply, state}
@@ -257,6 +267,7 @@ defmodule Game.Session.Process do
           |> Map.put(:user, user)
 
         {:noreply, state}
+
       _ ->
         {:noreply, state}
     end
@@ -282,10 +293,11 @@ defmodule Game.Session.Process do
 
   # Check if the session is inactive, disconnect if it is
   defp check_for_inactive(%{socket: socket, last_recv: last_recv}) do
-    case Timex.diff(Timex.now, last_recv, :seconds) do
+    case Timex.diff(Timex.now(), last_recv, :seconds) do
       time when time > @timeout_seconds ->
         Logger.info("Idle player #{inspect(self())} - disconnecting", type: :session)
         socket |> @socket.disconnect()
+
       _ ->
         self() |> schedule_inactive_check()
     end

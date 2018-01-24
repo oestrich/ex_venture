@@ -9,8 +9,8 @@ defmodule Game.Zone.Repo do
   @doc """
   Load all zones
   """
-  @spec all() :: [Zone.t]
+  @spec all() :: [Zone.t()]
   def all() do
-    Zone |> Repo.all
+    Zone |> Repo.all()
   end
 end

@@ -8,5 +8,5 @@ defmodule Game.Session.SessionStats do
 
   - `commands`: Map of counts for command usage, The module is the key, value is the count
   """
-  defstruct [commands: %{}]
+  defstruct commands: %{}
 end

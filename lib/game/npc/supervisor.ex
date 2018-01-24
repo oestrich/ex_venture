@@ -20,24 +20,25 @@ defmodule Game.NPC.Supervisor do
   def npcs(pid) do
     pid
     |> Supervisor.which_children()
-    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.map(&elem(&1, 1))
   end
 
   @doc """
   Start a newly created npc in the zone
   """
-  @spec start_child(pid, npc_spawner :: NPCSpawner.t) :: :ok
+  @spec start_child(pid, NPCSpawner.t()) :: :ok
   def start_child(pid, npc_spawner) do
     child_spec = worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :transient)
     Supervisor.start_child(pid, child_spec)
   end
 
   def init(zone) do
-    children = zone
-    |> NPC.for_zone()
-    |> Enum.map(fn (npc_spawner) ->
-      worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :transient)
-    end)
+    children =
+      zone
+      |> NPC.for_zone()
+      |> Enum.map(fn npc_spawner ->
+        worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :transient)
+      end)
 
     Zone.npc_supervisor(zone.id, self())
 

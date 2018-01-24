@@ -72,5 +72,6 @@ defmodule Game.Session.Commands do
     commands = Map.put(commands, command.module, count + 1)
     %{state | stats: %{commands: commands}}
   end
+
   def record_command(state, _), do: state
 end
