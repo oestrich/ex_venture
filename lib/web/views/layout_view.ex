@@ -9,9 +9,11 @@ defmodule Web.LayoutView do
       _ -> ""
     end
   end
+
   def tab_selected(conn, routes) when is_list(routes) do
-    routes |> Enum.map(&(tab_selected(conn, &1))) |> Enum.join(" ")
+    routes |> Enum.map(&tab_selected(conn, &1)) |> Enum.join(" ")
   end
+
   def tab_selected(conn, route) do
     case conn.path_info do
       ["admin", ^route] -> "active"

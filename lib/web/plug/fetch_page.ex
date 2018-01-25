@@ -15,6 +15,7 @@ defmodule Web.Plug.FetchPage do
         conn
         |> assign(:page, String.to_integer(page))
         |> assign(:per, @per)
+
       _ ->
         conn
         |> assign(:page, 1)

@@ -47,6 +47,7 @@ defmodule Web.TelnetChannel do
       case Map.get(state.channels, pid, nil) do
         nil ->
           {:reply, :ok, state}
+
         _session_pid ->
           Process.unlink(pid)
           {:reply, :ok, drop_channel(state, pid)}
@@ -57,6 +58,7 @@ defmodule Web.TelnetChannel do
       case Map.get(state.channels, pid, nil) do
         nil ->
           {:noreply, state}
+
         session_pid ->
           Game.Session.disconnect(session_pid)
           {:noreply, drop_channel(state, pid)}
@@ -94,37 +96,48 @@ defmodule Web.TelnetChannel do
       case command do
         {:echo, true} ->
           send(state.socket.channel_pid, {:option, :echo, true})
+
         {:echo, false} ->
           send(state.socket.channel_pid, {:option, :echo, false})
       end
+
       {:noreply, state}
     end
+
     def handle_cast({:gmcp, module, data}, state) do
       send(state.socket.channel_pid, {:gmcp, module, data})
       {:noreply, state}
     end
+
     def handle_cast({:echo, message}, state) do
       send(state.socket.channel_pid, {:echo, message})
       {:noreply, state}
     end
+
     def handle_cast({:echo, message, :prompt}, state) do
       send(state.socket.channel_pid, {:echo, message, :prompt})
       {:noreply, state}
     end
+
     def handle_cast(:start_session, state) do
       {:ok, pid} = Game.Session.start(self())
       Monitor.monitor(self(), pid)
       GenServer.cast(self(), :attempt_sign_in)
       {:noreply, Map.merge(state, %{session: pid})}
     end
+
     def handle_cast(:attempt_sign_in, state) do
       case state.socket.assigns do
         %{user: user} ->
           Game.Session.sign_in(state.session, user)
-        _ -> nil
+
+        _ ->
+          nil
       end
+
       {:noreply, state}
     end
+
     def handle_cast(:disconnect, state) do
       Monitor.demonitor(self())
 
@@ -132,17 +145,23 @@ defmodule Web.TelnetChannel do
         %{session: pid} ->
           pid |> Game.Session.disconnect()
           send(state.socket.channel_pid, :disconnect)
-        _ -> nil
+
+        _ ->
+          nil
       end
+
       {:stop, :normal, state}
     end
+
     def handle_cast({:recv, message}, state) do
       case state do
-        %{session: pid} -> pid |> Game.Session.recv(message |> String.trim)
+        %{session: pid} -> pid |> Game.Session.recv(message |> String.trim())
         _ -> nil
       end
+
       {:noreply, state}
     end
+
     def handle_cast({:user_id, user_id}, state) do
       send(state.socket.channel_pid, {:user_id, user_id})
       {:noreply, state}
@@ -157,7 +176,9 @@ defmodule Web.TelnetChannel do
         %{user_id: user_id} ->
           user = User.get(user_id)
           socket |> assign(:user, user)
-        _ -> socket
+
+        _ ->
+          socket
       end
 
     {:ok, pid} = Server.start_link(socket)
@@ -168,39 +189,48 @@ defmodule Web.TelnetChannel do
     case socket.assigns do
       %{server_pid: pid} ->
         GenServer.cast(pid, {:recv, message})
-      _ -> nil
+
+      _ ->
+        nil
     end
+
     {:noreply, socket}
   end
 
   def handle_info({:user_id, user_id}, state) do
     {:noreply, Map.put(state, :user_id, user_id)}
   end
+
   def handle_info({:option, :echo, flag}, socket) do
-    push socket, "option", %{type: "echo", echo: flag, sent_at: Timex.now()}
+    push(socket, "option", %{type: "echo", echo: flag, sent_at: Timex.now()})
     {:noreply, socket}
   end
+
   def handle_info({:gmcp, module, data}, socket) do
-    push socket, "gmcp", %{module: module, data: data, sent_at: Timex.now()}
+    push(socket, "gmcp", %{module: module, data: data, sent_at: Timex.now()})
     {:noreply, socket}
   end
+
   def handle_info({:echo, message}, socket) do
     broadcast(socket, message)
-    push socket, "echo", %{message: "\n#{message}\n", sent_at: Timex.now()}
+    push(socket, "echo", %{message: "\n#{message}\n", sent_at: Timex.now()})
     {:noreply, socket}
   end
+
   def handle_info({:echo, message, :prompt}, socket) do
     broadcast(socket, message)
-    push socket, "prompt", %{message: "\n#{message}", sent_at: Timex.now()}
+    push(socket, "prompt", %{message: "\n#{message}", sent_at: Timex.now()})
     {:noreply, socket}
   end
+
   def handle_info(:disconnect, socket) do
-    push socket, "disconnect", %{sent_at: Timex.now()}
+    push(socket, "disconnect", %{sent_at: Timex.now()})
     {:noreply, socket}
   end
 
   def broadcast(%{user_id: user_id}, data) when is_integer(user_id) do
     Web.Endpoint.broadcast("user:#{user_id}", "echo", %{data: data})
   end
+
   def broadcast(_, _), do: :ok
 end

@@ -13,17 +13,17 @@ defmodule Web.ItemAspect do
   @doc """
   Load all items
   """
-  @spec all() :: [ItemAspect.t]
+  @spec all() :: [ItemAspect.t()]
   def all() do
     ItemAspect
     |> order_by([i], i.id)
-    |> Repo.all
+    |> Repo.all()
   end
 
   @doc """
   Get a single item
   """
-  @spec get(id :: integer) :: ItemAspect.t
+  @spec get(id :: integer) :: ItemAspect.t()
   def get(id) do
     ItemAspect |> Repo.get(id)
   end
@@ -37,13 +37,13 @@ defmodule Web.ItemAspect do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(item :: ItemAspect.t) :: changeset :: map
+  @spec edit(item :: ItemAspect.t()) :: changeset :: map
   def edit(item), do: item |> ItemAspect.changeset(%{})
 
   @doc """
   Create an item module
   """
-  @spec create(params :: map) :: {:ok, ItemAspect.t} | {:error, changeset :: map}
+  @spec create(params :: map) :: {:ok, ItemAspect.t()} | {:error, changeset :: map}
   def create(params) do
     %ItemAspect{}
     |> ItemAspect.changeset(Item.cast_params(params))
@@ -53,11 +53,12 @@ defmodule Web.ItemAspect do
   @doc """
   Update an item
   """
-  @spec update(id :: integer, params :: map) :: {:ok, ItemAspect.t} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) :: {:ok, ItemAspect.t()} | {:error, changeset :: map}
   def update(id, params) do
     item_aspect = id |> get()
     changeset = item_aspect |> ItemAspect.changeset(Item.cast_params(params))
-    case changeset |> Repo.update do
+
+    case changeset |> Repo.update() do
       {:ok, item_aspect} ->
         item_aspect
         |> Repo.preload([:items])
@@ -65,7 +66,9 @@ defmodule Web.ItemAspect do
         |> Enum.each(&Items.reload/1)
 
         {:ok, item_aspect}
-      error -> error
+
+      error ->
+        error
     end
   end
 end

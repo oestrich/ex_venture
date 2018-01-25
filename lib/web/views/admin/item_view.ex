@@ -21,7 +21,7 @@ defmodule Web.Admin.ItemView do
   def types(), do: Item.types()
 
   def item_aspects() do
-    Enum.map(ItemAspect.all(), fn (item_aspect) ->
+    Enum.map(ItemAspect.all(), fn item_aspect ->
       {item_aspect.name, item_aspect.id}
     end)
   end

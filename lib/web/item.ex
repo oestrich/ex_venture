@@ -19,13 +19,13 @@ defmodule Web.Item do
   @doc """
   Delegate to the Data item for types
   """
-  @spec types() :: [String.t]
+  @spec types() :: [String.t()]
   def types(), do: Item.types()
 
   @doc """
   Load all items
   """
-  @spec all(opts :: Keyword.t) :: [Item.t]
+  @spec all(opts :: Keyword.t()) :: [Item.t()]
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
 
@@ -40,22 +40,28 @@ defmodule Web.Item do
   def filter_on_attribute({"cost_from", cost}, query) do
     query |> where([i], i.cost >= ^cost)
   end
+
   def filter_on_attribute({"cost_to", cost}, query) do
     query |> where([i], i.cost <= ^cost)
   end
+
   def filter_on_attribute({"level_from", level}, query) do
     query |> where([i], i.level >= ^level)
   end
+
   def filter_on_attribute({"level_to", level}, query) do
     query |> where([i], i.level <= ^level)
   end
+
   def filter_on_attribute({"tag", value}, query) do
     query
     |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
   end
+
   def filter_on_attribute({"type", type}, query) do
     query |> where([i], i.type == ^type)
   end
+
   def filter_on_attribute({"item_aspect_id", item_aspect_id}, query) do
     query
     |> join(:left, [i], ia in assoc(i, :item_aspectings))
@@ -65,7 +71,7 @@ defmodule Web.Item do
   @doc """
   List out all items for a select box
   """
-  @spec for_select() :: [{String.t, integer()}]
+  @spec for_select() :: [{String.t(), integer()}]
   def for_select() do
     Item
     |> select([i], [i.name, i.id])
@@ -77,11 +83,11 @@ defmodule Web.Item do
   @doc """
   Get a single item
   """
-  @spec get(id :: integer) :: Item.t
+  @spec get(id :: integer) :: Item.t()
   def get(id) do
     Item
     |> Repo.get(id)
-    |> Repo.preload([shop_items: [:shop], npc_items: [:npc], item_aspectings: [:item_aspect]])
+    |> Repo.preload(shop_items: [:shop], npc_items: [:npc], item_aspectings: [:item_aspect])
   end
 
   @doc """
@@ -93,13 +99,13 @@ defmodule Web.Item do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(item :: Item.t) :: changeset :: map
+  @spec edit(item :: Item.t()) :: changeset :: map
   def edit(item), do: item |> Item.changeset(%{})
 
   @doc """
   Clone an item (remove the id)
   """
-  @spec clone(item :: Item.t) :: changeset :: map
+  @spec clone(item :: Item.t()) :: changeset :: map
   def clone(item) do
     item = item |> Map.take(Item.fields())
     struct(Item, item)
@@ -108,29 +114,35 @@ defmodule Web.Item do
   @doc """
   Create an item
   """
-  @spec create(params :: map) :: {:ok, Item.t} | {:error, changeset :: map}
+  @spec create(params :: map) :: {:ok, Item.t()} | {:error, changeset :: map}
   def create(params) do
     changeset = %Item{} |> Item.changeset(cast_params(params))
+
     case changeset |> Repo.insert() do
       {:ok, item} ->
         Items.insert(item)
         {:ok, item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   @doc """
   Update an item
   """
-  @spec update(id :: integer, params :: map) :: {:ok, Item.t} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) :: {:ok, Item.t()} | {:error, changeset :: map}
   def update(id, params) do
     item = id |> get()
     changeset = item |> Item.changeset(cast_params(params))
-    case changeset |> Repo.update do
+
+    case changeset |> Repo.update() do
       {:ok, item} ->
         Items.reload(item)
         {:ok, item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
@@ -152,13 +164,16 @@ defmodule Web.Item do
       _ -> params
     end
   end
+
   defp parse_stats(params), do: params
 
   defp cast_stats(stats, params) do
-    case stats |> Stats.load do
+    case stats |> Stats.load() do
       {:ok, stats} ->
         Map.put(params, "stats", stats)
-        _ -> params
+
+      _ ->
+        params
     end
   end
 
@@ -168,17 +183,19 @@ defmodule Web.Item do
       _ -> params
     end
   end
+
   defp parse_effects(params), do: params
 
   defp cast_effects(effects, params) do
-    effects = effects
-    |> Enum.map(fn (effect) ->
-      case Effect.load(effect) do
-        {:ok, effect} -> effect
-        _ -> nil
-      end
-    end)
-    |> Enum.reject(&is_nil/1)
+    effects =
+      effects
+      |> Enum.map(fn effect ->
+        case Effect.load(effect) do
+          {:ok, effect} -> effect
+          _ -> nil
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
 
     Map.put(params, "effects", effects)
   end
@@ -192,5 +209,6 @@ defmodule Web.Item do
     params
     |> Map.put("tags", tags)
   end
+
   def parse_tags(params), do: params
 end

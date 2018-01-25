@@ -17,6 +17,7 @@ defmodule Web.Admin.SkillController do
 
   def create(conn, %{"class_id" => class_id, "skill" => params}) do
     class = Class.get(class_id)
+
     case Skill.create(class, params) do
       {:ok, skill} -> conn |> redirect(to: skill_path(conn, :show, skill.id))
       {:error, changeset} -> conn |> render("new.html", class: class, changeset: changeset)
@@ -31,7 +32,9 @@ defmodule Web.Admin.SkillController do
 
   def update(conn, %{"id" => id, "skill" => params}) do
     case Skill.update(id, params) do
-      {:ok, skill} -> conn |> redirect(to: skill_path(conn, :show, skill.id))
+      {:ok, skill} ->
+        conn |> redirect(to: skill_path(conn, :show, skill.id))
+
       {:error, changeset} ->
         skill = Skill.get(id)
         conn |> render("edit.html", skill: skill, changeset: changeset)

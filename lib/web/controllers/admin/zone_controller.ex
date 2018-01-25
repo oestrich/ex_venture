@@ -3,7 +3,7 @@ defmodule Web.Admin.ZoneController do
 
   alias Web.Zone
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
@@ -36,7 +36,9 @@ defmodule Web.Admin.ZoneController do
 
   def update(conn, %{"id" => id, "zone" => params}) do
     case Zone.update(id, params) do
-      {:ok, zone} -> conn |> redirect(to: zone_path(conn, :show, zone.id))
+      {:ok, zone} ->
+        conn |> redirect(to: zone_path(conn, :show, zone.id))
+
       {:error, changeset} ->
         zone = Zone.get(id)
         conn |> render("edit.html", zone: zone, changeset: changeset)

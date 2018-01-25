@@ -15,7 +15,9 @@ defmodule Web.Admin.ConfigController do
 
   def update(conn, %{"id" => name, "config" => %{"value" => value}}) do
     case Config.update(name, value) do
-      {:ok, _config} -> conn |> redirect(to: config_path(conn, :index))
+      {:ok, _config} ->
+        conn |> redirect(to: config_path(conn, :index))
+
       {:error, changeset} ->
         config = Config.get(name)
         conn |> render("edit.html", config: config, changeset: changeset)

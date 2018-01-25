@@ -20,7 +20,7 @@ defmodule Web.Stats do
   def user_count() do
     User
     |> select([u], count(u.id))
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -30,7 +30,7 @@ defmodule Web.Stats do
   def item_count() do
     Item
     |> select([i], count(i.id))
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -40,7 +40,7 @@ defmodule Web.Stats do
   def zone_count() do
     Zone
     |> select([z], count(z.id))
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -50,7 +50,7 @@ defmodule Web.Stats do
   def room_count() do
     Room
     |> select([r], count(r.id))
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -60,7 +60,7 @@ defmodule Web.Stats do
   def npc_count() do
     NPC
     |> select([n], count(n.id))
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -70,6 +70,6 @@ defmodule Web.Stats do
   def bug_count() do
     Bug
     |> select([b], count(b.id))
-    |> Repo.one
+    |> Repo.one()
   end
 end

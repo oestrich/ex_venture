@@ -1,7 +1,7 @@
 defmodule Web.Admin.UserController do
   use Web.AdminController
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   alias Web.User
 
@@ -24,6 +24,7 @@ defmodule Web.Admin.UserController do
 
   def teleport(conn, %{"room_id" => room_id}) do
     %{user: user} = conn.assigns
+
     case User.teleport(user, room_id) do
       {:ok, _user} -> conn |> redirect(to: room_path(conn, :show, room_id))
       _ -> conn |> redirect(to: room_path(conn, :show, room_id))
@@ -40,6 +41,7 @@ defmodule Web.Admin.UserController do
     case User.reset(id) do
       {:ok, user} ->
         conn |> redirect(to: user_path(conn, :show, user.id))
+
       {:error, _} ->
         conn |> redirect(to: user_path(conn, :show, id))
     end

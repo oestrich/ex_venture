@@ -23,17 +23,17 @@ defmodule Web.User do
   @doc """
   Fetch a user from a web token
   """
-  @spec from_token(token :: String.t) :: User.t
+  @spec from_token(token :: String.t()) :: User.t()
   def from_token(token) do
     User
     |> where([u], u.token == ^token)
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
   Load all users
   """
-  @spec all(opts :: Keyword.t) :: [User.t]
+  @spec all(opts :: Keyword.t()) :: [User.t()]
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
 
@@ -49,29 +49,37 @@ defmodule Web.User do
     query
     |> where([u], fragment("?->>'level' >= ?", u.save, ^to_string(level)))
   end
+
   def filter_on_attribute({"level_to", level}, query) do
     query
     |> where([u], fragment("?->>'level' <= ?", u.save, ^to_string(level)))
   end
+
   def filter_on_attribute({"class_id", class_id}, query) do
     query
     |> where([u], u.class_id == ^class_id)
   end
+
   def filter_on_attribute({"race_id", race_id}, query) do
     query
     |> where([u], u.race_id == ^race_id)
   end
+
   def filter_on_attribute(_, query), do: query
 
   @doc """
   Load a user
   """
-  @spec get(id :: integer) :: User.t
+  @spec get(id :: integer) :: User.t()
   def get(id) do
     User
     |> where([u], u.id == ^id)
-    |> preload([:class, :race, sessions: ^(from s in User.Session, order_by: [desc: s.started_at], limit: 10)])
-    |> preload([quest_progress: [:quest]])
+    |> preload([
+      :class,
+      :race,
+      sessions: ^from(s in User.Session, order_by: [desc: s.started_at], limit: 10)
+    ])
+    |> preload(quest_progress: [:quest])
     |> Repo.one()
   end
 
@@ -84,7 +92,7 @@ defmodule Web.User do
   @doc """
   Create a new user
   """
-  @spec create(params :: map) :: {:ok, User.t} | {:error, changeset :: map}
+  @spec create(params :: map) :: {:ok, User.t()} | {:error, changeset :: map}
   def create(params = %{"race_id" => race_id}) do
     save = starting_save(race_id)
     params = Map.put(params, "save", save)
@@ -93,6 +101,7 @@ defmodule Web.User do
     |> User.changeset(params)
     |> Repo.insert()
   end
+
   def create(params) do
     %User{}
     |> User.changeset(params)
@@ -102,7 +111,7 @@ defmodule Web.User do
   @doc """
   Get a starting save for a user
   """
-  @spec starting_save(race_id :: integer()) :: Save.t
+  @spec starting_save(race_id :: integer()) :: Save.t()
   def starting_save(race_id) do
     race = Race.get(race_id)
 
@@ -113,10 +122,10 @@ defmodule Web.User do
   @doc """
   List out connected players
   """
-  @spec connected_players() :: [User.t]
+  @spec connected_players() :: [User.t()]
   def connected_players() do
     SessionRegistry.connected_players()
-    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.map(&elem(&1, 1))
   end
 
   @doc """
@@ -124,23 +133,27 @@ defmodule Web.User do
 
   Updates the save and sends a message to their session
   """
-  @spec teleport(user :: User.t, room_id :: integer) :: {:ok, User.t} | {:error, map}
+  @spec teleport(user :: User.t(), room_id :: integer) :: {:ok, User.t()} | {:error, map}
   def teleport(user, room_id) do
     room_id = String.to_integer(room_id)
     save = %{user.save | room_id: room_id}
     changeset = user |> User.changeset(%{save: save})
+
     case changeset |> Repo.update() do
       {:ok, user} ->
         teleport_player_in_game(user, room_id)
 
         {:ok, user}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   def teleport_player_in_game(user, room_id) do
-    player = SessionRegistry.connected_players()
-    |> Enum.find(fn ({_, player}) -> player.id == user.id end)
+    player =
+      SessionRegistry.connected_players()
+      |> Enum.find(fn {_, player} -> player.id == user.id end)
 
     case player do
       nil -> nil
@@ -164,14 +177,17 @@ defmodule Web.User do
   @doc """
   Change a user's password
   """
-  @spec change_password(user :: User.t, current_password :: String.t, params :: map) :: {:ok, User.t}
+  @spec change_password(user :: User.t(), current_password :: String.t(), params :: map) ::
+          {:ok, User.t()}
   def change_password(user, current_password, params) do
     case Authentication.find_and_validate(user.name, current_password) do
-      {:error, :invalid} -> {:error, :invalid}
+      {:error, :invalid} ->
+        {:error, :invalid}
+
       user ->
         user
         |> User.password_changeset(params)
-        |> Repo.update
+        |> Repo.update()
     end
   end
 
@@ -183,9 +199,10 @@ defmodule Web.User do
   @spec disconnect() :: :ok
   def disconnect() do
     SessionRegistry.connected_players()
-    |> Enum.each(fn ({session, _}) ->
+    |> Enum.each(fn {session, _} ->
       Session.disconnect(session, force: true)
     end)
+
     :ok
   end
 end

@@ -14,13 +14,15 @@ defmodule Web.Class do
   @doc """
   Get all classes
   """
-  @spec all(opts :: Keyword.t) :: [Class.t]
+  @spec all(Keyword.t()) :: [Class.t()]
   def all(opts \\ [])
+
   def all(alpha: true) do
     Class
     |> order_by([c], c.name)
-    |> Repo.all
+    |> Repo.all()
   end
+
   def all(opts) do
     opts = Enum.into(opts, %{})
 
@@ -32,7 +34,7 @@ defmodule Web.Class do
   @doc """
   List out all classs for a select box
   """
-  @spec class_select() :: [{String.t, integer()}]
+  @spec class_select() :: [{String.t(), integer()}]
   def class_select() do
     Class
     |> select([c], [c.name, c.id])
@@ -46,12 +48,12 @@ defmodule Web.Class do
 
   Preload skills
   """
-  @spec get(id :: integer) :: [Class.t]
+  @spec get(integer) :: [Class.t()]
   def get(id) do
     Class
     |> where([c], c.id == ^id)
-    |> preload([skills: ^(from s in Skill, order_by: [s.level, s.id])])
-    |> Repo.one
+    |> preload(skills: ^from(s in Skill, order_by: [s.level, s.id]))
+    |> Repo.one()
   end
 
   @doc """
@@ -63,13 +65,13 @@ defmodule Web.Class do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(class :: Class.t) :: changeset :: map
+  @spec edit(Class.t()) :: map
   def edit(class), do: class |> Class.changeset(%{})
 
   @doc """
   Create a class
   """
-  @spec create(params :: map) :: {:ok, Class.t} | {:error, changeset :: map}
+  @spec create(map) :: {:ok, Class.t()} | {:error, map}
   def create(params) do
     %Class{}
     |> Class.changeset(cast_params(params))
@@ -79,18 +81,18 @@ defmodule Web.Class do
   @doc """
   Update an zone
   """
-  @spec update(id :: integer, params :: map) :: {:ok, Zone.t} | {:error, changeset :: map}
+  @spec update(integer, map) :: {:ok, Zone.t()} | {:error, map}
   def update(id, params) do
     id
     |> get()
     |> Class.changeset(cast_params(params))
-    |> Repo.update
+    |> Repo.update()
   end
 
   @doc """
   Cast params into what `Data.Class` expects
   """
-  @spec cast_params(params :: map) :: map
+  @spec cast_params(map) :: map
   def cast_params(params) do
     params
     |> parse_stats()
@@ -102,13 +104,16 @@ defmodule Web.Class do
       _ -> params
     end
   end
+
   defp parse_stats(params), do: params
 
   defp cast_stats(stats, params) do
-    case stats |> Stats.load do
+    case stats |> Stats.load() do
       {:ok, stats} ->
         Map.put(params, "each_level_stats", stats)
-        _ -> params
+
+      _ ->
+        params
     end
   end
 end

@@ -3,7 +3,7 @@ defmodule Web.Admin.NPCController do
 
   alias Web.NPC
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
@@ -37,7 +37,9 @@ defmodule Web.Admin.NPCController do
 
   def update(conn, %{"id" => id, "npc" => params}) do
     case NPC.update(id, params) do
-      {:ok, npc} -> conn |> redirect(to: npc_path(conn, :show, npc.id))
+      {:ok, npc} ->
+        conn |> redirect(to: npc_path(conn, :show, npc.id))
+
       {:error, changeset} ->
         npc = NPC.get(id)
         conn |> render("edit.html", npc: npc, changeset: changeset)

@@ -11,7 +11,7 @@ defmodule Web.ItemAspecting do
   @doc """
   Get a single item
   """
-  @spec get(id :: integer) :: ItemAspecting.t
+  @spec get(id :: integer) :: ItemAspecting.t()
   def get(id) do
     ItemAspecting
     |> Repo.get(id)
@@ -20,13 +20,14 @@ defmodule Web.ItemAspecting do
   @doc """
   Get a changeset for a new page
   """
-  @spec new(item :: Item.t) :: changeset :: map
+  @spec new(item :: Item.t()) :: changeset :: map
   def new(item), do: item |> Ecto.build_assoc(:item_aspectings) |> ItemAspecting.changeset(%{})
 
   @doc """
   Create an item aspecting
   """
-  @spec create(item :: Item.t, params :: map) :: {:ok, ItemAspecting.t} | {:error, changeset :: map}
+  @spec create(item :: Item.t(), params :: map) ::
+          {:ok, ItemAspecting.t()} | {:error, changeset :: map}
   def create(item, params) do
     changeset =
       item
@@ -40,7 +41,9 @@ defmodule Web.ItemAspecting do
         |> Items.reload()
 
         {:ok, item_aspecting}
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -55,7 +58,9 @@ defmodule Web.ItemAspecting do
         |> Items.reload()
 
         {:ok, item_aspecting}
-      error -> error
+
+      error ->
+        error
     end
   end
 end

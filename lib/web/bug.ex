@@ -30,6 +30,7 @@ defmodule Web.Bug do
   def filter_on_attribute({"is_completed", is_completed}, query) do
     query |> where([b], b.is_completed == ^is_completed)
   end
+
   def filter_on_attribute(_, query), do: query
 
   @doc """
@@ -40,7 +41,7 @@ defmodule Web.Bug do
     Bug
     |> where([b], b.id == ^id)
     |> preload([:reporter])
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """

@@ -16,6 +16,7 @@ defmodule Web.Admin.NPCSpawnerController do
     changeset = NPC.new_spawner(npc)
     conn |> render("new.html", npc: npc, changeset: changeset, zone: zone)
   end
+
   def new(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
     changeset = NPC.new_spawner(npc)
@@ -24,6 +25,7 @@ defmodule Web.Admin.NPCSpawnerController do
 
   def create(conn, %{"npc_id" => npc_id, "npc_spawner" => params}) do
     npc = NPC.get(npc_id)
+
     case NPC.add_spawner(npc, params) do
       {:ok, npc_spawner} -> conn |> redirect(to: npc_path(conn, :show, npc_spawner.npc_id))
       {:error, changeset} -> conn |> render("new.html", npc: npc, changeset: changeset)
@@ -38,7 +40,9 @@ defmodule Web.Admin.NPCSpawnerController do
 
   def update(conn, %{"id" => id, "npc_spawner" => params}) do
     case NPC.update_spawner(id, params) do
-      {:ok, npc_spawner} -> conn |> redirect(to: npc_path(conn, :show, npc_spawner.npc_id))
+      {:ok, npc_spawner} ->
+        conn |> redirect(to: npc_path(conn, :show, npc_spawner.npc_id))
+
       {:error, changeset} ->
         npc_spawner = NPC.get_spawner(id)
         conn |> render("edit.html", npc_spawner: npc_spawner, changeset: changeset)

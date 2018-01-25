@@ -3,7 +3,7 @@ defmodule Web.Admin.NoteController do
 
   alias Web.Note
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
@@ -37,7 +37,9 @@ defmodule Web.Admin.NoteController do
 
   def update(conn, %{"id" => id, "note" => params}) do
     case Note.update(id, params) do
-      {:ok, note} -> conn |> redirect(to: note_path(conn, :show, note.id))
+      {:ok, note} ->
+        conn |> redirect(to: note_path(conn, :show, note.id))
+
       {:error, changeset} ->
         note = Note.get(id)
         conn |> render("edit.html", note: note, changeset: changeset)

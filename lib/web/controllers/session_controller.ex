@@ -13,6 +13,7 @@ defmodule Web.SessionController do
         conn
         |> put_flash(:error, "Invalid sign in")
         |> redirect(to: public_session_path(conn, :new))
+
       user ->
         conn
         |> put_session(:user_token, user.token)

@@ -7,14 +7,17 @@ defmodule Web.KeywordsHelper do
   def split_keywords(params = %{"keywords" => keywords}) do
     params |> Map.put("keywords", keywords |> String.split(",") |> Enum.map(&String.trim/1))
   end
+
   def split_keywords(params), do: params
 
   def keywords(%{changes: %{keywords: keywords}}) when keywords != nil do
     keywords(%{keywords: keywords})
   end
+
   def keywords(%{data: %{keywords: keywords}}) when keywords != nil do
     keywords(%{keywords: keywords})
   end
+
   def keywords(%{keywords: keywords}) when keywords != nil, do: keywords |> Enum.join(", ")
   def keywords(%{}), do: ""
 end

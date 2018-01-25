@@ -3,7 +3,7 @@ defmodule Web.Admin.TypoController do
 
   alias Web.Typo
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns

@@ -4,6 +4,6 @@ defmodule Web.HelpView do
   alias Web.Color
 
   def command_topic_key(command) do
-    command |> to_string |> String.split(".") |> List.last
+    command |> to_string |> String.split(".") |> List.last()
   end
 end

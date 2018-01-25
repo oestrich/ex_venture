@@ -3,7 +3,7 @@ defmodule Web.Admin.QuestController do
 
   alias Web.Quest
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
@@ -37,7 +37,9 @@ defmodule Web.Admin.QuestController do
 
   def update(conn, %{"id" => id, "quest" => params}) do
     case Quest.update(id, params) do
-      {:ok, quest} -> conn |> redirect(to: quest_path(conn, :show, quest.id))
+      {:ok, quest} ->
+        conn |> redirect(to: quest_path(conn, :show, quest.id))
+
       {:error, changeset} ->
         quest = Quest.get(id)
         conn |> render("edit.html", quest: quest, changeset: changeset)

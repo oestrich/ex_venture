@@ -3,7 +3,7 @@ defmodule Web.AccountController do
 
   alias Web.User
 
-  plug :ensure_user!
+  plug(:ensure_user!)
 
   def show(conn, _params) do
     conn |> render("show.html")
@@ -13,6 +13,7 @@ defmodule Web.AccountController do
     case User.change_password(conn.assigns.user, params["current_password"], params) do
       {:ok, _user} ->
         conn |> redirect(to: public_page_path(conn, :index))
+
       _ ->
         conn |> redirect(to: public_account_path(conn, :show))
     end

@@ -4,10 +4,10 @@ defmodule Web.PageController do
   alias Web.User
 
   def index(conn, _params) do
-    render conn, "index.html"
+    render(conn, "index.html")
   end
 
   def who(conn, _params) do
-    render conn, "who.html", players: User.connected_players()
+    render(conn, "who.html", players: User.connected_players())
   end
 end

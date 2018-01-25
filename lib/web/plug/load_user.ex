@@ -15,6 +15,7 @@ defmodule Web.Plug.LoadUser do
   end
 
   defp _load_user(conn, nil), do: conn
+
   defp _load_user(conn, user) do
     token = Phoenix.Token.sign(conn, "user socket", user.id)
 

@@ -19,7 +19,7 @@ defmodule Web.Admin.UserView do
   end
 
   def time(time) do
-    new_york = Timex.Timezone.get(@timezone, Timex.now)
+    new_york = Timex.Timezone.get(@timezone, Timex.now())
 
     time
     |> Timex.Timezone.convert(new_york)

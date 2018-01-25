@@ -3,7 +3,7 @@ defmodule Web.AuthenticatedController do
     quote do
       use Web, :controller
 
-      plug :load_user
+      plug(:load_user)
 
       defp load_user(conn, _opts) do
         case conn |> get_session(:user_token) do

@@ -1,7 +1,7 @@
 defmodule Web.Admin.SessionController do
   use Web, :controller
 
-  plug :put_layout, "login.html"
+  plug(:put_layout, "login.html")
 
   alias Game.Authentication
 
@@ -15,6 +15,7 @@ defmodule Web.Admin.SessionController do
         conn
         |> put_flash(:error, "Invalid sign in")
         |> redirect(to: session_path(conn, :new))
+
       user ->
         conn
         |> put_session(:user_token, user.token)

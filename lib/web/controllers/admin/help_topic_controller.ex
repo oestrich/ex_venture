@@ -3,7 +3,7 @@ defmodule Web.Admin.HelpTopicController do
 
   alias Web.HelpTopic
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
@@ -36,7 +36,9 @@ defmodule Web.Admin.HelpTopicController do
 
   def update(conn, %{"id" => id, "help_topic" => params}) do
     case HelpTopic.update(id, params) do
-      {:ok, help_topic} -> conn |> redirect(to: help_topic_path(conn, :show, help_topic.id))
+      {:ok, help_topic} ->
+        conn |> redirect(to: help_topic_path(conn, :show, help_topic.id))
+
       {:error, changeset} ->
         help_topic = HelpTopic.get(id)
         conn |> render("edit.html", help_topic: help_topic, changeset: changeset)

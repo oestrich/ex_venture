@@ -3,7 +3,7 @@ defmodule Web.Admin.ClassController do
 
   alias Web.Class
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
@@ -36,7 +36,9 @@ defmodule Web.Admin.ClassController do
 
   def update(conn, %{"id" => id, "class" => params}) do
     case Class.update(id, params) do
-      {:ok, class} -> conn |> redirect(to: class_path(conn, :show, class.id))
+      {:ok, class} ->
+        conn |> redirect(to: class_path(conn, :show, class.id))
+
       {:error, changeset} ->
         class = Class.get(id)
         conn |> render("edit.html", class: class, changeset: changeset)

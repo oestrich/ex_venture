@@ -29,6 +29,7 @@ defmodule Web.JSONHelper do
   end
 
   defp parse_value(nil), do: ""
+
   defp parse_value(value) do
     case Poison.encode(value, pretty: true) do
       {:ok, value} -> value

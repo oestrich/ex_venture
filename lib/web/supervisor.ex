@@ -14,7 +14,7 @@ defmodule Web.Supervisor do
     children = [
       supervisor(Web.Endpoint, []),
       worker(Web.NPCChannel.Monitor, []),
-      worker(Web.TelnetChannel.Monitor, []),
+      worker(Web.TelnetChannel.Monitor, [])
     ]
 
     supervise(children, strategy: :one_for_one)

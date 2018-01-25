@@ -3,7 +3,7 @@ defmodule Web.Admin.BugController do
 
   alias Web.Bug
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
@@ -21,6 +21,7 @@ defmodule Web.Admin.BugController do
     case Bug.complete(id) do
       {:ok, bug} ->
         conn |> redirect(to: bug_path(conn, :show, bug))
+
       _ ->
         conn |> redirect(to: bug_path(conn, :index))
     end

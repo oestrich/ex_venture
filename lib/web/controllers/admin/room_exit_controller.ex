@@ -13,11 +13,15 @@ defmodule Web.Admin.RoomExitController do
 
   def create(conn, %{"room_id" => room_id, "exit" => params, "direction" => direction}) do
     case Room.create_exit(params) do
-      {:ok, _room_exit} -> conn |> redirect(to: room_path(conn, :show, room_id))
+      {:ok, _room_exit} ->
+        conn |> redirect(to: room_path(conn, :show, room_id))
+
       {:error, changeset} ->
         room = Room.get(room_id)
         zone = Zone.get(room.zone_id)
-        conn |> render("new.html", changeset: changeset, zone: zone, room: room, direction: direction)
+
+        conn
+        |> render("new.html", changeset: changeset, zone: zone, room: room, direction: direction)
     end
   end
 

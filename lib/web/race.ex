@@ -12,23 +12,25 @@ defmodule Web.Race do
   @doc """
   Get all races
   """
-  @spec all(opts :: Keyword.t) :: [Race.t]
+  @spec all(opts :: Keyword.t()) :: [Race.t()]
   def all(opts \\ [])
+
   def all(alpha: true) do
     Race
     |> order_by([r], r.name)
-    |> Repo.all
+    |> Repo.all()
   end
+
   def all(_) do
     Race
     |> order_by([r], r.id)
-    |> Repo.all
+    |> Repo.all()
   end
 
   @doc """
   List out all races for a select box
   """
-  @spec race_select() :: [{String.t, integer()}]
+  @spec race_select() :: [{String.t(), integer()}]
   def race_select() do
     Race
     |> select([r], [r.name, r.id])
@@ -40,11 +42,11 @@ defmodule Web.Race do
   @doc """
   Get a races
   """
-  @spec get(id :: integer) :: [Race.t]
+  @spec get(id :: integer) :: [Race.t()]
   def get(id) do
     Race
     |> where([c], c.id == ^id)
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -56,13 +58,13 @@ defmodule Web.Race do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(race :: Race.t) :: changeset :: map
+  @spec edit(race :: Race.t()) :: changeset :: map
   def edit(race), do: race |> Race.changeset(%{})
 
   @doc """
   Create a race
   """
-  @spec create(params :: map) :: {:ok, Race.t} | {:error, changeset :: map}
+  @spec create(params :: map) :: {:ok, Race.t()} | {:error, changeset :: map}
   def create(params) do
     %Race{}
     |> Race.changeset(cast_params(params))
@@ -72,12 +74,12 @@ defmodule Web.Race do
   @doc """
   Update a race
   """
-  @spec update(id :: integer, params :: map) :: {:ok, Race.t} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) :: {:ok, Race.t()} | {:error, changeset :: map}
   def update(id, params) do
     id
     |> get()
     |> Race.changeset(cast_params(params))
-    |> Repo.update
+    |> Repo.update()
   end
 
   @doc """
@@ -95,13 +97,16 @@ defmodule Web.Race do
       _ -> params
     end
   end
+
   defp parse_stats(params), do: params
 
   defp cast_stats(stats, params) do
-    case stats |> Stats.load do
+    case stats |> Stats.load() do
       {:ok, stats} ->
         Map.put(params, "starting_stats", stats)
-        _ -> params
+
+      _ ->
+        params
     end
   end
 end

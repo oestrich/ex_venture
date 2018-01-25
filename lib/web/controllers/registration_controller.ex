@@ -14,6 +14,7 @@ defmodule Web.RegistrationController do
         conn
         |> put_session(:user_token, user.token)
         |> redirect(to: public_play_path(conn, :show))
+
       {:error, changeset} ->
         conn |> render("new.html", changeset: changeset)
     end

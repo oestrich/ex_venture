@@ -7,7 +7,7 @@ defmodule Web.Admin.RoomView do
   alias Game.Items
 
   def room_select(%{rooms: rooms}) do
-    rooms |> Enum.map(&({&1.name, &1.id}))
+    rooms |> Enum.map(&{&1.name, &1.id})
   end
 
   def has_exit?(room, direction) do
@@ -21,6 +21,7 @@ defmodule Web.Admin.RoomView do
       |> String.capitalize()
 
     room_name = get_exit(room, direction).name
+
     door =
       case room |> exit_has_door?(direction) do
         true -> " - Door"

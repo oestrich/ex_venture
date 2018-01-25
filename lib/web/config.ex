@@ -24,11 +24,11 @@ defmodule Web.Config do
   @doc """
   Get a config struct by name
   """
-  @spec find_config(String.t) :: Config.t()
+  @spec find_config(String.t()) :: Config.t()
   def find_config(name) do
     Config
     |> where([c], c.name == ^name)
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -38,11 +38,14 @@ defmodule Web.Config do
   def update(name, value) do
     config = find_config(name)
     changeset = config |> Config.changeset(%{value: value})
+
     case changeset |> Repo.update() do
       {:ok, config} ->
         GameConfig.reload(name)
         {:ok, config}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 end

@@ -33,7 +33,9 @@ defmodule Web.Admin.RaceController do
 
   def update(conn, %{"id" => id, "race" => params}) do
     case Race.update(id, params) do
-      {:ok, race} -> conn |> redirect(to: race_path(conn, :show, race.id))
+      {:ok, race} ->
+        conn |> redirect(to: race_path(conn, :show, race.id))
+
       {:error, changeset} ->
         race = Race.get(id)
         conn |> render("edit.html", race: race, changeset: changeset)

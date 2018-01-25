@@ -30,16 +30,17 @@ defmodule Web.Note do
     query
     |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
   end
+
   def filter_on_attribute(_, query), do: query
 
   @doc """
   Get a note
   """
-  @spec get(integer()) :: [Note.t]
+  @spec get(integer()) :: [Note.t()]
   def get(id) do
     Note
     |> where([n], n.id == ^id)
-    |> Repo.one
+    |> Repo.one()
   end
 
   @doc """
@@ -57,7 +58,7 @@ defmodule Web.Note do
   @doc """
   Create a note
   """
-  @spec create(map()) :: {:ok, Note.t} | {:error, map}
+  @spec create(map()) :: {:ok, Note.t()} | {:error, map}
   def create(params) do
     %Note{}
     |> Note.changeset(cast_params(params))
@@ -67,12 +68,12 @@ defmodule Web.Note do
   @doc """
   Update an zone
   """
-  @spec update(integer(), map()) :: {:ok, Zone.t} | {:error, map()}
+  @spec update(integer(), map()) :: {:ok, Zone.t()} | {:error, map()}
   def update(id, params) do
     id
     |> get()
     |> Note.changeset(cast_params(params))
-    |> Repo.update
+    |> Repo.update()
   end
 
   @doc """
@@ -93,5 +94,6 @@ defmodule Web.Note do
     params
     |> Map.put("tags", tags)
   end
+
   def parse_tags(params), do: params
 end

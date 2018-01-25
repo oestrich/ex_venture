@@ -10,7 +10,7 @@ defmodule Web.Skill do
   @doc """
   Get a skill
   """
-  @spec get(id :: integer) :: Skill.t
+  @spec get(id :: integer) :: Skill.t()
   def get(id) do
     Skill |> Repo.get(id) |> Repo.preload([:class])
   end
@@ -18,7 +18,7 @@ defmodule Web.Skill do
   @doc """
   Get a changeset for a new page
   """
-  @spec new(class :: Class.t) :: changeset :: map
+  @spec new(class :: Class.t()) :: changeset :: map
   def new(class) do
     class
     |> Ecto.build_assoc(:skills)
@@ -28,13 +28,13 @@ defmodule Web.Skill do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(skill :: Skill.t) :: changeset :: map
+  @spec edit(skill :: Skill.t()) :: changeset :: map
   def edit(skill), do: skill |> Skill.changeset(%{})
 
   @doc """
   Create a skill
   """
-  @spec create(class :: Class.t, params :: map) :: {:ok, Skill.t} | {:error, changeset :: map}
+  @spec create(class :: Class.t(), params :: map) :: {:ok, Skill.t()} | {:error, changeset :: map}
   def create(class, params) do
     class
     |> Ecto.build_assoc(:skills)
@@ -45,7 +45,7 @@ defmodule Web.Skill do
   @doc """
   Update a skill
   """
-  @spec update(id :: integer, params :: map) :: {:ok, Skill.t} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) :: {:ok, Skill.t()} | {:error, changeset :: map}
   def update(id, params) do
     id
     |> get()
@@ -68,17 +68,19 @@ defmodule Web.Skill do
       _ -> params
     end
   end
+
   defp parse_effects(params), do: params
 
   defp cast_effects(effects, params) do
-    effects = effects
-    |> Enum.map(fn (effect) ->
-      case Effect.load(effect) do
-        {:ok, effect} -> effect
-        _ -> nil
-      end
-    end)
-    |> Enum.reject(&is_nil/1)
+    effects =
+      effects
+      |> Enum.map(fn effect ->
+        case Effect.load(effect) do
+          {:ok, effect} -> effect
+          _ -> nil
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
 
     Map.put(params, "effects", effects)
   end

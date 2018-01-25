@@ -33,7 +33,9 @@ defmodule Web.Admin.ItemAspectController do
 
   def update(conn, %{"id" => id, "item_aspect" => params}) do
     case ItemAspect.update(id, params) do
-      {:ok, item_aspect} -> conn |> redirect(to: item_aspect_path(conn, :show, item_aspect.id))
+      {:ok, item_aspect} ->
+        conn |> redirect(to: item_aspect_path(conn, :show, item_aspect.id))
+
       {:error, changeset} ->
         item_aspect = ItemAspect.get(id)
         conn |> render("edit.html", item_aspect: item_aspect, changeset: changeset)

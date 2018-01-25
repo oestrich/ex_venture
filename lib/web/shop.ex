@@ -15,19 +15,19 @@ defmodule Web.Shop do
   @doc """
   Get a shop
   """
-  @spec get(id :: integer) :: [Room.t]
+  @spec get(id :: integer) :: [Room.t()]
   def get(id) do
     Shop
     |> where([s], s.id == ^id)
-    |> preload([shop_items: ^(from si in ShopItem, join: i in assoc(si, :item), order_by: [i.name])])
-    |> preload([shop_items: [:item]])
-    |> Repo.one
+    |> preload(shop_items: ^from(si in ShopItem, join: i in assoc(si, :item), order_by: [i.name]))
+    |> preload(shop_items: [:item])
+    |> Repo.one()
   end
 
   @doc """
   Get a changeset for a new page
   """
-  @spec new(room :: Room.t) :: changeset :: map
+  @spec new(room :: Room.t()) :: changeset :: map
   def new(room) do
     room
     |> Ecto.build_assoc(:shops)
@@ -37,7 +37,7 @@ defmodule Web.Shop do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(shop :: Shop.t) :: changeset :: map
+  @spec edit(shop :: Shop.t()) :: changeset :: map
   def edit(shop) do
     shop
     |> Shop.changeset(%{})
@@ -46,9 +46,10 @@ defmodule Web.Shop do
   @doc """
   Create a shop
   """
-  @spec create(room :: Room.t, params :: map) :: {:ok, Shop.t} | {:error, changeset :: map}
+  @spec create(room :: Room.t(), params :: map) :: {:ok, Shop.t()} | {:error, changeset :: map}
   def create(room, params) do
     changeset = room |> Ecto.build_assoc(:shops) |> Shop.changeset(params)
+
     case changeset |> Repo.insert() do
       {:ok, shop} ->
         room = RoomRepo.get(shop.room_id)
@@ -56,21 +57,26 @@ defmodule Web.Shop do
         shop = shop.id |> get()
         Game.Zone.spawn_shop(room.zone_id, shop)
         {:ok, shop}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   @doc """
   Update a shop
   """
-  @spec update(id :: integer, params :: map) :: {:ok, Shop.t} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) :: {:ok, Shop.t()} | {:error, changeset :: map}
   def update(id, params) do
     changeset = id |> get() |> Shop.changeset(params)
+
     case changeset |> Repo.update() do
       {:ok, shop} ->
         push_update(shop)
         {:ok, shop}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
@@ -89,7 +95,7 @@ defmodule Web.Shop do
   @doc """
   Get a changeset for a new shop item
   """
-  @spec new_item(shop :: Shop.t) :: changeset :: map
+  @spec new_item(shop :: Shop.t()) :: changeset :: map
   def new_item(shop) do
     shop
     |> Ecto.build_assoc(:shop_items)
@@ -108,18 +114,21 @@ defmodule Web.Shop do
   @doc """
   Add an item to a shop
   """
-  @spec add_item(shop :: Shop.t, item :: Item.t, params :: map) :: {:ok, ShopItem.t}
+  @spec add_item(shop :: Shop.t(), item :: Item.t(), params :: map) :: {:ok, ShopItem.t()}
   def add_item(shop, item, params) do
-    changeset = shop
-    |> Ecto.build_assoc(:shop_items)
-    |> ShopItem.changeset(Map.merge(params, %{"item_id" => item.id}))
+    changeset =
+      shop
+      |> Ecto.build_assoc(:shop_items)
+      |> ShopItem.changeset(Map.merge(params, %{"item_id" => item.id}))
 
     case changeset |> Repo.insert() do
       {:ok, shop_item} ->
         shop = shop.id |> get()
         push_update(shop)
         {:ok, shop_item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
@@ -136,22 +145,27 @@ defmodule Web.Shop do
         shop = shop_item.shop_id |> get()
         push_update(shop)
         {:ok, shop_item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   @doc """
   Delete an item from a shop
   """
-  @spec delete_item(shop_item_id :: integer) :: {:ok, ShopItem.t}
+  @spec delete_item(shop_item_id :: integer) :: {:ok, ShopItem.t()}
   def delete_item(shop_item_id) do
     shop_item = ShopItem |> Repo.get(shop_item_id)
+
     case shop_item |> Repo.delete() do
       {:ok, shop_item} ->
         shop = shop_item.shop_id |> get()
         push_update(shop)
         {:ok, shop_item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 

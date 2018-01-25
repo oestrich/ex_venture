@@ -3,7 +3,7 @@ defmodule Web.Admin.ItemController do
 
   alias Web.Item
 
-  plug Web.Plug.FetchPage when action in [:index]
+  plug(Web.Plug.FetchPage when action in [:index])
 
   def index(conn, params) do
     %{page: page, per: per} = conn.assigns
@@ -26,7 +26,9 @@ defmodule Web.Admin.ItemController do
 
   def update(conn, %{"id" => id, "item" => params}) do
     case Item.update(id, params) do
-      {:ok, item} -> conn |> redirect(to: item_path(conn, :show, item.id))
+      {:ok, item} ->
+        conn |> redirect(to: item_path(conn, :show, item.id))
+
       {:error, changeset} ->
         item = Item.get(id)
         conn |> render("edit.html", item: item, changeset: changeset)
@@ -38,6 +40,7 @@ defmodule Web.Admin.ItemController do
     changeset = Item.edit(item)
     conn |> render("new.html", changeset: changeset)
   end
+
   def new(conn, _params) do
     changeset = Item.new()
     conn |> render("new.html", changeset: changeset)

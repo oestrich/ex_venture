@@ -11,6 +11,7 @@ defmodule Web.Admin.ZoneView do
 
   def layer_class(zone, layer) do
     [first_layer | _] = layers(zone)
+
     case first_layer == layer do
       true -> "active"
       false -> ""

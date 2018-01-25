@@ -12,7 +12,7 @@ defmodule Web.Typo do
   @doc """
   Get all typos
   """
-  @spec all(opts :: Keyword.t) :: [Typo.t]
+  @spec all(opts :: Keyword.t()) :: [Typo.t()]
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
 
@@ -27,11 +27,11 @@ defmodule Web.Typo do
   @doc """
   Get a typo
   """
-  @spec get(id :: integer) :: [Class.t]
+  @spec get(id :: integer) :: [Class.t()]
   def get(id) do
     Typo
     |> where([b], b.id == ^id)
     |> preload([:reporter, :room])
-    |> Repo.one
+    |> Repo.one()
   end
 end

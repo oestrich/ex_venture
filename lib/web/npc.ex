@@ -20,7 +20,7 @@ defmodule Web.NPC do
   @doc """
   Get all npcs
   """
-  @spec all(filter :: map) :: [NPC.t]
+  @spec all(filter :: map) :: [NPC.t()]
   def all(opts \\ []) do
     NPC
     |> order_by([n], n.id)
@@ -33,18 +33,20 @@ defmodule Web.NPC do
     query
     |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
   end
+
   def filter_on_attribute({"zone_id", value}, query) do
     query
     |> join(:left, [n], ns in assoc(n, :npc_spawners))
     |> where([n, ns], ns.zone_id == ^value)
     |> group_by([n, ns], n.id)
   end
+
   def filter_on_attribute(_, query), do: query
 
   @doc """
   List out all npcs for a select box
   """
-  @spec for_select() :: [{String.t, integer()}]
+  @spec for_select() :: [{String.t(), integer()}]
   def for_select() do
     NPC
     |> select([n], [n.name, n.id])
@@ -56,7 +58,7 @@ defmodule Web.NPC do
   @doc """
   List out all npcs for a select box, that are quest givers
   """
-  @spec for_quest_select() :: [{String.t, integer()}]
+  @spec for_quest_select() :: [{String.t(), integer()}]
   def for_quest_select() do
     NPC
     |> select([n], [n.name, n.id])
@@ -69,12 +71,12 @@ defmodule Web.NPC do
   @doc """
   Get a npc
   """
-  @spec get(id :: integer) :: [NPC.t]
+  @spec get(id :: integer) :: [NPC.t()]
   def get(id) do
     NPC
     |> where([c], c.id == ^id)
-    |> preload([npc_items: [:item], npc_spawners: [:zone, :room]])
-    |> Repo.one
+    |> preload(npc_items: [:item], npc_spawners: [:zone, :room])
+    |> Repo.one()
   end
 
   @doc """
@@ -86,13 +88,13 @@ defmodule Web.NPC do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit(npc :: NPC.t) :: changeset :: map
+  @spec edit(npc :: NPC.t()) :: changeset :: map
   def edit(npc), do: npc |> NPC.changeset(%{})
 
   @doc """
   Create a npc
   """
-  @spec create(params :: map) :: {:ok, NPC.t} | {:error, changeset :: map}
+  @spec create(params :: map) :: {:ok, NPC.t()} | {:error, changeset :: map}
   def create(params) do
     %NPC{}
     |> NPC.changeset(cast_params(params))
@@ -102,24 +104,28 @@ defmodule Web.NPC do
   @doc """
   Update a NPC
   """
-  @spec update(id :: integer, params :: map) :: {:ok, NPC.t} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) :: {:ok, NPC.t()} | {:error, changeset :: map}
   def update(id, params) do
     changeset = id |> get() |> NPC.changeset(cast_params(params))
-    case changeset |> Repo.update do
+
+    case changeset |> Repo.update() do
       {:ok, npc} ->
         push_update(npc)
         {:ok, npc}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   defp push_update(npc) do
     npc = npc |> Repo.preload([:npc_spawners])
-    Enum.map(npc.npc_spawners, fn (npc_spawner) ->
+
+    Enum.map(npc.npc_spawners, fn npc_spawner ->
       npc_spawner =
         NPCSpawner
         |> where([ns], ns.id == ^npc_spawner.id)
-        |> preload([npc: [:npc_items]])
+        |> preload(npc: [:npc_items])
         |> Repo.one()
 
       Game.NPC.update(npc_spawner.id, npc_spawner)
@@ -144,13 +150,16 @@ defmodule Web.NPC do
       _ -> params
     end
   end
+
   defp parse_stats(params), do: params
 
   defp cast_stats(stats, params) do
-    case stats |> Stats.load do
+    case stats |> Stats.load() do
       {:ok, stats} ->
         Map.put(params, "stats", stats)
-        _ -> params
+
+      _ ->
+        params
     end
   end
 
@@ -160,12 +169,13 @@ defmodule Web.NPC do
       _ -> params
     end
   end
+
   defp parse_events(params), do: params
 
   defp cast_events(events, params) do
     events =
       events
-      |> Enum.map(fn (event) ->
+      |> Enum.map(fn event ->
         case Event.load(event) do
           {:ok, event} -> event
           _ -> nil
@@ -182,12 +192,13 @@ defmodule Web.NPC do
       _ -> params
     end
   end
+
   defp parse_script(params), do: params
 
   defp cast_script(script, params) do
     script =
       script
-      |> Enum.map(fn (line) ->
+      |> Enum.map(fn line ->
         case Line.load(line) do
           {:ok, line} -> line
           _ -> nil
@@ -207,6 +218,7 @@ defmodule Web.NPC do
     params
     |> Map.put("tags", tags)
   end
+
   def parse_tags(params), do: params
 
   #
@@ -216,7 +228,7 @@ defmodule Web.NPC do
   @doc """
   Load a npc spawner
   """
-  @spec get_spawner(id :: integer) :: NPCSpawner.t
+  @spec get_spawner(id :: integer) :: NPCSpawner.t()
   def get_spawner(npc_spawner_id) do
     NPCSpawner
     |> Repo.get(npc_spawner_id)
@@ -226,7 +238,7 @@ defmodule Web.NPC do
   @doc """
   Get a changeset for a new page
   """
-  @spec new_spawner(npc :: NPC.t) :: changeset :: map
+  @spec new_spawner(npc :: NPC.t()) :: changeset :: map
   def new_spawner(npc) do
     npc
     |> Ecto.build_assoc(:npc_spawners)
@@ -236,7 +248,7 @@ defmodule Web.NPC do
   @doc """
   Get a changeset for an edit page
   """
-  @spec edit_spawner(npc_spawner :: NPCSpawner.t) :: changeset :: map
+  @spec edit_spawner(npc_spawner :: NPCSpawner.t()) :: changeset :: map
   def edit_spawner(npc_spawner), do: npc_spawner |> NPCSpawner.changeset(%{})
 
   @doc """
@@ -244,41 +256,52 @@ defmodule Web.NPC do
   """
   def add_spawner(npc_id, params) do
     changeset = npc_id |> Ecto.build_assoc(:npc_spawners) |> NPCSpawner.changeset(params)
+
     case changeset |> Repo.insert() do
       {:ok, npc_spawner} ->
         npc_spawner = npc_spawner |> Repo.preload([:npc])
         Game.Zone.spawn_npc(npc_spawner.zone_id, npc_spawner)
         {:ok, npc_spawner}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   @doc """
   Update a NPC Spawner
   """
-  @spec update_spawner(id :: integer, params :: map) :: {:ok, NPCSpawner.t} | {:error, changeset :: map}
+  @spec update_spawner(id :: integer, params :: map) ::
+          {:ok, NPCSpawner.t()} | {:error, changeset :: map}
   def update_spawner(id, params) do
     changeset = id |> get_spawner() |> NPCSpawner.update_changeset(params)
-    case changeset |> Repo.update do
+
+    case changeset |> Repo.update() do
       {:ok, npc_spawner} ->
-        npc_spawner = npc_spawner |> Repo.preload([npc: [:npc_items]])
+        npc_spawner = npc_spawner |> Repo.preload(npc: [:npc_items])
         Game.NPC.update(npc_spawner.id, npc_spawner)
         {:ok, npc_spawner}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
   @doc """
   Delete a room exit
   """
-  @spec delete_spawner(npc_spawner_id :: integer) :: {:ok, NPCSpawner.t} | {:error, changeset :: map}
+  @spec delete_spawner(npc_spawner_id :: integer) ::
+          {:ok, NPCSpawner.t()} | {:error, changeset :: map}
   def delete_spawner(npc_spawner_id) do
     npc_spawner = npc_spawner_id |> get_spawner()
+
     case npc_spawner |> Repo.delete() do
       {:ok, npc_spawner} ->
         Game.NPC.terminate(npc_spawner.id)
         {:ok, npc_spawner}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
@@ -326,7 +349,9 @@ defmodule Web.NPC do
       {:ok, npc_item} ->
         push_update(npc)
         {:ok, npc_item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
@@ -343,7 +368,9 @@ defmodule Web.NPC do
         npc = npc_item.npc_id |> get()
         push_update(npc)
         {:ok, npc_item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 
@@ -353,12 +380,15 @@ defmodule Web.NPC do
   @spec delete_item(integer()) :: {:ok, NPCItem.t()} | {:error, changeset :: map}
   def delete_item(item_id) do
     npc_item = item_id |> get_item()
+
     case npc_item |> Repo.delete() do
       {:ok, npc_item} ->
         npc = npc_item.npc_id |> get()
         push_update(npc)
         {:ok, npc_item}
-      anything -> anything
+
+      anything ->
+        anything
     end
   end
 end

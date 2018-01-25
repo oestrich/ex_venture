@@ -10,6 +10,6 @@ defmodule Web.Admin.NPCSpawnerView do
   end
 
   def room_exits(zone) do
-    Enum.map(zone.rooms, &({"#{&1.id} - #{&1.name}", &1.id}))
+    Enum.map(zone.rooms, &{"#{&1.id} - #{&1.name}", &1.id})
   end
 end

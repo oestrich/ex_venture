@@ -3,10 +3,10 @@ defmodule Web.AdminController do
     quote do
       use Web, :controller
 
-      plug :put_layout, "admin.html"
-      plug Web.Plug.LoadUser
-      plug :ensure_user!
-      plug :ensure_admin!
+      plug(:put_layout, "admin.html")
+      plug(Web.Plug.LoadUser)
+      plug(:ensure_user!)
+      plug(:ensure_admin!)
 
       defp ensure_user!(conn, _opts) do
         case Map.has_key?(conn.assigns, :user) do
@@ -19,7 +19,9 @@ defmodule Web.AdminController do
         %{user: user} = conn.assigns
 
         case "admin" in user.flags do
-          true -> conn
+          true ->
+            conn
+
           false ->
             conn
             |> put_session(:user_token, nil)

@@ -18,6 +18,7 @@ defmodule Web.Admin.ShopController do
 
   def create(conn, %{"room_id" => room_id, "shop" => params}) do
     room = Room.get(room_id)
+
     case Shop.create(room, params) do
       {:ok, shop} -> conn |> redirect(to: shop_path(conn, :show, shop.id))
       {:error, changeset} -> conn |> render("new.html", changeset: changeset)
@@ -33,7 +34,9 @@ defmodule Web.Admin.ShopController do
 
   def update(conn, %{"id" => id, "shop" => params}) do
     case Shop.update(id, params) do
-      {:ok, shop} -> conn |> redirect(to: shop_path(conn, :show, shop.id))
+      {:ok, shop} ->
+        conn |> redirect(to: shop_path(conn, :show, shop.id))
+
       {:error, changeset} ->
         shop = Shop.get(id)
         room = Room.get(shop.room_id)

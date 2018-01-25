@@ -46,6 +46,7 @@ defmodule Web.NPCChannel do
       case Map.get(state.channels, pid, nil) do
         nil ->
           {:reply, :ok, state}
+
         _npc_id ->
           Process.unlink(pid)
           {:reply, :ok, drop_channel(state, pid)}
@@ -56,6 +57,7 @@ defmodule Web.NPCChannel do
       case Map.get(state.channels, pid, nil) do
         nil ->
           {:noreply, state}
+
         npc_id ->
           NPC.release(npc_id)
           {:noreply, drop_channel(state, pid)}
@@ -82,13 +84,16 @@ defmodule Web.NPCChannel do
     socket = socket |> assign(:npc_id, id)
 
     Logger.info("Admin (#{user.id}) is attempting to control NPC (#{id})")
+
     case NPC.control(id) do
       :ok ->
         Monitor.monitor(self(), id)
         AdminInstrumenter.control_npc()
 
         {:ok, socket}
-      _ -> {:error, %{reason: "already controlled"}}
+
+      _ ->
+        {:error, %{reason: "already controlled"}}
     end
   end
 

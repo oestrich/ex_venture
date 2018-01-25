@@ -17,6 +17,7 @@ defmodule Web.Admin.RoomController do
 
   def create(conn, %{"zone_id" => zone_id, "room" => params}) do
     zone = Zone.get(zone_id)
+
     case Room.create(zone, params) do
       {:ok, room} -> conn |> redirect(to: room_path(conn, :show, room.id))
       {:error, changeset} -> conn |> render("new.html", zone: zone, changeset: changeset)
@@ -31,7 +32,9 @@ defmodule Web.Admin.RoomController do
 
   def update(conn, %{"id" => id, "room" => params}) do
     case Room.update(id, params) do
-      {:ok, room} -> conn |> redirect(to: room_path(conn, :show, room.id))
+      {:ok, room} ->
+        conn |> redirect(to: room_path(conn, :show, room.id))
+
       {:error, changeset} ->
         room = Room.get(id)
         conn |> render("edit.html", room: room, changeset: changeset)

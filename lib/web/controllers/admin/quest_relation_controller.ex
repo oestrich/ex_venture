@@ -11,8 +11,11 @@ defmodule Web.Admin.QuestRelationController do
 
   def create(conn, %{"quest_id" => quest_id, "side" => side, "quest_relation" => params}) do
     quest = Quest.get(quest_id)
+
     case Quest.create_relation(quest, side, params) do
-      {:ok, _relation} -> conn |> redirect(to: quest_path(conn, :show, quest.id))
+      {:ok, _relation} ->
+        conn |> redirect(to: quest_path(conn, :show, quest.id))
+
       {:error, changeset} ->
         conn |> render("new.html", quest: quest, side: side, changeset: changeset)
     end
@@ -20,6 +23,7 @@ defmodule Web.Admin.QuestRelationController do
 
   def delete(conn, %{"id" => id, "quest_id" => quest_id}) do
     quest = Quest.get(quest_id)
+
     case Quest.delete_relation(id) do
       {:ok, _relation} -> conn |> redirect(to: quest_path(conn, :show, quest.id))
       {:error, _changeset} -> conn |> redirect(to: quest_path(conn, :show, quest.id))
