@@ -5,6 +5,8 @@ defmodule Game.Command.Who do
 
   use Game.Command
 
+  alias Game.Format
+
   commands(["who"])
 
   @impl Game.Command
@@ -33,7 +35,12 @@ defmodule Game.Command.Who do
     names =
       players
       |> Enum.map(fn {_pid, user} ->
-        "[#{user.save.level} #{user.class.name} #{user.race.name}] {blue}#{user.name}{/blue}"
+        flags =
+          user.flags
+          |> Enum.map(&"{red}#{&1}{/red}")
+          |> Enum.join(" ")
+
+        "[#{user.save.level} #{user.class.name} #{user.race.name}] #{Format.player_name(user)} #{flags}"
       end)
       |> Enum.join("\n")
 
