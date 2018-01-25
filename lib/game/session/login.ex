@@ -14,6 +14,7 @@ defmodule Game.Session.Login do
   alias Game.Authentication
   alias Game.Config
   alias Game.Channel
+  alias Game.Mail
   alias Game.Session
   alias Game.Session.GMCP
   alias Metrics.PlayerInstrumenter
@@ -56,6 +57,12 @@ defmodule Game.Session.Login do
     socket |> @socket.set_user_id(user.id)
 
     socket |> @socket.echo(Config.after_sign_in_message())
+
+    case Mail.unread_mail_for(user) do
+      [] -> :ok
+      _ -> socket |> @socket.echo("You have mail.")
+    end
+
     socket |> @socket.echo("[Press enter to continue]")
 
     state
