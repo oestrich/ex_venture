@@ -40,4 +40,15 @@ defmodule Game.Mail do
     |> Mail.changeset(%{is_read: true})
     |> Repo.update()
   end
+
+  def create(sender, mail) do
+    %Mail{}
+    |> Mail.changeset(%{
+      title: mail.title,
+      sender_id: sender.id,
+      receiver_id: mail.player.id,
+      body: Enum.join(mail.body, "\n"),
+    })
+    |> Repo.insert()
+  end
 end

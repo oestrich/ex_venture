@@ -11,6 +11,8 @@ defmodule Game.Account do
   alias Game.Config
   alias Game.Item
 
+  import Ecto.Query
+
   @doc """
   Create a new user from attributes. Preloads everything required to start playing the game.
   """
@@ -122,5 +124,22 @@ defmodule Game.Account do
   def migrate_items(user) do
     items = user.save.items |> Enum.map(&Item.migrate_instance/1)
     %{user | save: %{user.save | items: items}}
+  end
+
+  @doc """
+  Get a player by their name
+  """
+  @spec get_player(String.t()) :: {:ok, User.t()} | {:error, :not_found}
+  def get_player(name) do
+    player =
+      User
+      |> where([u], fragment("lower(?) = ?", u.name, ^String.downcase(name)))
+      |> limit(1)
+      |> Repo.one()
+
+    case player do
+      nil -> {:error, :not_found}
+      _ -> {:ok, player}
+    end
   end
 end

@@ -715,17 +715,16 @@ defmodule Game.Format do
 
   @doc """
   Format mail for a user
-
-      iex> Game.Format.list_mail([%{id: 1, sender: %{name: "Player"}, title: "hello"}])
-      "1 - {blue}Player{/blue} - hello"
   """
   @spec list_mail([Mail.t()]) :: String.t()
   def list_mail(mail) do
-    mail
-    |> Enum.map(fn mail ->
-      "#{mail.id} - #{player_name(mail.sender)} - #{mail.title}"
-    end)
-    |> Enum.join("\n")
+    rows =
+      mail
+      |> Enum.map(fn mail ->
+        [to_string(mail.id), player_name(mail.sender), mail.title]
+      end)
+
+    Table.format("You have #{length(mail)} unread mail.", rows, [5, 20, 30])
   end
 
   @doc """

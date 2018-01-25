@@ -64,4 +64,54 @@ defmodule Game.Command.MailTest do
       assert Regex.match?(~r(could not), mail)
     end
   end
+
+  describe "create new mail" do
+    setup %{state: state} do
+      receiver = create_user(%{name: "player", password: "password"})
+      state = Map.put(state, :commands, %{})
+      %{receiver: receiver, state: state}
+    end
+
+    test "starts a new editor", %{state: state, receiver: receiver} do
+      {:editor, Mail, state} = Mail.run({:new, "player"}, state)
+
+      assert state.commands.mail.player.id == receiver.id
+
+      [{_, echo}] = @socket.get_prompts()
+      assert Regex.match?(~r(Title), echo)
+    end
+
+    test "player not found", %{state: state} do
+      :ok = Mail.run({:new, "unknown"}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/Could not/i, echo)
+    end
+
+    test "capture the title", %{state: state, receiver: receiver} do
+      state = Map.put(state, :commands, %{mail: %{player: receiver, title: nil}})
+
+      {:update, state} = Mail.editor({:text, "How are you?"}, state)
+
+      assert state.commands.mail.title == "How are you?"
+    end
+
+    test "capture body lines", %{state: state, receiver: receiver} do
+      state = Map.put(state, :commands, %{mail: %{player: receiver, title: "mail", body: []}})
+
+      {:update, state} = Mail.editor({:text, "How are you?"}, state)
+
+      assert state.commands.mail.body == ["How are you?"]
+    end
+
+    test "creates new mail", %{state: state, receiver: receiver} do
+      state = Map.put(state, :commands, %{mail: %{player: receiver, title: "mail", body: ["Hi"]}})
+
+      {:update, state} = Mail.editor(:complete, state)
+
+      assert state.commands == %{}
+
+      assert length(Game.Mail.unread_mail_for(receiver)) == 1
+    end
+  end
 end
