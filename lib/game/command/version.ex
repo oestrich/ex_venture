@@ -5,11 +5,12 @@ defmodule Game.Command.Version do
 
   use Game.Command
 
-  commands ["version"]
+  commands(["version"])
 
   @impl Game.Command
   def help(:topic), do: "Version"
   def help(:short), do: "View the running MUD version"
+
   def help(:full) do
     """
     View the full version of ExVenture running
@@ -19,14 +20,18 @@ defmodule Game.Command.Version do
     """
   end
 
+  @impl Game.Command
   @doc """
   View version information
   """
-  @impl Game.Command
-  @spec run(args :: {atom, String.t}, state :: map) :: :ok
   def run(command, state)
+
   def run({}, %{socket: socket}) do
-    socket |> @socket.echo("#{ExVenture.version()}\nhttp://exventure.org - https://github.com/oestrich/ex_venture")
+    socket
+    |> @socket.echo(
+      "#{ExVenture.version()}\nhttp://exventure.org - https://github.com/oestrich/ex_venture"
+    )
+
     :ok
   end
 end

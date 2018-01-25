@@ -9,11 +9,12 @@ defmodule Game.Command.Info do
   alias Game.Effect
   alias Game.Item
 
-  commands [{"info", ["score"]}]
+  commands([{"info", ["score"]}])
 
   @impl Game.Command
   def help(:topic), do: "Info"
   def help(:short), do: "View stats about your character"
+
   def help(:full) do
     """
     #{help(:short)}
@@ -23,12 +24,12 @@ defmodule Game.Command.Info do
     """
   end
 
+  @impl Game.Command
   @doc """
   Look at your info sheet
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({}, state = %{socket: socket, user: user, save: save}) do
     user = %{user | save: cacluate_save(save), seconds_online: seconds_online(user, state)}
     socket |> @socket.echo(Format.info(user))

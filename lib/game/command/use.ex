@@ -10,11 +10,12 @@ defmodule Game.Command.Use do
   alias Game.Item
   alias Game.Items
 
-  commands ["use"]
+  commands(["use"])
 
   @impl Game.Command
   def help(:topic), do: "Use"
   def help(:short), do: "Use an item from your inventory"
+
   def help(:full) do
     """
     #{help(:short)}
@@ -24,14 +25,15 @@ defmodule Game.Command.Use do
     """
   end
 
+  @impl Game.Command
   @doc """
   Use an item
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({item_name}, state = %{socket: socket, save: %{items: items}}) do
     items = Items.items_keep_instance(items)
+
     case Item.find_item(items, item_name) do
       nil -> socket |> item_not_found(item_name)
       item -> state |> use_item(item)
@@ -47,10 +49,17 @@ defmodule Game.Command.Use do
     socket |> @socket.echo("\"#{Format.item_name(item)}\" could not be used")
     :ok
   end
+
   defp use_item(state = %{socket: socket, user: user, save: save}, {instance, item}) do
     player_effects = save |> Item.effects_on_player(only: ["stats"])
     effects = save.stats |> Effect.calculate(player_effects ++ item.effects)
-    Character.apply_effects({:user, user}, effects, {:user, user}, Format.usee_item(item, target: {:user, user}, user: {:user, user}))
+
+    Character.apply_effects(
+      {:user, user},
+      effects,
+      {:user, user},
+      Format.usee_item(item, target: {:user, user}, user: {:user, user})
+    )
 
     description = Format.user_item(item, target: {:user, user}, user: {:user, user})
     socket |> @socket.echo([description | Format.effects(effects)] |> Enum.join("\n"))
@@ -61,9 +70,11 @@ defmodule Game.Command.Use do
   defp spend_item(_, %{amount: -1}) do
     {:skip, :prompt}
   end
+
   defp spend_item(state = %{save: %{items: items}}, instance) do
     items = List.delete(items, instance)
-    instance = Item.migrate_instance(instance) # ensure item is good to go
+    # ensure item is good to go
+    instance = Item.migrate_instance(instance)
     instance = %{instance | amount: instance.amount - 1}
 
     items =

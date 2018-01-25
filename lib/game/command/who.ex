@@ -5,11 +5,12 @@ defmodule Game.Command.Who do
 
   use Game.Command
 
-  commands ["who"]
+  commands(["who"])
 
   @impl Game.Command
   def help(:topic), do: "Who"
   def help(:short), do: "See who is online"
+
   def help(:full) do
     """
     #{help(:short)}
@@ -25,14 +26,16 @@ defmodule Game.Command.Who do
   @impl Game.Command
   @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({}, %{socket: socket}) do
     players = Session.Registry.connected_players()
 
-    names = players
-    |> Enum.map(fn ({_pid, user}) ->
-      "[#{user.save.level} #{user.class.name} #{user.race.name}] {blue}#{user.name}{/blue}"
-    end)
-    |> Enum.join("\n")
+    names =
+      players
+      |> Enum.map(fn {_pid, user} ->
+        "[#{user.save.level} #{user.class.name} #{user.race.name}] {blue}#{user.name}{/blue}"
+      end)
+      |> Enum.join("\n")
 
     socket |> @socket.echo("There are #{players |> length} players online:\n#{names}")
     :ok

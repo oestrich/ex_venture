@@ -9,11 +9,12 @@ defmodule Game.Command.Map do
 
   alias Game.Session.GMCP
 
-  commands ["map"]
+  commands(["map"])
 
   @impl Game.Command
   def help(:topic), do: "Map"
   def help(:short), do: "View a map of the zone"
+
   def help(:full) do
     """
     #{help(:short)}
@@ -23,12 +24,12 @@ defmodule Game.Command.Map do
     """
   end
 
+  @impl Game.Command
   @doc """
   View a map of the zone
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer})

@@ -11,11 +11,12 @@ defmodule Game.Command.Wear do
 
   @must_be_alive true
 
-  commands ["wear", "remove"], parse: false
+  commands(["wear", "remove"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Wear"
   def help(:short), do: "Put on a piece of armor"
+
   def help(:full) do
     """
     Put on a peice of armor, or remove it from a slot. {white}Wear{/white} takes the item
@@ -41,26 +42,30 @@ defmodule Game.Command.Wear do
       iex> Game.Command.Wear.parse("remve chest")
       {:error, :bad_parse, "remve chest"}
   """
-  @spec parse(command :: String.t) :: []
+  @spec parse(String.t()) :: []
   def parse("wear " <> command), do: {:wear, command}
   def parse("remove " <> command), do: {:remove, command}
 
+  @impl Game.Command
   @doc """
   Put an item in your hands
   """
-  @impl Game.Command
-  @spec run(args :: {atom, String.t}, state :: map) :: :ok
   def run(command, state)
+
   def run({:wear, item_name}, state = %{socket: socket, save: %{items: items}}) do
     items = Items.items(items)
+
     case Item.find_item(items, item_name) do
       nil -> socket |> item_not_found(item_name)
       item -> socket |> item_found(item, state)
     end
   end
+
   def run({:remove, slot}, state = %{socket: socket}) do
     case slot do
-      "chest" -> :chest |> run_remove(state)
+      "chest" ->
+        :chest |> run_remove(state)
+
       _ ->
         socket |> @socket.echo("Unknown armor slot")
         :ok
@@ -72,15 +77,21 @@ defmodule Game.Command.Wear do
     :ok
   end
 
-  defp item_found(socket, item = %{level: item_level, type: "armor"}, %{save: %{level: level}}) when level < item_level do
-    socket |> @socket.echo("You cannot wear \"#{Format.item_name(item)}\", you are not high enough level.")
+  defp item_found(socket, item = %{level: item_level, type: "armor"}, %{save: %{level: level}})
+       when level < item_level do
+    socket
+    |> @socket.echo(
+      "You cannot wear \"#{Format.item_name(item)}\", you are not high enough level."
+    )
+
     :ok
   end
+
   defp item_found(socket, item = %{type: "armor"}, state) do
     %{save: save} = state
     %{items: items} = save
 
-    {wearing, items} =  remove(item.stats.slot, save.wearing, items)
+    {wearing, items} = remove(item.stats.slot, save.wearing, items)
     {instance, items} = Item.remove(items, item)
     wearing = Map.put(wearing, item.stats.slot, instance)
 
@@ -89,6 +100,7 @@ defmodule Game.Command.Wear do
     socket |> @socket.echo(~s(You are now wearing #{item.name}))
     {:update, Map.put(state, :save, save)}
   end
+
   defp item_found(socket, item, _state) do
     socket |> @socket.echo(~s(You cannot wear #{item.name}))
     :ok
@@ -105,6 +117,7 @@ defmodule Game.Command.Wear do
 
         socket |> @socket.echo("You removed #{item.name} from your chest")
         {:update, Map.put(state, :save, save)}
+
       false ->
         socket |> @socket.echo("Nothing was on your #{slot}.")
         :ok
@@ -114,13 +127,15 @@ defmodule Game.Command.Wear do
   @doc """
   Stop wearing an item
   """
-  @spec remove(slot :: :atom, wearing :: map, items :: [integer]) :: {wearing :: map, inventory :: [integer]}
+  @spec remove(:atom, map, [integer]) :: {map, [integer]}
   def remove(slot, wearing, items)
   def remove(_slot, nil, items), do: {%{}, nil, items}
+
   def remove(slot, wearing, items) do
     case wearing[slot] do
       nil ->
         {Map.delete(wearing, slot), items}
+
       item ->
         {Map.delete(wearing, slot), [item | items]}
     end

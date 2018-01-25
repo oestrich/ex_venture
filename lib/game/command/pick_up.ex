@@ -12,11 +12,12 @@ defmodule Game.Command.PickUp do
 
   @must_be_alive true
 
-  commands [{"pick up", ["get", "take"]}]
+  commands([{"pick up", ["get", "take"]}])
 
   @impl Game.Command
   def help(:topic), do: "Pick Up"
   def help(:short), do: "Pick up an item in the same room"
+
   def help(:full) do
     """
     #{help(:short)}.
@@ -26,30 +27,36 @@ defmodule Game.Command.PickUp do
     """
   end
 
+  @impl Game.Command
   @doc """
   Pick up an item from a room
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok | {:update, map}
   def run(command, state)
+
   def run({@currency}, state = %{socket: socket, save: save}) do
     case @room.pick_up_currency(save.room_id) do
       {:ok, currency} ->
-        Logger.info("Session (#{inspect(self())}) picking up #{currency} currency from room (#{save.room_id})", type: :player)
+        Logger.info(
+          "Session (#{inspect(self())}) picking up #{currency} currency from room (#{save.room_id})",
+          type: :player
+        )
+
         save = %{save | currency: save.currency + currency}
         socket |> @socket.echo("You picked up #{currency} #{@currency}")
         {:update, Map.put(state, :save, save)}
+
       _ ->
         socket |> @socket.echo(~s("#{@currency}" could not be found))
         :ok
     end
   end
+
   def run({item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
     instance =
       room.items
-      |> Enum.find(fn (instance) ->
+      |> Enum.find(fn instance ->
         item = Items.item(instance)
         Game.Item.matches_lookup?(item, item_name)
       end)
@@ -58,6 +65,7 @@ defmodule Game.Command.PickUp do
       nil ->
         socket |> @socket.echo(~s("#{item_name}" could not be found))
         :ok
+
       instance ->
         pick_up(instance, room, state)
     end
@@ -67,10 +75,16 @@ defmodule Game.Command.PickUp do
     case @room.pick_up(room.id, item) do
       {:ok, instance} ->
         item = Items.item(instance)
-        Logger.info("Session (#{inspect(self())}) picking up item (#{item.id}) from room (#{room.id})", type: :player)
+
+        Logger.info(
+          "Session (#{inspect(self())}) picking up item (#{item.id}) from room (#{room.id})",
+          type: :player
+        )
+
         save = %{save | items: [instance | save.items]}
         socket |> @socket.echo("You picked up the #{item.name}")
         {:update, Map.put(state, :save, save)}
+
       _ ->
         socket |> @socket.echo(~s("#{item.name}" could not be found))
         :ok

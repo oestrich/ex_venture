@@ -11,11 +11,12 @@ defmodule Game.Command.Drop do
 
   @must_be_alive true
 
-  commands ["drop"]
+  commands(["drop"])
 
   @impl Game.Command
   def help(:topic), do: "Drop"
   def help(:short), do: "Drop an item in the same room"
+
   def help(:full) do
     """
     Drop an item into the room you are in.
@@ -26,12 +27,12 @@ defmodule Game.Command.Drop do
     """
   end
 
+  @impl Game.Command
   @doc """
   Drop an item in the same room
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok | {:update, map}
   def run(command, state)
+
   def run({item_name}, state) do
     case Regex.match?(~r{#{@currency}}, item_name) do
       true -> drop_currency(item_name, state)
@@ -43,11 +44,13 @@ defmodule Game.Command.Drop do
     amount =
       amount_to_drop
       |> String.split(" ")
-      |> List.first
+      |> List.first()
       |> String.to_integer()
 
     case currency - amount >= 0 do
-      true -> _drop_currency(amount, state)
+      true ->
+        _drop_currency(amount, state)
+
       false ->
         socket |> @socket.echo("You do not have enough #{currency()} to drop #{amount}.")
         :ok
@@ -63,11 +66,14 @@ defmodule Game.Command.Drop do
 
   defp drop_item(item_name, state = %{socket: socket, save: %{items: items}}) do
     items = Items.items(items)
-    case Enum.find(items, &(Item.matches_lookup?(&1, item_name))) do
+
+    case Enum.find(items, &Item.matches_lookup?(&1, item_name)) do
       nil ->
         socket |> @socket.echo(~s(Could not find "#{item_name}"))
         :ok
-      item -> _drop_item(item, state)
+
+      item ->
+        _drop_item(item, state)
     end
   end
 

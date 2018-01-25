@@ -12,11 +12,12 @@ defmodule Game.Command.Run do
   @direction_regex ~r/(?<count>\d+)?(?<direction>[nesw])/
   @continue_wait Application.get_env(:ex_venture, :game)[:continue_wait]
 
-  commands ["run"]
+  commands(["run"])
 
   @impl Game.Command
   def help(:topic), do: "Run"
   def help(:short), do: "Move around quickly"
+
   def help(:full) do
     """
     #{help(:short)}. You will stop running if an exit cannot be found.
@@ -26,23 +27,28 @@ defmodule Game.Command.Run do
     """
   end
 
+  @impl Game.Command
   @doc """
   Run the user around
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({directions}, state) when is_list(directions) do
     move(directions, state)
   end
+
   def run({directions}, state) do
     case parse_run(directions) do
       directions when is_list(directions) ->
         move(directions, state)
-      _ -> :ok
+
+      _ ->
+        :ok
     end
   end
-  def run({}, _state), do: :ok # run without directions
+
+  # run without directions
+  def run({}, _state), do: :ok
 
   @doc """
   Move in the first direction of the list
@@ -52,16 +58,22 @@ defmodule Game.Command.Run do
       {:error, :no_exit} ->
         state.socket |> @socket.echo("Could not move #{direction}, no exit found.")
         :ok
+
       {:error, :no_movement} ->
         :ok
-      {:update, state} -> maybe_continue(state, directions)
+
+      {:update, state} ->
+        maybe_continue(state, directions)
     end
   end
 
   defp maybe_continue(state, []), do: {:update, state}
+
   defp maybe_continue(state, directions) do
     state |> GMCP.vitals()
-    {:update, state, {%Command{module: __MODULE__, args: {directions}, continue: true}, @continue_wait}}
+
+    {:update, state,
+     {%Command{module: __MODULE__, args: {directions}, continue: true}, @continue_wait}}
   end
 
   @doc """
@@ -84,9 +96,11 @@ defmodule Game.Command.Run do
     case Regex.named_captures(@direction_regex, direction) do
       %{"count" => count, "direction" => direction} when count != "" ->
         count = String.to_integer(count)
-        Enum.map(1..count, fn (_) -> _direction(direction) end)
+        Enum.map(1..count, fn _ -> _direction(direction) end)
+
       %{"direction" => direction} ->
         [_direction(direction)]
+
       _ ->
         []
     end

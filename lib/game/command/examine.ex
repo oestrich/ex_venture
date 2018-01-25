@@ -7,11 +7,12 @@ defmodule Game.Command.Examine do
 
   alias Game.Items
 
-  commands ["examine"]
+  commands(["examine"])
 
   @impl Game.Command
   def help(:topic), do: "Examine"
   def help(:short), do: "View information about items in your inventory"
+
   def help(:full) do
     """
     #{help(:short)}
@@ -21,21 +22,26 @@ defmodule Game.Command.Examine do
     """
   end
 
+  @impl Game.Command
   @doc """
   View information about items in your inventory
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
-  def run({item_name}, %{socket: socket, save: %{wearing: wearing, wielding: wielding, items: items}}) do
-    wearing_instances = Enum.map(wearing, &(elem(&1, 1)))
-    wielding_instances = Enum.map(wielding, &(elem(&1, 1)))
+
+  def run({item_name}, %{
+        socket: socket,
+        save: %{wearing: wearing, wielding: wielding, items: items}
+      }) do
+    wearing_instances = Enum.map(wearing, &elem(&1, 1))
+    wielding_instances = Enum.map(wielding, &elem(&1, 1))
 
     items = Items.items(wearing_instances ++ wielding_instances ++ items)
-    case Enum.find(items, &(Game.Item.matches_lookup?(&1, item_name))) do
+
+    case Enum.find(items, &Game.Item.matches_lookup?(&1, item_name)) do
       nil -> nil
       item -> socket |> @socket.echo(Format.item(item))
     end
+
     :ok
   end
 end

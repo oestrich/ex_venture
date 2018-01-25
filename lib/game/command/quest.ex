@@ -10,11 +10,12 @@ defmodule Game.Command.Quest do
   alias Game.Experience
   alias Game.Quest
 
-  commands [{"quest", ["quests"]}], parse: false
+  commands([{"quest", ["quests"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Quest"
   def help(:short), do: "View information about your current quests"
+
   def help(:full) do
     """
     #{help(:short)}. Quests are handed out by NPCs that
@@ -61,7 +62,7 @@ defmodule Game.Command.Quest do
       iex> Game.Command.Channels.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
-  @spec parse(command :: String.t) :: {atom}
+  @spec parse(String.t()) :: {atom}
   def parse(command)
   def parse("quest"), do: {:list, :active}
   def parse("quests"), do: {:list, :active}
@@ -70,19 +71,18 @@ defmodule Game.Command.Quest do
   def parse("quest complete"), do: {:complete, :any}
   def parse("quest complete " <> quest_id), do: {:complete, quest_id}
 
-  @doc """
-  Questing
-  """
   @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok | {:update, map}
   def run(command, state)
+
   def run({:list, :active}, %{socket: socket, user: user}) do
     case Quest.for(user) do
       [] ->
         socket |> @socket.echo("You have no active quests.")
+
       quests ->
         socket |> @socket.echo(Format.quest_progress(quests))
     end
+
     :ok
   end
 
@@ -90,16 +90,18 @@ defmodule Game.Command.Quest do
     case Quest.progress_for(user, quest_id) do
       nil ->
         socket |> @socket.echo("You have not started this quest.")
+
       progress ->
         socket |> @socket.echo(Format.quest_detail(progress, save))
     end
+
     :ok
   end
 
   # find quests that are completed and see if npc in the room
   def run({:complete, :any}, state = %{socket: socket, user: user, save: save}) do
     room = @room.look(save.room_id)
-    npc_ids = Enum.map(room.npcs, &(&1.original_id))
+    npc_ids = Enum.map(room.npcs, & &1.original_id)
 
     user
     |> Quest.for()
@@ -113,6 +115,7 @@ defmodule Game.Command.Quest do
       nil ->
         socket |> @socket.echo("You have not started this quest.")
         :ok
+
       progress ->
         progress
         |> gate_for_active(state)
@@ -130,6 +133,7 @@ defmodule Game.Command.Quest do
     case progress.status do
       "active" ->
         progress
+
       _ ->
         state.socket |> @socket.echo("This quest is already complete.")
         :ok
@@ -141,19 +145,25 @@ defmodule Game.Command.Quest do
   """
   @spec check_npc_is_in_room(QuestProgress.t(), State.t()) :: :ok | QuestProgress.t()
   def check_npc_is_in_room(:ok, _state), do: :ok
+
   def check_npc_is_in_room(progress, %{socket: socket, save: save}) do
     npc =
       save.room_id
       |> @room.look()
       |> Map.get(:npcs)
-      |> Enum.find(fn (npc) ->
+      |> Enum.find(fn npc ->
         npc.original_id == progress.quest.giver_id
       end)
 
     case npc do
       nil ->
-        socket |> @socket.echo("The quest giver #{Format.npc_name(progress.quest.giver)} cannot be found.")
+        socket
+        |> @socket.echo(
+          "The quest giver #{Format.npc_name(progress.quest.giver)} cannot be found."
+        )
+
         :ok
+
       _ ->
         {progress, npc}
     end
@@ -162,17 +172,21 @@ defmodule Game.Command.Quest do
   @doc """
   Verify the quest is complete
   """
-  @spec check_steps_are_complete({QuestProgress.t(), NPC.t()}, State.t()) :: :ok | QuestProgress.t()
+  @spec check_steps_are_complete({QuestProgress.t(), NPC.t()}, State.t()) ::
+          :ok | QuestProgress.t()
   def check_steps_are_complete(:ok, _state), do: :ok
+
   def check_steps_are_complete({progress, npc}, state) do
     case Quest.requirements_complete?(progress, state.save) do
       true ->
         {progress, npc}
+
       false ->
-        response = Format.wrap_lines([
-          "You have not completed the requirements for the quest.",
-          "See {white}quest info #{progress.quest_id}{/white} for your current progress.",
-        ])
+        response =
+          Format.wrap_lines([
+            "You have not completed the requirements for the quest.",
+            "See {white}quest info #{progress.quest_id}{/white} for your current progress."
+          ])
 
         state.socket |> @socket.echo(response)
         :ok
@@ -181,6 +195,7 @@ defmodule Game.Command.Quest do
 
   @spec complete_quest({QuestProgress.t(), NPC.t()}, State.t()) :: QuestProgress.t()
   def complete_quest(:ok, _state), do: :ok
+
   def complete_quest({progress, npc}, state = %{socket: socket, user: user, save: save}) do
     %{quest: quest} = progress
 
@@ -197,8 +212,12 @@ defmodule Game.Command.Quest do
         npc.id |> @npc.notify({"quest/completed", user, quest})
 
         {:update, state}
+
       _ ->
-        socket |> @socket.echo("Something went wrong, please contact the administrators if you encounter a problem again.")
+        socket
+        |> @socket.echo(
+          "Something went wrong, please contact the administrators if you encounter a problem again."
+        )
     end
   end
 
@@ -206,6 +225,7 @@ defmodule Game.Command.Quest do
     socket |> @socket.echo("You have no quests to complete")
     :ok
   end
+
   defp find_active_quests_for_room(quest_progress, npc_ids, _) do
     Enum.filter(quest_progress, fn progress ->
       progress.quest.giver_id in npc_ids
@@ -213,6 +233,7 @@ defmodule Game.Command.Quest do
   end
 
   defp filter_for_ready_to_complete(:ok, _), do: :ok
+
   defp filter_for_ready_to_complete(quest_progress, save) do
     Enum.find(quest_progress, fn progress ->
       Quest.requirements_complete?(progress, save)
@@ -220,8 +241,10 @@ defmodule Game.Command.Quest do
   end
 
   defp maybe_complete(:ok, _), do: :ok
+
   defp maybe_complete(nil, %{socket: socket}) do
     socket |> @socket.echo("You cannot complete a quest in this room. Find the quest giver.")
   end
+
   defp maybe_complete(progress, state), do: run({:complete, progress.quest_id}, state)
 end

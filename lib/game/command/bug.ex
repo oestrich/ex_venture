@@ -9,11 +9,12 @@ defmodule Game.Command.Bug do
   alias Data.Bug
   alias Data.Repo
 
-  commands ["bug"]
+  commands(["bug"])
 
   @impl Game.Command
   def help(:topic), do: "Bug"
   def help(:short), do: "Report a bug"
+
   def help(:full) do
     """
     Report a bug you encounter to the game admins. After entering a title you will
@@ -25,10 +26,14 @@ defmodule Game.Command.Bug do
   end
 
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, state :: map) :: :ok
   def run(command, state)
+
   def run({bug_title}, state = %{socket: socket}) do
-    socket |> @socket.echo("Please enter in any more information you have (an empty new line will finish entering text): ")
+    socket
+    |> @socket.echo(
+      "Please enter in any more information you have (an empty new line will finish entering text): "
+    )
+
     commands =
       state
       |> Map.get(:commands, %{})
@@ -45,14 +50,16 @@ defmodule Game.Command.Bug do
     state = %{state | commands: %{state.commands | bug: bug}}
     {:update, state}
   end
+
   def editor(:complete, state = %{socket: socket}) do
     bug = state.commands.bug
 
     params = %{
       title: bug.title,
       body: bug.lines |> Enum.join("\n"),
-      reporter_id: state.user.id,
+      reporter_id: state.user.id
     }
+
     params |> create_bug(socket)
 
     commands =
@@ -65,14 +72,18 @@ defmodule Game.Command.Bug do
 
   defp create_bug(params, socket) do
     changeset = %Bug{} |> Bug.changeset(params)
+
     case changeset |> Repo.insert() do
       {:ok, _bug} ->
         socket |> @socket.echo("Your bug has been submitted. Thanks!")
+
       {:error, changeset} ->
-        error = Enum.map(changeset.errors, fn ({field, error}) ->
-          human_error = Web.ErrorHelpers.translate_error(error)
-          "#{field} #{human_error}"
-        end)
+        error =
+          Enum.map(changeset.errors, fn {field, error} ->
+            human_error = Web.ErrorHelpers.translate_error(error)
+            "#{field} #{human_error}"
+          end)
+
         socket |> @socket.echo("There was an issue creating the bug.\n#{error}")
     end
   end

@@ -12,11 +12,12 @@ defmodule Game.Command.Look do
   alias Game.Session.GMCP
   alias Game.Utility
 
-  commands ["look at", {"look", ["l"]}]
+  commands(["look at", {"look", ["l"]}])
 
   @impl Game.Command
   def help(:topic), do: "Look"
   def help(:short), do: "Look around the room"
+
   def help(:full) do
     """
     View information about the room you are in.
@@ -30,15 +31,16 @@ defmodule Game.Command.Look do
     """
   end
 
+  @impl Game.Command
   @doc """
   Look around the current room
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
     room = @room.look(room_id)
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
+
     room_map =
       mini_map
       |> String.split("\n")
@@ -52,19 +54,25 @@ defmodule Game.Command.Look do
 
     :ok
   end
-  def run({direction}, %{socket: socket, save: %{room_id: room_id}}) when direction in ["north", "east", "south", "west"] do
+
+  def run({direction}, %{socket: socket, save: %{room_id: room_id}})
+      when direction in ["north", "east", "south", "west"] do
     room = @room.look(room_id)
 
     id_key = String.to_atom("#{direction}_id")
+
     case room |> Exit.exit_to(direction) do
       %{^id_key => room_id} ->
         room = @room.look(room_id)
         socket |> @socket.echo(Format.peak_room(room, direction))
-      _ -> nil
+
+      _ ->
+        nil
     end
 
     :ok
   end
+
   def run({name}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
@@ -87,7 +95,9 @@ defmodule Game.Command.Look do
       |> Item.find_item(item_name)
 
     case item do
-      nil -> room
+      nil ->
+        room
+
       {_instance, item} ->
         socket |> @socket.echo(Format.item(item))
         :ok
@@ -95,11 +105,14 @@ defmodule Game.Command.Look do
   end
 
   defp maybe_look_npc(:ok, _name, _state), do: :ok
+
   defp maybe_look_npc(room, npc_name, %{socket: socket}) do
-    npc = room.npcs |> Enum.find(&(Utility.matches?(&1, npc_name)))
+    npc = room.npcs |> Enum.find(&Utility.matches?(&1, npc_name))
 
     case npc do
-      nil -> room
+      nil ->
+        room
+
       npc ->
         socket |> @socket.echo(Format.npc_full(npc))
         :ok
@@ -107,11 +120,14 @@ defmodule Game.Command.Look do
   end
 
   defp maybe_look_player(:ok, _name, _state), do: :ok
+
   defp maybe_look_player(room, player_name, %{socket: socket}) do
-    player = room.players |> Enum.find(&(Utility.matches?(&1, player_name)))
+    player = room.players |> Enum.find(&Utility.matches?(&1, player_name))
 
     case player do
-      nil -> room
+      nil ->
+        room
+
       player ->
         socket |> @socket.echo(Format.player_full(player))
         :ok
@@ -119,6 +135,7 @@ defmodule Game.Command.Look do
   end
 
   defp could_not_find(:ok, _name, _state), do: :ok
+
   defp could_not_find(_, name, %{socket: socket}) do
     socket |> @socket.echo("Could not find \"#{name}\"")
     :ok

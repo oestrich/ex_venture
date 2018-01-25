@@ -15,6 +15,7 @@ defmodule Game.Command.Pager do
   def paginate(state, opts \\ []) do
     lines = Keyword.get(opts, :lines, @default_lines)
     command = Keyword.get(opts, :command, "")
+
     case command |> String.downcase() do
       "a" <> _ -> all(state)
       "q" <> _ -> quit(state)
@@ -35,6 +36,7 @@ defmodule Game.Command.Pager do
   """
   def quit(state) do
     state |> prompt()
+
     state
     |> Map.put(:mode, "commands")
     |> Map.delete(:pagination)
@@ -53,8 +55,12 @@ defmodule Game.Command.Pager do
     case to_save |> length() do
       0 ->
         state |> quit()
+
       _ ->
-        socket |> @socket.prompt("Pager: [{white}Enter{/white}, {white}All{/white}, {white}Quit{/white}] > ")
+        socket
+        |> @socket.prompt(
+          "Pager: [{white}Enter{/white}, {white}All{/white}, {white}Quit{/white}] > "
+        )
 
         to_save = Enum.join(to_save, "\n")
 

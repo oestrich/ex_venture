@@ -7,11 +7,12 @@ defmodule Game.Command.Inventory do
 
   alias Game.Items
 
-  commands [{"inventory", ["inv", "i"]}]
+  commands([{"inventory", ["inv", "i"]}])
 
   @impl Game.Command
   def help(:topic), do: "Inventory"
   def help(:short), do: "View your character's inventory"
+
   def help(:full) do
     """
     View your inventory.
@@ -23,27 +24,31 @@ defmodule Game.Command.Inventory do
     """
   end
 
+  @impl Game.Command
   @doc """
   Look at your inventory
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
-  def run({}, state = %{save: %{currency: currency, wearing: wearing, wielding: wielding, items: items}}) do
-    wearing = wearing
-    |> Enum.reduce(%{}, fn ({slot, instance}, wearing) ->
-      Map.put(wearing, slot, Items.item(instance))
-    end)
 
-    wielding = wielding
-    |> Enum.reduce(%{}, fn ({hand, instance}, wielding) ->
-      Map.put(wielding, hand, Items.item(instance))
-    end)
+  def run({}, state = %{save: save}) do
+    %{currency: currency, wearing: wearing, wielding: wielding, items: items} = save
+
+    wearing =
+      wearing
+      |> Enum.reduce(%{}, fn {slot, instance}, wearing ->
+        Map.put(wearing, slot, Items.item(instance))
+      end)
+
+    wielding =
+      wielding
+      |> Enum.reduce(%{}, fn {hand, instance}, wielding ->
+        Map.put(wielding, hand, Items.item(instance))
+      end)
 
     items =
       items
       |> Items.items()
-      |> Enum.reduce(%{}, fn (item, map) ->
+      |> Enum.reduce(%{}, fn item, map ->
         %{quantity: quantity} = Map.get(map, item.id, %{item: item, quantity: 0})
         Map.put(map, item.id, %{item: item, quantity: quantity + 1})
       end)

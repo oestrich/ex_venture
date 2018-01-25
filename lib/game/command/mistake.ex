@@ -5,11 +5,12 @@ defmodule Game.Command.Mistake do
 
   use Game.Command
 
-  commands ["kill", "attack"], parse: false
+  commands(["kill", "attack"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Mistakes"
   def help(:short), do: "Common command mistakes"
+
   def help(:full) do
     """
     #{help(:short)}. This command catches common mistakes and directs you
@@ -30,16 +31,20 @@ defmodule Game.Command.Mistake do
       iex> Game.Command.Mistake.parse("unknown")
       {:error, :bad_parse, "unknown"}
   """
-  @spec parse(command :: String.t) :: {atom}
+  @spec parse(command :: String.t()) :: {atom}
   def parse(command)
   def parse("attack" <> _), do: {:auto_combat}
   def parse("kill" <> _), do: {:auto_combat}
 
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, state :: map) :: :ok
   def run(command, state)
+
   def run({:auto_combat}, %{socket: socket}) do
-    socket |> @socket.echo("There is no auto combat. Please read {white}help combat{/white} for more information.")
+    socket
+    |> @socket.echo(
+      "There is no auto combat. Please read {white}help combat{/white} for more information."
+    )
+
     :ok
   end
 end

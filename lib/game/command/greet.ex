@@ -8,11 +8,12 @@ defmodule Game.Command.Greet do
 
   alias Game.Utility
 
-  commands ["greet", "talk to"], parse: false
+  commands(["greet", "talk to"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Greet"
   def help(:short), do: "Greet another player or NPC"
+
   def help(:full) do
     """
     #{help(:short)}. A way to greet another player or NPC. If you are
@@ -39,16 +40,17 @@ defmodule Game.Command.Greet do
       iex> Game.Command.Greet.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
-  @spec parse(command :: String.t) :: {atom}
+  @spec parse(String.t()) :: {atom}
   def parse(command)
   def parse("greet " <> character), do: {:greet, character}
   def parse("talk to " <> character), do: {:greet, character}
 
+  @impl Game.Command
   @doc """
   Greet another player
   """
-  @impl Game.Command
   def run(command, state)
+
   def run({:greet, name}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)
 
@@ -60,10 +62,12 @@ defmodule Game.Command.Greet do
   end
 
   defp maybe_greet_npc(room, npc_name, %{socket: socket, user: user}) do
-    npc = room.npcs |> Enum.find(&(Utility.matches?(&1, npc_name)))
+    npc = room.npcs |> Enum.find(&Utility.matches?(&1, npc_name))
 
     case npc do
-      nil -> room
+      nil ->
+        room
+
       npc ->
         @npc.greet(npc.id, user)
 
@@ -73,11 +77,14 @@ defmodule Game.Command.Greet do
   end
 
   defp maybe_greet_player(:ok, _player_name, _state), do: :ok
+
   defp maybe_greet_player(room, player_name, %{socket: socket}) do
-    player = room.players |> Enum.find(&(Utility.matches?(&1, player_name)))
+    player = room.players |> Enum.find(&Utility.matches?(&1, player_name))
 
     case player do
-      nil -> room
+      nil ->
+        room
+
       player ->
         socket |> @socket.echo("You greet #{Format.player_name(player)}.")
         :ok

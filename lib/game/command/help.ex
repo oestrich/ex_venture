@@ -5,13 +5,14 @@ defmodule Game.Command.Help do
 
   use Game.Command
 
-  commands ["help"]
+  commands(["help"])
 
   alias Game.Help
 
   @impl Game.Command
   def help(:topic), do: "Help"
   def help(:short), do: "View information about commands and other topics"
+
   def help(:full) do
     """
     #{help(:short)}
@@ -22,15 +23,16 @@ defmodule Game.Command.Help do
     """
   end
 
+  @impl Game.Command
   @doc """
   View help
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({}, state) do
     {:paginate, Help.base(), state}
   end
+
   def run({topic}, state) do
     {:paginate, Help.topic(topic), state}
   end

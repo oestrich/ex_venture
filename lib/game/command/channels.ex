@@ -9,11 +9,12 @@ defmodule Game.Command.Channels do
 
   @channels ["global", "newbie"]
 
-  commands ["channels", "global", "newbie"], parse: false
+  commands(["channels", "global", "newbie"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Channels"
   def help(:short), do: "Talk to other players"
+
   def help(:full) do
     """
     #{help(:short)}
@@ -51,7 +52,7 @@ defmodule Game.Command.Channels do
       iex> Game.Command.Channels.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
-  @spec parse(command :: String.t) :: {atom}
+  @spec parse(String.t()) :: {atom}
   def parse(command)
   def parse("channels"), do: {}
   def parse("channels off " <> channel), do: {:leave, channel}
@@ -59,35 +60,42 @@ defmodule Game.Command.Channels do
   def parse("global " <> message), do: {"global", message}
   def parse("newbie " <> message), do: {"newbie", message}
 
+  @impl Game.Command
   @doc """
   Send to all connected players
   """
-  @impl Game.Command
   def run(command, state)
+
   def run({}, %{socket: socket}) do
-    channels = Channel.subscribed()
-    |> Enum.map(&("  - {red}#{&1}{/red}"))
-    |> Enum.join("\n")
+    channels =
+      Channel.subscribed()
+      |> Enum.map(&"  - {red}#{&1}{/red}")
+      |> Enum.join("\n")
 
     socket |> @socket.echo("You are subscribed to:\n#{channels}")
     :ok
   end
+
   def run({:join, channel}, %{user: user}) do
     join_channel(channel, user)
     :ok
   end
+
   def run({:leave, channel}, %{user: user}) do
     case in_channel?(channel, user) do
       true -> Channel.leave(channel)
       false -> nil
     end
+
     :ok
   end
+
   def run({channel, message}, %{user: user}) do
     case in_channel?(channel, user) do
       true -> Channel.broadcast(channel, Format.channel_say(channel, {:user, user}, message))
       false -> nil
     end
+
     :ok
   end
 
@@ -99,5 +107,6 @@ defmodule Game.Command.Channels do
       true -> nil
     end
   end
+
   defp join_channel(_channel, _user), do: nil
 end

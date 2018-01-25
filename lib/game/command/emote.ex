@@ -5,11 +5,12 @@ defmodule Game.Command.Emote do
 
   use Game.Command
 
-  commands ["emote"]
+  commands(["emote"])
 
   @impl Game.Command
   def help(:topic), do: "Emote"
   def help(:short), do: "Perform an emote"
+
   def help(:full) do
     """
     Performs an emote. Anything you type after emote will be added to your name.
@@ -20,12 +21,12 @@ defmodule Game.Command.Emote do
     """
   end
 
+  @impl Game.Command
   @doc """
   Perform an emote
   """
-  @impl Game.Command
-  @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
+
   def run({emote}, %{socket: socket, user: user, save: %{room_id: room_id}}) do
     socket |> @socket.echo(Format.emote({:user, user}, emote))
     room_id |> @room.emote({:user, user}, Message.emote(user, emote))

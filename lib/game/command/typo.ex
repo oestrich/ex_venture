@@ -9,11 +9,12 @@ defmodule Game.Command.Typo do
   alias Data.Typo
   alias Data.Repo
 
-  commands ["typo"]
+  commands(["typo"])
 
   @impl Game.Command
   def help(:topic), do: "Typo"
   def help(:short), do: "Report a typo"
+
   def help(:full) do
     """
     Report a typo you encounter to the game admins. After entering a title you will
@@ -25,10 +26,14 @@ defmodule Game.Command.Typo do
   end
 
   @impl Game.Command
-  @spec run(args :: {atom, String.t}, state :: map) :: :ok
   def run(command, state)
+
   def run({typo_title}, state = %{socket: socket}) do
-    socket |> @socket.echo("Please enter in any more information you have (an empty new line will finish entering text): ")
+    socket
+    |> @socket.echo(
+      "Please enter in any more information you have (an empty new line will finish entering text): "
+    )
+
     commands =
       state
       |> Map.get(:commands, %{})
@@ -45,6 +50,7 @@ defmodule Game.Command.Typo do
     state = %{state | commands: %{state.commands | typo: typo}}
     {:update, state}
   end
+
   def editor(:complete, state = %{socket: socket}) do
     typo = state.commands.typo
 
@@ -52,8 +58,9 @@ defmodule Game.Command.Typo do
       title: typo.title,
       body: typo.lines |> Enum.join("\n"),
       reporter_id: state.user.id,
-      room_id: state.save.room_id,
+      room_id: state.save.room_id
     }
+
     params |> create_typo(socket)
 
     commands =
@@ -66,14 +73,18 @@ defmodule Game.Command.Typo do
 
   defp create_typo(params, socket) do
     changeset = %Typo{} |> Typo.changeset(params)
+
     case changeset |> Repo.insert() do
       {:ok, _typo} ->
         socket |> @socket.echo("Your typo has been submitted. Thanks!")
+
       {:error, changeset} ->
-        error = Enum.map(changeset.errors, fn ({field, error}) ->
-          human_error = Web.ErrorHelpers.translate_error(error)
-          "#{field} #{human_error}"
-        end)
+        error =
+          Enum.map(changeset.errors, fn {field, error} ->
+            human_error = Web.ErrorHelpers.translate_error(error)
+            "#{field} #{human_error}"
+          end)
+
         socket |> @socket.echo("There was an issue creating the typo.\n#{error}")
     end
   end

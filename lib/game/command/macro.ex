@@ -16,8 +16,8 @@ defmodule Game.Command.Macro do
       alias Game.Message
       alias Game.Session
 
-      Module.register_attribute __MODULE__, :commands, accumulate: true
-      Module.register_attribute __MODULE__, :aliases, accumulate: true
+      Module.register_attribute(__MODULE__, :commands, accumulate: true)
+      Module.register_attribute(__MODULE__, :aliases, accumulate: true)
 
       @behaviour Game.Command
       @before_compile Game.Command.Macro
@@ -57,12 +57,12 @@ defmodule Game.Command.Macro do
   """
   defmacro commands(commands, opts \\ []) do
     parse = Keyword.get(opts, :parse, true)
-    Enum.map(commands, &(expand_command(&1, parse)))
+    Enum.map(commands, &expand_command(&1, parse))
   end
 
   defp expand_command({command, aliases}, parse) do
     aliases =
-      Enum.map(aliases, fn (command_alias) ->
+      Enum.map(aliases, fn command_alias ->
         parse_func =
           if parse do
             alias_parse(command_alias)
@@ -81,6 +81,7 @@ defmodule Game.Command.Macro do
       unquote(aliases)
     end
   end
+
   defp expand_command(command, parse) do
     parse_func =
       if parse do
