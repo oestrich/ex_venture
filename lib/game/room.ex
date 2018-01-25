@@ -202,7 +202,7 @@ defmodule Game.Room do
   def handle_cast({:enter, {:user, user}, reason}, state) do
     %{room: room, players: players, npcs: npcs} = state
 
-    Logger.debug("Player (#{user.id}) entered room (#{room.id})", type: :room)
+    Logger.debug(fn -> "Player (#{user.id}) entered room (#{room.id})" end, type: :room)
 
     players |> inform_players({"room/entered", {{:user, user}, reason}})
     npcs |> inform_npcs({"room/entered", {{:user, user}, reason}})
@@ -213,7 +213,7 @@ defmodule Game.Room do
   def handle_cast({:enter, {:npc, npc}, reason}, state) do
     %{room: room, players: players, npcs: npcs} = state
 
-    Logger.debug("NPC (#{npc.id}) entered room (#{room.id})", type: :room)
+    Logger.debug(fn -> "NPC (#{npc.id}) entered room (#{room.id})" end, type: :room)
 
     players |> inform_players({"room/entered", {{:npc, npc}, reason}})
     npcs |> inform_npcs({"room/entered", {{:npc, npc}, reason}})

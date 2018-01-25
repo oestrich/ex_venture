@@ -239,8 +239,8 @@ defmodule Data.Event do
   def valid_action?(_, %{type: "target"}), do: true
 
   def valid_action?(_, action = %{type: "target/effects"}) do
-    Map.has_key?(action, :weight) && is_integer(action.weight) && is_binary(action.text) && is_float(action.delay) &&
-      Enum.all?(action.effects, &Effect.valid?/1)
+    Map.has_key?(action, :weight) && is_integer(action.weight) && is_binary(action.text) &&
+      is_float(action.delay) && Enum.all?(action.effects, &Effect.valid?/1)
   end
 
   def valid_action?(_, _), do: false

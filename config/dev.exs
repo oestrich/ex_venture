@@ -12,7 +12,14 @@ config :ex_venture, Web.Endpoint,
   code_reloader: true,
   check_origin: false,
   server: true,
-  watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin", cd: Path.expand("../assets", __DIR__)]]
+  watchers: [
+    node: [
+      "node_modules/brunch/bin/brunch",
+      "watch",
+      "--stdin",
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
 
 config :ex_venture, :networking,
   host: "localhost",
@@ -28,6 +35,7 @@ config :ex_venture, :game,
   continue_wait: 500
 
 config :logger, :level, :info
+
 config :logger, :console,
   format: "$time $metadata[$level] $levelpad$message\n",
   metadata: [:type]

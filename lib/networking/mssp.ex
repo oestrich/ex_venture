@@ -13,26 +13,29 @@ defmodule Networking.MSSP do
   alias Game.Session
 
   def name() do
-    name = Config.game_name()
-    |> String.graphemes()
+    name =
+      Config.game_name()
+      |> String.graphemes()
 
     [@mssp_var] ++ 'NAME' ++ [@mssp_val] ++ name
   end
 
   def players() do
-    player_count = Session.Registry.connected_players
-    |> length()
-    |> Integer.to_string()
-    |> String.graphemes()
+    player_count =
+      Session.Registry.connected_players()
+      |> length()
+      |> Integer.to_string()
+      |> String.graphemes()
 
     [@mssp_var] ++ 'PLAYERS' ++ [@mssp_val] ++ player_count
   end
 
   def uptime() do
-    started_at = Server.started_at()
-    |> Timex.to_unix()
-    |> Integer.to_string()
-    |> String.graphemes()
+    started_at =
+      Server.started_at()
+      |> Timex.to_unix()
+      |> Integer.to_string()
+      |> String.graphemes()
 
     [@mssp_var] ++ 'UPTIME' ++ [@mssp_val] ++ started_at
   end

@@ -19,18 +19,27 @@ config :ex_venture, Web.Endpoint,
   render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]
 
-config :ex_venture, Data.Repo,
-  loggers: [Metrics.RepoInstrumenter, Ecto.LogEntry]
+config :ex_venture, Data.Repo, loggers: [Metrics.RepoInstrumenter, Ecto.LogEntry]
 
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
 
-config :distillery,
-  no_warn_missing: [:elixir_make]
+config :distillery, no_warn_missing: [:elixir_make]
 
 config :prometheus, Metrics.PipelineInstrumenter,
   labels: [:status_class, :method, :host, :scheme],
-  duration_buckets: [10, 100, 1_000, 10_000, 100_000,
-                     300_000, 500_000, 750_000, 1_000_000,
-                     1_500_000, 2_000_000, 3_000_000],
+  duration_buckets: [
+    10,
+    100,
+    1_000,
+    10_000,
+    100_000,
+    300_000,
+    500_000,
+    750_000,
+    1_000_000,
+    1_500_000,
+    2_000_000,
+    3_000_000
+  ],
   registry: :default,
   duration_unit: :microseconds

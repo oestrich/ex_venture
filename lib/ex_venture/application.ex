@@ -11,13 +11,15 @@ defmodule ExVenture.Application do
     import Supervisor.Spec, warn: false
 
     # Define workers and child supervisors to be supervised
-    children = [
-      supervisor(Data.Repo, []),
-      supervisor(Web.Supervisor, []),
-      supervisor(Game.Registries, []),
-      supervisor(Game.Supervisor, []),
-      listener(),
-    ] |> Enum.reject(&is_nil/1)
+    children =
+      [
+        supervisor(Data.Repo, []),
+        supervisor(Web.Supervisor, []),
+        supervisor(Game.Registries, []),
+        supervisor(Game.Supervisor, []),
+        listener()
+      ]
+      |> Enum.reject(&is_nil/1)
 
     Metrics.Setup.setup()
 
@@ -32,7 +34,9 @@ defmodule ExVenture.Application do
       true ->
         import Supervisor.Spec, warn: false
         worker(Networking.Listener, [])
-      false -> nil
+
+      false ->
+        nil
     end
   end
 end

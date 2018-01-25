@@ -26,14 +26,16 @@ config :ex_venture, :game,
   zone: Game.Zone,
   continue_wait: 500
 
-config :logger,
-  level: :info
+config :logger, level: :info
 
 config :logger,
-  backends: [{LoggerFileBackend, :global}, {LoggerFileBackend, :phoenix}, {LoggerFileBackend, :commands}]
+  backends: [
+    {LoggerFileBackend, :global},
+    {LoggerFileBackend, :phoenix},
+    {LoggerFileBackend, :commands}
+  ]
 
-config :logger, :global,
-  path: "/var/log/ex_venture/global.log"
+config :logger, :global, path: "/var/log/ex_venture/global.log"
 
 config :logger, :phoenix,
   path: "/var/log/ex_venture/phoenix.log",

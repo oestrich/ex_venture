@@ -6,17 +6,17 @@ defmodule ExVenture.Mixfile do
       app: :ex_venture,
       version: "0.17.0",
       elixir: "~> 1.4",
-      elixirc_paths: elixirc_paths(Mix.env),
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
-      compilers: [:phoenix] ++ Mix.compilers,
+      elixirc_paths: elixirc_paths(Mix.env()),
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      compilers: [:phoenix] ++ Mix.compilers(),
       deps: deps(),
       aliases: aliases(),
       source_url: "https://github.com/oestrich/ex_venture",
       docs: [
         main: "readme",
-        extras: ["README.md"],
-      ],
+        extras: ["README.md"]
+      ]
     ]
   end
 
@@ -25,12 +25,11 @@ defmodule ExVenture.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger],
-     mod: {ExVenture.Application, []}]
+    [extra_applications: [:logger], mod: {ExVenture.Application, []}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Dependencies can be Hex packages:
   #
@@ -70,7 +69,7 @@ defmodule ExVenture.Mixfile do
       {:timex, "~> 3.1"},
       {:timex_ecto, "~> 3.1"},
       {:uuid, "~> 1.1"},
-      {:yaml_elixir, "~> 1.3"},
+      {:yaml_elixir, "~> 1.3"}
     ]
   end
 
@@ -78,7 +77,7 @@ defmodule ExVenture.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      "ecto.migrate.reset": ["ecto.drop", "ecto.create", "ecto.migrate"],
+      "ecto.migrate.reset": ["ecto.drop", "ecto.create", "ecto.migrate"]
     ]
   end
 end

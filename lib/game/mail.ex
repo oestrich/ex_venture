@@ -47,7 +47,7 @@ defmodule Game.Mail do
       title: mail.title,
       sender_id: sender.id,
       receiver_id: mail.player.id,
-      body: Enum.join(mail.body, "\n"),
+      body: Enum.join(mail.body, "\n")
     })
     |> Repo.insert()
   end

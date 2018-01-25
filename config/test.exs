@@ -1,7 +1,6 @@
 use Mix.Config
 
-config :logger,
-  level: :error
+config :logger, level: :error
 
 config :ex_venture, Data.Repo,
   adapter: Ecto.Adapters.Postgres,

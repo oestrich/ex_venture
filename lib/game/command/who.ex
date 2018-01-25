@@ -40,7 +40,8 @@ defmodule Game.Command.Who do
           |> Enum.map(&"{red}#{&1}{/red}")
           |> Enum.join(" ")
 
-        "[#{user.save.level} #{user.class.name} #{user.race.name}] #{Format.player_name(user)} #{flags}"
+        prompt = "[#{user.save.level} #{user.class.name} #{user.race.name}]"
+        "#{prompt} #{Format.player_name(user)} #{flags}"
       end)
       |> Enum.join("\n")
 
