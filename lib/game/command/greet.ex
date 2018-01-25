@@ -31,6 +31,9 @@ defmodule Game.Command.Greet do
   @doc """
   Parse the command into arguments
 
+      iex> Game.Command.Greet.parse("greet")
+      {:greet, :help}
+
       iex> Game.Command.Greet.parse("greet guard")
       {:greet, "guard"}
 
@@ -42,6 +45,7 @@ defmodule Game.Command.Greet do
   """
   @spec parse(String.t()) :: {atom}
   def parse(command)
+  def parse("greet"), do: {:greet, :help}
   def parse("greet " <> character), do: {:greet, character}
   def parse("talk to " <> character), do: {:greet, character}
 
@@ -50,6 +54,11 @@ defmodule Game.Command.Greet do
   Greet another player
   """
   def run(command, state)
+
+  def run({:greet, :help}, %{socket: socket}) do
+    socket |> @socket.echo("You are not sure who to greet.")
+    :ok
+  end
 
   def run({:greet, name}, state = %{save: %{room_id: room_id}}) do
     room = @room.look(room_id)

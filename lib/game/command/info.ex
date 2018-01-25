@@ -9,7 +9,7 @@ defmodule Game.Command.Info do
   alias Game.Effect
   alias Game.Item
 
-  commands([{"info", ["score"]}])
+  commands([{"info", ["score"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Info"
@@ -23,6 +23,11 @@ defmodule Game.Command.Info do
     [ ] > {white}info{/white}
     """
   end
+
+  @impl Game.Command
+  def parse(command)
+  def parse("info"), do: {}
+  def parse("score"), do: {}
 
   @impl Game.Command
   @doc """
