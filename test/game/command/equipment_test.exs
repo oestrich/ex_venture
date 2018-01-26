@@ -1,5 +1,6 @@
 defmodule Game.Command.EquipmentTest do
   use Data.ModelCase
+  doctest Game.Command.Equipment
 
   alias Game.Command.Equipment
 

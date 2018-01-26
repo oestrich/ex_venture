@@ -40,6 +40,11 @@ defmodule Game.Command.Drop do
     end
   end
 
+  def run({}, %{socket: socket}) do
+    socket |> @socket.echo("Please provide an item to drop. See {white}help drop{/white} for more information.")
+    :ok
+  end
+
   defp drop_currency(amount_to_drop, state = %{socket: socket, save: %{currency: currency}}) do
     amount =
       amount_to_drop

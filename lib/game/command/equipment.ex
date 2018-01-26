@@ -7,7 +7,7 @@ defmodule Game.Command.Equipment do
 
   alias Game.Items
 
-  commands([{"equipment", ["eq"]}])
+  commands([{"equipment", ["eq"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Equipment"
@@ -22,6 +22,25 @@ defmodule Game.Command.Equipment do
     [ ] > {white}equipment{/white}
     """
   end
+
+  @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Equipment.parse("equipment")
+      {}
+      iex> Game.Command.Equipment.parse("eq")
+      {}
+
+      iex> Game.Command.Equipment.parse("equipment hi")
+      {:error, :bad_parse, "equipment hi"}
+
+      iex> Game.Command.Equipment.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("eq"), do: {}
+  def parse("equipment"), do: {}
 
   @impl Game.Command
   @doc """

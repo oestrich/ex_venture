@@ -1,7 +1,8 @@
 defmodule Game.Command.EmoteTest do
   use Data.ModelCase
+  doctest Game.Command.Emote
 
-  alias Game.Command
+  alias Game.Command.Emote
   alias Game.Message
 
   @room Test.Game.Room
@@ -12,7 +13,7 @@ defmodule Game.Command.EmoteTest do
   end
 
   test "send an emote to the room", %{socket: socket, user: user} do
-    :ok = Command.Emote.run({"does something"}, %{socket: socket, user: user, save: %{room_id: 1}})
+    :ok = Emote.run({"does something"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
     assert @room.get_emotes() == [{1, Message.emote(user, "does something")}]
   end

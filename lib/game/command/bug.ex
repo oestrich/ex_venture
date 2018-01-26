@@ -42,6 +42,11 @@ defmodule Game.Command.Bug do
     {:editor, __MODULE__, Map.put(state, :commands, commands)}
   end
 
+  def run({}, %{socket: socket}) do
+    socket |> @socket.echo("Please provide a bug title. See {white}help bug{/white} for more information.")
+    :ok
+  end
+
   @impl Game.Command.Editor
   def editor({:text, line}, state) do
     bug = Map.get(state.commands, :bug, %{})
