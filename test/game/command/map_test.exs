@@ -1,7 +1,8 @@
 defmodule Game.Command.MapTest do
   use Data.ModelCase
+  doctest Game.Command.Map
 
-  alias Game.Command
+  alias Game.Command.Map
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -13,7 +14,7 @@ defmodule Game.Command.MapTest do
   end
 
   test "view a map of the zone", %{socket: socket} do
-    :ok = Command.Map.run({}, %{socket: socket, save: %{room_id: 1}})
+    :ok = Map.run({}, %{socket: socket, save: %{room_id: 1}})
 
     [{^socket, map}] = @socket.get_echos()
     assert Regex.match?(~r([ ]), map)

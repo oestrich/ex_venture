@@ -40,6 +40,11 @@ defmodule Game.Command.Use do
     end
   end
 
+  def run({}, %{socket: socket}) do
+    socket |> @socket.echo("You are not sure what to use. See {white}help use{/white} for more information.")
+    :ok
+  end
+
   defp item_not_found(socket, item_name) do
     socket |> @socket.echo(~s("#{item_name}" could not be found.))
     :ok

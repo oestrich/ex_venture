@@ -12,7 +12,7 @@ defmodule Game.Command.PickUp do
 
   @must_be_alive true
 
-  commands([{"pick up", ["get", "take"]}])
+  commands([{"pick up", ["get", "take"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Pick Up"
@@ -26,6 +26,37 @@ defmodule Game.Command.PickUp do
     [ ] > {white}pick up sword{/white}
     """
   end
+
+  @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.PickUp.parse("pick up")
+      {"pick up", :help}
+      iex> Game.Command.PickUp.parse("get")
+      {"get", :help}
+      iex> Game.Command.PickUp.parse("take")
+      {"take", :help}
+
+      iex> Game.Command.PickUp.parse("pick up item")
+      {"item"}
+
+      iex> Game.Command.PickUp.parse("get item")
+      {"item"}
+
+      iex> Game.Command.PickUp.parse("take item")
+      {"item"}
+
+      iex> Game.Command.PickUp.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("pick up"), do: {"pick up", :help}
+  def parse("get"), do: {"get", :help}
+  def parse("take"), do: {"take", :help}
+  def parse("pick up " <> item), do: {item}
+  def parse("get " <> item), do: {item}
+  def parse("take " <> item), do: {item}
 
   @impl Game.Command
   @doc """
@@ -69,6 +100,11 @@ defmodule Game.Command.PickUp do
       instance ->
         pick_up(instance, room, state)
     end
+  end
+
+  def run({verb, :help}, %{socket: socket}) do
+    socket |> @socket.echo("You don't know what to #{verb}. See {white}help get{/white} for more information.")
+    :ok
   end
 
   def pick_up(item, room, state = %{socket: socket, save: save}) do

@@ -28,10 +28,9 @@ defmodule Game.Command.Examine do
   """
   def run(command, state)
 
-  def run({item_name}, %{
-        socket: socket,
-        save: %{wearing: wearing, wielding: wielding, items: items}
-      }) do
+  def run({item_name}, %{socket: socket, save: save}) do
+    %{wearing: wearing, wielding: wielding, items: items} = save
+
     wearing_instances = Enum.map(wearing, &elem(&1, 1))
     wielding_instances = Enum.map(wielding, &elem(&1, 1))
 
@@ -42,6 +41,11 @@ defmodule Game.Command.Examine do
       item -> socket |> @socket.echo(Format.item(item))
     end
 
+    :ok
+  end
+
+  def run({}, %{socket: socket}) do
+    socket |> @socket.echo("You don't know what to examine. See {white}help drop{/white} for more information.")
     :ok
   end
 end

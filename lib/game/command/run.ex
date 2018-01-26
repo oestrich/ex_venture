@@ -48,7 +48,10 @@ defmodule Game.Command.Run do
   end
 
   # run without directions
-  def run({}, _state), do: :ok
+  def run({}, %{socket: socket}) do
+    socket |> @socket.echo("You run in place.")
+    :ok
+  end
 
   @doc """
   Move in the first direction of the list

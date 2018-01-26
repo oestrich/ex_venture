@@ -5,7 +5,7 @@ defmodule Game.Command.Quit do
 
   use Game.Command
 
-  commands(["quit"])
+  commands(["quit"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Quit"
@@ -19,6 +19,22 @@ defmodule Game.Command.Quit do
     [ ] > {white}quit{/white}
     """
   end
+
+  @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Quit.parse("quit")
+      {}
+
+      iex> Game.Command.Quit.parse("quit extra")
+      {:error, :bad_parse, "quit extra"}
+
+      iex> Game.Command.Quit.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("quit"), do: {}
 
   @impl Game.Command
   @doc """

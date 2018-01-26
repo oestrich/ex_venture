@@ -9,7 +9,7 @@ defmodule Game.Command.Map do
 
   alias Game.Session.GMCP
 
-  commands(["map"])
+  commands(["map"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Map"
@@ -23,6 +23,22 @@ defmodule Game.Command.Map do
     [ ] > {white}map{/white}
     """
   end
+
+  @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Map.parse("map")
+      {}
+
+      iex> Game.Command.Map.parse("map extra")
+      {:error, :bad_parse, "map extra"}
+
+      iex> Game.Command.Map.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("map"), do: {}
 
   @impl Game.Command
   @doc """

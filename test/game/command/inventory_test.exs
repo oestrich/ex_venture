@@ -1,5 +1,6 @@
 defmodule Game.Command.InventoryTest do
   use Data.ModelCase
+  doctest Game.Command.Inventory
 
   @socket Test.Networking.Socket
 

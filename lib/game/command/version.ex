@@ -5,7 +5,7 @@ defmodule Game.Command.Version do
 
   use Game.Command
 
-  commands(["version"])
+  commands(["version"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Version"
@@ -19,6 +19,22 @@ defmodule Game.Command.Version do
     [ ] > {white}version{/white}
     """
   end
+
+  @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Version.parse("version")
+      {}
+
+      iex> Game.Command.Version.parse("version extra")
+      {:error, :bad_parse, "version extra"}
+
+      iex> Game.Command.Version.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("version"), do: {}
 
   @impl Game.Command
   @doc """

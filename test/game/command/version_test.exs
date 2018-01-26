@@ -1,5 +1,6 @@
 defmodule Game.Command.VersionTest do
   use ExUnit.Case
+  doctest Game.Command.Version
 
   alias Game.Command.Version
 
