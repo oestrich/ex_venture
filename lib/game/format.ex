@@ -506,8 +506,10 @@ defmodule Game.Format do
       iex> Game.Format.player_flags(%{flags: []})
       "none"
   """
-  def player_flags(%{flags: []}), do: "none"
-  def player_flags(%{flags: flags}) do
+  def player_flags(player, opts \\ [none: true])
+  def player_flags(%{flags: []}, [none: true]), do: "none"
+  def player_flags(%{flags: []}, [none: false]), do: ""
+  def player_flags(%{flags: flags}, _opts) do
     flags
     |> Enum.map(&"{red}#{&1}{/red}")
     |> Enum.join(" ")

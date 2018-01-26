@@ -39,7 +39,7 @@ defmodule Game.Command.Who do
       players
       |> Enum.map(fn {_pid, user} ->
         prompt = "[#{user.save.level} #{user.class.name} #{user.race.name}]"
-        "#{prompt} #{Format.player_name(user)} #{Format.player_flags(user)}"
+        "#{prompt} #{Format.player_name(user)} #{Format.player_flags(user, none: false)}"
       end)
       |> Enum.join("\n")
 
