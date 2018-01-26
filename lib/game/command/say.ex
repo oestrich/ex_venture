@@ -5,7 +5,7 @@ defmodule Game.Command.Say do
 
   use Game.Command
 
-  commands(["say"])
+  commands(["say"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Say"
@@ -23,6 +23,22 @@ defmodule Game.Command.Say do
 
   @impl Game.Command
   @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Say.parse("say hello")
+      {"hello"}
+
+      iex> Game.Command.Say.parse("say")
+      {:error, :bad_parse, "say"}
+
+      iex> Game.Command.Say.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("say " <> name), do: {name}
+
+  @impl Game.Command
+  @doc """
   Says to the current room the player is in
   """
   def run(command, state)
@@ -32,6 +48,4 @@ defmodule Game.Command.Say do
     room_id |> @room.say({:user, user}, Message.new(user, message))
     :ok
   end
-
-  def run({}, _), do: :ok
 end

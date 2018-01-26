@@ -32,10 +32,6 @@ defmodule Game.CommandTest do
       assert is_integer(command.parsed_in)
     end
 
-    test "allows capitalization of the command", %{user: user} do
-      assert %Command{module: Command.Say, args: {"hello"}} = Command.parse("Say hello", user)
-    end
-
     test "removes extra spaces", %{user: user} do
       assert %Command{module: Command.Say, args: {"hello how are you"}} = Command.parse("say  hello  how are you", user)
     end
