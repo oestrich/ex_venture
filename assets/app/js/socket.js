@@ -94,11 +94,12 @@ document.getElementById("prompt").addEventListener("keypress", e => {
     var command = document.getElementById("prompt").value
 
     if (options.echo) {
-      commandHistory.add(command)
+      commandHistory.add(command);
 
       let html = document.createElement('span');
       html.innerHTML = command + "<br/>";
-      document.getElementById("terminal").append(html)
+      document.getElementById("terminal").append(html);
+      scrollToBottom();
     }
 
     document.getElementById("prompt").value = ""
