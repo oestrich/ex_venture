@@ -6,6 +6,7 @@ alias Data.Exit
 alias Data.HelpTopic
 alias Data.Item
 alias Data.NPC
+alias Data.NPCItem
 alias Data.NPCSpawner
 alias Data.Race
 alias Data.Room
