@@ -5,6 +5,7 @@ defmodule Game.Command.Who do
 
   use Game.Command
 
+  alias Game.Command.Info
   alias Game.Format
 
   commands(["who"])
@@ -19,6 +20,8 @@ defmodule Game.Command.Who do
 
     Example:
     [ ] > {white}who{/white}
+
+    [ ] > {white}who player{/white}
     """
   end
 
@@ -35,17 +38,14 @@ defmodule Game.Command.Who do
     names =
       players
       |> Enum.map(fn {_pid, user} ->
-        flags =
-          user.flags
-          |> Enum.map(&"{red}#{&1}{/red}")
-          |> Enum.join(" ")
-
         prompt = "[#{user.save.level} #{user.class.name} #{user.race.name}]"
-        "#{prompt} #{Format.player_name(user)} #{flags}"
+        "#{prompt} #{Format.player_name(user)} #{Format.player_flags(user)}"
       end)
       |> Enum.join("\n")
 
     socket |> @socket.echo("There are #{players |> length} players online:\n#{names}")
     :ok
   end
+
+  def run({name}, state), do: Info.run({name}, state)
 end

@@ -482,7 +482,35 @@ defmodule Game.Format do
       ["Play Time", play_time(user.seconds_online)]
     ]
 
-    Table.format("#{user.name} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
+    Table.format("#{player_name(user)} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
+  end
+
+  @doc """
+  View information about another player
+  """
+  def short_info(user = %{save: save}) do
+    rows = [
+      ["Level", save.level],
+      ["Flags", player_flags(user)],
+    ]
+
+    Table.format("#{player_name(user)} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
+  end
+
+  @doc """
+  Format player flags
+
+      iex> Game.Format.player_flags(%{flags: ["admin"]})
+      "{red}admin{/red}"
+
+      iex> Game.Format.player_flags(%{flags: []})
+      "none"
+  """
+  def player_flags(%{flags: []}), do: "none"
+  def player_flags(%{flags: flags}) do
+    flags
+    |> Enum.map(&"{red}#{&1}{/red}")
+    |> Enum.join(" ")
   end
 
   @doc """

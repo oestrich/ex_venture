@@ -134,6 +134,7 @@ defmodule Game.Account do
     player =
       User
       |> where([u], fragment("lower(?) = ?", u.name, ^String.downcase(name)))
+      |> preload([:race, :class])
       |> limit(1)
       |> Repo.one()
 

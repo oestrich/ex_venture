@@ -17,17 +17,35 @@ defmodule Game.Command.Info do
 
   def help(:full) do
     """
-    #{help(:short)}
+    #{help(:short)}. You can also view stats about another character.
 
     Example:
     [ ] > {white}info{/white}
+    [ ] > {white}score{/white}
+
+    [ ] > {white}info player{/white}
     """
   end
 
   @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Info.parse("info")
+      {}
+      iex> Game.Command.Info.parse("score")
+      {}
+
+      iex> Game.Command.Info.parse("info player")
+      {"player"}
+
+      iex> Game.Command.Info.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
   def parse(command)
   def parse("info"), do: {}
   def parse("score"), do: {}
+  def parse("info " <> name), do: {name}
 
   @impl Game.Command
   @doc """
@@ -39,6 +57,18 @@ defmodule Game.Command.Info do
     user = %{user | save: cacluate_save(save), seconds_online: seconds_online(user, state)}
     socket |> @socket.echo(Format.info(user))
     :ok
+  end
+
+  def run({name}, %{socket: socket}) do
+    case Account.get_player(name) do
+      {:ok, player} ->
+        socket |> @socket.echo(Format.short_info(player))
+        :ok
+
+      {:error, :not_found} ->
+        socket |> @socket.echo("Could not find a player with the name \"#{name}\"")
+        :ok
+    end
   end
 
   defp cacluate_save(save) do
