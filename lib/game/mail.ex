@@ -8,6 +8,7 @@ defmodule Game.Mail do
   alias Data.Mail
   alias Data.Repo
   alias Data.User
+  alias Game.Session
 
   @doc """
   Get mail for a user
@@ -42,13 +43,25 @@ defmodule Game.Mail do
   end
 
   def create(sender, mail) do
-    %Mail{}
-    |> Mail.changeset(%{
-      title: mail.title,
-      sender_id: sender.id,
-      receiver_id: mail.player.id,
-      body: Enum.join(mail.body, "\n")
-    })
-    |> Repo.insert()
+    %{player: player} = mail
+
+    changeset =
+      %Mail{}
+      |> Mail.changeset(%{
+        title: mail.title,
+        sender_id: sender.id,
+        receiver_id: player.id,
+        body: Enum.join(mail.body, "\n")
+      })
+
+    case changeset |> Repo.insert() do
+      {:ok, mail} ->
+        mail = Repo.preload(mail, [:sender, :receiver])
+        Session.notify(player, {"mail/new", mail})
+        {:ok, mail}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 end

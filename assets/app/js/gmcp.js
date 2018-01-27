@@ -49,6 +49,16 @@ let characterVitals = (channel, data) => {
   movementStat.innerHTML = `${data.move_points}/${data.max_move_points} mv`;
 }
 
+/**
+ * Mail.New module
+ */
+let mailNew = (channel, data) => {
+  notifications.display(`New Mail from ${data.from.name}`, data.title);
+}
+
+/**
+ * Channels.Tell module
+ */
 let tell = (channel, data) => {
   notifications.display(`New tell from ${data.from.name}`, data.message);
 }
@@ -150,6 +160,7 @@ let gmcp = {
   "Channels.Tell": tell,
   "Character": character,
   "Character.Vitals": characterVitals,
+  "Mail.New": mailNew,
   "Room.Info": roomInfo,
   "Room.Character.Enter": roomCharacterEnter,
   "Room.Character.Leave": roomCharacterLeave,

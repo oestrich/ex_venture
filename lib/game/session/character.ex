@@ -44,6 +44,12 @@ defmodule Game.Session.Character do
   @doc """
   Callback for being notified of events
   """
+  def notify(state, {"mail/new", mail}) do
+    state.socket |> @socket.echo("You have new mail. {white}mail read #{mail.id}{/white} to read it")
+    state |> GMCP.mail_new(mail)
+    state
+  end
+
   def notify(state, {"room/entered", {character, reason}}) do
     case reason do
       :enter -> Session.echo(self(), "#{Format.name(character)} enters")

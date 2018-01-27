@@ -2,6 +2,7 @@ defmodule Game.SessionTest do
   use GenServerCase
   use Data.ModelCase
 
+  alias Data.Mail
   alias Game.Command
   alias Game.Message
   alias Game.Session
@@ -461,6 +462,15 @@ defmodule Game.SessionTest do
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r(hi), echo)
+    end
+
+    test "new mail received", state do
+      mail = %Mail{id: 1, sender: %{id: 10, name: "Player"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, {"mail/new", mail}}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(New mail)i, echo)
     end
   end
 end

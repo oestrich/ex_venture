@@ -190,4 +190,18 @@ defmodule Game.Session.GMCP do
 
     socket |> @socket.push_gmcp("Channels.Tell", Poison.encode!(data))
   end
+
+  @doc """
+  Push a new mail
+  """
+  @spec mail_new(State.t(), Mail.t()) :: :ok
+  def mail_new(%{socket: socket}, mail) do
+    data = %{
+      id: mail.id,
+      from: user_info(mail.sender),
+      title: mail.title,
+    }
+
+    socket |> @socket.push_gmcp("Mail.New", Poison.encode!(data))
+  end
 end
