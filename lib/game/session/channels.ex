@@ -5,6 +5,7 @@ defmodule Game.Session.Channels do
 
   use Networking.Socket
 
+  alias Game.Session.GMCP
   alias Game.Session.State
 
   @doc """
@@ -34,9 +35,10 @@ defmodule Game.Session.Channels do
   @doc """
   Callback for receiving a broadcast on a channel
   """
-  @spec broadcast(State.t(), Message.t()) :: State.t()
-  def broadcast(state = %{socket: socket}, message) do
-    socket |> @socket.echo(message)
+  @spec broadcast(State.t(), String.t(), Message.t()) :: State.t()
+  def broadcast(state = %{socket: socket}, channel, message) do
+    socket |> @socket.echo(message.formatted)
+    state |> GMCP.channel_broadcast(channel, message)
     state
   end
 
@@ -46,6 +48,7 @@ defmodule Game.Session.Channels do
   @spec tell(State.t(), Character.t(), Message.t()) :: State.t()
   def tell(state = %{socket: socket}, from, message) do
     socket |> @socket.echo(message.formatted)
+    state |> GMCP.tell(from, message)
     Map.put(state, :reply_to, from)
   end
 end

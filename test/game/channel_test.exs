@@ -21,7 +21,7 @@ defmodule Game.ChannelTest do
 
     Channel.broadcast("global", "sending a message")
 
-    assert_receive {:channel, {:broadcast, "sending a message"}}
+    assert_receive {:channel, {:broadcast, "global", "sending a message"}}
   end
 
   test "list out subscribed channels" do

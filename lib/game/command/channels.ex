@@ -6,6 +6,7 @@ defmodule Game.Command.Channels do
   use Game.Command
 
   alias Game.Channel
+  alias Game.Message
 
   @channels ["global", "newbie"]
 
@@ -92,7 +93,7 @@ defmodule Game.Command.Channels do
 
   def run({channel, message}, %{user: user}) do
     case in_channel?(channel, user) do
-      true -> Channel.broadcast(channel, Format.channel_say(channel, {:user, user}, message))
+      true -> Channel.broadcast(channel, Message.broadcast(user, channel, message))
       false -> nil
     end
 

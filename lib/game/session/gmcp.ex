@@ -120,6 +120,13 @@ defmodule Game.Session.GMCP do
   end
 
   @doc """
+  Get info for an NPC or a User
+  """
+  @spec character_info(Character.t()) :: map()
+  def character_info({:user, user}), do: user_info(user)
+  def character_info({:npc, npc}), do: npc_info(npc)
+
+  @doc """
   Gather information for a user
   """
   @spec user_info(User.t()) :: map
@@ -137,7 +144,7 @@ defmodule Game.Session.GMCP do
   @spec npc_info(NPC.t()) :: map
   def npc_info(npc) do
     %{
-      type: :player,
+      type: :npc,
       id: npc.id,
       name: npc.name
     }
@@ -155,5 +162,32 @@ defmodule Game.Session.GMCP do
       _ ->
         []
     end
+  end
+
+  @doc """
+  Push a new channel message
+  """
+  @spec channel_broadcast(State.t(), String.t(), Message.t()) :: :ok
+  def channel_broadcast(%{socket: socket}, channel, message) do
+    data = %{
+      channel: channel,
+      from: character_info({message.type, message.sender}),
+      message: message.message,
+    }
+
+    socket |> @socket.push_gmcp("Channels.Broadcast", Poison.encode!(data))
+  end
+
+  @doc """
+  Push a new tell
+  """
+  @spec tell(State.t(), Character.t(), Message.t()) :: :ok
+  def tell(%{socket: socket}, character, message) do
+    data = %{
+      from: character_info(character),
+      message: message.message,
+    }
+
+    socket |> @socket.push_gmcp("Channels.Tell", Poison.encode!(data))
   end
 end

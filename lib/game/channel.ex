@@ -5,7 +5,7 @@ defmodule Game.Channel do
   The joining process will need to have the following `handle_info` cases set up:
   - `{:channel, {:joined, channel}}`
   - `{:channel, {:left, channel}}`
-  - `{:channel, {:broadcast, message}}`
+  - `{:channel, {:broadcast, channel, message}}`
   - `{:channel, {:tell, from, message}}`
   """
 

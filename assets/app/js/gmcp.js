@@ -3,6 +3,17 @@ import _ from "underscore"
 
 import format from "./color"
 
+import Notifacations from "./notifications"
+
+let notifications = new Notifacations();
+
+/**
+ * Channel.Broadcast module
+ */
+let channelBroadcast = (channel, data) => {
+  notifications.display(`[${data.channel}] ${data.from.name}`, data.message);
+}
+
 /**
  * Character module
  */
@@ -36,6 +47,10 @@ let characterVitals = (channel, data) => {
   movement.style.width = `${moveWidth * 100}%`;
   let movementStat = _.first(Sizzle("#movement .stat"));
   movementStat.innerHTML = `${data.move_points}/${data.max_move_points} mv`;
+}
+
+let tell = (channel, data) => {
+  notifications.display(`New tell from ${data.from.name}`, data.message);
 }
 
 /**
@@ -131,6 +146,8 @@ let zoneMap = (channel, data) => {
 }
 
 let gmcp = {
+  "Channels.Broadcast": channelBroadcast,
+  "Channels.Tell": tell,
   "Character": character,
   "Character.Vitals": characterVitals,
   "Room.Info": roomInfo,

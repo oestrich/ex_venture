@@ -212,8 +212,8 @@ defmodule Game.Session.Process do
     {:noreply, Channels.left(state, channel)}
   end
 
-  def handle_info({:channel, {:broadcast, message}}, state) do
-    {:noreply, Channels.broadcast(state, message)}
+  def handle_info({:channel, {:broadcast, channel, message}}, state) do
+    {:noreply, Channels.broadcast(state, channel, message)}
   end
 
   def handle_info({:channel, {:tell, from, message}}, state) do

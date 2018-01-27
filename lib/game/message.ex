@@ -35,6 +35,15 @@ defmodule Game.Message do
     }
   end
 
+  def broadcast(user, channel, message) do
+    %__MODULE__{
+      type: :user,
+      sender: user,
+      message: message,
+      formatted: Format.channel_say(channel, {:user, user}, message)
+    }
+  end
+
   def tell(user, message) do
     %__MODULE__{
       type: :user,

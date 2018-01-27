@@ -64,7 +64,7 @@ defmodule Game.Channel.Server do
     channels
     |> Map.get(channel, [])
     |> Enum.each(fn pid ->
-      send(pid, {:channel, {:broadcast, message}})
+      send(pid, {:channel, {:broadcast, channel, message}})
     end)
   end
 

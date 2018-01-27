@@ -4,6 +4,7 @@ defmodule Game.Command.ChannelsTest do
 
   alias Game.Channel
   alias Game.Command.Channels
+  alias Game.Message
 
   @socket Test.Networking.Socket
 
@@ -29,7 +30,7 @@ defmodule Game.Command.ChannelsTest do
 
     :ok = Channels.run({"global", "hello"}, %{socket: socket, user: user})
 
-    assert_receive {:channel, {:broadcast, "{red}[global]{/red} {blue}Player{/blue} says, {green}\"hello\"{/green}"}}
+    assert_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}
   end
 
   test "does not send a message if the user is not subscribed to the channel", %{socket: socket, user: user} do
@@ -37,7 +38,7 @@ defmodule Game.Command.ChannelsTest do
 
     :ok = Channels.run({"newbie", "hello"}, %{socket: socket, user: user})
 
-    refute_receive {:channel, {:broadcast, "{red}[newbie]{/red} {blue}Player{/blue} says, {green}\"hello\"{/green}"}}
+    refute_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}
   end
 
   test "join a channel", %{socket: socket} do
