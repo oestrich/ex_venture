@@ -89,7 +89,7 @@ defmodule Game.RoomTest do
 
     {:noreply, _state} = Room.handle_cast({:emote, {:user, user}, message}, state)
 
-    assert_received {:"$gen_cast", {:echo, "{blue}user{/blue} {green}emote{/green}"}}
+    assert_received {:"$gen_cast", {:notify, {"room/heard", %Message{message: "emote"}}}}
   end
 
   test "updating player data" do

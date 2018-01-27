@@ -249,7 +249,7 @@ defmodule Game.Room do
     # don't send to the sender
     players
     |> Enum.reject(&(&1.id == sender.id))
-    |> echo_to_players(message.formatted)
+    |> inform_players({"room/heard", message})
 
     npcs |> inform_npcs({"room/heard", message})
 
@@ -257,7 +257,7 @@ defmodule Game.Room do
   end
 
   def handle_cast({:say, {:npc, sender}, message}, state = %{players: players, npcs: npcs}) do
-    players |> echo_to_players(message.formatted)
+    players |> inform_players({"room/heard", message})
 
     # don't send to the sender
     npcs
@@ -271,7 +271,7 @@ defmodule Game.Room do
     # don't send to the sender
     players
     |> Enum.reject(&(&1.id == sender.id))
-    |> echo_to_players(message.formatted)
+    |> inform_players({"room/heard", message})
 
     npcs |> inform_npcs({"room/heard", message})
 
@@ -279,7 +279,7 @@ defmodule Game.Room do
   end
 
   def handle_cast({:emote, {:npc, sender}, message}, state = %{players: players, npcs: npcs}) do
-    players |> echo_to_players(message.formatted)
+    players |> inform_players({"room/heard", message})
 
     # don't send to the sender
     npcs

@@ -70,6 +70,11 @@ defmodule Game.Session.Character do
     end
   end
 
+  def notify(state, {"room/heard", message}) do
+    state.socket |> @socket.echo(message.formatted)
+    state
+  end
+
   def notify(state, {"quest/new", quest}) do
     Session.echo(
       self(),
