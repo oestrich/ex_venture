@@ -26,21 +26,17 @@ defmodule Game.SessionTest do
     assert @socket.get_echos() == [{socket, "a message"}]
   end
 
-  describe "ticking" do
+  describe "regenerating" do
     setup do
       stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12, move_points: 8, max_move_points: 10}
       class = %{points_name: "Skill Points", points_abbreviation: "SP", regen_health: 1, regen_skill_points: 1}
-      %{user: %{class: class}, save: %{room_id: 1, level: 2, stats: stats}, regen: %{count: 5}}
-    end
-
-    test "updates last tick", state do
-      {:noreply, %{last_tick: :time}} = Process.handle_cast({:tick, :time}, state)
+      %{user: %{class: class}, save: %{room_id: 1, level: 2, stats: stats}, regen: %{is_regenerating: true, count: 5}}
     end
 
     test "regens stats", state do
       @room.clear_update_characters()
 
-      {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Process.handle_cast({:tick, :time}, state)
+      {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Process.handle_info(:regen, state)
 
       assert stats.health == 12
       assert stats.skill_points == 11
@@ -55,7 +51,7 @@ defmodule Game.SessionTest do
       stats = %{health: 15, max_health: 15, skill_points: 12, max_skill_points: 12, move_points: 10, max_move_points: 10}
       save = %{room_id: 1, level: 2, stats: stats}
 
-      {:noreply, %{save: %{stats: stats}}} = Process.handle_cast({:tick, :time}, %{state | save: save})
+      {:noreply, %{save: %{stats: stats}}} = Process.handle_info(:regen, %{state | save: save})
 
       assert stats.health == 15
       assert stats.skill_points == 12
@@ -65,7 +61,7 @@ defmodule Game.SessionTest do
     end
 
     test "does not regen, only increments count if not high enough", state do
-      {:noreply, %{regen: %{count: 2}, save: %{stats: stats}}} = Process.handle_cast({:tick, :time}, %{state | regen: %{count: 1}})
+      {:noreply, %{regen: %{count: 2}, save: %{stats: stats}}} = Process.handle_info(:regen, %{state | regen: %{is_regenerating: true, count: 1}})
 
       assert stats.health == 10
       assert stats.skill_points == 9
@@ -97,7 +93,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
     {:noreply, state} = Process.handle_cast({:recv, "run 2n"}, state)
 
     assert state.mode == "continuing"
@@ -111,7 +107,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-    state = %State{socket: socket, state: "active", mode: "continuing", user: user, save: %{room_id: 1, stats: %{move_points: 10}}}
+    state = %State{socket: socket, state: "active", mode: "continuing", user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
     command = %Command{module: Command.Run, args: {[:north, :north]}}
     {:noreply, _state} = Process.handle_info({:continue, command}, state)
 

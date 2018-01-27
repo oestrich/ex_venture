@@ -6,6 +6,7 @@ defmodule Game.Session.Commands do
   alias Game.Command
   alias Game.Command.Pager
   alias Game.Session
+  alias Game.Session.Regen
   alias Game.Session.State
 
   @doc """
@@ -27,13 +28,26 @@ defmodule Game.Session.Commands do
     case command |> Command.run(state) do
       {:update, state} ->
         Session.Registry.update(%{state.user | save: state.save})
-        state |> Session.Process.prompt()
-        {:noreply, Map.put(state, :mode, "commands")}
+
+        state =
+          state
+          |> Session.Process.prompt()
+          |> Regen.maybe_trigger_regen()
+          |> Map.put(:mode, "commands")
+
+        {:noreply, state}
 
       {:update, state, {command = %Command{}, send_in}} ->
         Session.Registry.update(%{state.user | save: state.save})
+
+        state =
+          state
+          |> Regen.maybe_trigger_regen()
+          |> Map.put(:mode, "continuing")
+
         :erlang.send_after(send_in, self(), {:continue, command})
-        {:noreply, Map.put(state, :mode, "continuing")}
+
+        {:noreply, state}
 
       {:paginate, text, state} ->
         state =

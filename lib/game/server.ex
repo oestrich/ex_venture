@@ -42,9 +42,6 @@ defmodule Game.Server do
 
     Session.Registry.connected_players()
     |> PlayerInstrumenter.set_player_count()
-    |> Enum.each(fn {session, _} ->
-      session |> Session.tick(time)
-    end)
 
     World.zones() |> Enum.each(&Zone.tick(&1, time))
 

@@ -23,9 +23,9 @@ defmodule Game.Session.Process do
   alias Game.Session.Commands
   alias Game.Session.Effects
   alias Game.Session.GMCP
+  alias Game.Session.Regen
   alias Game.Session.SessionStats
   alias Game.Session.State
-  alias Game.Session.Tick
   alias Metrics.PlayerInstrumenter
 
   @save_period 15_000
@@ -47,7 +47,6 @@ defmodule Game.Session.Process do
     socket |> Session.Login.start()
     self() |> schedule_save()
     self() |> schedule_inactive_check()
-    last_tick = Timex.now() |> Timex.shift(minutes: -2)
 
     Logger.info("New session started #{inspect(self())}", type: :session)
     PlayerInstrumenter.session_started()
@@ -57,11 +56,10 @@ defmodule Game.Session.Process do
       state: "login",
       session_started_at: Timex.now(),
       last_recv: Timex.now(),
-      last_tick: last_tick,
       mode: "commands",
       target: nil,
       is_targeting: MapSet.new(),
-      regen: %{count: 0},
+      regen: %{is_regenerating: false, count: 0},
       reply_to: nil,
       commands: %{},
       stats: %SessionStats{}
@@ -105,11 +103,6 @@ defmodule Game.Session.Process do
     {:noreply, state}
   end
 
-  # Update the tick timestamp
-  def handle_cast({:tick, time}, state = %{save: _save}) do
-    {:noreply, Tick.tick(time, state)}
-  end
-
   # Handle logging in
   def handle_cast({:recv, name}, state = %{state: "login"}) do
     state = Session.Login.process(name, state)
@@ -119,6 +112,7 @@ defmodule Game.Session.Process do
   # Handle displaying message after signing in
   def handle_cast({:recv, _name}, state = %{state: "after_sign_in"}) do
     state = Session.Login.after_sign_in(state, self())
+    send(self(), :regen)
     {:noreply, Map.merge(state, %{last_recv: Timex.now()})}
   end
 
@@ -224,6 +218,10 @@ defmodule Game.Session.Process do
   # General callback
   #
 
+  def handle_info(:regen, state = %{save: _save}) do
+    {:noreply, Regen.tick(state)}
+  end
+
   def handle_info({:continue, command}, state) do
     command |> Commands.run_command(state)
   end
@@ -279,6 +277,7 @@ defmodule Game.Session.Process do
   def prompt(state = %{socket: socket, user: user, save: save}) do
     state |> GMCP.vitals()
     socket |> @socket.prompt(Format.prompt(user, save))
+    state
   end
 
   # Schedule an inactive check

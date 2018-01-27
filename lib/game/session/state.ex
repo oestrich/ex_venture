@@ -17,7 +17,6 @@ defmodule Game.Session.State do
   - `:user` - User struct
   - `:save` - Save struct from the user
   - `:last_recv` - Timestamp of when the session last received a message
-  - `:last_tick` - Timestamp of when the session last received a tick
   - `:target` - Target of the user
   - `:is_targeting` - MapSet of who is targeting the user
   - `:regen` - Regen timestamps
@@ -33,7 +32,6 @@ defmodule Game.Session.State do
     :user,
     :save,
     :last_recv,
-    :last_tick,
     :target,
     :is_targeting,
     :regen,

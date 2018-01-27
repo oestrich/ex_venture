@@ -1,4 +1,4 @@
-defmodule Game.Session.Tick do
+defmodule Game.Session.Regen do
   @moduledoc """
   Handle a game tick for a player
   """
@@ -10,23 +10,62 @@ defmodule Game.Session.Tick do
 
   alias Game.Config
   alias Game.Session.GMCP
+  alias Game.Session.State
   alias Game.Stats
 
   @movement_regen 1
 
   @doc """
+  Maybe trigger a regeneration, if not already regenerating and not at max stats
+  """
+  @spec maybe_trigger_regen(State.t()) :: State.t()
+  def maybe_trigger_regen(state = %{regen: %{is_regenerating: true}}) do
+    state
+  end
+
+  def maybe_trigger_regen(state) do
+    state |> trigger_regen_if_not_max()
+  end
+
+  @doc """
   Perform a tick on a session
 
   - Regen
-  - Save last tick timestamp
   """
-  @spec tick(DateTime.t(), Map) :: map
-  def tick(time, state) do
+  @spec tick(map()) :: map()
+  def tick(state) do
     state
     |> handle_regen(Config.regen_tick_count(5))
     |> regen_movement()
     |> push(state)
-    |> Map.put(:last_tick, time)
+    |> trigger_regen_if_not_max()
+  end
+
+  @doc """
+  Trigger a regeneration if the stats are not a max
+  """
+  @spec trigger_regen_if_not_max(State.t()) :: State.t()
+  def trigger_regen_if_not_max(state) do
+    case hp_max?(state) && sp_max?(state) && mp_max?(state) do
+      true ->
+        %{state | regen: %{state.regen | is_regenerating: false}}
+
+      false ->
+        :erlang.send_after(2000, self(), :regen)
+        %{state | regen: %{state.regen | is_regenerating: true}}
+    end
+  end
+
+  defp hp_max?(%{save: save}) do
+    save.stats.health == save.stats.max_health
+  end
+
+  defp sp_max?(%{save: save}) do
+    save.stats.skill_points == save.stats.max_skill_points
+  end
+
+  defp mp_max?(%{save: save}) do
+    save.stats.move_points == save.stats.max_move_points
   end
 
   @doc """
@@ -34,6 +73,7 @@ defmodule Game.Session.Tick do
 
   Only pushes if the stats changed
   """
+  @spec push(State.t(), State.t()) :: State.t()
   def push(state = %{save: %{stats: stats}}, %{save: %{stats: stats}}) do
     state
   end
@@ -66,6 +106,7 @@ defmodule Game.Session.Tick do
   @spec handle_regen(map, integer) :: map
   def handle_regen(state = %{regen: %{count: count}}, count) do
     %{user: user = %{class: class}, save: save} = state
+
     stats = Stats.regen(:health, save.stats, class.regen_health * save.level)
     stats = Stats.regen(:skill_points, stats, class.regen_skill_points * save.level)
 
@@ -77,12 +118,12 @@ defmodule Game.Session.Tick do
 
     state
     |> Map.put(:save, save)
-    |> Map.put(:regen, %{count: 0})
+    |> Map.put(:regen, %{state.regen | count: 0})
   end
 
   def handle_regen(state = %{regen: %{count: count}}, _count) do
     state
-    |> Map.put(:regen, %{count: count + 1})
+    |> Map.put(:regen, %{state.regen | count: count + 1})
   end
 
   @doc """
