@@ -53,9 +53,9 @@ defmodule Game.Room.ActionsTest do
     end
   end
 
-  describe "tick - respawning items" do
+  describe "respawning items" do
     setup %{room: room, item: item} do
-      create_room_item(room, item, %{spawn: true, spawn_interval: 30})
+      create_room_item(room, item, %{spawn: true, spawn_interval: 0})
       room = Repo.preload(room, [:room_items])
       start_and_clear_items()
       insert_item(item)
@@ -63,25 +63,27 @@ defmodule Game.Room.ActionsTest do
     end
 
     test "does nothing if the item already exists", %{room: room} do
-      {:update, %{room: room}} = Room.Actions.tick(%{room: room, respawn: %{}})
+      {:update, %{room: room}} = Room.Actions.maybe_respawn_items(%{room: room, respawn: %{}})
       assert room.items |> length == 1
     end
 
     test "detecting a missing item", %{room: room, item: %{id: item_id}} do
-      {:update, state} = Room.Actions.tick(%{room: %{room | items: []}, respawn: %{}})
+      {:update, state} = Room.Actions.maybe_respawn_items(%{room: %{room | items: []}, respawn: %{}})
       assert %{^item_id => _} = state.respawn
+      assert_receive {:respawn, ^item_id}
     end
 
-    test "doesn't spawn until time", %{room: room, item: %{id: item_id}} do
-      {:update, %{room: room}} = Room.Actions.tick(%{room: %{room | items: []}, respawn: %{item_id => Timex.now}})
-      assert room.items |> length() == 0
+    test "doesn't spawn again if already spawning", %{room: room, item: %{id: item_id}} do
+      {:update, _state} = Room.Actions.maybe_respawn_items(%{room: %{room | items: []}, respawn: %{item_id => Timex.now}})
+      refute_receive {:respawn, ^item_id}
     end
 
     test "respawns an item", %{room: room, item: %{id: item_id}} do
-      time = Timex.now |> Timex.shift(seconds: -31)
-      {:update, %{room: room, respawn: respawn}} = Room.Actions.tick(%{room: %{room | items: []}, respawn: %{item_id => time}})
+      state = %{room: %{room | items: []}, respawn: %{}}
+
+      {:update, %{room: room}} = Room.Actions.respawn_item(state, item_id)
+
       assert room.items |> length() == 1
-      refute respawn |> Map.has_key?(item_id)
     end
   end
 end

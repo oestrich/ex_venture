@@ -37,7 +37,7 @@ defmodule Game.Room.Actions do
   @doc """
   Pick up all of the currency in the room
   """
-  @spec pick_up_currency(Data.Room.t()) :: {Data.Room.t(), {:ok, integer}}
+  @spec pick_up_currency(Room.t()) :: {Room.t(), {:ok, integer}}
   def pick_up_currency(room = %{currency: currency}) do
     case Repo.update(room, %{currency: 0}) do
       {:ok, room} -> {room, {:ok, currency}}
@@ -62,17 +62,17 @@ defmodule Game.Room.Actions do
   end
 
   @doc """
-  Handle a tick
+  Check to respawn items
 
   Spawns items if necessary
   """
-  @spec tick(map) :: :ok | {:update, Data.Room.t()}
-  def tick(state = %{room: %{room_items: room_items}}) when length(room_items) > 0 do
+  @spec maybe_respawn_items(State.t()) :: :ok | {:update, State.t()}
+  def maybe_respawn_items(state = %{room: %{room_items: room_items}}) when length(room_items) > 0 do
     state = respawn_items(state)
     {:update, state}
   end
 
-  def tick(_), do: :ok
+  def maybe_respawn(_), do: :ok
 
   defp respawn_items(state = %{room: room}) do
     room.room_items
@@ -88,37 +88,27 @@ defmodule Game.Room.Actions do
   defp respawn(room_item, state = %{respawn: respawn}) do
     case respawn[room_item.item_id] do
       nil -> start_respawn(room_item, state)
-      time -> respawn_if_after_interval(room_item, time, state)
+      _ -> state
     end
   end
 
   defp start_respawn(room_item, state = %{respawn: respawn}) do
     respawn = Map.put(respawn, room_item.item_id, Timex.now())
+    :erlang.send_after(room_item.spawn_interval * 1000, self(), {:respawn, room_item.item_id})
     %{state | respawn: respawn}
   end
 
-  defp respawn_if_after_interval(room_item, time, state) do
-    case past_interval?(time, room_item.spawn_interval) do
-      true -> respawn_item(room_item, state)
-      false -> state
-    end
-  end
-
-  defp past_interval?(time, interval) do
-    Timex.diff(Timex.now(), time, :seconds) > interval
-  end
-
-  defp respawn_item(room_item, state = %{room: room, respawn: respawn}) do
-    item = Items.item(room_item.item_id)
+  def respawn_item(state = %{room: room, respawn: respawn}, item_id) do
+    item = Items.item(item_id)
     instance = Data.Item.instantiate(item)
 
     case Repo.update(room, %{items: [instance | room.items]}) do
       {:ok, room} ->
-        respawn = Map.delete(respawn, room_item.item_id)
-        %{state | room: room, respawn: respawn}
+        respawn = Map.delete(respawn, item_id)
+        {:update, %{state | room: room, respawn: respawn}}
 
       {:error, _} ->
-        state
+        :ok
     end
   end
 end

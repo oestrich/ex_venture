@@ -196,8 +196,7 @@ defmodule Game.Zone do
     {:reply, map |> String.trim(), state}
   end
 
-  def handle_cast({:tick, time}, state = %{rooms: rooms, npcs: npcs}) do
-    rooms |> Enum.each(&Room.tick(&1.id, time))
+  def handle_cast({:tick, time}, state = %{npcs: npcs}) do
     npcs |> Enum.each(&NPC.tick(&1.id, time))
     {:noreply, state}
   end

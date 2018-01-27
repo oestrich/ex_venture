@@ -140,14 +140,6 @@ defmodule Game.Room do
   end
 
   @doc """
-  Send a tick to the room
-  """
-  @spec tick(integer(), DateTime.t()) :: :ok
-  def tick(id, _time) do
-    GenServer.cast(pid(id), :tick)
-  end
-
-  @doc """
   Update a room's data
   """
   @spec update(integer(), Room.t()) :: :ok
@@ -174,7 +166,15 @@ defmodule Game.Room do
 
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do
     {room, return} = Actions.pick_up(room, item)
-    {:reply, return, Map.put(state, :room, room)}
+
+    state = %{state | room: room}
+
+    case Actions.maybe_respawn_items(state) do
+      :ok ->
+        {:reply, return, state}
+      {:update, state} ->
+        {:reply, return, state}
+    end
   end
 
   def handle_call(:pick_up_currency, _from, state = %{room: room}) do
@@ -190,13 +190,6 @@ defmodule Game.Room do
     Logger.info("Room updated #{room.id}", type: :room)
     room.zone_id |> Zone.update_room(room)
     {:noreply, Map.put(state, :room, room)}
-  end
-
-  def handle_cast(:tick, state) do
-    case Actions.tick(state) do
-      :ok -> {:noreply, state}
-      {:update, state} -> {:noreply, state}
-    end
   end
 
   def handle_cast({:enter, {:user, user}, reason}, state) do
@@ -345,6 +338,13 @@ defmodule Game.Room do
 
       _ ->
         {:noreply, state}
+    end
+  end
+
+  def handle_info({:respawn, item_id}, state) do
+    case Actions.respawn_item(state, item_id) do
+      :ok -> {:noreply, state}
+      {:update, state} -> {:noreply, state}
     end
   end
 
