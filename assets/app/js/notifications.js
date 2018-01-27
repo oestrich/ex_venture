@@ -28,7 +28,8 @@ class Notifications {
     if (document.visibilityState == "visible" && visible) { return }
 
     this.enable(() => {
-      new Notification(title, {body: body});
+      let notification = new Notification(title, {body: body, tag: "channels"});
+      setTimeout(notification.close.bind(notification), 2500);
     });
   }
 }
