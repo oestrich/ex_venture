@@ -43,14 +43,6 @@ defmodule Game.Zone do
   #
 
   @doc """
-  Send a tick to the zone
-  """
-  @spec tick(pid, DateTime.t()) :: :ok
-  def tick(pid, time) do
-    GenServer.cast(pid, {:tick, time})
-  end
-
-  @doc """
   Let the zone know a room is online
 
   For sending ticks to
@@ -194,11 +186,6 @@ defmodule Game.Zone do
     """
 
     {:reply, map |> String.trim(), state}
-  end
-
-  def handle_cast({:tick, time}, state = %{npcs: npcs}) do
-    npcs |> Enum.each(&NPC.tick(&1.id, time))
-    {:noreply, state}
   end
 
   def handle_cast({:room_online, room}, state = %{rooms: rooms}) do

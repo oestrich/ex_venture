@@ -6,8 +6,6 @@ defmodule Game.Server do
   use GenServer
 
   alias Game.Session
-  alias Game.Zone
-  alias Game.World
   alias Metrics.PlayerInstrumenter
 
   @tick_interval 2000
@@ -38,12 +36,8 @@ defmodule Game.Server do
   end
 
   def handle_info(:tick, state) do
-    time = Timex.now()
-
     Session.Registry.connected_players()
     |> PlayerInstrumenter.set_player_count()
-
-    World.zones() |> Enum.each(&Zone.tick(&1, time))
 
     {:noreply, state}
   end

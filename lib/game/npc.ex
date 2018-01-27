@@ -21,6 +21,8 @@ defmodule Game.NPC do
   alias Game.NPC.Events
   alias Game.Zone
 
+  @tick_interval 2000
+
   defmacro __using__(_opts) do
     quote do
       @npc Application.get_env(:ex_venture, :game)[:npc]
@@ -86,14 +88,6 @@ defmodule Game.NPC do
 
   def notify(id, action) do
     GenServer.cast(pid(id), {:notify, action})
-  end
-
-  @doc """
-  Send a tick message
-  """
-  @spec tick(integer, DateTime.t()) :: :ok
-  def tick(id, time) do
-    GenServer.cast(pid(id), {:tick, time})
   end
 
   @doc """
@@ -169,6 +163,8 @@ defmodule Game.NPC do
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
 
+    :erlang.send_after(@tick_interval, self(), :tick)
+
     state = %State{
       npc_spawner: npc_spawner,
       npc: npc,
@@ -213,15 +209,6 @@ defmodule Game.NPC do
 
   def handle_cast({:notify, action}, state) do
     case Events.act_on(state, action) do
-      :ok -> {:noreply, state}
-      {:update, state} -> {:noreply, state}
-    end
-  end
-
-  def handle_cast({:tick, time}, state) do
-    notify(self(), {"tick"})
-
-    case Actions.tick(state, time) do
       :ok -> {:noreply, state}
       {:update, state} -> {:noreply, state}
     end
@@ -295,6 +282,17 @@ defmodule Game.NPC do
     Enum.each(is_targeting, &Character.died(&1, {:npc, npc}))
     room_id |> @room.leave({:npc, npc})
     {:stop, :normal, state}
+  end
+
+  def handle_info(:tick, state) do
+    :erlang.send_after(@tick_interval, self(), :tick)
+
+    notify(self(), {"tick"})
+
+    case Actions.tick(state, Timex.now()) do
+      :ok -> {:noreply, state}
+      {:update, state} -> {:noreply, state}
+    end
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
