@@ -21,7 +21,7 @@ defmodule Web.Skill do
     opts = Enum.into(opts, %{})
 
     Skill
-    |> order_by([u], desc: u.updated_at)
+    |> order_by([s], asc: s.level, asc: s.id)
     |> preload([:class])
     |> Filter.filter(opts[:filter], __MODULE__)
     |> Pagination.paginate(opts)

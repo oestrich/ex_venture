@@ -38,7 +38,7 @@ defmodule Web.User do
     opts = Enum.into(opts, %{})
 
     User
-    |> order_by([u], asc: u.level)
+    |> order_by([u], desc: u.updated_at)
     |> preload([:class, :race])
     |> Filter.filter(opts[:filter], __MODULE__)
     |> Pagination.paginate(opts)
