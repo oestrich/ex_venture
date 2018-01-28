@@ -5,7 +5,6 @@ defmodule Game.Format do
 
   use Game.Currency
 
-  alias Data.Class
   alias Data.Exit
   alias Data.Item
   alias Data.Mail
@@ -517,21 +516,19 @@ defmodule Game.Format do
   Format skills
 
       iex> skills = [%{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}]
-      iex> Game.Format.skills(%{name: "Fighter"}, skills)
-      "Fighter\\n\\nLevel - Name - Points - Description\\n1 - Slash (slash) - 2sp - Fight your foe\\n"
+      iex> Game.Format.skills(skills)
+      "Level - Name - Points - Description\\n1 - Slash (slash) - 2sp - Fight your foe\\n"
   """
-  @spec skills(Class.t(), [Skill.t()]) :: String.t()
-  def skills(class, skills)
+  @spec skills([Skill.t()]) :: String.t()
+  def skills(skills)
 
-  def skills(%{name: name}, skills) do
+  def skills(skills) do
     skills =
       skills
       |> Enum.map(&skill(&1))
       |> Enum.join("\n")
 
     """
-    #{name}
-
     Level - Name - Points - Description
     #{skills}
     """

@@ -6,14 +6,16 @@ defmodule Game.Command.Skills do
   use Game.Command
 
   alias Game.Character
+  alias Game.Command
   alias Game.Command.Target
   alias Game.Effect
   alias Game.Item
   alias Game.Skill
+  alias Game.Skills
 
   @must_be_alive true
 
-  commands(["skills"])
+  commands(["skills"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Skills"
@@ -32,16 +34,52 @@ defmodule Game.Command.Skills do
 
   @impl Game.Command
   @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Skills.parse("skills")
+      {}
+
+      iex> Game.Command.Skills.parse("skills hi")
+      {:error, :bad_parse, "skills hi"}
+
+      iex> Game.Command.Skills.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("skills"), do: {}
+
+  def parse_skill(command, %{save: save}) do
+    skill =
+      save.skill_ids
+      |> Skills.skills()
+      |> Enum.filter(&(&1.level <= save.level))
+      |> Enum.find(fn skill ->
+        Regex.match?(~r(^#{skill.command}), command)
+      end)
+
+    case skill do
+      nil ->
+        {:error, :bad_parse, command}
+
+      skill ->
+        %Command{text: command, module: __MODULE__, args: {skill, command}}
+    end
+  end
+
+  @impl Game.Command
+  @doc """
   Look at your info sheet
   """
   def run(command, state)
 
-  def run({}, %{socket: socket, user: user, save: save}) do
+  def run({}, %{socket: socket, save: save}) do
     skills =
-      user.class.skills
+      save.skill_ids
+      |> Skills.skills()
       |> Enum.filter(&(&1.level <= save.level))
+      |> Enum.sort_by(&(&1.level))
 
-    socket |> @socket.echo(Format.skills(user.class, skills))
+    socket |> @socket.echo(Format.skills(skills))
     :ok
   end
 

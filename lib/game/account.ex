@@ -3,8 +3,10 @@ defmodule Game.Account do
   Handle database interactions for a user's account.
   """
 
+  alias Data.ClassSkill
   alias Data.Repo
   alias Data.Save
+  alias Data.Skill
   alias Data.Stats
   alias Data.User
   alias Data.User.Session
@@ -132,6 +134,18 @@ defmodule Game.Account do
   end
 
   @doc """
+  Hook to handle all account migrations
+
+  - Migrate items
+  """
+  @spec migrate(User.t()) :: User.t()
+  def migrate(user) do
+    user
+    |> migrate_items()
+    |> migrate_skills()
+  end
+
+  @doc """
   Migrate items after load
 
   - Ensure usable items have an amount, checks item state
@@ -140,6 +154,33 @@ defmodule Game.Account do
   def migrate_items(user) do
     items = user.save.items |> Enum.map(&Item.migrate_instance/1)
     %{user | save: %{user.save | items: items}}
+  end
+
+  @doc """
+  Migrate skill ids after signing in
+
+  - Ensure all global skills are present
+  - Ensure all class skills are present
+  - Ensure no duplicated ids
+  """
+  @spec migrate_skills(User.t()) :: User.t()
+  def migrate_skills(user) do
+    class_skill_ids =
+      ClassSkill
+      |> where([cs], cs.class_id == ^user.class_id)
+      |> select([cs], cs.skill_id)
+      |> Repo.all()
+
+    global_skill_ids =
+      Skill
+      |> where([s], s.is_global == true)
+      |> select([s], s.id)
+      |> Repo.all()
+
+    skill_ids = class_skill_ids ++ global_skill_ids ++ user.save.skill_ids
+    skill_ids = Enum.uniq(skill_ids)
+
+    %{user | save: %{user.save | skill_ids: skill_ids}}
   end
 
   @doc """

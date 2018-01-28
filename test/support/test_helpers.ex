@@ -1,6 +1,7 @@
 defmodule TestHelpers do
   alias Data.Bug
   alias Data.Class
+  alias Data.ClassSkill
   alias Data.Config
   alias Data.Exit
   alias Data.HelpTopic
@@ -50,6 +51,7 @@ defmodule TestHelpers do
       experience_points: 0,
       currency: 0,
       items: [],
+      skill_ids: [],
       stats: base_stats(),
       wearing: %{},
       wielding: %{},
@@ -236,6 +238,12 @@ defmodule TestHelpers do
   def create_skill(attributes \\ %{}) do
     %Skill{}
     |> Skill.changeset(skill_attributes(attributes))
+    |> Repo.insert!
+  end
+
+  def create_class_skill(class, skill) do
+    %ClassSkill{}
+    |> ClassSkill.changeset(%{class_id: class.id, skill_id: skill.id})
     |> Repo.insert!
   end
 

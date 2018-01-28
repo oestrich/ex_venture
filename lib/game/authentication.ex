@@ -32,7 +32,7 @@ defmodule Game.Authentication do
       true ->
         user
         |> set_defaults()
-        |> Account.migrate_items()
+        |> Account.migrate()
 
       _ ->
         {:error, :invalid}
@@ -49,7 +49,7 @@ defmodule Game.Authentication do
     |> preloads()
     |> Repo.one()
     |> set_defaults()
-    |> Account.migrate_items()
+    |> Account.migrate()
   end
 
   defp preloads(query) do

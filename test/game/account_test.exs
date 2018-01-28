@@ -64,4 +64,36 @@ defmodule Game.AccountTest do
       assert [%Item.Instance{id: _, amount: 3} | _] = user.save.items
     end
   end
+
+  describe "migrating known skills on load" do
+    setup do
+      user =
+        create_user(%{name: "user", password: "password"})
+        |> Repo.preload([:class])
+
+      start_and_clear_skills()
+
+      %{user: user}
+    end
+
+    test "ensure class skills are present", %{user: user} do
+      skill = create_skill()
+      insert_skill(skill)
+
+      create_class_skill(user.class, skill)
+
+      user = Account.migrate_skills(user)
+
+      assert user.save.skill_ids == [skill.id]
+    end
+
+    test "ensure global skills are present", %{user: user} do
+      skill = create_skill(%{is_global: true})
+      insert_skill(skill)
+
+      user = Account.migrate_skills(user)
+
+      assert user.save.skill_ids == [skill.id]
+    end
+  end
 end

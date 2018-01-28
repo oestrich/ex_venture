@@ -16,7 +16,7 @@ defmodule Game.CommandTest do
 
   describe "parsing commands" do
     setup do
-      %{user: %{class: %{skills: []}}}
+      %{user: %{save: %{skill_ids: []}}}
     end
 
     test "command not found", %{user: user} do
@@ -165,9 +165,12 @@ defmodule Game.CommandTest do
       assert %Command{module: Command.Target, args: {}} = Command.parse("target", user)
     end
 
-    test "parsing class skills", %{user: user} do
-      slash = %{command: "slash"}
-      user = %{user | class: %{skills: [slash]}}
+    test "parsing skills", %{user: user} do
+      start_and_clear_skills()
+      slash = %{id: 1, level: 1, command: "slash"}
+      insert_skill(slash)
+
+      user = %{user | save: %{level: 1, skill_ids: [slash.id]}}
 
       assert %Command{module: Command.Skills, args: {^slash, "slash"}} = Command.parse("slash", user)
     end
@@ -237,7 +240,7 @@ defmodule Game.CommandTest do
 
   describe "bad parse" do
     setup do
-      %{user: %{class: %{skills: []}}, state: %{socket: :socket}}
+      %{user: %{save: %{skill_ids: []}}, state: %{socket: :socket}}
     end
 
     test "an unknown command is run", %{user: user, state: state} do

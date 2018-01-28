@@ -65,6 +65,7 @@ defmodule Game.Command do
 
   alias Data.User
   alias Game.Command
+  alias Game.Command.Skills
   alias Game.Insight
   alias Metrics.CommandInstrumenter
 
@@ -117,20 +118,20 @@ defmodule Game.Command do
   def parse(command, user)
   def parse("", _user), do: {:skip, {}}
 
-  def parse(command, %{class: class}) do
+  def parse(command, user) do
     start_parsing_at = Timex.now()
     command = command |> String.replace(~r/  /, " ")
-    class_skill = class.skills |> Enum.find(&class_parse_command(&1, command))
+    skill_parse = command |> Skills.parse_skill(user)
 
-    case class_skill do
-      nil ->
+    case skill_parse do
+      {:error, :bad_parse, _} ->
         command
         |> _parse()
         |> maybe_bad_parse(command)
         |> record_parse_time(start_parsing_at)
 
       _ ->
-        %__MODULE__{text: command, module: Game.Command.Skills, args: {class_skill, command}}
+        skill_parse
         |> record_parse_time(start_parsing_at)
     end
   end
@@ -141,10 +142,6 @@ defmodule Game.Command do
   end
 
   defp record_parse_time(command, _start_parsing_at), do: command
-
-  defp class_parse_command(skill, command) do
-    Regex.match?(~r(^#{skill.command}), command)
-  end
 
   defp _parse(command) do
     @commands

@@ -15,6 +15,7 @@ defmodule Data.Save do
           experience_points: integer,
           stats: map,
           currency: integer,
+          skill_ids: [integer()],
           items: [Item.instance()],
           wearing: %{
             chest: integer
@@ -33,6 +34,7 @@ defmodule Data.Save do
     :experience_points,
     :stats,
     :currency,
+    :skill_ids,
     :items,
     :wearing,
     :wielding
@@ -142,6 +144,13 @@ defmodule Data.Save do
     end
   end
 
+  defp _migrate(save = %{version: 3}) do
+    save
+    |> Map.put(:skill_ids, [])
+    |> Map.put(:version, 4)
+    |> _migrate()
+  end
+
   defp _migrate(save = %{version: 2}) do
     wielding =
       save
@@ -202,6 +211,7 @@ defmodule Data.Save do
       :items,
       :level,
       :room_id,
+      :skill_ids,
       :stats,
       :version,
       :wearing,
