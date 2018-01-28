@@ -46,6 +46,8 @@ defmodule ExVenture.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
+      {:bamboo, "~> 0.8"},
+      {:bamboo_smtp, "~> 1.4.0"},
       {:comeonin, "~> 3.2"},
       {:cowboy, "~> 1.0"},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

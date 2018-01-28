@@ -138,4 +138,8 @@ defmodule Web.Router do
       resources("/rooms", RoomController, only: [:new, :create])
     end
   end
+
+  if Mix.env == :dev do
+    forward "/emails/sent", Bamboo.EmailPreviewPlug
+  end
 end

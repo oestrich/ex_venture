@@ -1,0 +1,5 @@
+Thank you for signing up, <%= @user.name %>!
+
+Remember, if you sign into the site before playing you can get started right away.
+
+<%= public_page_url(Endpoint, :index) %>

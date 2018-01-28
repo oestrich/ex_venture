@@ -8,7 +8,9 @@ defmodule Game.Account do
   alias Data.Stats
   alias Data.User
   alias Data.User.Session
+  alias ExVenture.Mailer
   alias Game.Config
+  alias Game.Emails
   alias Game.Item
 
   import Ecto.Query
@@ -30,6 +32,8 @@ defmodule Game.Account do
 
     case create_account(attributes) do
       {:ok, user} ->
+        user |> maybe_email_welcome()
+
         user =
           user
           |> Repo.preload([:race])
@@ -46,6 +50,18 @@ defmodule Game.Account do
     %User{}
     |> User.changeset(attributes)
     |> Repo.insert()
+  end
+
+  def maybe_email_welcome(user) do
+    case user.email do
+      nil ->
+        :ok
+
+      _ ->
+        user
+        |> Emails.welcome()
+        |> Mailer.deliver_later()
+    end
   end
 
   @doc """

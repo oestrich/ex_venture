@@ -97,9 +97,16 @@ defmodule Web.User do
     save = starting_save(race_id)
     params = Map.put(params, "save", save)
 
-    %User{}
-    |> User.changeset(params)
-    |> Repo.insert()
+    changeset = %User{} |> User.changeset(params)
+    case changeset |> Repo.insert() do
+      {:ok, user} ->
+        Account.maybe_email_welcome(user)
+
+        {:ok, user}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   def create(params) do

@@ -8,7 +8,7 @@ config :ex_venture, Data.Repo,
 
 config :ex_venture, Web.Endpoint,
   http: [port: 4000],
-  url: [host: {:system, "HOST"}, port: 4000],
+  url: [host: {:system, "HOST"}, port: {:system, "HTTP_PORT"}, scheme: {:system, "HTTP_SCHEME"}],
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
@@ -46,3 +46,10 @@ config :logger, :commands,
   path: "/var/log/ex_venture/commands.log",
   level: :info,
   metadata_filter: [type: :command]
+
+config :ex_venture, ExVenture.Mailer,
+  adapter: Bamboo.SMTPAdapter,
+  server: {:system, "SMTP_SERVER"},
+  port: {:system, "SMTP_PORT"},
+  username: {:system, "SMTP_USERNAME"},
+  password: {:system, "SMTP_PASSWORD"}
