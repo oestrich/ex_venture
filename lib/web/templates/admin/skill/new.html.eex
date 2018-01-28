@@ -9,8 +9,7 @@
         <i class="fa fa-dashboard"></i> Home
       <% end %>
     </li>
-    <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
-    <li><%= link(@class.name, to: class_path(@conn, :show, @class.id)) %></li>
+    <li><%= link("Skills", to: skill_path(@conn, :index)) %></li>
     <li class="active">New Skill</li>
   </ol>
 </section>
@@ -18,7 +17,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render "_form.html", path: class_skill_path(@conn, :create, @class.id), class: @class, changeset: @changeset, title: "New", submit: "Create" %>
+      <%= render "_form.html", path: skill_path(@conn, :create), changeset: @changeset, title: "New", submit: "Create" %>
     </div>
   </div>
 </section>

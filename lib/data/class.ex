@@ -5,6 +5,7 @@ defmodule Data.Class do
 
   use Data.Schema
 
+  alias Data.ClassSkill
   alias Data.Stats
 
   schema "classes" do
@@ -15,7 +16,8 @@ defmodule Data.Class do
     field(:regen_health, :integer)
     field(:regen_skill_points, :integer)
 
-    has_many(:skills, Data.Skill)
+    has_many(:class_skills, ClassSkill)
+    has_many(:skills, through: [:class_skills, :skill])
   end
 
   def changeset(struct, params) do

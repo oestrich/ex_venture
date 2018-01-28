@@ -72,18 +72,21 @@
               </tr>
             </thead>
             <tbody>
-              <%= Enum.map @class.skills, fn (skill) -> %>
+              <%= Enum.map @class.class_skills, fn (class_skill) -> %>
                 <tr>
-                  <td><%= skill.level %></td>
-                  <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
+                  <td><%= class_skill.skill.level %></td>
+                  <td><%= link(class_skill.skill.name, to: skill_path(@conn, :show, class_skill.skill_id)) %></td>
                   <td>
-                    <%= Enum.map(skill.tags, fn (tag) -> %>
+                    <%= Enum.map(class_skill.skill.tags, fn (tag) -> %>
                       <span class="label label-info"><%= tag %></span>
                     <% end) %>
                   </td>
                   <td>
-                    <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>
+                    <%= link("View", to: skill_path(@conn, :show, class_skill.skill_id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: skill_path(@conn, :edit, class_skill.skill_id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: class_skill_path(@conn, :delete, class_skill.id), method: :delete, class: "btn btn-warning btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

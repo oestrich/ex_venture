@@ -3,11 +3,7 @@ defmodule Web.SkillTest do
 
   alias Web.Skill
 
-  setup do
-    %{class: create_class()}
-  end
-
-  test "creating a skill", %{class: class} do
+  test "creating a skill" do
     params = %{
       "name" => "Slash",
       "command" => "slash",
@@ -19,14 +15,13 @@ defmodule Web.SkillTest do
       "effects" => "[]",
     }
 
-    {:ok, skill} = Skill.create(class, params)
+    {:ok, skill} = Skill.create(params)
 
     assert skill.name == "Slash"
-    assert skill.class_id == class.id
   end
 
-  test "updating a skill", %{class: class} do
-    skill = create_skill(class, %{name: "Magic Missile"})
+  test "updating a skill" do
+    skill = create_skill(%{name: "Magic Missile"})
 
     {:ok, skill} = Skill.update(skill.id, %{name: "Dodge"})
     assert skill.name == "Dodge"

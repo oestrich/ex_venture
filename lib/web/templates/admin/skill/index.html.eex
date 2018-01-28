@@ -8,6 +8,11 @@
   <div class="row">
     <div class="col-md-9">
       <div class="box">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Skill", to: skill_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
         <div class="box-body">
           <table class="table">
             <thead>
@@ -31,7 +36,11 @@
                       <span class="label label-info"><%= tag %></span>
                     <% end) %>
                   </td>
-                  <td><%= link(skill.class.name, to: class_path(@conn, :show, skill.class_id)) %></td>
+                  <td>
+                    <%= Enum.map(skill.classes, fn (class) -> %>
+                      <%= link(class.name, to: class_path(@conn, :show, class.id), class: "btn btn-success btn-xs") %>
+                    <% end) %>
+                  </td>
                   <td>
                     <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>

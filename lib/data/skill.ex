@@ -7,6 +7,9 @@ defmodule Data.Skill do
 
   import Data.Effect, only: [validate_effects: 1]
 
+  alias Data.ClassSkill
+  alias Data.Effect
+
   schema "skills" do
     field(:name, :string)
     field(:description, :string)
@@ -15,10 +18,11 @@ defmodule Data.Skill do
     field(:user_text, :string)
     field(:usee_text, :string)
     field(:command, :string)
-    field(:effects, {:array, Data.Effect})
+    field(:effects, {:array, Effect})
     field(:tags, {:array, :string}, default: [])
 
-    belongs_to(:class, Data.Class)
+    has_many(:class_skills, ClassSkill)
+    has_many(:classes, through: [:class_skills, :class])
 
     timestamps()
   end
@@ -35,7 +39,6 @@ defmodule Data.Skill do
       :command,
       :effects,
       :tags,
-      :class_id
     ])
     |> validate_required([
       :name,
@@ -47,7 +50,6 @@ defmodule Data.Skill do
       :command,
       :effects,
       :tags,
-      :class_id
     ])
     |> validate_effects()
   end

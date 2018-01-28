@@ -1,12 +1,7 @@
 defmodule Web.Admin.SkillControllerTest do
   use Web.AuthConnCase
 
-  setup do
-    class = create_class()
-    %{class: class}
-  end
-
-  test "create a skill", %{conn: conn, class: class} do
+  test "create a skill", %{conn: conn} do
     params = %{
       name: "Slash",
       command: "slash",
@@ -18,12 +13,12 @@ defmodule Web.Admin.SkillControllerTest do
       effects: "[]",
     }
 
-    conn = post conn, class_skill_path(conn, :create, class.id), skill: params
+    conn = post conn, skill_path(conn, :create), skill: params
     assert html_response(conn, 302)
   end
 
-  test "update a skill", %{conn: conn, class: class} do
-    skill = create_skill(class)
+  test "update a skill", %{conn: conn} do
+    skill = create_skill()
 
     conn = put conn, skill_path(conn, :update, skill.id), skill: %{name: "Dodge"}
     assert html_response(conn, 302)

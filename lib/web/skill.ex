@@ -22,7 +22,7 @@ defmodule Web.Skill do
 
     Skill
     |> order_by([s], asc: s.level, asc: s.id)
-    |> preload([:class])
+    |> preload([:classes])
     |> Filter.filter(opts[:filter], __MODULE__)
     |> Pagination.paginate(opts)
   end
@@ -48,18 +48,14 @@ defmodule Web.Skill do
   """
   @spec get(id :: integer) :: Skill.t()
   def get(id) do
-    Skill |> Repo.get(id) |> Repo.preload([:class])
+    Skill |> Repo.get(id)
   end
 
   @doc """
   Get a changeset for a new page
   """
-  @spec new(class :: Class.t()) :: changeset :: map
-  def new(class) do
-    class
-    |> Ecto.build_assoc(:skills)
-    |> Skill.changeset(%{})
-  end
+  @spec new() :: Ecto.Changeset.t()
+  def new(), do: %Skill{} |> Skill.changeset(%{})
 
   @doc """
   Get a changeset for an edit page
@@ -70,10 +66,9 @@ defmodule Web.Skill do
   @doc """
   Create a skill
   """
-  @spec create(class :: Class.t(), params :: map) :: {:ok, Skill.t()} | {:error, changeset :: map}
-  def create(class, params) do
-    class
-    |> Ecto.build_assoc(:skills)
+  @spec create(map) :: {:ok, Skill.t()} | {:error, changeset :: map}
+  def create(params) do
+    %Skill{}
     |> Skill.changeset(cast_params(params))
     |> Repo.insert()
   end

@@ -53,8 +53,10 @@ defmodule Web.Router do
     end
 
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
-      resources("/skills", SkillController, only: [:new, :create])
+      resources("/skills", ClassSkillController, only: [:new, :create], as: :skill)
     end
+
+    resources "/class_skills", ClassSkillController, only: [:delete]
 
     resources("/config", ConfigController, only: [:index, :edit, :update])
 
@@ -122,7 +124,7 @@ defmodule Web.Router do
       resources("/items", ShopItemController, only: [:new, :create])
     end
 
-    resources("/skills", SkillController, only: [:index, :show, :edit, :update])
+    resources("/skills", SkillController, only: [:index, :show, :new, :create, :edit, :update])
 
     resources("/typos", TypoController, only: [:index, :show])
 

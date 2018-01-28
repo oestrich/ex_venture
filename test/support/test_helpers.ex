@@ -220,9 +220,8 @@ defmodule TestHelpers do
     |> Repo.insert!
   end
 
-  def skill_attributes(class, attributes) do
+  def skill_attributes(attributes) do
     Map.merge(%{
-      class_id: class.id,
       name: "Slash",
       command: "slash",
       description: "Slash at the target",
@@ -234,9 +233,9 @@ defmodule TestHelpers do
     }, attributes)
   end
 
-  def create_skill(class, attributes \\ %{}) do
+  def create_skill(attributes \\ %{}) do
     %Skill{}
-    |> Skill.changeset(skill_attributes(class, attributes))
+    |> Skill.changeset(skill_attributes(attributes))
     |> Repo.insert!
   end
 
