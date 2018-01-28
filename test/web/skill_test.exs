@@ -1,7 +1,13 @@
 defmodule Web.SkillTest do
   use Data.ModelCase
+  import Test.SkillsHelper
 
+  alias Game.Skills
   alias Web.Skill
+
+  setup do
+    start_and_clear_skills()
+  end
 
   test "creating a skill" do
     params = %{
@@ -18,6 +24,8 @@ defmodule Web.SkillTest do
     {:ok, skill} = Skill.create(params)
 
     assert skill.name == "Slash"
+
+    assert Skills.skill(skill.id).name == "Slash"
   end
 
   test "updating a skill" do
@@ -25,5 +33,7 @@ defmodule Web.SkillTest do
 
     {:ok, skill} = Skill.update(skill.id, %{name: "Dodge"})
     assert skill.name == "Dodge"
+
+    assert Skills.skill(skill.id).name == "Dodge"
   end
 end

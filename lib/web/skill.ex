@@ -6,6 +6,7 @@ defmodule Web.Skill do
   alias Data.Effect
   alias Data.Skill
   alias Data.Repo
+  alias Game.Skills
   alias Web.Filter
   alias Web.Pagination
 
@@ -68,9 +69,16 @@ defmodule Web.Skill do
   """
   @spec create(map) :: {:ok, Skill.t()} | {:error, changeset :: map}
   def create(params) do
-    %Skill{}
-    |> Skill.changeset(cast_params(params))
-    |> Repo.insert()
+    changeset = %Skill{} |> Skill.changeset(cast_params(params))
+
+    case changeset |> Repo.insert() do
+      {:ok, skill} ->
+        Skills.insert(skill)
+        {:ok, skill}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -78,10 +86,17 @@ defmodule Web.Skill do
   """
   @spec update(id :: integer, params :: map) :: {:ok, Skill.t()} | {:error, changeset :: map}
   def update(id, params) do
-    id
-    |> get()
-    |> Skill.changeset(cast_params(params))
-    |> Repo.update()
+    skill = id |> get()
+    changeset = skill |> Skill.changeset(cast_params(params))
+
+    case changeset |> Repo.update() do
+      {:ok, skill} ->
+        Skills.reload(skill)
+        {:ok, skill}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
