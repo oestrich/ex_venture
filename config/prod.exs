@@ -8,7 +8,7 @@ config :ex_venture, Data.Repo,
 
 config :ex_venture, Web.Endpoint,
   http: [port: 4000],
-  url: [host: {:system, "HOST"}, port: {:system, "HTTP_PORT"}, scheme: {:system, "HTTP_SCHEME"}],
+  url: [host: {:system, "HOST"}, port: 443, scheme: "https"],
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
@@ -53,3 +53,5 @@ config :ex_venture, ExVenture.Mailer,
   port: {:system, "SMTP_PORT"},
   username: {:system, "SMTP_USERNAME"},
   password: {:system, "SMTP_PASSWORD"}
+
+config :ex_venture, :mailer, from: {:system, "EXVENTURE_MAILER_FROM"}
