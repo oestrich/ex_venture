@@ -75,7 +75,8 @@
               <tr>
                 <th>Level</th>
                 <th>Name</th>
-                <td>Actions</th>
+                <th>Tags</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -83,6 +84,11 @@
                 <tr>
                   <td><%= skill.level %></td>
                   <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
+                  <td>
+                    <%= Enum.map(skill.tags, fn (tag) -> %>
+                      <span class="label label-info"><%= tag %></span>
+                    <% end) %>
+                  </td>
                   <td>
                     <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>

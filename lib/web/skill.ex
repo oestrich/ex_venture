@@ -6,6 +6,42 @@ defmodule Web.Skill do
   alias Data.Effect
   alias Data.Skill
   alias Data.Repo
+  alias Web.Filter
+  alias Web.Pagination
+
+  import Ecto.Query
+
+  @behaviour Filter
+
+  @doc """
+  Load all skills
+  """
+  @spec all(Keyword.t()) :: [Skill.t()]
+  def all(opts \\ []) do
+    opts = Enum.into(opts, %{})
+
+    Skill
+    |> order_by([u], desc: u.updated_at)
+    |> preload([:class])
+    |> Filter.filter(opts[:filter], __MODULE__)
+    |> Pagination.paginate(opts)
+  end
+
+  @impl Filter
+  def filter_on_attribute({"level_from", level}, query) do
+    query |> where([s], s.level >= ^level)
+  end
+
+  def filter_on_attribute({"level_to", level}, query) do
+    query |> where([s], s.level <= ^level)
+  end
+
+  def filter_on_attribute({"tag", value}, query) do
+    query
+    |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
+  end
+
+  def filter_on_attribute(_, query), do: query
 
   @doc """
   Get a skill
@@ -60,6 +96,7 @@ defmodule Web.Skill do
   def cast_params(params) do
     params
     |> parse_effects()
+    |> parse_tags()
   end
 
   defp parse_effects(params = %{"effects" => effects}) do
@@ -84,4 +121,16 @@ defmodule Web.Skill do
 
     Map.put(params, "effects", effects)
   end
+
+  def parse_tags(params = %{"tags" => tags}) do
+    tags =
+      tags
+      |> String.split(",")
+      |> Enum.map(&String.trim/1)
+
+    params
+    |> Map.put("tags", tags)
+  end
+
+  def parse_tags(params), do: params
 end

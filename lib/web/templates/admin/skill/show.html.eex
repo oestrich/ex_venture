@@ -9,8 +9,7 @@
         <i class="fa fa-dashboard"></i> Home
       <% end %>
     </li>
-    <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
-    <li><%= link(@skill.class.name, to: class_path(@conn, :show, @skill.class_id)) %></li>
+    <li><%= link("Skills", to: skill_path(@conn, :index)) %></li>
     <li class="active"><%= @skill.name %></li>
   </ol>
 </section>
@@ -35,6 +34,14 @@
               <tr>
                 <th>Name</th>
                 <td><%= @skill.name %></td>
+              </tr>
+              <tr>
+                <th>Tags</th>
+                <td>
+                  <%= Enum.map(@skill.tags, fn (tag) -> %>
+                    <span class="label label-info"><%= tag %></span>
+                  <% end) %>
+                </td>
               </tr>
               <tr>
                 <th>Command</th>

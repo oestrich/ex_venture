@@ -4,6 +4,15 @@ defmodule Web.Admin.SkillController do
   alias Web.Class
   alias Web.Skill
 
+  plug(Web.Plug.FetchPage when action in [:index])
+
+  def index(conn, params) do
+    %{page: page, per: per} = conn.assigns
+    filter = Map.get(params, "skill", %{})
+    %{page: skills, pagination: pagination} = Skill.all(filter: filter, page: page, per: per)
+    conn |> render("index.html", skills: skills, filter: filter, pagination: pagination)
+  end
+
   def show(conn, %{"id" => id}) do
     skill = Skill.get(id)
     conn |> render("show.html", skill: skill)

@@ -16,8 +16,11 @@ defmodule Data.Skill do
     field(:usee_text, :string)
     field(:command, :string)
     field(:effects, {:array, Data.Effect})
+    field(:tags, {:array, :string}, default: [])
 
     belongs_to(:class, Data.Class)
+
+    timestamps()
   end
 
   def changeset(struct, params) do
@@ -31,6 +34,7 @@ defmodule Data.Skill do
       :usee_text,
       :command,
       :effects,
+      :tags,
       :class_id
     ])
     |> validate_required([
@@ -42,6 +46,7 @@ defmodule Data.Skill do
       :usee_text,
       :command,
       :effects,
+      :tags,
       :class_id
     ])
     |> validate_effects()

@@ -122,7 +122,7 @@ defmodule Web.Router do
       resources("/items", ShopItemController, only: [:new, :create])
     end
 
-    resources("/skills", SkillController, only: [:show, :edit, :update])
+    resources("/skills", SkillController, only: [:index, :show, :edit, :update])
 
     resources("/typos", TypoController, only: [:index, :show])
 

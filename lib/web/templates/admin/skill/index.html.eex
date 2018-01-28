@@ -1,0 +1,81 @@
+<section class="content-header">
+  <h1>
+    Skills
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-9">
+      <div class="box">
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Tags</th>
+                <th>Classes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @skills, fn (skill) -> %>
+                <tr>
+                  <td><%= skill.id %></td>
+                  <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
+                  <td><%= skill.level %></td>
+                  <td>
+                    <%= Enum.map(skill.tags, fn (tag) -> %>
+                      <span class="label label-info"><%= tag %></span>
+                    <% end) %>
+                  </td>
+                  <td><%= link(skill.class.name, to: class_path(@conn, :show, skill.class_id)) %></td>
+                  <td>
+                    <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+          <%= render(SharedView, "_pagination.html", path: skill_path(@conn, :index), pagination: @pagination) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Filter</h3>
+        </div>
+        <%= form_tag skill_path(@conn, :index), method: :get do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :skill, :level %>
+              <div class="row">
+                <div class="col-md-6">
+                  <%= number_input :skill, :level_from, value: @filter["level_from"], placeholder: "From", class: "form-control" %>
+                </div>
+                <div class="col-md-6">
+                  <%= number_input :skill, :level_to, value: @filter["level_to"], placeholder: "To", class: "form-control" %>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <%= label :skill, :tag %>
+              <%= text_input :skill, :tag, value: @filter["tag"], class: "form-control" %>
+            </div>
+          </div>
+          <div class="box-footer">
+            <%= submit "Filter", class: "btn btn-primary" %>
+            <%= link "Clear", to: skill_path(@conn, :index), class: "btn" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

@@ -19,6 +19,12 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :tags %>
+        <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
+        <%= error_tag f, :tags %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :command %>
         <%= text_input f, :command, class: "form-control" %>
         <%= error_tag f, :command %>
