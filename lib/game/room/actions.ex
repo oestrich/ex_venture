@@ -72,7 +72,7 @@ defmodule Game.Room.Actions do
     {:update, state}
   end
 
-  def maybe_respawn(_), do: :ok
+  def maybe_respawn_items(_), do: :ok
 
   defp respawn_items(state = %{room: room}) do
     room.room_items
