@@ -72,7 +72,7 @@ defmodule Game.Command.Target do
   def target_npc(npc = %{id: id, name: name}, socket, state = %{user: user}) do
     Character.being_targeted({:npc, id}, {:user, user})
     socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
-    state |> GMCP.targeted({:npc, npc})
+    state |> GMCP.target({:npc, npc})
     {:update, Map.put(state, :target, {:npc, id})}
   end
 
@@ -92,7 +92,7 @@ defmodule Game.Command.Target do
   def target_user(%{id: id, name: name}, socket, state = %{user: user}) do
     Character.being_targeted({:user, id}, {:user, user})
     socket |> @socket.echo("You are now targeting {blue}#{name}{/blue}.")
-    state |> GMCP.targeted({:user, user})
+    state |> GMCP.target({:user, user})
     {:update, Map.put(state, :target, {:user, id})}
   end
 

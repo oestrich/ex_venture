@@ -82,13 +82,25 @@ defmodule Game.Session.GMCP do
   @doc """
   Send the player's target info
   """
-  @spec targeted(map, Character.t()) :: :ok
-  def targeted(%{socket: socket}, {:user, user}) do
+  @spec target(map, Character.t()) :: :ok
+  def target(%{socket: socket}, {:user, user}) do
     socket |> @socket.push_gmcp("Target.Character", user |> user_info() |> Poison.encode!())
   end
 
-  def targeted(%{socket: socket}, {:npc, npc}) do
+  def target(%{socket: socket}, {:npc, npc}) do
     socket |> @socket.push_gmcp("Target.Character", npc |> npc_info() |> Poison.encode!())
+  end
+
+  @doc """
+  A character targeted the player
+  """
+  @spec counter_targeted(map, Character.t()) :: :ok
+  def counter_targeted(%{socket: socket}, {:user, user}) do
+    socket |> @socket.push_gmcp("Target.You", user |> user_info() |> Poison.encode!())
+  end
+
+  def counter_targeted(%{socket: socket}, {:npc, npc}) do
+    socket |> @socket.push_gmcp("Target.You", npc |> npc_info() |> Poison.encode!())
   end
 
   @doc """

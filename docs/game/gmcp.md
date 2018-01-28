@@ -1,5 +1,25 @@
 # GMCP Events
 
+## Channel.Broadcast
+
+A channel you are in had a message broadcast to it.
+
+```
+Channel.Broadcast {
+  "channel": "global",
+  "from": {"id": 1, "name": "Player"},
+  "message": "Hi"
+}
+```
+
+## Channel.Tell
+
+A new tell message was sent to your character.
+
+```
+Channel.Tell {"from": {"id": 1, "name": "Player"}, "message": "Hi"}
+```
+
 ## Character
 
 On sign in the general character information will be sent.
@@ -23,6 +43,18 @@ Character.Vitals {
   "intelligence": 15,
   "health": 30,
   "dexterity": 15
+}
+```
+
+## Mail.New
+
+You have received a new peice of mail.
+
+```
+Mail.New {
+  "id": 1,
+  "from": {"id": 1, "name": "Player"},
+  "title": "Hi"
 }
 ```
 
@@ -67,6 +99,14 @@ Target.Character {"type": "player", "name": "Player", "id": 3}
 
 ```
 Target.Clear {}
+```
+
+## Target.You
+
+Another Charcater (PC or NPC) has targeted your character.
+
+```
+Target.You {"type": "player", "name": "Player", "id": 3}
 ```
 
 ## Zone.Map

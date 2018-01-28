@@ -16,12 +16,13 @@ defmodule Game.Session.Character do
   @doc """
   Callback for being targeted
   """
-  def targeted(state = %{socket: socket}, player) do
-    socket |> @socket.echo("You are being targeted by #{Format.name(player)}.")
+  def targeted(state = %{socket: socket}, character) do
+    socket |> @socket.echo("You are being targeted by #{Format.name(character)}.")
+    state |> GMCP.counter_targeted(character)
 
     state
-    |> maybe_target(player)
-    |> Map.put(:is_targeting, MapSet.put(state.is_targeting, Character.who(player)))
+    |> maybe_target(character)
+    |> Map.put(:is_targeting, MapSet.put(state.is_targeting, Character.who(character)))
   end
 
   @doc """
@@ -132,6 +133,7 @@ defmodule Game.Session.Character do
 
   def maybe_target(state = %{socket: socket, target: nil, user: user}, player) do
     socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
+    state |> GMCP.target(player)
     player = Character.who(player)
     Character.being_targeted(player, {:user, user})
     Map.put(state, :target, player)

@@ -144,6 +144,10 @@ let roomCharacterLeave = (channel, data) => {
   }
 }
 
+let targetYou = (channel, data) => {
+  notifications.display(`${data.name} is targetting you`, "");
+}
+
 let zoneMap = (channel, data) => {
   let map = _.first(Sizzle(".room-info .map"))
 
@@ -164,6 +168,7 @@ let gmcp = {
   "Room.Info": roomInfo,
   "Room.Character.Enter": roomCharacterEnter,
   "Room.Character.Leave": roomCharacterLeave,
+  "Target.You": targetYou,
   "Zone.Map": zoneMap,
 }
 
