@@ -27,7 +27,7 @@ defmodule Game.Command.SkillsTest do
       effects: [],
     }
 
-    user = %{id: 10, name: "Player", class: %{name: "Fighter", points_abbreviation: "PP", skills: [slash]}}
+    user = %{id: 10, name: "Player", class: %{name: "Fighter", skills: [slash]}}
     save = %{level: 1, stats: %{strength: 10, skill_points: 10}, wearing: %{}}
     {:ok, %{socket: :socket, user: user, save: save, slash: slash}}
   end
@@ -37,7 +37,7 @@ defmodule Game.Command.SkillsTest do
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(slash), look)
-    assert Regex.match?(~r(2PP), look)
+    assert Regex.match?(~r(2sp), look)
   end
 
   test "using a skill", %{socket: socket, user: user, save: save, slash: slash} do

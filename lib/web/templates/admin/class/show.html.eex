@@ -35,14 +35,6 @@
               <td><%= @class.description %></td>
             </tr>
             <tr>
-              <th>Points Name</th>
-              <td><%= @class.points_name %></td>
-            </tr>
-            <tr>
-              <th>Points Abbreviation</th>
-              <td><%= @class.points_abbreviation %></td>
-            </tr>
-            <tr>
               <th>Stats for each level</th>
               <td><pre><%= @class.each_level_stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
             </tr>

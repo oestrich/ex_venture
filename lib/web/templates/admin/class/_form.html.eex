@@ -18,20 +18,6 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :points_name %>
-        <%= text_input f, :points_name, class: "form-control" %>
-        <%= error_tag f, :points_name %>
-        <span class="help-block">Name of the skill points used for the class.</span>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :points_abbreviation %>
-        <%= text_input f, :points_abbreviation, class: "form-control" %>
-        <%= error_tag f, :points_abbreviation %>
-        <span class="help-block">Abbreviation of the points used for the class.</span>
-      </div>
-
-      <div class="form-group">
         <%= label f, :each_level_stats %>
         <%= textarea f, :each_level_stats, value: @changeset |> each_level_stats(), class: "form-control", rows: 10 %>
         <%= error_tag f, :each_level_stats %>

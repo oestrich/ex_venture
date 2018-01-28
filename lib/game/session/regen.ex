@@ -110,7 +110,7 @@ defmodule Game.Session.Regen do
     stats = Stats.regen(:health, save.stats, class.regen_health * save.level)
     stats = Stats.regen(:skill_points, stats, class.regen_skill_points * save.level)
 
-    echo_health(save.stats, stats, class)
+    echo_health(save.stats, stats)
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
@@ -129,8 +129,8 @@ defmodule Game.Session.Regen do
   @doc """
   Display regen text to the user
   """
-  @spec echo_health(Stats.t(), Stats.t(), Class.t()) :: nil
-  def echo_health(starting_stats, stats, class) do
+  @spec echo_health(Stats.t(), Stats.t()) :: nil
+  def echo_health(starting_stats, stats) do
     starting_hp = starting_stats.health
     starting_sp = starting_stats.skill_points
 
@@ -139,14 +139,13 @@ defmodule Game.Session.Regen do
         nil
 
       %{health: ^starting_hp} ->
-        echo(self(), "You regenerated some #{class.points_name |> String.downcase()}.")
+        echo(self(), "You regenerated some skill points.")
 
       %{skill_points: ^starting_sp} ->
-        nil
-        echo(self(), "You regenerated some health.")
+        echo(self(), "You regenerated some health points.")
 
       _ ->
-        echo(self(), "You regenerated some health and #{class.points_name |> String.downcase()}.")
+        echo(self(), "You regenerated some health and skill points.")
     end
   end
 end

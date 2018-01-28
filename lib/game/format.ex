@@ -49,20 +49,18 @@ defmodule Game.Format do
 
   Example:
 
-      iex> class = %{points_abbreviation: "SP"}
       iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10, move_points: 4, max_move_points: 10}
-      iex> Game.Format.prompt(%{name: "user", class: class}, %{experience_points: 1010, stats: stats})
+      iex> Game.Format.prompt(%{name: "user"}, %{experience_points: 1010, stats: stats})
       "[50/75hp 9/10sp 4/10mv 10xp] > "
   """
   @spec prompt(User.t(), Save.t()) :: String.t()
   def prompt(user, save)
 
-  def prompt(%{class: class}, %{experience_points: exp, stats: stats}) do
-    sp = class.points_abbreviation |> String.downcase()
+  def prompt(_user, %{experience_points: exp, stats: stats}) do
     exp = rem(exp, 1000)
 
     health = "#{stats.health}/#{stats.max_health}hp"
-    skill = "#{stats.skill_points}/#{stats.max_skill_points}#{sp}"
+    skill = "#{stats.skill_points}/#{stats.max_skill_points}sp"
     move = "#{stats.move_points}/#{stats.max_move_points}mv"
 
     "[#{health} #{skill} #{move} #{exp}xp] > "
@@ -472,9 +470,9 @@ defmodule Game.Format do
     rows = [
       ["Level", save.level],
       ["XP", save.experience_points],
-      ["Health", "#{stats.health}/#{stats.max_health}"],
-      [user.class.points_name, "#{stats.skill_points}/#{stats.max_skill_points}"],
-      ["Movement", "#{stats.move_points}/#{stats.max_move_points}"],
+      ["Health Points", "#{stats.health}/#{stats.max_health}"],
+      ["Skill Points", "#{stats.skill_points}/#{stats.max_skill_points}"],
+      ["Movement Points", "#{stats.move_points}/#{stats.max_move_points}"],
       ["Strength", stats.strength],
       ["Dexterity", stats.dexterity],
       ["Intelligence", stats.intelligence],
@@ -482,7 +480,7 @@ defmodule Game.Format do
       ["Play Time", play_time(user.seconds_online)]
     ]
 
-    Table.format("#{player_name(user)} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
+    Table.format("#{player_name(user)} - #{user.race.name} - #{user.class.name}", rows, [16, 15])
   end
 
   @doc """
@@ -519,16 +517,16 @@ defmodule Game.Format do
   Format skills
 
       iex> skills = [%{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}]
-      iex> Game.Format.skills(%{name: "Fighter", points_abbreviation: "PP"}, skills)
-      "Fighter\\n\\nLevel - Name - Points - Description\\n1 - Slash (slash) - 2PP - Fight your foe\\n"
+      iex> Game.Format.skills(%{name: "Fighter"}, skills)
+      "Fighter\\n\\nLevel - Name - Points - Description\\n1 - Slash (slash) - 2sp - Fight your foe\\n"
   """
   @spec skills(Class.t(), [Skill.t()]) :: String.t()
   def skills(class, skills)
 
-  def skills(%{name: name, points_abbreviation: points_abbreviation}, skills) do
+  def skills(%{name: name}, skills) do
     skills =
       skills
-      |> Enum.map(&skill(&1, points_abbreviation))
+      |> Enum.map(&skill(&1))
       |> Enum.join("\n")
 
     """
@@ -543,14 +541,12 @@ defmodule Game.Format do
   Format a skill
 
       iex> skill = %{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}
-      iex> Game.Format.skill(skill, "PP")
-      "1 - Slash (slash) - 2PP - Fight your foe"
+      iex> Game.Format.skill(skill)
+      "1 - Slash (slash) - 2sp - Fight your foe"
   """
-  @spec skill(Skill.t(), String.t()) :: String.t()
-  def skill(skill, sp_name) do
-    "#{skill.level} - #{skill.name} (#{skill.command}) - #{skill.points}#{sp_name} - #{
-      skill.description
-    }"
+  @spec skill(Skill.t()) :: String.t()
+  def skill(skill) do
+    "#{skill.level} - #{skill.name} (#{skill.command}) - #{skill.points}sp - #{skill.description}"
   end
 
   @doc """

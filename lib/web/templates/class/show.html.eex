@@ -11,7 +11,7 @@
       <%= Enum.map(@class.skills, fn (skill) -> %>
         <li class="list-group-item">
           <h5><%= skill.name %></h5>
-          <span>Level <%= skill.level %> - <%= skill.points %> <%= @class.points_abbreviation %></span>
+          <span>Level <%= skill.level %> - <%= skill.points %> sp</span>
           <p>Command: <code><%= skill.command %></code></p>
           <p><%= skill.description %></p>
         </li>

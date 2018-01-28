@@ -359,8 +359,6 @@ defmodule Seeds do
     {:ok, fighter} = create_class(%{
       name: "Fighter",
       description: "Uses strength and swords to overcome.",
-      points_name: "Skill Points",
-      points_abbreviation: "SP",
       regen_health: 2,
       regen_skill_points: 1,
       each_level_stats: %{
@@ -394,8 +392,6 @@ defmodule Seeds do
     {:ok, mage} = create_class(%{
       name: "Mage",
       description: "Uses intelligence and magic to overcome.",
-      points_name: "Mana",
-      points_abbreviation: "MP",
       regen_health: 1,
       regen_skill_points: 2,
       each_level_stats: %{

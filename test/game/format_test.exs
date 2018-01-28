@@ -132,7 +132,7 @@ defmodule Game.FormatTest do
         name: "hero",
         save: save,
         race: %{name: "Human"},
-        class: %{name: "Fighter", points_name: "Skill Points"},
+        class: %{name: "Fighter"},
         seconds_online: 61,
       }
 

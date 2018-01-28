@@ -30,7 +30,7 @@ defmodule Game.SessionTest do
   describe "regenerating" do
     setup do
       stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12, move_points: 8, max_move_points: 10}
-      class = %{points_name: "Skill Points", points_abbreviation: "SP", regen_health: 1, regen_skill_points: 1}
+      class = %{regen_health: 1, regen_skill_points: 1}
       %{user: %{class: class}, save: %{room_id: 1, level: 2, stats: stats}, regen: %{is_regenerating: true, count: 5}}
     end
 

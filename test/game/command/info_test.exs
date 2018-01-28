@@ -21,7 +21,7 @@ defmodule Game.Command.InfoTest do
         name: "hero",
         save: base_save(),
         race: %{name: "Human"},
-        class: %{name: "Fighter", points_name: "Skill Points"},
+        class: %{name: "Fighter"},
         seconds_online: 15,
       }
       save = %{user.save | wearing: %{chest: armor.id}, stats: base_stats()}

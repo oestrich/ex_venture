@@ -10,8 +10,6 @@ defmodule Data.Class do
   schema "classes" do
     field(:name, :string)
     field(:description, :string)
-    field(:points_name, :string)
-    field(:points_abbreviation, :string)
     field(:each_level_stats, Stats)
 
     field(:regen_health, :integer)
@@ -25,8 +23,6 @@ defmodule Data.Class do
     |> cast(params, [
       :name,
       :description,
-      :points_name,
-      :points_abbreviation,
       :each_level_stats,
       :regen_health,
       :regen_skill_points
@@ -34,8 +30,6 @@ defmodule Data.Class do
     |> validate_required([
       :name,
       :description,
-      :points_name,
-      :points_abbreviation,
       :each_level_stats,
       :regen_health,
       :regen_skill_points
