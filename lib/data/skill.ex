@@ -20,6 +20,7 @@ defmodule Data.Skill do
     field(:command, :string)
     field(:effects, {:array, Effect})
     field(:tags, {:array, :string}, default: [])
+    field(:is_global, :boolean, default: false)
 
     has_many(:class_skills, ClassSkill)
     has_many(:classes, through: [:class_skills, :class])
@@ -39,6 +40,7 @@ defmodule Data.Skill do
       :command,
       :effects,
       :tags,
+      :is_global
     ])
     |> validate_required([
       :name,
@@ -50,6 +52,7 @@ defmodule Data.Skill do
       :command,
       :effects,
       :tags,
+      :is_global
     ])
     |> validate_effects()
   end

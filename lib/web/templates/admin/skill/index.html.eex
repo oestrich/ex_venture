@@ -22,6 +22,7 @@
                 <th>Level</th>
                 <th>Tags</th>
                 <th>Classes</th>
+                <th>Is Global?</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -41,6 +42,7 @@
                       <%= link(class.name, to: class_path(@conn, :show, class.id), class: "btn btn-success btn-xs") %>
                     <% end) %>
                   </td>
+                  <td><span class="label label-default"><%= skill.is_global %></span></td>
                   <td>
                     <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>
