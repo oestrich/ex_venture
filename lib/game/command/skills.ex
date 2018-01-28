@@ -48,6 +48,11 @@ defmodule Game.Command.Skills do
   def parse(command)
   def parse("skills"), do: {}
 
+  @doc """
+  Parse skill specific commands
+  """
+  @spec parse_skill(String.t(), User.t()) :: Command.t() | {:error, :bad_parse, String.t()}
+  def parse_skill(command, user)
   def parse_skill(command, %{save: save}) do
     skill =
       save.skill_ids
