@@ -40,6 +40,7 @@ defmodule Game.Account do
           user
           |> Repo.preload([:race])
           |> Repo.preload(class: :skills)
+          |> migrate()
 
         {:ok, user}
 
