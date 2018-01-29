@@ -1,0 +1,14 @@
+<div class="row">
+  <div class="col-md-12">
+    <ul class="list-group">
+      <%= Enum.map(@skills, fn (skill) -> %>
+        <li class="list-group-item">
+          <h5><%= link(skill.name, to: public_skill_path(@conn, :show, skill.id)) %></h5>
+          <span>Level <%= skill.level %> - <%= skill.points %> sp</span>
+          <p>Command: <code><%= skill.command %></code></p>
+          <p><%= skill.description %></p>
+        </li>
+      <% end) %>
+    </ul>
+  </div>
+</div>

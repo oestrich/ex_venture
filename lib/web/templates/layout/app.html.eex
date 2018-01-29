@@ -27,6 +27,9 @@
             <li class="nav-item <%= tab_selected(@conn, "classes") %>">
               <%= link("Classes", to: public_class_path(@conn, :index), class: "nav-link") %>
             </li>
+            <li class="nav-item <%= tab_selected(@conn, "skills") %>">
+              <%= link("Skills", to: public_skill_path(@conn, :index), class: "nav-link") %>
+            </li>
             <li class="nav-item <%= tab_selected(@conn, "races") %>">
               <%= link("Races", to: public_race_path(@conn, :index), class: "nav-link") %>
             </li>

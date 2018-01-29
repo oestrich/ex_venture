@@ -40,6 +40,8 @@ defmodule Web.Router do
     delete("/sessions", SessionController, :delete)
     resources("/sessions", SessionController, only: [:new, :create])
 
+    resources("/skills", SkillController, only: [:index, :show])
+
     get("/who", PageController, :who)
   end
 

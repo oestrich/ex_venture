@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="mb-3"><%= @skill.name %></h2>
+    <span>Level <%= @skill.level %> - <%= @skill.points %> sp</span>
+    <p>Command: <code><%= @skill.command %></code></p>
+    <p><%= @skill.description %></p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="back">
+      <%= link(to: public_skill_path(@conn, :index)) do %>
+        &laquo; Back
+      <% end %>
+    </div>
+  </div>
+</div>
