@@ -44,6 +44,8 @@ There is a web client located at [http://localhost:4000/play](http://localhost:4
 
 There is an admin panel located at [http://locahost:4000/admin](http://localhost:4000/admin) that you can build out the game in. Create zones, rooms, npcs, items, etc. in the panel. They will become live instantly on creating or updating.
 
+You can see more on [exventure.org](https://exventure.org/admin/).
+
 ![Admin Dashboard](https://exventure.org/images/admin-dashboard.png)
 
 ## Deployment
