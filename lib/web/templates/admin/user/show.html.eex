@@ -6,7 +6,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
@@ -56,12 +56,8 @@
           </table>
         </div>
       </div>
-    </div>
-  </div>
 
-  <%= if online?(@user) do %>
-    <div class="row">
-      <div class="col-md-12">
+      <%= if online?(@user) do %>
         <div class="box">
           <div class="box-header">
             <h3 class="box-title">Live Stats</h3>
@@ -75,12 +71,10 @@
             </table>
           </div>
         </div>
-      </div>
+      <% end %>
     </div>
-  <% end %>
 
-  <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Basic Stats</h3>
