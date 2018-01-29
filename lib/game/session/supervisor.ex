@@ -3,13 +3,13 @@ defmodule Game.Session.Supervisor do
   Supervisor for sessions
   """
 
-  use Supervisor
+  use DynamicSupervisor
 
   alias Game.Session
 
   @doc false
   def start_link do
-    Supervisor.start_link(__MODULE__, nil, name: __MODULE__)
+    DynamicSupervisor.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
   @doc """
@@ -17,13 +17,11 @@ defmodule Game.Session.Supervisor do
   """
   @spec start_child(pid) :: {:ok, pid}
   def start_child(socket_pid) do
-    child_spec = worker(Session.Process, [socket_pid], id: socket_pid, restart: :transient)
-    Supervisor.start_child(__MODULE__, child_spec)
+    DynamicSupervisor.start_child(__MODULE__, {Session.Process, [socket_pid]})
   end
 
   @doc false
   def init(_) do
-    children = []
-    supervise(children, strategy: :one_for_one)
+    DynamicSupervisor.init(strategy: :one_for_one)
   end
 end

@@ -5,7 +5,7 @@ defmodule Game.Session.Process do
   Holds knowledge if the user is logged in, who they are, what they're save is.
   """
 
-  use GenServer
+  use GenServer, restart: :transient
   use Networking.Socket
   use Game.Room
 
@@ -43,7 +43,7 @@ defmodule Game.Session.Process do
     GenServer.start_link(__MODULE__, socket)
   end
 
-  def init(socket) do
+  def init([socket]) do
     socket |> Session.Login.start()
     self() |> schedule_save()
     self() |> schedule_inactive_check()
