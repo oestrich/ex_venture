@@ -2,6 +2,7 @@ defmodule Web.LayoutView do
   use Web, :view
 
   alias Game.Config
+  alias Web.Bug
 
   def tab_selected(conn, "dashboard") do
     case conn.path_info do

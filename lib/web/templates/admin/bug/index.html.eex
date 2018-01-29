@@ -37,7 +37,9 @@
                   <td><%= bug.is_completed %></td>
                   <td>
                     <%= link("View", to: bug_path(@conn, :show, bug.id), class: "btn btn-default btn-xs") %>
-                    <%= button("Mark Complete", to: bug_complete_path(@conn, :complete, bug.id), class: "btn btn-default btn-xs") %>
+                    <%= if !bug.is_completed do %>
+                      <%= button("Mark Complete", to: bug_complete_path(@conn, :complete, bug.id), class: "btn btn-default btn-xs") %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

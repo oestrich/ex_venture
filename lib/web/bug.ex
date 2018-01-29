@@ -34,6 +34,16 @@ defmodule Web.Bug do
   def filter_on_attribute(_, query), do: query
 
   @doc """
+  Get a count of incomplete bugs
+  """
+  def incomplete_count() do
+    Bug
+    |> select([b], count(b.id))
+    |> where([b], b.is_completed == false)
+    |> Repo.one()
+  end
+
+  @doc """
   Get a bug
   """
   @spec get(integer()) :: [Bug.t()]
