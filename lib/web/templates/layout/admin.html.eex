@@ -51,17 +51,67 @@
                 <span>Play Now &raquo;</span>
               <% end %>
             </li>
-            <li class="header">MAIN NAVIGATION</li>
-            <li class="<%= tab_selected(@conn, "bugs") %>">
-              <%= link(to: bug_path(@conn, :index)) do %>
-                <i class="fa fa-bug"></i>
-                <span>Bugs</span>
-              <% end %>
-            </li>
+            <li class="header">PLAYERS</li>
             <li class="<%= tab_selected(@conn, "classes") %>">
               <%= link(to: class_path(@conn, :index)) do %>
                 <i class="fa fa-user-circle"></i>
                 <span>Classes</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "races") %>">
+              <%= link(to: race_path(@conn, :index)) do %>
+                <i class="fa fa-eye"></i>
+                <span>Races</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "skills") %>">
+              <%= link(to: skill_path(@conn, :index)) do %>
+                <i class="fa fa-gavel"></i>
+                <span>Skills</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "users") %>">
+              <%= link(to: user_path(@conn, :index)) do %>
+                <i class="fa fa-users"></i>
+                <span>Users</span>
+              <% end %>
+            </li>
+            <li class="header">THE WORLD</li>
+            <li class="<%= tab_selected(@conn, "items") %>">
+              <%= link(to: item_path(@conn, :index)) do %>
+                <i class="fa fa-shopping-basket"></i>
+                <span>Items</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "item_aspects") %>">
+              <%= link(to: item_aspect_path(@conn, :index)) do %>
+                <i class="fa fa-tag"></i>
+                <span>Item Aspects</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "npcs") %>">
+              <%= link(to: npc_path(@conn, :index)) do %>
+                <i class="fa fa-address-card"></i>
+                <span>NPCs</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "quests") %>">
+              <%= link(to: quest_path(@conn, :index)) do %>
+                <i class="fa fa-compass"></i>
+                <span>Quests</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, ["zones", "rooms", "shops"]) %>">
+              <%= link(to: zone_path(@conn, :index)) do %>
+                <i class="fa fa-flag"></i>
+                <span>Zones</span>
+              <% end %>
+            </li>
+            <li class="header">THE GAME</li>
+            <li class="<%= tab_selected(@conn, "bugs") %>">
+              <%= link(to: bug_path(@conn, :index)) do %>
+                <i class="fa fa-bug"></i>
+                <span>Bugs</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "config") %>">
@@ -82,64 +132,16 @@
                 <span>Insights</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "items") %>">
-              <%= link(to: item_path(@conn, :index)) do %>
-                <i class="fa fa-shopping-basket"></i>
-                <span>Items</span>
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, "item_aspects") %>">
-              <%= link(to: item_aspect_path(@conn, :index)) do %>
-                <i class="fa fa-tag"></i>
-                <span>Item Aspects</span>
-              <% end %>
-            </li>
             <li class="<%= tab_selected(@conn, "notes") %>">
               <%= link(to: note_path(@conn, :index)) do %>
                 <i class="fa fa-book"></i>
                 <span>Notes</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "npcs") %>">
-              <%= link(to: npc_path(@conn, :index)) do %>
-                <i class="fa fa-address-card"></i>
-                <span>NPCs</span>
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, "quests") %>">
-              <%= link(to: quest_path(@conn, :index)) do %>
-                <i class="fa fa-compass"></i>
-                <span>Quests</span>
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, "races") %>">
-              <%= link(to: race_path(@conn, :index)) do %>
-                <i class="fa fa-eye"></i>
-                <span>Races</span>
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, "skills") %>">
-              <%= link(to: skill_path(@conn, :index)) do %>
-                <i class="fa fa-gavel"></i>
-                <span>Skills</span>
-              <% end %>
-            </li>
             <li class="<%= tab_selected(@conn, "typos") %>">
               <%= link(to: typo_path(@conn, :index)) do %>
                 <i class="fa fa-font"></i>
                 <span>Typos</span>
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, "users") %>">
-              <%= link(to: user_path(@conn, :index)) do %>
-                <i class="fa fa-users"></i>
-                <span>Users</span>
-              <% end %>
-            </li>
-            <li class="<%= tab_selected(@conn, ["zones", "rooms", "shops"]) %>">
-              <%= link(to: zone_path(@conn, :index)) do %>
-                <i class="fa fa-flag"></i>
-                <span>Zones</span>
               <% end %>
             </li>
           </ul>
