@@ -316,8 +316,8 @@ defmodule Seeds do
       name: "Human",
       description: "A human",
       starting_stats: %{
-        health: 15,
-        max_health: 15,
+        health: 40,
+        max_health: 40,
         skill_points: 15,
         max_skill_points: 15,
         move_points: 15,
@@ -333,8 +333,8 @@ defmodule Seeds do
       name: "Dwarf",
       description: "A dwarf",
       starting_stats: %{
-        health: 20,
-        max_health: 20,
+        health: 50,
+        max_health: 50,
         skill_points: 15,
         max_skill_points: 15,
         move_points: 15,
@@ -351,8 +351,8 @@ defmodule Seeds do
       description: "An elf",
       starting_stats: %{
         health: 15,
-        max_health: 15,
-        skill_points: 15,
+        max_health: 35,
+        skill_points: 35,
         max_skill_points: 15,
         move_points: 15,
         max_move_points: 15,
