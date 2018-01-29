@@ -1,6 +1,7 @@
 alias Data.Repo
 
 alias Data.Class
+alias Data.ClassSkill
 alias Data.Config
 alias Data.Exit
 alias Data.HelpTopic
@@ -105,10 +106,16 @@ defmodule Helpers do
     |> Repo.insert
   end
 
-  def create_skill(class, attributes) do
+  def create_skill(attributes) do
     %Skill{}
-    |> Skill.changeset(Map.merge(attributes, %{class_id: class.id}))
-    |> Repo.insert!
+    |> Skill.changeset(attributes)
+    |> Repo.insert
+  end
+
+  def create_class_skill(class, skill) do
+    %ClassSkill{}
+    |> ClassSkill.changeset(%{class_id: class.id, skill_id: skill.id})
+    |> Repo.insert
   end
 
   def create_help_topic(attributes) do
@@ -374,20 +381,6 @@ defmodule Seeds do
         wisdom: 1,
       },
     })
-    fighter
-    |> create_skill(%{
-      level: 1,
-      name: "Slash",
-      description: "Use your weapon to slash at your target",
-      points: 1,
-      user_text: "You slash at {target}.",
-      usee_text: "You were slashed at by {user}.",
-      command: "slash",
-      effects: [
-        %{kind: "damage", type: :slashing, amount: 10},
-        %{kind: "damage/type", types: [:slashing]},
-      ],
-    })
 
     {:ok, mage} = create_class(%{
       name: "Mage",
@@ -407,8 +400,22 @@ defmodule Seeds do
         wisdom: 3,
       },
     })
-    mage
-    |> create_skill(%{
+
+    {:ok, slash} = create_skill(%{
+      level: 1,
+      name: "Slash",
+      description: "Use your weapon to slash at your target",
+      points: 1,
+      user_text: "You slash at {target}.",
+      usee_text: "You were slashed at by {user}.",
+      command: "slash",
+      effects: [
+        %{kind: "damage", type: :slashing, amount: 10},
+        %{kind: "damage/type", types: [:slashing]},
+      ],
+    })
+
+    {:ok, magic_missile} = create_skill(%{
       level: 1,
       name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
@@ -421,6 +428,9 @@ defmodule Seeds do
         %{kind: "damage/type", types: [:arcane]},
       ],
     })
+
+    create_class_skill(fighter, slash)
+    create_class_skill(mage, magic_missile)
 
     create_help_topic(%{name: "Fighter", keywords: ["fighter"], body: "This class uses physical skills"})
     create_help_topic(%{name: "Mage", keywords: ["mage"], body: "This class uses arcane skills"})
