@@ -284,8 +284,6 @@ defmodule Game.NPC do
   end
 
   def handle_info({:tick, event_id}, state) do
-    Logger.debug("NPC #{state.npc.id} received tick for event: #{event_id}", type: :npc)
-
     case state.tick_events |> Enum.find(&(&1.id == event_id)) do
       nil ->
         {:noreply, state}
