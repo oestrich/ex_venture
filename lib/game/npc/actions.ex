@@ -124,13 +124,13 @@ defmodule Game.NPC.Actions do
   """
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
   def apply_effects(state = %{npc: npc}, effects, from) do
-    continuous_effects = effects |> Effect.continuous_effects()
+    continuous_effects = effects |> Effect.continuous_effects(from)
     stats = effects |> Effect.apply(npc.stats)
     state = stats |> maybe_died(state, from)
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}
 
-    Enum.each(continuous_effects, fn effect ->
+    Enum.each(continuous_effects, fn {_, effect} ->
       :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
     end)
 
@@ -147,7 +147,7 @@ defmodule Game.NPC.Actions do
   Apply a continuous effect to an NPC
   """
   def handle_continuous_effect(state, effect_id) do
-    case Enum.find(state.continuous_effects, &(&1.id == effect_id)) do
+    case Enum.find(state.continuous_effects, fn {_from, effect} -> effect.id == effect_id end) do
       nil -> state
       effect -> apply_continuous_effect(state, effect)
     end
@@ -155,16 +155,16 @@ defmodule Game.NPC.Actions do
 
   @doc """
   """
-  @spec apply_continuous_effect(State.t(), Effect.t()) :: State.t()
-  def apply_continuous_effect(state = %{npc: npc}, effect) do
+  @spec apply_continuous_effect(State.t(), {Character.t(), Effect.t()}) :: State.t()
+  def apply_continuous_effect(state = %{npc: npc}, {from, effect}) do
     stats = [effect] |> Effect.apply(npc.stats)
-    state = stats |> maybe_died(state, {:npc, npc})
+    state = stats |> maybe_died(state, from)
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}
 
     case is_alive?(npc) do
       true ->
-        state |> update_effect_count(effect)
+        state |> update_effect_count({from, effect})
 
       false ->
         state

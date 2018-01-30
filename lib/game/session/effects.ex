@@ -23,7 +23,7 @@ defmodule Game.Session.Effects do
   def apply(effects, from, description, state) do
     %{user: user, save: save} = state
 
-    continuous_effects = effects |> Effect.continuous_effects()
+    continuous_effects = effects |> Effect.continuous_effects(from)
     stats = effects |> Effect.apply(save.stats)
 
     save = Map.put(save, :stats, stats)
@@ -34,7 +34,7 @@ defmodule Game.Session.Effects do
     user |> echo_effects(from, description, effects)
     user |> maybe_died(state, from)
 
-    Enum.each(continuous_effects, fn effect ->
+    Enum.each(continuous_effects, fn {_from, effect} ->
       :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
     end)
 
@@ -100,7 +100,7 @@ defmodule Game.Session.Effects do
   """
   @spec handle_continuous_effect(State.t(), String.t()) :: State.t()
   def handle_continuous_effect(state, effect_id) do
-    case Enum.find(state.continuous_effects, &(&1.id == effect_id)) do
+    case Enum.find(state.continuous_effects, fn {_from, effect} -> effect.id == effect_id end) do
       nil -> state
       effect -> apply_continuous_effect(state, effect)
     end
@@ -110,7 +110,7 @@ defmodule Game.Session.Effects do
   Apply a continuous effect to the user
   """
   @spec apply_continuous_effect(State.t(), Effect.t()) :: State.t()
-  def apply_continuous_effect(state, effect) do
+  def apply_continuous_effect(state, {from, effect}) do
     %{socket: socket, user: user, save: save} = state
 
     stats = [effect] |> Effect.apply(save.stats)
@@ -121,11 +121,11 @@ defmodule Game.Session.Effects do
 
     socket |> @socket.echo([effect] |> Format.effects() |> Enum.join("\n"))
 
-    user |> maybe_died(state, {:user, user})
+    user |> maybe_died(state, from)
 
     case is_alive?(save) do
       true ->
-        state |> update_effect_count(effect)
+        state |> update_effect_count({from, effect})
 
       false ->
         state |> Map.put(:continuous_effects, [])

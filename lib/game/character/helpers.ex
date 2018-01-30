@@ -18,15 +18,15 @@ defmodule Game.Character.Helpers do
   @doc """
   Update the effect count. If the effect count is 0, remove it from the states continuous effects list
   """
-  @spec update_effect_count(map(), Effect.t()) :: map()
-  def update_effect_count(state, effect) do
-    continuous_effects = List.delete(state.continuous_effects, effect)
+  @spec update_effect_count(map(), {Character.t(), Effect.t()}) :: map()
+  def update_effect_count(state, {from, effect}) do
+    continuous_effects = List.delete(state.continuous_effects, {from, effect})
     effect = %{effect | count: effect.count - 1}
     maybe_send_continuous_effect(effect)
 
     case effect.count do
       0 -> %{state | continuous_effects: continuous_effects}
-      _ -> %{state | continuous_effects: [effect | continuous_effects]}
+      _ -> %{state | continuous_effects: [{from, effect} | continuous_effects]}
     end
   end
 

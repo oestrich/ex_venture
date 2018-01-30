@@ -23,10 +23,11 @@ defmodule Game.NPCTest do
 
   test "applying continuous effects - damage over time" do
     effect = %{kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
+    from = {:user, %{id: 2}}
 
     state = %State{npc: %{id: 1, name: "NPC", stats: %{health: 25}}, continuous_effects: []}
-    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2}}, "description"}, state)
-    [effect] = state.continuous_effects
+    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], from, "description"}, state)
+    [{^from, effect}] = state.continuous_effects
     assert effect.kind == "damage/over-time"
     assert effect.id
 

@@ -202,16 +202,18 @@ defmodule Game.SessionTest do
     effect = %{kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
     stats = %{health: 25}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
+    from = {:npc, %{id: 1, name: "Bandit"}}
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}
 
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], from, "description"}, state)
 
     assert state.save.stats.health == 15
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
 
-    [effect] = state.continuous_effects
+    [{^from, effect}] = state.continuous_effects
     assert effect.kind == "damage/over-time"
     assert effect.id
+
     effect_id = effect.id
     assert_receive {:continuous_effect, ^effect_id}
   end

@@ -116,6 +116,7 @@ defmodule Game.NPC.ActionsTest do
   describe "continuous effects" do
     setup do
       effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
+      from = {:user, %{id: 1, name: "Player"}}
       npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health: 25}}
       npc_spawner = %{id: 1, spawn_interval: 0}
 
@@ -123,26 +124,26 @@ defmodule Game.NPC.ActionsTest do
         room_id: 1,
         npc: npc,
         npc_spawner: npc_spawner,
-        continuous_effects: [effect],
+        continuous_effects: [{from, effect}],
       }
 
       @room.clear_leaves()
 
-      %{state: state, effect: effect}
+      %{state: state, effect: effect, from: from}
     end
 
-    test "finds the matching effect and applies it as damage, then decrements the counter", %{state: state, effect: effect} do
+    test "finds the matching effect and applies it as damage, then decrements the counter", %{state: state, effect: effect, from: from} do
       state = Actions.handle_continuous_effect(state, :id)
 
       effect_id = effect.id
-      assert [%{id: :id, count: 2}] = state.continuous_effects
+      assert [{^from, %{id: :id, count: 2}}] = state.continuous_effects
       assert state.npc.stats.health == 15
       assert_receive {:continuous_effect, ^effect_id}
     end
 
-    test "handles death", %{state: state, effect: effect} do
+    test "handles death", %{state: state, effect: effect, from: from} do
       effect = %{effect | amount: 26}
-      state = %{state | continuous_effects: [effect]}
+      state = %{state | continuous_effects: [{from, effect}]}
 
       state = Actions.handle_continuous_effect(state, :id)
 
@@ -150,9 +151,9 @@ defmodule Game.NPC.ActionsTest do
       assert state.continuous_effects == []
     end
 
-    test "does not send another message if last count", %{state: state, effect: effect} do
+    test "does not send another message if last count", %{state: state, effect: effect, from: from} do
       effect = %{effect | count: 1}
-      state = %{state | continuous_effects: [effect]}
+      state = %{state | continuous_effects: [{from, effect}]}
 
       state = Actions.handle_continuous_effect(state, :id)
 
