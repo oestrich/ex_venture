@@ -72,7 +72,7 @@ defmodule Game.NPC.ActionsTest do
       npc = %{id: 1, name: "NPC", currency: 100, npc_items: npc_items}
       npc_spawner = %{id: 1, spawn_interval: 0}
 
-      %{room_id: 1, npc: npc, npc_spawner: npc_spawner, is_targeting: [], target: nil}
+      %{room_id: 1, npc: npc, npc_spawner: npc_spawner, target: nil}
     end
 
     test "triggers respawn", state do
@@ -123,7 +123,6 @@ defmodule Game.NPC.ActionsTest do
         room_id: 1,
         npc: npc,
         npc_spawner: npc_spawner,
-        is_targeting: MapSet.new(),
         continuous_effects: [effect],
       }
 

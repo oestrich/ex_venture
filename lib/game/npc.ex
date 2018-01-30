@@ -14,7 +14,6 @@ defmodule Game.NPC do
   alias Data.Repo
   alias Data.Stats
   alias Game.Channel
-  alias Game.Character
   alias Game.Message
   alias Game.NPC.Actions
   alias Game.NPC.Conversation
@@ -36,7 +35,6 @@ defmodule Game.NPC do
       :npc_spawner,
       :npc,
       :room_id,
-      :is_targeting,
       :target,
       :last_controlled_at,
       tick_events: [],
@@ -164,7 +162,6 @@ defmodule Game.NPC do
       npc_spawner: npc_spawner,
       npc: npc,
       room_id: npc_spawner.room_id,
-      is_targeting: MapSet.new(),
       target: nil,
       tick_events: [],
     }
@@ -237,17 +234,11 @@ defmodule Game.NPC do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, player}, state) do
-    state =
-      Map.put(state, :is_targeting, MapSet.put(state.is_targeting, Game.Character.who(player)))
-
+  def handle_cast({:targeted, _player}, state) do
     {:noreply, state}
   end
 
-  def handle_cast({:remove_target, player}, state) do
-    state =
-      Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Game.Character.who(player)))
-
+  def handle_cast({:remove_target, _player}, state) do
     {:noreply, state}
   end
 
@@ -259,17 +250,6 @@ defmodule Game.NPC do
 
     state = Actions.apply_effects(state, effects, from)
     {:noreply, state}
-  end
-
-  def handle_cast({:died, who}, state = %{target: target, npc: npc}) do
-    case Character.who(target) == Character.who(who) do
-      true ->
-        Character.remove_target(target, {:npc, npc})
-        {:noreply, Map.put(state, :target, nil)}
-
-      false ->
-        {:noreply, state}
-    end
   end
 
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc}) do
