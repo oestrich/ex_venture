@@ -65,7 +65,8 @@ defmodule Game.Session.Character do
           true ->
             state
             |> Map.put(:target, nil)
-            |> maybe_target(possible_new_target(state, state.target))
+            |> remove_from_targeting_list(character)
+            |> maybe_target()
 
           false ->
             state
@@ -125,29 +126,51 @@ defmodule Game.Session.Character do
   def notify(state, _), do: state
 
   @doc """
-  Maybe target the character who targeted you, only if your own target is empty
+  Clean out the list as characters who were targeting you die
   """
-  @spec maybe_target(map, Character.t() | nil) :: map
-  def maybe_target(state, player)
-  def maybe_target(state, nil), do: state
+  @spec remove_from_targeting_list(State.t(), Character.t()) :: State.t()
+  def remove_from_targeting_list(state, target) do
+    is_targeting =
+      state.is_targeting
+      |> MapSet.delete(Character.who(target))
 
-  def maybe_target(state = %{socket: socket, target: nil, user: user}, player) do
-    socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
-    state |> GMCP.target(player)
-    player = Character.who(player)
-    Character.being_targeted(player, {:user, user})
-    Map.put(state, :target, player)
+    %{state | is_targeting: is_targeting}
   end
 
-  def maybe_target(state, _player), do: state
+  @doc """
+  Maybe target the character who targeted you, only if your own target is empty
+  """
+  @spec maybe_target(State.t()) :: State.t()
+  def maybe_target(state = %{target: nil}) do
+    case possible_new_target(state) do
+      nil -> state
+      player -> _target(state, player)
+    end
+  end
+
+  def maybe_target(state), do: state
+
+  @spec maybe_target(map, Character.t() | nil) :: map
+  def maybe_target(state = %{target: nil}, player), do: _target(state, player)
+  def maybe_target(state, _), do: state
+
+  defp _target(state, player) do
+    state.socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
+
+    state |> GMCP.target(player)
+
+    player = Character.who(player)
+    Character.being_targeted(player, {:user, state.user})
+
+    %{state | target: player}
+  end
 
   @doc """
   Get a possible new target from the list
   """
-  @spec possible_new_target(map, Character.t()) :: Character.t()
-  def possible_new_target(state, target) do
+  @spec possible_new_target(map) :: Character.t()
+  def possible_new_target(state) do
     state.is_targeting
-    |> MapSet.delete(Character.who(target))
     |> MapSet.to_list()
     |> List.first()
     |> character_info()
