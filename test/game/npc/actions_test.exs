@@ -17,36 +17,14 @@ defmodule Game.NPC.ActionsTest do
 
       state = %State{npc: npc, npc_spawner: npc_spawner, room_id: 2}
 
-      %{time: Timex.now(), state: state, npc: npc}
+      %{state: state, npc: npc}
     end
 
-    test "does nothing if the npc is alive", %{time: time, state: state} do
-      assert {:update, ^state} = Actions.tick(state, time)
-    end
+    test "respawns the npc", %{state: state, npc: npc} do
+      state = %{state | npc: put_in(npc, [:stats, :health], 0)}
 
-    test "detecting death", %{time: time, state: state, npc: npc} do
-      {:update, state} = Actions.tick(%{state | npc: put_in(npc, [:stats, :health], 0)}, time)
+      state = Actions.handle_respawn(state)
 
-      assert state.respawn_at == time |> Timex.shift(seconds: 10)
-    end
-
-    test "doesn't spawn until time", %{time: time, state: state, npc: npc} do
-      respawn_at = time |> Timex.shift(seconds: 2)
-
-      {:update, state} = Actions.tick(%{state | npc: put_in(npc, [:stats, :health], 0), respawn_at: respawn_at}, time)
-
-      assert state.respawn_at == respawn_at
-      assert state.npc.stats.health == 0
-    end
-
-    test "respawns the npc", %{time: time, state: state, npc: npc} do
-      respawn_at = time |> Timex.shift(seconds: -31)
-
-      state = %{state | npc: put_in(npc, [:stats, :health], 0), respawn_at: respawn_at}
-
-      {:update, state} = Actions.tick(state, time)
-
-      assert is_nil(state.respawn_at)
       assert state.npc.stats.health == 15
       assert state.room_id == 1
       assert [{1, {:npc, _}, :respawn}] = @room.get_enters()
@@ -91,7 +69,16 @@ defmodule Game.NPC.ActionsTest do
         %{item_id: 2, drop_rate: 50},
       ]
 
-      %{room_id: 1, npc: %{id: 1, name: "NPC", currency: 100, npc_items: npc_items}, is_targeting: [], target: nil}
+      npc = %{id: 1, name: "NPC", currency: 100, npc_items: npc_items}
+      npc_spawner = %{id: 1, spawn_interval: 0}
+
+      %{room_id: 1, npc: npc, npc_spawner: npc_spawner, is_targeting: [], target: nil}
+    end
+
+    test "triggers respawn", state do
+      _state = Actions.died(state)
+
+      assert_receive :respawn
     end
 
     test "drops currency in the room", state do
@@ -130,7 +117,15 @@ defmodule Game.NPC.ActionsTest do
     setup do
       effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
       npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health: 25}}
-      state = %State{room_id: 1, npc: npc, is_targeting: MapSet.new(), continuous_effects: [effect]}
+      npc_spawner = %{id: 1, spawn_interval: 0}
+
+      state = %State{
+        room_id: 1,
+        npc: npc,
+        npc_spawner: npc_spawner,
+        is_targeting: MapSet.new(),
+        continuous_effects: [effect],
+      }
 
       @room.clear_leaves()
 

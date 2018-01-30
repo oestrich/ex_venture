@@ -24,7 +24,6 @@ defmodule Game.NPC.Actions do
   def tick(state, time) do
     state =
       state
-      |> maybe_respawn(time)
       |> clean_conversations(time)
 
     {:update, state}
@@ -44,28 +43,10 @@ defmodule Game.NPC.Actions do
     %{state | conversations: conversations}
   end
 
-  defp maybe_respawn(state = %{npc: %{stats: %{health: health}}}, time) when health < 1 do
-    state
-    |> handle_respawn(time)
-  end
-
-  defp maybe_respawn(state, _time), do: state
-
-  defp handle_respawn(state = %{respawn_at: respawn_at, npc: npc, npc_spawner: npc_spawner}, time)
-       when respawn_at != nil do
-    case Timex.after?(time, respawn_at) do
-      true ->
-        npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
-        npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
-        %{state | npc: npc, room_id: npc_spawner.room_id, respawn_at: nil}
-
-      false ->
-        state
-    end
-  end
-
-  defp handle_respawn(state, time) do
-    Map.put(state, :respawn_at, time |> Timex.shift(seconds: state.npc_spawner.spawn_interval))
+  def handle_respawn(state = %{npc: npc, npc_spawner: npc_spawner}) do
+    npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
+    npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
+    %{state | npc: npc, room_id: npc_spawner.room_id}
   end
 
   @doc """
@@ -80,7 +61,7 @@ defmodule Game.NPC.Actions do
   The NPC died, send out messages
   """
   @spec died(map) :: :ok
-  def died(state = %{room_id: room_id, npc: npc, is_targeting: is_targeting}) do
+  def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner, is_targeting: is_targeting}) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
     Enum.each(is_targeting, &Character.died(&1, {:npc, npc}))
@@ -88,6 +69,8 @@ defmodule Game.NPC.Actions do
 
     drop_currency(room_id, npc, npc.currency)
     npc |> drop_items(room_id)
+
+    :erlang.send_after(npc_spawner.spawn_interval * 1000, self(), :respawn)
 
     state
     |> Map.put(:target, nil)

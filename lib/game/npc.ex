@@ -41,7 +41,6 @@ defmodule Game.NPC do
       :is_targeting,
       :target,
       :last_controlled_at,
-      :respawn_at,
       tick_events: [],
       conversations: %{},
       continuous_effects: []
@@ -308,6 +307,10 @@ defmodule Game.NPC do
       :ok -> {:noreply, state}
       {:update, state} -> {:noreply, state}
     end
+  end
+
+  def handle_info(:respawn, state) do
+    {:noreply, Actions.handle_respawn(state)}
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
