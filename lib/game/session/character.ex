@@ -53,8 +53,8 @@ defmodule Game.Session.Character do
 
   def notify(state, {"room/entered", {character, reason}}) do
     case reason do
-      :enter -> Session.echo(self(), "#{Format.name(character)} enters")
-      :respawn -> Session.echo(self(), "#{Format.name(character)} respawns")
+      :enter -> state.socket |> @socket.echo("#{Format.name(character)} enters")
+      :respawn -> state.socket |> @socket.echo("#{Format.name(character)} respawns")
     end
 
     state |> GMCP.character_enter(character)
@@ -63,8 +63,8 @@ defmodule Game.Session.Character do
 
   def notify(state, {"room/leave", {character, reason}}) do
     case reason do
-      :leave -> Session.echo(self(), "#{Format.name(character)} leaves")
-      :death -> :ok
+      :leave -> state.socket |> @socket.echo("#{Format.name(character)} leaves")
+      :death -> state.socket |> @socket.echo("#{Format.name(character)} has died")
     end
 
     state |> GMCP.character_leave(character)
@@ -96,14 +96,11 @@ defmodule Game.Session.Character do
   @doc """
   Callback for a target dying
   """
-  def died(state = %{target: target}, who) when is_nil(target) do
-    Session.echo(self(), "#{Format.target_name(who)} has died.")
+  def died(state = %{target: target}, _who) when is_nil(target) do
     state
   end
 
-  def died(state = %{socket: socket, user: user, target: target}, who) do
-    socket |> @socket.echo("#{Format.target_name(who)} has died.")
-
+  def died(state = %{user: user, target: target}, who) do
     state =
       state
       |> apply_experience(who)

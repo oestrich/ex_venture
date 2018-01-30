@@ -250,7 +250,7 @@ defmodule Game.Session.Process do
     {:noreply, state}
   end
 
-  def handle_info(:resurrect, state) do
+  def handle_info({:resurrect, graveyard_id}, state) do
     %{save: %{stats: stats}} = state
 
     case stats.health do
@@ -263,6 +263,9 @@ defmodule Game.Session.Process do
           state
           |> Map.put(:save, save)
           |> Map.put(:user, user)
+
+          {:update, state} = Move.move_to(state, graveyard_id, :death, :respawn)
+          state |> prompt()
 
         {:noreply, state}
 

@@ -72,8 +72,7 @@ defmodule Game.Session.Effects do
 
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->
-        send(self(), :resurrect)
-        GenServer.cast(self(), {:teleport, graveyard_id})
+        send(self(), {:resurrect, graveyard_id})
 
       {:error, :no_graveyard} ->
         :ok

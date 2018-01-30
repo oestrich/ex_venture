@@ -217,8 +217,8 @@ defmodule Game.Command.Move do
   @doc """
   Move the player to a new room
   """
-  def move_to(state = %{save: save, user: user}, room_id) do
-    @room.leave(save.room_id, {:user, user})
+  def move_to(state = %{save: save, user: user}, room_id, leave_reason \\ :leave, enter_reason \\ :enter) do
+    @room.leave(save.room_id, {:user, user}, leave_reason)
 
     clear_target(state, {:user, user})
 
@@ -229,7 +229,7 @@ defmodule Game.Command.Move do
       |> Map.put(:save, save)
       |> Map.put(:target, nil)
 
-    @room.enter(room_id, {:user, user})
+    @room.enter(room_id, {:user, user}, enter_reason)
 
     Game.Command.run(%Game.Command{module: Game.Command.Look, args: {}, system: true}, state)
     {:update, state}

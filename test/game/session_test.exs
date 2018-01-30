@@ -249,8 +249,7 @@ defmodule Game.SessionTest do
 
     assert state.save.stats.health == -5
 
-    assert_receive :resurrect
-    assert_receive {:"$gen_cast", {:teleport, 2}}
+    assert_receive {:resurrect, 2}
   after
     Session.Registry.unregister()
   end
@@ -402,21 +401,36 @@ defmodule Game.SessionTest do
   end
 
   describe "resurrection" do
+    setup do
+      @room.clear_enters()
+      @room.clear_leaves()
+    end
+
     test "sets health to 1 if < 0", state do
-      save = %{stats: %{health: -1}}
+      save = %{stats: %{health: -1}, room_id: 2}
       state = %{state | save: save}
 
-      {:noreply, state} = Process.handle_info(:resurrect, state)
+      {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
 
       assert state.save.stats.health == 1
       assert state.user.save.stats.health == 1
+    end
+
+    test "leaves old room, enters new room", state do
+      save = %{stats: %{health: -1}, room_id: 1}
+      state = %{state | save: save}
+
+      {:noreply, _state} = Process.handle_info({:resurrect, 2}, state)
+
+      [{1, {:user, _}, :death}] = @room.get_leaves()
+      [{2, {:user, _}, :respawn}] = @room.get_enters()
     end
 
     test "does not touch health if > 0", state do
       save = %{stats: %{health: 2}}
       state = %{state | save: save}
 
-      {:noreply, state} = Process.handle_info(:resurrect, state)
+      {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
 
       assert state.save.stats.health == 2
     end
@@ -425,19 +439,17 @@ defmodule Game.SessionTest do
   describe "event notification" do
     test "player enters the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:user, %{id: 1, name: "Player"}}, :enter}}}, state)
-
-      assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} enters"}}
+      [{_, "{blue}Player{/blue} enters"}] = @socket.get_echos()
     end
 
     test "npc enters the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, :enter}}}, state)
-
-      assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} enters"}}
+      [{_, "{yellow}Bandit{/yellow} enters"}] = @socket.get_echos()
     end
 
     test "player leaves the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, :leave}}}, state)
-      assert_received {:"$gen_cast", {:echo, "{blue}Player{/blue} leaves"}}
+      [{_, "{blue}Player{/blue} leaves"}] = @socket.get_echos()
     end
 
     test "player leaves the room and they were the target", %{socket: socket} do
@@ -448,7 +460,7 @@ defmodule Game.SessionTest do
 
     test "npc leaves the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, :leave}}}, state)
-      assert_received {:"$gen_cast", {:echo, "{yellow}Bandit{/yellow} leaves"}}
+      [{_, "{yellow}Bandit{/yellow} leaves"}] = @socket.get_echos()
     end
 
     test "npc leaves the room and they were the target", %{socket: socket} do
