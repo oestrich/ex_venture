@@ -8,6 +8,7 @@ defmodule Game.NPCTest do
   alias Game.Session.Registry
 
   setup do
+    @room.clear_notifies()
     @room.clear_says()
     @room.clear_leaves()
   end
@@ -63,8 +64,6 @@ defmodule Game.NPCTest do
   end
 
   test "applying effects - died" do
-    Registry.register(%{id: 2})
-
     effect = %{kind: "damage", type: :slashing, amount: 10}
 
     is_targeting = MapSet.new |> MapSet.put({:user, 2})
@@ -75,8 +74,7 @@ defmodule Game.NPCTest do
     assert state.npc.stats.health == 0
 
     assert [{1, {:npc, _}, :death}] = @room.get_leaves()
-
-    assert_received {:"$gen_cast", {:died, {:npc, _}}}
+    assert [{1, {"character/died", _, _, _}}] = @room.get_notifies()
 
     Registry.unregister()
   end

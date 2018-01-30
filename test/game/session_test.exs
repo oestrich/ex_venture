@@ -15,7 +15,8 @@ defmodule Game.SessionTest do
 
   setup do
     socket = :socket
-    @socket.clear_messages
+    @socket.clear_messages()
+    @room.clear_notifies()
 
     user = %{id: 1, name: "user"}
     {:ok, %{socket: socket, user: user, save: %{}}}
@@ -228,7 +229,7 @@ defmodule Game.SessionTest do
     assert state.save.stats.health == -5
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
-    assert_received {:"$gen_cast", {:died, {:user, _}}}
+    assert [{1, {"character/died", _, _, _}}] = @room.get_notifies()
   after
     Session.Registry.unregister()
   end
@@ -303,52 +304,6 @@ defmodule Game.SessionTest do
 
     assert state.is_targeting |> MapSet.size() == 0
     refute state.is_targeting |> MapSet.member?({:user, 10})
-  end
-
-  describe "target dying" do
-    setup %{socket: socket} do
-      target = {:user, %{id: 10, name: "Player"}}
-      user = %{id: 10, class: class_attributes(%{})}
-
-      state = %{
-        socket: socket,
-        state: "active",
-        user: user,
-        save: base_save(),
-        target: {:user, 10},
-        is_targeting: MapSet.new(),
-      }
-
-      %{state: state, target: target}
-    end
-
-    test "clears your target", %{state: state, target: target} do
-      {:noreply, state} = Process.handle_cast({:died, target}, state)
-
-      assert is_nil(state.target)
-    end
-
-    test "if other things are tracking you, select one to track", %{state: state, target: target} do
-      is_targeting = MapSet.new() |> MapSet.put({:npc, 2})
-      state = %{state | is_targeting: is_targeting}
-
-      npc_spawner = %Data.NPCSpawner{id: 2, npc: struct(Data.NPC, npc_attributes(%{}))}
-      Game.NPC.start_link(npc_spawner)
-
-      {:noreply, state} = Process.handle_cast({:died, target}, state)
-
-      assert state.target == {:npc, 2}
-    end
-
-    test "npc - a died message is sent and experience is applied", %{state: state} do
-      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 1200}}
-      state = %{state | target: {:npc, 10}}
-
-      {:noreply, state} = Process.handle_cast({:died, target}, state)
-
-      assert is_nil(state.target)
-      assert state.save.level == 2
-    end
   end
 
   describe "channels" do
@@ -483,6 +438,61 @@ defmodule Game.SessionTest do
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r(New mail)i, echo)
+    end
+
+    test "character died", state do
+      npc = {:npc, %{id: 1, name: "bandit"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, {"character/died", npc, :character, npc}}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(has died), echo)
+    end
+  end
+
+  describe "character dying" do
+    setup %{socket: socket} do
+      target = {:user, %{id: 10, name: "Player"}}
+      user = %{id: 10, class: class_attributes(%{})}
+
+      state = %{
+        socket: socket,
+        state: "active",
+        user: user,
+        save: base_save(),
+        target: {:user, 10},
+        is_targeting: MapSet.new(),
+      }
+
+      %{state: state, target: target}
+    end
+
+    test "clears your target", %{state: state, target: target} do
+      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:user, state.user}}}, state)
+
+      assert is_nil(state.target)
+    end
+
+    test "if other things are tracking you, select one to track", %{state: state, target: target} do
+      is_targeting = MapSet.new() |> MapSet.put({:npc, 2})
+      state = %{state | is_targeting: is_targeting}
+
+      npc_spawner = %Data.NPCSpawner{id: 2, npc: struct(Data.NPC, npc_attributes(%{}))}
+      Game.NPC.start_link(npc_spawner)
+
+      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:user, state.user}}}, state)
+
+      assert state.target == {:npc, 2}
+    end
+
+    test "npc - a died message is sent and experience is applied", %{state: state} do
+      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 1200}}
+      state = %{state | target: {:npc, 10}}
+
+      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:user, state.user}}}, state)
+
+      assert is_nil(state.target)
+      assert state.save.level == 2
     end
   end
 end

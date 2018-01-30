@@ -76,20 +76,20 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "triggers respawn", state do
-      _state = Actions.died(state)
+      _state = Actions.died(state, {:npc, state.npc})
 
       assert_receive :respawn
     end
 
     test "drops currency in the room", state do
-      _state = Actions.died(state)
+      _state = Actions.died(state, {:npc, state.npc})
 
       assert [{1, {:npc, _}, 51}] = @room.get_drop_currencies()
     end
 
     test "does not drop 0 currency", state do
       npc = %{state.npc | currency: 0}
-      _state = Actions.died(%{state | npc: npc})
+      _state = Actions.died(%{state | npc: npc}, {:npc, state.npc})
 
       assert [] = @room.get_drop_currencies()
     end
@@ -99,7 +99,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "drops items in the room", state do
-      _state = Actions.died(state)
+      _state = Actions.died(state, {:npc, state.npc})
 
       assert [{1, {:npc, _}, %{id: 1}}, {1, {:npc, _}, %{id: 2}}] = @room.get_drops()
     end

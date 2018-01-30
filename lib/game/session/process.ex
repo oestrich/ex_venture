@@ -186,10 +186,6 @@ defmodule Game.Session.Process do
     {:noreply, SessionCharacter.notify(state, event)}
   end
 
-  def handle_cast({:died, who}, state = %{state: "active"}) do
-    {:noreply, SessionCharacter.died(state, who)}
-  end
-
   def handle_call(:info, _from, state) do
     {:reply, {:user, state.user}, state}
   end
