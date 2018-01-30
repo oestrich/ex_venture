@@ -6,7 +6,6 @@ defmodule Game.Character do
   handle the following casts:
 
   - `{:targeted, player}`
-  - `{:remove_target, player}`
   - `{:apply_effects, effects, player}`
   """
 
@@ -30,14 +29,6 @@ defmodule Game.Character do
   @spec being_targeted(tuple(), Character.t()) :: :ok
   def being_targeted(target, player) do
     GenServer.cast({:via, Via, who(target)}, {:targeted, player})
-  end
-
-  @doc """
-  When a player stops targetting a character, let them know
-  """
-  @spec remove_target(tuple(), Character.t()) :: :ok
-  def remove_target(target, player) do
-    GenServer.cast({:via, Via, who(target)}, {:remove_target, player})
   end
 
   @doc """

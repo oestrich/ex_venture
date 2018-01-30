@@ -296,16 +296,6 @@ defmodule Game.SessionTest do
     end
   end
 
-  test "a player removing a target stops tracking them", %{socket: socket} do
-    targeter = {:user, %{id: 10, name: "Player"}}
-    is_targeting = MapSet.new() |> MapSet.put({:user, 10})
-
-    {:noreply, state} = Process.handle_cast({:remove_target, targeter}, %{socket: socket, is_targeting: is_targeting})
-
-    assert state.is_targeting |> MapSet.size() == 0
-    refute state.is_targeting |> MapSet.member?({:user, 10})
-  end
-
   describe "channels" do
     setup do
       @socket.clear_messages()

@@ -238,10 +238,6 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_cast({:remove_target, _player}, state) do
-    {:noreply, state}
-  end
-
   def handle_cast({:apply_effects, effects, from, _description}, state = %{npc: npc}) do
     Logger.info(
       "Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})",

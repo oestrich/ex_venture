@@ -26,14 +26,6 @@ defmodule Game.Session.Character do
   end
 
   @doc """
-  Callback for someone stopping targeting you
-  """
-  def remove_target(state, character) do
-    Session.echo(self(), "You are no longer being targeted by #{Format.name(character)}.")
-    Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Character.who(character)))
-  end
-
-  @doc """
   Callback for applying effects
   """
   def apply_effects(state, effects, from, description) do
