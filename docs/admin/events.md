@@ -77,7 +77,7 @@ This action will apply the effects to the target.
 
 ## tick
 
-When a game tick occurs, this event will be triggered.
+When the NPC is started or updated, all `tick` events will receive a UUID. Each `tick` event will then calculate a delay based on `wait` + `:random.uniform(chance)`. This allows for variability as well as ensuring each event happens only so often.
 
 ### move
 
@@ -87,7 +87,8 @@ When a game tick occurs, this event will be triggered.
   "action": {
     "type": "move",
     "max_distance": 3,
-    "chance": 50
+    "chance": 50,
+    "wait": 10
   }
 }
 ```
@@ -119,7 +120,7 @@ The emote action takes a `message` that the NPC will emote into the room. `chanc
     "type": "say",
     "message": "Can I help you?",
     "chance": 50,
-    "wait": 10,
+    "wait": 10
   }
 }
 ```
