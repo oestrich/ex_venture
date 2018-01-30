@@ -94,7 +94,7 @@ defmodule Data.Event do
   end
 
   def starting_event("tick") do
-    %{type: "tick", action: %{type: "move", max_distance: 3, chance: 25}}
+    %{type: "tick", action: %{type: "move", max_distance: 3, chance: 25, wait: 10}}
   end
 
   @doc """
@@ -117,7 +117,7 @@ defmodule Data.Event do
       iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
       false
 
-      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50}})
+      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50, wait: 10}})
       true
       iex> Data.Event.valid?(%{type: "tick", action: %{type: "move"}})
       false
@@ -188,21 +188,17 @@ defmodule Data.Event do
   @doc """
   Validate the arguments matches the action
 
-      iex> Data.Event.valid_action?(%{type: "move", max_distance: 3, chance: 50})
+      iex> Data.Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 50, wait: 10})
       true
-      iex> Data.Event.valid_action?(%{type: "move", max_distance: 3, chance: 150})
+      iex> Data.Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 150})
       false
 
       iex> Data.Event.valid_action?(%{type: "say", message: "hi"})
       true
-      iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50})
-      true
       iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50, wait: 20})
       true
 
-      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50})
+      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10})
       true
 
       iex> Data.Event.valid_action?(%{type: "target"})
@@ -223,17 +219,17 @@ defmodule Data.Event do
   def valid_action?(event_type \\ nil, action)
 
   def valid_action?(_, action = %{type: "emote", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && chance < 100 && maybe_wait?(action)
+    is_binary(string) && is_integer(chance) && wait?(action)
   end
 
-  def valid_action?(_, %{type: "move", max_distance: max_distance, chance: chance}) do
-    is_integer(max_distance) && is_integer(chance) && chance < 100
+  def valid_action?(_, action = %{type: "move", max_distance: max_distance, chance: chance}) do
+    is_integer(max_distance) && is_integer(chance) && wait?(action)
   end
 
   def valid_action?(_, %{type: "say", message: string}) when is_binary(string), do: true
 
   def valid_action?("tick", action = %{type: "say", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && chance < 100 && maybe_wait?(action)
+    is_binary(string) && is_integer(chance) && wait?(action)
   end
 
   def valid_action?(_, %{type: "target"}), do: true
@@ -245,8 +241,8 @@ defmodule Data.Event do
 
   def valid_action?(_, _), do: false
 
-  defp maybe_wait?(%{wait: wait}), do: is_integer(wait)
-  defp maybe_wait?(_), do: true
+  defp wait?(%{wait: wait}), do: is_integer(wait)
+  defp wait?(_), do: false
 
   @doc """
   Validate events of the NPC

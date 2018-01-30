@@ -161,6 +161,30 @@ defmodule Game.NPC.EventsTest do
     end
   end
 
+  describe "ticking events" do
+    test "adds UUIDs" do
+      events = [
+        %{type: "tick"},
+        %{type: "room/heard"},
+        %{type: "tick"},
+      ]
+
+      assert [%{id: _}, %{id: _}] = Events.instantiate_ticks(events)
+    end
+
+    test "calculates the delay" do
+      event = %{
+        type: "tick",
+        action: %{
+          chance: 50,
+          wait: 10,
+        },
+      }
+
+      assert Events.calculate_delay(event, Test.NPCDelay) == 40
+    end
+  end
+
   describe "tick - move" do
     setup do
       event = %{
@@ -169,6 +193,7 @@ defmodule Game.NPC.EventsTest do
           type: "move",
           max_distance: 3,
           chance: 50,
+          wait: 10,
         },
       }
 
@@ -191,15 +216,13 @@ defmodule Game.NPC.EventsTest do
       @room.clear_leaves()
       start_and_clear_doors()
 
-      event = {"tick"}
-
       %{state: state, event: event}
     end
 
     # random number < chance, move
     # leave current room, send clearing targets, enter new room, save state
     test "moves to a random exit", %{state: state, event: event} do
-      {:update, state} = Events.act_on(state, event)
+      state = Events.act_on_tick(state, event)
 
       assert state.room_id == 2
 
@@ -214,7 +237,7 @@ defmodule Game.NPC.EventsTest do
       |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
       |> @room.set_room(multiple: true)
 
-      {:update, state} = Events.act_on(state, event)
+      state = Events.act_on_tick(state, event)
 
       assert state.room_id == 1
 
@@ -225,7 +248,7 @@ defmodule Game.NPC.EventsTest do
     test "won't move if it has a target", %{state: state, event: event} do
       state = %{state | target: {:npc, 1}}
 
-      {:update, state} = Events.act_on(state, event)
+      state = Events.act_on_tick(state, event)
 
       assert state.room_id == 1
     end
@@ -235,7 +258,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{state.npc | stats: stats}
       state = %{state | npc: npc}
 
-      {:update, state} = Events.act_on(state, event)
+      state = Events.act_on_tick(state, event)
 
       assert state.room_id == 1
     end
@@ -248,19 +271,11 @@ defmodule Game.NPC.EventsTest do
       |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
       |> @room.set_room(multiple: true)
 
-      {:update, state} = Events.act_on(state, event)
+      state = Events.act_on_tick(state, event)
 
       assert state.room_id == 2
 
       assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:user, %{id: 10}}, :enter}}}}
-    end
-
-    test "will move if the random number is below chance" do
-      assert Events.move_room?(%{action: %{chance: 50}}, Test.ChanceSuccess)
-    end
-
-    test "will not move if the random number is over chance" do
-      refute Events.move_room?(%{action: %{chance: 50}}, Test.ChanceFail)
     end
 
     test "will not move if the door is closed", %{state: state, event: event} do
@@ -281,7 +296,7 @@ defmodule Game.NPC.EventsTest do
       Door.load(room_exit)
       Door.set(room_exit, "closed")
 
-      {:update, state} = Events.act_on(state, event)
+      state = Events.act_on_tick(state, event)
 
       assert state.room_id == 1
 
@@ -296,7 +311,7 @@ defmodule Game.NPC.EventsTest do
       |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
       |> @room.set_room(multiple: true)
 
-      {:update, state} = Events.act_on(state, event)
+      state = Events.act_on_tick(state, event)
 
       assert state.room_id == 1
 
@@ -346,31 +361,14 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
 
-      event = {"tick"}
-
       %{state: state, event: event}
     end
 
     test "will emote to the room", %{state: state, event: event} do
-      {:update, %{events: %{emote_tick: _}}} = Events.act_on(state, event)
+      assert Events.act_on_tick(state, event)
 
       [{_, message}] = @room.get_emotes()
       assert message.message == "fidgets"
-    end
-
-    test "will limit the amount of acting on the event", %{state: state, event: event} do
-      state = %{state | events: %{emote_tick: Timex.now()}}
-      {:update, ^state} = Events.act_on(state, event)
-
-      [] = @room.get_emotes()
-    end
-
-    test "will move if the random number is below chance" do
-      assert Events.emote?(%{action: %{chance: 50}}, Test.ChanceSuccess)
-    end
-
-    test "will not move if the random number is over chance" do
-      refute Events.emote?(%{action: %{chance: 50}}, Test.ChanceFail)
     end
   end
 
@@ -392,31 +390,14 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
 
-      event = {"tick"}
-
       %{state: state, event: event}
     end
 
     test "will say to the room", %{state: state, event: event} do
-      {:update, %{events: %{say_tick: _}}} = Events.act_on(state, event)
+      Events.act_on_tick(state, event)
 
       [{_, message}] = @room.get_says()
       assert message.message == "Can I help you?"
-    end
-
-    test "will limit the amount of acting on the event", %{state: state, event: event} do
-      state = %{state | events: %{say_tick: Timex.now()}}
-      {:update, ^state} = Events.act_on(state, event)
-
-      [] = @room.get_emotes()
-    end
-
-    test "will move if the random number is below chance" do
-      assert Events.say?(%{action: %{chance: 50}}, Test.ChanceSuccess)
-    end
-
-    test "will not move if the random number is over chance" do
-      refute Events.say?(%{action: %{chance: 50}}, Test.ChanceFail)
     end
   end
 

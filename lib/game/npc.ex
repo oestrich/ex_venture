@@ -42,7 +42,7 @@ defmodule Game.NPC do
       :target,
       :last_controlled_at,
       :respawn_at,
-      events: %{},
+      tick_events: [],
       conversations: %{},
       continuous_effects: []
     ]
@@ -171,8 +171,10 @@ defmodule Game.NPC do
       room_id: npc_spawner.room_id,
       is_targeting: MapSet.new(),
       target: nil,
-      events: %{}
+      tick_events: [],
     }
+
+    state = state |> Events.start_tick_events(npc)
 
     {:ok, state}
   end
@@ -219,6 +221,7 @@ defmodule Game.NPC do
       state
       |> Map.put(:npc_spawner, npc_spawner)
       |> Map.put(:npc, customize_npc(npc_spawner, npc_spawner.npc))
+      |> Events.start_tick_events(npc_spawner.npc)
 
     @room.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
@@ -284,10 +287,22 @@ defmodule Game.NPC do
     {:stop, :normal, state}
   end
 
+  def handle_info({:tick, event_id}, state) do
+    Logger.debug("NPC #{state.npc.id} received tick for event: #{event_id}", type: :npc)
+
+    case state.tick_events |> Enum.find(&(&1.id == event_id)) do
+      nil ->
+        {:noreply, state}
+
+      tick_event ->
+        state = Events.act_on_tick(state, tick_event)
+        tick_event |> Events.delay_event()
+        {:noreply, state}
+    end
+  end
+
   def handle_info(:tick, state) do
     :erlang.send_after(@tick_interval, self(), :tick)
-
-    notify(self(), {"tick"})
 
     case Actions.tick(state, Timex.now()) do
       :ok -> {:noreply, state}

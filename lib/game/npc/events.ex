@@ -19,7 +19,53 @@ defmodule Game.NPC.Events do
   alias Game.NPC
   alias Game.NPC.Combat
 
-  @rand Application.get_env(:ex_venture, :game)[:rand]
+  @doc """
+  Filters to tick events and adds a UUID
+  """
+  def instantiate_ticks(events) do
+    events
+    |> Enum.filter(&(&1.type == "tick"))
+    |> Enum.map(fn event ->
+      Map.put(event, :id, UUID.uuid4())
+    end)
+  end
+
+  @doc """
+  Instantiate events and start their ticking
+  """
+  @spec start_tick_events(State.t(), NPC.t()) :: State.t()
+  def start_tick_events(state, npc) do
+    tick_events = npc.events |> instantiate_ticks()
+    tick_events |> Enum.each(&delay_event/1)
+    %{state | tick_events: tick_events}
+  end
+
+  @doc """
+  Calculate a delay and `:erlang.send_after/3` the event
+
+  `{:tick, id}` is the message.
+  """
+  @spec delay_event(map()) :: :ok
+  def delay_event(tick_event) do
+    :erlang.send_after(calculate_delay(tick_event) * 1000, self(), {:tick, tick_event.id})
+  end
+
+  @doc """
+  Calculates how long the next event firing should be delayed for, in seconds
+
+  Uses the `wait` and `chance` keys in the action
+  """
+  @spec calculate_delay(Event.t()) :: integer()
+  def calculate_delay(event, rand \\ :rand) do
+    wait = Map.get(event.action, :wait, 60)
+    chance = Map.get(event.action, :wait, 60)
+
+    wait + rand.uniform(chance)
+  end
+
+  #
+  # Notifications & Acting on
+  #
 
   @doc """
   Act on events the NPC has been notified of
@@ -67,17 +113,6 @@ defmodule Game.NPC.Events do
     |> Enum.each(&act_on_room_heard(room_id, npc, &1, message))
 
     :ok
-  end
-
-  def act_on(state = %{npc: npc}, {"tick"}) do
-    broadcast(npc, "tick")
-
-    state =
-      npc.events
-      |> Enum.filter(&(&1.type == "tick"))
-      |> Enum.reduce(state, &act_on_tick(&2, &1))
-
-    {:update, state}
   end
 
   def act_on(%{npc: npc}, {"quest/completed", user, quest}) do
@@ -182,24 +217,15 @@ defmodule Game.NPC.Events do
   def act_on_tick(state = %{npc: %{stats: %{health: health}}}, _event) when health < 1, do: state
 
   def act_on_tick(state, event = %{action: %{type: "move"}}) do
-    case move_room?(event) do
-      true -> maybe_move_room(state, event)
-      false -> state
-    end
+    maybe_move_room(state, event)
   end
 
   def act_on_tick(state, event = %{action: %{type: "emote"}}) do
-    case emote?(event) && !delay_emote?(state, event) do
-      true -> emote_to_room(state, event)
-      false -> state
-    end
+    emote_to_room(state, event)
   end
 
   def act_on_tick(state, event = %{action: %{type: "say"}}) do
-    case say?(event) && !delay_say?(state, event) do
-      true -> say_to_room(state, event)
-      false -> state
-    end
+    say_to_room(state, event)
   end
 
   def act_on_tick(state, _event), do: state
@@ -254,79 +280,19 @@ defmodule Game.NPC.Events do
   end
 
   @doc """
-  Determine if the NPC should move rooms
-
-  Uses `:rand` by default
-  """
-  @spec move_room?(event :: Event.t(), rand :: atom) :: boolean
-  def move_room?(event, rand \\ @rand)
-
-  def move_room?(%{action: %{chance: chance}}, rand) do
-    rand.uniform(100) <= chance
-  end
-
-  @doc """
-  Determine if the NPC should emote into a room
-
-  Uses `:rand` by default
-  """
-  @spec emote?(event :: Event.t(), rand :: atom) :: boolean
-  def emote?(event, rand \\ @rand)
-
-  def emote?(%{action: %{chance: chance}}, rand) do
-    rand.uniform(100) <= chance
-  end
-
-  @doc """
-  Check if enough time has passed to emote again.
-  """
-  @spec delay_emote?(State.t(), Event.t()) :: boolean()
-  def delay_emote?(state, event)
-
-  def delay_emote?(%{events: %{emote_tick: emote_tick}}, %{action: %{wait: wait_seconds}}) do
-    Timex.diff(Timex.now(), emote_tick, :seconds) < wait_seconds
-  end
-
-  def delay_emote?(_, _), do: false
-
-  @doc """
   Emote the NPC's message to the room
   """
   def emote_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
     room_id |> @room.emote({:npc, npc}, Message.npc_emote(npc, message))
-    state |> Map.put(:events, Map.put(state.events, :emote_tick, Timex.now()))
+    state
   end
-
-  @doc """
-  Determine if the NPC should say into a room
-
-  Uses `:rand` by default
-  """
-  @spec say?(event :: Event.t(), rand :: atom) :: boolean
-  def say?(event, rand \\ @rand)
-
-  def say?(%{action: %{chance: chance}}, rand) do
-    rand.uniform(100) <= chance
-  end
-
-  @doc """
-  Check if enough time has passed to say again.
-  """
-  @spec delay_say?(State.t(), Event.t()) :: boolean()
-  def delay_say?(state, event)
-
-  def delay_say?(%{events: %{say_tick: say_tick}}, %{action: %{wait: wait_seconds}}) do
-    Timex.diff(Timex.now(), say_tick, :seconds) < wait_seconds
-  end
-
-  def delay_say?(_, _), do: false
 
   @doc """
   Say the NPC's message to the room
   """
   def say_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
     room_id |> @room.say({:npc, npc}, Message.npc_say(npc, message))
-    state |> Map.put(:events, Map.put(state.events, :say_tick, Timex.now()))
+    state
   end
 
   defp broadcast(npc, action) do
