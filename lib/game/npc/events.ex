@@ -191,10 +191,6 @@ defmodule Game.NPC.Events do
   @spec act_on_room_entered(NPC.State.t(), Character.t(), Event.t()) :: NPC.State.t()
   def act_on_room_entered(state, character, event)
 
-  def act_on_room_entered(state, {:user, _, user}, event) do
-    act_on_room_entered(state, {:user, user}, event)
-  end
-
   def act_on_room_entered(state, {:user, _}, %{action: %{type: "say", message: message}}) do
     %{room_id: room_id, npc: npc} = state
     room_id |> @room.say({:npc, npc}, Message.npc(npc, message))
