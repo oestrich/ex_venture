@@ -21,8 +21,6 @@ defmodule Game.NPC do
   alias Game.NPC.Events
   alias Game.Zone
 
-  @tick_interval 2000
-
   defmacro __using__(_opts) do
     quote do
       @npc Application.get_env(:ex_venture, :game)[:npc]
@@ -162,8 +160,6 @@ defmodule Game.NPC do
     npc_spawner.zone_id |> Zone.npc_online(npc)
     GenServer.cast(self(), :enter)
 
-    :erlang.send_after(@tick_interval, self(), :tick)
-
     state = %State{
       npc_spawner: npc_spawner,
       npc: npc,
@@ -205,6 +201,7 @@ defmodule Game.NPC do
 
   def handle_cast({:greet, user}, state) do
     state = Conversation.greet(state, user)
+    schedule_cleaning_conversations()
     {:noreply, state}
   end
 
@@ -300,17 +297,12 @@ defmodule Game.NPC do
     end
   end
 
-  def handle_info(:tick, state) do
-    :erlang.send_after(@tick_interval, self(), :tick)
-
-    case Actions.tick(state, Timex.now()) do
-      :ok -> {:noreply, state}
-      {:update, state} -> {:noreply, state}
-    end
-  end
-
   def handle_info(:respawn, state) do
     {:noreply, Actions.handle_respawn(state)}
+  end
+
+  def handle_info(:clean_conversations, state) do
+    {:noreply, Actions.clean_conversations(state, Timex.now())}
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
@@ -320,11 +312,17 @@ defmodule Game.NPC do
 
   def handle_info({:channel, {:tell, {:user, user}, message}}, state) do
     state = Conversation.recv(state, user, message.message)
+    schedule_cleaning_conversations()
     {:noreply, state}
   end
 
   def handle_info({:channel, {:tell, _, _message}}, state) do
     {:noreply, state}
+  end
+
+  # clean conversations after 6 minutes, to ensure something will be cleaned
+  defp schedule_cleaning_conversations() do
+    :erlang.send_after(6 * 60 * 1000, self(), :clean_conversations)
   end
 
   defp customize_npc(npc_spawner, npc) do

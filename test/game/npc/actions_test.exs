@@ -49,7 +49,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "cleans out conversations after 5 minutes", %{state: state, time: time} do
-      {:update, state} = Actions.tick(state, time)
+      state = Actions.clean_conversations(state, time)
 
       assert Map.keys(state.conversations) == [11]
     end

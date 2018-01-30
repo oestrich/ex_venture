@@ -18,18 +18,6 @@ defmodule Game.NPC.Actions do
   alias Game.Items
 
   @doc """
-  Respawn the NPC as a tick happens
-  """
-  @spec tick(map, DateTime.t()) :: :ok | {:update, map}
-  def tick(state, time) do
-    state =
-      state
-      |> clean_conversations(time)
-
-    {:update, state}
-  end
-
-  @doc """
   Clean up conversation state, after 5 minutes remove the state of the user
   """
   def clean_conversations(state, time) do
