@@ -228,6 +228,7 @@ defmodule Game.Command.Move do
       state
       |> Map.put(:save, save)
       |> Map.put(:target, nil)
+      |> Map.put(:is_targeting, MapSet.new())
 
     @room.enter(room_id, {:user, user}, enter_reason)
 
