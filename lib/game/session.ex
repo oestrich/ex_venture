@@ -98,6 +98,14 @@ defmodule Game.Session do
   end
 
   @doc """
+  Room crashed, rejoin if necessary
+  """
+  @spec room_crashed(integer(), integer()) :: :ok
+  def room_crashed(pid, room_id) do
+    GenServer.cast(pid, {:room_crashed, room_id})
+  end
+
+  @doc """
   Find a connected user by their user struct
   """
   @spec find_connected_player(User.t()) :: pid()

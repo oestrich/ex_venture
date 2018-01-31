@@ -33,13 +33,12 @@ defmodule Game.Room.Repo do
   @doc """
   Load all rooms in a zone
   """
-  @spec for_zone(integer) :: [Room.t()]
+  @spec for_zone(integer()) :: [integer()]
   def for_zone(zone_id) do
     Room
     |> where([r], r.zone_id == ^zone_id)
-    |> preload([:room_items, :shops])
+    |> select([r], r.id)
     |> Repo.all()
-    |> Enum.map(&Exit.load_exits/1)
   end
 
   def update(room, params) do

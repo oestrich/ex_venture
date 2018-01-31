@@ -151,6 +151,17 @@ defmodule Game.Session.Process do
     end
   end
 
+  def handle_cast({:room_crashed, room_id}, state) do
+    case state.save.room_id == room_id do
+      true ->
+        :erlang.send_after(500, self(), :reenter)
+        {:noreply, state}
+
+      false ->
+        {:noreply, state}
+    end
+  end
+
   def handle_cast({:teleport, room_id}, state) do
     {:update, state} = Move.move_to(state, room_id)
     state |> prompt()
@@ -206,6 +217,11 @@ defmodule Game.Session.Process do
   #
   # General callback
   #
+
+  def handle_info(:reenter, state = %{save: save}) do
+    @room.enter(save.room_id, {:user, state.user})
+    {:noreply, state}
+  end
 
   def handle_info(:regen, state = %{save: _save}) do
     {:noreply, Regen.tick(state)}

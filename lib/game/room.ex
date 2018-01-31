@@ -25,8 +25,8 @@ defmodule Game.Room do
     end
   end
 
-  def start_link(room) do
-    GenServer.start_link(__MODULE__, room, name: pid(room.id))
+  def start_link(room_id) do
+    GenServer.start_link(__MODULE__, room_id, name: pid(room_id))
   end
 
   def pid(id) do
@@ -173,10 +173,9 @@ defmodule Game.Room do
     GenServer.call(pid(id), :get_state)
   end
 
-  def init(room) do
-    Logger.info("Room online #{room.id}", type: :room)
-    room.zone_id |> Zone.room_online(room)
-    {:ok, %{room: room, players: [], npcs: [], respawn: %{}}}
+  def init(room_id) do
+    send(self(), {:load_room, room_id})
+    {:ok, %{room: nil, players: [], npcs: [], respawn: %{}}}
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
@@ -340,6 +339,13 @@ defmodule Game.Room do
       _ ->
         {:noreply, state}
     end
+  end
+
+  def handle_info({:load_room, room_id}, state) do
+    room = Repo.get(room_id)
+    room.zone_id |> Zone.room_online(room)
+    Logger.info("Room online #{room.id}", type: :room)
+    {:noreply, %{state | room: room}}
   end
 
   def handle_info({:respawn, item_id}, state) do

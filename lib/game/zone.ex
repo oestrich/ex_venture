@@ -13,6 +13,7 @@ defmodule Game.Zone do
   alias Game.Map, as: GameMap
   alias Game.NPC
   alias Game.Room
+  alias Game.Session
   alias Game.Shop
   alias Game.Zone.Repo
 
@@ -48,7 +49,7 @@ defmodule Game.Zone do
   For sending ticks to
   """
   def room_online(id, room) do
-    GenServer.cast(pid(id), {:room_online, room})
+    GenServer.cast(pid(id), {:room_online, room, self()})
   end
 
   @doc """
@@ -123,7 +124,7 @@ defmodule Game.Zone do
   """
   @spec update_room(integer, Room.t()) :: :ok
   def update_room(id, room) do
-    GenServer.cast(pid(id), {:update_room, room})
+    GenServer.cast(pid(id), {:update_room, room, self()})
   end
 
   @doc """
@@ -153,10 +154,13 @@ defmodule Game.Zone do
   #
 
   def init(zone) do
+    Process.flag(:trap_exit, true)
+
     {:ok,
      %{
        zone: zone,
        rooms: [],
+       room_pids: [],
        room_supervisor_pid: nil,
        npcs: [],
        npc_supervisor_pid: nil,
@@ -188,9 +192,16 @@ defmodule Game.Zone do
     {:reply, map |> String.trim(), state}
   end
 
-  def handle_cast({:room_online, room}, state = %{rooms: rooms}) do
+  def handle_cast({:room_online, room, room_pid}, state) do
+    Process.link(room_pid)
     Enum.each(room.exits, &Door.maybe_load/1)
-    {:noreply, Map.put(state, :rooms, [room | rooms])}
+
+    state =
+      state
+      |> Map.put(:rooms, [room | state.rooms])
+      |> Map.put(:room_pids, [{room_pid, room.id} | state.room_pids])
+
+    {:noreply, state}
   end
 
   def handle_cast({:npc_online, npc}, state = %{npcs: npcs}) do
@@ -228,8 +239,51 @@ defmodule Game.Zone do
     {:noreply, state}
   end
 
-  def handle_cast({:update_room, room}, state = %{rooms: rooms}) do
-    rooms = rooms |> Enum.reject(&(&1.id == room.id))
-    {:noreply, Map.put(state, :rooms, [room | rooms])}
+  def handle_cast({:update_room, new_room, room_pid}, state) do
+    rooms = state.rooms |> Enum.reject(&(&1.id == new_room.id))
+    room_pids = state.room_pids |> Enum.reject(fn {pid, _} -> pid == room_pid end)
+
+    state =
+      state
+      |> Map.put(:rooms, [new_room | rooms])
+      |> Map.put(:room_pids, [{room_pid, new_room.id} | room_pids])
+
+    {:noreply, state}
+  end
+
+  # Clean out the crashed process from stored knowledge
+  # Assumes the crashed process was a room
+  # tell all NPCs in the zone that the process crashed
+  # tell all connected players that the process crashed
+  def handle_info({:EXIT, pid, _reason}, state) do
+    {_pid, room_id} =
+      Enum.find(state.room_pids, fn {room_pid, _} ->
+        pid == room_pid
+      end)
+
+    room =
+      Enum.find(state.rooms, fn room ->
+        room.id == room_id
+      end)
+
+    rooms = state.rooms |> Enum.reject(&(&1.id == room.id))
+    room_pids = state.room_pids |> Enum.reject(fn {room_pid, _} -> pid == room_pid end)
+
+    state.npcs
+    |> Enum.each(fn npc ->
+      npc.id |> NPC.room_crashed(room_id)
+    end)
+
+    Session.Registry.connected_players()
+    |> Enum.each(fn {pid, _} ->
+      pid |> Session.room_crashed(room_id)
+    end)
+
+    state =
+      state
+      |> Map.put(:rooms, rooms)
+      |> Map.put(:room_pids, room_pids)
+
+    {:noreply, state}
   end
 end

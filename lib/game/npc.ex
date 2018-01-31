@@ -141,6 +141,14 @@ defmodule Game.NPC do
   end
 
   @doc """
+  Room crashed, rejoin if necessary
+  """
+  @spec room_crashed(integer(), integer()) :: :ok
+  def room_crashed(id, room_id) do
+    GenServer.cast(pid(id), {:room_crashed, room_id})
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -182,6 +190,17 @@ defmodule Game.NPC do
 
   def handle_call(:info, _from, state) do
     {:reply, {:npc, state.npc}, state}
+  end
+
+  def handle_cast({:room_crashed, room_id}, state) do
+    case state.room_id == room_id do
+      true ->
+        :erlang.send_after(500, self(), :reenter)
+        {:noreply, state}
+
+      false ->
+        {:noreply, state}
+    end
   end
 
   def handle_cast(:release, state) do
@@ -263,6 +282,11 @@ defmodule Game.NPC do
         tick_event |> Events.delay_event()
         {:noreply, state}
     end
+  end
+
+  def handle_info(:reenter, state = %{room_id: room_id, npc: npc}) do
+    @room.enter(room_id, {:npc, npc})
+    {:noreply, state}
   end
 
   def handle_info(:respawn, state) do
