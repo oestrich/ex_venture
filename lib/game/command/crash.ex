@@ -46,9 +46,16 @@ defmodule Game.Command.Crash do
   """
   def run(command, state)
 
-  def run({:room}, %{save: save, socket: socket}) do
-    save.room_id |> @room.crash()
-    socket |> @socket.echo("Sent a message to crash the room.")
+  def run({:room}, %{user: user, save: save, socket: socket}) do
+    case "admin" in user.flags do
+      true ->
+        save.room_id |> @room.crash()
+        socket |> @socket.echo("Sent a message to crash the room.")
+
+      false ->
+        socket |> @socket.echo("You must be an admin to perform this.")
+    end
+
     :ok
   end
 end
