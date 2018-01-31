@@ -364,7 +364,6 @@ defmodule Game.Command.MoveTest do
     {:update, state} = Command.run(command, state)
 
     assert state.target == nil
-    assert_received {:"$gen_cast", {:remove_target, {:user, ^user}}}
     assert [{^socket, "Target.Clear", "{}"} | _] = @socket.get_push_gmcps()
 
     Registry.unregister()

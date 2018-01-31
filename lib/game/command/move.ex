@@ -10,8 +10,6 @@ defmodule Game.Command.Move do
   alias Game.Door
   alias Game.Session.GMCP
 
-  import Game.Character.Helpers, only: [clear_target: 2]
-
   @must_be_alive true
 
   commands(
@@ -220,7 +218,7 @@ defmodule Game.Command.Move do
   def move_to(state = %{save: save, user: user}, room_id, leave_reason \\ :leave, enter_reason \\ :enter) do
     @room.leave(save.room_id, {:user, user}, leave_reason)
 
-    clear_target(state, {:user, user})
+    clear_target(state)
 
     save = %{save | room_id: room_id}
 
@@ -228,6 +226,7 @@ defmodule Game.Command.Move do
       state
       |> Map.put(:save, save)
       |> Map.put(:target, nil)
+      |> Map.put(:is_targeting, MapSet.new())
 
     @room.enter(room_id, {:user, user}, enter_reason)
 
@@ -276,4 +275,16 @@ defmodule Game.Command.Move do
     state |> GMCP.map(mini_map)
     :ok
   end
+
+  @doc """
+  If the state has a target, send a GMCP message that the target was cleared
+  """
+  @spec clear_target(Session.t()) :: :ok
+  def clear_target(state)
+
+  def clear_target(state = %{target: target}) when target != nil do
+    state |> GMCP.clear_target()
+  end
+
+  def clear_target(_state), do: :ok
 end

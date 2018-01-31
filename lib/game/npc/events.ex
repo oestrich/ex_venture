@@ -73,6 +73,11 @@ defmodule Game.NPC.Events do
   @spec act_on(NPC.State.t(), {String.t(), any()}) :: :ok | {:update, NPC.State.t()}
   def act_on(state, action)
 
+  def act_on(state = %{npc: npc}, {"character/died", character, :character, from}) do
+    broadcast(npc, "character/died", who(character))
+    state |> act_on_character_died(character, from)
+  end
+
   def act_on(state = %{npc: npc}, {"combat/tick"}) do
     broadcast(npc, "combat/tick")
     state |> act_on_combat_tick()
@@ -130,6 +135,22 @@ defmodule Game.NPC.Events do
   def act_on(_, _), do: :ok
 
   @doc """
+  Act on a character death notification
+
+  Clear the target if the target matches
+  """
+  def act_on_character_died(%{target: nil}, _character, _from), do: :ok
+
+  def act_on_character_died(state, character, _from) do
+    case Character.who(character) == Character.who(state.target) do
+      true ->
+        {:update, Map.put(state, :target, nil)}
+      false ->
+        :ok
+    end
+  end
+
+  @doc """
   Act on a combat tick, if the NPC has a target, pick an event and apply those effects
   """
   def act_on_combat_tick(%{target: nil}), do: :ok
@@ -169,10 +190,6 @@ defmodule Game.NPC.Events do
   """
   @spec act_on_room_entered(NPC.State.t(), Character.t(), Event.t()) :: NPC.State.t()
   def act_on_room_entered(state, character, event)
-
-  def act_on_room_entered(state, {:user, _, user}, event) do
-    act_on_room_entered(state, {:user, user}, event)
-  end
 
   def act_on_room_entered(state, {:user, _}, %{action: %{type: "say", message: message}}) do
     %{room_id: room_id, npc: npc} = state

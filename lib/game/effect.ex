@@ -207,10 +207,13 @@ defmodule Game.Effect do
 
   - `damage/over-time`
   """
-  @spec continuous_effects([Effect.t()]) :: [Effect.t()]
-  def continuous_effects(effects) do
+  @spec continuous_effects([Effect.t()], Character.t()) :: [Effect.t()]
+  def continuous_effects(effects, from) do
     effects
     |> Enum.filter(&Effect.continuous?/1)
     |> Enum.map(&Effect.instantiate/1)
+    |> Enum.map(fn effect ->
+      {from, effect}
+    end)
   end
 end

@@ -40,19 +40,19 @@ defmodule Game.NPC.Actions do
   @doc """
   Check if the NPC died, and if so perform actions
   """
-  @spec maybe_died(map, map) :: :ok
-  def maybe_died(stats, state)
-  def maybe_died(%{health: health}, state) when health < 1, do: died(state)
-  def maybe_died(_stats, state), do: state
+  @spec maybe_died(map, map, Character.t()) :: :ok
+  def maybe_died(stats, state, from)
+  def maybe_died(%{health: health}, state, from) when health < 1, do: died(state, from)
+  def maybe_died(_stats, state, _from), do: state
 
   @doc """
   The NPC died, send out messages
   """
-  @spec died(map) :: :ok
-  def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner, is_targeting: is_targeting}) do
+  @spec died(map, Character.t()) :: :ok
+  def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner}, who) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    Enum.each(is_targeting, &Character.died(&1, {:npc, npc}))
+    room_id |> @room.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
     room_id |> @room.leave({:npc, npc}, :death)
 
     drop_currency(room_id, npc, npc.currency)
@@ -123,14 +123,14 @@ defmodule Game.NPC.Actions do
   Apply effects to the NPC
   """
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
-  def apply_effects(state = %{npc: npc}, effects, _from) do
-    continuous_effects = effects |> Effect.continuous_effects()
+  def apply_effects(state = %{npc: npc}, effects, from) do
+    continuous_effects = effects |> Effect.continuous_effects(from)
     stats = effects |> Effect.apply(npc.stats)
-    state = stats |> maybe_died(state)
+    state = stats |> maybe_died(state, from)
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}
 
-    Enum.each(continuous_effects, fn effect ->
+    Enum.each(continuous_effects, fn {_, effect} ->
       :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
     end)
 
@@ -147,7 +147,7 @@ defmodule Game.NPC.Actions do
   Apply a continuous effect to an NPC
   """
   def handle_continuous_effect(state, effect_id) do
-    case Enum.find(state.continuous_effects, &(&1.id == effect_id)) do
+    case Enum.find(state.continuous_effects, fn {_from, effect} -> effect.id == effect_id end) do
       nil -> state
       effect -> apply_continuous_effect(state, effect)
     end
@@ -155,16 +155,16 @@ defmodule Game.NPC.Actions do
 
   @doc """
   """
-  @spec apply_continuous_effect(State.t(), Effect.t()) :: State.t()
-  def apply_continuous_effect(state = %{npc: npc}, effect) do
+  @spec apply_continuous_effect(State.t(), {Character.t(), Effect.t()}) :: State.t()
+  def apply_continuous_effect(state = %{npc: npc}, {from, effect}) do
     stats = [effect] |> Effect.apply(npc.stats)
-    state = stats |> maybe_died(state)
+    state = stats |> maybe_died(state, from)
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}
 
     case is_alive?(npc) do
       true ->
-        state |> update_effect_count(effect)
+        state |> update_effect_count({from, effect})
 
       false ->
         state

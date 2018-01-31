@@ -11,8 +11,6 @@ defmodule Game.Session.Process do
 
   require Logger
 
-  import Game.Character.Helpers, only: [clear_target: 2]
-
   alias Game.Account
   alias Game.Command.Move
   alias Game.Command.Pager
@@ -81,7 +79,6 @@ defmodule Game.Session.Process do
     %{user: user, save: save, session_started_at: session_started_at, stats: stats} = state
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, user})
-    clear_target(state, {:user, user})
     user |> Account.save_session(save, session_started_at, Timex.now(), stats)
     {:stop, :normal, state}
   end
@@ -174,20 +171,12 @@ defmodule Game.Session.Process do
     {:noreply, SessionCharacter.targeted(state, player)}
   end
 
-  def handle_cast({:remove_target, character}, state) do
-    {:noreply, SessionCharacter.remove_target(state, character)}
-  end
-
   def handle_cast({:apply_effects, effects, from, description}, state = %{state: "active"}) do
     {:noreply, SessionCharacter.apply_effects(state, effects, from, description)}
   end
 
   def handle_cast({:notify, event}, state) do
     {:noreply, SessionCharacter.notify(state, event)}
-  end
-
-  def handle_cast({:died, who}, state = %{state: "active"}) do
-    {:noreply, SessionCharacter.died(state, who)}
   end
 
   def handle_call(:info, _from, state) do

@@ -84,6 +84,24 @@ defmodule Test.Game.Room do
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :leave, []) end)
   end
 
+  def notify(id, _sender, event) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) ->
+      notifys = Map.get(state, :notify, [])
+      Map.put(state, :notify, notifys ++ [{id, event}])
+    end)
+  end
+
+  def get_notifies() do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :notify, []) end)
+  end
+
+  def clear_notifies() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :notify, []) end)
+  end
+
   def say(id, _sender, message) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->

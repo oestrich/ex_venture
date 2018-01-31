@@ -259,7 +259,7 @@ defmodule Web.NPC do
 
     case changeset |> Repo.insert() do
       {:ok, npc_spawner} ->
-        npc_spawner = npc_spawner |> Repo.preload([:npc])
+        npc_spawner = npc_spawner |> Repo.preload([npc: [:npc_items]])
         Game.Zone.spawn_npc(npc_spawner.zone_id, npc_spawner)
         {:ok, npc_spawner}
 

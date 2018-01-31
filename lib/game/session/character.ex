@@ -26,14 +26,6 @@ defmodule Game.Session.Character do
   end
 
   @doc """
-  Callback for someone stopping targeting you
-  """
-  def remove_target(state, character) do
-    Session.echo(self(), "You are no longer being targeted by #{Format.name(character)}.")
-    Map.put(state, :is_targeting, MapSet.delete(state.is_targeting, Character.who(character)))
-  end
-
-  @doc """
   Callback for applying effects
   """
   def apply_effects(state, effects, from, description) do
@@ -45,6 +37,38 @@ defmodule Game.Session.Character do
   @doc """
   Callback for being notified of events
   """
+  def notify(state, event)
+
+  def notify(state, {"character/died", character, :character, who}) do
+    state.socket |> @socket.echo("#{Format.name(character)} has died")
+    state |> GMCP.character_leave(character)
+
+    # see if who is you
+    case Character.who(who) == Character.who({:user, state.user}) do
+      true ->
+        state =
+          state
+          |> apply_experience(character)
+          |> track_quest_progress(character)
+
+        state |> Session.Process.prompt()
+
+        case Character.who(character) == Character.who(state.target) do
+          true ->
+            state
+            |> Map.put(:target, nil)
+            |> remove_from_targeting_list(character)
+            |> maybe_target()
+
+          false ->
+            state
+        end
+
+      false ->
+        state
+    end
+  end
+
   def notify(state, {"mail/new", mail}) do
     state.socket |> @socket.echo("You have new mail. {white}mail read #{mail.id}{/white} to read it")
     state |> GMCP.mail_new(mail)
@@ -64,7 +88,7 @@ defmodule Game.Session.Character do
   def notify(state, {"room/leave", {character, reason}}) do
     case reason do
       :leave -> state.socket |> @socket.echo("#{Format.name(character)} leaves")
-      :death -> state.socket |> @socket.echo("#{Format.name(character)} has died")
+      :death -> :ok
     end
 
     state |> GMCP.character_leave(character)
@@ -94,57 +118,51 @@ defmodule Game.Session.Character do
   def notify(state, _), do: state
 
   @doc """
-  Callback for a target dying
+  Clean out the list as characters who were targeting you die
   """
-  def died(state = %{target: target}, _who) when is_nil(target) do
-    state
-  end
+  @spec remove_from_targeting_list(State.t(), Character.t()) :: State.t()
+  def remove_from_targeting_list(state, target) do
+    is_targeting =
+      state.is_targeting
+      |> MapSet.delete(Character.who(target))
 
-  def died(state = %{user: user, target: target}, who) do
-    state =
-      state
-      |> apply_experience(who)
-      |> track_quest_progress(who)
-
-    state |> Session.Process.prompt()
-
-    case Character.who(target) == Character.who(who) do
-      true ->
-        Character.remove_target(target, {:user, user})
-
-        state
-        |> Map.put(:target, nil)
-        |> maybe_target(possible_new_target(state, target))
-
-      false ->
-        state
-    end
+    %{state | is_targeting: is_targeting}
   end
 
   @doc """
   Maybe target the character who targeted you, only if your own target is empty
   """
-  @spec maybe_target(map, Character.t() | nil) :: map
-  def maybe_target(state, player)
-  def maybe_target(state, nil), do: state
-
-  def maybe_target(state = %{socket: socket, target: nil, user: user}, player) do
-    socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
-    state |> GMCP.target(player)
-    player = Character.who(player)
-    Character.being_targeted(player, {:user, user})
-    Map.put(state, :target, player)
+  @spec maybe_target(State.t()) :: State.t()
+  def maybe_target(state = %{target: nil}) do
+    case possible_new_target(state) do
+      nil -> state
+      player -> _target(state, player)
+    end
   end
 
-  def maybe_target(state, _player), do: state
+  def maybe_target(state), do: state
+
+  @spec maybe_target(map, Character.t() | nil) :: map
+  def maybe_target(state = %{target: nil}, player), do: _target(state, player)
+  def maybe_target(state, _), do: state
+
+  defp _target(state, player) do
+    state.socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
+
+    state |> GMCP.target(player)
+
+    player = Character.who(player)
+    Character.being_targeted(player, {:user, state.user})
+
+    %{state | target: player}
+  end
 
   @doc """
   Get a possible new target from the list
   """
-  @spec possible_new_target(map, Character.t()) :: Character.t()
-  def possible_new_target(state, target) do
+  @spec possible_new_target(map) :: Character.t()
+  def possible_new_target(state) do
     state.is_targeting
-    |> MapSet.delete(Character.who(target))
     |> MapSet.to_list()
     |> List.first()
     |> character_info()

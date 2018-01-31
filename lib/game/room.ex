@@ -84,6 +84,16 @@ defmodule Game.Room do
   end
 
   @doc """
+  Notify characters in a room of an event
+  """
+  @spec notify(integer(), Character.t(), tuple()) :: :ok
+  def notify(id, character, event)
+
+  def notify(id, character, event) do
+    GenServer.cast(pid(id), {:notify, character, event})
+  end
+
+  @doc """
   Say to the players in the room
   """
   @spec say(integer(), pid(), Message.t()) :: :ok
@@ -215,71 +225,53 @@ defmodule Game.Room do
   end
 
   def handle_cast({:leave, {:user, user}, reason}, state) do
-    %{room: room, players: players, npcs: npcs} = state
+    %{room: room, players: players} = state
 
     Logger.info("Player (#{user.id}) left room (#{room.id})", type: :room)
-
     players = Enum.reject(players, &(&1.id == user.id))
-    players |> inform_players({"room/leave", {{:user, user}, reason}})
-    npcs |> inform_npcs({"room/leave", {{:user, user}, reason}})
+    state = %{state | players: players}
 
-    {:noreply, Map.put(state, :players, players)}
+    handle_cast({:notify, {:user, user}, {"room/leave", {{:user, user}, reason}}}, state)
   end
 
   def handle_cast({:leave, {:npc, npc}, reason}, state) do
-    %{room: room, players: players, npcs: npcs} = state
+    %{room: room, npcs: npcs} = state
 
     Logger.info("NPC (#{npc.id}) left room (#{room.id})", type: :room)
-
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
-    players |> inform_players({"room/leave", {{:npc, npc}, reason}})
-    npcs |> inform_npcs({"room/leave", {{:npc, npc}, reason}})
+    state = %{state | npcs: npcs}
 
-    {:noreply, Map.put(state, :npcs, npcs)}
+    handle_cast({:notify, {:npc, npc}, {"room/leave", {{:npc, npc}, reason}}}, state)
   end
 
-  def handle_cast({:say, {:user, sender}, message}, state = %{players: players, npcs: npcs}) do
+  def handle_cast({:notify, {:user, sender}, event}, state = %{players: players, npcs: npcs}) do
     # don't send to the sender
     players
     |> Enum.reject(&(&1.id == sender.id))
-    |> inform_players({"room/heard", message})
+    |> inform_players(event)
 
-    npcs |> inform_npcs({"room/heard", message})
+    npcs |> inform_npcs(event)
 
     {:noreply, state}
   end
 
-  def handle_cast({:say, {:npc, sender}, message}, state = %{players: players, npcs: npcs}) do
-    players |> inform_players({"room/heard", message})
+  def handle_cast({:notify, {:npc, sender}, event}, state = %{players: players, npcs: npcs}) do
+    players |> inform_players(event)
 
     # don't send to the sender
     npcs
     |> Enum.reject(&(&1.id == sender.id))
-    |> inform_npcs({"room/heard", message})
+    |> inform_npcs(event)
 
     {:noreply, state}
   end
 
-  def handle_cast({:emote, {:user, sender}, message}, state = %{players: players, npcs: npcs}) do
-    # don't send to the sender
-    players
-    |> Enum.reject(&(&1.id == sender.id))
-    |> inform_players({"room/heard", message})
-
-    npcs |> inform_npcs({"room/heard", message})
-
-    {:noreply, state}
+  def handle_cast({:say, sender, message}, state) do
+    handle_cast({:notify, sender, {"room/heard", message}}, state)
   end
 
-  def handle_cast({:emote, {:npc, sender}, message}, state = %{players: players, npcs: npcs}) do
-    players |> inform_players({"room/heard", message})
-
-    # don't send to the sender
-    npcs
-    |> Enum.reject(&(&1.id == sender.id))
-    |> inform_npcs({"room/heard", message})
-
-    {:noreply, state}
+  def handle_cast({:emote, sender, message}, state) do
+    handle_cast({:notify, sender, {"room/heard", message}}, state)
   end
 
   def handle_cast({:update_character, {:user, user}}, state = %{players: players}) do

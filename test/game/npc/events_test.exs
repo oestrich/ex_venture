@@ -14,6 +14,34 @@ defmodule Game.NPC.EventsTest do
     @room.clear_says()
   end
 
+  describe "character/died" do
+    setup do
+      npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
+      user = %{id: 2, name: "Player"}
+
+      state = %State{room_id: 1, npc: npc, target: nil}
+
+      @room._room()
+      |> Map.put(:npcs, [npc])
+      |> Map.put(:players, [%{id: 1, name: "Player"}])
+      |> @room.set_room()
+
+      event = {"character/died", {:user, user}, :character, {:npc, npc}}
+
+      %{state: state, event: event}
+    end
+
+    test "clears the target if they were targetting the character", %{state: state, event: event} do
+      state = %{state | target: {:user, 2}}
+      {:update, state} = Events.act_on(state, event)
+      assert is_nil(state.target)
+    end
+
+    test "does nothing if the target does not match", %{state: state, event: event} do
+      :ok = Events.act_on(state, event)
+    end
+  end
+
   describe "combat/tick" do
     setup do
       event = %{

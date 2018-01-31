@@ -20,9 +20,10 @@ defmodule Game.Session.EffectsTest do
 
   describe "continuous effects" do
     setup %{state: state} do
+      from = {:npc, %{id: 1, name: "Bandit"}}
       effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
-      state = %{state | continuous_effects: [effect]}
-      %{state: state, effect: effect}
+      state = %{state | continuous_effects: [{from, effect}]}
+      %{state: state, effect: effect, from: from}
     end
 
     test "applying effects with continuous effects", %{state: state, effect: effect} do
@@ -31,15 +32,15 @@ defmodule Game.Session.EffectsTest do
       assert state.save.stats.health == 15
       [{:socket, ~s(10 slashing damage is dealt.)}] = @socket.get_echos()
 
-      [%{id: :id, count: 2}] = state.continuous_effects
+      [{_, %{id: :id, count: 2}}] = state.continuous_effects
 
       effect_id = effect.id
       assert_receive {:continuous_effect, ^effect_id}
     end
 
-    test "handles death", %{state: state, effect: effect} do
+    test "handles death", %{state: state, effect: effect, from: from} do
       effect = %{effect | amount: 26}
-      state = %{state | continuous_effects: [effect]}
+      state = %{state | continuous_effects: [{from, effect}]}
 
       state = Effects.handle_continuous_effect(state, :id)
       assert state.save.stats.health == -1
@@ -47,9 +48,9 @@ defmodule Game.Session.EffectsTest do
       assert state.continuous_effects == []
     end
 
-    test "does not send another message if last count", %{state: state, effect: effect} do
+    test "does not send another message if last count", %{state: state, effect: effect, from: from} do
       effect = %{effect | count: 1}
-      state = %{state | continuous_effects: [effect]}
+      state = %{state | continuous_effects: [{from, effect}]}
 
       state = Effects.handle_continuous_effect(state, effect.id)
       [] = state.continuous_effects
