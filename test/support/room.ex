@@ -21,6 +21,24 @@ defmodule Test.Game.Room do
     }
   end
 
+  def crash(id) do
+    start_link()
+    Agent.update(__MODULE__, fn (state) ->
+      crashes = Map.get(state, :crash, [])
+      Map.put(state, :crash, crashes ++ [id])
+    end)
+  end
+
+  def get_crashes() do
+    start_link()
+    Agent.get(__MODULE__, fn (state) -> Map.get(state, :crash, []) end)
+  end
+
+  def clear_crashes() do
+    start_link()
+    Agent.update(__MODULE__, fn (state) -> Map.put(state, :crash, []) end)
+  end
+
   def set_room(room, opts \\ []) do
     start_link()
 
