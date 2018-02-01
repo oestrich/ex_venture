@@ -5,9 +5,7 @@ defmodule Web.UserTest do
   alias Game.Account
   alias Game.Authentication
   alias Game.Session
-  alias Web.Room
   alias Web.User
-  alias Web.Zone
 
   setup do
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
