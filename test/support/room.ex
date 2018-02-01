@@ -21,6 +21,10 @@ defmodule Test.Game.Room do
     }
   end
 
+  def link(_id), do: :ok
+
+  def unlink(_id), do: :ok
+
   def crash(id) do
     start_link()
     Agent.update(__MODULE__, fn (state) ->
