@@ -46,7 +46,7 @@ There is an admin panel located at [http://locahost:4000/admin](http://localhost
 
 You can see more on [exventure.org](https://exventure.org/admin/).
 
-![Admin Dashboard](https://exventure.org/images/admin-dashboard.png)
+![Admin Dashboard](https://exventure.org/images/admin-dashboard.png?refresh=true)
 
 ## Deployment
 
