@@ -8,16 +8,14 @@ defmodule Game.NPC do
 
   require Logger
 
-  import Ecto.Query
-
   alias Data.NPCSpawner
-  alias Data.Repo
   alias Data.Stats
   alias Game.Channel
   alias Game.Message
   alias Game.NPC.Actions
   alias Game.NPC.Conversation
   alias Game.NPC.Events
+  alias Game.NPC.Repo, as: NPCRepo
   alias Game.Zone
 
   defmacro __using__(_opts) do
@@ -50,8 +48,8 @@ defmodule Game.NPC do
 
   Will have a registered name with the return from `Game.NPC.pid/1`.
   """
-  def start_link(npc_spawner) do
-    GenServer.start_link(__MODULE__, npc_spawner, name: pid(npc_spawner.id))
+  def start_link(npc_spawner_id) do
+    GenServer.start_link(__MODULE__, npc_spawner_id, name: pid(npc_spawner_id))
   end
 
   @doc """
@@ -65,12 +63,9 @@ defmodule Game.NPC do
   @doc """
   Load all NPCs in the database
   """
-  @spec for_zone(Zone.t()) :: [map]
+  @spec for_zone(Zone.t()) :: [integer()]
   def for_zone(zone) do
-    NPCSpawner
-    |> where([ns], ns.zone_id == ^zone.id)
-    |> preload(npc: [:npc_items])
-    |> Repo.all()
+    NPCRepo.for_zone(zone)
   end
 
   @doc """
@@ -141,14 +136,6 @@ defmodule Game.NPC do
   end
 
   @doc """
-  Room crashed, rejoin if necessary
-  """
-  @spec room_crashed(integer(), integer()) :: :ok
-  def room_crashed(id, room_id) do
-    GenServer.cast(pid(id), {:room_crashed, room_id})
-  end
-
-  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -159,22 +146,42 @@ defmodule Game.NPC do
   # Server
   #
 
-  def init(npc_spawner) do
-    npc = customize_npc(npc_spawner, npc_spawner.npc)
-    npc = %{npc | stats: Stats.default(npc.stats)}
-    Logger.info("Starting NPC #{npc.id}", type: :npc)
-    npc_spawner.zone_id |> Zone.npc_online(npc)
-    GenServer.cast(self(), :enter)
+  def init(npc_spawner_id) do
+    send(self(), {:load, npc_spawner_id})
 
     state = %State{
-      npc_spawner: npc_spawner,
-      npc: npc,
-      room_id: npc_spawner.room_id,
+      npc_spawner: nil,
+      npc: nil,
+      room_id: nil,
       target: nil,
       tick_events: [],
     }
 
     {:ok, state}
+  end
+
+  @doc """
+  Load the npc data on start
+  """
+  def load(npc_spawner_id, state) do
+    npc_spawner = NPCRepo.get(npc_spawner_id)
+
+    npc = customize_npc(npc_spawner, npc_spawner.npc)
+    npc = %{npc | stats: Stats.default(npc.stats)}
+
+    npc_spawner.zone_id |> Zone.npc_online(npc)
+
+    Logger.info("Starting NPC #{npc.id}", type: :npc)
+
+    state =
+      state
+      |> Map.put(:npc_spawner, npc_spawner)
+      |> Map.put(:npc, npc)
+      |> Map.put(:room_id, npc_spawner.room_id)
+
+    GenServer.cast(self(), :enter)
+
+    {:noreply, state}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -192,17 +199,6 @@ defmodule Game.NPC do
     {:reply, {:npc, state.npc}, state}
   end
 
-  def handle_cast({:room_crashed, room_id}, state) do
-    case state.room_id == room_id do
-      true ->
-        :erlang.send_after(500, self(), :reenter)
-        {:noreply, state}
-
-      false ->
-        {:noreply, state}
-    end
-  end
-
   def handle_cast(:release, state) do
     {:noreply, %{state | last_controlled_at: nil}}
   end
@@ -211,6 +207,7 @@ defmodule Game.NPC do
     state = state |> Events.start_tick_events(npc)
     Channel.join_tell({:npc, npc})
     @room.enter(room_id, {:npc, npc})
+    @room.link(room_id)
     {:noreply, state}
   end
 
@@ -272,6 +269,8 @@ defmodule Game.NPC do
     {:stop, :normal, state}
   end
 
+  def handle_info({:load, npc_spawner_id}, state), do: load(npc_spawner_id, state)
+
   def handle_info({:tick, event_id}, state) do
     case state.tick_events |> Enum.find(&(&1.id == event_id)) do
       nil ->
@@ -282,11 +281,6 @@ defmodule Game.NPC do
         tick_event |> Events.delay_event()
         {:noreply, state}
     end
-  end
-
-  def handle_info(:reenter, state = %{room_id: room_id, npc: npc}) do
-    @room.enter(room_id, {:npc, npc})
-    {:noreply, state}
   end
 
   def handle_info(:respawn, state) do

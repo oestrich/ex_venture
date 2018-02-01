@@ -167,6 +167,32 @@ defmodule Game.Room do
   end
 
   @doc """
+  Link the current process against the room's pid, finds by id
+  """
+  def link(id) do
+    case Registry.lookup(Game.Room.Registry, id) do
+      [{pid, _}] ->
+        Process.link(pid)
+
+      _ ->
+        :ok
+    end
+  end
+
+  @doc """
+  Unlink the current process against the room's pid, finds by id
+  """
+  def unlink(id) do
+    case Registry.lookup(Game.Room.Registry, id) do
+      [{pid, _}] ->
+        Process.unlink(pid)
+
+      _ ->
+        :ok
+    end
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -342,10 +368,16 @@ defmodule Game.Room do
   end
 
   def handle_info({:load_room, room_id}, state) do
-    room = Repo.get(room_id)
-    room.zone_id |> Zone.room_online(room)
-    Logger.info("Room online #{room.id}", type: :room)
-    {:noreply, %{state | room: room}}
+    case Repo.get(room_id) do
+      nil ->
+        Logger.error("No room could be found for ID #{room_id}", type: :room)
+        {:stop, :normal, state}
+
+      room ->
+        room.zone_id |> Zone.room_online(room)
+        Logger.info("Room online #{room.id}", type: :room)
+        {:noreply, %{state | room: room}}
+    end
   end
 
   def handle_info({:respawn, item_id}, state) do

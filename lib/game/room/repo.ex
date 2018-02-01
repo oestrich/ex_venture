@@ -24,10 +24,15 @@ defmodule Game.Room.Repo do
   """
   @spec get(integer) :: [Room.t()]
   def get(id) do
-    Room
-    |> Repo.get(id)
-    |> Exit.load_exits()
-    |> Repo.preload([:room_items, :shops])
+    case Room |> Repo.get(id) do
+      nil ->
+        nil
+
+      room ->
+        room
+        |> Exit.load_exits()
+        |> Repo.preload([:room_items, :shops])
+    end
   end
 
   @doc """

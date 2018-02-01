@@ -277,8 +277,10 @@ defmodule Game.NPC.Events do
   end
 
   def move_room(state = %{npc: npc}, old_room, new_room) do
+    @room.unlink(old_room.id)
     @room.leave(old_room.id, {:npc, npc})
     @room.enter(new_room.id, {:npc, npc})
+    @room.link(old_room.id)
 
     Enum.each(new_room.players, fn player ->
       GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})

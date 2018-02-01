@@ -14,21 +14,11 @@ defmodule Game.NPC.Supervisor do
   end
 
   @doc """
-  Return all npcs that are currently online in a zone
-  """
-  @spec npcs(pid) :: [pid]
-  def npcs(pid) do
-    pid
-    |> Supervisor.which_children()
-    |> Enum.map(&elem(&1, 1))
-  end
-
-  @doc """
   Start a newly created npc in the zone
   """
   @spec start_child(pid, NPCSpawner.t()) :: :ok
   def start_child(pid, npc_spawner) do
-    child_spec = worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :transient)
+    child_spec = worker(NPC, [npc_spawner.id], id: npc_spawner.id, restart: :transient)
     Supervisor.start_child(pid, child_spec)
   end
 
@@ -36,8 +26,8 @@ defmodule Game.NPC.Supervisor do
     children =
       zone
       |> NPC.for_zone()
-      |> Enum.map(fn npc_spawner ->
-        worker(NPC, [npc_spawner], id: npc_spawner.id, restart: :transient)
+      |> Enum.map(fn npc_spawner_id ->
+        worker(NPC, [npc_spawner_id], id: npc_spawner_id, restart: :transient)
       end)
 
     Zone.npc_supervisor(zone.id, self())

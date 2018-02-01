@@ -269,11 +269,6 @@ defmodule Game.Zone do
     rooms = state.rooms |> Enum.reject(&(&1.id == room.id))
     room_pids = state.room_pids |> Enum.reject(fn {room_pid, _} -> pid == room_pid end)
 
-    state.npcs
-    |> Enum.each(fn npc ->
-      npc.id |> NPC.room_crashed(room_id)
-    end)
-
     Session.Registry.connected_players()
     |> Enum.each(fn {pid, _} ->
       pid |> Session.room_crashed(room_id)

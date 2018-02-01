@@ -225,8 +225,7 @@ defmodule Game.SessionTest do
     stats = %{health: 5}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
-    is_targeting = MapSet.new() |> MapSet.put({:user, 2})
-    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: is_targeting}
+    state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health == -5
 
@@ -463,18 +462,6 @@ defmodule Game.SessionTest do
       {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:user, state.user}}}, state)
 
       assert is_nil(state.target)
-    end
-
-    test "if other things are tracking you, select one to track", %{state: state, target: target} do
-      is_targeting = MapSet.new() |> MapSet.put({:npc, 2})
-      state = %{state | is_targeting: is_targeting}
-
-      npc_spawner = %Data.NPCSpawner{id: 2, npc: struct(Data.NPC, npc_attributes(%{}))}
-      Game.NPC.start_link(npc_spawner)
-
-      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:user, state.user}}}, state)
-
-      assert state.target == {:npc, 2}
     end
 
     test "npc - a died message is sent and experience is applied", %{state: state} do

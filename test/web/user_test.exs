@@ -31,6 +31,8 @@ defmodule Web.UserTest do
 
       assert user.save.room_id == room_id
       assert_receive {:"$gen_cast", {:teleport, ^room_id}}
+
+      Game.Room._get_state(room.id)
     end
 
     test "teleporting a player - only updates if player not in the game", %{user: user, room: room} do

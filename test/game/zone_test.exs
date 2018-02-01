@@ -25,7 +25,7 @@ defmodule Game.ZoneTest do
   end
 
   test "updates the local room" do
-    {:noreply, state} = Zone.handle_cast({:update_room, %{id: 10, name: "Forest"}}, %{rooms: [%{id: 10}]})
+    {:noreply, state} = Zone.handle_cast({:update_room, %{id: 10, name: "Forest"}, self()}, %{rooms: [%{id: 10}], room_pids: []})
      room = state.rooms |> List.first
      assert room.name == "Forest"
   end
@@ -33,7 +33,7 @@ defmodule Game.ZoneTest do
   test "when a room comes online and has a door it is initialized", %{north: north} do
     north = %{north | exits: [%{id: 1, has_door: true}]}
 
-    {:noreply, _state} = Zone.handle_cast({:room_online, north}, %{rooms: []})
+    {:noreply, _state} = Zone.handle_cast({:room_online, north, self()}, %{rooms: [], room_pids: []})
 
     assert Door.closed?(1)
   end

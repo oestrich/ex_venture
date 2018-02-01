@@ -25,6 +25,8 @@ defmodule Web.RoomTest do
     state = Game.Zone._get_state(zone.id)
     children = state.room_supervisor_pid |> Supervisor.which_children()
     assert children |> length() == 1
+
+    assert Game.Room._get_state(room.id)
   end
 
   test "updating a room updates the room state in the supervision tree", %{zone: zone} do
