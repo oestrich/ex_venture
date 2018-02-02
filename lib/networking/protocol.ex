@@ -101,6 +101,8 @@ defmodule Networking.Protocol do
     :ok = transport.setopts(socket, [{:active, true}])
     GenServer.cast(self(), :start_session)
 
+    Process.flag(:trap_exit, true)
+
     :gen_server.enter_loop(__MODULE__, [], %{
       socket: socket,
       transport: transport,
@@ -154,9 +156,12 @@ defmodule Networking.Protocol do
 
   def handle_cast(:start_session, state) do
     {:ok, pid} = Game.Session.start(self())
+    Process.link(pid)
+
     send_data(state, [@iac, @will, @mccp])
     send_data(state, [@iac, @will, @mssp])
     send_data(state, [@iac, @will, @gmcp])
+
     {:noreply, Map.merge(state, %{session: pid})}
   end
 
@@ -221,6 +226,18 @@ defmodule Networking.Protocol do
     Logger.info("Connection Timeout", type: :socket)
     disconnect(transport, socket, state)
     {:stop, :normal, state}
+  end
+
+  def handle_info({:EXIT, pid, _reason}, state) do
+    case state.session do
+      ^pid ->
+        {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
+        Process.link(pid)
+
+        {:noreply, %{state | session: pid}}
+      _ ->
+        {:stop, :error, state}
+    end
   end
 
   # Disconnect the socket and optionally the session

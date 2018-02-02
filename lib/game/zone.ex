@@ -13,7 +13,6 @@ defmodule Game.Zone do
   alias Game.Map, as: GameMap
   alias Game.NPC
   alias Game.Room
-  alias Game.Session
   alias Game.Shop
   alias Game.Zone.Repo
 
@@ -263,10 +262,8 @@ defmodule Game.Zone do
   # the NPC is crashing as well, so it will restart on its own
   # tell all connected players that the process crashed
   def handle_info({:EXIT, pid, _reason}, state) do
-    {room_id, rooms, room_pids} = reject_room_by_pid(state, pid)
+    {rooms, room_pids} = reject_room_by_pid(state, pid)
     {npcs, npc_pids} = reject_npc_by_pid(state, pid)
-
-    maybe_alert_players_of_room_crash(room_id)
 
     state =
       state
@@ -283,17 +280,17 @@ defmodule Game.Zone do
       {_pid, room_id} ->
         case Enum.find(state.rooms, &(&1.id == room_id)) do
           nil ->
-            {nil, state.rooms, state.room_pids}
+            {state.rooms, state.room_pids}
 
           room ->
             rooms = state.rooms |> Enum.reject(&(&1.id == room.id))
             room_pids = state.room_pids |> Enum.reject(&(elem(&1, 0) == pid))
 
-            {room.id, rooms, room_pids}
+            {rooms, room_pids}
         end
 
       nil ->
-        {nil, state.rooms, state.room_pids}
+        {state.rooms, state.room_pids}
     end
   end
 
@@ -319,14 +316,6 @@ defmodule Game.Zone do
   defp find_pid(pids, matching_pid) do
     Enum.find(pids, fn {pid, _} ->
       pid == matching_pid
-    end)
-  end
-
-  defp maybe_alert_players_of_room_crash(nil), do: :ok
-  defp maybe_alert_players_of_room_crash(room_id) do
-    Session.Registry.connected_players()
-    |> Enum.each(fn {pid, _} ->
-      pid |> Session.room_crashed(room_id)
     end)
   end
 end

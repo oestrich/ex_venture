@@ -20,6 +20,17 @@ defmodule Game.Session do
   end
 
   @doc """
+  Start a new session that is signed in
+
+  Creates a session pointing at a socket
+  """
+  @spec start_with_user(pid, integer()) :: {:ok, pid}
+  def start_with_user(socket, nil), do: start(socket)
+  def start_with_user(socket, user_id) do
+    Supervisor.start_child(socket, user_id)
+  end
+
+  @doc """
   Send a disconnect signal to a session
   """
   @spec disconnect(pid) :: :ok

@@ -20,6 +20,14 @@ defmodule Game.Session.Supervisor do
     DynamicSupervisor.start_child(__MODULE__, {Session.Process, [socket_pid]})
   end
 
+  @doc """
+  Start a new session for a socket, that is sign_in
+  """
+  @spec start_child(pid(), integer()) :: {:ok, pid()}
+  def start_child(socket_pid, user_id) do
+    DynamicSupervisor.start_child(__MODULE__, {Session.Process, [socket_pid, user_id]})
+  end
+
   @doc false
   def init(_) do
     DynamicSupervisor.init(strategy: :one_for_one)

@@ -16,6 +16,7 @@ defmodule Game.Session.Login do
   alias Game.Channel
   alias Game.Mail
   alias Game.Session
+  alias Game.Session.Process
   alias Game.Session.GMCP
   alias Metrics.PlayerInstrumenter
 
@@ -69,6 +70,7 @@ defmodule Game.Session.Login do
   end
 
   def after_sign_in(state = %{user: user}, session) do
+    @room.link(user.save.room_id)
     @room.enter(user.save.room_id, {:user, user})
     session |> Session.recv("look")
     state |> GMCP.character()
@@ -127,6 +129,49 @@ defmodule Game.Session.Login do
       false ->
         user |> login(socket, state |> Map.delete(:login))
     end
+  end
+
+  @doc """
+  Recover a session after crashing
+  """
+  @spec recover_session(integer(), State.t()) :: State.t()
+  def recover_session(user_id, state) do
+    case Authentication.find_user(user_id) do
+      nil ->
+        state.socket |> @socket.disconnect()
+        state
+
+      user ->
+        user |> process_recovery(state)
+    end
+  end
+
+  defp process_recovery(user, state = %{socket: socket}) do
+    case already_signed_in?(user) do
+      true ->
+        socket |> @socket.echo("Sorry, this player is already logged in.")
+        socket |> @socket.disconnect()
+        state
+
+      false ->
+        user |> _recover_session(state)
+    end
+  end
+
+  defp _recover_session(user, state) do
+    Session.Registry.register(user)
+
+    state =
+      state
+      |> Map.put(:user, user)
+      |> Map.put(:save, user.save)
+
+    state = after_sign_in(state, self())
+
+    state.socket |> @socket.echo("Session recovered... Welcome back.")
+    state |> Process.prompt()
+
+    state
   end
 
   defp already_signed_in?(user) do

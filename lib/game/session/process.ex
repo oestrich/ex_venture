@@ -5,7 +5,7 @@ defmodule Game.Session.Process do
   Holds knowledge if the user is logged in, who they are, what they're save is.
   """
 
-  use GenServer, restart: :transient
+  use GenServer, restart: :temporary
   use Networking.Socket
   use Game.Room
 
@@ -42,14 +42,21 @@ defmodule Game.Session.Process do
   end
 
   def init([socket]) do
-    socket |> Session.Login.start()
-    self() |> schedule_save()
-    self() |> schedule_inactive_check()
-
+    send(self(), :start)
     Logger.info("New session started #{inspect(self())}", type: :session)
     PlayerInstrumenter.session_started()
+    {:ok, clean_state(socket)}
+  end
 
-    state = %State{
+  def init([socket, user_id]) do
+    send(self(), {:recover_session, user_id})
+    PlayerInstrumenter.session_started()
+    Logger.info("Session recovering (#{user_id}) - #{inspect(self())}", type: :session)
+    {:ok, clean_state(socket)}
+  end
+
+  defp clean_state(socket) do
+    %State{
       socket: socket,
       state: "login",
       session_started_at: Timex.now(),
@@ -62,8 +69,6 @@ defmodule Game.Session.Process do
       commands: %{},
       stats: %SessionStats{}
     }
-
-    {:ok, state}
   end
 
   # On a disconnect unregister the PID and stop the server
@@ -217,6 +222,22 @@ defmodule Game.Session.Process do
   #
   # General callback
   #
+
+  def handle_info(:start, state) do
+    state.socket |> Session.Login.start()
+    self() |> schedule_save()
+    self() |> schedule_inactive_check()
+
+    {:noreply, state}
+  end
+
+  def handle_info({:recover_session, user_id}, state) do
+    state = Session.Login.recover_session(user_id, state)
+    self() |> schedule_save()
+    self() |> schedule_inactive_check()
+
+    {:noreply, state}
+  end
 
   def handle_info(:reenter, state = %{save: save}) do
     @room.enter(save.room_id, {:user, state.user})
