@@ -88,8 +88,9 @@ defmodule Web.TelnetChannel do
     end
 
     def init(socket) do
+      Process.flag(:trap_exit, true)
       GenServer.cast(self(), :start_session)
-      {:ok, %{socket: socket}}
+      {:ok, %{socket: socket, user_id: nil}}
     end
 
     def handle_cast({:command, _, command}, state) do
@@ -121,6 +122,7 @@ defmodule Web.TelnetChannel do
 
     def handle_cast(:start_session, state) do
       {:ok, pid} = Game.Session.start(self())
+      Process.link(pid)
       Monitor.monitor(self(), pid)
       GenServer.cast(self(), :attempt_sign_in)
       {:noreply, Map.merge(state, %{session: pid})}
@@ -164,7 +166,23 @@ defmodule Web.TelnetChannel do
 
     def handle_cast({:user_id, user_id}, state) do
       send(state.socket.channel_pid, {:user_id, user_id})
-      {:noreply, state}
+      {:noreply, %{state | user_id: user_id}}
+    end
+
+    def handle_info({:EXIT, _pid, :normal}, state), do: {:noreply, state}
+    def handle_info({:EXIT, pid, _reason}, state) do
+      case state.session do
+        ^pid ->
+          {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
+          Process.link(pid)
+
+          Monitor.demonitor(self())
+          Monitor.monitor(self(), pid)
+
+          {:noreply, %{state | session: pid}}
+        _ ->
+          {:stop, :error, state}
+      end
     end
   end
 
