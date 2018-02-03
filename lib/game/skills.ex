@@ -29,6 +29,13 @@ defmodule Game.Skills do
     end
   end
 
+  def skill(command) when is_binary(command) do
+    case :ets.lookup(@ets_table, command) do
+      [{_, skill}] -> skill
+      _ -> nil
+    end
+  end
+
   @spec skills([integer()]) :: [Skill.t()]
   def skills(ids) do
     ids
@@ -72,6 +79,7 @@ defmodule Game.Skills do
 
     Enum.each(skills, fn skill ->
       :ets.insert(@ets_table, {skill.id, skill})
+      :ets.insert(@ets_table, {skill.command, skill})
     end)
 
     {:noreply, state}
@@ -79,6 +87,7 @@ defmodule Game.Skills do
 
   def handle_call({:insert, skill}, _from, state) do
     :ets.insert(@ets_table, {skill.id, skill})
+    :ets.insert(@ets_table, {skill.command, skill})
     {:reply, :ok, state}
   end
 

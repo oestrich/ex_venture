@@ -6,6 +6,7 @@ defmodule Game.Help do
   require Logger
 
   alias Game.Help.Agent, as: HelpAgent
+  alias Game.Skills
 
   @doc """
   Basic help information
@@ -125,7 +126,7 @@ defmodule Game.Help do
       |> Enum.find(&match_built_in_topic?(&1, topic))
 
     case built_in do
-      nil -> "Unknown topic"
+      nil -> find_skill_topic(topic)
       built_in -> format_built_in_topic(built_in)
     end
   end
@@ -139,6 +140,23 @@ defmodule Game.Help do
     #{built_in.name}
 
     #{built_in.full}
+    """
+    |> String.trim()
+  end
+
+  def find_skill_topic(topic) do
+    case Skills.skill(String.downcase(topic)) do
+      nil -> "Unknown topic"
+      skill -> format_skill_topic(skill)
+    end
+  end
+
+  defp format_skill_topic(skill) do
+    """
+    {magenta}#{skill.name}{/magenta} - Level #{skill.level} - #{skill.points} sp
+    Command: {white}#{skill.command}{/white}
+
+    #{skill.description}
     """
     |> String.trim()
   end
