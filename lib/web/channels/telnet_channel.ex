@@ -7,6 +7,7 @@ defmodule Web.TelnetChannel do
 
   use Phoenix.Channel
 
+  alias Metrics.PlayerInstrumenter
   alias Web.User
 
   defmodule Monitor do
@@ -121,6 +122,7 @@ defmodule Web.TelnetChannel do
     end
 
     def handle_cast(:start_session, state) do
+      PlayerInstrumenter.session_started(:websocket)
       {:ok, pid} = Game.Session.start(self())
       Process.link(pid)
       Monitor.monitor(self(), pid)

@@ -44,13 +44,12 @@ defmodule Game.Session.Process do
   def init([socket]) do
     send(self(), :start)
     Logger.info("New session started #{inspect(self())}", type: :session)
-    PlayerInstrumenter.session_started()
     {:ok, clean_state(socket)}
   end
 
   def init([socket, user_id]) do
     send(self(), {:recover_session, user_id})
-    PlayerInstrumenter.session_started()
+    PlayerInstrumenter.session_recovered()
     Logger.info("Session recovering (#{user_id}) - #{inspect(self())}", type: :session)
     {:ok, clean_state(socket)}
   end

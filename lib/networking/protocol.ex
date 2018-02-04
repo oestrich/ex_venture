@@ -7,6 +7,7 @@ defmodule Networking.Protocol do
   require Logger
 
   alias Game.Color
+  alias Metrics.PlayerInstrumenter
   alias Networking.MSSP
 
   @behaviour :ranch_protocol
@@ -96,6 +97,7 @@ defmodule Networking.Protocol do
 
   def init(ref, socket, transport) do
     Logger.info("Player connecting", type: :socket)
+    PlayerInstrumenter.session_started(:telnet)
 
     :ok = :ranch.accept_ack(ref)
     :ok = transport.setopts(socket, [{:active, true}])
