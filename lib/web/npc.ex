@@ -391,4 +391,43 @@ defmodule Web.NPC do
         anything
     end
   end
+
+  #
+  # Trainable Skills
+  #
+
+  def add_trainable_skill(npc, skill_id) do
+    skill_ids =
+      [skill_id | npc.trainable_skills]
+      |> Enum.uniq()
+
+    changeset = npc |> NPC.trainable_skills_changeset(%{trainable_skills: skill_ids})
+
+    case changeset |> Repo.update() do
+      {:ok, npc} ->
+        push_update(npc)
+        {:ok, npc}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  def remove_trainable_skill(npc, skill_id) do
+    skill_ids =
+      npc.trainable_skills
+      |> List.delete(skill_id)
+      |> Enum.uniq()
+
+    changeset = npc |> NPC.trainable_skills_changeset(%{trainable_skills: skill_ids})
+
+    case changeset |> Repo.update() do
+      {:ok, npc} ->
+        push_update(npc)
+        {:ok, npc}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
 end

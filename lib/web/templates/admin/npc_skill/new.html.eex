@@ -1,0 +1,41 @@
+<section class="content-header">
+  <h1>
+    Add Skill
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("NPCs", to: npc_path(@conn, :index)) %></li>
+    <li><%= link(@npc.name, to: npc_path(@conn, :show, @npc.id)) %></li>
+    <li class="active">Add Skill</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Add Trainable Skill to NPC</h3>
+        </div>
+
+        <%= form_tag npc_skill_path(@conn, :create, @npc.id) do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :skill, :id %>
+              <%= select :skill, :id, @skills |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Add Item", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
