@@ -108,7 +108,11 @@ defmodule Web.Router do
       resources("/steps", QuestStepController, only: [:new, :create], as: :step)
     end
 
-    resources("/races", RaceController, only: [:index, :show, :new, :create, :edit, :update])
+    resources("/races", RaceController, only: [:index, :show, :new, :create, :edit, :update]) do
+      resources("/skills", RaceSkillController, only: [:new, :create], as: :skill)
+    end
+
+    resources "/race_skills", RaceSkillController, only: [:delete]
 
     resources("/room_items", RoomItemController, only: [:delete])
 

@@ -18,6 +18,7 @@ defmodule TestHelpers do
   alias Data.QuestRelation
   alias Data.QuestStep
   alias Data.Race
+  alias Data.RaceSkill
   alias Data.Repo
   alias Data.Room
   alias Data.RoomItem
@@ -244,6 +245,12 @@ defmodule TestHelpers do
   def create_class_skill(class, skill) do
     %ClassSkill{}
     |> ClassSkill.changeset(%{class_id: class.id, skill_id: skill.id})
+    |> Repo.insert!
+  end
+
+  def create_race_skill(race, skill) do
+    %RaceSkill{}
+    |> RaceSkill.changeset(%{race_id: race.id, skill_id: skill.id})
     |> Repo.insert!
   end
 

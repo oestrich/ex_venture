@@ -6,6 +6,7 @@ defmodule Web.Race do
   import Ecto.Query
 
   alias Data.Race
+  alias Data.RaceSkill
   alias Data.Repo
   alias Data.Stats
 
@@ -46,6 +47,8 @@ defmodule Web.Race do
   def get(id) do
     Race
     |> where([c], c.id == ^id)
+    |> preload(race_skills: ^from(cs in RaceSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id]))
+    |> preload(race_skills: [:skill])
     |> Repo.one()
   end
 
@@ -107,6 +110,34 @@ defmodule Web.Race do
 
       _ ->
         params
+    end
+  end
+
+  #
+  # Race Skills
+  #
+
+  @doc """
+  New changeset
+  """
+  @spec new_race_skill(Race.t()) :: Ecto.Changeset.t()
+  def new_race_skill(race) do
+    race
+    |> Ecto.build_assoc(:race_skills)
+    |> RaceSkill.changeset(%{})
+  end
+
+  def add_skill(race, skill_id) do
+    race
+    |> Ecto.build_assoc(:race_skills)
+    |> RaceSkill.changeset(%{skill_id: skill_id})
+    |> Repo.insert()
+  end
+
+  def remove_skill(id) do
+    case Repo.get(RaceSkill, id) do
+      nil -> {:error, :not_found}
+      race_skill -> Repo.delete(race_skill)
     end
   end
 end

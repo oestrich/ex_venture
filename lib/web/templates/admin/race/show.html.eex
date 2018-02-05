@@ -43,4 +43,49 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Skills</h3>
+          <div class="box-tools">
+            <%= link("Add Skill", to: race_skill_path(@conn, :new, @race.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Name</th>
+                <th>Tags</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@race.race_skills, fn (race_skill) -> %>
+                <tr>
+                  <td><%= race_skill.skill.level %></td>
+                  <td><%= link(race_skill.skill.name, to: skill_path(@conn, :show, race_skill.skill_id)) %></td>
+                  <td>
+                    <%= Enum.map(race_skill.skill.tags, fn (tag) -> %>
+                      <span class="label label-info"><%= tag %></span>
+                    <% end) %>
+                  </td>
+                  <td>
+                    <%= link("View", to: skill_path(@conn, :show, race_skill.skill_id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: skill_path(@conn, :edit, race_skill.skill_id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: race_skill_path(@conn, :delete, race_skill.id), method: :delete, class: "btn btn-warning btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

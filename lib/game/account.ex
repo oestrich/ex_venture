@@ -4,6 +4,7 @@ defmodule Game.Account do
   """
 
   alias Data.ClassSkill
+  alias Data.RaceSkill
   alias Data.Repo
   alias Data.Save
   alias Data.Skill
@@ -172,13 +173,19 @@ defmodule Game.Account do
       |> select([cs], cs.skill_id)
       |> Repo.all()
 
+    race_skill_ids =
+      RaceSkill
+      |> where([cs], cs.race_id == ^user.race_id)
+      |> select([cs], cs.skill_id)
+      |> Repo.all()
+
     global_skill_ids =
       Skill
       |> where([s], s.is_global == true)
       |> select([s], s.id)
       |> Repo.all()
 
-    skill_ids = class_skill_ids ++ global_skill_ids ++ user.save.skill_ids
+    skill_ids = class_skill_ids ++ race_skill_ids ++ global_skill_ids ++ user.save.skill_ids
     skill_ids = Enum.uniq(skill_ids)
 
     %{user | save: %{user.save | skill_ids: skill_ids}}

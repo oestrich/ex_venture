@@ -1,0 +1,19 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label f, :skill_id %>
+        <%= select f, :skill_id, @skills |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+        <%= error_tag f, :skill_id %>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

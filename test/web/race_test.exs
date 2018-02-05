@@ -1,6 +1,7 @@
 defmodule Web.RaceTest do
   use Data.ModelCase
 
+  alias Data.RaceSkill
   alias Web.Race
 
   test "creating a race" do
@@ -33,5 +34,21 @@ defmodule Web.RaceTest do
     {:ok, race} = Race.update(race.id, %{name: "Dwarf"})
 
     assert race.name == "Dwarf"
+  end
+
+  describe "race skills" do
+    setup do
+      %{race: create_race(), skill: create_skill()}
+    end
+
+    test "adding skills to a race", %{race: race, skill: skill} do
+      assert {:ok, %RaceSkill{}} = Race.add_skill(race, skill.id)
+    end
+
+    test "delete a skill from a race", %{race: race, skill: skill} do
+      {:ok, race_skill} = Race.add_skill(race, skill.id)
+
+      assert {:ok, _} = Race.remove_skill(race_skill.id)
+    end
   end
 end

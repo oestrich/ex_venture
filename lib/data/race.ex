@@ -5,12 +5,16 @@ defmodule Data.Race do
 
   use Data.Schema
 
+  alias Data.RaceSkill
   alias Data.Stats
 
   schema "races" do
     field(:name, :string)
     field(:description, :string)
     field(:starting_stats, Stats)
+
+    has_many(:race_skills, RaceSkill)
+    has_many(:skills, through: [:race_skills, :skill])
 
     timestamps()
   end

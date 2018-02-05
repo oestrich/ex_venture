@@ -69,7 +69,7 @@ defmodule Game.AccountTest do
     setup do
       user =
         create_user(%{name: "user", password: "password"})
-        |> Repo.preload([:class])
+        |> Repo.preload([:class, :race])
 
       start_and_clear_skills()
 
@@ -90,6 +90,17 @@ defmodule Game.AccountTest do
     test "ensure global skills are present", %{user: user} do
       skill = create_skill(%{is_global: true})
       insert_skill(skill)
+
+      user = Account.migrate_skills(user)
+
+      assert user.save.skill_ids == [skill.id]
+    end
+
+    test "ensure race skills are present", %{user: user} do
+      skill = create_skill()
+      insert_skill(skill)
+
+      create_race_skill(user.race, skill)
 
       user = Account.migrate_skills(user)
 
