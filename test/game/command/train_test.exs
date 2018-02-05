@@ -48,6 +48,25 @@ defmodule Game.Command.TrainTest do
       assert Regex.match?(~r(kick)i, echo)
     end
 
+    test "hides skills the player is not ready for - too high a level", %{state: state, guard: guard} do
+      start_and_clear_skills()
+
+      slash = %{name: "Slash", command: "slash"} |> create_skill() |> insert_skill()
+      kick = %{name: "Kick", command: "kick", level: 3} |> create_skill() |> insert_skill()
+
+      guard = %{guard | trainable_skills: [slash.id, kick.id]}
+
+      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+
+      state = %{state | save: %{state.save | level: 2}}
+
+      :ok = Train.run({:list}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(slash)i, echo)
+      refute Regex.match?(~r(kick)i, echo)
+    end
+
     test "no trainers in the room", %{state: state} do
       @room.set_room(Map.merge(@room._room(), %{npcs: []}))
 
@@ -126,6 +145,18 @@ defmodule Game.Command.TrainTest do
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(already known)i, echo)
+    end
+
+    test "not high enough level", %{state: state, guard: guard, slash: slash} do
+      slash |> Map.put(:level, 4) |> insert_skill()
+
+      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      state = %{state | save: %{state.save | level: 3}}
+
+      :ok = Train.run({:train, "slash"}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(not ready)i, echo)
     end
 
     test "no trainers in the room", %{state: state} do

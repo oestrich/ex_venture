@@ -76,6 +76,7 @@ defmodule Game.Command.Train do
           trainer.trainable_skills
           |> Skills.skills()
           |> filter_player_skills(save)
+          |> filter_skills_by_level(save)
 
         state.socket |> @socket.echo(Format.trainable_skills(trainer, skills))
       {:error, :more_than_one_trainer} ->
@@ -135,6 +136,7 @@ defmodule Game.Command.Train do
     trainer
     |> find_skill(skill_name, state)
     |> check_if_skill_known(state)
+    |> check_if_right_level(state)
     |> train_skill(state)
   end
 
@@ -159,6 +161,16 @@ defmodule Game.Command.Train do
     case Enum.member?(save.skill_ids, skill.id) do
       true ->
         state.socket |> @socket.echo("#{skill.name} is already known.")
+      false ->
+        skill
+    end
+  end
+
+  defp check_if_right_level(:ok, _state), do: :ok
+  defp check_if_right_level(skill, state = %{save: save}) do
+    case skill.level > save.level do
+      true ->
+        state.socket |> @socket.echo("You are not ready to learn #{skill.name}. Go experience the world more.")
       false ->
         skill
     end
@@ -200,6 +212,12 @@ defmodule Game.Command.Train do
   defp filter_player_skills(skills, save) do
     Enum.reject(skills, fn skill ->
       Enum.member?(save.skill_ids, skill.id)
+    end)
+  end
+
+  defp filter_skills_by_level(skills, save) do
+    Enum.reject(skills, fn skill ->
+      skill.level > save.level
     end)
   end
 end
