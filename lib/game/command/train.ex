@@ -106,10 +106,7 @@ defmodule Game.Command.Train do
 
     case one_trainer(room.npcs) do
       {:ok, trainer} ->
-        trainer
-        |> find_skill(skill_name, state)
-        |> check_if_skill_known(state)
-        |> train_skill(state)
+        trainer |> maybe_train_skill(skill_name, state)
 
       {:error, :more_than_one_trainer} ->
         state.socket |> @socket.echo("There are more than one trainer in this room. Please refer by name")
@@ -126,15 +123,19 @@ defmodule Game.Command.Train do
 
     case find_trainer(room.npcs, npc_name) do
       {:ok, trainer} ->
-        trainer
-        |> find_skill(skill_name, state)
-        |> check_if_skill_known(state)
-        |> train_skill(state)
+        trainer |> maybe_train_skill(skill_name, state)
 
       {:error, :not_found} ->
         state.socket |> @socket.echo("There are no trainers by that name in this room. Go find them!")
         :ok
     end
+  end
+
+  defp maybe_train_skill(trainer, skill_name, state) do
+    trainer
+    |> find_skill(skill_name, state)
+    |> check_if_skill_known(state)
+    |> train_skill(state)
   end
 
   defp find_skill(trainer, skill_name, state) do
