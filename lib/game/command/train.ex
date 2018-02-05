@@ -33,6 +33,12 @@ defmodule Game.Command.Train do
       iex> Game.Command.Train.parse("train list from guard")
       {:list, "guard"}
 
+      iex> Game.Command.Train.parse("train skill")
+      {:train, "skill"}
+
+      iex> Game.Command.Train.parse("train skill from guard")
+      {:train, "skill", :from, "guard"}
+
       iex> Game.Command.Train.parse("train")
       {:error, :bad_parse, "train"}
 
@@ -42,6 +48,18 @@ defmodule Game.Command.Train do
   def parse(command)
   def parse("train list"), do: {:list}
   def parse("train list from " <> name), do: {:list, name}
+  def parse("train " <> string), do: parse_train_command(string)
+
+  @doc """
+  Find skill name and the trainer
+  """
+  @spec parse_train_command(String.t()) :: :ok
+  def parse_train_command(string) do
+    case Regex.run(~r/(?<skill>.+) from (?<shop>.+)/i, string, capture: :all) do
+      nil -> {:train, string}
+      [_string, skill_name, shop_name] -> {:train, skill_name, :from, shop_name}
+    end
+  end
 
   @impl Game.Command
   @doc """
@@ -81,6 +99,81 @@ defmodule Game.Command.Train do
     end
 
     :ok
+  end
+
+  def run({:train, skill_name}, state = %{save: save}) do
+    room = @room.look(save.room_id)
+
+    case one_trainer(room.npcs) do
+      {:ok, trainer} ->
+        trainer
+        |> find_skill(skill_name, state)
+        |> check_if_skill_known(state)
+        |> train_skill(state)
+
+      {:error, :more_than_one_trainer} ->
+        state.socket |> @socket.echo("There are more than one trainer in this room. Please refer by name")
+        :ok
+
+      {:error, :not_found} ->
+        state.socket |> @socket.echo("There are no trainers in this room. Go find some!")
+        :ok
+    end
+  end
+
+  def run({:train, skill_name, :from, npc_name}, state = %{save: save}) do
+    room = @room.look(save.room_id)
+
+    case find_trainer(room.npcs, npc_name) do
+      {:ok, trainer} ->
+        trainer
+        |> find_skill(skill_name, state)
+        |> check_if_skill_known(state)
+        |> train_skill(state)
+
+      {:error, :not_found} ->
+        state.socket |> @socket.echo("There are no trainers by that name in this room. Go find them!")
+        :ok
+    end
+  end
+
+  defp find_skill(trainer, skill_name, state) do
+    skill =
+      trainer.trainable_skills
+      |> Skills.skills()
+      |> Enum.find(&Utility.matches?(&1, skill_name))
+
+    case skill do
+      nil ->
+        state.socket |> @socket.echo("Could not find skill \"#{skill_name}\"")
+        :ok
+
+      skill ->
+        skill
+    end
+  end
+
+  defp check_if_skill_known(:ok, _state), do: :ok
+  defp check_if_skill_known(skill, state = %{save: save}) do
+    case Enum.member?(save.skill_ids, skill.id) do
+      true ->
+        state.socket |> @socket.echo("#{skill.name} is already known.")
+      false ->
+        skill
+    end
+  end
+
+  defp train_skill(:ok, _state), do: :ok
+  defp train_skill(skill, state = %{user: user, save: save}) do
+    state.socket |> @socket.echo("#{skill.name} trained successfully!")
+
+    skill_ids = Enum.uniq([skill.id | save.skill_ids])
+
+    save = %{save | skill_ids: skill_ids}
+    user = %{user | save: save}
+    state = %{state | user: user, save: save}
+
+    {:update, state}
   end
 
   defp one_trainer(npcs) do
