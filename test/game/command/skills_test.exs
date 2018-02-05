@@ -43,12 +43,32 @@ defmodule Game.Command.SkillsTest do
     assert {:error, :bad_parse, "look"} = Skills.parse_skill("look", state.user)
   end
 
-  test "view skill information", %{state: state} do
-    :ok = Skills.run({}, state)
+  describe "viewing skills" do
+    setup do
+      %{level: 5, name: "Kick"}
+      |> create_skill()
+      |> insert_skill()
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(slash), look)
-    assert Regex.match?(~r(2sp), look)
+      :ok
+    end
+
+    test "view skill information", %{state: state} do
+      :ok = Skills.run({}, state)
+
+      [{_socket, look}] = @socket.get_echos()
+      assert Regex.match?(~r(slash), look)
+      assert Regex.match?(~r(2sp), look)
+
+      refute Regex.match?(~r(kick)i, look)
+    end
+
+    test "view skill information -all", %{state: state} do
+      :ok = Skills.run({:all}, state)
+
+      [{_socket, look}] = @socket.get_echos()
+      assert Regex.match?(~r(slash)i, look)
+      refute Regex.match?(~r(kick)i, look)
+    end
   end
 
   test "using a skill", %{state: state, save: save, slash: slash} do
