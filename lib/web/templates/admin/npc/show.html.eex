@@ -147,6 +147,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th>Level</th>
                   <th>Name</th>
                   <th>Actions</th>
                 </tr>
@@ -155,6 +156,7 @@
                 <%= Enum.map skills(@npc), fn (skill) -> %>
                   <tr>
                     <td><%= skill.id %></td>
+                    <td><%= skill.level %></td>
                     <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
                     <td>
                       <%= link(to: npc_skill_path(@conn, :delete, @npc.id, skill.id), method: "delete", data: [confirm: "Are you sure?"], class: "btn btn-default btn-xs") do %>
