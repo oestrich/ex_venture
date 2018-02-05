@@ -32,7 +32,7 @@
           </div>
 
           <div class="box-footer">
-            <%= submit "Add Item", class: "btn btn-primary" %>
+            <%= submit "Add Skill", class: "btn btn-primary" %>
           </div>
         <% end %>
       </div>
