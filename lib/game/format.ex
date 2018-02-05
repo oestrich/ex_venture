@@ -807,4 +807,20 @@ defmodule Game.Format do
         " - Kill #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
     end
   end
+
+  @doc """
+  List out skills that a trainer will give
+  """
+  @spec trainable_skills(NPC.t(), [Skill.t()]) :: String.t()
+  def trainable_skills(trainer, skills) do
+    rows =
+      skills
+      |> Enum.map(fn skill ->
+        [to_string(skill.id), skill.name, skill.command]
+      end)
+
+    rows = [["ID", "Name", "Command"] | rows]
+
+    Table.format("#{npc_name(trainer)} will train these skills:", rows, [5, 30, 20])
+  end
 end

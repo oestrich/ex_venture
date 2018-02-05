@@ -13,6 +13,7 @@ defmodule Test.Game.Room do
       exits: [%{north_id: 2, south_id: 1}],
       zone_id: 1,
       players: [],
+      npcs: [],
       items: [],
       shops: [],
       x: 0,
