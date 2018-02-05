@@ -59,6 +59,13 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :is_trainer do %>
+          <%= checkbox f, :is_trainer %> Is a skill tainer?
+        <% end %>
+        <%= error_tag f, :is_trainer %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :stats %>
         <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 12 %>
         <%= error_tag f, :stats %>

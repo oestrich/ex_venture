@@ -161,4 +161,25 @@ defmodule Web.NPCTest do
     state = Game.NPC._get_state(npc_spawner.id)
     assert state.npc.npc_items == []
   end
+
+  describe "trainable skills" do
+    setup do
+      npc = create_npc(%{is_trainer: true})
+      skill = create_skill()
+      %{npc: npc, skill: skill}
+    end
+
+    test "adding a new skill", %{npc: npc, skill: skill} do
+      {:ok, npc} = NPC.add_trainable_skill(npc, skill.id)
+
+      assert npc.trainable_skills == [skill.id]
+    end
+
+    test "removing a new skill", %{npc: npc, skill: skill} do
+      {:ok, npc} = NPC.add_trainable_skill(npc, skill.id)
+      {:ok, npc} = NPC.remove_trainable_skill(npc, skill.id)
+
+      assert npc.trainable_skills == []
+    end
+  end
 end

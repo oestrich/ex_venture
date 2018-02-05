@@ -9,6 +9,7 @@ defmodule Test.SkillsHelper do
   def insert_skill(skill) do
     Skills.insert(skill)
     ensure_process_caught_up(Skills)
+    skill
   end
 
   def ensure_process_caught_up(pid) do

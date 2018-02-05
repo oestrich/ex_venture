@@ -39,6 +39,9 @@ defmodule Game.Command.Skills do
       iex> Game.Command.Skills.parse("skills")
       {}
 
+      iex> Game.Command.Skills.parse("skills all")
+      {:all}
+
       iex> Game.Command.Skills.parse("skills hi")
       {:error, :bad_parse, "skills hi"}
 
@@ -47,6 +50,7 @@ defmodule Game.Command.Skills do
   """
   def parse(command)
   def parse("skills"), do: {}
+  def parse("skills all"), do: {:all}
 
   @doc """
   Parse skill specific commands
@@ -82,6 +86,16 @@ defmodule Game.Command.Skills do
       save.skill_ids
       |> Skills.skills()
       |> Enum.filter(&(&1.level <= save.level))
+      |> Enum.sort_by(&(&1.level))
+
+    socket |> @socket.echo(Format.skills(skills))
+    :ok
+  end
+
+  def run({:all}, %{socket: socket, save: save}) do
+    skills =
+      save.skill_ids
+      |> Skills.skills()
       |> Enum.sort_by(&(&1.level))
 
     socket |> @socket.echo(Format.skills(skills))

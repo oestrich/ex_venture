@@ -26,6 +26,9 @@ defmodule Data.NPC do
     field(:description, :string, default: "{status_line}")
     field(:is_quest_giver, :boolean, default: false)
 
+    field(:is_trainer, :boolean, default: false)
+    field(:trainable_skills, {:array, :integer}, default: [])
+
     field(:currency, :integer, default: 0)
 
     has_many(:npc_items, NPCItem)
@@ -48,7 +51,8 @@ defmodule Data.NPC do
       :script,
       :status_line,
       :description,
-      :is_quest_giver
+      :is_quest_giver,
+      :is_trainer
     ])
     |> validate_required([
       :name,
@@ -60,13 +64,21 @@ defmodule Data.NPC do
       :events,
       :status_line,
       :description,
-      :is_quest_giver
+      :is_quest_giver,
+      :is_trainer
     ])
     |> validate_stats()
     |> Event.validate_events()
     |> Script.validate_script()
     |> validate_script()
     |> validate_status_line()
+  end
+
+  def trainable_skills_changeset(struct, params) do
+    struct
+    |> cast(params, [:trainable_skills])
+    |> validate_required([:trainable_skills])
+    |> validate_is_trainer()
   end
 
   defp validate_stats(changeset) do
@@ -120,6 +132,13 @@ defmodule Data.NPC do
           :script,
           "cannot include a conversation that has a trigger with quest"
         )
+    end
+  end
+
+  defp validate_is_trainer(changeset) do
+    case get_field(changeset, :is_trainer) do
+      true -> changeset
+      false -> add_error(changeset, :trainable_skills, "not a trainer")
     end
   end
 end

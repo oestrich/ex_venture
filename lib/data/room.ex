@@ -33,7 +33,8 @@ defmodule Data.Room do
     field(:currency, :integer)
     field(:items, {:array, Item.Instance})
 
-    field(:players, {:array, :tuple}, virtual: true)
+    field(:players, {:array, :map}, default: [], virtual: true)
+    field(:npcs, {:array, :map}, default: [], virtual: true)
 
     field(:x, :integer)
     field(:y, :integer)

@@ -98,6 +98,7 @@ defmodule Game.Command do
     Command.Quit,
     Command.Shops,
     Command.Tell,
+    Command.Train,
     Command.Typo,
     Command.Use,
     Command.Version,

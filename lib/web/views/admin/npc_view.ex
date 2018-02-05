@@ -4,6 +4,7 @@ defmodule Web.Admin.NPCView do
 
   alias Data.Event
   alias Data.Stats
+  alias Game.Skills
   alias Web.Admin.SharedView
   alias Web.Zone
 
@@ -40,5 +41,9 @@ defmodule Web.Admin.NPCView do
 
   def custom_name?(%{name: name}) do
     name != "" && !is_nil(name)
+  end
+
+  def skills(npc) do
+    Skills.skills(npc.trainable_skills)
   end
 end

@@ -55,6 +55,10 @@
               <td><%= @npc.is_quest_giver %></td>
             </tr>
             <tr>
+              <th>Is a skill trainer?</th>
+              <td><%= @npc.is_trainer %></td>
+            </tr>
+            <tr>
               <th>Notes</th>
               <td>
                 <%= if @npc.notes != nil do %>
@@ -127,6 +131,45 @@
       </div>
     </div>
   </div>
+
+  <%= if @npc.is_trainer do %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Skills</h3>
+            <div class="box-tools">
+              <%= link("Add Trainable Skill", to: npc_skill_path(@conn, :new, @npc.id), class: "btn btn-primary") %>
+            </div>
+          </div>
+          <div class="box-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= Enum.map skills(@npc), fn (skill) -> %>
+                  <tr>
+                    <td><%= skill.id %></td>
+                    <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
+                    <td>
+                      <%= link(to: npc_skill_path(@conn, :delete, @npc.id, skill.id), method: "delete", data: [confirm: "Are you sure?"], class: "btn btn-default btn-xs") do %>
+                        <i class="fa fa-times"></i>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 
   <div class="row">
     <div class="col-md-12">
