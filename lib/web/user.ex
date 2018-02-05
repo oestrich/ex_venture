@@ -90,6 +90,12 @@ defmodule Web.User do
   def new(), do: %User{} |> User.changeset(%{})
 
   @doc """
+  Get a changeset for an edit page
+  """
+  @spec edit(User.t()) :: changeset :: map
+  def edit(user), do: user |> User.changeset(%{})
+
+  @doc """
   Create a new user
   """
   @spec create(params :: map) :: {:ok, User.t()} | {:error, changeset :: map}
@@ -113,6 +119,17 @@ defmodule Web.User do
     %User{}
     |> User.changeset(params)
     |> Repo.insert()
+  end
+
+  @doc """
+  Update a user
+  """
+  @spec update(integer(), map()) :: {:ok, User.t()} | {:error, changeset :: map}
+  def update(id, params) do
+    id
+    |> get()
+    |> User.changeset(params)
+    |> Repo.update()
   end
 
   @doc """

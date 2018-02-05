@@ -17,6 +17,23 @@ defmodule Web.Admin.UserController do
     conn |> render("show.html", user: user)
   end
 
+  def edit(conn, %{"id" => id}) do
+    user = User.get(id)
+    changeset = User.edit(user)
+    conn |> render("edit.html", user: user, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "user" => params}) do
+    case User.update(id, params) do
+      {:ok, user} ->
+        conn |> redirect(to: user_path(conn, :show, user.id))
+
+      {:error, changeset} ->
+        user = User.get(id)
+        conn |> render("edit.html", user: user, changeset: changeset)
+    end
+  end
+
   def watch(conn, %{"user_id" => id}) do
     user = User.get(id)
     conn |> render("watch.html", user: user)

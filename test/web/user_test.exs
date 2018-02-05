@@ -47,6 +47,12 @@ defmodule Web.UserTest do
     assert user.name == "player"
   end
 
+  test "update a player", %{user: user} do
+    {:ok, user} = User.update(user.id, %{"email" => "new@example.com"})
+
+    assert user.email == "new@example.com"
+  end
+
   describe "reset a user" do
     setup do
       create_config(:starting_save, base_save() |> Poison.encode!)

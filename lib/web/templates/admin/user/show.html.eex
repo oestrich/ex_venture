@@ -13,6 +13,8 @@
           <div class="box-tools">
             <%= if online?(@user) do %>
               <%= link("Watch", to: user_watch_path(@conn, :watch, @user.id), class: "btn btn-warning") %>
+            <% else %>
+              <%= link("Edit", to: user_path(@conn, :edit, @user.id), class: "btn btn-primary") %>
             <% end %>
             <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
           </div>
