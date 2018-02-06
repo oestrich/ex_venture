@@ -28,6 +28,9 @@ defmodule Game.Command.Say do
       iex> Game.Command.Say.parse("say hello")
       {"hello"}
 
+      iex> Game.Command.Say.parse("'hello")
+      {"hello"}
+
       iex> Game.Command.Say.parse("say")
       {:error, :bad_parse, "say"}
 
@@ -35,7 +38,8 @@ defmodule Game.Command.Say do
       {:error, :bad_parse, "unknown"}
   """
   def parse(command)
-  def parse("say " <> name), do: {name}
+  def parse("say " <> string), do: {string}
+  def parse("'" <> string), do: {string}
 
   @impl Game.Command
   @doc """
