@@ -9,6 +9,7 @@ defmodule Web.Room do
   alias Data.Item
   alias Data.NPCSpawner
   alias Data.Room
+  alias Data.Room.Feature
   alias Data.RoomItem
   alias Data.Repo
   alias Data.Zone
@@ -228,5 +229,48 @@ defmodule Web.Room do
           Game.Room.update(room.id, room)
       end
     end)
+  end
+
+  #
+  # Features
+  #
+
+  @doc """
+  Add a feature to a room
+  """
+  @spec add_feature(Room.t(), map()) :: {:ok, Room.t()} | {:error, Ecto.Changeset.t()}
+  def add_feature(room, feature) do
+    {:ok, feature} = Feature.load(feature)
+    changeset = room |> Room.feature_changeset(%{features: [feature | room.features]})
+
+    case changeset |> Repo.update() do
+      {:ok, room} ->
+        Game.Room.update(room.id, room)
+        {:ok, room}
+
+      anything ->
+        anything
+    end
+  end
+
+  @doc """
+  Delete a room feature from a room
+  """
+  @spec delete_feature(Room.t(), String.t()) :: {:ok, Room.t} | {:error, Ecto.Changeset.t()}
+  def delete_feature(room, feature_id) do
+    features =
+      room.features
+      |> Enum.reject(& &1.id == feature_id)
+
+    changeset = room |> Room.feature_changeset(%{features: features})
+
+    case changeset |> Repo.update() do
+      {:ok, room} ->
+        Game.Room.update(room.id, room)
+        {:ok, room}
+
+      anything ->
+        anything
+    end
   end
 end

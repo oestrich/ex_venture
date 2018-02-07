@@ -110,4 +110,25 @@ defmodule Web.RoomTest do
     state = Game.Room._get_state(room2.id)
     assert state.room.exits |> length() == 0
   end
+
+  describe "room features" do
+    test "add a new room feature", %{zone: zone} do
+      {:ok, room} = Room.create(zone, room_attributes(%{}))
+
+      {:ok, _feature} = Room.add_feature(room, %{"key" => "log", "short_description" => "short", "description" => "Long"})
+
+      state = Game.Room._get_state(room.id)
+      assert state.room.features |> length() == 1
+    end
+
+    test "remove a room feature", %{zone: zone} do
+      {:ok, room} = Room.create(zone, room_attributes(%{}))
+
+      {:ok, feature} = Room.add_feature(room, %{"key" => "log", "short_description" => "short", "description" => "Long"})
+      {:ok, _feature} = Room.delete_feature(room, feature.id)
+
+      state = Game.Room._get_state(room.id)
+      assert state.room.features |> length() == 0
+    end
+  end
 end
