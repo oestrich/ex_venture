@@ -80,6 +80,7 @@ defmodule Game.Command.Look do
     |> maybe_look_item(name, state)
     |> maybe_look_npc(name, state)
     |> maybe_look_player(name, state)
+    |> maybe_look_feature(name, state)
     |> could_not_find(name, state)
 
     :ok
@@ -130,6 +131,21 @@ defmodule Game.Command.Look do
 
       player ->
         socket |> @socket.echo(Format.player_full(player))
+        :ok
+    end
+  end
+
+  defp maybe_look_feature(:ok, _name, _state), do: :ok
+
+  defp maybe_look_feature(room, key, %{socket: socket}) do
+    feature = room.features |> Enum.find(&Utility.matches?(&1.key, key))
+
+    case feature do
+      nil ->
+        room
+
+      feature ->
+        socket |> @socket.echo(feature.description)
         :ok
     end
   end
