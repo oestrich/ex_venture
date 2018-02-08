@@ -66,6 +66,7 @@ defmodule Game.FormatTest do
         npcs: [%{name: "Bandit", status_line: "{name} is here."}],
         exits: [%{south_id: 1}, %{west_id: 1}],
         shops: [%{name: "Hole in the Wall"}],
+        features: [%{key: "log", short_description: "A log"}],
       }
 
       items = [%{name: "Sword"}]
@@ -108,6 +109,10 @@ defmodule Game.FormatTest do
 
     test "includes the shops", %{room: room, items: items, map: map} do
       assert Regex.match?(~r/Hole in the Wall/, Format.room(room, items, map))
+    end
+
+    test "includes features", %{room: room, items: items, map: map} do
+      assert Regex.match?(~r/log/, Format.room(room, items, map))
     end
   end
 

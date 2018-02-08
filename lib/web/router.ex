@@ -119,6 +119,8 @@ defmodule Web.Router do
     resources "/rooms", RoomController, only: [:show, :edit, :update] do
       resources("/exits", RoomExitController, only: [:new, :create], as: :exit)
 
+      resources("/features", RoomFeatureController, only: [:new, :create, :edit, :update, :delete], as: :feature)
+
       resources("/items", RoomItemController, only: [:new, :create])
 
       resources("/shops", ShopController, only: [:new, :create])

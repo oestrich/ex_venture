@@ -7,6 +7,7 @@ defmodule Data.Room do
 
   alias Data.Exit
   alias Data.Item
+  alias Data.Room.Feature
   alias Data.Shop
   alias Data.Zone
 
@@ -32,6 +33,7 @@ defmodule Data.Room do
     field(:description, :string)
     field(:currency, :integer)
     field(:items, {:array, Item.Instance})
+    field(:features, {:array, Feature}, default: [])
 
     field(:players, {:array, :map}, default: [], virtual: true)
     field(:npcs, {:array, :map}, default: [], virtual: true)
@@ -88,6 +90,13 @@ defmodule Data.Room do
       :is_graveyard
     ])
     |> validate_inclusion(:ecology, @ecologies)
+  end
+
+  def feature_changeset(struct, params) do
+    struct
+    |> cast(params, [:features])
+    |> validate_required([:features])
+    |> Feature.validate_features()
   end
 
   def exits(room) do

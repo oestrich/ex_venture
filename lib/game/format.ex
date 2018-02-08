@@ -134,16 +134,26 @@ defmodule Game.Format do
   """
   @spec room(Room.t(), [Item.t()], Map.t()) :: String.t()
   def room(room, items, map) do
+    description = "#{room.description} #{room.features |> features() |> Enum.join(" ")}"
+
     """
     {green}#{room.name}{/green}
     #{underline(room.name)}
-    #{room.description |> wrap()}\n
+    #{description |> wrap()}\n
     #{map}
 
     #{who_is_here(room)}
     #{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
     """
     |> String.trim()
+  end
+
+  @doc """
+  Display room features
+  """
+  def features([]), do: []
+  def features([feature | list]) do
+    [String.replace(feature.short_description, feature.key, "{white}#{feature.key}{/white}") | features(list)]
   end
 
   @doc """

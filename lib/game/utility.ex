@@ -20,9 +20,10 @@ defmodule Game.Utility do
       false
   """
   @spec matches?(map(), String.t()) :: boolean()
-  def matches?(struct, lookup) do
-    String.starts_with?(struct.name |> String.downcase(), lookup |> String.downcase())
+  def matches?(string, lookup) when is_binary(string) do
+    String.starts_with?(string |> String.downcase(), lookup |> String.downcase())
   end
+  def matches?(struct, lookup), do: matches?(struct.name, lookup)
 
   @doc """
   Match a name at the start of a string

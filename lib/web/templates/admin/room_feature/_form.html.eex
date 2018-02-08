@@ -1,0 +1,30 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_tag @path, method: form_method(@feature) do %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label :feature, :key %>
+        <%= text_input :feature, :key, value: Map.get(@feature, :key, ""), class: "form-control" %>
+        <span class="help-block">This will be used as the lookup key for the <code>look</code> command</span
+      </div>
+
+      <div class="form-group">
+        <%= label :feature, :short_description %>
+        <%= text_input :feature, :short_description, value: Map.get(@feature, :short_description, ""), class: "form-control" %>
+        <span class="help-block">The key should be included in this description, it will be color coded white to show it can be looked at further</span>
+      </div>
+
+      <div class="form-group">
+        <%= label :feature, :description %>
+        <%= textarea :feature, :description, value: Map.get(@feature, :description, ""), class: "form-control", rows: 5 %>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
