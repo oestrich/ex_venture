@@ -96,6 +96,7 @@ defmodule Data.Room do
     struct
     |> cast(params, [:features])
     |> validate_required([:features])
+    |> Feature.validate_features()
   end
 
   def exits(room) do

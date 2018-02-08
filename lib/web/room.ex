@@ -236,6 +236,16 @@ defmodule Web.Room do
   #
 
   @doc """
+  Get a room feature
+  """
+  @spec get_feature(Room.t(), String.t()) :: map()
+  def get_feature(room, id) do
+    Enum.find(room.features, fn feature ->
+      feature.id == id
+    end)
+  end
+
+  @doc """
   Add a feature to a room
   """
   @spec add_feature(Room.t(), map()) :: {:ok, Room.t()} | {:error, Ecto.Changeset.t()}
@@ -248,8 +258,34 @@ defmodule Web.Room do
         Game.Room.update(room.id, room)
         {:ok, room}
 
-      anything ->
-        anything
+      {:error, _} ->
+        {:error, Map.put(feature, :id, nil)}
+    end
+  end
+
+  @doc """
+  Edit a room feature from a room
+  """
+  @spec edit_feature(Room.t(), String.t(), map()) :: {:ok, Room.t} | {:error, Ecto.Changeset.t()}
+  def edit_feature(room, feature_id, params) do
+    features =
+      room.features
+      |> Enum.reject(& &1.id == feature_id)
+
+    {:ok, feature} =
+      params
+      |> Map.put("id", feature_id)
+      |> Feature.load()
+
+    changeset = room |> Room.feature_changeset(%{features: [feature | features]})
+
+    case changeset |> Repo.update() do
+      {:ok, room} ->
+        Game.Room.update(room.id, room)
+        {:ok, room}
+
+      {:error, _} ->
+        {:error, feature}
     end
   end
 

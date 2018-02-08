@@ -5,6 +5,8 @@ defmodule Data.Room.Feature do
 
   @behaviour Ecto.Type
 
+  import Ecto.Changeset
+
   defstruct [:id, :key, :short_description, :description]
 
   @impl Ecto.Type
@@ -40,4 +42,22 @@ defmodule Data.Room.Feature do
   @impl Ecto.Type
   def dump(feature) when is_map(feature), do: {:ok, Map.delete(feature, :__struct__)}
   def dump(_), do: :error
+
+  def validate_features(changeset) do
+    case get_field(changeset, :features) do
+      nil -> changeset
+      features ->
+        case Enum.all?(features, &valid?/1) do
+          true -> changeset
+          false -> add_error(changeset, :features, "is invalid")
+        end
+    end
+  end
+
+  def valid?(feature) do
+    feature.id != "" && !is_nil(feature.id) &&
+      feature.key != "" && !is_nil(feature.key) &&
+      feature.description != "" && !is_nil(feature.description) &&
+      feature.short_description != "" && !is_nil(feature.short_description)
+  end
 end

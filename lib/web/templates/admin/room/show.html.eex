@@ -183,6 +183,50 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
+          <h3 class="box-title">Room Features</h3>
+
+          <div class="box-tools">
+            <%= link("New Feature", to: room_feature_path(@conn, :new, @room.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Key</th>
+                <th>Short Description</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@room.features, fn (feature) -> %>
+                <tr>
+                  <td><%= feature.id %></td>
+                  <td><%= feature.key %></td>
+                  <td><%= feature.short_description %></td>
+                  <td><%= feature.description %></td>
+                  <td>
+                    <%= link("Edit", to: room_feature_path(@conn, :edit, @room.id, feature.id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: room_feature_path(@conn, :delete, @room.id, feature.id), method: :delete, class: "btn btn-warning btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
           <h3 class="box-title">Shops</h3>
           <div class="box-tools">
             <%= link("New Shop", to: room_shop_path(@conn, :new, @room.id), class: "btn btn-primary") %>
