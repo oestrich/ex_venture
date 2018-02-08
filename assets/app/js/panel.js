@@ -6,15 +6,11 @@ import format from "./color"
 let scrollToBottom = (callback) => {
   let panel = _.first(Sizzle(".panel"))
 
-  let willScroll = panel.scrollHeight - panel.scrollTop - panel.offsetHeight < 0;
-
   if (callback != undefined) {
     callback();
   }
 
-  if (willScroll) {
-    panel.scrollTop = panel.scrollHeight;
-  }
+  panel.scrollTop = panel.scrollHeight;
 }
 
 let appendMessage = (payload) => {
