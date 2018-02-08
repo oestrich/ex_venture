@@ -19,6 +19,11 @@ defmodule Game.FormatTest do
       assert Format.wrap(line) ==
         "{blue}this{/blue} line {yellow}will be{/yellow} split up into two lines because it is longer than 80\ncharacters"
     end
+
+    test "wraps and does not chuck newlines" do
+      assert Format.wrap("hi\nthere") == "hi\nthere"
+      assert Format.wrap("hi\n\n\nthere") == "hi\n\n\nthere"
+    end
   end
 
   describe "inventory formatting" do

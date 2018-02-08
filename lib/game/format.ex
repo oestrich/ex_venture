@@ -194,6 +194,7 @@ defmodule Game.Format do
   @spec wrap(String.t()) :: String.t()
   def wrap(string) do
     string
+    |> String.replace("\n", " {newline} ")
     |> String.split()
     |> _wrap("", "")
   end
@@ -210,12 +211,25 @@ defmodule Game.Format do
 
   defp _wrap([], line, string), do: join(string, line, "\n")
 
+  defp _wrap(["{newline}" | left], line, string) do
+    case string do
+      "" ->
+        _wrap(left, "", line)
+
+      _ ->
+        _wrap(left, "", Enum.join([string, line], "\n"))
+    end
+  end
+
   defp _wrap([word | left], line, string) do
     test_line = "#{line} #{word}" |> Color.strip_color()
 
     case String.length(test_line) do
-      len when len < 80 -> _wrap(left, join(line, word, " "), string)
-      _ -> _wrap(left, word, join(string, line, "\n"))
+      len when len < 80 ->
+        _wrap(left, join(line, word, " "), string)
+
+      _ ->
+        _wrap(left, word, join(string, line, "\n"))
     end
   end
 
