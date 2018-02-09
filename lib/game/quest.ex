@@ -35,6 +35,18 @@ defmodule Game.Quest do
     |> Repo.one()
   end
 
+  @doc """
+  Get the current tracked quest
+  """
+  @spec current_tracked_quest(User.t()) :: QuestProgress.t() | nil
+  def current_tracked_quest(user) do
+    QuestProgress
+    |> where([qp], qp.user_id == ^user.id and qp.is_tracking == true)
+    |> preloads()
+    |> limit(1)
+    |> Repo.one()
+  end
+
   defp preloads(quest) do
     quest |> preload(quest: [:giver, quest_steps: [:item, :npc]])
   end
@@ -225,5 +237,34 @@ defmodule Game.Quest do
         _ -> false
       end
     end)
+  end
+
+  @doc """
+  Set a quest as being tracked, clears other quests they have and sets this one
+  """
+  @spec track_quest(User.t(), Quest.t()) :: :ok | {:error, :not_started}
+  def track_quest(user, quest_id) do
+    case progress_for(user, quest_id) do
+      nil -> {:error, :not_started}
+      quest_progress -> _track_quest(user, quest_progress)
+    end
+  end
+
+  defp _track_quest(user, quest_progress) do
+    reset_query =
+      QuestProgress
+      |> where([qp], qp.user_id == ^user.id and qp.quest_id == ^quest_progress.quest_id)
+
+    track_changeset = quest_progress |> QuestProgress.changeset(%{is_tracking: true})
+
+    multi =
+      Ecto.Multi.new
+      |> Ecto.Multi.update_all(:reset_tracking, reset_query, set: [is_tracking: false])
+      |> Ecto.Multi.update(:track, track_changeset)
+
+    case multi |> Repo.transaction() do
+      {:ok, _} -> {:ok, quest_progress}
+      _ -> :error
+    end
   end
 end

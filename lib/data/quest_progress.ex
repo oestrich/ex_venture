@@ -41,6 +41,7 @@ defmodule Data.QuestProgress do
   schema "quest_progress" do
     field(:status, :string, default: "active")
     field(:progress, Progress, default: %{})
+    field(:is_tracking, :boolean, default: false)
 
     belongs_to(:quest, Quest)
     belongs_to(:user, User)
@@ -50,8 +51,8 @@ defmodule Data.QuestProgress do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:status, :progress, :user_id, :quest_id])
-    |> validate_required([:status, :progress, :user_id, :quest_id])
+    |> cast(params, [:status, :progress, :is_tracking, :user_id, :quest_id])
+    |> validate_required([:status, :progress, :is_tracking, :user_id, :quest_id])
     |> validate_inclusion(:status, @statuses)
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:quest_id)

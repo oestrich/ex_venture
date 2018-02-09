@@ -54,6 +54,12 @@ defmodule Game.Command.Quest do
       iex> Game.Command.Quest.parse("quest info 10")
       {:show, "10"}
 
+      iex> Game.Command.Quest.parse("quest info")
+      {:show, :tracked}
+
+      iex> Game.Command.Quest.parse("quest track 10")
+      {:track, "10"}
+
       iex> Game.Command.Quest.parse("quest complete 10")
       {:complete, "10"}
       iex> Game.Command.Quest.parse("quest complete")
@@ -68,6 +74,8 @@ defmodule Game.Command.Quest do
   def parse("quests"), do: {:list, :active}
   def parse("quest show " <> quest_id), do: {:show, quest_id}
   def parse("quest info " <> quest_id), do: {:show, quest_id}
+  def parse("quest info"), do: {:show, :tracked}
+  def parse("quest track " <> quest_id), do: {:track, quest_id}
   def parse("quest complete"), do: {:complete, :any}
   def parse("quest complete " <> quest_id), do: {:complete, quest_id}
 
@@ -81,6 +89,18 @@ defmodule Game.Command.Quest do
 
       quests ->
         socket |> @socket.echo(Format.quest_progress(quests))
+    end
+
+    :ok
+  end
+
+  def run({:show, :tracked}, %{socket: socket, user: user, save: save}) do
+    case Quest.current_tracked_quest(user) do
+      nil ->
+        socket |> @socket.echo("You do not have have a tracked quest.")
+
+      progress ->
+        socket |> @socket.echo(Format.quest_detail(progress, save))
     end
 
     :ok
@@ -123,6 +143,18 @@ defmodule Game.Command.Quest do
         |> check_steps_are_complete(state)
         |> complete_quest(state)
     end
+  end
+
+  def run({:track, quest_id}, %{socket: socket, user: user}) do
+    case Quest.track_quest(user, quest_id) do
+      {:error, :not_started} ->
+        socket |> @socket.echo("You have not started this quest to start tracking it.")
+
+      {:ok, progress} ->
+        socket |> @socket.echo("You are tracking {white}#{progress.quest.name}{/white}")
+    end
+
+    :ok
   end
 
   @doc """

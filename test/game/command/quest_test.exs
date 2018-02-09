@@ -64,6 +64,27 @@ defmodule Game.Command.QuestTest do
       assert Regex.match?(~r/Potion/, quest)
     end
 
+    test "viewing your tracked quest", %{state: state, quest: quest} do
+      create_quest_progress(state.user, quest)
+      Game.Quest.track_quest(state.user, quest.id)
+
+      :ok = Quest.run({:show, :tracked}, state)
+
+      [{_, quest}] = @socket.get_echos()
+      assert Regex.match?(~r/Into the Dungeon/, quest)
+      assert Regex.match?(~r/Goblin/, quest)
+      assert Regex.match?(~r/Potion/, quest)
+    end
+
+    test "viewing your tracked quest - no tracked quest", %{state: state, quest: quest} do
+      create_quest_progress(state.user, quest)
+
+      :ok = Quest.run({:show, :tracked}, state)
+
+      [{_, quest}] = @socket.get_echos()
+      assert Regex.match?(~r/do not/i, quest)
+    end
+
     test "viewing a quest that you do not have", %{state: state, quest: quest} do
       :ok = Quest.run({:show, to_string(quest.id)}, state)
 
@@ -161,6 +182,31 @@ defmodule Game.Command.QuestTest do
       [{_, quest}, {_, _experience}] = @socket.get_echos()
       assert Regex.match?(~r/quest complete/i, quest)
       assert Regex.match?(~r/25 gold/i, quest)
+    end
+  end
+
+  describe "track a quest" do
+    setup do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon"})
+
+      %{quest: quest}
+    end
+
+    test "tracking a quest", %{state: state, quest: quest} do
+      create_quest_progress(state.user, quest)
+
+      :ok = Quest.run({:track, to_string(quest.id)}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/tracking/i, echo)
+    end
+
+    test "tracking a quest - not part of your quest", %{state: state, quest: quest} do
+      :ok = Quest.run({:track, to_string(quest.id)}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/not started/i, echo)
     end
   end
 

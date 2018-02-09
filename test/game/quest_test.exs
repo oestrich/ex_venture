@@ -5,7 +5,7 @@ defmodule Game.QuestTest do
   alias Data.QuestStep
   alias Game.Quest
 
-  describe "start tracking a quest" do
+  describe "start a quest" do
     test "creates a new quest progress record" do
       guard = create_npc(%{is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon"})
@@ -15,6 +15,36 @@ defmodule Game.QuestTest do
       assert :ok = Quest.start_quest(user, quest)
 
       assert Quest.progress_for(user, quest.id)
+    end
+  end
+
+  describe "start tracking a quest" do
+    test "marks the quest progress as tracking" do
+      guard = create_npc(%{is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon"})
+
+      user = create_user()
+
+      Quest.start_quest(user, quest)
+
+      {:ok, _qp} = Quest.track_quest(user, quest.id)
+
+      assert Quest.progress_for(user, quest.id).is_tracking
+    end
+
+    test "does nothing if the quest progress is not found" do
+      guard = create_npc(%{is_quest_giver: true})
+      quest1 = create_quest(guard, %{name: "Into the Dungeon"})
+      quest2 = create_quest(guard, %{name: "Into the Dungeon Again"})
+
+      user = create_user()
+
+      Quest.start_quest(user, quest1)
+      {:ok, _} = Quest.track_quest(user, quest1.id)
+
+      {:error, :not_started} = Quest.track_quest(user, quest2.id)
+
+      assert Quest.progress_for(user, quest1.id).is_tracking
     end
   end
 
