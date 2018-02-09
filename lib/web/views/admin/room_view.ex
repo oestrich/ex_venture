@@ -43,4 +43,10 @@ defmodule Web.Admin.RoomView do
       room_exit -> Map.get(room_exit, direction)
     end
   end
+
+  def keep_newlines(string) do
+    string
+    |> String.replace("\n", "<br />")
+    |> raw()
+  end
 end

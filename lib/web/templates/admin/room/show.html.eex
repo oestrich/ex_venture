@@ -39,7 +39,7 @@
               </tr>
               <tr>
                 <th>Description</th>
-                <td><%= @room.description %></td>
+                <td><%= @room.description |> keep_newlines() %></td>
               </tr>
               <tr>
                 <th><%= currency() |> String.capitalize() %> in Room</th>
