@@ -20,57 +20,14 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
-          <h3 class="box-title">Attributes</h3>
+          <h3 class="box-title">Room View</h3>
           <div class="box-tools">
             <%= link("Teleport", to: user_path(@conn, :teleport, room_id: @room.id), method: "post", class: "btn btn-primary") %>
             <%= link("Edit", to: room_path(@conn, :edit, @room.id), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <tbody>
-              <tr>
-                <th>Zone</th>
-                <td><%= @room.zone.name %></td>
-              </tr>
-              <tr>
-                <th>Name</th>
-                <td><%= @room.name %></td>
-              </tr>
-              <tr>
-                <th>Description</th>
-                <td><%= @room.description |> keep_newlines() %></td>
-              </tr>
-              <tr>
-                <th><%= currency() |> String.capitalize() %> in Room</th>
-                <td><%= @room.currency %></td>
-              </tr>
-              <tr>
-                <th>Coorinates</th>
-                <td><%= @room.x %>, <%= @room.y %>, layer: <%= @room.map_layer %></td>
-              </tr>
-              <tr>
-                <th>Is a zone exit?</th>
-                <td><%= @room.is_zone_exit %></td>
-              </tr>
-              <tr>
-                <th>Is a graveyard?</th>
-                <td><%= @room.is_graveyard %></td>
-              </tr>
-              <tr>
-                <th>Ecology</th>
-                <td><%= @room.ecology %></td>
-              </tr>
-              <tr>
-                <th>Notes</th>
-                <td><%= @room.notes %></td>
-              </tr>
-              <tr>
-                <th>Last Save</th>
-                <td><%= @room.updated_at %></td>
-              </tr>
-            </tbody>
-          </table>
+          <pre class="console"><%= render("_console.html", room: @room, conn: @conn) %></pre>
         </div>
       </div>
     </div>
@@ -194,7 +151,6 @@
           <table class="table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Key</th>
                 <th>Short Description</th>
                 <th>Description</th>
@@ -204,7 +160,6 @@
             <tbody>
               <%= Enum.map(@room.features, fn (feature) -> %>
                 <tr>
-                  <td><%= feature.id %></td>
                   <td><%= feature.key %></td>
                   <td><%= feature.short_description %></td>
                   <td><%= feature.description %></td>
@@ -216,6 +171,38 @@
                   </td>
                 </tr>
               <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Notes</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Is a zone exit?</th>
+                <td><%= @room.is_zone_exit %></td>
+              </tr>
+              <tr>
+                <th>Is a graveyard?</th>
+                <td><%= @room.is_graveyard %></td>
+              </tr>
+              <tr>
+                <th>Ecology</th>
+                <td><%= @room.ecology %></td>
+              </tr>
+              <tr>
+                <th>Notes</th>
+                <td><%= @room.notes %></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -260,35 +247,6 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
-          <h3 class="box-title">Items</h3>
-          <div class="box-tools">
-            <%= link("Add Item", to: room_room_item_path(@conn, :new, @room.id, spawn: false), class: "btn btn-primary") %>
-          </div>
-        </div>
-        <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @room.items |> Items.items(), fn (item) -> %>
-                <tr>
-                  <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
           <h3 class="box-title">Item Spawns</h3>
           <div class="box-tools">
             <%= link("Add Item Spawn", to: room_room_item_path(@conn, :new, @room.id), class: "btn btn-primary") %>
@@ -313,34 +271,6 @@
                       <i class="fa fa-times"></i>
                     <% end %>
                   </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">NPC Spawns</h3>
-        </div>
-        <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Spawn Interval</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @room.npc_spawners, fn (npc_spawner) -> %>
-                <tr>
-                  <td><%= link(npc_spawner.npc.name, to: npc_path(@conn, :show, npc_spawner.npc_id)) %></td>
-                  <td><%= npc_spawner.spawn_interval %></td>
                 </tr>
               <% end %>
             </tbody>

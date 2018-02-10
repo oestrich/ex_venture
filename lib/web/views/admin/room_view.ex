@@ -4,7 +4,9 @@ defmodule Web.Admin.RoomView do
 
   alias Data.Exit
   alias Data.Room
+  alias Game.Format
   alias Game.Items
+  alias Web.Color
 
   def room_select(%{rooms: rooms}) do
     rooms |> Enum.map(&{&1.name, &1.id})
@@ -47,6 +49,54 @@ defmodule Web.Admin.RoomView do
   def keep_newlines(string) do
     string
     |> String.replace("\n", "<br />")
+    |> raw()
+  end
+
+  def items(room, conn) do
+    items =
+      room.items
+      |> Items.items()
+      |> Enum.map(fn item ->
+        content_tag(:span, class: "cyan") do
+          link(item.name, to: item_path(conn, :show, item.id))
+        end
+      end)
+
+    add_new =
+      content_tag(:span, class: "cyan") do
+        link("Add Item", to: room_room_item_path(conn, :new, room.id, spawn: false))
+      end
+
+    currency =
+      content_tag(:span, class: "cyan") do
+        "#{room.currency} #{currency()}"
+      end
+
+    [items | [currency | [add_new]]]
+    |> List.flatten
+    |> Enum.map(&safe_to_string/1)
+    |> Enum.join(", ")
+    |> raw()
+  end
+
+  def who(room, conn) do
+    room.npc_spawners
+    |> Enum.map(fn npc_spawner ->
+      content_tag(:span, class: "yellow") do
+        link(npc_spawner.npc.name, to: npc_path(conn, :show, npc_spawner.npc_id))
+      end
+    end)
+    |> Enum.map(&safe_to_string/1)
+    |> Enum.join(", ")
+    |> raw()
+  end
+
+  def description(room) do
+    description = "#{room.description} #{room.features |> Format.features() |> Enum.join(" ")}"
+
+    description
+    |> Format.wrap()
+    |> Color.format()
     |> raw()
   end
 end

@@ -1,0 +1,7 @@
+<span class="green"><%= @room.name %></span> (<%= @room.x %>, <%= @room.y %>, layer: <%= @room.map_layer %>)
+<%= Format.underline(@room.name) %>
+
+<%= @room |> description() %>
+<br />
+<span class="white">Who</span>: <%= @room |> who(@conn) %>
+<span class="white">Items</span>: <%= @room |> items(@conn) %>
