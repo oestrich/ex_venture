@@ -5,6 +5,7 @@ defmodule Web.Admin.NPCView do
   alias Data.Event
   alias Data.Stats
   alias Game.Skills
+  alias Web.Admin.EventView
   alias Web.Admin.SharedView
   alias Web.Zone
 
@@ -45,5 +46,13 @@ defmodule Web.Admin.NPCView do
 
   def skills(npc) do
     Skills.skills(npc.trainable_skills)
+  end
+
+  def stat_display_name(stat) do
+    stat
+    |> to_string()
+    |> String.split("_")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
   end
 end

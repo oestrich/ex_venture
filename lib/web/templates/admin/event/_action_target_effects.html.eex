@@ -1,0 +1,25 @@
+<b>Type</b>:
+<span>target/effects</span>
+
+<b>Weight</b>:
+<span><%= @action.weight %></span>
+
+<b>Text</b>:
+<span><code><%= @action.text %></code></span>
+
+<b>Delay</b>:
+<span><%= @action.delay %></span>
+
+<br />
+<b>Effects</b>:
+<span>
+  <ul>
+    <%= Enum.map(@action.effects, fn effect -> %>
+      <li>
+        <%= Enum.map(effect, fn {key, value} -> %>
+          <b><%= key %></b>: <%= value %>
+        <% end) %>
+      </li>
+    <% end) %>
+  </ul>
+</span>

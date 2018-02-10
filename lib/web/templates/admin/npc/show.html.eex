@@ -16,7 +16,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
@@ -26,10 +26,6 @@
         </div>
         <div class="box-body">
           <table class="table">
-            <tr>
-              <th>Level</th>
-              <td><%= @npc.level %></td>
-            </tr>
             <tr>
               <th>Name</th>
               <td><%= @npc.name %></td>
@@ -41,10 +37,6 @@
                   <span class="label label-info"><%= tag %></span>
                 <% end) %>
               </td>
-            </tr>
-            <tr>
-              <th>Experience Points</th>
-              <td><%= @npc.experience_points %> xp</td>
             </tr>
             <tr>
               <th><%= currency() |> String.capitalize() %></th>
@@ -75,17 +67,71 @@
               <td><pre><%= @npc.description %></pre></td>
             </tr>
             <tr>
-              <th>Stats</th>
-              <td><pre><%= @npc.stats |> Stats.default() |> Poison.encode!(pretty: true) %></pre></td>
-            </tr>
-            <tr>
-              <th>Events</th>
-              <td><pre><%= @npc.events |> Poison.encode!(pretty: true) %></pre></td>
-            </tr>
-            <tr>
               <th>Script</th>
               <td><pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Stats</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tr>
+              <th>Level</th>
+              <td><%= @npc.level %></td>
+            </tr>
+            <tr>
+              <th>Experience Points</th>
+              <td><%= @npc.experience_points %></td>
+            </tr>
+            <%= Enum.map(@npc.stats |> Stats.default(), fn ({stat, val}) -> %>
+              <tr>
+                <th><%= stat |> stat_display_name() %></th>
+                <td><%= val %></td>
+              </tr>
+            <% end) %>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Events</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Condition</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@npc.events, fn event -> %>
+                <tr>
+                  <td><code><%= event.type %></code></td>
+                  <td>
+                    <%= Enum.map(Map.get(event, :condition, %{}), fn {key, val} -> %>
+                      <b><%= key %>:</b> <code><%= val %></code><br />
+                    <% end) %>
+                  </td>
+                  <td>
+                    <%= render(EventView, "_action.html", action: event.action) %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
           </table>
         </div>
       </div>

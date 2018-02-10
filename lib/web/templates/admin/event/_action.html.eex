@@ -1,0 +1,3 @@
+<div class="event action">
+  <%= render(action_template(@action), action: @action) %>
+</div>
