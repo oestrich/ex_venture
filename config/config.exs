@@ -10,7 +10,8 @@ config :ex_venture,
 config :ex_venture, :game,
   currency: "gold",
   timeout_seconds: 60 * 60,
-  rand: :rand
+  rand: :rand,
+  random_damage: 25..25
 
 # Configures the endpoint
 config :ex_venture, Web.Endpoint,

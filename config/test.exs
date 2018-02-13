@@ -20,7 +20,8 @@ config :ex_venture, :game,
   shop: Test.Game.Shop,
   zone: Test.Game.Zone,
   rand: Test.ChanceSuccess,
-  continue_wait: 10
+  continue_wait: 10,
+  random_damage: 0..0
 
 config :comeonin, :bcrypt_log_rounds, 4
 config :comeonin, :pbkdf2_rounds, 1
