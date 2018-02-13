@@ -51,24 +51,12 @@
               <td><%= @npc.is_trainer %></td>
             </tr>
             <tr>
-              <th>Notes</th>
-              <td>
-                <%= if @npc.notes != nil do %>
-                  <%= Earmark.as_html!(@npc.notes) |> raw() %>
-                <% end %>
-              </td>
-            </tr>
-            <tr>
               <th>Status Line</th>
               <td><pre><%= @npc.status_line %></pre></td>
             </tr>
             <tr>
               <th>Description</th>
               <td><pre><%= @npc.description %></pre></td>
-            </tr>
-            <tr>
-              <th>Script</th>
-              <td><pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre></td>
             </tr>
           </table>
         </div>
@@ -133,6 +121,19 @@
               <% end) %>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Script</h3>
+        </div>
+        <div class="box-body">
+          <pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre>
         </div>
       </div>
     </div>
@@ -265,6 +266,21 @@
               <% end %>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Notes</h3>
+        </div>
+        <div class="box-body">
+          <%= if @npc.notes != nil do %>
+            <%= Earmark.as_html!(@npc.notes) |> raw() %>
+          <% end %>
         </div>
       </div>
     </div>
