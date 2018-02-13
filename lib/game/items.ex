@@ -10,8 +10,6 @@ defmodule Game.Items do
   alias Data.Item
   alias Data.Repo
 
-  @ets_table :items
-
   @doc false
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -23,8 +21,8 @@ defmodule Game.Items do
   end
 
   def item(id) when is_integer(id) do
-    case :ets.lookup(@ets_table, id) do
-      [{_, item}] -> item
+    case Cachex.get(:items, id) do
+      {:ok, item} when item != nil -> item
       _ -> nil
     end
   end
@@ -73,7 +71,6 @@ defmodule Game.Items do
   #
 
   def init(_) do
-    create_table()
     GenServer.cast(self(), :load_items)
     {:ok, %{}}
   end
@@ -86,7 +83,7 @@ defmodule Game.Items do
 
     Enum.each(items, fn item ->
       item = Item.compile(item)
-      :ets.insert(@ets_table, {item.id, item})
+      Cachex.set(:items, item.id, item)
     end)
 
     {:noreply, state}
@@ -98,23 +95,18 @@ defmodule Game.Items do
       |> Repo.preload([:item_aspects])
       |> Item.compile()
 
-    :ets.insert(@ets_table, {item.id, item})
+    Cachex.set(:items, item.id, item)
     {:reply, :ok, state}
   end
 
   def handle_call({:insert, item}, _from, state) do
-    :ets.insert(@ets_table, {item.id, item})
+    Cachex.set(:items, item.id, item)
     {:reply, :ok, state}
   end
 
   def handle_call(:clear, _from, state) do
-    :ets.delete(@ets_table)
-    create_table()
+    Cachex.clear(:items)
 
     {:reply, :ok, state}
-  end
-
-  defp create_table() do
-    :ets.new(@ets_table, [:set, :protected, :named_table])
   end
 end

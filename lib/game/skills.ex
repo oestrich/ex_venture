@@ -10,8 +10,6 @@ defmodule Game.Skills do
   alias Data.Skill
   alias Data.Repo
 
-  @ets_table :skills
-
   @doc false
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -23,15 +21,15 @@ defmodule Game.Skills do
   end
 
   def skill(id) when is_integer(id) do
-    case :ets.lookup(@ets_table, id) do
-      [{_, skill}] -> skill
+    case Cachex.get(:skills, id) do
+      {:ok, skill} when skill != nil -> skill
       _ -> nil
     end
   end
 
   def skill(command) when is_binary(command) do
-    case :ets.lookup(@ets_table, command) do
-      [{_, skill}] -> skill
+    case Cachex.get(:skills, command) do
+      {:ok, skill} when skill != nil -> skill
       _ -> nil
     end
   end
@@ -69,7 +67,6 @@ defmodule Game.Skills do
   #
 
   def init(_) do
-    create_table()
     GenServer.cast(self(), :load_skills)
     {:ok, %{}}
   end
@@ -78,27 +75,22 @@ defmodule Game.Skills do
     skills = Skill |> Repo.all()
 
     Enum.each(skills, fn skill ->
-      :ets.insert(@ets_table, {skill.id, skill})
-      :ets.insert(@ets_table, {skill.command, skill})
+      Cachex.set(:skills, skill.id, skill)
+      Cachex.set(:skills, skill.command, skill)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, skill}, _from, state) do
-    :ets.insert(@ets_table, {skill.id, skill})
-    :ets.insert(@ets_table, {skill.command, skill})
+    Cachex.set(:skills, skill.id, skill)
+    Cachex.set(:skills, skill.command, skill)
     {:reply, :ok, state}
   end
 
   def handle_call(:clear, _from, state) do
-    :ets.delete(@ets_table)
-    create_table()
+    Cachex.clear(:skills)
 
     {:reply, :ok, state}
-  end
-
-  defp create_table() do
-    :ets.new(@ets_table, [:set, :protected, :named_table])
   end
 end

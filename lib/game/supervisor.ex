@@ -12,6 +12,7 @@ defmodule Game.Supervisor do
 
   def init(_) do
     children = [
+      supervisor(Game.Caches, []),
       worker(Game.Config, []),
       worker(Game.Server, []),
       supervisor(Game.Session.Supervisor, []),
