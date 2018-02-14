@@ -12,7 +12,7 @@ defmodule Game.Door do
   """
   @type status :: String.t()
 
-  @ets_table :doors
+  @cache_key :doors
   @closed "closed"
   @open "open"
 
@@ -48,8 +48,8 @@ defmodule Game.Door do
   """
   @spec get(integer()) :: String.t()
   def get(exit_id) do
-    case :ets.lookup(@ets_table, exit_id) do
-      [{_, state}] -> state
+    case Cachex.get(@cache_key, exit_id) do
+      {:ok, state} when state != nil -> state
       _ -> nil
     end
   end
@@ -109,33 +109,26 @@ defmodule Game.Door do
   #
 
   def init(_) do
-    create_table()
     {:ok, %{}}
   end
 
   def handle_call({:load, exit_id}, _from, state) do
-    :ets.insert(@ets_table, {exit_id, @closed})
+    Cachex.set(@cache_key, exit_id, @closed)
     {:reply, @closed, state}
   end
 
   def handle_call({:set, exit_id, door_state}, _from, state) do
-    :ets.insert(@ets_table, {exit_id, door_state})
+    Cachex.set(@cache_key, exit_id, door_state)
     {:reply, door_state, state}
   end
 
   def handle_call({:remove, exit_id}, _from, state) do
-    :ets.delete(@ets_table, exit_id)
+    Cachex.del(@cache_key, exit_id)
     {:reply, :ok, state}
   end
 
   def handle_call(:clear, _from, state) do
-    :ets.delete(@ets_table)
-    create_table()
-
+    Cachex.clear(@cache_key)
     {:reply, :ok, state}
-  end
-
-  defp create_table() do
-    :ets.new(@ets_table, [:set, :protected, :named_table])
   end
 end
