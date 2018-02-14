@@ -493,6 +493,7 @@ defmodule Game.Format do
     rows = [
       ["Level", save.level],
       ["XP", save.experience_points],
+      ["Spent XP", save.spent_experience_points],
       ["Health Points", "#{stats.health}/#{stats.max_health}"],
       ["Skill Points", "#{stats.skill_points}/#{stats.max_skill_points}"],
       ["Movement Points", "#{stats.move_points}/#{stats.max_move_points}"],

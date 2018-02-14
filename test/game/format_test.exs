@@ -136,7 +136,7 @@ defmodule Game.FormatTest do
         wisdom: 10,
       }
 
-      save = %Data.Save{level: 1, experience_points: 0, stats: stats}
+      save = %Data.Save{level: 1, experience_points: 0, spent_experience_points: 0, stats: stats}
 
       user = %{
         name: "hero",
@@ -167,6 +167,10 @@ defmodule Game.FormatTest do
 
     test "includes player xp", %{user: user} do
       assert Regex.match?(~r/XP.+|.+0/, Format.info(user))
+    end
+
+    test "includes player spent xp", %{user: user} do
+      assert Regex.match?(~r/Spent XP.+|.+0/, Format.info(user))
     end
 
     test "includes player health", %{user: user} do

@@ -12,7 +12,8 @@ defmodule Data.Save do
           room_id: integer,
           channels: [String.t()],
           level: integer,
-          experience_points: integer,
+          experience_points: integer(),
+          spent_experience_points: integer(),
           stats: map,
           currency: integer,
           skill_ids: [integer()],
@@ -32,6 +33,7 @@ defmodule Data.Save do
     :channels,
     :level,
     :experience_points,
+    :spent_experience_points,
     :stats,
     :currency,
     :skill_ids,
@@ -144,6 +146,13 @@ defmodule Data.Save do
     end
   end
 
+  defp _migrate(save = %{version: 4}) do
+    save
+    |> Map.put(:spent_experience_points, 0)
+    |> Map.put(:version, 5)
+    |> _migrate()
+  end
+
   defp _migrate(save = %{version: 3}) do
     save
     |> Map.put(:skill_ids, [])
@@ -212,6 +221,7 @@ defmodule Data.Save do
       :level,
       :room_id,
       :skill_ids,
+      :spent_experience_points,
       :stats,
       :version,
       :wearing,

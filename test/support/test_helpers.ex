@@ -50,6 +50,7 @@ defmodule TestHelpers do
       channels: [],
       level: 1,
       experience_points: 0,
+      spent_experience_points: 0,
       currency: 0,
       items: [],
       skill_ids: [],
