@@ -153,14 +153,14 @@ defmodule Game.NPC.Events do
   @doc """
   Act on a combat tick, if the NPC has a target, pick an event and apply those effects
   """
-  def act_on_combat_tick(%{target: nil}), do: :ok
+  def act_on_combat_tick(state = %{target: nil}), do: {:update, %{state | combat: false}}
 
   def act_on_combat_tick(state = %{room_id: room_id, npc: npc, target: target}) do
     room = @room.look(room_id)
 
     case find_target(room, target) do
       nil ->
-        {:update, %{state | target: nil}}
+        {:update, %{state | target: nil, combat: false}}
 
       target ->
         event =
@@ -197,10 +197,10 @@ defmodule Game.NPC.Events do
     state
   end
 
-  def act_on_room_entered(state = %{npc: npc}, {:user, user}, %{action: %{type: "target"}}) do
+  def act_on_room_entered(state = %{npc: npc, combat: false}, {:user, user}, %{action: %{type: "target"}}) do
     Character.being_targeted({:user, user}, {:npc, npc})
     notify_delayed({"combat/tick"}, 1500)
-    %{state | target: Character.who({:user, user})}
+    %{state | combat: true, target: Character.who({:user, user})}
   end
 
   def act_on_room_entered(state, _character, _event), do: state

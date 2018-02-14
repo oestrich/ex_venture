@@ -35,6 +35,7 @@ defmodule Game.NPC do
       :room_id,
       :target,
       :last_controlled_at,
+      combat: false,
       tick_events: [],
       conversations: %{},
       continuous_effects: []
@@ -154,6 +155,7 @@ defmodule Game.NPC do
       npc: nil,
       room_id: nil,
       target: nil,
+      combat: false,
       tick_events: [],
     }
 

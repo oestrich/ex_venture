@@ -7,9 +7,12 @@ defmodule Game.Session.Effects do
   use Game.Zone
   use Networking.Socket
 
+  require Logger
+
   alias Game.Character
   alias Game.Effect
   alias Game.Format
+  alias Game.Session.Process
 
   import Game.Session, only: [echo: 2]
   import Game.Character.Helpers, only: [update_character: 2, update_effect_count: 2, is_alive?: 1]
@@ -35,6 +38,7 @@ defmodule Game.Session.Effects do
     user |> maybe_died(state, from)
 
     Enum.each(continuous_effects, fn {_from, effect} ->
+      Logger.debug(fn -> "Delaying effect (#{effect.id})" end, type: :player)
       :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
     end)
 
@@ -122,6 +126,7 @@ defmodule Game.Session.Effects do
     socket |> @socket.echo([effect] |> Format.effects() |> Enum.join("\n"))
 
     user |> maybe_died(state, from)
+    state |> Process.prompt()
 
     case is_alive?(save) do
       true ->

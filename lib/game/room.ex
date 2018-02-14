@@ -261,7 +261,7 @@ defmodule Game.Room do
   def handle_cast({:leave, {:user, user}, reason}, state) do
     %{room: room, players: players} = state
 
-    Logger.info("Player (#{user.id}) left room (#{room.id})", type: :room)
+    Logger.debug(fn -> "Player (#{user.id}) left room (#{room.id})" end, type: :room)
     players = Enum.reject(players, &(&1.id == user.id))
     state = %{state | players: players}
 
@@ -271,7 +271,7 @@ defmodule Game.Room do
   def handle_cast({:leave, {:npc, npc}, reason}, state) do
     %{room: room, npcs: npcs} = state
 
-    Logger.info("NPC (#{npc.id}) left room (#{room.id})", type: :room)
+    Logger.debug(fn -> "NPC (#{npc.id}) left room (#{room.id})" end, type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
     state = %{state | npcs: npcs}
 

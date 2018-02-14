@@ -58,7 +58,7 @@ defmodule Game.NPC.EventsTest do
       }
 
       npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
-      state = %State{room_id: 1, npc: npc}
+      state = %State{room_id: 1, npc: npc, combat: true}
 
       @room._room()
       |> Map.put(:npcs, [npc])
@@ -71,7 +71,9 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "does nothing if no target", %{state: state, event: event} do
-      :ok = Events.act_on(state, event)
+      {:update, state} = Events.act_on(state, event)
+
+      assert state.combat == false
 
       refute_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
     end
@@ -82,6 +84,7 @@ defmodule Game.NPC.EventsTest do
       {:update, state} = Events.act_on(state, event)
 
       assert is_nil(state.target)
+      assert state.combat == false
 
       refute_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
     end
@@ -129,6 +132,24 @@ defmodule Game.NPC.EventsTest do
       assert state.target == {:user, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
+    end
+
+    test "target the player when they entered - do nothing if already in combat" do
+      Registry.register(%{id: 2})
+
+      npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
+      state = %State{room_id: 1, npc: npc}
+
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
+      assert state.target == {:user, 2}
+      assert state.combat == true
+
+      assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
+
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
+      assert state.target == {:user, 2}
+
+      refute_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
   end
 
