@@ -11,7 +11,7 @@ defmodule Game.Command.TrainTest do
     @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
 
-    %{state: %{socket: :socket, user: user, save: user.save}}
+    %{state: %{socket: :socket, user: user, save: %{user.save | level: 2, experience_points: 1100}}}
   end
 
   describe "list out trainable skills" do
@@ -109,7 +109,7 @@ defmodule Game.Command.TrainTest do
   describe "training skills" do
     setup do
       start_and_clear_skills()
-      slash = %{name: "Slash", command: "slash"} |> create_skill() |> insert_skill()
+      slash = %{name: "Slash", command: "slash", level: 2} |> create_skill() |> insert_skill()
 
       guard = create_npc(%{name: "Guard", is_trainer: true})
       guard = %{guard | trainable_skills: [slash.id]}
@@ -126,6 +126,7 @@ defmodule Game.Command.TrainTest do
       assert Regex.match?(~r(trained success)i, echo)
 
       assert state.save.skill_ids == [slash.id]
+      assert state.save.spent_experience_points == 1000
     end
 
     test "skill not found", %{state: state, guard: guard} do
@@ -157,6 +158,16 @@ defmodule Game.Command.TrainTest do
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(not ready)i, echo)
+    end
+
+    test "not enough xp left to spend", %{state: state, guard: guard} do
+      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      state = %{state | save: %{state.save | spent_experience_points: 900, experience_points: 1000}}
+
+      :ok = Train.run({:train, "slash"}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(do not have enough)i, echo)
     end
 
     test "no trainers in the room", %{state: state} do

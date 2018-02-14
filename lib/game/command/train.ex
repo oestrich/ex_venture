@@ -5,6 +5,7 @@ defmodule Game.Command.Train do
 
   use Game.Command
 
+  alias Game.Skill
   alias Game.Skills
   alias Game.Utility
 
@@ -77,10 +78,15 @@ defmodule Game.Command.Train do
           |> Skills.skills()
           |> filter_player_skills(save)
           |> filter_skills_by_level(save)
+          |> add_skill_cost(save)
 
-        state.socket |> @socket.echo(Format.trainable_skills(trainer, skills))
+        skill_table = Format.trainable_skills(trainer, skills)
+        spent_experience_points = save.experience_points - save.spent_experience_points
+        state.socket |> @socket.echo("You have #{spent_experience_points} XP to spend.\n#{skill_table}")
+
       {:error, :more_than_one_trainer} ->
         state.socket |> @socket.echo("There are more than one trainer in this room. Please refer by name")
+
       {:error, :not_found} ->
         state.socket |> @socket.echo("There are no trainers in this room. Go find some!")
     end
@@ -137,6 +143,7 @@ defmodule Game.Command.Train do
     |> find_skill(skill_name, state)
     |> check_if_skill_known(state)
     |> check_if_right_level(state)
+    |> check_if_enough_experience_to_spend(state)
     |> train_skill(state)
   end
 
@@ -176,13 +183,28 @@ defmodule Game.Command.Train do
     end
   end
 
+  defp check_if_enough_experience_to_spend(:ok, _state), do: :ok
+  defp check_if_enough_experience_to_spend(skill, state = %{save: save}) do
+    skill_cost = Skill.skill_train_cost(skill, save)
+    spendable_experience = save.experience_points - save.spent_experience_points
+
+    case skill_cost <= spendable_experience do
+      true ->
+        skill
+      false ->
+        state.socket |> @socket.echo("You do not have enough experience to spend to train #{skill.name}.")
+    end
+  end
+
   defp train_skill(:ok, _state), do: :ok
   defp train_skill(skill, state = %{user: user, save: save}) do
-    state.socket |> @socket.echo("#{skill.name} trained successfully!")
+    skill_cost = Skill.skill_train_cost(skill, save)
+    state.socket |> @socket.echo("#{skill.name} trained successfully! #{skill_cost} XP spent.")
 
     skill_ids = Enum.uniq([skill.id | save.skill_ids])
+    spent_experience_points = save.spent_experience_points + skill_cost
 
-    save = %{save | skill_ids: skill_ids}
+    save = %{save | skill_ids: skill_ids, spent_experience_points: spent_experience_points}
     user = %{user | save: save}
     state = %{state | user: user, save: save}
 
@@ -218,6 +240,12 @@ defmodule Game.Command.Train do
   defp filter_skills_by_level(skills, save) do
     Enum.reject(skills, fn skill ->
       skill.level > save.level
+    end)
+  end
+
+  defp add_skill_cost(skills, save) do
+    Enum.map(skills, fn skill ->
+      {skill, Skill.skill_train_cost(skill, save)}
     end)
   end
 end

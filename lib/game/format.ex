@@ -840,12 +840,12 @@ defmodule Game.Format do
   def trainable_skills(trainer, skills) do
     rows =
       skills
-      |> Enum.map(fn skill ->
-        [to_string(skill.id), skill.name, skill.command]
+      |> Enum.map(fn {skill, cost} ->
+        [to_string(skill.id), skill.name, skill.command, cost]
       end)
 
-    rows = [["ID", "Name", "Command"] | rows]
+    rows = [["ID", "Name", "Command", "Cost"] | rows]
 
-    Table.format("#{npc_name(trainer)} will train these skills:", rows, [5, 30, 20])
+    Table.format("#{npc_name(trainer)} will train these skills:", rows, [5, 30, 20, 10])
   end
 end

@@ -30,4 +30,21 @@ defmodule Game.Skill do
         {:ok, stats}
     end
   end
+
+  @doc """
+  Calculate the training cost (in experience) of a skill
+
+      iex> Game.Skill.skill_train_cost(%{level: 3}, %{level: 3})
+      1000
+
+      iex> Game.Skill.skill_train_cost(%{level: 3}, %{level: 4})
+      900
+
+      iex> Game.Skill.skill_train_cost(%{level: 3}, %{level: 9})
+      500
+  """
+  def skill_train_cost(skill, save) do
+    cost = 1000 - 100 * (save.level - skill.level)
+    Enum.max([cost, 500])
+  end
 end
