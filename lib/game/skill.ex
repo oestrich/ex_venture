@@ -40,11 +40,11 @@ defmodule Game.Skill do
       iex> Game.Skill.skill_train_cost(%{level: 3}, %{level: 4})
       900
 
-      iex> Game.Skill.skill_train_cost(%{level: 3}, %{level: 9})
-      500
+      iex> Game.Skill.skill_train_cost(%{level: 3}, %{level: 13})
+      100
   """
   def skill_train_cost(skill, save) do
     cost = 1000 - 100 * (save.level - skill.level)
-    Enum.max([cost, 500])
+    Enum.max([cost, 100])
   end
 end
