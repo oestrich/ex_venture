@@ -23,5 +23,15 @@ defmodule Data.QuestStepTest do
       refute changeset.errors[:item_id]
       refute changeset.errors[:count]
     end
+
+    test "item/have requires an item and count" do
+      changeset = %QuestStep{} |> QuestStep.changeset(%{type: "item/have"})
+      assert changeset.errors[:item_id]
+      assert changeset.errors[:count]
+
+      changeset = %QuestStep{} |> QuestStep.changeset(%{type: "item/have", count: 4, item_id: 4})
+      refute changeset.errors[:item_id]
+      refute changeset.errors[:count]
+    end
   end
 end

@@ -114,6 +114,11 @@
                           <b>Count:</b> <%= quest_step.count %><br />
                           <b>Item:</b> <%= link(quest_step.item.name, to: item_path(@conn, :show, quest_step.item_id)) %>
                         </dl>
+                      <% "item/have" -> %>
+                        <dl>
+                          <b>Count:</b> <%= quest_step.count %><br />
+                          <b>Item:</b> <%= link(quest_step.item.name, to: item_path(@conn, :show, quest_step.item_id)) %>
+                        </dl>
                       <% "npc/kill" -> %>
                         <dl>
                           <b>Count:</b> <%= quest_step.count %><br />

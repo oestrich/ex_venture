@@ -236,13 +236,14 @@ defmodule Game.FormatTest do
 
       step1 = %{id: 1, type: "npc/kill", count: 3, npc: goblin}
       step2 = %{id: 2, type: "item/collect", count: 4, item: potion, item_id: potion.id}
+      step3 = %{id: 2, type: "item/have", count: 5, item: potion, item_id: potion.id}
 
       quest = %{
         id: 1,
         name: "Into the Dungeon",
         description: "Dungeon delving",
         giver: guard,
-        quest_steps: [step1, step2],
+        quest_steps: [step1, step2, step3],
       }
 
       progress = %{status: "active", progress: %{step1.id => 2}, quest: quest}
@@ -263,11 +264,15 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r/active/, Format.quest_detail(progress, save))
     end
 
-    test "includes npc step", %{progress: progress, save: save} do
+    test "includes item collect step", %{progress: progress, save: save} do
       assert Regex.match?(~r(Collect {cyan}Potion{/cyan} - 2/4), Format.quest_detail(progress, save))
     end
 
-    test "includes item step", %{progress: progress, save: save} do
+    test "includes item have step", %{progress: progress, save: save} do
+      assert Regex.match?(~r(Have {cyan}Potion{/cyan} - 2/5), Format.quest_detail(progress, save))
+    end
+
+    test "includes npc step", %{progress: progress, save: save} do
       assert Regex.match?(~r(Kill {yellow}Goblin{/yellow} - 2/3), Format.quest_detail(progress, save))
     end
   end

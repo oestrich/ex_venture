@@ -41,7 +41,7 @@ defmodule Game.Quest do
   @spec current_tracked_quest(User.t()) :: QuestProgress.t() | nil
   def current_tracked_quest(user) do
     QuestProgress
-    |> where([qp], qp.user_id == ^user.id and qp.is_tracking == true)
+    |> where([qp], qp.user_id == ^user.id and qp.is_tracking == true and qp.status != "complete")
     |> preloads()
     |> limit(1)
     |> Repo.one()
@@ -86,6 +86,13 @@ defmodule Game.Quest do
   def current_step_progress(step, quest_progress, save) do
     case step.type do
       "item/collect" ->
+        save.items
+        |> Enum.filter(fn item ->
+          item.id == step.item_id
+        end)
+        |> length()
+
+      "item/have" ->
         save.items
         |> Enum.filter(fn item ->
           item.id == step.item_id
