@@ -96,6 +96,7 @@ defmodule Game.Command do
     Command.PickUp,
     Command.Quest,
     Command.Quit,
+    Command.Recall,
     Command.Shops,
     Command.Tell,
     Command.Train,
