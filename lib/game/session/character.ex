@@ -112,6 +112,8 @@ defmodule Game.Session.Character do
       "You have a new quest available, #{Format.quest_name(quest)} (#{quest.id})"
     )
 
+    Quest.track_quest(state.user, quest.id)
+
     state
   end
 
