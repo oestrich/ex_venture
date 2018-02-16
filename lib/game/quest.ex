@@ -258,20 +258,19 @@ defmodule Game.Quest do
   end
 
   defp _track_quest(user, quest_progress) do
-    reset_query =
-      QuestProgress
-      |> where([qp], qp.user_id == ^user.id and qp.quest_id == ^quest_progress.quest_id)
+    reset_query = QuestProgress |> where([qp], qp.user_id == ^user.id)
 
-    track_changeset = quest_progress |> QuestProgress.changeset(%{is_tracking: true})
+    track_changeset =
+      quest_progress
+      |> Map.put(:is_tracking, false)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_change(:is_tracking, true)
 
-    multi =
-      Ecto.Multi.new
-      |> Ecto.Multi.update_all(:reset_tracking, reset_query, set: [is_tracking: false])
-      |> Ecto.Multi.update(:track, track_changeset)
+    Repo.transaction(fn ->
+      Repo.update_all(reset_query, set: [is_tracking: false])
+      Repo.update(track_changeset)
+    end)
 
-    case multi |> Repo.transaction() do
-      {:ok, _} -> {:ok, quest_progress}
-      _ -> :error
-    end
+    {:ok, quest_progress}
   end
 end
