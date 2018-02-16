@@ -1,3 +1,15 @@
+- name: Classes
+  short: Basics about classes
+  full: |
+    Classes are simply starting templates. They provide you with a set of skills that get
+    you going for your first few levels of the game. After that you train the skills you
+    want to gain. You can keep going with your class's theme or switch it up.
+
+    Each experience point you gain can be used to train new skills. Each skill costs
+    1000 experience if it is the same level as you. For every level below yours it
+    costs 100 experience less, down to a minimum of 100 experience. See {white}help train{/white}
+    for more information about training skills.
+
 - name: Combat
   short: Basics about combat
   full: |
