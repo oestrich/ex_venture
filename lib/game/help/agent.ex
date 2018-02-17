@@ -5,6 +5,7 @@ defmodule Game.Help.Agent do
   To reduce database loading
   """
 
+  alias Game.Help.BuiltIn
   alias Game.Help.Repo
 
   def start_link() do
@@ -32,7 +33,8 @@ defmodule Game.Help.Agent do
     |> YamlElixir.read_from_file()
     |> Enum.map(fn help ->
       help = for {key, val} <- help, into: %{}, do: {String.to_atom(key), val}
-      help |> Enum.into(%{})
+      help = help |> Enum.into(%{})
+      struct(BuiltIn, help)
     end)
   end
 

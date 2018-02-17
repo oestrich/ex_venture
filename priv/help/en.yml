@@ -1,4 +1,5 @@
-- name: Classes
+- id: 6fcdbdc9-c716-4bd7-9001-83f6f11cdcb8
+  name: Classes
   short: Basics about classes
   full: |
     Classes are simply starting templates. They provide you with a set of skills that get
@@ -10,7 +11,8 @@
     costs 100 experience less, down to a minimum of 100 experience. See {white}help train{/white}
     for more information about training skills.
 
-- name: Combat
+- id: b3074cb3-f52a-42a1-aa1f-f000e940734c
+  name: Combat
   short: Basics about combat
   full: |
     There is no auto combat. You must {white}target{/white} a character before being able to use {white}skills{/white}

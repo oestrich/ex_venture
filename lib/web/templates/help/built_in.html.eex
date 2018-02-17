@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="mb-3"><%= @built_in.name %></h2>
+    <p>
+      <pre class="terminal">
+        <%= @built_in.full |> Color.format() |> String.replace("\n", "<br />") |> raw() %>
+      </pre>
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="back">
+      <%= link(to: public_help_path(@conn, :index), class: "back") do %>
+        &laquo; Back
+      <% end %>
+    </div>
+  </div>
+</div>

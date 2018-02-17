@@ -1,6 +1,7 @@
 defmodule Web.HelpView do
   use Web, :view
 
+  alias Game.Help.BuiltIn
   alias Web.Color
 
   def command_topic_key(command) do

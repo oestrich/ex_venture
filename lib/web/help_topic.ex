@@ -18,9 +18,11 @@ defmodule Web.HelpTopic do
   def all(opts \\ [])
 
   def all(alpha: true) do
-    HelpTopic
-    |> order_by([ht], ht.name)
-    |> Repo.all()
+    help_topics = HelpAgent.database()
+    built_ins = HelpAgent.built_in()
+
+    help_topics ++ built_ins
+    |> Enum.sort_by(& &1.name)
   end
 
   def all(opts) do
@@ -49,6 +51,11 @@ defmodule Web.HelpTopic do
       command |> to_string |> String.split(".") |> List.last() |> String.downcase() ==
         topic |> String.downcase()
     end)
+  end
+
+  def built_in(id) do
+    HelpAgent.built_in()
+    |> Enum.find(& &1.id == id)
   end
 
   @doc """

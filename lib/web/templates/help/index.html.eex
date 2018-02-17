@@ -7,7 +7,12 @@
       </li>
       <%= Enum.map(@help_topics, fn (help_topic) -> %>
         <li class="list-group-item">
-          <%= link(help_topic.name, to: public_help_path(@conn, :show, help_topic.id)) %>
+          <%= case help_topic do %>
+            <% %BuiltIn{} -> %>
+              <%= link(help_topic.name, to: public_help_path(@conn, :built_in, help_topic.id)) %>
+            <% _ -> %>
+              <%= link(help_topic.name, to: public_help_path(@conn, :show, help_topic.id)) %>
+          <% end %>
         </li>
       <% end) %>
     </ul>

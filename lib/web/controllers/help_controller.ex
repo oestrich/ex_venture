@@ -22,4 +22,9 @@ defmodule Web.HelpController do
     command = HelpTopic.command(command)
     conn |> render("command.html", command: command)
   end
+
+  def built_in(conn, %{"id" => id}) do
+    built_in = HelpTopic.built_in(id)
+    conn |> render("built_in.html", built_in: built_in)
+  end
 end
