@@ -70,6 +70,14 @@ defmodule Game.Session.Character do
     end
   end
 
+  def notify(state = %{save: save}, {"currency/receive", character, currency}) do
+    state.socket |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}")
+
+    save = %{save | currency: save.currency + currency}
+    user = %{state.user | save: save}
+    %{state | user: user, save: save}
+  end
+
   def notify(state = %{save: save}, {"item/receive", character, instance}) do
     item = Items.item(instance)
     state.socket |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}")

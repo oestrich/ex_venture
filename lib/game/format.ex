@@ -357,6 +357,7 @@ defmodule Game.Format do
   @spec currency(Save.t() | Room.t()) :: String.t()
   def currency(%{currency: currency}) when currency == 0, do: ""
   def currency(%{currency: currency}), do: "{cyan}#{currency} #{@currency}{/cyan}"
+  def currency(currency) when is_integer(currency), do: "{cyan}#{currency} #{@currency}{/cyan}"
 
   @doc """
   Format Shop text for shops in the room

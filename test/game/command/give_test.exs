@@ -25,7 +25,7 @@ defmodule Game.Command.GiveTest do
       start_and_clear_items()
       insert_item(%{id: 1, name: "potion", keywords: []})
 
-      save = %{state.save | items: [item_instance(1)]}
+      save = %{state.save | items: [item_instance(1)], currency: 50}
 
       %{state: %{state | save: save}}
     end
@@ -42,11 +42,24 @@ defmodule Game.Command.GiveTest do
       assert state.save.items == []
     end
 
+    test "give currency", %{state: state} do
+      {:update, state} = Give.run({"40 gold", :to, "player"}, state)
+
+      assert state.save.currency == 10
+    end
+
     test "item not found", %{state: state} do
       :ok = Give.run({"thing", :to, "player"}, state)
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r[could not be found], echo)
+    end
+
+    test "not enough currency", %{state: state} do
+      :ok = Give.run({"100 gold", :to, "player"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r[do not have enough gold], echo)
     end
 
     test "character not found", %{state: state} do

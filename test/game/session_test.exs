@@ -455,6 +455,18 @@ defmodule Game.SessionTest do
       assert Regex.match?(~r(Potion)i, echo)
       assert Regex.match?(~r(Guard)i, echo)
     end
+
+    test "new currency received", state do
+      state = %{state | user: %{save: nil}, save: %{currency: 10}}
+
+      {:noreply, state} = Process.handle_cast({:notify, {"currency/receive", {:npc, %{name: "Guard"}}, 50}}, state)
+
+      assert state.save.currency == 60
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(50 gold)i, echo)
+      assert Regex.match?(~r(Guard)i, echo)
+    end
   end
 
   describe "character dying" do

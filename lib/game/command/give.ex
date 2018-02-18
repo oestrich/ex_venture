@@ -4,6 +4,7 @@ defmodule Game.Command.Give do
   """
 
   use Game.Command
+  use Game.Currency
   use Game.Zone
 
   alias Game.Character
@@ -53,7 +54,7 @@ defmodule Game.Command.Give do
   def _parse_give_command(string) do
     case Regex.run(~r/(?<item>.+) to (?<character>.+)/i, string, capture: :all) do
       nil -> {:error, :bad_parse, "give " <> string}
-      [_string, item_name, character_name] -> {item_name, :to, character_name}
+      [_string, item_name, character_name] -> {String.trim(item_name), :to, character_name}
     end
   end
 
@@ -66,7 +67,7 @@ defmodule Game.Command.Give do
   def run({item_name, :to, character_name}, state = %{save: save}) do
     room = @room.look(save.room_id)
 
-    case find_item(state, item_name) do
+    case find_item_or_currency(state.save, item_name) do
       {:error, :not_found} ->
         state.socket |> @socket.echo("\"#{item_name}\" could not be found.")
 
@@ -75,7 +76,18 @@ defmodule Game.Command.Give do
     end
   end
 
-  defp find_item(%{save: save}, item_name) do
+  defp find_item_or_currency(save, item_name) do
+    case Regex.match?(~r/^\d+ #{@currency}$/, item_name) do
+      false ->
+        find_item(save, item_name)
+
+      true ->
+        [currency | _] = String.split(item_name, " ")
+        {:ok, String.to_integer(currency), :currency}
+    end
+  end
+
+  defp find_item(save, item_name) do
     items = Items.items_keep_instance(save.items)
 
     item =
@@ -118,6 +130,23 @@ defmodule Game.Command.Give do
 
       player ->
         {:user, player}
+    end
+  end
+
+  defp send_item_to_character(state = %{save: save}, currency, :currency, character) do
+    case save.currency >= currency do
+      false ->
+        state.socket |> @socket.echo("You do not have enough #{currency()} to give to #{Format.name(character)}")
+      true ->
+        state.socket |> @socket.echo("Gave #{Format.currency(currency)} to #{Format.name(character)}")
+
+        Character.notify(character, {"currency/receive", {:user, state.user}, currency})
+
+        save = %{save | currency: save.currency - currency}
+        user = %{state.user | save: save}
+        state = %{state | user: user, save: save}
+
+        {:update, state}
     end
   end
 
