@@ -9,7 +9,12 @@ defmodule Data.QuestStep do
   alias Data.NPC
   alias Data.Quest
 
-  @types ["item/collect", "item/have", "npc/kill"]
+  @types [
+    "item/collect",
+    "item/give",
+    "item/have",
+    "npc/kill",
+  ]
 
   schema "quest_steps" do
     field(:type, :string)
@@ -39,10 +44,20 @@ defmodule Data.QuestStep do
 
   def validate_type(changeset) do
     case get_field(changeset, :type) do
-      "item/collect" -> changeset |> validate_required([:item_id, :count])
-      "item/have" -> changeset |> validate_required([:item_id, :count])
-      "npc/kill" -> changeset |> validate_required([:npc_id, :count])
-      _ -> changeset
+      "item/collect" ->
+        changeset |> validate_required([:item_id, :count])
+
+      "item/give" ->
+        changeset |> validate_required([:item_id, :npc_id, :count])
+
+      "item/have" ->
+        changeset |> validate_required([:item_id, :count])
+
+      "npc/kill" ->
+        changeset |> validate_required([:npc_id, :count])
+
+      _ ->
+        changeset
     end
   end
 end

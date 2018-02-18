@@ -65,6 +65,22 @@ defmodule Game.QuestTest do
       assert Quest.current_step_progress(step, progress, save) == 1
     end
 
+    test "item/give - no progress on a step yet" do
+      step = %QuestStep{type: "item/give", item_id: 1}
+      progress = %QuestProgress{progress: %{}}
+      save = %{}
+
+      assert Quest.current_step_progress(step, progress, save) == 0
+    end
+
+    test "item/give - progress started" do
+      step = %QuestStep{id: 1, type: "item/give", item_id: 1}
+      progress = %QuestProgress{progress: %{step.id => 3}}
+      save = %{}
+
+      assert Quest.current_step_progress(step, progress, save) == 3
+    end
+
     test "item/have - no progress on a step yet" do
       step = %QuestStep{type: "item/have", item_id: 1}
       progress = %QuestProgress{progress: %{}}
@@ -113,6 +129,15 @@ defmodule Game.QuestTest do
       quest = %Data.Quest{quest_steps: [step]}
       progress = %QuestProgress{progress: %{}, quest: quest}
       save = %{items: [item_instance(2), item_instance(2)]}
+
+      assert Quest.requirements_complete?(progress, save)
+    end
+
+    test "quest complete when all step requirements are met - item/give" do
+      step = %QuestStep{id: 1, type: "item/give", count: 2, item_id: 2}
+      quest = %Data.Quest{quest_steps: [step]}
+      progress = %QuestProgress{progress: %{step.id => 2}, quest: quest}
+      save = %{}
 
       assert Quest.requirements_complete?(progress, save)
     end
@@ -171,6 +196,57 @@ defmodule Game.QuestTest do
       quest_progress = create_quest_progress(user, quest)
 
       assert :ok = Quest.track_progress(user, {:npc, guard})
+
+      quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
+      assert quest_progress.progress == %{}
+    end
+  end
+
+  describe "track progress - give an item to an npc" do
+    setup do
+      user = create_user()
+      baker = create_npc(%{name: "Baker"})
+      flour = create_item(%{name: "Flour"})
+      flour_instance = item_instance(flour.id)
+
+      %{user: user, baker: baker, flour: flour_instance}
+    end
+
+    test "no current quest that matches", %{user: user, baker: baker, flour: flour} do
+      assert :ok = Quest.track_progress(user, {:item, flour, baker})
+    end
+
+    test "updates any quest progresses that match the user, the npc, and the item", %{user: user, baker: baker, flour: flour} do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      npc_step = create_quest_step(quest, %{type: "item/give", count: 3, item_id: flour.id, npc_id: baker.id})
+      quest_progress = create_quest_progress(user, quest)
+
+      assert :ok = Quest.track_progress(user, {:item, flour, baker})
+
+      quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
+      assert quest_progress.progress == %{npc_step.id => 1}
+    end
+
+    test "ignores steps if they do not match the npc being passed in", %{user: user, baker: baker, flour: flour} do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      create_quest_step(quest, %{type: "item/give", count: 3, item_id: flour.id, npc_id: baker.id})
+      quest_progress = create_quest_progress(user, quest)
+
+      assert :ok = Quest.track_progress(user, {:item, flour, guard})
+
+      quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
+      assert quest_progress.progress == %{}
+    end
+
+    test "ignores steps if they do not match the item being passed in", %{user: user, baker: baker, flour: flour} do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      create_quest_step(quest, %{type: "item/give", count: 3, item_id: flour.id, npc_id: baker.id})
+      quest_progress = create_quest_progress(user, quest)
+
+      assert :ok = Quest.track_progress(user, {:item, item_instance(0), baker})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{}

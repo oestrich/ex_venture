@@ -92,6 +92,9 @@ defmodule Game.Quest do
         end)
         |> length()
 
+      "item/give" ->
+        Map.get(quest_progress.progress, step.id, 0)
+
       "item/have" ->
         save.items
         |> Enum.filter(fn item ->
@@ -167,6 +170,21 @@ defmodule Game.Quest do
   Track quest progress for the user
   """
   @spec track_progress(User.t(), any()) :: :ok
+  def track_progress(user, {:item, item_instance, npc}) do
+    QuestProgress
+    |> join(:left, [qp], q in assoc(qp, :quest))
+    |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
+    |> where(
+      [qp, q, qs],
+      qp.user_id == ^user.id and qs.type == "item/give" and qs.npc_id == ^npc.id and qs.item_id == ^item_instance.id
+    )
+    |> select([qp, q, qs], [qp.id, qs.id])
+    |> Repo.all()
+    |> Enum.each(&track_step/1)
+
+    :ok
+  end
+
   def track_progress(user, {:npc, npc}) do
     QuestProgress
     |> join(:left, [qp], q in assoc(qp, :quest))

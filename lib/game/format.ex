@@ -828,6 +828,10 @@ defmodule Game.Format do
         current_step_progress = Quest.current_step_progress(step, progress, save)
         " - Collect #{item_name(step.item)} - #{current_step_progress}/#{step.count}"
 
+      "item/give" ->
+        current_step_progress = Quest.current_step_progress(step, progress, save)
+        " - Give #{item_name(step.item)} to #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
+
       "item/have" ->
         current_step_progress = Quest.current_step_progress(step, progress, save)
         " - Have #{item_name(step.item)} - #{current_step_progress}/#{step.count}"

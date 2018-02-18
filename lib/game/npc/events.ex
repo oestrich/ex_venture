@@ -18,6 +18,7 @@ defmodule Game.NPC.Events do
   alias Game.Message
   alias Game.NPC
   alias Game.NPC.Combat
+  alias Game.Quest
 
   @doc """
   Filters to tick events and adds a UUID
@@ -81,6 +82,15 @@ defmodule Game.NPC.Events do
   def act_on(state = %{npc: npc}, {"combat/tick"}) do
     broadcast(npc, "combat/tick")
     state |> act_on_combat_tick()
+  end
+
+  def act_on(state = %{npc: npc}, {"item/receive", character, instance}) do
+    broadcast(npc, "item/receive", %{
+      from: who(character),
+      item: instance.id,
+    })
+
+    state |> act_on_item_receive(character, instance)
   end
 
   def act_on(state = %{npc: npc}, {"room/entered", {character, _reason}}) do
@@ -184,6 +194,19 @@ defmodule Game.NPC.Events do
         {:update, state}
     end
   end
+
+  @doc """
+  Act on the `item/receive` event
+  """
+  def act_on_item_receive(state, character, item_instance)
+
+  def act_on_item_receive(state, {:user, user}, item_instance) do
+    npc = %{state.npc | id: state.npc.original_id}
+    Quest.track_progress(user, {:item, item_instance, npc})
+    :ok
+  end
+
+  def act_on_item_receive(state, _, _), do: state
 
   @doc """
   Act on the `room/entered` event.
