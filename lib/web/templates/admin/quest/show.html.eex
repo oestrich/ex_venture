@@ -130,6 +130,10 @@
                           <b>Count:</b> <%= quest_step.count %><br />
                           <b>NPC:</b> <%= link(quest_step.npc.name, to: npc_path(@conn, :show, quest_step.npc_id)) %>
                         </dl>
+                      <% "room/explore" -> %>
+                        <dl>
+                          <b>Room:</b> <%= link(quest_step.room.name, to: room_path(@conn, :show, quest_step.room_id)) %>
+                        </dl>
                     <% end %>
                   </td>
                   <td>

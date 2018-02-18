@@ -112,6 +112,22 @@ defmodule Game.QuestTest do
 
       assert Quest.current_step_progress(step, progress, save) == 3
     end
+
+    test "room/explore - no progress on a step yet" do
+      step = %QuestStep{type: "room/explore"}
+      progress = %QuestProgress{progress: %{}}
+      save = %{}
+
+      assert Quest.current_step_progress(step, progress, save) == false
+    end
+
+    test "room/explore - progress started" do
+      step = %QuestStep{id: 1, type: "room/explore"}
+      progress = %QuestProgress{progress: %{step.id => %{explored: true}}}
+      save = %{}
+
+      assert Quest.current_step_progress(step, progress, save) == true
+    end
   end
 
   describe "determine if a user has all progress required for a quest" do
@@ -137,6 +153,15 @@ defmodule Game.QuestTest do
       step = %QuestStep{id: 1, type: "item/give", count: 2, item_id: 2}
       quest = %Data.Quest{quest_steps: [step]}
       progress = %QuestProgress{progress: %{step.id => 2}, quest: quest}
+      save = %{}
+
+      assert Quest.requirements_complete?(progress, save)
+    end
+
+    test "quest complete when all step requirements are met - room/explored" do
+      step = %QuestStep{id: 1, type: "room/explore", room_id: 2}
+      quest = %Data.Quest{quest_steps: [step]}
+      progress = %QuestProgress{progress: %{step.id => %{explored: true}}, quest: quest}
       save = %{}
 
       assert Quest.requirements_complete?(progress, save)
@@ -196,6 +221,44 @@ defmodule Game.QuestTest do
       quest_progress = create_quest_progress(user, quest)
 
       assert :ok = Quest.track_progress(user, {:npc, guard})
+
+      quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
+      assert quest_progress.progress == %{}
+    end
+  end
+
+  describe "track progress - exploring a room" do
+    setup do
+      user = create_user()
+      zone = create_zone()
+      room = create_room(zone, %{name: "Goblin Hideout"})
+
+      %{user: user, room: room}
+    end
+
+    test "no current quest that matches", %{user: user, room: room} do
+      assert :ok = Quest.track_progress(user, {:room, room.id})
+    end
+
+    test "updates any quest progresses that match the user and the room", %{user: user, room: room} do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      npc_step = create_quest_step(quest, %{type: "room/explore", room_id: room.id})
+      quest_progress = create_quest_progress(user, quest)
+
+      assert :ok = Quest.track_progress(user, {:room, room.id})
+
+      quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
+      assert quest_progress.progress == %{npc_step.id => %{explored: true}}
+    end
+
+    test "ignores steps if they do not match the room being passed in", %{user: user, room: room} do
+      guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
+      create_quest_step(quest, %{type: "room/explore", room_id: room.id})
+      quest_progress = create_quest_progress(user, quest)
+
+      assert :ok = Quest.track_progress(user, {:room, -1})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{}

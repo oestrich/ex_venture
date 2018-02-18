@@ -28,10 +28,15 @@ defmodule Data.QuestProgress do
     Load progress from the database
     """
     @impl Ecto.Type
-    def load(event) do
-      event = for {key, val} <- event, into: %{}, do: {String.to_integer(key), val}
-      {:ok, event}
+    def load(progress) do
+      progress = for {key, val} <- progress, into: %{}, do: {String.to_integer(key), cast_val(val)}
+      {:ok, progress}
     end
+
+    defp cast_val(map) when is_map(map) do
+      for {key, val} <- map, into: %{}, do: {String.to_atom(key), val}
+    end
+    defp cast_val(val), do: val
 
     @impl Ecto.Type
     def dump(progress) when is_map(progress), do: {:ok, Map.delete(progress, :__struct__)}

@@ -1,0 +1,6 @@
+<div class="form-group">
+  <%= label @f, :room_id %>
+  <%= number_input @f, :room_id, placeholder: "Enter Room ID", class: "form-control" %>
+  <%= error_tag @f, :room_id %>
+  <span class="help-block">Since this can be any of the rooms in the game, find it's ID and paste it here</span>
+</div>

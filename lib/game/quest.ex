@@ -48,7 +48,7 @@ defmodule Game.Quest do
   end
 
   defp preloads(quest) do
-    quest |> preload(quest: [:giver, quest_steps: [:item, :npc]])
+    quest |> preload(quest: [:giver, quest_steps: [:item, :npc, :room]])
   end
 
   @doc """
@@ -104,6 +104,11 @@ defmodule Game.Quest do
 
       "npc/kill" ->
         Map.get(quest_progress.progress, step.id, 0)
+
+      "room/explore" ->
+        quest_progress.progress
+        |> Map.get(step.id, %{explored: false})
+        |> Map.get(:explored)
     end
   end
 
@@ -123,6 +128,9 @@ defmodule Game.Quest do
   Check if a single step is complete
   """
   @spec requirement_complete?(QuestStep.t(), QuestProgress.t(), Save.t()) :: boolean()
+  def requirement_complete?(step = %{type: "room/explore"}, progress, save) do
+    current_step_progress(step, progress, save)
+  end
   def requirement_complete?(step, progress, save) do
     current_step_progress(step, progress, save) >= step.count
   end
@@ -187,6 +195,7 @@ defmodule Game.Quest do
 
   def track_progress(user, {:npc, npc}) do
     QuestProgress
+    |> where([qp], qp.status == "active")
     |> join(:left, [qp], q in assoc(qp, :quest))
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
@@ -196,6 +205,22 @@ defmodule Game.Quest do
     |> select([qp, q, qs], [qp.id, qs.id])
     |> Repo.all()
     |> Enum.each(&track_step/1)
+
+    :ok
+  end
+
+  def track_progress(user, {:room, room_id}) do
+    QuestProgress
+    |> where([qp], qp.status == "active")
+    |> join(:left, [qp], q in assoc(qp, :quest))
+    |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
+    |> where(
+      [qp, q, qs],
+      qp.user_id == ^user.id and qs.type == "room/explore" and qs.room_id == ^room_id
+    )
+    |> select([qp, q, qs], [qp.id, qs.id])
+    |> Repo.all()
+    |> Enum.each(&track_room_step/1)
 
     :ok
   end
@@ -211,6 +236,25 @@ defmodule Game.Quest do
 
       true ->
         progress = quest_progress.progress |> Map.put(step_id, step_progress + 1)
+
+        quest_progress
+        |> QuestProgress.changeset(%{progress: progress})
+        |> Repo.update()
+    end
+  end
+
+  # Update room steps to be explored
+  defp track_room_step([progress_id, step_id]) do
+    quest_progress = Repo.get(QuestProgress, progress_id)
+    step = Repo.get(QuestStep, step_id)
+    step_progress = Map.get(quest_progress.progress, step.id, %{explored: false})
+
+    case step_progress do
+      %{explored: true} ->
+        :ok
+
+      _ ->
+        progress = quest_progress.progress |> Map.put(step_id, %{explored: true})
 
         quest_progress
         |> QuestProgress.changeset(%{progress: progress})

@@ -137,7 +137,7 @@ defmodule Game.Format do
     description = "#{room.description} #{room.features |> features() |> Enum.join(" ")}"
 
     """
-    {green}#{room.name}{/green}
+    #{room_name(room)}
     #{underline(room.name)}
     #{description |> wrap()}\n
     #{map}
@@ -146,6 +146,10 @@ defmodule Game.Format do
     #{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
     """
     |> String.trim()
+  end
+
+  def room_name(room) do
+    "{green}#{room.name}{/green}"
   end
 
   @doc """
@@ -839,6 +843,10 @@ defmodule Game.Format do
       "npc/kill" ->
         current_step_progress = Quest.current_step_progress(step, progress, save)
         " - Kill #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
+
+      "room/explore" ->
+        current_step_progress = Quest.current_step_progress(step, progress, save)
+        " - Explore #{room_name(step.room)} - #{current_step_progress}"
     end
   end
 

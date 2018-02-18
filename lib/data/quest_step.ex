@@ -7,6 +7,7 @@ defmodule Data.QuestStep do
 
   alias Data.Item
   alias Data.NPC
+  alias Data.Room
   alias Data.Quest
 
   @types [
@@ -14,6 +15,7 @@ defmodule Data.QuestStep do
     "item/give",
     "item/have",
     "npc/kill",
+    "room/explore",
   ]
 
   schema "quest_steps" do
@@ -23,6 +25,7 @@ defmodule Data.QuestStep do
     belongs_to(:quest, Quest)
     belongs_to(:item, Item)
     belongs_to(:npc, NPC)
+    belongs_to(:room, Room)
 
     timestamps()
   end
@@ -31,15 +34,17 @@ defmodule Data.QuestStep do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:type, :count, :quest_id, :item_id, :npc_id])
+    |> cast(params, [:type, :count, :quest_id, :item_id, :npc_id, :room_id])
     |> validate_required([:quest_id])
     |> validate_inclusion(:type, @types)
     |> validate_type()
     |> foreign_key_constraint(:quest_id)
     |> foreign_key_constraint(:item_id)
     |> foreign_key_constraint(:npc_id)
+    |> foreign_key_constraint(:room_id)
     |> unique_constraint(:item_id, name: :quest_steps_quest_id_item_id_index)
     |> unique_constraint(:npc_id, name: :quest_steps_quest_id_npc_id_index)
+    |> unique_constraint(:room_id, name: :quest_steps_quest_id_room_id_index)
   end
 
   def validate_type(changeset) do
@@ -55,6 +60,9 @@ defmodule Data.QuestStep do
 
       "npc/kill" ->
         changeset |> validate_required([:npc_id, :count])
+
+      "room/explore" ->
+        changeset |> validate_required([:room_id])
 
       _ ->
         changeset

@@ -8,6 +8,7 @@ defmodule Game.Command.Move do
 
   alias Data.Exit
   alias Game.Door
+  alias Game.Quest
   alias Game.Session.GMCP
 
   @must_be_alive true
@@ -231,6 +232,8 @@ defmodule Game.Command.Move do
 
     @room.enter(room_id, {:user, user}, enter_reason)
     @room.link(room_id)
+
+    Quest.track_progress(user, {:room, room_id})
 
     Game.Command.run(%Game.Command{module: Game.Command.Look, args: {}, system: true}, state)
     {:update, state}

@@ -81,7 +81,7 @@ defmodule Web.Quest do
       :giver,
       parent_relations: [:parent],
       child_relations: [:child],
-      quest_steps: [:item, :npc]
+      quest_steps: [:item, :npc, :room]
     ])
     |> Repo.one()
   end
