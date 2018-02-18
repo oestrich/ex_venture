@@ -88,6 +88,7 @@ defmodule Game.Command do
     Command.Emote,
     Command.Equipment,
     Command.Examine,
+    Command.Give,
     Command.Greet,
     Command.Help,
     Command.Mail,

@@ -47,6 +47,14 @@ defmodule Game.Character do
   end
 
   @doc """
+  Notify a character of an event
+  """
+  @spec notify(Character.t(), map()) :: :ok
+  def notify(target, event) do
+    GenServer.cast({:via, Via, who(target)}, {:notify, event})
+  end
+
+  @doc """
   Converts a tuple with a struct to a tuple with an id
   """
   @spec who({:npc, integer()} | {:npc, NPC.t()}) :: {:npc, integer()}

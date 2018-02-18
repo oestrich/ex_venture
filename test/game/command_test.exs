@@ -241,6 +241,10 @@ defmodule Game.CommandTest do
     test "recall", %{user: user} do
       assert %Command{module: Command.Recall, args: {}} = Command.parse("recall", user)
     end
+
+    test "giving", %{user: user} do
+      assert %Command{module: Command.Give, args: {"item", :to, "player"}} = Command.parse("give item to player", user)
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{socket: socket} do

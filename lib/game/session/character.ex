@@ -8,6 +8,7 @@ defmodule Game.Session.Character do
   alias Game.Character
   alias Game.Experience
   alias Game.Format
+  alias Game.Items
   alias Game.Quest
   alias Game.Session
   alias Game.Session.Effects
@@ -67,6 +68,15 @@ defmodule Game.Session.Character do
       false ->
         state
     end
+  end
+
+  def notify(state = %{save: save}, {"item/receive", character, instance}) do
+    item = Items.item(instance)
+    state.socket |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}")
+
+    save = %{save | items: [instance | save.items]}
+    user = %{state.user | save: save}
+    %{state | user: user, save: save}
   end
 
   def notify(state, {"mail/new", mail}) do

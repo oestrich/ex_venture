@@ -439,6 +439,22 @@ defmodule Game.SessionTest do
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r(has died), echo)
     end
+
+    test "new item received", state do
+      start_and_clear_items()
+      insert_item(%{id: 1, name: "Potion"})
+      instance = item_instance(1)
+
+      state = %{state | user: %{save: nil}, save: %{items: []}}
+
+      {:noreply, state} = Process.handle_cast({:notify, {"item/receive", {:npc, %{name: "Guard"}}, instance}}, state)
+
+      assert state.save.items == [instance]
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(Potion)i, echo)
+      assert Regex.match?(~r(Guard)i, echo)
+    end
   end
 
   describe "character dying" do
