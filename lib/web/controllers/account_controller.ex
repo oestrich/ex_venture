@@ -3,7 +3,7 @@ defmodule Web.AccountController do
 
   alias Web.User
 
-  plug(:ensure_user!)
+  plug(Web.Plug.EnsureUser)
 
   def show(conn, _params) do
     conn |> render("show.html")
@@ -16,13 +16,6 @@ defmodule Web.AccountController do
 
       _ ->
         conn |> redirect(to: public_account_path(conn, :show))
-    end
-  end
-
-  defp ensure_user!(conn, _opts) do
-    case Map.has_key?(conn.assigns, :user) do
-      true -> conn
-      false -> conn |> redirect(to: session_path(conn, :new)) |> halt()
     end
   end
 end

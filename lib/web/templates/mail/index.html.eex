@@ -1,0 +1,28 @@
+<div class="row">
+  <%= render(AccountView, "_sidebar.html", conn: @conn) %>
+
+  <div class="col-md-10">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Sender</th>
+          <th>Title</th>
+          <th>Sent At</th>
+          <th>Read?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= Enum.map(@mail_pieces, fn mail -> %>
+          <tr>
+            <td><%= mail.sender.name %></td>
+            <td><%= link(mail.title, to: public_mail_path(@conn, :show, mail.id)) %></td>
+            <td><%= mail.inserted_at |> TimeView.time() %></td>
+            <td><span class="badge badge-light"><%= mail.is_read %></span></td>
+          </tr>
+        <% end) %>
+      </tbody>
+    </table>
+
+    <%= render(SharedView, "_pagination.html", path: public_mail_path(@conn, :index), pagination: @pagination) %>
+  </div>
+</div>

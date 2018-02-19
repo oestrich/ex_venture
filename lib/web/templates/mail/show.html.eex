@@ -1,0 +1,20 @@
+<div class="row">
+  <%= render(AccountView, "_sidebar.html", conn: @conn) %>
+
+  <div class="col-md-10">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title"><%= @mail.title %></h3>
+        <div class="card-subtitle text-muted">
+          From: <%= @mail.sender.name %>
+        </div>
+        <div class="card-subtitle text-muted">
+          Sent At: <%= @mail.inserted_at |> TimeView.time() %>
+        </div>
+        <p class="card-text">
+          <%= @mail.body %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,8 @@
 defmodule Web.Admin.UserView do
   use Web, :view
 
+  import Web.TimeView
+
   alias Game.Format
   alias Game.Items
   alias Web.Admin.SharedView
@@ -8,22 +10,12 @@ defmodule Web.Admin.UserView do
   alias Web.Race
   alias Web.User
 
-  @timezone Application.get_env(:ex_venture, :timezone)
-
   def online?(user) do
     Enum.any?(User.connected_players(), &(&1.id == user.id))
   end
 
   def live(user) do
     Enum.find(User.connected_players(), &(&1.id == user.id))
-  end
-
-  def time(time) do
-    new_york = Timex.Timezone.get(@timezone, Timex.now())
-
-    time
-    |> Timex.Timezone.convert(new_york)
-    |> Timex.format!("%Y-%m-%d %I:%M %p", :strftime)
   end
 
   def stat_display_name(stat) do

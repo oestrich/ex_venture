@@ -3,6 +3,7 @@ defmodule Web.LayoutView do
 
   alias Game.Config
   alias Web.Bug
+  alias Web.Mail
 
   def tab_selected(conn, "dashboard") do
     case conn.path_info do

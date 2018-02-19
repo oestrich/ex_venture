@@ -1,0 +1,12 @@
+<div class="col-md-2">
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <%= link(to: public_mail_path(@conn, :index), class: "nav-link") do %>
+        Mail <span class="badge badge-light"><%= Mail.unread_count(@conn.assigns.user) %></span>
+      <% end %>
+    </li>
+    <li class="nav-item">
+      <%= link("Settings", to: public_account_path(@conn, :show), class: "nav-link") %>
+    </li>
+  </ul>
+</div>

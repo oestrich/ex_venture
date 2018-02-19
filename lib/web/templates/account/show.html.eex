@@ -1,5 +1,7 @@
 <div class="row">
-  <div class="col-md-4 offset-md-4">
+  <%= render("_sidebar.html", conn: @conn) %>
+
+  <div class="col-md-4">
     <h3>Change Password</h3>
 
     <%= form_tag public_account_path(@conn, :update), [method: :put] do %>

@@ -38,8 +38,13 @@
             </li>
 
             <%= if Map.has_key?(@conn.assigns, :user) do %>
-              <li class="nav-item>">
-                <%= link("Account", to: public_account_path(@conn, :show), class: "nav-link") %>
+              <li class="nav-item <%= tab_selected(@conn, "account") %>">
+                <%= link(to: public_mail_path(@conn, :index), class: "nav-link") do %>
+                  Account
+                  <%= if (unread_count = Mail.unread_count(@user)) > 0 do %>
+                    <span class="badge badge-info"><%= unread_count %></span>
+                  <% end %>
+                <% end %>
               </li>
               <%= if @conn |> is_admin? do %>
                 <li class="nav-item>">

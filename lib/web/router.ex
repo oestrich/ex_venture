@@ -25,6 +25,8 @@ defmodule Web.Router do
     get("/account", AccountController, :show)
     put("/account", AccountController, :update)
 
+    resources("/account/mail", MailController, only: [:index, :show])
+
     resources("/classes", ClassController, only: [:index, :show])
 
     get("/help/commands", HelpController, :commands)
