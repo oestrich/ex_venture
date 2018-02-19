@@ -216,7 +216,12 @@ defmodule Game.Command.Move do
   @doc """
   Move the player to a new room
   """
-  def move_to(state = %{save: save, user: user}, room_id, leave_reason \\ :leave, enter_reason \\ :enter) do
+  def move_to(
+        state = %{save: save, user: user},
+        room_id,
+        leave_reason \\ :leave,
+        enter_reason \\ :enter
+      ) do
     @room.unlink(save.room_id)
     @room.leave(save.room_id, {:user, user}, leave_reason)
 

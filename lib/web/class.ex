@@ -52,7 +52,10 @@ defmodule Web.Class do
   def get(id) do
     Class
     |> where([c], c.id == ^id)
-    |> preload(class_skills: ^from(cs in ClassSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id]))
+    |> preload(
+      class_skills:
+        ^from(cs in ClassSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id])
+    )
     |> preload(class_skills: [:skill])
     |> Repo.one()
   end

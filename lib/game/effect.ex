@@ -86,12 +86,12 @@ defmodule Game.Effect do
   def calculate_damage(effect, stats) do
     case Damage.physical?(effect.type) do
       true ->
-        strength_modifier = 1 + (stats.strength / 20.0) + (Enum.random(@random_damage) / 100)
+        strength_modifier = 1 + stats.strength / 20.0 + Enum.random(@random_damage) / 100
         modified_amount = round(Float.ceil(effect.amount * strength_modifier))
         effect |> Map.put(:amount, modified_amount)
 
       false ->
-        intelligence_modifier = 1 + (stats.intelligence / 20.0) + (Enum.random(@random_damage) / 100)
+        intelligence_modifier = 1 + stats.intelligence / 20.0 + Enum.random(@random_damage) / 100
         modified_amount = round(Float.ceil(effect.amount * intelligence_modifier))
         effect |> Map.put(:amount, modified_amount)
     end

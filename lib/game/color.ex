@@ -22,6 +22,7 @@ defmodule Game.Color do
 
   defp _format([], lines, stack) when length(stack) > 0, do: ["\e[0m" | lines]
   defp _format([], lines, _stack), do: lines
+
   defp _format([head | tail], lines, stack) do
     case Regex.match?(@color_regex, head) do
       true ->
@@ -60,9 +61,11 @@ defmodule Game.Color do
   def format_closing_code([_previous | [previous | stack]]) do
     {format_color(previous), [previous | stack]}
   end
+
   def format_closing_code([_previous | stack]) do
     {format_color("{/color}"), stack}
   end
+
   def format_closing_code(stack) do
     {format_color("{/color}"), stack}
   end

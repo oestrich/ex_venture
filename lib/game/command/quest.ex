@@ -275,7 +275,10 @@ defmodule Game.Command.Quest do
   defp maybe_complete(:ok, _), do: :ok
 
   defp maybe_complete(nil, %{socket: socket}) do
-    socket |> @socket.echo("You cannot complete a quest in this room. Find the quest giver or complete required steps.")
+    socket
+    |> @socket.echo(
+      "You cannot complete a quest in this room. Find the quest giver or complete required steps."
+    )
   end
 
   defp maybe_complete(progress, state), do: run({:complete, progress.quest_id}, state)

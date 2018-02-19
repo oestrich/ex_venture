@@ -10,6 +10,7 @@ defmodule Web.Admin.RoomFeatureController do
 
   def create(conn, %{"room_id" => room_id, "feature" => params}) do
     room = Room.get(room_id)
+
     case Room.add_feature(room, params) do
       {:ok, _room} ->
         conn |> redirect(to: room_path(conn, :show, room.id))
@@ -27,6 +28,7 @@ defmodule Web.Admin.RoomFeatureController do
 
   def update(conn, %{"room_id" => room_id, "id" => id, "feature" => params}) do
     room = Room.get(room_id)
+
     case Room.edit_feature(room, id, params) do
       {:ok, _room} ->
         conn |> redirect(to: room_path(conn, :show, room.id))
@@ -38,6 +40,7 @@ defmodule Web.Admin.RoomFeatureController do
 
   def delete(conn, %{"room_id" => room_id, "id" => id}) do
     room = Room.get(room_id)
+
     case Room.delete_feature(room, id) do
       {:ok, _} ->
         conn |> redirect(to: room_path(conn, :show, room.id))

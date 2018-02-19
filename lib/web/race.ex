@@ -47,7 +47,10 @@ defmodule Web.Race do
   def get(id) do
     Race
     |> where([c], c.id == ^id)
-    |> preload(race_skills: ^from(cs in RaceSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id]))
+    |> preload(
+      race_skills:
+        ^from(cs in RaceSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id])
+    )
     |> preload(race_skills: [:skill])
     |> Repo.one()
   end

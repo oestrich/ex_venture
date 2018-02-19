@@ -45,7 +45,11 @@ defmodule Game.Command.Examine do
   end
 
   def run({}, %{socket: socket}) do
-    socket |> @socket.echo("You don't know what to examine. See {white}help drop{/white} for more information.")
+    socket
+    |> @socket.echo(
+      "You don't know what to examine. See {white}help drop{/white} for more information."
+    )
+
     :ok
   end
 end

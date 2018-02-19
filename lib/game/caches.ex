@@ -14,7 +14,7 @@ defmodule Game.Caches do
     children = [
       worker(Cachex, [:doors, [], []], id: :doors_cache),
       worker(Cachex, [:items, [], []], id: :items_cache),
-      worker(Cachex, [:skills, [], []], id: :skills_cache),
+      worker(Cachex, [:skills, [], []], id: :skills_cache)
     ]
 
     supervise(children, strategy: :one_for_one)

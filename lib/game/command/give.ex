@@ -136,9 +136,14 @@ defmodule Game.Command.Give do
   defp send_item_to_character(state = %{save: save}, currency, :currency, character) do
     case save.currency >= currency do
       false ->
-        state.socket |> @socket.echo("You do not have enough #{currency()} to give to #{Format.name(character)}")
+        state.socket
+        |> @socket.echo(
+          "You do not have enough #{currency()} to give to #{Format.name(character)}"
+        )
+
       true ->
-        state.socket |> @socket.echo("Gave #{Format.currency(currency)} to #{Format.name(character)}")
+        state.socket
+        |> @socket.echo("Gave #{Format.currency(currency)} to #{Format.name(character)}")
 
         Character.notify(character, {"currency/receive", {:user, state.user}, currency})
 

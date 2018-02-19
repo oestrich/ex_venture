@@ -131,6 +131,7 @@ defmodule Game.Quest do
   def requirement_complete?(step = %{type: "room/explore"}, progress, save) do
     current_step_progress(step, progress, save)
   end
+
   def requirement_complete?(step, progress, save) do
     current_step_progress(step, progress, save) >= step.count
   end
@@ -184,7 +185,8 @@ defmodule Game.Quest do
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
       [qp, q, qs],
-      qp.user_id == ^user.id and qs.type == "item/give" and qs.npc_id == ^npc.id and qs.item_id == ^item_instance.id
+      qp.user_id == ^user.id and qs.type == "item/give" and qs.npc_id == ^npc.id and
+        qs.item_id == ^item_instance.id
     )
     |> select([qp, q, qs], [qp.id, qs.id])
     |> Repo.all()

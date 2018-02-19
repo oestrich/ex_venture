@@ -15,7 +15,7 @@ defmodule Data.QuestStep do
     "item/give",
     "item/have",
     "npc/kill",
-    "room/explore",
+    "room/explore"
   ]
 
   schema "quest_steps" do

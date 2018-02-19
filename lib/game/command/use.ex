@@ -41,7 +41,11 @@ defmodule Game.Command.Use do
   end
 
   def run({}, %{socket: socket}) do
-    socket |> @socket.echo("You are not sure what to use. See {white}help use{/white} for more information.")
+    socket
+    |> @socket.echo(
+      "You are not sure what to use. See {white}help use{/white} for more information."
+    )
+
     :ok
   end
 

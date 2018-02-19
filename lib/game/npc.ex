@@ -156,7 +156,7 @@ defmodule Game.NPC do
       room_id: nil,
       target: nil,
       combat: false,
-      tick_events: [],
+      tick_events: []
     }
 
     {:ok, state}

@@ -21,7 +21,7 @@ defmodule Web.HelpTopic do
     help_topics = HelpAgent.database()
     built_ins = HelpAgent.built_in()
 
-    help_topics ++ built_ins
+    (help_topics ++ built_ins)
     |> Enum.sort_by(& &1.name)
   end
 
@@ -55,7 +55,7 @@ defmodule Web.HelpTopic do
 
   def built_in(id) do
     HelpAgent.built_in()
-    |> Enum.find(& &1.id == id)
+    |> Enum.find(&(&1.id == id))
   end
 
   @doc """

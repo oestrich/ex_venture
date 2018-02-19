@@ -181,7 +181,7 @@ defmodule Game.Session.GMCP do
     data = %{
       channel: channel,
       from: character_info({message.type, message.sender}),
-      message: message.message,
+      message: message.message
     }
 
     socket |> @socket.push_gmcp("Channels.Broadcast", Poison.encode!(data))
@@ -194,7 +194,7 @@ defmodule Game.Session.GMCP do
   def tell(%{socket: socket}, character, message) do
     data = %{
       from: character_info(character),
-      message: message.message,
+      message: message.message
     }
 
     socket |> @socket.push_gmcp("Channels.Tell", Poison.encode!(data))
@@ -208,7 +208,7 @@ defmodule Game.Session.GMCP do
     data = %{
       id: mail.id,
       from: user_info(mail.sender),
-      title: mail.title,
+      title: mail.title
     }
 
     socket |> @socket.push_gmcp("Mail.New", Poison.encode!(data))

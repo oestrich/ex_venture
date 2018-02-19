@@ -289,8 +289,8 @@ defmodule Game.Session.Process do
           |> Map.put(:save, save)
           |> Map.put(:user, user)
 
-          {:update, state} = Move.move_to(state, graveyard_id, :death, :respawn)
-          state |> prompt()
+        {:update, state} = Move.move_to(state, graveyard_id, :death, :respawn)
+        state |> prompt()
 
         {:noreply, state}
 

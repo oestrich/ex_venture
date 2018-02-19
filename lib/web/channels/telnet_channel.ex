@@ -172,6 +172,7 @@ defmodule Web.TelnetChannel do
     end
 
     def handle_info({:EXIT, _pid, :normal}, state), do: {:noreply, state}
+
     def handle_info({:EXIT, pid, _reason}, state) do
       case state.session do
         ^pid ->
@@ -182,6 +183,7 @@ defmodule Web.TelnetChannel do
           Monitor.monitor(self(), pid)
 
           {:noreply, %{state | session: pid}}
+
         _ ->
           {:stop, :error, state}
       end

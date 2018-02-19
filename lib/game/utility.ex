@@ -23,6 +23,7 @@ defmodule Game.Utility do
   def matches?(string, lookup) when is_binary(string) do
     String.starts_with?(string |> String.downcase(), lookup |> String.downcase())
   end
+
   def matches?(struct, lookup), do: matches?(struct.name, lookup)
 
   @doc """

@@ -57,6 +57,7 @@ defmodule Game.Command.Skills do
   """
   @spec parse_skill(String.t(), User.t()) :: Command.t() | {:error, :bad_parse, String.t()}
   def parse_skill(command, user)
+
   def parse_skill(command, %{save: save}) do
     skill =
       save.skill_ids
@@ -86,7 +87,7 @@ defmodule Game.Command.Skills do
       save.skill_ids
       |> Skills.skills()
       |> Enum.filter(&(&1.level <= save.level))
-      |> Enum.sort_by(&(&1.level))
+      |> Enum.sort_by(& &1.level)
 
     socket |> @socket.echo(Format.skills(skills))
     :ok
@@ -96,7 +97,7 @@ defmodule Game.Command.Skills do
     skills =
       save.skill_ids
       |> Skills.skills()
-      |> Enum.sort_by(&(&1.level))
+      |> Enum.sort_by(& &1.level)
 
     socket |> @socket.echo(Format.skills(skills))
     :ok

@@ -71,7 +71,8 @@ defmodule Game.Session.Character do
   end
 
   def notify(state = %{save: save}, {"currency/receive", character, currency}) do
-    state.socket |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}")
+    state.socket
+    |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}")
 
     save = %{save | currency: save.currency + currency}
     user = %{state.user | save: save}
@@ -80,7 +81,9 @@ defmodule Game.Session.Character do
 
   def notify(state = %{save: save}, {"item/receive", character, instance}) do
     item = Items.item(instance)
-    state.socket |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}")
+
+    state.socket
+    |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}")
 
     save = %{save | items: [instance | save.items]}
     user = %{state.user | save: save}
@@ -88,7 +91,9 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"mail/new", mail}) do
-    state.socket |> @socket.echo("You have new mail. {white}mail read #{mail.id}{/white} to read it")
+    state.socket
+    |> @socket.echo("You have new mail. {white}mail read #{mail.id}{/white} to read it")
+
     state |> GMCP.mail_new(mail)
     state
   end

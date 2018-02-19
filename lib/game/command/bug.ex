@@ -43,7 +43,11 @@ defmodule Game.Command.Bug do
   end
 
   def run({}, %{socket: socket}) do
-    socket |> @socket.echo("Please provide a bug title. See {white}help bug{/white} for more information.")
+    socket
+    |> @socket.echo(
+      "Please provide a bug title. See {white}help bug{/white} for more information."
+    )
+
     :ok
   end
 

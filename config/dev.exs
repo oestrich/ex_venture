@@ -40,7 +40,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $levelpad$message\n",
   metadata: [:type]
 
-config :ex_venture, ExVenture.Mailer,
-  adapter: Bamboo.LocalAdapter
+config :ex_venture, ExVenture.Mailer, adapter: Bamboo.LocalAdapter
 
 config :ex_venture, :mailer, from: "mud@example.com"

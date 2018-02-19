@@ -104,6 +104,7 @@ defmodule Web.User do
     params = Map.put(params, "save", save)
 
     changeset = %User{} |> User.changeset(params)
+
     case changeset |> Repo.insert() do
       {:ok, user} ->
         Account.maybe_email_welcome(user)

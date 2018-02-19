@@ -87,7 +87,7 @@ defmodule Game.NPC.Events do
   def act_on(state = %{npc: npc}, {"item/receive", character, instance}) do
     broadcast(npc, "item/receive", %{
       from: who(character),
-      item: instance.id,
+      item: instance.id
     })
 
     state |> act_on_item_receive(character, instance)
@@ -155,6 +155,7 @@ defmodule Game.NPC.Events do
     case Character.who(character) == Character.who(state.target) do
       true ->
         {:update, Map.put(state, :target, nil)}
+
       false ->
         :ok
     end
@@ -220,7 +221,9 @@ defmodule Game.NPC.Events do
     state
   end
 
-  def act_on_room_entered(state = %{npc: npc, combat: false}, {:user, user}, %{action: %{type: "target"}}) do
+  def act_on_room_entered(state = %{npc: npc, combat: false}, {:user, user}, %{
+        action: %{type: "target"}
+      }) do
     Character.being_targeted({:user, user}, {:npc, npc})
     notify_delayed({"combat/tick"}, 1500)
     %{state | combat: true, target: Character.who({:user, user})}

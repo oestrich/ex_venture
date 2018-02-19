@@ -82,10 +82,13 @@ defmodule Game.Command.Train do
 
         skill_table = Format.trainable_skills(trainer, skills)
         spent_experience_points = save.experience_points - save.spent_experience_points
-        state.socket |> @socket.echo("You have #{spent_experience_points} XP to spend.\n#{skill_table}")
+
+        state.socket
+        |> @socket.echo("You have #{spent_experience_points} XP to spend.\n#{skill_table}")
 
       {:error, :more_than_one_trainer} ->
-        state.socket |> @socket.echo("There are more than one trainer in this room. Please refer by name")
+        state.socket
+        |> @socket.echo("There are more than one trainer in this room. Please refer by name")
 
       {:error, :not_found} ->
         state.socket |> @socket.echo("There are no trainers in this room. Go find some!")
@@ -101,8 +104,10 @@ defmodule Game.Command.Train do
       {:ok, trainer} ->
         skills = Skills.skills(trainer.trainable_skills)
         state.socket |> @socket.echo(Format.trainable_skills(trainer, skills))
+
       {:error, :not_found} ->
-        state.socket |> @socket.echo("There are no trainers by that name in this room. Go find them!")
+        state.socket
+        |> @socket.echo("There are no trainers by that name in this room. Go find them!")
     end
 
     :ok
@@ -116,7 +121,9 @@ defmodule Game.Command.Train do
         trainer |> maybe_train_skill(skill_name, state)
 
       {:error, :more_than_one_trainer} ->
-        state.socket |> @socket.echo("There are more than one trainer in this room. Please refer by name")
+        state.socket
+        |> @socket.echo("There are more than one trainer in this room. Please refer by name")
+
         :ok
 
       {:error, :not_found} ->
@@ -133,7 +140,9 @@ defmodule Game.Command.Train do
         trainer |> maybe_train_skill(skill_name, state)
 
       {:error, :not_found} ->
-        state.socket |> @socket.echo("There are no trainers by that name in this room. Go find them!")
+        state.socket
+        |> @socket.echo("There are no trainers by that name in this room. Go find them!")
+
         :ok
     end
   end
@@ -164,26 +173,32 @@ defmodule Game.Command.Train do
   end
 
   defp check_if_skill_known(:ok, _state), do: :ok
+
   defp check_if_skill_known(skill, state = %{save: save}) do
     case Enum.member?(save.skill_ids, skill.id) do
       true ->
         state.socket |> @socket.echo("#{skill.name} is already known.")
+
       false ->
         skill
     end
   end
 
   defp check_if_right_level(:ok, _state), do: :ok
+
   defp check_if_right_level(skill, state = %{save: save}) do
     case skill.level > save.level do
       true ->
-        state.socket |> @socket.echo("You are not ready to learn #{skill.name}. Go experience the world more.")
+        state.socket
+        |> @socket.echo("You are not ready to learn #{skill.name}. Go experience the world more.")
+
       false ->
         skill
     end
   end
 
   defp check_if_enough_experience_to_spend(:ok, _state), do: :ok
+
   defp check_if_enough_experience_to_spend(skill, state = %{save: save}) do
     skill_cost = Skill.skill_train_cost(skill, save)
     spendable_experience = save.experience_points - save.spent_experience_points
@@ -191,12 +206,15 @@ defmodule Game.Command.Train do
     case skill_cost <= spendable_experience do
       true ->
         skill
+
       false ->
-        state.socket |> @socket.echo("You do not have enough experience to spend to train #{skill.name}.")
+        state.socket
+        |> @socket.echo("You do not have enough experience to spend to train #{skill.name}.")
     end
   end
 
   defp train_skill(:ok, _state), do: :ok
+
   defp train_skill(skill, state = %{user: user, save: save}) do
     skill_cost = Skill.skill_train_cost(skill, save)
     state.socket |> @socket.echo("#{skill.name} trained successfully! #{skill_cost} XP spent.")

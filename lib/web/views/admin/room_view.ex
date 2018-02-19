@@ -57,23 +57,23 @@ defmodule Web.Admin.RoomView do
       room.items
       |> Items.items()
       |> Enum.map(fn item ->
-        content_tag(:span, class: "cyan") do
+        content_tag :span, class: "cyan" do
           link(item.name, to: item_path(conn, :show, item.id))
         end
       end)
 
     add_new =
-      content_tag(:span, class: "cyan") do
+      content_tag :span, class: "cyan" do
         link("Add Item", to: room_room_item_path(conn, :new, room.id, spawn: false))
       end
 
     currency =
-      content_tag(:span, class: "cyan") do
+      content_tag :span, class: "cyan" do
         "#{room.currency} #{currency()}"
       end
 
     [items | [currency | [add_new]]]
-    |> List.flatten
+    |> List.flatten()
     |> Enum.map(&safe_to_string/1)
     |> Enum.join(", ")
     |> raw()
@@ -82,7 +82,7 @@ defmodule Web.Admin.RoomView do
   def who(room, conn) do
     room.npc_spawners
     |> Enum.map(fn npc_spawner ->
-      content_tag(:span, class: "yellow") do
+      content_tag :span, class: "yellow" do
         link(npc_spawner.npc.name, to: npc_path(conn, :show, npc_spawner.npc_id))
       end
     end)

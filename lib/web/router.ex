@@ -61,7 +61,7 @@ defmodule Web.Router do
       resources("/skills", ClassSkillController, only: [:new, :create], as: :skill)
     end
 
-    resources "/class_skills", ClassSkillController, only: [:delete]
+    resources("/class_skills", ClassSkillController, only: [:delete])
 
     resources("/config", ConfigController, only: [:index, :edit, :update])
 
@@ -111,18 +111,23 @@ defmodule Web.Router do
       resources("/steps", QuestStepController, only: [:new, :create], as: :step)
     end
 
-    resources("/races", RaceController, only: [:index, :show, :new, :create, :edit, :update]) do
+    resources "/races", RaceController, only: [:index, :show, :new, :create, :edit, :update] do
       resources("/skills", RaceSkillController, only: [:new, :create], as: :skill)
     end
 
-    resources "/race_skills", RaceSkillController, only: [:delete]
+    resources("/race_skills", RaceSkillController, only: [:delete])
 
     resources("/room_items", RoomItemController, only: [:delete])
 
     resources "/rooms", RoomController, only: [:show, :edit, :update] do
       resources("/exits", RoomExitController, only: [:new, :create], as: :exit)
 
-      resources("/features", RoomFeatureController, only: [:new, :create, :edit, :update, :delete], as: :feature)
+      resources(
+        "/features",
+        RoomFeatureController,
+        only: [:new, :create, :edit, :update, :delete],
+        as: :feature
+      )
 
       resources("/items", RoomItemController, only: [:new, :create])
 
@@ -154,7 +159,7 @@ defmodule Web.Router do
     end
   end
 
-  if Mix.env == :dev do
-    forward "/emails/sent", Bamboo.EmailPreviewPlug
+  if Mix.env() == :dev do
+    forward("/emails/sent", Bamboo.EmailPreviewPlug)
   end
 end

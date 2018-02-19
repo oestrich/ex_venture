@@ -103,7 +103,11 @@ defmodule Game.Command.PickUp do
   end
 
   def run({verb, :help}, %{socket: socket}) do
-    socket |> @socket.echo("You don't know what to #{verb}. See {white}help get{/white} for more information.")
+    socket
+    |> @socket.echo(
+      "You don't know what to #{verb}. See {white}help get{/white} for more information."
+    )
+
     :ok
   end
 

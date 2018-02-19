@@ -45,7 +45,9 @@ defmodule Data.Room.Feature do
 
   def validate_features(changeset) do
     case get_field(changeset, :features) do
-      nil -> changeset
+      nil ->
+        changeset
+
       features ->
         case Enum.all?(features, &valid?/1) do
           true -> changeset
@@ -55,9 +57,8 @@ defmodule Data.Room.Feature do
   end
 
   def valid?(feature) do
-    feature.id != "" && !is_nil(feature.id) &&
-      feature.key != "" && !is_nil(feature.key) &&
-      feature.description != "" && !is_nil(feature.description) &&
-      feature.short_description != "" && !is_nil(feature.short_description)
+    feature.id != "" && !is_nil(feature.id) && feature.key != "" && !is_nil(feature.key) &&
+      feature.description != "" && !is_nil(feature.description) && feature.short_description != "" &&
+      !is_nil(feature.short_description)
   end
 end

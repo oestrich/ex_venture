@@ -41,7 +41,11 @@ defmodule Game.Command.Drop do
   end
 
   def run({}, %{socket: socket}) do
-    socket |> @socket.echo("Please provide an item to drop. See {white}help drop{/white} for more information.")
+    socket
+    |> @socket.echo(
+      "Please provide an item to drop. See {white}help drop{/white} for more information."
+    )
+
     :ok
   end
 

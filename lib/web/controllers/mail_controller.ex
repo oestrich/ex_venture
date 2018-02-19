@@ -31,6 +31,7 @@ defmodule Web.MailController do
           mail ->
             conn |> assign(:mail, mail)
         end
+
       _ ->
         conn |> redirect(to: public_mail_path(conn, :index)) |> halt()
     end

@@ -237,6 +237,7 @@ defmodule Networking.Protocol do
         Process.link(pid)
 
         {:noreply, %{state | session: pid}}
+
       _ ->
         {:stop, :error, state}
     end

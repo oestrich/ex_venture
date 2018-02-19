@@ -29,13 +29,16 @@ defmodule Data.QuestProgress do
     """
     @impl Ecto.Type
     def load(progress) do
-      progress = for {key, val} <- progress, into: %{}, do: {String.to_integer(key), cast_val(val)}
+      progress =
+        for {key, val} <- progress, into: %{}, do: {String.to_integer(key), cast_val(val)}
+
       {:ok, progress}
     end
 
     defp cast_val(map) when is_map(map) do
       for {key, val} <- map, into: %{}, do: {String.to_atom(key), val}
     end
+
     defp cast_val(val), do: val
 
     @impl Ecto.Type

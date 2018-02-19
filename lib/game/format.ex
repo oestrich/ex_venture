@@ -156,8 +156,12 @@ defmodule Game.Format do
   Display room features
   """
   def features([]), do: []
+
   def features([feature | list]) do
-    [String.replace(feature.short_description, feature.key, "{white}#{feature.key}{/white}") | features(list)]
+    [
+      String.replace(feature.short_description, feature.key, "{white}#{feature.key}{/white}")
+      | features(list)
+    ]
   end
 
   @doc """
@@ -518,7 +522,7 @@ defmodule Game.Format do
   def short_info(user = %{save: save}) do
     rows = [
       ["Level", save.level],
-      ["Flags", player_flags(user)],
+      ["Flags", player_flags(user)]
     ]
 
     Table.format("#{player_name(user)} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
@@ -534,8 +538,9 @@ defmodule Game.Format do
       "none"
   """
   def player_flags(player, opts \\ [none: true])
-  def player_flags(%{flags: []}, [none: true]), do: "none"
-  def player_flags(%{flags: []}, [none: false]), do: ""
+  def player_flags(%{flags: []}, none: true), do: "none"
+  def player_flags(%{flags: []}, none: false), do: ""
+
   def player_flags(%{flags: flags}, _opts) do
     flags
     |> Enum.map(&"{red}#{&1}{/red}")
@@ -834,7 +839,10 @@ defmodule Game.Format do
 
       "item/give" ->
         current_step_progress = Quest.current_step_progress(step, progress, save)
-        " - Give #{item_name(step.item)} to #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
+
+        " - Give #{item_name(step.item)} to #{npc_name(step.npc)} - #{current_step_progress}/#{
+          step.count
+        }"
 
       "item/have" ->
         current_step_progress = Quest.current_step_progress(step, progress, save)

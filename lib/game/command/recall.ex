@@ -56,11 +56,16 @@ defmodule Game.Command.Recall do
 
       _ ->
         min = round(stats.max_move_points * 0.9)
-        state.socket |> @socket.echo("You do not have enough movement points to recall. You must have at least #{min}mp first.")
+
+        state.socket
+        |> @socket.echo(
+          "You do not have enough movement points to recall. You must have at least #{min}mp first."
+        )
     end
   end
 
   defp maybe_recall(:ok), do: :ok
+
   defp maybe_recall(state = %{save: save}) do
     room = save.room_id |> @room.look()
 

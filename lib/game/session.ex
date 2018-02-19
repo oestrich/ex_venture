@@ -26,6 +26,7 @@ defmodule Game.Session do
   """
   @spec start_with_user(pid, integer()) :: {:ok, pid}
   def start_with_user(socket, nil), do: start(socket)
+
   def start_with_user(socket, user_id) do
     Supervisor.start_child(socket, user_id)
   end

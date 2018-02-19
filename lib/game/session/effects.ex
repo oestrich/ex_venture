@@ -59,7 +59,10 @@ defmodule Game.Session.Effects do
 
   def maybe_died(user = %{save: %{stats: %{health: health}}}, state, from) when health < 1 do
     user |> maybe_transport_to_graveyard()
-    state.save.room_id |> @room.notify({:user, user}, {"character/died", {:user, user}, :character, from})
+
+    state.save.room_id
+    |> @room.notify({:user, user}, {"character/died", {:user, user}, :character, from})
+
     :ok
   end
 

@@ -216,6 +216,7 @@ defmodule Game.Room do
     case Actions.maybe_respawn_items(state) do
       :ok ->
         {:reply, return, state}
+
       {:update, state} ->
         {:reply, return, state}
     end

@@ -266,11 +266,12 @@ defmodule Web.Room do
   @doc """
   Edit a room feature from a room
   """
-  @spec edit_feature(Room.t(), String.t(), map()) :: {:ok, Room.t} | {:error, Ecto.Changeset.t()}
+  @spec edit_feature(Room.t(), String.t(), map()) ::
+          {:ok, Room.t()} | {:error, Ecto.Changeset.t()}
   def edit_feature(room, feature_id, params) do
     features =
       room.features
-      |> Enum.reject(& &1.id == feature_id)
+      |> Enum.reject(&(&1.id == feature_id))
 
     {:ok, feature} =
       params
@@ -292,11 +293,11 @@ defmodule Web.Room do
   @doc """
   Delete a room feature from a room
   """
-  @spec delete_feature(Room.t(), String.t()) :: {:ok, Room.t} | {:error, Ecto.Changeset.t()}
+  @spec delete_feature(Room.t(), String.t()) :: {:ok, Room.t()} | {:error, Ecto.Changeset.t()}
   def delete_feature(room, feature_id) do
     features =
       room.features
-      |> Enum.reject(& &1.id == feature_id)
+      |> Enum.reject(&(&1.id == feature_id))
 
     changeset = room |> Room.feature_changeset(%{features: features})
 
