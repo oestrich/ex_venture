@@ -142,6 +142,8 @@
         <div class="box-header">
           <h3 class="box-title">Room Features</h3>
 
+          <i class="fa fa-question-circle" data-toggle="tooltip" title="Room features are appended to the end of a room's description."></i>
+
           <div class="box-tools">
             <%= link("New Feature", to: room_feature_path(@conn, :new, @room.id), class: "btn btn-primary") %>
           </div>
@@ -280,3 +282,9 @@
     </div>
   </div>
 </section>
+
+<script type="application/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
