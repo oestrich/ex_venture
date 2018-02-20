@@ -15,6 +15,8 @@ config :ex_venture, Web.Endpoint,
 config :ex_venture, :networking,
   host: {:system, "HOST"},
   port: 5555,
+  certfile: {:system, "SSL_CERTFILE"},
+  keyfile: {:system, "SSL_KEY_FILE"},
   ssl_port: {:system, "SSL_PORT"},
   server: true,
   socket_module: Networking.Protocol

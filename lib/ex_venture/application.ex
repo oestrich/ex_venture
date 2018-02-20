@@ -33,7 +33,7 @@ defmodule ExVenture.Application do
     case @server do
       true ->
         import Supervisor.Spec, warn: false
-        worker(Networking.Listener, [])
+        {Networking.Supervisor, []}
 
       false ->
         nil

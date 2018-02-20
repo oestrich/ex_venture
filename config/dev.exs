@@ -24,6 +24,9 @@ config :ex_venture, Web.Endpoint,
 config :ex_venture, :networking,
   host: "localhost",
   port: 5555,
+  ssl_port: 5443,
+  certfile: "priv/networking/app.crt",
+  keyfile: "priv/networking/app.key",
   server: true,
   socket_module: Networking.Protocol
 
