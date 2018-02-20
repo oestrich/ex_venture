@@ -96,7 +96,7 @@ defmodule Networking.Protocol do
   end
 
   def init(ref, socket, transport) do
-    Logger.info("Player connecting via #{inspect(transport)}", type: :socket)
+    Logger.info("Player connecting", type: :socket)
     PlayerInstrumenter.session_started(:telnet)
 
     :ok = :ranch.accept_ack(ref)
@@ -175,40 +175,6 @@ defmodule Networking.Protocol do
 
   @impl GenServer
   def handle_info({:tcp, socket, data}, state) do
-    receive_data(socket, data, state)
-  end
-
-  def handle_info({:ssl, socket, data}, state) do
-    receive_data(socket, data, state)
-  end
-
-  def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
-    Logger.info("Connection Closed", type: :socket)
-    disconnect(transport, socket, state)
-    {:stop, :normal, state}
-  end
-
-  def handle_info({:tcp_error, _socket, :etimedout}, state) do
-    %{socket: socket, transport: transport} = state
-    Logger.info("Connection Timeout", type: :socket)
-    disconnect(transport, socket, state)
-    {:stop, :normal, state}
-  end
-
-  def handle_info({:EXIT, pid, _reason}, state) do
-    case state.session do
-      ^pid ->
-        {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
-        Process.link(pid)
-
-        {:noreply, %{state | session: pid}}
-
-      _ ->
-        {:stop, :error, state}
-    end
-  end
-
-  defp receive_data(socket, data, state) do
     handle_options(data, socket, fn
       :mccp ->
         Logger.info("Starting MCCP", type: :socket)
@@ -249,6 +215,32 @@ defmodule Networking.Protocol do
 
         {:noreply, state}
     end)
+  end
+
+  def handle_info({:tcp_closed, socket}, state = %{socket: socket, transport: transport}) do
+    Logger.info("Connection Closed", type: :socket)
+    disconnect(transport, socket, state)
+    {:stop, :normal, state}
+  end
+
+  def handle_info({:tcp_error, _socket, :etimedout}, state) do
+    %{socket: socket, transport: transport} = state
+    Logger.info("Connection Timeout", type: :socket)
+    disconnect(transport, socket, state)
+    {:stop, :normal, state}
+  end
+
+  def handle_info({:EXIT, pid, _reason}, state) do
+    case state.session do
+      ^pid ->
+        {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
+        Process.link(pid)
+
+        {:noreply, %{state | session: pid}}
+
+      _ ->
+        {:stop, :error, state}
+    end
   end
 
   # Disconnect the socket and optionally the session
