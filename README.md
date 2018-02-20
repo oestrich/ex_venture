@@ -1,6 +1,7 @@
 # ExVenture
 
 [![Build Status](https://travis-ci.org/oestrich/ex_venture.svg?branch=master)](https://travis-ci.org/oestrich/ex_venture)
+[![Trello](https://img.shields.io/badge/issues-trello-blue.svg)](https://trello.com/b/PFGmFWmu/exventure)
 
 A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir. 
 
