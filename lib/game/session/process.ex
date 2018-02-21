@@ -83,6 +83,7 @@ defmodule Game.Session.Process do
     %{user: user, save: save, session_started_at: session_started_at, stats: stats} = state
     Session.Registry.unregister()
     @room.leave(save.room_id, {:user, user})
+    @room.unlink(save.room_id)
     user |> Account.save_session(save, session_started_at, Timex.now(), stats)
     {:stop, :normal, state}
   end

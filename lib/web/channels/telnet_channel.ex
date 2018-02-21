@@ -81,6 +81,7 @@ defmodule Web.TelnetChannel do
     """
 
     use GenServer
+    require Logger
 
     alias Web.TelnetChannel.Monitor
 
@@ -124,7 +125,6 @@ defmodule Web.TelnetChannel do
     def handle_cast(:start_session, state) do
       PlayerInstrumenter.session_started(:websocket)
       {:ok, pid} = Game.Session.start(self())
-      Process.link(pid)
       Monitor.monitor(self(), pid)
       GenServer.cast(self(), :attempt_sign_in)
       {:noreply, Map.merge(state, %{session: pid})}
@@ -176,8 +176,8 @@ defmodule Web.TelnetChannel do
     def handle_info({:EXIT, pid, _reason}, state) do
       case state.session do
         ^pid ->
+          Logger.info(fn -> "Restarting a session" end, type: :session)
           {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
-          Process.link(pid)
 
           Monitor.demonitor(self())
           Monitor.monitor(self(), pid)
