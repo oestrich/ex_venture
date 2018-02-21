@@ -21,6 +21,9 @@ defmodule Web.TelnetChannel do
     """
 
     use GenServer
+    require Logger
+
+    alias Web.TelnetChannel.Server
 
     def monitor(channel_pid, session_pid) do
       GenServer.call(__MODULE__, {:monitor, channel_pid, session_pid})
@@ -36,12 +39,19 @@ defmodule Web.TelnetChannel do
 
     def init(_) do
       Process.flag(:trap_exit, true)
-      {:ok, %{channels: %{}}}
+      {:ok, %{channels: %{}, sessions: %{}}}
     end
 
     def handle_call({:monitor, channel_pid, session_pid}, _from, state) do
       Process.link(channel_pid)
-      {:reply, :ok, put_channel(state, channel_pid, session_pid)}
+      Process.link(session_pid)
+
+      state =
+        state
+        |> put_channel(channel_pid, session_pid)
+        |> put_session(session_pid, channel_pid)
+
+      {:reply, :ok, state}
     end
 
     def handle_call({:demonitor, pid}, _from, state) do
@@ -56,12 +66,25 @@ defmodule Web.TelnetChannel do
     end
 
     def handle_info({:EXIT, pid, _reason}, state) do
+      Logger.info(fn -> "Trapped an EXIT from the monitor" end, type: :monitor)
+
       case Map.get(state.channels, pid, nil) do
         nil ->
-          {:noreply, state}
+          case Map.get(state.sessions, pid, nil) do
+            nil ->
+              {:noreply, state}
+
+            channel_pid ->
+              Logger.info(fn -> "Restarting the session" end, type: :monitor)
+              Server.restart_session(channel_pid)
+
+              {:noreply, drop_session(state, pid)}
+          end
 
         session_pid ->
+          Logger.info(fn -> "Sending a disconnect for the session" end, type: :monitor)
           Game.Session.disconnect(session_pid)
+
           {:noreply, drop_channel(state, pid)}
       end
     end
@@ -72,6 +95,14 @@ defmodule Web.TelnetChannel do
 
     defp put_channel(state, channel_pid, session_pid) do
       %{state | channels: Map.put(state.channels, channel_pid, session_pid)}
+    end
+
+    defp drop_session(state, pid) do
+      %{state | sessions: Map.delete(state.sessions, pid)}
+    end
+
+    defp put_session(state, session_pid, channel_pid) do
+      %{state | sessions: Map.put(state.sessions, session_pid, channel_pid)}
     end
   end
 
@@ -89,8 +120,11 @@ defmodule Web.TelnetChannel do
       GenServer.start_link(__MODULE__, socket)
     end
 
+    def restart_session(pid) do
+      GenServer.cast(pid, :restart_session)
+    end
+
     def init(socket) do
-      Process.flag(:trap_exit, true)
       GenServer.cast(self(), :start_session)
       {:ok, %{socket: socket, user_id: nil}}
     end
@@ -171,22 +205,14 @@ defmodule Web.TelnetChannel do
       {:noreply, %{state | user_id: user_id}}
     end
 
-    def handle_info({:EXIT, _pid, :normal}, state), do: {:noreply, state}
+    def handle_cast(:restart_session, state) do
+      Logger.info(fn -> "Restarting a session" end, type: :session)
+      {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
 
-    def handle_info({:EXIT, pid, _reason}, state) do
-      case state.session do
-        ^pid ->
-          Logger.info(fn -> "Restarting a session" end, type: :session)
-          {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
+      Monitor.demonitor(self())
+      Monitor.monitor(self(), pid)
 
-          Monitor.demonitor(self())
-          Monitor.monitor(self(), pid)
-
-          {:noreply, %{state | session: pid}}
-
-        _ ->
-          {:stop, :error, state}
-      end
+      {:noreply, %{state | session: pid}}
     end
   end
 
