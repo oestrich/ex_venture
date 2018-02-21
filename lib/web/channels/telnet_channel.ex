@@ -70,22 +70,26 @@ defmodule Web.TelnetChannel do
 
       case Map.get(state.channels, pid, nil) do
         nil ->
-          case Map.get(state.sessions, pid, nil) do
-            nil ->
-              {:noreply, state}
-
-            channel_pid ->
-              Logger.info(fn -> "Restarting the session" end, type: :monitor)
-              Server.restart_session(channel_pid)
-
-              {:noreply, drop_session(state, pid)}
-          end
+          maybe_restart_session(state, pid)
 
         session_pid ->
           Logger.info(fn -> "Sending a disconnect for the session" end, type: :monitor)
           Game.Session.disconnect(session_pid)
 
           {:noreply, drop_channel(state, pid)}
+      end
+    end
+
+    defp maybe_restart_session(state, pid) do
+      case Map.get(state.sessions, pid, nil) do
+        nil ->
+          {:noreply, state}
+
+        channel_pid ->
+          Logger.info(fn -> "Restarting the session" end, type: :monitor)
+          Server.restart_session(channel_pid)
+
+          {:noreply, drop_session(state, pid)}
       end
     end
 
