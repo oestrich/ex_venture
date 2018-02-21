@@ -41,7 +41,7 @@ end
 release :ex_venture do
   set version: current_version(:ex_venture)
   set applications: [
-    :runtime_tools
+    :runtime_tools, :unsafe
   ]
 
   set commands: [
