@@ -8,6 +8,8 @@ defmodule Game.Mail do
   alias Data.Mail
   alias Data.Repo
   alias Data.User
+  alias ExVenture.Mailer
+  alias Game.Emails
   alias Game.Session
 
   @doc """
@@ -58,10 +60,25 @@ defmodule Game.Mail do
       {:ok, mail} ->
         mail = Repo.preload(mail, [:sender, :receiver])
         Session.notify(player, {"mail/new", mail})
+
+        mail |> maybe_email_notify()
+
         {:ok, mail}
 
       {:error, changeset} ->
         {:error, changeset}
+    end
+  end
+
+  defp maybe_email_notify(mail) do
+    case mail.receiver.email do
+      nil ->
+        :ok
+
+      _ ->
+        mail
+        |> Emails.new_mail()
+        |> Mailer.deliver_later()
     end
   end
 end
