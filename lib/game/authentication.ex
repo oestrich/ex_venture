@@ -36,9 +36,12 @@ defmodule Game.Authentication do
   end
 
   defp _verify_one_time_password(user, password) do
+    max_age = Timex.now() |> Timex.shift(minutes: -10)
+
     one_time_password =
       OneTimePassword
-      |> where([o], o.user_id == ^user.id and o.password == ^password and is_nil(o.used_at))
+      |> where([o], o.user_id == ^user.id and o.password == ^password)
+      |> where([o], o.inserted_at > ^max_age and is_nil(o.used_at))
       |> Repo.one
 
     case one_time_password do
