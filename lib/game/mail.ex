@@ -76,9 +76,16 @@ defmodule Game.Mail do
         :ok
 
       _ ->
-        mail
-        |> Emails.new_mail()
-        |> Mailer.deliver_later()
+        case Session.find_connected_player(mail.receiver) do
+          nil ->
+            mail
+            |> Emails.new_mail()
+            |> Mailer.deliver_later()
+
+          _ ->
+            # online skip the email
+            :ok
+        end
     end
   end
 end
