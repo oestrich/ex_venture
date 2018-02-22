@@ -11,6 +11,16 @@ defmodule Web.UserTest do
     %{user: user}
   end
 
+  describe "verifying the passsword" do
+    test "valid", %{user: user} do
+      assert user.id == User.find_and_validate(user.name, "password").id
+    end
+
+    test "invalid", %{user: user} do
+      assert {:error, :invalid} = User.find_and_validate(user.name, "p@ssword")
+    end
+  end
+
   test "changing password", %{user: user} do
     {:ok, user} = User.change_password(user, "password", %{password: "apassword", password_confirmation: "apassword"})
 
