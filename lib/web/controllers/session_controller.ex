@@ -1,14 +1,14 @@
 defmodule Web.SessionController do
   use Web, :controller
 
-  alias Game.Authentication
+  alias Web.User
 
   def new(conn, _params) do
     conn |> render("new.html")
   end
 
   def create(conn, %{"user" => %{"name" => name, "password" => password}}) do
-    case Authentication.find_and_validate(name, password) do
+    case User.find_and_validate(name, password) do
       {:error, :invalid} ->
         conn
         |> put_flash(:error, "Invalid sign in")

@@ -3,7 +3,6 @@ defmodule Web.UserTest do
 
   alias Data.QuestProgress
   alias Game.Account
-  alias Game.Authentication
   alias Game.Session
   alias Web.User
 
@@ -15,7 +14,7 @@ defmodule Web.UserTest do
   test "changing password", %{user: user} do
     {:ok, user} = User.change_password(user, "password", %{password: "apassword", password_confirmation: "apassword"})
 
-    assert user.id == Authentication.find_and_validate(user.name, "apassword").id
+    assert user.id == User.find_and_validate(user.name, "apassword").id
   end
 
   test "changing password - bad current password", %{user: user} do
@@ -76,6 +75,23 @@ defmodule Web.UserTest do
       {:ok, _user} = User.reset(user.id)
 
       assert Data.Repo.all(QuestProgress) == []
+    end
+  end
+
+  describe "generate a one time password" do
+    test "create a new password", %{user: user} do
+      {:ok, password} = User.create_one_time_password(user)
+
+      assert password.password
+      assert is_nil(password.used_at)
+    end
+
+    test "creating a new password expires old ones", %{user: user} do
+      {:ok, old_password} = User.create_one_time_password(user)
+      {:ok, _password} = User.create_one_time_password(user)
+
+      old_password = Repo.get(Data.User.OneTimePassword, old_password.id)
+      assert old_password.used_at
     end
   end
 end

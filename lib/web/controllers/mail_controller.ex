@@ -3,7 +3,7 @@ defmodule Web.MailController do
 
   alias Web.Mail
 
-  plug(Web.Plug.EnsureUser)
+  plug(Web.Plug.PublicEnsureUser)
   plug(Web.Plug.FetchPage when action in [:index])
 
   plug(:load_mail when action in [:show])

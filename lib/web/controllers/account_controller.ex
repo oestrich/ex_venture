@@ -3,10 +3,22 @@ defmodule Web.AccountController do
 
   alias Web.User
 
-  plug(Web.Plug.EnsureUser)
+  plug(Web.Plug.PublicEnsureUser)
 
   def show(conn, _params) do
     conn |> render("show.html")
+  end
+
+  def password(conn, _params) do
+    %{user: user} = conn.assigns
+
+    case User.create_one_time_password(user) do
+      {:ok, password} ->
+        conn |> render("password.html", password: password)
+
+      :error ->
+        conn |> redirect(to: public_page_path(conn, :index))
+    end
   end
 
   def update(conn, %{"user" => params}) do

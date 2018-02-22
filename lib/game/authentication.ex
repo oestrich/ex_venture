@@ -8,6 +8,7 @@ defmodule Game.Authentication do
   alias Data.Skill
   alias Data.Stats
   alias Data.User
+  alias Data.User.OneTimePassword
   alias Game.Account
 
   @doc """
@@ -28,14 +29,30 @@ defmodule Game.Authentication do
   end
 
   defp _find_and_validate(user, password) do
-    case Comeonin.Bcrypt.checkpw(password, user.password_hash) do
-      true ->
+    case Ecto.UUID.cast(password) do
+      {:ok, _} -> _verify_one_time_password(user, password)
+      _ -> {:error, :invalid}
+    end
+  end
+
+  defp _verify_one_time_password(user, password) do
+    one_time_password =
+      OneTimePassword
+      |> where([o], o.user_id == ^user.id and o.password == ^password)
+      |> Repo.one
+
+    case one_time_password do
+      nil ->
+        {:error, :invalid}
+
+      _ ->
+        one_time_password
+        |> OneTimePassword.used_changeset()
+        |> Repo.update()
+
         user
         |> set_defaults()
         |> Account.migrate()
-
-      _ ->
-        {:error, :invalid}
     end
   end
 

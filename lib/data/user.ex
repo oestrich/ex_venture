@@ -9,6 +9,7 @@ defmodule Data.User do
   alias Data.QuestProgress
   alias Data.Race
   alias Data.Save
+  alias Data.User.OneTimePassword
   alias Data.User.Session
 
   schema "users" do
@@ -27,6 +28,7 @@ defmodule Data.User do
 
     has_many(:sessions, Session)
     has_many(:quest_progress, QuestProgress)
+    has_many(:one_time_passwords, OneTimePassword)
 
     timestamps()
   end

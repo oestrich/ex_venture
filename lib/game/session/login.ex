@@ -19,6 +19,7 @@ defmodule Game.Session.Login do
   alias Game.Session.Process
   alias Game.Session.GMCP
   alias Metrics.PlayerInstrumenter
+  alias Web.Router.Helpers, as: Routes
 
   @doc """
   Start text for logging in
@@ -114,6 +115,8 @@ defmodule Game.Session.Login do
   end
 
   def process(message, state = %{socket: socket}) do
+    socket |> @socket.echo("Please sign in via the website and get a one time password")
+    socket |> @socket.echo(Routes.public_account_url(Web.Endpoint, :password))
     socket |> @socket.prompt("Password: ")
     socket |> @socket.tcp_option(:echo, false)
     Map.merge(state, %{login: %{name: message}})

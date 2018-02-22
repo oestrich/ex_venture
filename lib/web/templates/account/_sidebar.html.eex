@@ -6,6 +6,9 @@
       <% end %>
     </li>
     <li class="nav-item">
+      <%= link("Password (Telnet)", to: public_account_path(@conn, :password), class: "nav-link") %>
+    </li>
+    <li class="nav-item">
       <%= link("Settings", to: public_account_path(@conn, :show), class: "nav-link") %>
     </li>
   </ul>

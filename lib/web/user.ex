@@ -9,8 +9,8 @@ defmodule Web.User do
   alias Data.Repo
   alias Data.Stats
   alias Data.User
+  alias Data.User.OneTimePassword
   alias Game.Account
-  alias Game.Authentication
   alias Game.Config
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
@@ -205,7 +205,7 @@ defmodule Web.User do
   @spec change_password(user :: User.t(), current_password :: String.t(), params :: map) ::
           {:ok, User.t()}
   def change_password(user, current_password, params) do
-    case Authentication.find_and_validate(user.name, current_password) do
+    case find_and_validate(user.name, current_password) do
       {:error, :invalid} ->
         {:error, :invalid}
 
@@ -229,5 +229,60 @@ defmodule Web.User do
     end)
 
     :ok
+  end
+
+  @doc """
+  Create a one time password for use when signing in via telnet
+  """
+  @spec create_one_time_password(User.t()) :: {:ok, OneTimePassword.t()}
+  def create_one_time_password(user) do
+    changeset =
+      user
+      |> Ecto.build_assoc(:one_time_passwords)
+      |> OneTimePassword.changeset()
+
+    case changeset |> Repo.insert() do
+      {:ok, password} ->
+        disable_old_passwords(user)
+
+        {:ok, password}
+
+      {:error, _changeset} ->
+        :error
+    end
+  end
+
+  def disable_old_passwords(user) do
+    query =
+      OneTimePassword
+      |> where([o], o.user_id == ^user.id and is_nil(o.used_at))
+
+    Repo.update_all(query, set: [used_at: Timex.now])
+  end
+
+  @doc """
+  Attempt to find a user and validate their password
+  """
+  @spec find_and_validate(String.t(), String.t()) :: {:error, :invalid} | User.t()
+  def find_and_validate(name, password) do
+    User
+    |> where([u], u.name == ^name)
+    |> Repo.one()
+    |> _find_and_validate(password)
+  end
+
+  defp _find_and_validate(nil, _password) do
+    Comeonin.Bcrypt.dummy_checkpw()
+    {:error, :invalid}
+  end
+
+  defp _find_and_validate(user, password) do
+    case Comeonin.Bcrypt.checkpw(password, user.password_hash) do
+      true ->
+        user
+
+      _ ->
+        {:error, :invalid}
+    end
   end
 end

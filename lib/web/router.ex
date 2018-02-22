@@ -23,6 +23,7 @@ defmodule Web.Router do
     get("/", PageController, :index)
 
     get("/account", AccountController, :show)
+    get("/account/password", AccountController, :password)
     put("/account", AccountController, :update)
 
     resources("/account/mail", MailController, only: [:index, :show])
