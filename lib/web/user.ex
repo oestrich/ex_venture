@@ -236,20 +236,12 @@ defmodule Web.User do
   """
   @spec create_one_time_password(User.t()) :: {:ok, OneTimePassword.t()}
   def create_one_time_password(user) do
-    changeset =
-      user
-      |> Ecto.build_assoc(:one_time_passwords)
-      |> OneTimePassword.changeset()
+    disable_old_passwords(user)
 
-    case changeset |> Repo.insert() do
-      {:ok, password} ->
-        disable_old_passwords(user)
-
-        {:ok, password}
-
-      {:error, _changeset} ->
-        :error
-    end
+    user
+    |> Ecto.build_assoc(:one_time_passwords)
+    |> OneTimePassword.changeset()
+    |> Repo.insert()
   end
 
   def disable_old_passwords(user) do

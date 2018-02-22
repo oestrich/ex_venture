@@ -16,7 +16,7 @@ defmodule Web.AccountController do
       {:ok, password} ->
         conn |> render("password.html", password: password)
 
-      :error ->
+      {:error, _} ->
         conn |> redirect(to: public_page_path(conn, :index))
     end
   end
