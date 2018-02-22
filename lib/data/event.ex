@@ -141,6 +141,8 @@ defmodule Data.Event do
 
       iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
       true
+      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say/random"}})
+      true
       iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
       true
       iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "leave"}})
@@ -157,6 +159,8 @@ defmodule Data.Event do
       true
       iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "say"}})
       true
+      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "say/random"}})
+      true
       iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "leave"}})
       false
   """
@@ -164,12 +168,12 @@ defmodule Data.Event do
     do: action.type in ["target/effects"]
 
   def valid_action_for_type?(%{type: "room/entered", action: action}),
-    do: action.type in ["say", "target"]
+    do: action.type in ["say", "say/random", "target"]
 
   def valid_action_for_type?(%{type: "room/heard", action: action}), do: action.type in ["say"]
 
   def valid_action_for_type?(%{type: "tick", action: action}),
-    do: action.type in ["emote", "move", "say"]
+    do: action.type in ["emote", "move", "say", "say/random"]
 
   def valid_action_for_type?(_), do: false
 
@@ -197,6 +201,13 @@ defmodule Data.Event do
       true
       iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50, wait: 20})
       true
+
+      iex> Data.Event.valid_action?(%{type: "say/random", messages: ["hi"]})
+      true
+      iex> Data.Event.valid_action?("tick", %{type: "say/random", messages: ["hi"], chance: 50, wait: 20})
+      true
+      iex> Data.Event.valid_action?(%{type: "say/random", messages: []})
+      false
 
       iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10})
       true
@@ -226,10 +237,18 @@ defmodule Data.Event do
     is_integer(max_distance) && is_integer(chance) && wait?(action)
   end
 
-  def valid_action?(_, %{type: "say", message: string}) when is_binary(string), do: true
-
   def valid_action?("tick", action = %{type: "say", message: string, chance: chance}) do
     is_binary(string) && is_integer(chance) && wait?(action)
+  end
+
+  def valid_action?(_, %{type: "say", message: string}) when is_binary(string), do: true
+
+  def valid_action?("tick", action = %{type: "say/random", messages: messages, chance: chance}) when is_list(messages) do
+    length(messages) > 0 && Enum.all?(messages, &is_binary/1) && is_integer(chance) && wait?(action)
+  end
+
+  def valid_action?(_, action = %{type: "say/random", messages: messages}) when is_list(messages) do
+    length(messages) > 0 && Enum.all?(messages, &is_binary/1)
   end
 
   def valid_action?(_, %{type: "target"}), do: true

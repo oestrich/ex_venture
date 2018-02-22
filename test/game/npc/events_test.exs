@@ -450,6 +450,34 @@ defmodule Game.NPC.EventsTest do
     end
   end
 
+  describe "tick - say/random" do
+    setup do
+      event = %{
+        type: "tick",
+        action: %{
+          type: "say/random",
+          messages: ["Can I help you?"],
+          chance: 50,
+          wait: 10,
+        },
+      }
+
+      @room.clear_says()
+
+      npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
+      state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
+
+      %{state: state, event: event}
+    end
+
+    test "will say to the room", %{state: state, event: event} do
+      Events.act_on_tick(state, event)
+
+      [{_, message}] = @room.get_says()
+      assert message.message == "Can I help you?"
+    end
+  end
+
   describe "quest/completed" do
     setup do
       user = create_user()

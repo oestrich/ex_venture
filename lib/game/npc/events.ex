@@ -271,6 +271,10 @@ defmodule Game.NPC.Events do
     say_to_room(state, event)
   end
 
+  def act_on_tick(state, event = %{action: %{type: "say/random"}}) do
+    say_random_to_room(state, event)
+  end
+
   def act_on_tick(state, _event), do: state
 
   def maybe_move_room(state = %{target: target}, _event) when target != nil, do: state
@@ -336,6 +340,15 @@ defmodule Game.NPC.Events do
   Say the NPC's message to the room
   """
   def say_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
+    room_id |> @room.say({:npc, npc}, Message.npc_say(npc, message))
+    state
+  end
+
+  @doc """
+  Say a random message to the room
+  """
+  def say_random_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{messages: messages}}) do
+    message = Enum.random(messages)
     room_id |> @room.say({:npc, npc}, Message.npc_say(npc, message))
     state
   end
