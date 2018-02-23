@@ -50,8 +50,10 @@ defmodule Game.Command.Channels do
   def parse("channels"), do: {}
   def parse("channels off " <> channel), do: {:leave, channel}
   def parse("channels on " <> channel), do: {:join, channel}
+
   def parse(channel_message) when is_binary(channel_message) do
     [channel | message] = String.split(channel_message)
+
     case channel in Game.Channels.get_channels() do
       true -> {channel, Enum.join(message, " ")}
       false -> {:error, :bad_parse, channel_message}

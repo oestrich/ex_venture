@@ -243,11 +243,14 @@ defmodule Data.Event do
 
   def valid_action?(_, %{type: "say", message: string}) when is_binary(string), do: true
 
-  def valid_action?("tick", action = %{type: "say/random", messages: messages, chance: chance}) when is_list(messages) do
-    length(messages) > 0 && Enum.all?(messages, &is_binary/1) && is_integer(chance) && wait?(action)
+  def valid_action?("tick", action = %{type: "say/random", messages: messages, chance: chance})
+      when is_list(messages) do
+    length(messages) > 0 && Enum.all?(messages, &is_binary/1) && is_integer(chance) &&
+      wait?(action)
   end
 
-  def valid_action?(_, action = %{type: "say/random", messages: messages}) when is_list(messages) do
+  def valid_action?(_, action = %{type: "say/random", messages: messages})
+      when is_list(messages) do
     length(messages) > 0 && Enum.all?(messages, &is_binary/1)
   end
 

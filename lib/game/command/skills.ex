@@ -103,7 +103,8 @@ defmodule Game.Command.Skills do
     :ok
   end
 
-  def run({%{command: command}, command}, %{socket: socket, target: target}) when is_nil(target) do
+  def run({%{command: command}, command}, %{socket: socket, target: target})
+      when is_nil(target) do
     socket |> @socket.echo("You don't have a target.")
     :ok
   end

@@ -249,7 +249,7 @@ defmodule Web.User do
       OneTimePassword
       |> where([o], o.user_id == ^user.id and is_nil(o.used_at))
 
-    Repo.update_all(query, set: [used_at: Timex.now])
+    Repo.update_all(query, set: [used_at: Timex.now()])
   end
 
   @doc """

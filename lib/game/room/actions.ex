@@ -67,7 +67,8 @@ defmodule Game.Room.Actions do
   Spawns items if necessary
   """
   @spec maybe_respawn_items(State.t()) :: :ok | {:update, State.t()}
-  def maybe_respawn_items(state = %{room: %{room_items: room_items}}) when length(room_items) > 0 do
+  def maybe_respawn_items(state = %{room: %{room_items: room_items}})
+      when length(room_items) > 0 do
     state = respawn_items(state)
     {:update, state}
   end
