@@ -19,7 +19,8 @@ defmodule Game.Session.Channels do
       |> Enum.into([])
 
     save = %{save | channels: channels}
-    %{state | save: save}
+    user = %{state.user | save: save}
+    %{state | user: user, save: save}
   end
 
   @doc """
@@ -29,7 +30,8 @@ defmodule Game.Session.Channels do
   def left(state = %{save: save}, channel) do
     channels = Enum.reject(save.channels, &(&1 == channel))
     save = %{save | channels: channels}
-    %{state | save: save}
+    user = %{state.user | save: save}
+    %{state | user: user, save: save}
   end
 
   @doc """

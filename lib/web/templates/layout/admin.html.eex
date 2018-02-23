@@ -119,6 +119,12 @@
                 <% end %>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "channels") %>">
+              <%= link(to: channel_path(@conn, :index)) do %>
+                <i class="fa fa-bullhorn"></i>
+                <span>Channels</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "config") %>">
               <%= link(to: config_path(@conn, :index)) do %>
                 <i class="fa fa-gears"></i>

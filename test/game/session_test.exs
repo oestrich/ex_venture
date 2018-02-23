@@ -315,17 +315,26 @@ defmodule Game.SessionTest do
     end
 
     test "receiving a join" do
-      {:noreply, state} = Process.handle_info({:channel, {:joined, "global"}}, %{save: %{channels: ["newbie"]}})
+      save = %{channels: ["newbie"]}
+      state = %{user: %{save: save}, save: save}
+
+      {:noreply, state} = Process.handle_info({:channel, {:joined, "global"}}, state)
       assert state.save.channels == ["global", "newbie"]
     end
 
     test "does not duplicate channels list" do
-      {:noreply, state} = Process.handle_info({:channel, {:joined, "newbie"}}, %{save: %{channels: ["newbie"]}})
+      save = %{channels: ["newbie"]}
+      state = %{user: %{save: save}, save: save}
+
+      {:noreply, state} = Process.handle_info({:channel, {:joined, "newbie"}}, state)
       assert state.save.channels == ["newbie"]
     end
 
     test "receiving a leave" do
-      {:noreply, state} = Process.handle_info({:channel, {:left, "global"}}, %{save: %{channels: ["global", "newbie"]}})
+      save = %{channels: ["global", "newbie"]}
+      state = %{user: %{save: save}, save: save}
+
+      {:noreply, state} = Process.handle_info({:channel, {:left, "global"}}, state)
       assert state.save.channels == ["newbie"]
     end
   end

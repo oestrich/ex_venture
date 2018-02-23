@@ -40,10 +40,6 @@ defmodule Game.CommandTest do
       assert %Command{module: Command.Say, args: {"hello"}} = Command.parse("say hello", user)
     end
 
-    test "parsing global", %{user: user} do
-      assert %Command{module: Command.Channels, args: {"global", "hello"}} = Command.parse("global hello", user)
-    end
-
     test "parsing tell", %{user: user} do
       assert %Command{module: Command.Tell, args: {"tell", "player hello"}} = Command.parse("tell player hello", user)
     end

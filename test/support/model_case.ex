@@ -13,6 +13,7 @@ defmodule Data.ModelCase do
       import Test.ItemsHelper
       import Test.DoorHelper
       import Test.SkillsHelper
+      import Test.ChannelsHelper
     end
   end
 

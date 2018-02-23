@@ -1,0 +1,42 @@
+<section class="content-header">
+  <h1>
+    New Channel
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Channels", to: channel_path(@conn, :index)) %></li>
+    <li class="active">New</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">New Channel</h3>
+        </div>
+
+        <%= form_for @changeset, channel_path(@conn, :create), fn (f) -> %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label f, :name %>
+              <%= text_input f, :name, class: "form-control" %>
+              <%= error_tag f, :name %>
+              <span class="help-block">This should be a single word and all lower case. It will be used as the command someone enters to speak on the channel.</span>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Create", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
