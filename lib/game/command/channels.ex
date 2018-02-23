@@ -8,9 +8,7 @@ defmodule Game.Command.Channels do
   alias Game.Channel
   alias Game.Message
 
-  @channels ["global", "newbie"]
-
-  commands(["channels", "global", "newbie"], parse: false)
+  commands(["channels"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Channels"
@@ -44,12 +42,6 @@ defmodule Game.Command.Channels do
       iex> Game.Command.Channels.parse("channels on global")
       {:join, "global"}
 
-      iex> Game.Command.Channels.parse("global hi")
-      {"global", "hi"}
-
-      iex> Game.Command.Channels.parse("newbie hi")
-      {"newbie", "hi"}
-
       iex> Game.Command.Channels.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
@@ -58,8 +50,13 @@ defmodule Game.Command.Channels do
   def parse("channels"), do: {}
   def parse("channels off " <> channel), do: {:leave, channel}
   def parse("channels on " <> channel), do: {:join, channel}
-  def parse("global " <> message), do: {"global", message}
-  def parse("newbie " <> message), do: {"newbie", message}
+  def parse(channel_message) when is_binary(channel_message) do
+    [channel | message] = String.split(channel_message)
+    case channel in Game.Channels.get_channels() do
+      true -> {channel, Enum.join(message, " ")}
+      false -> {:error, :bad_parse, channel_message}
+    end
+  end
 
   @impl Game.Command
   @doc """
@@ -84,8 +81,11 @@ defmodule Game.Command.Channels do
 
   def run({:leave, channel}, %{user: user}) do
     case in_channel?(channel, user) do
-      true -> Channel.leave(channel)
-      false -> nil
+      true ->
+        Channel.leave(channel)
+
+      false ->
+        nil
     end
 
     :ok
@@ -93,21 +93,33 @@ defmodule Game.Command.Channels do
 
   def run({channel, message}, %{user: user}) do
     case in_channel?(channel, user) do
-      true -> Channel.broadcast(channel, Message.broadcast(user, channel, message))
-      false -> nil
+      true ->
+        Channel.broadcast(channel, Message.broadcast(user, channel, message))
+
+      false ->
+        nil
     end
 
     :ok
   end
 
-  defp in_channel?(channel, %{save: %{channels: channels}}), do: channel in channels
-
-  defp join_channel(channel, user) when channel in @channels do
-    case in_channel?(channel, user) do
-      false -> Channel.join(channel)
-      true -> nil
-    end
+  defp in_channel?(channel, %{save: %{channels: channels}}) do
+    channel in channels
   end
 
-  defp join_channel(_channel, _user), do: nil
+  defp join_channel(channel, user) do
+    case channel in Game.Channels.get_channels() do
+      true ->
+        case in_channel?(channel, user) do
+          false ->
+            Channel.join(channel)
+
+          true ->
+            nil
+        end
+
+      false ->
+        nil
+    end
+  end
 end

@@ -58,6 +58,8 @@ defmodule Web.Router do
       post("/complete", BugController, :complete, as: :complete)
     end
 
+    resources("/channels", ChannelController, only: [:index, :new, :create])
+
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
       resources("/skills", ClassSkillController, only: [:new, :create], as: :skill)
     end

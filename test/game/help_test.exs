@@ -13,7 +13,7 @@ defmodule Game.HelpTest do
   end
 
   test "loading a help topic from a command" do
-    assert Regex.match?(~r(global), Help.topic("global"))
+    assert Regex.match?(~r(channels), Help.topic("channels"))
   end
 
   test "loading a help topic - unknown" do

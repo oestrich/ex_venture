@@ -1,5 +1,5 @@
 defmodule Game.Command.ChannelsTest do
-  use ExUnit.Case
+  use Data.ModelCase
   doctest Game.Command.Channels
 
   alias Game.Channel
@@ -9,9 +9,20 @@ defmodule Game.Command.ChannelsTest do
   @socket Test.Networking.Socket
 
   setup do
-    @socket.clear_messages
+    @socket.clear_messages()
+    Game.Channels.clear()
+
+    %{name: "global"} |> insert_channel()
+    %{name: "newbie"} |> insert_channel()
+
     user = %{id: 10, name: "Player", save: %{channels: ["global"]}}
     %{socket: :socket, user: user}
+  end
+
+  test "parsing out channels that exist" do
+    assert {"global", "hi"} = Channels.parse("global hi")
+    assert {"newbie", "hi"} = Channels.parse("newbie hi")
+    assert {:error, :bad_parse, "unknown hi"} = Channels.parse("unknown hi")
   end
 
   test "list out channels", %{socket: socket} do
@@ -38,7 +49,7 @@ defmodule Game.Command.ChannelsTest do
 
     :ok = Channels.run({"newbie", "hello"}, %{socket: socket, user: user})
 
-    refute_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}
+    refute_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}, 50
   end
 
   test "join a channel", %{socket: socket} do
@@ -50,13 +61,13 @@ defmodule Game.Command.ChannelsTest do
   test "join a channel - already joined", %{socket: socket, user: user} do
     :ok = Channels.run({:join, "global"}, %{socket: socket, user: user})
 
-    refute_receive {:channel, {:joined, "global"}}
+    refute_receive {:channel, {:joined, "global"}}, 50
   end
 
   test "limit to official channels on a join", %{socket: socket, user: user} do
     :ok = Channels.run({:join, "new-channel"}, %{socket: socket, user: user})
 
-    refute_receive {:channel, {:joined, "new-channel"}}
+    refute_receive {:channel, {:joined, "new-channel"}}, 50
   end
 
   test "leave a channel", %{socket: socket, user: user} do
@@ -70,6 +81,6 @@ defmodule Game.Command.ChannelsTest do
   test "leave a channel - no in channel", %{socket: socket, user: user} do
     :ok = Channels.run({:leave, "newbie"}, %{socket: socket, user: user})
 
-    refute_receive {:channel, {:left, "newbie"}}
+    refute_receive {:channel, {:left, "newbie"}}, 50
   end
 end

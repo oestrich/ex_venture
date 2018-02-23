@@ -1,5 +1,6 @@
 defmodule TestHelpers do
   alias Data.Bug
+  alias Data.Channel
   alias Data.Class
   alias Data.ClassSkill
   alias Data.Config
@@ -407,5 +408,11 @@ defmodule TestHelpers do
       status: "active",
       progress: %{},
     }, params)
+  end
+
+  def create_channel(name) do
+    %Channel{}
+    |> Channel.changeset(%{name: name})
+    |> Repo.insert!
   end
 end
