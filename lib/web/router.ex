@@ -147,6 +147,8 @@ defmodule Web.Router do
 
     resources("/skills", SkillController, only: [:index, :show, :new, :create, :edit, :update])
 
+    resources("/socials", SocialController, only: [:index, :show, :new, :create, :edit, :update])
+
     resources("/typos", TypoController, only: [:index, :show])
 
     post("/users/teleport", UserController, :teleport)

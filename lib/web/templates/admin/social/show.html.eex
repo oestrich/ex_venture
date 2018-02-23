@@ -1,0 +1,52 @@
+<section class="content-header">
+  <h1>
+    <%= @social.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Socials", to: social_path(@conn, :index)) %></li>
+    <li class="active"><%= @social.name %></li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: social_path(@conn, :edit, @social.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td><%= @social.name %></td>
+              </tr>
+              <tr>
+                <th>Command</th>
+                <td>"<%= @social.command %>"</td>
+              </tr>
+              <tr>
+                <th>With Target</th>
+                <td><%= @social.with_target %></td>
+              </tr>
+              <tr>
+                <th>Without Target</th>
+                <td><%= @social.without_target %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

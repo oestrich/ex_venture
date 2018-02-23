@@ -1,0 +1,67 @@
+<section class="content-header">
+  <h1>
+    Socials
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-9">
+      <div class="box">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Social", to: social_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Command</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map(@socials, fn social -> %>
+                <tr>
+                  <td><%= social.id %></td>
+                  <td><%= social.name %></td>
+                  <td><%= social.command %></td>
+                  <td>
+                    <%= link("View", to: social_path(@conn, :show, social.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: social_path(@conn, :edit, social.id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+
+          <%= render(SharedView, "_pagination.html", path: social_path(@conn, :index, social: @filter), pagination: @pagination) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Filter</h3>
+        </div>
+
+        <%= form_tag social_path(@conn, :index), method: :get do %>
+          <div class="box-body">
+            <div class="form-group">
+              <%= label :social, :name %>
+              <%= text_input :social, :name, value: @filter["name"], class: "form-control" %>
+            </div>
+          </div>
+          <div class="box-footer">
+            <%= submit "Filter", class: "btn btn-primary" %>
+            <%= link "Clear", to: social_path(@conn, :index), class: "btn" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

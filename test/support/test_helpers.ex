@@ -27,6 +27,7 @@ defmodule TestHelpers do
   alias Data.Shop
   alias Data.ShopItem
   alias Data.Skill
+  alias Data.Social
   alias Data.User
   alias Data.Zone
 
@@ -414,5 +415,20 @@ defmodule TestHelpers do
     %Channel{}
     |> Channel.changeset(%{name: name})
     |> Repo.insert!
+  end
+
+  def create_social(params \\ %{}) do
+    %Social{}
+    |> Social.changeset(social_params(params))
+    |> Repo.insert!
+  end
+
+  def social_params(params) do
+    Map.merge(%{
+      name: "Smile",
+      command: "smile",
+      with_target: "{user} smile at {target}",
+      without_target: "{user} smiles",
+    }, params)
   end
 end
