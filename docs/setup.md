@@ -69,8 +69,8 @@ Install Elixir via [asdf][asdf-elixir].
 
 ```bash
 asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
-asdf install elixir 1.5.2
-asdf global elixir 1.5.2
+asdf install elixir 1.6.1
+asdf global elixir 1.6.1
 mix local.hex
 mix local.rebar
 ```
