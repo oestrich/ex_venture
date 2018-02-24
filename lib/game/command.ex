@@ -106,7 +106,10 @@ defmodule Game.Command do
     Command.Version,
     Command.Wear,
     Command.Who,
-    Command.Wield
+    Command.Wield,
+
+    # Socials are last
+    Command.Socials
   ]
 
   @doc """

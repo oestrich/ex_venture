@@ -21,17 +21,11 @@ defmodule Game.Socials do
   end
 
   def social(id) when is_integer(id) do
-    case Cachex.get(@cache, id) do
-      {:ok, social} when social != nil -> social
-      _ -> nil
-    end
+    _fetch_from_cache(@cache, id)
   end
 
   def social(command) when is_binary(command) do
-    case Cachex.get(@cache, command) do
-      {:ok, social} when social != nil -> social
-      _ -> nil
-    end
+    _fetch_from_cache(@cache, command)
   end
 
   @spec socials([integer()]) :: [Social.t()]
@@ -39,6 +33,30 @@ defmodule Game.Socials do
     ids
     |> Enum.map(&social/1)
     |> Enum.reject(&is_nil/1)
+  end
+
+  @doc """
+  Fetch all socials
+  """
+  @spec all() :: [Social.t()]
+  def all() do
+    Cachex.execute!(@cache, fn cache ->
+      {:ok, keys} = Cachex.keys(cache)
+      keys = Enum.filter(keys, &is_integer/1)
+      socials =
+        keys
+        |> Enum.map(&_fetch_from_cache(cache, &1))
+        |> Enum.reject(&is_nil/1)
+      {:ok, socials}
+    end)
+  end
+
+  defp _fetch_from_cache(cache, key) do
+    case Cachex.get(cache, key) do
+      {:ok, nil} -> nil
+      {:ok, social} -> social
+      _ -> nil
+    end
   end
 
   @doc """
