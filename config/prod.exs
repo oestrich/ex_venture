@@ -2,14 +2,17 @@ use Mix.Config
 
 config :ex_venture, Data.Repo,
   adapter: Ecto.Adapters.Postgres,
-  database: "ex_venture",
-  hostname: "localhost",
-  pool_size: 10
+  url: "${DATABASE_URL}",
+  database: "",
+  ssl: true,
+  pool_size: 1
 
 config :ex_venture, Web.Endpoint,
+  load_from_system_env: true,
   http: [port: 4000],
   url: [host: {:system, "HOST"}, port: 443, scheme: "https"],
   server: true,
+  secret_key_base: "${SECRET_KEY_BASE}",
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :ex_venture, :networking,
