@@ -7,11 +7,12 @@ defmodule Game.Command.Give do
   use Game.Currency
   use Game.Zone
 
+  import Game.Room.Helpers, only: [find_character: 2]
+
   alias Game.Character
   alias Game.Format
   alias Game.Item
   alias Game.Items
-  alias Game.Utility
 
   commands(["give"], parse: false)
 
@@ -114,22 +115,6 @@ defmodule Game.Command.Give do
 
       {:npc, npc} ->
         send_item_to_character(state, instance, item, {:npc, npc})
-    end
-  end
-
-  defp find_character(room, character_name) do
-    case room.players |> Enum.find(&Utility.matches?(&1, character_name)) do
-      nil ->
-        case room.npcs |> Enum.find(&Utility.matches?(&1, character_name)) do
-          nil ->
-            {:error, :not_found}
-
-          npc ->
-            {:npc, npc}
-        end
-
-      player ->
-        {:user, player}
     end
   end
 

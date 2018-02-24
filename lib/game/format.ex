@@ -903,4 +903,20 @@ defmodule Game.Format do
     Without a target: {green}#{social.without_target}{/green}
     """
   end
+
+  @doc """
+  Format the social without_target text
+  """
+  def social_without_target(social, user) do
+    "{green}#{social.without_target}{green}"
+    |> template(%{user: player_name(user)})
+  end
+
+  @doc """
+  Format the social with_target text
+  """
+  def social_with_target(social, user, target) do
+    "{green}#{social.with_target}{green}"
+    |> template(%{user: player_name(user), target: name(target)})
+  end
 end

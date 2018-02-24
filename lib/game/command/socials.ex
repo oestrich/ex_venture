@@ -5,10 +5,11 @@ defmodule Game.Command.Socials do
 
   use Game.Command
 
+  import Game.Room.Helpers, only: [find_character: 2]
+
   alias Game.Format
   alias Game.Socials
 
-  For
   commands(["socials"], parse: false)
 
   @impl Game.Command
@@ -45,6 +46,26 @@ defmodule Game.Command.Socials do
   def parse("socials"), do: {:list}
   def parse("socials " <> social), do: {:help, social}
   def parse("social " <> social), do: {:help, social}
+  def parse(command) when is_binary(command) do
+    Socials.all()
+    |> Enum.find(fn social ->
+      Regex.match?(~r(^#{social.command}), command)
+    end)
+    |> parse_social(command)
+  end
+
+  defp parse_social(nil, command), do: {:error, :bad_parse, command}
+  defp parse_social(social, command) do
+    command =
+      command
+      |> String.replace(~r/^#{social.command}/i, "")
+      |> String.trim()
+
+    case command do
+      "" -> {social.command}
+      command -> {social.command, command}
+    end
+  end
 
   @impl Game.Command
   @doc """
@@ -60,15 +81,52 @@ defmodule Game.Command.Socials do
   def run({:help, social}, state) do
     case Socials.social(social) do
       nil ->
-        lines = [
-          "\"#{social}\" could not be found.",
-          "Please make sure to enter the social command. See {white}socials{/white} for the list."
-        ]
-
-        state.socket |> @socket.echo(Format.wrap(Enum.join(lines)))
+        state |> social_not_found(social)
 
       social ->
         state.socket |> @socket.echo(Format.social(social))
     end
+
+    :ok
+  end
+
+  def run({social}, state) do
+    case Socials.social(social) do
+      nil ->
+        state |> social_not_found(social)
+
+      social ->
+        state.socket |> @socket.echo(Format.social_without_target(social, state.user))
+    end
+
+    :ok
+  end
+
+  def run({social, character_name}, state = %{save: save}) do
+    case Socials.social(social) do
+      nil ->
+        state |> social_not_found(social)
+
+      social ->
+        room = @room.look(save.room_id)
+        case find_character(room, character_name) do
+          {:error, :not_found} ->
+            state.socket |> @socket.echo("\#{character_name}\" could not be found.")
+
+          character ->
+            state.socket |> @socket.echo(Format.social_with_target(social, state.user, character))
+        end
+    end
+
+    :ok
+  end
+
+  defp social_not_found(state, social) do
+    lines = [
+      "\"#{social}\" could not be found.",
+      "Please make sure to enter the social command. See {white}socials{/white} for the list."
+    ]
+
+    state.socket |> @socket.echo(Format.wrap(Enum.join(lines)))
   end
 end
