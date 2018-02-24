@@ -43,10 +43,12 @@ defmodule Game.Socials do
     Cachex.execute!(@cache, fn cache ->
       {:ok, keys} = Cachex.keys(cache)
       keys = Enum.filter(keys, &is_integer/1)
+
       socials =
         keys
         |> Enum.map(&_fetch_from_cache(cache, &1))
         |> Enum.reject(&is_nil/1)
+
       {:ok, socials}
     end)
   end

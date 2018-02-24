@@ -46,6 +46,7 @@ defmodule Game.Command.Socials do
   def parse("socials"), do: {:list}
   def parse("socials " <> social), do: {:help, social}
   def parse("social " <> social), do: {:help, social}
+
   def parse(command) when is_binary(command) do
     Socials.all()
     |> Enum.find(fn social ->
@@ -55,6 +56,7 @@ defmodule Game.Command.Socials do
   end
 
   defp parse_social(nil, command), do: {:error, :bad_parse, command}
+
   defp parse_social(social, command) do
     command =
       command
@@ -109,6 +111,7 @@ defmodule Game.Command.Socials do
 
       social ->
         room = @room.look(save.room_id)
+
         case find_character(room, character_name) do
           {:error, :not_found} ->
             state.socket |> @socket.echo("\#{character_name}\" could not be found.")

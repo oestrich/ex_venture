@@ -8,8 +8,10 @@ defmodule Game.Room.Helpers do
   @doc """
   Find a character in a room by name.
   """
-  @spec find_character(Room.t(), String.t()) :: {:error, :not_found} |
-    {:npc, NPC.t()} | {:user, User.t()}
+  @spec find_character(Room.t(), String.t()) ::
+          {:error, :not_found}
+          | {:npc, NPC.t()}
+          | {:user, User.t()}
   def find_character(room, character_name) do
     case room.players |> Enum.find(&Utility.matches?(&1, character_name)) do
       nil ->
