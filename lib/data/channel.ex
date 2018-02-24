@@ -5,16 +5,20 @@ defmodule Data.Channel do
 
   use Data.Schema
 
+  alias Game.Color
+
   schema "channels" do
     field(:name, :string)
+    field(:color, :string, default: "red")
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:name, :color])
+    |> validate_required([:name, :color])
+    |> validate_inclusion(:color, Color.options())
     |> validate_single_word_name()
   end
 

@@ -22,4 +22,22 @@ defmodule Web.Admin.ChannelController do
         conn |> render("new.html", changeset: changeset)
     end
   end
+
+  def edit(conn, %{"id" => id}) do
+    channel = Channel.get(id)
+    changeset = Channel.edit(channel)
+    conn |> render("edit.html", channel: channel, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "channel" => params}) do
+    channel = Channel.get(id)
+
+    case Channel.update(channel, params) do
+      {:ok, _channel} ->
+        conn |> redirect(to: channel_path(conn, :index))
+
+      {:error, changeset} ->
+        conn |> render("edit.html", channel: channel, changeset: changeset)
+    end
+  end
 end

@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    New Channel
+    Edit <%= @channel.name %>
   </h1>
 
   <ol class="breadcrumb">
@@ -10,14 +10,14 @@
       <% end %>
     </li>
     <li><%= link("Channels", to: channel_path(@conn, :index)) %></li>
-    <li class="active">New</li>
+    <li class="active">Edit</li>
   </ol>
 </section>
 
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render("_form.html", path: channel_path(@conn, :create), changeset: @changeset, title: "New", submit: "Create") %>
+      <%= render("_form.html", path: channel_path(@conn, :update, @channel.id), changeset: @changeset, title: "Edit", submit: "Save") %>
     </div>
   </div>
 </section>

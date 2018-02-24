@@ -3,6 +3,13 @@ defmodule Web.Color do
   Interface to the game color module
   """
 
+  def options() do
+    Game.Color.options()
+    |> Enum.map(fn color ->
+      {String.capitalize(color), color}
+    end)
+  end
+
   def format(string) do
     string
     |> String.replace("{black}", "<span class='black'>")

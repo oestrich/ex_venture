@@ -19,15 +19,15 @@ defmodule Game.ChannelTest do
   test "sending a message on the channel" do
     :ok = Channel.join("global")
 
-    Channel.broadcast("global", "sending a message")
+    Channel.broadcast("global", %{formatted: "sending a message"})
 
-    assert_receive {:channel, {:broadcast, "global", "sending a message"}}
+    assert_receive {:channel, {:broadcast, "global", %{formatted: "sending a message"}}}
   end
 
   test "list out subscribed channels" do
     :ok = Channel.join("global")
 
-    assert Channel.subscribed() == ["global"]
+    assert [%{name: "global"}] = Channel.subscribed()
   end
 
   test "removing a pid after an exit is trapped" do

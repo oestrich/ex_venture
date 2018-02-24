@@ -6,6 +6,7 @@ defmodule Game.Channel.Server do
   require Logger
 
   alias Game.Channel
+  alias Game.Channels
 
   @doc """
   Get a list of channels the pid is subscribed to
@@ -16,7 +17,10 @@ defmodule Game.Channel.Server do
   def subscribed_channels(%{channels: channels}, pid) do
     channels
     |> Enum.filter(fn {_channel, pids} -> Enum.member?(pids, pid) end)
-    |> Enum.map(fn {channel, _pids} -> channel end)
+    |> Enum.map(fn {channel, _pids} ->
+      Channels.get(channel)
+    end)
+    |> Enum.reject(&is_nil/1)
   end
 
   @doc """
@@ -59,7 +63,7 @@ defmodule Game.Channel.Server do
   def broadcast(state, channel, message)
 
   def broadcast(%{channels: channels}, channel, message) do
-    Logger.info("Channel '#{channel}' message: #{inspect(message)}", type: :channel)
+    Logger.info("Channel '#{channel}' message: #{inspect(message.formatted)}", type: :channel)
 
     channels
     |> Map.get(channel, [])

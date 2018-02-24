@@ -15,6 +15,10 @@ defmodule Game.Channels do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  def get(channel) do
+    _fetch_from_cache(@cache, channel)
+  end
+
   @doc """
   Insert a new channel into the loaded data
   """
@@ -32,15 +36,19 @@ defmodule Game.Channels do
   @doc """
   Get the current set of channels
   """
-  @spec get_channels() :: [String.t()]
-  def get_channels() do
-    case Cachex.get(@cache, :channels) do
-      {:ok, channels} when channels != nil ->
-        channels
+  @spec all() :: [String.t()]
+  def all() do
+    Cachex.execute!(@cache, fn cache ->
+      {:ok, keys} = Cachex.keys(cache)
+      keys = Enum.filter(keys, &is_integer/1)
 
-      _ ->
-        []
-    end
+      channels =
+        keys
+        |> Enum.map(&_fetch_from_cache(cache, &1))
+        |> Enum.reject(&is_nil/1)
+
+      {:ok, channels}
+    end)
   end
 
   @doc """
@@ -48,6 +56,14 @@ defmodule Game.Channels do
   """
   def clear() do
     Cachex.clear(@cache)
+  end
+
+  defp _fetch_from_cache(cache, key) do
+    case Cachex.get(cache, key) do
+      {:ok, nil} -> nil
+      {:ok, channel} -> channel
+      _ -> nil
+    end
   end
 
   #
@@ -60,20 +76,19 @@ defmodule Game.Channels do
   end
 
   def handle_cast(:load_channels, state) do
-    channels =
-      Channel
-      |> Repo.all()
-      |> Enum.map(& &1.name)
+    channels = Channel |> Repo.all()
 
-    Cachex.set(@cache, :channels, channels)
+    Enum.each(channels, fn channel ->
+      Cachex.set(@cache, channel.id, channel)
+      Cachex.set(@cache, channel.name, channel)
+    end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, channel}, _from, state) do
-    channels = [channel.name | get_channels()]
-
-    Cachex.set(@cache, :channels, channels)
+    Cachex.set(@cache, channel.id, channel)
+    Cachex.set(@cache, channel.name, channel)
 
     {:reply, :ok, state}
   end

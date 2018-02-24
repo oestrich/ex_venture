@@ -8,6 +8,22 @@ defmodule Game.Color do
   @color_regex ~r/{\/?[\w:-]+}/
 
   @doc """
+  Valid color codes
+  """
+  def options() do
+    [
+      "black",
+      "red",
+      "green",
+      "yellow",
+      "blue",
+      "magenta",
+      "cyan",
+      "white",
+    ]
+  end
+
+  @doc """
   Format a string for colors
   """
   @spec format(String.t()) :: String.t()

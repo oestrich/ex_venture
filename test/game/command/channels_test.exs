@@ -12,8 +12,8 @@ defmodule Game.Command.ChannelsTest do
     @socket.clear_messages()
     Game.Channels.clear()
 
-    %{name: "global"} |> insert_channel()
-    %{name: "newbie"} |> insert_channel()
+    %Data.Channel{id: 1, name: "global", color: "red"} |> insert_channel()
+    %Data.Channel{id: 2, name: "newbie", color: "yellow"} |> insert_channel()
 
     user = %{id: 10, name: "Player", save: %{channels: ["global"]}}
     %{socket: :socket, user: user}

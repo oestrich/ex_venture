@@ -28,6 +28,7 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Color</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -36,7 +37,9 @@
                 <tr>
                   <td><%= channel.id %></td>
                   <td><%= channel.name %></td>
+                  <td><code><%= channel.color %></code></td>
                   <td>
+                    <%= link("Edit", to: channel_path(@conn, :edit, channel.id), btn: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

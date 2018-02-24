@@ -1,0 +1,28 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <%= if Ecto.get_meta(@changeset.data, :state) == :built do %>
+        <div class="form-group">
+          <%= label f, :name %>
+          <%= text_input f, :name, class: "form-control" %>
+          <%= error_tag f, :name %>
+          <span class="help-block">This should be a single word and all lower case. It will be used as the command someone enters to speak on the channel.</span>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= label f, :color %>
+        <%= select f, :color, Color.options(), class: "form-control" %>
+        <%= error_tag f, :color %>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

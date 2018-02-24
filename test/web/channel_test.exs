@@ -9,14 +9,29 @@ defmodule Web.ChannelTest do
     :ok
   end
 
-  test "creating a class" do
+  test "creating a channel" do
     params = %{
       "name" => "fighters",
+      "color" => "yellow",
     }
 
     {:ok, channel} = Channel.create(params)
 
     assert channel.name == "fighters"
-    assert "fighters" in Channels.get_channels()
+    assert Channels.get("fighters").color == "yellow"
+    assert [%{name: "fighters"}] = Channels.all()
+  end
+
+  test "updating a channel" do
+    params = %{
+      "name" => "fighters",
+      "color" => "yellow",
+    }
+
+    {:ok, channel} = Channel.create(params)
+    {:ok, channel} = Channel.update(channel, %{"color" => "magenta"})
+
+    assert channel.color == "magenta"
+    assert Channels.get("fighters").color == "magenta"
   end
 end

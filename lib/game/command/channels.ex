@@ -54,9 +54,9 @@ defmodule Game.Command.Channels do
   def parse(channel_message) when is_binary(channel_message) do
     [channel | message] = String.split(channel_message)
 
-    case channel in Game.Channels.get_channels() do
-      true -> {channel, Enum.join(message, " ")}
-      false -> {:error, :bad_parse, channel_message}
+    case Game.Channels.get(channel) do
+      nil -> {:error, :bad_parse, channel_message}
+      _ -> {channel, Enum.join(message, " ")}
     end
   end
 
@@ -69,7 +69,7 @@ defmodule Game.Command.Channels do
   def run({}, %{socket: socket}) do
     channels =
       Channel.subscribed()
-      |> Enum.map(&"  - {red}#{&1}{/red}")
+      |> Enum.map(&"  - {#{&1.color}}#{&1.name}{/#{&1.color}}")
       |> Enum.join("\n")
 
     socket |> @socket.echo("You are subscribed to:\n#{channels}")
@@ -96,7 +96,13 @@ defmodule Game.Command.Channels do
   def run({channel, message}, %{user: user}) do
     case in_channel?(channel, user) do
       true ->
-        Channel.broadcast(channel, Message.broadcast(user, channel, message))
+        case Game.Channels.get(channel) do
+          nil ->
+            nil
+
+          channel ->
+            Channel.broadcast(channel.name, Message.broadcast(user, channel, message))
+        end
 
       false ->
         nil
@@ -110,8 +116,11 @@ defmodule Game.Command.Channels do
   end
 
   defp join_channel(channel, user) do
-    case channel in Game.Channels.get_channels() do
-      true ->
+    case Game.Channels.get(channel) do
+      nil ->
+        nil
+
+      _ ->
         case in_channel?(channel, user) do
           false ->
             Channel.join(channel)
@@ -119,9 +128,6 @@ defmodule Game.Command.Channels do
           true ->
             nil
         end
-
-      false ->
-        nil
     end
   end
 end
