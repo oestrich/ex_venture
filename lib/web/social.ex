@@ -5,9 +5,11 @@ defmodule Web.Social do
 
   alias Data.Social
   alias Data.Repo
+  alias Game.Socials
   alias Web.Filter
   alias Web.Pagination
 
+  import Ecto.Changeset, only: [get_change: 2]
   import Ecto.Query
 
   @behaviour Filter
@@ -53,9 +55,16 @@ defmodule Web.Social do
   """
   @spec create(map()) :: {:ok, Social.t()}
   def create(params) do
-    %Social{}
-    |> Social.changeset(params)
-    |> Repo.insert()
+    changeset = %Social{} |> Social.changeset(params)
+
+    case changeset |> Repo.insert() do
+      {:ok, social} ->
+        Socials.insert(social)
+        {:ok, social}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -63,8 +72,27 @@ defmodule Web.Social do
   """
   @spec update(Social.t(), map()) :: {:ok, Social.t()}
   def update(social, params) do
-    social
-    |> Social.changeset(params)
-    |> Repo.update()
+    changeset = social |> Social.changeset(params)
+    original_command = social.command
+
+    case changeset |> Repo.update() do
+      {:ok, social} ->
+        maybe_remove_old_command(original_command, changeset)
+        Socials.reload(social)
+        {:ok, social}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  defp maybe_remove_old_command(command, changeset) do
+    case get_change(changeset, :command) do
+      nil ->
+        :ok
+
+      _ ->
+        Socials.remove_command(command)
+    end
   end
 end
