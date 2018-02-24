@@ -70,6 +70,12 @@
                 <span>Skills</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "socials") %>">
+              <%= link(to: social_path(@conn, :index)) do %>
+                <i class="fa fa-comment"></i>
+                <span>Socials</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "users") %>">
               <%= link(to: user_path(@conn, :index)) do %>
                 <i class="fa fa-users"></i>

@@ -873,4 +873,50 @@ defmodule Game.Format do
 
     Table.format("#{npc_name(trainer)} will train these skills:", rows, [5, 30, 20, 10])
   end
+
+  @doc """
+  Format a list of socials
+  """
+  def socials(socials) do
+    rows =
+      socials
+      |> Enum.map(fn social ->
+        [social.name, "{white}#{social.command}{/white}"]
+      end)
+
+    rows = [["Name", "Command"] | rows]
+
+    Table.format("List of socials", rows, [20, 20])
+  end
+
+  @doc """
+  View a single social
+  """
+  def social(social) do
+    """
+    #{social.name}
+    #{underline(social.name)}
+    Command: {white}#{social.command}{/white}
+
+    With a target: {green}#{social.with_target}{/green}
+
+    Without a target: {green}#{social.without_target}{/green}
+    """
+  end
+
+  @doc """
+  Format the social without_target text
+  """
+  def social_without_target(social, user) do
+    "{green}#{social.without_target}{green}"
+    |> template(%{user: player_name(user)})
+  end
+
+  @doc """
+  Format the social with_target text
+  """
+  def social_with_target(social, user, target) do
+    "{green}#{social.with_target}{green}"
+    |> template(%{user: player_name(user), target: name(target)})
+  end
 end
