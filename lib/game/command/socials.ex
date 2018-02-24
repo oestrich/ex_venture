@@ -114,7 +114,7 @@ defmodule Game.Command.Socials do
 
         case find_character(room, character_name) do
           {:error, :not_found} ->
-            state.socket |> @socket.echo("\#{character_name}\" could not be found.")
+            state.socket |> @socket.echo("\"#{character_name}\" could not be found.")
 
           character ->
             state.socket |> @socket.echo(Format.social_with_target(social, state.user, character))
@@ -130,6 +130,6 @@ defmodule Game.Command.Socials do
       "Please make sure to enter the social command. See {white}socials{/white} for the list."
     ]
 
-    state.socket |> @socket.echo(Format.wrap(Enum.join(lines)))
+    state.socket |> @socket.echo(Format.wrap(Enum.join(lines, " ")))
   end
 end
