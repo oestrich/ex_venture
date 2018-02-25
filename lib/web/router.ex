@@ -13,8 +13,19 @@ defmodule Web.Router do
     plug(Web.Plug.LoadUser)
   end
 
+  pipeline :public_2fa do
+    plug(Web.Plug.LoadUser, verify: false)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
+  end
+
+  scope "/", Web, as: :public do
+    pipe_through([:browser, :public_2fa])
+
+    get("/account/twofactor/verify", AccountTwoFactorController, :verify)
+    post("/account/twofactor/verify", AccountTwoFactorController, :verify_token)
   end
 
   scope "/", Web, as: :public do
@@ -25,6 +36,11 @@ defmodule Web.Router do
     get("/account", AccountController, :show)
     get("/account/password", AccountController, :password)
     put("/account", AccountController, :update)
+
+    get("/account/twofactor/start", AccountTwoFactorController, :start)
+    get("/account/twofactor/qr.png", AccountTwoFactorController, :qr)
+    post("/account/twofactor", AccountTwoFactorController, :validate)
+    delete("/account/twofactor", AccountTwoFactorController, :clear)
 
     resources("/account/mail", MailController, only: [:index, :show])
 

@@ -23,6 +23,9 @@ defmodule Data.User do
     field(:token, Ecto.UUID)
     field(:seconds_online, :integer)
 
+    field(:totp_secret, :string)
+    field(:totp_verified_at, Timex.Ecto.DateTime)
+
     belongs_to(:class, Class)
     belongs_to(:race, Race)
 
@@ -68,6 +71,26 @@ defmodule Data.User do
     |> validate_confirmation(:password)
     |> hash_password
     |> validate_required([:password_hash])
+  end
+
+  def totp_changeset(struct) do
+    struct
+    |> change()
+    |> put_change(:totp_secret, Base.encode32(:crypto.strong_rand_bytes(8)))
+    |> put_change(:totp_verified_at, nil)
+  end
+
+  def totp_verified_changeset(struct) do
+    struct
+    |> change()
+    |> put_change(:totp_verified_at, Timex.now())
+  end
+
+  def totp_reset_changeset(struct) do
+    struct
+    |> change()
+    |> put_change(:totp_secret, nil)
+    |> put_change(:totp_verified_at, nil)
   end
 
   defp hash_password(changeset) do

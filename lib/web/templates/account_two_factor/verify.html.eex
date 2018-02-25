@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h3>Two Factor Authentication</h3>
+
+    <div class="card">
+      <div class="card-body">
+        <%= form_tag public_account_two_factor_path(@conn, :verify_token) do %>
+          <div class="form-group has-feedback">
+            <%= label :user, :token, "Authentication Token" %>
+            <%= text_input :user, :token, class: "form-control", autofocus: true %>
+          </div>
+
+          <%= submit "Verify token", class: "btn btn-primary btn-block btn-flat" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
