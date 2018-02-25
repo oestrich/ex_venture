@@ -7,6 +7,7 @@ defmodule Web.AccountTwoFactorController do
 
   plug(Web.Plug.PublicEnsureUser)
   plug(:signout_after_failed_attempts when action in [:verify, :verify_token])
+  plug(:ensure_not_verified_yet! when action in [:start, :validate, :qr])
 
   def start(conn, _params) do
     %{user: user} = conn.assigns
@@ -89,6 +90,25 @@ defmodule Web.AccountTwoFactorController do
 
       _ ->
         conn
+    end
+  end
+
+  @doc """
+  Ensure that the two factor process has not completed yet. We should not
+  show the QR code again (or restart the connection) if someone browses there
+  by accident.
+  """
+  def ensure_not_verified_yet!(conn, _opts) do
+    %{user: user} = conn.assigns
+
+    case user.totp_verified_at do
+      nil ->
+        conn
+
+      _ ->
+        conn
+        |> redirect(to: public_page_path(conn, :index))
+        |> halt()
     end
   end
 end
