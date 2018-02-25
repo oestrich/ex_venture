@@ -281,7 +281,7 @@ defmodule Web.User do
   """
   @spec totp_verified?(User.t()) :: boolean()
   def totp_verified?(user) do
-    user.totp_secret && user.totp_verified_at
+    !!user.totp_secret && !!user.totp_verified_at
   end
 
   @doc """

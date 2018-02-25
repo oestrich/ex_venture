@@ -11,8 +11,13 @@ defmodule Web.Plug.EnsureUser do
 
   def call(conn, _opts) do
     case Map.has_key?(conn.assigns, :user) do
-      true -> conn
-      false -> conn |> redirect(to: Routes.session_path(conn, :new)) |> halt()
+      true ->
+        conn
+
+      false ->
+        conn
+        |> redirect(to: Routes.session_path(conn, :new))
+        |> halt()
     end
   end
 end

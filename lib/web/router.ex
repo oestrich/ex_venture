@@ -13,8 +13,19 @@ defmodule Web.Router do
     plug(Web.Plug.LoadUser)
   end
 
+  pipeline :public_2fa do
+    plug(Web.Plug.LoadUser, verify: false)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
+  end
+
+  scope "/", Web, as: :public do
+    pipe_through([:browser, :public_2fa])
+
+    get("/account/twofactor/verify", AccountTwoFactorController, :verify)
+    post("/account/twofactor/verify", AccountTwoFactorController, :verify_token)
   end
 
   scope "/", Web, as: :public do
