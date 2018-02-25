@@ -22,15 +22,21 @@ use Mix.Releases.Config,
 # and environment configuration is called a profile
 
 environment :dev do
+  # If you are running Phoenix, you should make sure that
+  # server: true is set and the code reloader is disabled,
+  # even in dev mode.
+  # It is recommended that you build with MIX_ENV=prod and pass
+  # the --env flag to Distillery explicitly if you want to use
+  # dev mode.
   set dev_mode: true
   set include_erts: false
-  set cookie: :"(*.VMz%3=&MrBo$r]M`&s7a~ok{eecL=/U?r_|0!Rbq5mLy[wCzsDV^j>5m%W_,S"
+  set cookie: :"?)y{FD|OH06IKi5Fu,)66boc,RPS.`l>/jWDg__@`~q*kdKxdh`beq2(>?.F3Lw!"
 end
 
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: :"<U}DQ)|8,I)&O_eEHQ$i8TTI]FSbKc(OWHGRhhj5uv/f_mUR_!Qx%KzTK?s|YN}4"
+  set cookie: :":zk)yxgeIJIWH]L*q&|nc{r3d8X%d;pgRx<5ouOBmhkGE!AAzp::?8:bP*bR_zd4"
 end
 
 # You may define one or more releases in this file.
@@ -41,11 +47,7 @@ end
 release :ex_venture do
   set version: current_version(:ex_venture)
   set applications: [
-    :runtime_tools, :unsafe
-  ]
-
-  set commands: [
-    "migrate": "rel/commands/migrate.sh",
-    "seed": "rel/commands/seed.sh",
+    :runtime_tools
   ]
 end
+
