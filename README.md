@@ -86,3 +86,9 @@ stream {
 ## Metrics
 
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
+
+## Attribution - qrcode
+
+This contains a local copy of [qrcode](https://gitlab.com/Pacodastre/qrcode/tree/master). It was edited to remove the local base32 module since the pot library defines its own and is different. The `qrcode_demo` module was also renamed to `qrcode_png` and stripped down to only producing pngs.
+
+    Copyright 2011 Steve Davis <steve@simulacity.com>

@@ -104,4 +104,35 @@ defmodule Web.UserTest do
       assert old_password.used_at
     end
   end
+
+  describe "check totp token" do
+    setup %{user: user} do
+      user = User.create_totp_secret(user)
+      %{user: user}
+    end
+
+    test "does not create duplicate secrets while it hasn't been verified yet", %{user: user} do
+      original_secret = user.totp_secret
+      user = User.create_totp_secret(user)
+      assert user.totp_secret == original_secret
+    end
+
+    test "validate a token", %{user: user} do
+      secret = Base.encode32(Base.decode32!(user.totp_secret, padding: false))
+      token = :pot.totp(secret)
+
+      assert User.valid_totp_token?(user, token)
+    end
+
+    test "validate a token - invalid token", %{user: user} do
+      refute User.valid_totp_token?(user, "abc123")
+    end
+
+    test "verify the token", %{user: user} do
+      user = User.totp_token_verified(user)
+
+      assert user.totp_verified_at
+      assert User.totp_verified?(user)
+    end
+  end
 end

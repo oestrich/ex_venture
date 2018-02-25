@@ -23,4 +23,13 @@
       <%= submit "Update Password", class: "btn btn-primary btn-block btn-flat" %>
     <% end %>
   </div>
+
+  <div class="col-md-4">
+    <h3>Two Factor</h3>
+    <%= if !User.totp_verified?(@user) do %>
+      <%= link("Connect a second factor", to: public_account_two_factor_path(@conn, :start), class: "btn btn-primary") %>
+    <% else %>
+      Second factor is enabled!
+    <% end %>
+  </div>
 </div>

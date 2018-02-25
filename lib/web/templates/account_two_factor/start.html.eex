@@ -1,0 +1,21 @@
+<div class="row">
+  <%= render(AccountView, "_sidebar.html", conn: @conn) %>
+
+  <div class="col-md-10">
+    <div class="card">
+      <div class="card-body">
+        <h3>Connect your authenticator</h3>
+        <%= img_tag(public_account_two_factor_path(@conn, :qr)) %>
+
+        <%= form_tag public_account_two_factor_path(@conn, :validate) do %>
+          <div class="form-group has-feedback">
+            <%= label :user, :token %>
+            <%= text_input :user, :token, class: "form-control" %>
+          </div>
+
+          <%= submit "Verify token", class: "btn btn-primary btn-block btn-flat" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

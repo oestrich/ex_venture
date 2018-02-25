@@ -67,6 +67,7 @@ defmodule ExVenture.Mixfile do
       {:prometheus_plugs, "~> 1.1"},
       {:prometheus_process_collector, "~> 1.2"},
       {:poison, "~> 3.1"},
+      {:pot, git: "https://github.com/yuce/pot.git"},
       {:postgrex, ">= 0.0.0"},
       {:ranch, "~> 1.4"},
       {:timex, "~> 3.1"},

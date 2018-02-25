@@ -232,6 +232,59 @@ defmodule Web.User do
   end
 
   @doc """
+  Start the TOTP validation
+  """
+  @spec create_totp_secret(User.t()) :: {:ok, OneTimePassword.t()}
+  def create_totp_secret(user) do
+    case {user.totp_secret, user.totp_verified_at} do
+      {secret, nil} when secret != nil ->
+        user
+
+      _ ->
+        user
+        |> User.totp_changeset()
+        |> Repo.update!()
+    end
+  end
+
+  @doc """
+  Start the TOTP validation
+  """
+  @spec totp_token_verified(User.t()) :: {:ok, OneTimePassword.t()}
+  def totp_token_verified(user) do
+    user
+    |> User.totp_verified_changeset()
+    |> Repo.update!()
+  end
+
+  def generate_qr_png(user) do
+    secret = Base.encode32(Base.decode32!(user.totp_secret), padding: false)
+    issuer = URI.encode(Config.game_name())
+    url = "otpauth://totp/#{issuer}:#{user.name}?secret=#{secret}&issuer=#{issuer}"
+
+    url
+    |> :qrcode.encode()
+    |> :qrcode_png.simple_png_encode()
+  end
+
+  @doc """
+  Check the TOTP token against the user
+  """
+  @spec valid_totp_token?(User.t(), String.t()) :: boolean()
+  def valid_totp_token?(user, token) do
+    secret = Base.encode32(Base.decode32!(user.totp_secret, padding: false))
+    :pot.valid_totp(token, secret)
+  end
+
+  @doc """
+  Check if the user has TOTP on and verified
+  """
+  @spec totp_verified?(User.t()) :: boolean()
+  def totp_verified?(user) do
+    user.totp_secret && user.totp_verified_at
+  end
+
+  @doc """
   Create a one time password for use when signing in via telnet
   """
   @spec create_one_time_password(User.t()) :: {:ok, OneTimePassword.t()}
