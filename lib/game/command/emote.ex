@@ -17,7 +17,10 @@ defmodule Game.Command.Emote do
 
     Example:
     [ ] > {white}emote does something{/white}
-    #{Format.emote({:user, %{name: "player"}}, "does soemthing")}
+    #{Format.emote({:user, %{name: "player"}}, "does something")}
+
+    [ ] > {white}*does something{/white}
+    #{Format.emote({:user, %{name: "player"}}, "does something")}
     """
   end
 
@@ -28,6 +31,9 @@ defmodule Game.Command.Emote do
       iex> Game.Command.Emote.parse("emote hello")
       {"hello"}
 
+      iex> Game.Command.Emote.parse("*hello")
+      {"hello"}
+
       iex> Game.Command.Emote.parse("emote")
       {:error, :bad_parse, "emote"}
 
@@ -35,7 +41,8 @@ defmodule Game.Command.Emote do
       {:error, :bad_parse, "unknown"}
   """
   def parse(command)
-  def parse("emote " <> name), do: {name}
+  def parse("emote " <> text), do: {text}
+  def parse("*" <> text), do: {text}
 
   @impl Game.Command
   @doc """
