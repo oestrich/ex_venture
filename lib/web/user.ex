@@ -248,12 +248,22 @@ defmodule Web.User do
   end
 
   @doc """
-  Start the TOTP validation
+  The token was verified and TOTP should be turned on
   """
   @spec totp_token_verified(User.t()) :: {:ok, OneTimePassword.t()}
   def totp_token_verified(user) do
     user
     |> User.totp_verified_changeset()
+    |> Repo.update!()
+  end
+
+  @doc """
+  Clear the user's TOTP state
+  """
+  @spec reset_totp(User.t()) :: {:ok, OneTimePassword.t()}
+  def reset_totp(user) do
+    user
+    |> User.totp_reset_changeset()
     |> Repo.update!()
   end
 

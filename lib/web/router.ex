@@ -40,6 +40,7 @@ defmodule Web.Router do
     get("/account/twofactor/start", AccountTwoFactorController, :start)
     get("/account/twofactor/qr.png", AccountTwoFactorController, :qr)
     post("/account/twofactor", AccountTwoFactorController, :validate)
+    delete("/account/twofactor", AccountTwoFactorController, :clear)
 
     resources("/account/mail", MailController, only: [:index, :show])
 

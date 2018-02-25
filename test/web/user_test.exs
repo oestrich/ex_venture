@@ -134,5 +134,14 @@ defmodule Web.UserTest do
       assert user.totp_verified_at
       assert User.totp_verified?(user)
     end
+
+    test "clear totp settings", %{user: user} do
+      user = User.totp_token_verified(user)
+
+      user = User.reset_totp(user)
+
+      assert is_nil(user.totp_secret)
+      assert is_nil(user.totp_verified_at)
+    end
   end
 end

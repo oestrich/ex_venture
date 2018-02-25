@@ -23,6 +23,7 @@ defmodule Web.AccountTwoFactorController do
 
         conn
         |> put_flash(:info, "Your account has Two Factor security enabled!")
+        |> put_session(:is_user_totp_verified, true)
         |> redirect(to: public_account_path(conn, :show))
 
       false ->
@@ -53,6 +54,17 @@ defmodule Web.AccountTwoFactorController do
         |> put_session(:totp_failed_count, failed_count + 1)
         |> redirect(to: public_account_two_factor_path(conn, :verify))
     end
+  end
+
+  def clear(conn, _) do
+    %{user: user} = conn.assigns
+
+    User.reset_totp(user)
+
+    conn
+    |> put_session(:is_user_totp_verified, false)
+    |> put_flash(:info, "Second factor disabled")
+    |> redirect(to: public_account_path(conn, :show))
   end
 
   def qr(conn, _params) do

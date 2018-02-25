@@ -30,6 +30,7 @@
       <%= link("Connect a second factor", to: public_account_two_factor_path(@conn, :start), class: "btn btn-primary") %>
     <% else %>
       Second factor is enabled!
+      <%= link("Disable second factor", to: public_account_two_factor_path(@conn, :clear), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger") %>
     <% end %>
   </div>
 </div>

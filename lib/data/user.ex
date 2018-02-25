@@ -86,6 +86,13 @@ defmodule Data.User do
     |> put_change(:totp_verified_at, Timex.now())
   end
 
+  def totp_reset_changeset(struct) do
+    struct
+    |> change()
+    |> put_change(:totp_secret, nil)
+    |> put_change(:totp_verified_at, nil)
+  end
+
   defp hash_password(changeset) do
     case changeset do
       %{valid?: true, changes: %{password: password}} ->
