@@ -35,7 +35,7 @@ defmodule Web.Admin.NPCView do
 
   def script(changeset) do
     case get_field(changeset, :script) do
-      nil -> [] |> Poison.encode!(pretty: true)
+      nil -> ""
       script -> script |> Poison.encode!(pretty: true)
     end
   end

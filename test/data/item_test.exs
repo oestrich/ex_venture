@@ -130,7 +130,7 @@ defmodule Data.ItemTest do
       assert changeset.errors[:effects]
 
       changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage/type", types: [:slashing]}]})
-      assert changeset.errors[:effects]
+      refute changeset.errors[:effects]
     end
   end
 
