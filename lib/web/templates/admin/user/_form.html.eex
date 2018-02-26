@@ -16,6 +16,21 @@
         <%= text_input f, :email, class: "form-control" %>
         <%= error_tag f, :email %>
       </div>
+
+      <div class="form-group">
+        <%= label f, :flags %>
+        <ul>
+          <%= Enum.map(User.flags(), fn flag -> %>
+            <li class="checkbox">
+              <label>
+                <input type="checkbox" name="user[flags][]" value="<%= flag %>" <%= checked_flag?(@changeset, flag) %>/>
+                <%= flag %>
+              </label>
+            </li>
+          <% end) %>
+        </ul>
+        <%= error_tag f, :flags %>
+      </div>
     </div>
 
     <div class="box-footer">

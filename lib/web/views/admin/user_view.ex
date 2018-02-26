@@ -1,6 +1,7 @@
 defmodule Web.Admin.UserView do
   use Web, :view
 
+  import Ecto.Changeset
   import Web.TimeView
 
   alias Game.Format
@@ -30,5 +31,18 @@ defmodule Web.Admin.UserView do
     command
     |> String.split(".")
     |> List.last()
+  end
+
+  def checked_flag?(changeset, flag) do
+    case get_field(changeset, :flags) do
+      nil ->
+        ""
+
+      flags ->
+        case flag in flags do
+          true -> "checked=checked"
+          false -> ""
+        end
+    end
   end
 end

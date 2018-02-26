@@ -21,6 +21,12 @@ defmodule Web.User do
   @behaviour Filter
 
   @doc """
+  User flags
+  """
+  @spec flags() :: [String.t()]
+  def flags(), do: ["admin"]
+
+  @doc """
   Fetch a user from a web token
   """
   @spec from_token(token :: String.t()) :: User.t()
