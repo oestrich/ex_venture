@@ -22,14 +22,14 @@
         <%= label f, :with_target %>
         <%= textarea f, :with_target, class: "form-control", rows: 2 %>
         <%= error_tag f, :with_target %>
-        <span class="help-block">When used with a target</span>
+        <span class="help-block">When used with a target, template replacements: <code>{user}</code> and <code>{target}</code></span>
       </div>
 
       <div class="form-group">
         <%= label f, :without_target %>
         <%= textarea f, :without_target, class: "form-control", rows: 2 %>
         <%= error_tag f, :without_target %>
-        <span class="help-block">When used with out a target</span>
+        <span class="help-block">When used with out a target, template replacements: <code>{user}</code></span>
       </div>
     </div>
 

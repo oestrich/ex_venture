@@ -37,11 +37,11 @@
               </tr>
               <tr>
                 <th>With Target</th>
-                <td><%= @social.with_target %></td>
+                <td><code><%= @social.with_target %></code></td>
               </tr>
               <tr>
                 <th>Without Target</th>
-                <td><%= @social.without_target %></td>
+                <td><code><%= @social.without_target %></code></td>
               </tr>
             </tbody>
           </table>
