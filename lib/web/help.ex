@@ -1,10 +1,10 @@
 defmodule Web.Help.Compiler do
   @moduledoc """
-  Compiler for the help text. This file is stored in `prig/help/web.txt`
+  Compiler for the help text. This file is stored in `prig/help/web.help`
   """
 
   defmacro __using__(_opts) do
-    help_file = Path.join(:code.priv_dir(:ex_venture), "help/web.txt")
+    help_file = Path.join(:code.priv_dir(:ex_venture), "help/web.help")
     {:ok, help_text} = File.read(help_file)
     quotes = generate_gets(help_text)
     quotes = Enum.reverse([default_get() | quotes])
