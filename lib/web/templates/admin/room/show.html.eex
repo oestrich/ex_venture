@@ -259,6 +259,7 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Item Spawns</h3>
+          <%= SharedView.help_tooltip("room.item_spawns") %>
           <div class="box-tools">
             <%= link("Add Item Spawn", to: room_room_item_path(@conn, :new, @room.id), class: "btn btn-primary") %>
           </div>

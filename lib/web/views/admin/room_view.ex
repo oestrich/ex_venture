@@ -8,6 +8,7 @@ defmodule Web.Admin.RoomView do
   alias Game.Items
   alias Web.Color
   alias Web.Help
+  alias Web.Admin.SharedView
 
   def room_select(%{rooms: rooms}) do
     rooms |> Enum.map(&{&1.name, &1.id})
@@ -65,7 +66,7 @@ defmodule Web.Admin.RoomView do
 
     add_new =
       content_tag :span, class: "cyan" do
-        link("Add Item", to: room_room_item_path(conn, :new, room.id, spawn: false))
+        link("Add Item", to: room_room_item_path(conn, :new, room.id, spawn: false), data: [toggle: "tooltip"], title: Help.get("room.items"))
       end
 
     currency =

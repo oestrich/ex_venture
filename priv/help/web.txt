@@ -1,3 +1,30 @@
+npc.events:
+  NPCs interact with the world based on these definitions.
+
+npc.item_drop_rate:
+  Percent chance to drop on death, 1-100.
+
+npc.items:
+  NPCs have a chance of dropping anything in this list when they are killed.
+
+npc.quest_giver:
+  A quest giver will show up in the quest form as a potential giver.
+
+npc.skill_trainer:
+  If true, you can attach skills to this NPC to train players with.
+
+npc.skills:
+  Players can train these skills from this NPC.
+
+npc.spawner_interval:
+  When the spawner is killed it will wait this long (seconds) to respawn to the original room.
+
+npc.spawner_name:
+  If empty the base NPC will be used, fill this in to create similar NPCs with different names to customize.
+
+npc.spawners:
+  These are what the player interacts with. They are spawned as processes.
+
 quest.completed_message:
   A message the NPC will say after the quest is completed
 
@@ -22,5 +49,17 @@ room.feature:
 room.graveyard:
   A graveyard room can be selected as a zone's graveyard, this can be for any zone. The zone's graveyard is where the player is teleported after dying.
 
+room.item_spawns:
+  Item spawns ensure that an item is put back in a room after an interval has passed.
+
+room.items:
+  These items are added directly to the game
+
 room.zone_exit:
   A room that is a zone exit will always show up in the room selection box when creating exits, not just for the current zone.
+
+zone.name:
+  This will be seen in the player's map.
+
+zone.graveyard:
+  The graveyard is where the player will be teleported after dying in this zone.
