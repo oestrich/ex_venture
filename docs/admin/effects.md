@@ -23,6 +23,8 @@ This subtracts from the health field of the target. `type` must be one of those 
 
 This helps limit which damage types are used in the application of a skill. If a damage effect's type is not in the list of it's `type` then the damage is halved. For example, if a `slashing` damage effect was matched with a `bludgeoning` `damage/type` effect, then the slashing damage is halved.
 
+This might happen when all of a player's armor and weapon effects are combined with the skill they are using. A piece of armor might be described as "magic users only", and have a `damage/type` of `["arcane", "ice", "fire"]` to restrict what skills a player might use while wearing them. If they try using a dagger with `slashing` damage, then their `slashing` damage is halved.
+
 ## damage/over-time
 
 ```
