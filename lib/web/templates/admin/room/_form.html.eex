@@ -45,6 +45,7 @@
         <%= label f, :ecology %>
         <%= select f, :ecology, Room.ecologies(), class: "form-control" %>
         <%= error_tag f, :ecology %>
+        <span class="help-block"><%= Help.get("room.ecology") %></span>
       </div>
 
       <div class="checkbox">
@@ -52,6 +53,7 @@
           <%= checkbox f, :is_zone_exit %> Is A Zone Exit?
         <% end %>
         <%= error_tag f, :is_zone_exit %>
+        <span class="help-block"><%= Help.get("room.zone_exit") %></span>
       </div>
 
       <div class="checkbox">
@@ -59,6 +61,7 @@
           <%= checkbox f, :is_graveyard %> Is A Graveyard?
         <% end %>
         <%= error_tag f, :is_graveyard %>
+        <span class="help-block"><%= Help.get("room.graveyard") %></span>
       </div>
 
       <div class="form-group">

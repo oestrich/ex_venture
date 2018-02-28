@@ -43,11 +43,17 @@
               <td><%= @npc.currency %></td>
             </tr>
             <tr>
-              <th>Is a quest giver?</th>
+              <th>
+                Is a quest giver?
+                <%= SharedView.help_tooltip("npc.quest_giver") %>
+              </th>
               <td><%= @npc.is_quest_giver %></td>
             </tr>
             <tr>
-              <th>Is a skill trainer?</th>
+              <th>
+                Is a skill trainer?
+                <%= SharedView.help_tooltip("npc.skill_trainer") %>
+              </th>
               <td><%= @npc.is_trainer %></td>
             </tr>
             <tr>
@@ -95,6 +101,7 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Events</h3>
+          <%= SharedView.help_tooltip("npc.events") %>
         </div>
         <div class="box-body">
           <table class="table">
@@ -144,6 +151,7 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Items</h3>
+          <%= SharedView.help_tooltip("npc.items") %>
           <div class="box-tools">
             <%= link("Add Item", to: npc_item_path(@conn, :new, @npc.id), class: "btn btn-primary") %>
           </div>
@@ -154,7 +162,10 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Drop Rate</th>
+                <th>
+                  Drop Rate
+                  <%= SharedView.help_tooltip("npc.item_drop_rate") %>
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -163,7 +174,7 @@
                 <tr>
                   <td><%= npc_item.id %></td>
                   <td><%= link(npc_item.item.name, to: item_path(@conn, :show, npc_item.item_id)) %></td>
-                  <td><%= npc_item.drop_rate %></td>
+                  <td><%= npc_item.drop_rate %>%</td>
                   <td>
                     <%= link("Edit", to: npc_item_path(@conn, :edit, npc_item.id), class: "btn btn-default btn-xs") %>
                     <%= link(to: npc_item_path(@conn, :delete, npc_item.id), method: "delete", data: [confirm: "Are you sure?"], class: "btn btn-default btn-xs") do %>
@@ -185,6 +196,7 @@
         <div class="box">
           <div class="box-header">
             <h3 class="box-title">Skills</h3>
+            <%= SharedView.help_tooltip("npc.skills") %>
             <div class="box-tools">
               <%= link("Add Trainable Skill", to: npc_skill_path(@conn, :new, @npc.id), class: "btn btn-primary") %>
             </div>
@@ -225,6 +237,7 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Zone Spawners</h3>
+          <%= SharedView.help_tooltip("npc.spawners") %>
           <div class="box-tools">
             <%= link("New Spawner", to: npc_spawner_path(@conn, :new, @npc.id), class: "btn btn-primary") %>
           </div>
@@ -237,7 +250,10 @@
                 <th>Zone</th>
                 <th>Room</th>
                 <th>Name</th>
-                <th>Interval</th>
+                <th>
+                  Interval
+                  <%= SharedView.help_tooltip("npc.spawner_interval") %>
+                </th>
                 <td>Actions</th>
               </tr>
             </thead>

@@ -26,8 +26,10 @@
 
         <%= form_tag room_room_item_path(@conn, :create, @room.id, spawn: false) do %>
           <div class="box-body">
+            <div class="lead"><%= Help.get("room.items") %></div>
+
             <div class="form-group">
-              <%= label :item, :id %>
+              <%= label :item, :id, "Item" %>
               <%= select :item, :id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
             </div>
           </div>

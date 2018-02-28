@@ -5,6 +5,8 @@
 
   <%= form_for @changeset, @path, fn (f) -> %>
     <div class="box-body">
+      <div class="lead"><%= Help.get("room.item_spawns") %></div>
+
       <div class="form-group">
         <%= label f, :item_id %>
         <%= select f, :item_id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>

@@ -27,7 +27,10 @@
         <div class="box-body">
           <table class="table">
             <tr>
-              <th>Name</th>
+              <th>
+                Name
+                <%= SharedView.help_tooltip("zone.name") %>
+              </th>
               <td><%= @zone.name %></td>
             </tr>
             <tr>
@@ -35,7 +38,10 @@
               <td><%= @zone.description %></td>
             </tr>
             <tr>
-              <th>Resurrection Room</th>
+              <th>
+                Graveyard Room
+                <%= SharedView.help_tooltip("zone.graveyard") %>
+              </th>
               <td>
                 <%= if @zone.graveyard != nil do %>
                   <%= link(@zone.graveyard.name, to: room_path(@conn, :show, @zone.graveyard.id)) %>

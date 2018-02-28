@@ -40,6 +40,8 @@ defmodule Web do
       import Web.Router.Helpers
       import Web.ErrorHelpers
       import Web.Gettext
+
+      alias Web.Views.Help
     end
   end
 
