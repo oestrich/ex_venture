@@ -8,7 +8,7 @@ defmodule Metrics.PlayerInstrumenter do
   require Logger
 
   def setup() do
-    Gauge.declare(name: :exventure_player_count, help: "Number of players signed in currently")
+    Gauge.declare(name: :exventure_player_count, help: "Number of players signed in currently", labels: [:role])
 
     Counter.declare(
       name: :exventure_session_total,
@@ -52,7 +52,8 @@ defmodule Metrics.PlayerInstrumenter do
   """
   @spec set_player_count(list) :: list
   def set_player_count(players) do
-    Gauge.set([name: :exventure_player_count], length(players))
-    players
+    {admins, players} = Enum.split_with(players, & "admin" in &1.flags)
+    Gauge.set([name: :exventure_player_count, labels: [:players]], length(players))
+    Gauge.set([name: :exventure_player_count, labels: [:admins]], length(admins))
   end
 end
