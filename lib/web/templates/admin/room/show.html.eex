@@ -142,7 +142,7 @@
         <div class="box-header">
           <h3 class="box-title">Room Features</h3>
 
-          <i class="fa fa-question-circle" data-toggle="tooltip" title="Room features are appended to the end of a room's description."></i>
+          <i class="fa fa-question-circle" data-toggle="tooltip" title="<%= Help.get("room.feature") %>"></i>
 
           <div class="box-tools">
             <%= link("New Feature", to: room_feature_path(@conn, :new, @room.id), class: "btn btn-primary") %>
@@ -190,15 +190,24 @@
           <table class="table">
             <tbody>
               <tr>
-                <th>Is a zone exit?</th>
+                <th>
+                  Is a zone exit?
+                  <i class="fa fa-question-circle" data-toggle="tooltip" title="<%= Help.get("room.zone_exit") %>"></i>
+                </th>
                 <td><%= @room.is_zone_exit %></td>
               </tr>
               <tr>
-                <th>Is a graveyard?</th>
+                <th>
+                  Is a graveyard?
+                  <i class="fa fa-question-circle" data-toggle="tooltip" title="<%= Help.get("room.graveyard") %>"></i>
+                </th>
                 <td><%= @room.is_graveyard %></td>
               </tr>
               <tr>
-                <th>Ecology</th>
+                <th>
+                  Ecology
+                  <i class="fa fa-question-circle" data-toggle="tooltip" title="<%= Help.get("room.ecology") %>"></i>
+                </th>
                 <td><%= @room.ecology %></td>
               </tr>
               <tr>
@@ -282,9 +291,3 @@
     </div>
   </div>
 </section>
-
-<script type="application/javascript">
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip();
-});
-</script>

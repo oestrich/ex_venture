@@ -5,6 +5,8 @@
 
   <%= form_tag @path, method: form_method(@feature) do %>
     <div class="box-body">
+      <p class="lead"><%= Help.get("room.feature") %></p>
+
       <div class="form-group">
         <%= label :feature, :key %>
         <%= text_input :feature, :key, value: Map.get(@feature, :key, ""), class: "form-control" %>

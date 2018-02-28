@@ -1,0 +1,26 @@
+quest.completed_message:
+  A message the NPC will say after the quest is completed
+
+quest.description:
+  This will be available using `quest info :id` in game
+
+quest.giver:
+  The NPC that hands out the quest, all spanwers will pass out the quest
+
+quest.level:
+  Required level to receive the quest
+
+quest.steps:
+  Players must fulfill each of these in order to complete the quest.
+
+room.ecology:
+  Room ecology changes the color of the map "icon" in the map grid.
+
+room.feature:
+  Room features are appended to the end of a room's description.
+
+room.graveyard:
+  A graveyard room can be selected as a zone's graveyard, this can be for any zone. The zone's graveyard is where the player is teleported after dying.
+
+room.zone_exit:
+  A room that is a zone exit will always show up in the room selection box when creating exits, not just for the current zone.

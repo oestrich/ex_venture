@@ -7,6 +7,7 @@ defmodule Web.Admin.RoomView do
   alias Game.Format
   alias Game.Items
   alias Web.Color
+  alias Web.Help
 
   def room_select(%{rooms: rooms}) do
     rooms |> Enum.map(&{&1.name, &1.id})
