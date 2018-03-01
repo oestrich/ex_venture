@@ -132,7 +132,7 @@ defmodule Game.Session.Character do
   def notify(state, {"quest/new", quest}) do
     Session.echo(
       self(),
-      "You have a new quest available, #{Format.quest_name(quest)} (#{quest.id})"
+      "You received a new quest, #{Format.quest_name(quest)} (#{quest.id})"
     )
 
     Quest.track_quest(state.user, quest.id)
