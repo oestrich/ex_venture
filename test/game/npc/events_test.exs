@@ -75,7 +75,7 @@ defmodule Game.NPC.EventsTest do
 
       assert state.combat == false
 
-      refute_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
+      refute_receive {:"$gen_cast", {:notify, {"combat/tick"}}}, 50
     end
 
     test "does nothing if target no longer in the room, and removes target", %{state: state, event: event} do
@@ -85,8 +85,15 @@ defmodule Game.NPC.EventsTest do
 
       assert is_nil(state.target)
       assert state.combat == false
+    end
 
-      refute_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
+    test "does nothing if there is no combat/tick events to pick from", %{state: state, event: event} do
+      state = %{state | npc: %{state.npc | events: []}, target: {:user, 1}}
+
+      {:update, state} = Events.act_on(state, event)
+
+      assert state.combat == false
+      assert is_nil(state.target)
     end
 
     test "calculates the effects and then applies them to the target", %{state: state, event: event} do

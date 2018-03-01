@@ -174,26 +174,32 @@ defmodule Game.NPC.Events do
         {:update, %{state | target: nil, combat: false}}
 
       target ->
-        event =
-          npc.events
-          |> Enum.filter(&(&1.type == "combat/tick"))
-          |> Combat.weighted_event()
-
-        action = event.action
-        effects = npc.stats |> Effect.calculate(action.effects)
-
-        Character.apply_effects(
-          target,
-          effects,
-          {:npc, npc},
-          Format.skill_usee(action.text, user: {:npc, npc})
-        )
-
-        delay = round(Float.ceil(action.delay * 1000))
-        notify_delayed({"combat/tick"}, delay)
-
-        {:update, state}
+        npc.events
+        |> Enum.filter(&(&1.type == "combat/tick"))
+        |> Combat.weighted_event()
+        |> perform_combat_action(target, npc, state)
     end
+  end
+
+  defp perform_combat_action(nil, _target, _npc, state) do
+    {:update, %{state | target: nil, combat: false}}
+  end
+
+  defp perform_combat_action(event, target, npc, state) do
+    action = event.action
+    effects = npc.stats |> Effect.calculate(action.effects)
+
+    Character.apply_effects(
+      target,
+      effects,
+      {:npc, npc},
+      Format.skill_usee(action.text, user: {:npc, npc})
+    )
+
+    delay = round(Float.ceil(action.delay * 1000))
+    notify_delayed({"combat/tick"}, delay)
+
+    {:update, state}
   end
 
   @doc """

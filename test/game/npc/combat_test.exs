@@ -12,6 +12,10 @@ defmodule Game.NPC.CombatTest do
       %{weight_ten: weight_ten, weight_three: weight_three, events: [weight_ten, weight_three]}
     end
 
+    test "handles an empty list" do
+      assert is_nil(Combat.weighted_event([]))
+    end
+
     test "gets total size", %{events: events} do
       assert Combat.total_weights(events) == 13
     end

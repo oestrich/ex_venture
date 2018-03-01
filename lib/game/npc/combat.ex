@@ -9,6 +9,8 @@ defmodule Game.NPC.Combat do
   Select a weighted event from the list of events
   """
   @spec weighted_event([Event.t()]) :: Event.t()
+  def weighted_event([]), do: nil
+
   def weighted_event(events) do
     events
     |> total_weights()
