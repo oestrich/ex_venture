@@ -46,6 +46,12 @@ defmodule Web.Admin.SharedView do
   def more_next?(%{current: current, total: total}), do: total - current >= 4
 
   def help_tooltip(key) do
-    content_tag(:i, "", class: "fa fa-question-circle", data: [toggle: "tooltip"], title: Help.get(key, markdown: false)) 
+    content_tag(
+      :i,
+      "",
+      class: "fa fa-question-circle",
+      data: [toggle: "tooltip"],
+      title: Help.get(key, markdown: false)
+    )
   end
 end

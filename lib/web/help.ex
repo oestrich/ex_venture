@@ -14,7 +14,7 @@ defmodule Web.Help.Compiler do
   defp generate_gets(help_text) do
     help_text
     |> String.split("\n")
-    |> Enum.reject(& &1 == "")
+    |> Enum.reject(&(&1 == ""))
     |> Enum.map(&String.trim/1)
     |> convert_to_map()
     |> Enum.map(fn {key, val} ->
@@ -43,6 +43,7 @@ defmodule Web.Help.Compiler do
   end
 
   defp _convert([], map), do: map
+
   defp _convert([key | [val | lines]], map) do
     _convert(lines, Map.put(map, String.replace(key, ":", ""), val))
   end

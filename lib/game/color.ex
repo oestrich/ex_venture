@@ -19,7 +19,7 @@ defmodule Game.Color do
       "blue",
       "magenta",
       "cyan",
-      "white",
+      "white"
     ]
   end
 

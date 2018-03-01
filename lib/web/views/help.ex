@@ -6,7 +6,7 @@ defmodule Web.Views.Help do
 
   import Phoenix.HTML, only: [raw: 1]
 
-  def get(arg, [markdown: false]) do
+  def get(arg, markdown: false) do
     arg
     |> Web.Help.get()
   end

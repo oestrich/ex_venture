@@ -23,7 +23,7 @@ defmodule Web.Plug.LoadUser do
 
   defp _load_user(conn, nil, _opts), do: conn
 
-  defp _load_user(conn, user, [verify: false]) do
+  defp _load_user(conn, user, verify: false) do
     conn |> _assign_user(user)
   end
 
