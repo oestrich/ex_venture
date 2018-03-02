@@ -16,13 +16,15 @@ defmodule Data.Exit do
     belongs_to(:west, Room)
     belongs_to(:up, Room)
     belongs_to(:down, Room)
+    belongs_to(:in, Room)
+    belongs_to(:out, Room)
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:has_door, :north_id, :east_id, :south_id, :west_id, :up_id, :down_id])
+    |> cast(params, [:has_door, :north_id, :east_id, :south_id, :west_id, :up_id, :down_id, :in_id, :out_id])
     |> validate_required([:has_door])
     |> validate_direction()
     |> foreign_key_constraint(:north_id)
@@ -31,12 +33,16 @@ defmodule Data.Exit do
     |> foreign_key_constraint(:east_id)
     |> foreign_key_constraint(:up_id)
     |> foreign_key_constraint(:down_id)
+    |> foreign_key_constraint(:in_id)
+    |> foreign_key_constraint(:out_id)
     |> unique_constraint(:north_id)
     |> unique_constraint(:south_id)
     |> unique_constraint(:west_id)
     |> unique_constraint(:east_id)
     |> unique_constraint(:down_id)
     |> unique_constraint(:up_id)
+    |> unique_constraint(:in_id)
+    |> unique_constraint(:out_id)
   end
 
   defp validate_direction(changeset) do
@@ -48,6 +54,9 @@ defmodule Data.Exit do
         changeset
 
       [:down_id, :up_id] ->
+        changeset
+
+      [:in_id, :out_id] ->
         changeset
 
       _ ->
@@ -70,10 +79,12 @@ defmodule Data.Exit do
       |> or_where([e], e.west_id == ^room.id)
       |> or_where([e], e.up_id == ^room.id)
       |> or_where([e], e.down_id == ^room.id)
+      |> or_where([e], e.in_id == ^room.id)
+      |> or_where([e], e.out_id == ^room.id)
 
     query =
       case Keyword.get(opts, :preload) do
-        true -> query |> preload([:north, :south, :east, :west, :up, :down])
+        true -> query |> preload([:north, :south, :east, :west, :up, :down, :in, :out])
         _ -> query
       end
 
@@ -112,6 +123,16 @@ defmodule Data.Exit do
       :up_id
       iex> Data.Exit.opposite_id(:down)
       :up_id
+
+      iex> Data.Exit.opposite_id("in")
+      :out_id
+      iex> Data.Exit.opposite_id(:in)
+      :out_id
+
+      iex> Data.Exit.opposite_id("out")
+      :in_id
+      iex> Data.Exit.opposite_id(:out)
+      :in_id
   """
   @spec opposite_id(String.t() | atom) :: atom
   def opposite_id("north"), do: :south_id
@@ -120,12 +141,16 @@ defmodule Data.Exit do
   def opposite_id("west"), do: :east_id
   def opposite_id("up"), do: :down_id
   def opposite_id("down"), do: :up_id
+  def opposite_id("in"), do: :out_id
+  def opposite_id("out"), do: :in_id
   def opposite_id(:north), do: :south_id
   def opposite_id(:east), do: :west_id
   def opposite_id(:south), do: :north_id
   def opposite_id(:west), do: :east_id
   def opposite_id(:up), do: :down_id
   def opposite_id(:down), do: :up_id
+  def opposite_id(:in), do: :out_id
+  def opposite_id(:out), do: :in_id
 
   @doc """
   Get an exit in a direction

@@ -22,6 +22,8 @@ defmodule Game.Command.Move do
       {"west", ["w"]},
       {"up", ["u"]},
       {"down", ["d"]},
+      "in",
+      "out",
       "open",
       "close"
     ],
@@ -34,7 +36,7 @@ defmodule Game.Command.Move do
 
   def help(:full) do
     """
-    Move around rooms.
+    Move around rooms. You can move where you see an exit when looking.
 
     Example:
     [ ] > {white}move west{/white}
@@ -68,6 +70,8 @@ defmodule Game.Command.Move do
   def parse("u"), do: {:up}
   def parse("down"), do: {:down}
   def parse("d"), do: {:down}
+  def parse("in"), do: {:in}
+  def parse("out"), do: {:out}
 
   def parse("open " <> direction) do
     case parse(direction) do
@@ -139,6 +143,24 @@ defmodule Game.Command.Move do
 
     case room |> Exit.exit_to(:down) do
       room_exit = %{down_id: id} -> maybe_move_to(state, id, room_exit)
+      _ -> {:error, :no_exit}
+    end
+  end
+
+  def run({:in}, state = %{save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+
+    case room |> Exit.exit_to(:in) do
+      room_exit = %{in_id: id} -> maybe_move_to(state, id, room_exit)
+      _ -> {:error, :no_exit}
+    end
+  end
+
+  def run({:out}, state = %{save: %{room_id: room_id}}) do
+    room = @room.look(room_id)
+
+    case room |> Exit.exit_to(:out) do
+      room_exit = %{out_id: id} -> maybe_move_to(state, id, room_exit)
       _ -> {:error, :no_exit}
     end
   end

@@ -44,6 +44,12 @@
             <%= if @direction == "down" do %>
               <%= render("_fields.html", f: f, room: @room, room_field: :up_id, select_field: :down_id) %>
             <% end %>
+            <%= if @direction == "in" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :out_id, select_field: :in_id) %>
+            <% end %>
+            <%= if @direction == "out" do %>
+              <%= render("_fields.html", f: f, room: @room, room_field: :in_id, select_field: :out_id) %>
+            <% end %>
 
             <div class="form-group">
               <%= label f, :has_door %>
