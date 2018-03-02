@@ -58,6 +58,9 @@ room.items:
 room.zone_exit:
   A room that is a zone exit will always show up in the room selection box when creating exits, not just for the current zone.
 
+skill.white_list_effects:
+  Effects in this whitelist will be calculated when using the skill. Anything not in the list will be filtered out.
+
 zone.name:
   This will be seen in the player's map.
 

@@ -18,6 +18,7 @@ defmodule Data.Skill do
     field(:user_text, :string)
     field(:usee_text, :string)
     field(:command, :string)
+    field(:white_list_effects, {:array, :string}, default: [])
     field(:effects, {:array, Effect})
     field(:tags, {:array, :string}, default: [])
     field(:is_global, :boolean, default: false)
@@ -38,6 +39,7 @@ defmodule Data.Skill do
       :user_text,
       :usee_text,
       :command,
+      :white_list_effects,
       :effects,
       :tags,
       :is_global
@@ -50,10 +52,32 @@ defmodule Data.Skill do
       :user_text,
       :usee_text,
       :command,
+      :white_list_effects,
       :effects,
       :tags,
       :is_global
     ])
     |> validate_effects()
+    |> validate_white_list()
+  end
+
+  defp validate_white_list(changeset) do
+    case get_field(changeset, :white_list_effects) do
+      nil ->
+        changeset
+
+      white_list_effects ->
+        _validate_white_list(changeset, white_list_effects)
+    end
+  end
+
+  defp _validate_white_list(changeset, white_list_effects) do
+    case Enum.all?(white_list_effects, & &1 in Effect.types()) do
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :white_list_effects, "must all be a real type")
+    end
   end
 end

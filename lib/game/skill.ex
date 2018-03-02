@@ -47,4 +47,14 @@ defmodule Game.Skill do
     cost = 1000 - 100 * (save.level - skill.level)
     Enum.max([cost, 100])
   end
+
+  @doc """
+  Filter out effects that don't match the skill's whitelist
+  """
+  @spec filter_effects([Effect.t()], Skill.t()) :: [Effect.t()]
+  def filter_effects(effects, skill) do
+    Enum.filter(effects, fn effect ->
+      effect.kind in skill.white_list_effects
+    end)
+  end
 end

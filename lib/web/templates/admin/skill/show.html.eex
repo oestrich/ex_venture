@@ -68,6 +68,19 @@
                 <td><span class="label label-default"><%= @skill.is_global %></span></td>
               </tr>
               <tr>
+                <th>
+                  White Listed Effect Types
+                  <%= SharedView.help_tooltip("skill.white_list_effects") %>
+                </th>
+                <td>
+                  <ul>
+                    <%= Enum.map(@skill.white_list_effects, fn effect -> %>
+                      <li><code><%= effect %></code></li>
+                    <% end) %>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
                 <th>Effects</th>
                 <td><pre><%= @skill |> json_field(:effects) %></pre></td>
               </tr>
