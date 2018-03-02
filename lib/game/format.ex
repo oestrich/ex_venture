@@ -344,7 +344,7 @@ defmodule Game.Format do
   end
 
   def maybe_items(room, items) do
-    case length(items) == 0 and room.currency == 0 do
+    case Enum.empty?(items) and room.currency == 0 do
       true ->
         ""
 
