@@ -70,6 +70,19 @@ defmodule Game.Session.Character do
     end
   end
 
+  def notify(state, {"currency/dropped", character, currency}) do
+    case Character.who(character) == {:user, state.user.id} do
+      true ->
+        state
+
+      false ->
+        state.socket
+        |> @socket.echo("#{Format.name(character)} dropped #{Format.currency(currency)}")
+
+        state
+    end
+  end
+
   def notify(state = %{save: save}, {"currency/receive", character, currency}) do
     state.socket
     |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}")
@@ -77,6 +90,19 @@ defmodule Game.Session.Character do
     save = %{save | currency: save.currency + currency}
     user = %{state.user | save: save}
     %{state | user: user, save: save}
+  end
+
+  def notify(state, {"item/dropped", character, item}) do
+    case Character.who(character) == {:user, state.user.id} do
+      true ->
+        state
+
+      false ->
+        state.socket
+        |> @socket.echo("#{Format.name(character)} dropped #{Format.item_name(item)}")
+
+        state
+    end
   end
 
   def notify(state = %{save: save}, {"item/receive", character, instance}) do

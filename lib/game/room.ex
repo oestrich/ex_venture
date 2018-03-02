@@ -8,7 +8,6 @@ defmodule Game.Room do
   require Logger
 
   alias Data.Room
-  alias Game.Format
   alias Game.Items
   alias Game.Message
   alias Game.NPC
@@ -344,7 +343,7 @@ defmodule Game.Room do
           type: :room
         )
 
-        players |> echo_to_players(Format.dropped(who, item))
+        players |> inform_players({"item/dropped", who, item})
         {:noreply, Map.put(state, :room, room)}
 
       _ ->
@@ -360,7 +359,7 @@ defmodule Game.Room do
           type: :room
         )
 
-        players |> echo_to_players(who, Format.dropped(who, {:currency, amount}))
+        players |> inform_players({"currency/dropped", who, amount})
         {:noreply, Map.put(state, :room, room)}
 
       _ ->
@@ -386,22 +385,6 @@ defmodule Game.Room do
       :ok -> {:noreply, state}
       {:update, state} -> {:noreply, state}
     end
-  end
-
-  defp echo_to_players(players, {:user, user}, message) do
-    players
-    |> Enum.reject(& &1.id == user.id)
-    |> echo_to_players(message)
-  end
-
-  defp echo_to_players(players, _, message) do
-    echo_to_players(players, message)
-  end
-
-  defp echo_to_players(players, message) do
-    Enum.each(players, fn user ->
-      Session.echo(user, message)
-    end)
   end
 
   defp inform_players(players, action) do
