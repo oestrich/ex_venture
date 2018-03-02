@@ -28,6 +28,15 @@ defmodule Game.Command.Typo do
   @impl Game.Command
   def run(command, state)
 
+  def run({}, %{socket: socket}) do
+    socket
+    |> @socket.echo(
+      "Please provide a typo title. See {white}help typo{/white} for more information."
+    )
+
+    :ok
+  end
+
   def run({typo_title}, state = %{socket: socket}) do
     socket
     |> @socket.echo(
