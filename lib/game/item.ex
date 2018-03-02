@@ -5,6 +5,7 @@ defmodule Game.Item do
 
   alias Data.Item
   alias Game.Items
+  alias Game.Utility
 
   @doc """
   Determine if a lookup string matches the item
@@ -19,14 +20,14 @@ defmodule Game.Item do
       iex> Game.Item.matches_lookup?(%{name: "Short Sword", keywords: ["sword"]}, "sword")
       true
 
-      iex> Game.Item.matches_lookup?(%{name: "Short Sword", keywords: ["sword"]}, "short")
+      iex> Game.Item.matches_lookup?(%{name: "Short Sword", keywords: ["sword"]}, "dagger")
       false
   """
   @spec matches_lookup?(Item.t(), String.t()) :: Item.t() | nil
   def matches_lookup?(item, lookup) do
     [item.name | item.keywords]
     |> Enum.map(&String.downcase/1)
-    |> Enum.any?(&(&1 == lookup))
+    |> Enum.any?(&Utility.matches?(&1, lookup))
   end
 
   @doc """
