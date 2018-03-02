@@ -66,6 +66,22 @@
         </div>
       </div>
     </div>
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= if @room |> has_exit?(:out) do %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :out).id)) do %>
+              <%= display_exit(@room, :out) %>
+            <% end %>
+            <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :out).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
+              <i class="fa fa-times"></i>
+            <% end %>
+          <% else %>
+            <%= link("Add Exit (Out)", to: room_exit_path(@conn, :new, @room.id, direction: :out)) %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="row">
     <div class="col-md-4">
@@ -84,7 +100,23 @@
         </div>
       </div>
     </div>
-    <div class="col-md-offset-4 col-md-4">
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= if @room |> has_exit?(:in) do %>
+            <%= link(to: room_path(@conn, :show, get_exit(@room, :in).id)) do %>
+              <%= display_exit(@room, :in) %>
+            <% end %>
+            <%= link(to: exit_path(@conn, :delete, Exit.exit_to(@room, :in).id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
+              <i class="fa fa-times"></i>
+            <% end %>
+          <% else %>
+            <%= link("Add Exit (In)", to: room_exit_path(@conn, :new, @room.id, direction: :in)) %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
       <div class="box">
         <div class="box-body">
           <%= if @room |> has_exit?(:east) do %>

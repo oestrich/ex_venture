@@ -9,7 +9,7 @@ defmodule Game.Command.Run do
   alias Game.Command.Move
   alias Game.Session.GMCP
 
-  @direction_regex ~r/(?<count>\d+)?(?<direction>[neswud])/
+  @direction_regex ~r/(?<count>\d+)?(?<direction>[neswudio])/
   @continue_wait Application.get_env(:ex_venture, :game)[:continue_wait]
 
   commands(["run"])
@@ -115,4 +115,6 @@ defmodule Game.Command.Run do
   def _direction("w"), do: :west
   def _direction("u"), do: :up
   def _direction("d"), do: :down
+  def _direction("i"), do: :in
+  def _direction("o"), do: :out
 end
