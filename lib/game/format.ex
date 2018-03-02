@@ -343,10 +343,14 @@ defmodule Game.Format do
     |> template(%{name: npc_name(npc), status_line: npc_status(npc)})
   end
 
-  def maybe_items(_room, []), do: ""
-
   def maybe_items(room, items) do
-    "Items: #{items(room, items)}\n"
+    case length(items) == 0 and room.currency == 0 do
+      true ->
+        ""
+
+      false ->
+        "Items: #{items(room, items)}\n"
+    end
   end
 
   def items(room, items) when is_list(items) do

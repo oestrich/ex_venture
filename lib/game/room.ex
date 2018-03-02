@@ -390,7 +390,7 @@ defmodule Game.Room do
 
   defp echo_to_players(players, {:user, user}, message) do
     players
-    |> Enum.reject(fn {_, _, player} -> player.id == user.id end)
+    |> Enum.reject(& &1.id == user.id)
     |> echo_to_players(message)
   end
 
