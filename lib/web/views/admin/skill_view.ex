@@ -1,6 +1,7 @@
 defmodule Web.Admin.SkillView do
   use Web, :view
 
+  alias Data.Effect
   alias Web.Admin.SharedView
 
   import Ecto.Changeset

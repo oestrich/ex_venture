@@ -24,4 +24,16 @@ defmodule Data.SkillTest do
       assert changeset.errors[:effects]
     end
   end
+
+  describe "validates white list effects" do
+    test "real types are valid" do
+      changeset = %Skill{} |> Skill.changeset(%{white_list_effects: ["damage"]})
+      refute changeset.errors[:white_list_effects]
+    end
+
+    test "unknown types are invalid" do
+      changeset = %Skill{} |> Skill.changeset(%{white_list_effects: ["unknown"]})
+      assert changeset.errors[:white_list_effects]
+    end
+  end
 end

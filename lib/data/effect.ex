@@ -55,6 +55,19 @@ defmodule Data.Effect do
 
   @behaviour Ecto.Type
 
+  @doc """
+  A list of all types in the system.
+  """
+  def types() do
+    [
+      "damage",
+      "damage/over-time",
+      "damage/type",
+      "recover",
+      "stats",
+    ]
+  end
+
   @impl Ecto.Type
   def type, do: :map
 
