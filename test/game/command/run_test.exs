@@ -59,11 +59,11 @@ defmodule Game.Command.RunTest do
 
   describe "parsing run directions" do
     test "expand directions" do
-      assert Command.Run.parse_run("2en3s") == [:east, :east, :north, :south, :south, :south]
+      assert Command.Run.parse_run("2en3s1u2d") == [:east, :east, :north, :south, :south, :south, :up, :down, :down]
     end
 
     test "handles bad input" do
-      assert Command.Run.parse_run("2ed3s") == [:east, :east, :south, :south, :south]
+      assert Command.Run.parse_run("2ef3s") == [:east, :east, :south, :south, :south]
     end
 
     test "handles no directions" do
