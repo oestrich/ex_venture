@@ -5,6 +5,7 @@ defmodule Game.Command.Wear do
 
   use Game.Command
 
+  alias Data.Stats
   alias Game.Format
   alias Game.Item
   alias Game.Items
@@ -62,11 +63,13 @@ defmodule Game.Command.Wear do
   end
 
   def run({:remove, slot}, state = %{socket: socket}) do
-    case slot do
-      "chest" ->
-        :chest |> run_remove(state)
+    slots = Enum.map(Stats.slots(), &to_string/1)
 
-      _ ->
+    case slot in slots do
+      true ->
+        slot |> String.to_atom() |> run_remove(state)
+
+      false ->
         socket |> @socket.echo("Unknown armor slot")
         :ok
     end
@@ -111,11 +114,11 @@ defmodule Game.Command.Wear do
 
     case Map.has_key?(wearing, slot) do
       true ->
-        item = Items.item(wearing.chest)
-        {wearing, items} = remove(:chest, wearing, items)
+        item = Items.item(wearing[slot])
+        {wearing, items} = remove(slot, wearing, items)
         save = %{save | wearing: wearing, items: items}
 
-        socket |> @socket.echo("You removed #{item.name} from your chest")
+        socket |> @socket.echo("You removed #{item.name} from your #{slot}")
         {:update, Map.put(state, :save, save)}
 
       false ->

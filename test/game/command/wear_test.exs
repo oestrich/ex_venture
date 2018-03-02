@@ -96,7 +96,7 @@ defmodule Game.Command.WearTest do
 
     test "unknown slot", %{socket: socket} do
       save = %Save{items: [item_instance(1)], wearing: %{}}
-      :ok = Command.Wear.run({:remove, "finger"}, %{socket: socket, save: save})
+      :ok = Command.Wear.run({:remove, "hair"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Unknown armor slot), look)
