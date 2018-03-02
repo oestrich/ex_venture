@@ -10,6 +10,7 @@ defmodule Game.Command.Target do
   alias Data.User
   alias Game.Character
   alias Game.Session.GMCP
+  alias Game.Utility
 
   @must_be_alive true
 
@@ -159,6 +160,6 @@ defmodule Game.Command.Target do
   """
   @spec find_target_in_list([map], String.t()) :: String.t()
   def find_target_in_list(list, name) do
-    Enum.find(list, &(String.downcase(&1.name) == String.downcase(name)))
+    Enum.find(list, &Utility.matches?(&1.name, name))
   end
 end

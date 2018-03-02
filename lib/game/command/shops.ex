@@ -7,8 +7,8 @@ defmodule Game.Command.Shops do
   use Game.Currency
   use Game.Shop
 
-  alias Data.Shop
   alias Game.Items
+  alias Game.Utility
 
   commands(["shops", "shop", "buy", "sell"], parse: false)
 
@@ -261,7 +261,7 @@ defmodule Game.Command.Shops do
   end
 
   defp find_shop(shops, shop_name) do
-    case shop = Enum.find(shops, fn shop -> Shop.matches?(shop, shop_name) end) do
+    case shop = Enum.find(shops, fn shop -> Utility.matches?(shop, shop_name) end) do
       nil ->
         {:error, :not_found}
 
