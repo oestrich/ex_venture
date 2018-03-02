@@ -105,6 +105,13 @@ let renderRoom = (channel, room) => {
 }
 
 /**
+ * Room.Heard module
+ */
+let roomHeard = (channel, data) => {
+  notifications.display(`${data.from.name}`, data.message);
+}
+
+/**
  * Room.Info module
  */
 let roomInfo = (channel, data) => {
@@ -165,6 +172,7 @@ let gmcp = {
   "Character": character,
   "Character.Vitals": characterVitals,
   "Mail.New": mailNew,
+  "Room.Heard": roomHeard,
   "Room.Info": roomInfo,
   "Room.Character.Enter": roomCharacterEnter,
   "Room.Character.Leave": roomCharacterLeave,

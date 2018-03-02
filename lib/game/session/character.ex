@@ -151,6 +151,7 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"room/heard", message}) do
+    state |> GMCP.room_heard(message)
     state.socket |> @socket.echo(message.formatted)
     state
   end
