@@ -26,7 +26,7 @@ defmodule Game.Command.SkillsTest do
       description: "Slash",
       user_text: "Slash at your {target}",
       usee_text: "You were slashed at",
-      effects: [],
+      effects: [%{kind: "damage", type: :slashing, amount: 0}],
     })
     insert_skill(slash)
 
