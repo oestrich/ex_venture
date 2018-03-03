@@ -26,7 +26,7 @@ defmodule Game.Format do
   def template(string, map) do
     map
     |> Enum.reduce(string, fn {key, val}, string ->
-      String.replace(string, "{#{key}}", val)
+      String.replace(string, "{#{key}}", to_string(val))
     end)
   end
 

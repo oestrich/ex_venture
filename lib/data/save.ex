@@ -18,6 +18,9 @@ defmodule Data.Save do
           currency: integer,
           skill_ids: [integer()],
           items: [Item.instance()],
+          config: %{
+            hints: boolean(),
+          },
           wearing: %{
             chest: integer
           },
@@ -29,6 +32,7 @@ defmodule Data.Save do
 
   defstruct [
     :version,
+    :config,
     :room_id,
     :channels,
     :level,
@@ -64,6 +68,7 @@ defmodule Data.Save do
       |> ensure(:channels, [])
       |> ensure(:currency, 0)
       |> ensure(:items, [])
+      |> atomize_config()
       |> atomize_stats()
       |> atomize_wearing()
       |> atomize_wielding()
@@ -79,6 +84,13 @@ defmodule Data.Save do
       _ -> save
     end
   end
+
+  defp atomize_config(save = %{config: config}) when config != nil do
+    config = for {key, val} <- config, into: %{}, do: {String.to_atom(key), val}
+    %{save | config: config}
+  end
+
+  defp atomize_config(save), do: save
 
   defp atomize_stats(save = %{stats: stats}) when stats != nil do
     stats = for {key, val} <- stats, into: %{}, do: {String.to_atom(key), val}
@@ -103,6 +115,7 @@ defmodule Data.Save do
 
   defp load_items(save = %{items: items, wearing: wearing, wielding: wielding})
        when is_list(items) do
+
     items =
       items
       |> Enum.map(fn item ->
@@ -144,6 +157,13 @@ defmodule Data.Save do
       true -> save |> _migrate()
       false -> save |> Map.put(:version, 1) |> _migrate()
     end
+  end
+
+  defp _migrate(save = %{version: 5}) do
+    save
+    |> Map.put(:config, %{hints: true})
+    |> Map.put(:version, 6)
+    |> _migrate()
   end
 
   defp _migrate(save = %{version: 4}) do
@@ -215,6 +235,7 @@ defmodule Data.Save do
   def valid?(save) do
     keys(save) == [
       :channels,
+      :config,
       :currency,
       :experience_points,
       :items,
@@ -227,7 +248,30 @@ defmodule Data.Save do
       :wearing,
       :wielding
     ] && valid_channels?(save) && valid_currency?(save) && valid_stats?(save) &&
-      valid_items?(save) && valid_room_id?(save) && valid_wearing?(save) && valid_wielding?(save)
+      valid_items?(save) && valid_room_id?(save) && valid_wearing?(save) && valid_wielding?(save) &&
+        valid_config?(save)
+  end
+
+  @doc """
+  Validate config are correct
+
+      iex> Data.Save.valid_config?(%{config: %{hints: true}})
+      true
+
+      iex> Data.Save.valid_config?(%{config: %{hints: false}})
+      true
+
+      iex> Data.Save.valid_config?(%{config: [:bad]})
+      false
+
+      iex> Data.Save.valid_config?(%{config: :anything})
+      false
+  """
+  @spec valid_config?(Save.t()) :: boolean()
+  def valid_config?(save)
+
+  def valid_config?(%{config: config}) do
+    is_map(config) && keys(config) == [:hints] && is_boolean(config.hints)
   end
 
   @doc """

@@ -122,7 +122,7 @@ defmodule Game.Command.PickUp do
         )
 
         save = %{save | items: [instance | save.items]}
-        socket |> @socket.echo("You picked up the #{item.name}")
+        socket |> @socket.echo("You picked up the #{Format.item_name(item)}")
         {:update, Map.put(state, :save, save)}
 
       _ ->
