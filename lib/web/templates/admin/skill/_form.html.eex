@@ -32,6 +32,13 @@
       </div>
 
       <div class="form-group">
+        <%= label f, :cooldown_time %>
+        <%= number_input f, :cooldown_time, class: "form-control" %>
+        <%= error_tag f, :cooldown_time %>
+        <span class="help-block"><%= Help.get("skill.cooldown_time") %></span>
+      </div>
+
+      <div class="form-group">
         <%= label f, :description %>
         <%= textarea f, :description, class: "form-control", rows: 5 %>
         <%= error_tag f, :description %>

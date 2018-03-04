@@ -18,6 +18,7 @@ defmodule Data.Skill do
     field(:user_text, :string)
     field(:usee_text, :string)
     field(:command, :string)
+    field(:cooldown_time, :integer, default: 3000)
     field(:white_list_effects, {:array, :string}, default: [])
     field(:effects, {:array, Effect})
     field(:tags, {:array, :string}, default: [])
@@ -39,6 +40,7 @@ defmodule Data.Skill do
       :user_text,
       :usee_text,
       :command,
+      :cooldown_time,
       :white_list_effects,
       :effects,
       :tags,
@@ -52,6 +54,7 @@ defmodule Data.Skill do
       :user_text,
       :usee_text,
       :command,
+      :cooldown_time,
       :white_list_effects,
       :effects,
       :tags,
@@ -59,6 +62,7 @@ defmodule Data.Skill do
     ])
     |> validate_effects()
     |> validate_white_list()
+    |> validate_number(:cooldown_time, greater_than_or_equal_to: 0)
   end
 
   defp validate_white_list(changeset) do

@@ -48,6 +48,13 @@
                 <td>"<%= @skill.command %>"</td>
               </tr>
               <tr>
+                <th>
+                  Cool Down Time
+                  <%= SharedView.help_tooltip("skill.cooldown_time") %>
+                </th>
+                <td><%= @skill.cooldown_time %>ms</td>
+              </tr>
+              <tr>
                 <th>Description</th>
                 <td><%= @skill.description %></td>
               </tr>
