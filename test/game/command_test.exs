@@ -194,7 +194,7 @@ defmodule Game.CommandTest do
     end
 
     test "bug", %{user: user} do
-      assert %Command{module: Command.Bug, args: {"a bug title"}} = Command.parse("bug a bug title", user)
+      assert %Command{module: Command.Bug, args: {:new, "a bug title"}} = Command.parse("bug a bug title", user)
     end
 
     test "typo", %{user: user} do

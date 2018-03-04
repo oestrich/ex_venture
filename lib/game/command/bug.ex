@@ -8,8 +8,9 @@ defmodule Game.Command.Bug do
 
   alias Data.Bug
   alias Data.Repo
+  alias Game.Bugs
 
-  commands(["bug"])
+  commands(["bugs", "bug"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Bug"
@@ -26,9 +27,44 @@ defmodule Game.Command.Bug do
   end
 
   @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Bug.parse("bugs")
+      {:list}
+
+      iex> Game.Command.Bug.parse("bug my title")
+      {:new, "my title"}
+
+      iex> Game.Command.Bug.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  @spec parse(String.t()) :: {any()}
+  def parse(command)
+  def parse("bugs"), do: {:list}
+  def parse("bugs read " <> id), do: {:read, id}
+  def parse("bug read " <> id), do: {:read, id}
+  def parse("bug " <> title), do: {:new, title}
+  def parse("bug"), do: {:unknown}
+
+  @impl Game.Command
   def run(command, state)
 
-  def run({bug_title}, state = %{socket: socket}) do
+  def run({:list}, state) do
+    bugs = Bugs.reported_by(state.user)
+    state.socket |> @socket.echo(Format.list_bugs(bugs))
+  end
+
+  def run({:read, id}, state) do
+    case Bugs.get(state.user, id) do
+      {:error, :not_found} ->
+        state.socket |> @socket.echo("Bug ##{id} not found")
+      {:ok, bug} ->
+        state.socket |> @socket.echo(Format.show_bug(bug))
+    end
+  end
+
+  def run({:new, bug_title}, state = %{socket: socket}) do
     socket
     |> @socket.echo(
       "Please enter in any more information you have (an empty new line will finish entering text): "
@@ -42,7 +78,7 @@ defmodule Game.Command.Bug do
     {:editor, __MODULE__, Map.put(state, :commands, commands)}
   end
 
-  def run({}, %{socket: socket}) do
+  def run({:unknown}, %{socket: socket}) do
     socket
     |> @socket.echo(
       "Please provide a bug title. See {white}help bug{/white} for more information."

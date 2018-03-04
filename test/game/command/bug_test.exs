@@ -1,5 +1,7 @@
 defmodule Game.Command.BugTest do
   use Data.ModelCase
+  doctest Game.Command.Bug
+
   import Ecto.Query
 
   alias Game.Command.Bug
@@ -8,48 +10,75 @@ defmodule Game.Command.BugTest do
   @socket Test.Networking.Socket
 
   setup do
-    @socket.clear_messages
+    @socket.clear_messages()
     %{socket: :socket}
   end
 
-  test "creating a new bug", %{socket: socket} do
-    {:editor, Bug, state} = Bug.run({"title"}, %{socket: socket})
+  describe "viewing a list of your bugs" do
+    setup do
+      user = create_user(%{name: "user", password: "password"})
+      %{state: %{socket: :socket, user: user, save: user.save}}
+    end
 
-    assert state.commands.bug.title == "title"
-    assert state.commands.bug.lines == []
+    test "shows all", %{state: state} do
+      create_bug(state.user, %{title: "my bug", description: "some extras"})
 
-    [{^socket, echo}] = @socket.get_echos()
-    assert Regex.match?(~r(enter in any more), echo)
+      :ok = Bug.run({:list}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(my bug), echo)
+    end
+
+    test "view a single bug", %{state: state} do
+      bug = create_bug(state.user, %{title: "my bug", description: "some extras"})
+
+      :ok = Bug.run({:read, to_string(bug.id)}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(my bug), echo)
+    end
   end
 
-  test "add lines together in the editor", %{socket: socket} do
-    state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: %{lines: []}}}
-    {:update, state} = Bug.editor({:text, "line"}, state)
-    assert state.commands.bug.lines == ["line"]
-  end
+  describe "documenting a bug" do
+    test "creating a new bug", %{socket: socket} do
+      {:editor, Bug, state} = Bug.run({:new, "title"}, %{socket: socket})
 
-  test "complete the editor creates a bug", %{socket: socket} do
-    user = create_user(%{name: "user", password: "password"})
+      assert state.commands.bug.title == "title"
+      assert state.commands.bug.lines == []
 
-    bug = %{title: "A bug", lines: ["line 1", "line 2"]}
-    state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: bug}, user: user}
-    {:update, state} = Bug.editor(:complete, state)
+      [{^socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(enter in any more), echo)
+    end
 
-    assert state.commands == %{}
+    test "add lines together in the editor", %{socket: socket} do
+      state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: %{lines: []}}}
+      {:update, state} = Bug.editor({:text, "line"}, state)
+      assert state.commands.bug.lines == ["line"]
+    end
 
-    assert Data.Bug |> select([b], count(b.id)) |> Repo.one == 1
-  end
+    test "complete the editor creates a bug", %{socket: socket} do
+      user = create_user(%{name: "user", password: "password"})
 
-  test "complete the editor creates a bug - a bug with bugs", %{socket: socket} do
-    bug = %{title: "A bug", lines: ["line 1", "line 2"]}
-    state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: bug}, user: %{id: -1}}
-    {:update, state} = Bug.editor(:complete, state)
+      bug = %{title: "A bug", lines: ["line 1", "line 2"]}
+      state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: bug}, user: user}
+      {:update, state} = Bug.editor(:complete, state)
 
-    assert state.commands == %{}
+      assert state.commands == %{}
 
-    assert Data.Bug |> select([b], count(b.id)) |> Repo.one == 0
-    [{^socket, echo}] = @socket.get_echos()
+      assert Data.Bug |> select([b], count(b.id)) |> Repo.one == 1
+    end
 
-    assert Regex.match?(~r(an issue), echo)
+    test "complete the editor creates a bug - a bug with bugs", %{socket: socket} do
+      bug = %{title: "A bug", lines: ["line 1", "line 2"]}
+      state = %State{socket: socket, state: "active", mode: "editor", commands: %{bug: bug}, user: %{id: -1}}
+      {:update, state} = Bug.editor(:complete, state)
+
+      assert state.commands == %{}
+
+      assert Data.Bug |> select([b], count(b.id)) |> Repo.one == 0
+      [{^socket, echo}] = @socket.get_echos()
+
+      assert Regex.match?(~r(an issue), echo)
+    end
   end
 end
