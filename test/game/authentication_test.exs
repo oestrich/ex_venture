@@ -15,6 +15,11 @@ defmodule Game.AuthenticationTest do
     assert Authentication.find_and_validate("user", password.password).id == user.id
   end
 
+  test "user is case insensitive", %{user: user} do
+    {:ok, password} = User.create_one_time_password(user)
+    assert Authentication.find_and_validate("uSer", password.password).id == user.id
+  end
+
   test "password is wrong" do
     assert Authentication.find_and_validate("user", "p@ssword") == {:error, :invalid}
   end
