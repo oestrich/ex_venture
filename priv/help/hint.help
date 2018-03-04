@@ -1,2 +1,5 @@
 quests.new:
   You can view this with {white}quest info {id}{/white}
+
+skills.cooldown_time:
+  You must wait {remaining_seconds} seconds longer to use this skill.

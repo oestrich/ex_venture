@@ -30,7 +30,7 @@ defmodule Game.Command.SkillsTest do
     })
     insert_skill(slash)
 
-    save = %{level: 1, stats: %{strength: 10, skill_points: 10}, wearing: %{}, skill_ids: [slash.id]}
+    save = %{base_save() | level: 1, stats: %{strength: 10, skill_points: 10}, wearing: %{}, skill_ids: [slash.id]}
     user = %{id: 10, name: "Player", save: save}
 
     state = %State{
@@ -145,7 +145,7 @@ defmodule Game.Command.SkillsTest do
 
     :ok = Skills.run({slash, "slash"}, state)
 
-    [{_socket, look}] = @socket.get_echos()
+    [{_socket, look} | _] = @socket.get_echos()
     assert Regex.match?(~r(not ready)i, look)
   end
 

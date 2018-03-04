@@ -9,6 +9,7 @@ defmodule Game.Command.Skills do
   alias Game.Command
   alias Game.Command.Target
   alias Game.Effect
+  alias Game.Hint
   alias Game.Item
   alias Game.Skill
   alias Game.Skills
@@ -148,12 +149,17 @@ defmodule Game.Command.Skills do
         skill
 
       last_used_at ->
-        case Timex.diff(Timex.now(), last_used_at, :milliseconds) > skill.cooldown_time do
+        difference = Timex.diff(Timex.now(), last_used_at, :milliseconds)
+        case difference > skill.cooldown_time do
           true ->
             skill
 
           false ->
+            remaining_seconds = Float.round((skill.cooldown_time - difference) / 1000, 1)
+
             state.socket |> @socket.echo("{white}#{skill.name}{/white} is not ready yet.")
+            Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
+
             :ok
         end
     end
