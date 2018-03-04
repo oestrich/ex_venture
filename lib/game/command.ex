@@ -83,6 +83,7 @@ defmodule Game.Command do
 
     # Alphabetical
     Command.Bug,
+    Command.Config,
     Command.Crash,
     Command.Drop,
     Command.Emote,

@@ -8,6 +8,7 @@ defmodule Game.Session.Character do
   alias Game.Character
   alias Game.Experience
   alias Game.Format
+  alias Game.Hint
   alias Game.Items
   alias Game.Quest
   alias Game.Session
@@ -157,10 +158,8 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"quest/new", quest}) do
-    Session.echo(
-      self(),
-      "You received a new quest, #{Format.quest_name(quest)} (#{quest.id})"
-    )
+    state.socket |> @socket.echo("You received a new quest, #{Format.quest_name(quest)} (#{quest.id})")
+    Hint.gate(state, "quests.new", id: quest.id)
 
     Quest.track_quest(state.user, quest.id)
 

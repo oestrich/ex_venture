@@ -26,7 +26,7 @@ defmodule Game.Format do
   def template(string, map) do
     map
     |> Enum.reduce(string, fn {key, val}, string ->
-      String.replace(string, "{#{key}}", val)
+      String.replace(string, "{#{key}}", to_string(val))
     end)
   end
 
@@ -922,5 +922,21 @@ defmodule Game.Format do
   def social_with_target(social, user, target) do
     "{green}#{social.with_target}{green}"
     |> template(%{user: player_name(user), target: name(target)})
+  end
+
+  @doc """
+  Format the user's config
+  """
+  @spec config(Save.t()) :: String.t()
+  def config(save) do
+    rows =
+      save.config
+      |> Enum.map(fn {key, value} ->
+        [String.capitalize(to_string(key)), value]
+      end)
+
+    rows = [["Name", "On?"] | rows]
+
+    Table.format("Config", rows, [20, 20])
   end
 end
