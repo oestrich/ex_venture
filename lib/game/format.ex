@@ -923,4 +923,20 @@ defmodule Game.Format do
     "{green}#{social.with_target}{green}"
     |> template(%{user: player_name(user), target: name(target)})
   end
+
+  @doc """
+  Format the user's config
+  """
+  @spec config(Save.t()) :: String.t()
+  def config(save) do
+    rows =
+      save.config
+      |> Enum.map(fn {key, value} ->
+        [String.capitalize(to_string(key)), value]
+      end)
+
+    rows = [["Name", "On?"] | rows]
+
+    Table.format("Config", rows, [20, 20])
+  end
 end

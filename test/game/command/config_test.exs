@@ -1,0 +1,62 @@
+defmodule Game.Command.ConfigTest do
+  use Data.ModelCase
+  doctest Game.Command.Config
+
+  alias Game.Command.Config
+
+  @socket Test.Networking.Socket
+
+  setup do
+    @socket.clear_messages()
+    user = create_user(%{name: "user", password: "password"})
+    %{state: %{socket: :socket, user: user, save: user.save}}
+  end
+
+  describe "listing config" do
+    test "view all config", %{state: state} do
+      {:paginate, echo, _state} = Config.run({:list}, state)
+
+      assert Regex.match?(~r/hints/i, echo)
+    end
+  end
+
+  describe "config on" do
+    test "set to true", %{state: state} do
+      state = %{state | save: %{state.save | config: %{hints: false}}}
+
+      {:update, %{save: save}} = Config.run({:on, "hints"}, state)
+
+      assert save.config.hints
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/on/, echo)
+    end
+
+    test "the key is not found - skips", %{state: state} do
+      :ok = Config.run({:on, "missing"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/unknown/i, echo)
+    end
+  end
+
+  describe "config off" do
+    test "set to false", %{state: state} do
+      state = %{state | save: %{state.save | config: %{hints: true}}}
+
+      {:update, %{save: save}} = Config.run({:off, "hints"}, state)
+
+      refute save.config.hints
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/off/, echo)
+    end
+
+    test "the key is not found - skips", %{state: state} do
+      :ok = Config.run({:off, "missing"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/unknown/i, echo)
+    end
+  end
+end
