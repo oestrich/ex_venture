@@ -22,6 +22,7 @@ defmodule Game.Session.State do
   - `:regen` - Regen timestamps
   - `:reply_to` - User who the player should respond to
   - `:commands` - Temporary command storage, for continuing, editing, etc
+  - `:skills` - Similar to `:commands`, but for skills (last used at)
   - `:continuous_effects` - Continuous effects that the user has, list
   """
   @enforce_keys [:socket, :state, :mode]
@@ -37,6 +38,7 @@ defmodule Game.Session.State do
     :regen,
     :reply_to,
     :commands,
+    :skills,
     mode: "comands",
     continuous_effects: [],
     stats: %SessionStats{}

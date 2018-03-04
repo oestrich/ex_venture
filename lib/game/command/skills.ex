@@ -123,17 +123,43 @@ defmodule Game.Command.Skills do
         :ok
 
       target ->
-        skill |> use_skill(target, state)
+        skill
+        |> check_skill_level(state)
+        |> check_cooldown(state)
+        |> use_skill(target, state)
     end
   end
 
-  defp use_skill(%{level: skill_level}, _traget, state = %{save: %{level: player_level}})
-       when skill_level > player_level do
-    %{socket: socket} = state
-    socket |> @socket.echo("You are not high enough level to use this skill.")
-    :ok
+  defp check_skill_level(skill, state = %{save: save}) do
+    case skill.level > save.level do
+      true ->
+        state.socket |> @socket.echo("You are not high enough level to use this skill.")
+        :ok
+
+      false ->
+        skill
+    end
   end
 
+  defp check_cooldown(:ok, _state), do: :ok
+  defp check_cooldown(skill, state = %{skills: skills}) do
+    case Map.get(skills, skill.id) do
+      nil ->
+        skill
+
+      last_used_at ->
+        case Timex.diff(Timex.now(), last_used_at, :milliseconds) > skill.cooldown_time do
+          true ->
+            skill
+
+          false ->
+            state.socket |> @socket.echo("{white}#{skill.name}{/white} is not ready yet.")
+            :ok
+        end
+    end
+  end
+
+  defp use_skill(:ok, _target, _state), do: :ok
   defp use_skill(skill, target, state) do
     %{socket: socket, user: user, save: save = %{stats: stats}} = state
 
@@ -159,6 +185,8 @@ defmodule Game.Command.Skills do
         )
 
         socket |> @socket.echo(Format.skill_user(skill, effects, target))
+
+        state = state |> set_timeout(skill)
 
         {:update, %{state | save: save}}
 
@@ -223,5 +251,11 @@ defmodule Game.Command.Skills do
       nil -> nil
       user -> {:user, user}
     end
+  end
+
+  defp set_timeout(state, skill) do
+    Process.send_after(self(), {:skill, :ready, skill}, skill.cooldown_time)
+    skills = Map.put(state.skills, skill.id, Timex.now())
+    %{state | skills: skills}
   end
 end

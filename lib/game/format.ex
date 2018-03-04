@@ -704,6 +704,17 @@ defmodule Game.Format do
   end
 
   @doc """
+  Format a skill name, white
+
+    iex> Game.Format.skill_name(%{name: "Slash"})
+    "{white}Slash{/white}"
+  """
+  @spec skill_name(Skill.t()) :: String.t()
+  def skill_name(skill) do
+    "{white}#{skill.name}{/white}"
+  end
+
+  @doc """
   Format effects for display.
   """
   def effects([]), do: []

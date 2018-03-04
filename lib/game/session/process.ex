@@ -66,6 +66,7 @@ defmodule Game.Session.Process do
       regen: %{is_regenerating: false, count: 0},
       reply_to: nil,
       commands: %{},
+      skills: %{},
       stats: %SessionStats{}
     }
   end
@@ -276,6 +277,11 @@ defmodule Game.Session.Process do
   def handle_info({:continuous_effect, effect_id}, state) do
     Logger.debug(fn -> "Processing effect (#{effect_id})" end, type: :player)
     state = Effects.handle_continuous_effect(state, effect_id)
+    {:noreply, state}
+  end
+
+  def handle_info({:skill, :ready, skill}, state) do
+    state.socket |> @socket.echo("#{Format.skill_name(skill)} is ready.")
     {:noreply, state}
   end
 
