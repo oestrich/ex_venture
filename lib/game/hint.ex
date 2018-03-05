@@ -16,7 +16,7 @@ defmodule Game.Hint do
     |> Format.template(context)
   end
 
-  def gate(state, key, context) do
+  def gate(state, key, context \\ %{}) do
     case state.save.config.hints do
       true ->
         state.socket |> @socket.echo("{cyan}HINT{/cyan}: #{hint(key, context)}")

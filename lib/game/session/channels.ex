@@ -5,6 +5,7 @@ defmodule Game.Session.Channels do
 
   use Networking.Socket
 
+  alias Game.Hint
   alias Game.Session.GMCP
   alias Game.Session.State
 
@@ -51,6 +52,15 @@ defmodule Game.Session.Channels do
   def tell(state = %{socket: socket}, from, message) do
     socket |> @socket.echo(message.formatted)
     state |> GMCP.tell(from, message)
-    Map.put(state, :reply_to, from)
+
+    state
+    |> maybe_hint_tell()
+    |> Map.put(:reply_to, from)
   end
+
+  def maybe_hint_tell(state = %{reply_to: nil}) do
+    Hint.gate(state, "tells.new")
+    state
+  end
+  def maybe_hint_tell(state), do: state
 end
