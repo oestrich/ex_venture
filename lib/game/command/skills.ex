@@ -155,7 +155,7 @@ defmodule Game.Command.Skills do
             skill
 
           false ->
-            remaining_seconds = Float.round((skill.cooldown_time - difference) / 1000, 1)
+            remaining_seconds = round((skill.cooldown_time - difference) / 1000)
 
             state.socket |> @socket.echo("{white}#{skill.name}{/white} is not ready yet.")
             Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
