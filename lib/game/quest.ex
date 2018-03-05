@@ -10,6 +10,7 @@ defmodule Game.Quest do
   alias Data.QuestStep
   alias Data.Repo
   alias Data.User
+  alias Game.Item
   alias Game.Session
 
   @doc """
@@ -96,7 +97,8 @@ defmodule Game.Quest do
         Map.get(quest_progress.progress, step.id, 0)
 
       "item/have" ->
-        save.items
+        save
+        |> Item.all_items()
         |> Enum.filter(fn item ->
           item.id == step.item_id
         end)

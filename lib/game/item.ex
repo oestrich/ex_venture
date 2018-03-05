@@ -129,4 +129,20 @@ defmodule Game.Item do
   end
 
   defp ensure_amount(instance, _item), do: instance
+
+  @doc """
+  Get all items on a player
+  """
+  @spec all_items(Save.t()) :: [Item.instance()]
+  def all_items(save) do
+    wearing =
+      save.wearing
+      |> Enum.map(fn {_slot, instance} -> instance end)
+
+    wielding =
+      save.wielding
+      |> Enum.map(fn {_slot, instance} -> instance end)
+
+    save.items ++ wearing ++ wielding
+  end
 end

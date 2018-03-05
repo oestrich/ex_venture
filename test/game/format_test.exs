@@ -247,7 +247,7 @@ defmodule Game.FormatTest do
       }
 
       progress = %{status: "active", progress: %{step1.id => 2}, quest: quest}
-      save = %{items: [%{id: potion.id}, %{id: potion.id}]}
+      save = %{items: [%{id: potion.id}, %{id: potion.id}], wearing: %{}, wielding: %{}}
 
       %{quest: quest, progress: progress, save: save}
     end

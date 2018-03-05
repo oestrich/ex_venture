@@ -1,6 +1,5 @@
 defmodule Game.ItemTest do
-  use ExUnit.Case
-  import Test.ItemsHelper
+  use Data.ModelCase
   doctest Game.Item
 
   alias Game.Item
@@ -30,6 +29,18 @@ defmodule Game.ItemTest do
     test "load item effects from a player's save - empty" do
       assert Item.effects_from_wearing(%{}) == []
       assert Item.effects_from_wielding(%{}) == []
+    end
+  end
+
+  describe "fetching all items on a user" do
+    test "pulls from items, wielding, and wearing" do
+      save = %{
+        items: [item_instance(1)],
+        wearing: %{chest: item_instance(2)},
+        wielding: %{right: item_instance(3)},
+      }
+
+      assert [%{id: 1}, %{id: 2}, %{id: 3}] = Item.all_items(save)
     end
   end
 end

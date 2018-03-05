@@ -84,7 +84,7 @@ defmodule Game.QuestTest do
     test "item/have - no progress on a step yet" do
       step = %QuestStep{type: "item/have", item_id: 1}
       progress = %QuestProgress{progress: %{}}
-      save = %{items: []}
+      save = %{items: [], wearing: %{}, wielding: %{}}
 
       assert Quest.current_step_progress(step, progress, save) == 0
     end
@@ -92,9 +92,9 @@ defmodule Game.QuestTest do
     test "item/have - progress started" do
       step = %QuestStep{id: 1, type: "item/have", item_id: 1}
       progress = %QuestProgress{progress: %{}}
-      save = %{items: [item_instance(1)]}
+      save = %{items: [item_instance(1)], wearing: %{chest: item_instance(1)}, wielding: %{}}
 
-      assert Quest.current_step_progress(step, progress, save) == 1
+      assert Quest.current_step_progress(step, progress, save) == 2
     end
 
     test "npc/kill - no progress on a step yet" do
