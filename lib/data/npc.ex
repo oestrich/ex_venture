@@ -22,8 +22,8 @@ defmodule Data.NPC do
     field(:script, {:array, Script.Line})
     field(:notes, :string)
     field(:tags, {:array, :string}, default: [])
-    field(:status_line, :string, default: "{name} is here.")
-    field(:description, :string, default: "{status_line}")
+    field(:status_line, :string, default: "[name] is here.")
+    field(:description, :string, default: "[status_line]")
     field(:is_quest_giver, :boolean, default: false)
 
     field(:is_trainer, :boolean, default: false)
@@ -108,9 +108,9 @@ defmodule Data.NPC do
   end
 
   defp validate_status_line_includes_name(changeset) do
-    case Regex.match?(~r/{name}/, get_field(changeset, :status_line)) do
+    case Regex.match?(~r/[name]/, get_field(changeset, :status_line)) do
       true -> changeset
-      false -> add_error(changeset, :status_line, "must include `{name}`")
+      false -> add_error(changeset, :status_line, "must include `[name]`")
     end
   end
 

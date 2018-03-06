@@ -20,13 +20,13 @@ defmodule Game.Format do
   @doc """
   Template a string
 
-      iex> Game.Format.template("{name} says hello", %{name: "Player"})
+      iex> Game.Format.template("[name] says hello", %{name: "Player"})
       "Player says hello"
   """
   def template(string, map) do
     map
     |> Enum.reduce(string, fn {key, val}, string ->
-      String.replace(string, "{#{key}}", to_string(val))
+      String.replace(string, "[#{key}]", to_string(val))
     end)
   end
 
@@ -267,7 +267,7 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", status_line: "{name} is here."}]})
+      iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", status_line: "[name] is here."}]})
       "{player}Mordred{/player} is here. {npc}Arthur{/npc} is here."
   """
   def who_is_here(room) do
@@ -298,7 +298,7 @@ defmodule Game.Format do
   """
   @spec player_full(User.t()) :: String.t()
   def player_full(user) do
-    "{name} is here."
+    "[name] is here."
     |> template(%{name: player_name(user)})
   end
 
@@ -307,7 +307,7 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.npcs(%{npcs: [%{name: "Mordred", status_line: "{name} is in the room."}, %{name: "Arthur", status_line: "{name} is here."}]})
+      iex> Game.Format.npcs(%{npcs: [%{name: "Mordred", status_line: "[name] is in the room."}, %{name: "Arthur", status_line: "[name] is here."}]})
       "{npc}Mordred{/npc} is in the room. {npc}Arthur{/npc} is here."
   """
   @spec npcs(Room.t()) :: String.t()
@@ -584,13 +584,16 @@ defmodule Game.Format do
       "Slash away"
 
       iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
-      iex> Game.Format.skill_user(%{user_text: "You slash away at {target}"}, effects, {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_user(%{user_text: "You slash away at [target]"}, effects, {:npc, %{name: "Bandit"}})
       "You slash away at {npc}Bandit{/npc}\\n10 slashing damage is dealt."
   """
   def skill_user(skill, effects, target)
 
   def skill_user(%{user_text: user_text}, skill_effects, target) do
-    user_text = user_text |> String.replace("{target}", target_name(target))
+    user_text =
+      user_text
+      |> template(%{target: target_name(target)})
+
     [user_text | effects(skill_effects)] |> Enum.join("\n")
   end
 
@@ -600,7 +603,7 @@ defmodule Game.Format do
       iex> Game.Format.skill_usee(%{usee_text: "Slash away"}, user: {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by {user}"}, user: {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by [user]"}, user: {:npc, %{name: "Bandit"}})
       "You were slashed at by {npc}Bandit{/npc}"
   """
   def skill_usee(skill, opts \\ [])
@@ -611,33 +614,37 @@ defmodule Game.Format do
 
   def skill_usee(usee_text, opts) do
     usee_text
-    |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
+    |> template(%{user: target_name(Keyword.get(opts, :user))})
   end
 
   @doc """
   Message for users of items
 
-      iex> Game.Format.user_item(%{name: "Potion", user_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
+      iex> Game.Format.user_item(%{name: "Potion", user_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def user_item(item, opts \\ []) do
     item.user_text
-    |> String.replace("{name}", item_name(item))
-    |> String.replace("{target}", target_name(Keyword.get(opts, :target)))
-    |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
+    |> template(%{
+      name: item_name(item),
+      target: target_name(Keyword.get(opts, :target)),
+      user: target_name(Keyword.get(opts, :user)),
+    })
   end
 
   @doc """
   Message for usees of items
 
-      iex> Game.Format.usee_item(%{name: "Potion", usee_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
+      iex> Game.Format.usee_item(%{name: "Potion", usee_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def usee_item(item, opts \\ []) do
     item.usee_text
-    |> String.replace("{name}", item_name(item))
-    |> String.replace("{target}", target_name(Keyword.get(opts, :target)))
-    |> String.replace("{user}", target_name(Keyword.get(opts, :user)))
+    |> template(%{
+      name: item_name(item),
+      target: target_name(Keyword.get(opts, :target)),
+      user: target_name(Keyword.get(opts, :user)),
+    })
   end
 
   @doc """

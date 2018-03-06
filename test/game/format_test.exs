@@ -68,7 +68,7 @@ defmodule Game.FormatTest do
         description: "A hallway",
         currency: 100,
         players: [%{name: "Player"}],
-        npcs: [%{name: "Bandit", status_line: "{name} is here."}],
+        npcs: [%{name: "Bandit", status_line: "[name] is here."}],
         exits: [%{south_id: 1}, %{west_id: 1}],
         shops: [%{name: "Hole in the Wall"}],
         features: [%{key: "log", short_description: "A log"}],
@@ -279,7 +279,7 @@ defmodule Game.FormatTest do
 
   describe "npc status line" do
     setup do
-      npc = %{name: "Guard", is_quest_giver: false, status_line: "{name} is here."}
+      npc = %{name: "Guard", is_quest_giver: false, status_line: "[name] is here."}
 
       %{npc: npc}
     end

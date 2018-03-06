@@ -49,8 +49,8 @@ defmodule Data.Item do
     field(:effects, {:array, Data.Effect})
     field(:cost, :integer, default: 0)
     field(:level, :integer, default: 1)
-    field(:user_text, :string, default: "You use {name} on {target}.")
-    field(:usee_text, :string, default: "{user} uses {name} on you.")
+    field(:user_text, :string, default: "You use [name] on [target].")
+    field(:usee_text, :string, default: "[user] uses [name] on you.")
     field(:is_usable, :boolean, default: false)
     field(:amount, :integer, default: 1)
 

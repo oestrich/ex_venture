@@ -1,5 +1,5 @@
 quests.new:
-  You can view this with {command}quest info {id}{/command}.
+  You can view this with {command}quest info [id]{/command}.
 
 skills.cooldown_time:
   You must wait {remaining_seconds} seconds longer to use this skill.
