@@ -48,14 +48,14 @@
         <%= label f, :user_text %>
         <%= text_input f, :user_text, class: "form-control" %>
         <%= error_tag f, :user_text %>
-        <span class="help-block">Available template variables: <code>{target}</code></span>
+        <span class="help-block">Available template variables: <code>[target]</code></span>
       </div>
 
       <div class="form-group">
         <%= label f, :usee_text %>
         <%= text_input f, :usee_text, class: "form-control" %>
         <%= error_tag f, :usee_text %>
-        <span class="help-block">Available template variables: <code>{user}</code></span>
+        <span class="help-block">Available template variables: <code>[user]</code></span>
       </div>
 
       <div class="form-group">
