@@ -21,10 +21,10 @@ defmodule Game.Command.Socials do
     #{help(:short)}
 
     View a list of available socials
-    [ ] > {white}socials{/white}
+    [ ] > {command}socials{/command}
 
     Look at what a social will send
-    [ ] > {white}social smile{/white}
+    [ ] > {command}social smile{/command}
     """
   end
 
@@ -127,7 +127,7 @@ defmodule Game.Command.Socials do
   defp social_not_found(state, social) do
     lines = [
       "\"#{social}\" could not be found.",
-      "Please make sure to enter the social command. See {white}socials{/white} for the list."
+      "Please make sure to enter the social command. See {command}socials{/command} for the list."
     ]
 
     state.socket |> @socket.echo(Format.wrap(Enum.join(lines, " ")))

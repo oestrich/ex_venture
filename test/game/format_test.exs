@@ -44,19 +44,19 @@ defmodule Game.FormatTest do
 
     test "displays wielding", %{currency: currency, wearing: wearing, wielding: wielding, items: items} do
       Regex.match?(~r/You are wielding/, Format.inventory(currency, wearing, wielding, items))
-      Regex.match?(~r/- a {cyan}Shield{\/cyan} in your left hand/, Format.inventory(currency, wearing, wielding, items))
-      Regex.match?(~r/- a {cyan}Short Sword{\/cyan} in your right hand/, Format.inventory(currency, wearing, wielding, items))
+      Regex.match?(~r/- a {item}Shield{\/item} in your left hand/, Format.inventory(currency, wearing, wielding, items))
+      Regex.match?(~r/- a {item}Short Sword{\/item} in your right hand/, Format.inventory(currency, wearing, wielding, items))
     end
 
     test "displays wearing", %{currency: currency, wearing: wearing, wielding: wielding, items: items} do
       Regex.match?(~r/You are wearing/, Format.inventory(currency, wearing, wielding, items))
-      Regex.match?(~r/- a {cyan}Leather Armor{\/cyan} on your chest/, Format.inventory(currency, wearing, wielding, items))
+      Regex.match?(~r/- a {item}Leather Armor{\/item} on your chest/, Format.inventory(currency, wearing, wielding, items))
     end
 
     test "displays items", %{currency: currency, wearing: wearing, wielding: wielding, items: items} do
       Regex.match?(~r/You are holding:/, Format.inventory(currency, wearing, wielding, items))
-      Regex.match?(~r/- {cyan}Potion x2{\/cyan}/, Format.inventory(currency, wearing, wielding, items))
-      Regex.match?(~r/- {cyan}Dagger{\/cyan}/, Format.inventory(currency, wearing, wielding, items))
+      Regex.match?(~r/- {item}Potion x2{\/item}/, Format.inventory(currency, wearing, wielding, items))
+      Regex.match?(~r/- {item}Dagger{\/item}/, Format.inventory(currency, wearing, wielding, items))
     end
   end
 
@@ -265,15 +265,15 @@ defmodule Game.FormatTest do
     end
 
     test "includes item collect step", %{progress: progress, save: save} do
-      assert Regex.match?(~r(Collect {cyan}Potion{/cyan} - 2/4), Format.quest_detail(progress, save))
+      assert Regex.match?(~r(Collect {item}Potion{/item} - 2/4), Format.quest_detail(progress, save))
     end
 
     test "includes item have step", %{progress: progress, save: save} do
-      assert Regex.match?(~r(Have {cyan}Potion{/cyan} - 2/5), Format.quest_detail(progress, save))
+      assert Regex.match?(~r(Have {item}Potion{/item} - 2/5), Format.quest_detail(progress, save))
     end
 
     test "includes npc step", %{progress: progress, save: save} do
-      assert Regex.match?(~r(Kill {yellow}Goblin{/yellow} - 2/3), Format.quest_detail(progress, save))
+      assert Regex.match?(~r(Kill {npc}Goblin{/npc} - 2/3), Format.quest_detail(progress, save))
     end
   end
 
@@ -285,14 +285,14 @@ defmodule Game.FormatTest do
     end
 
     test "templates the name in", %{npc: npc} do
-      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow}"
-      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} is here."
+      assert Format.npc_name_for_status(npc) == "{npc}Guard{/npc}"
+      assert Format.npc_status(npc) == "{npc}Guard{/npc} is here."
     end
 
     test "if a quest giver it includes a quest mark", %{npc: npc} do
       npc = %{npc | is_quest_giver: true}
-      assert Format.npc_name_for_status(npc) == "{yellow}Guard{/yellow} ({yellow}!{/yellow})"
-      assert Format.npc_status(npc) == "{yellow}Guard{/yellow} ({yellow}!{/yellow}) is here."
+      assert Format.npc_name_for_status(npc) == "{npc}Guard{/npc} ({yellow}!{/yellow})"
+      assert Format.npc_status(npc) == "{npc}Guard{/npc} ({yellow}!{/yellow}) is here."
     end
   end
 end

@@ -22,8 +22,8 @@ defmodule Game.Command.Drop do
     Drop an item into the room you are in.
 
     Example:
-    [ ] > {white}drop sword{/white}
-    [ ] > {white}drop 10 gold{/white}
+    [ ] > {command}drop sword{/command}
+    [ ] > {command}drop 10 gold{/command}
     """
   end
 
@@ -43,7 +43,7 @@ defmodule Game.Command.Drop do
   def run({}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "Please provide an item to drop. See {white}help drop{/white} for more information."
+      "Please provide an item to drop. See {command}help drop{/command} for more information."
     )
 
     :ok

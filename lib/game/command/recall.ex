@@ -16,7 +16,7 @@ defmodule Game.Command.Recall do
     """
     #{help(:short)}. Spends all movement points, and you must have >90% left.
 
-    [ ] > {white}recall{/white}
+    [ ] > {command}recall{/command}
     """
   end
 

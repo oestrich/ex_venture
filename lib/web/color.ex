@@ -26,6 +26,17 @@ defmodule Web.Color do
     |> String.replace("{map:green}", "<span class='map-green'>")
     |> String.replace("{map:grey}", "<span class='map-grey'>")
     |> String.replace("{map:light-grey}", "<span class='map-light-grey'>")
+    |> String.replace("{npc}", "<span class='yellow'>")
+    |> String.replace("{item}", "<span class='cyan'>")
+    |> String.replace("{player}", "<span class='blue'>")
+    |> String.replace("{skill}", "<span class='white'>")
+    |> String.replace("{quest}", "<span class='yellow'>")
+    |> String.replace("{room}", "<span class='green'>")
+    |> String.replace("{say}",  "<span class='green'>")
+    |> String.replace("{command}",  "<span class='white'>")
+    |> String.replace("{exit}",  "<span class='white'>")
+    |> String.replace("{shop}",  "<span class='magenta'>")
+    |> String.replace("{shop}",  "<span class='cyan'>")
     |> String.replace(~r/{\/[\w:-]+}/, "</span>")
   end
 end

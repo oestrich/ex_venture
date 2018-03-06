@@ -20,7 +20,7 @@ defmodule Game.Command.Train do
     #{help(:short)}.
 
     Example:
-    [ ] > {white}train list{/white}
+    [ ] > {command}train list{/command}
     """
   end
 

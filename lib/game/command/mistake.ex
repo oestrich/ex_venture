@@ -42,7 +42,7 @@ defmodule Game.Command.Mistake do
   def run({:auto_combat}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "There is no auto combat. Please read {white}help combat{/white} for more information."
+      "There is no auto combat. Please read {command}help combat{/command} for more information."
     )
 
     :ok

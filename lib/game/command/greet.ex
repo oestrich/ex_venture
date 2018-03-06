@@ -21,9 +21,9 @@ defmodule Game.Command.Greet do
     from them if they are a quest giver.
 
     Example:
-    [ ] > {white}greet guard{/white}
+    [ ] > {command}greet guard{/command}
 
-    [ ] > {white}talk to guard{/white}
+    [ ] > {command}talk to guard{/command}
     """
   end
 

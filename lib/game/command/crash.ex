@@ -16,7 +16,7 @@ defmodule Game.Command.Crash do
     #{help(:short)}
 
     Crash the room process you are in
-    [ ] > {white}crash room{/white}
+    [ ] > {command}crash room{/command}
     """
   end
 

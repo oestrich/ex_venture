@@ -20,13 +20,13 @@ defmodule Game.Command.Wear do
 
   def help(:full) do
     """
-    Put on a peice of armor, or remove it from a slot. {white}Wear{/white} takes the item
-    name, and {white}remove{/white} takes the slot or item name. You must be of the same
+    Put on a peice of armor, or remove it from a slot. {command}Wear{/command} takes the item
+    name, and {command}remove{/command} takes the slot or item name. You must be of the same
     or greater level than the item to wear it.
 
     Example:
-    [ ] > {white}wear chest piece{/white}
-    [ ] > {white}remove chest{/white}
+    [ ] > {command}wear chest piece{/command}
+    [ ] > {command}remove chest{/command}
     """
   end
 

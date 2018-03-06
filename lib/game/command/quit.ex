@@ -16,7 +16,7 @@ defmodule Game.Command.Quit do
     Leave the game and save.
 
     Example:
-    [ ] > {white}quit{/white}
+    [ ] > {command}quit{/command}
     """
   end
 

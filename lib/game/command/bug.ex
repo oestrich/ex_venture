@@ -22,7 +22,7 @@ defmodule Game.Command.Bug do
     be able to enter in multi line text for further information.
 
     Example:
-    [ ] > {white}bug title{/white}
+    [ ] > {command}bug title{/command}
     """
   end
 
@@ -81,7 +81,7 @@ defmodule Game.Command.Bug do
   def run({:unknown}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "Please provide a bug title. See {white}help bug{/white} for more information."
+      "Please provide a bug title. See {command}help bug{/command} for more information."
     )
 
     :ok

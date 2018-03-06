@@ -18,13 +18,13 @@ defmodule Game.Command.Config do
     #{help(:short)}
 
     View a list of configuration options
-    [ ] > {white}config{/white}
+    [ ] > {command}config{/command}
 
     Turn a config on:
-    [ ] > {white}config on hints{/white}
+    [ ] > {command}config on hints{/command}
 
     Turn a config off:
-    [ ] > {white}config off hints{/white}
+    [ ] > {command}config off hints{/command}
     """
   end
 

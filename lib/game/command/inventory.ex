@@ -20,7 +20,7 @@ defmodule Game.Command.Inventory do
     Listed will be items you are wielding, wearing, and holding.
 
     Example:
-    [ ] > {white}inventory{/white}
+    [ ] > {command}inventory{/command}
     """
   end
 

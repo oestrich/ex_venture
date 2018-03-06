@@ -19,7 +19,7 @@ defmodule Game.Command.Equipment do
     will only display items worn and wielded.
 
     Example:
-    [ ] > {white}equipment{/white}
+    [ ] > {command}equipment{/command}
     """
   end
 

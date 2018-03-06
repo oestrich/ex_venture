@@ -39,15 +39,15 @@ defmodule Game.Command.Move do
     Move around rooms. You can move where you see an exit when looking.
 
     Example:
-    [ ] > {white}move west{/white}
-    [ ] > {white}west{/white}
-    [ ] > {white}w{/white}
+    [ ] > {command}move west{/command}
+    [ ] > {command}west{/command}
+    [ ] > {command}w{/command}
 
     Open and close doors.
 
     Example:
-    [ ] > {white}open west{/white}
-    [ ] > {white}close west{/white}
+    [ ] > {command}open west{/command}
+    [ ] > {command}close west{/command}
     """
   end
 

@@ -20,7 +20,7 @@ defmodule Game.Command.Map do
     #{help(:short)}
 
     Example:
-    [ ] > {white}map{/white}
+    [ ] > {command}map{/command}
     """
   end
 

@@ -18,12 +18,12 @@ defmodule Game.Command.Tell do
   def help(:full) do
     """
     #{help(:short)}. You can reply quickly to the last tell
-    you received by using {white}reply{/white}.
+    you received by using {command}reply{/command}.
 
     Example:
-    [ ] > {white}tell player Hello{/white}
+    [ ] > {command}tell player Hello{/command}
 
-    [ ] > {white}reply Hello{/white}
+    [ ] > {command}reply Hello{/command}
     """
   end
 

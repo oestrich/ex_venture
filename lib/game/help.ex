@@ -5,6 +5,7 @@ defmodule Game.Help do
 
   require Logger
 
+  alias Game.Format
   alias Game.Help.Agent, as: HelpAgent
   alias Game.Skills
 
@@ -23,13 +24,13 @@ defmodule Game.Help do
       Game.Command.commands()
       |> Enum.map(fn command ->
         key = command.help(:topic)
-        "\t{white}#{key}{/white}: #{command.help(:short)}\n"
+        "\t{command}#{key}{/command}: #{command.help(:short)}\n"
       end)
 
     built_ins =
       HelpAgent.built_in()
       |> Enum.map(fn built_in ->
-        "\t{white}#{built_in.name}{/white}: #{built_in.short}\n"
+        "\t{command}#{built_in.name}{/command}: #{built_in.short}\n"
       end)
 
     topics =
@@ -153,8 +154,8 @@ defmodule Game.Help do
 
   defp format_skill_topic(skill) do
     """
-    {magenta}#{skill.name}{/magenta} - Level #{skill.level} - #{skill.points} sp
-    Command: {white}#{skill.command}{/white}
+    #{Format.skill_name(skill)} - Level #{skill.level} - #{skill.points} sp
+    Command: {command}#{skill.command}{/command}
 
     #{skill.description}
     """

@@ -23,20 +23,20 @@ defmodule Game.Command.Quest do
 
     Viewing all active quests:
 
-    [ ] > {white}quest{/white}
+    [ ] > {command}quest{/command}
 
     View the requirements for a quest:
 
-    [ ] > {white}quest show 1{/white}
-    [ ] > {white}quest info 1{/white}
+    [ ] > {command}quest show 1{/command}
+    [ ] > {command}quest info 1{/command}
 
     Completing quests:
 
     You can complete a quest after all the quest requirements are fulfilled. Go back
-    to the quest giver and use the {white}quest complete{/white} command.
+    to the quest giver and use the {command}quest complete{/command} command.
 
-    [ ] > {white}quest complete{/white}
-    [ ] > {white}quest complete 1{/white}
+    [ ] > {command}quest complete{/command}
+    [ ] > {command}quest complete 1{/command}
     """
   end
 
@@ -151,7 +151,7 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo("You have not started this quest to start tracking it.")
 
       {:ok, progress} ->
-        socket |> @socket.echo("You are tracking {white}#{progress.quest.name}{/white}")
+        socket |> @socket.echo("You are tracking #{Format.quest_name(progress.quest)}")
     end
 
     :ok
@@ -217,7 +217,7 @@ defmodule Game.Command.Quest do
         response =
           Format.wrap_lines([
             "You have not completed the requirements for the quest.",
-            "See {white}quest info #{progress.quest_id}{/white} for your current progress."
+            "See {command}quest info #{progress.quest_id}{/command} for your current progress."
           ])
 
         state.socket |> @socket.echo(response)

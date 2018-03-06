@@ -19,26 +19,26 @@ defmodule Game.Command.Shops do
   def help(:full) do
     """
     View shops:
-    [ ] > {white}shops{/white}
+    [ ] > {command}shops{/command}
 
     List items in a shop:
-    [ ] > {white}shops list shop name{/white}
-    [ ] > {white}shop list{/white}
+    [ ] > {command}shops list shop name{/command}
+    [ ] > {command}shop list{/command}
 
     View an item in a shop:
-    [ ] > {white}shops show item from shop name{/white}
-    [ ] > {white}shop show item{/white}
+    [ ] > {command}shops show item from shop name{/command}
+    [ ] > {command}shop show item{/command}
 
     Buy an item from a shop:
-    [ ] > {white}buy item from shop name{/white}
-    [ ] > {white}buy item{/white}
+    [ ] > {command}buy item from shop name{/command}
+    [ ] > {command}buy item{/command}
 
     Sell an item to a shop:
-    [ ] > {white}sell item to shop name{/white}
-    [ ] > {white}sell item{/white}
+    [ ] > {command}sell item to shop name{/command}
+    [ ] > {command}sell item{/command}
 
     When matching a shop name, you can use the shortest unique string for
-    the shop. So "{magenta}Blacksmith{/magenta}" can be matched with "{white}blac{/white}".
+    the shop. So "{shop}Blacksmith{/shop}" can be matched with "{command}blac{/command}".
     """
   end
 
@@ -128,7 +128,7 @@ defmodule Game.Command.Shops do
   def run({:help}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "Unknown usage of the shop(s) command. Please see {white}help shops{/white} for more information."
+      "Unknown usage of the shop(s) command. Please see {command}help shops{/command} for more information."
     )
 
     :ok
@@ -350,7 +350,7 @@ defmodule Game.Command.Shops do
     socket
     |> @socket.echo("""
     There is more than one shop in the room, please add the shop you want to use to the command.
-    See {white}help shops{/white} for more information.
+    See {command}help shops{/command} for more information.
     """)
   end
 end

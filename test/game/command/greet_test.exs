@@ -32,7 +32,7 @@ defmodule Game.Command.GreetTest do
       :ok = Greet.run({:greet, "guard"}, state)
 
       [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(greet {yellow}Guard{/yellow}), mail)
+      assert Regex.match?(~r(greet {npc}Guard{/npc}), mail)
 
       assert @npc.get_greets() == [{1, state.user}]
     end
@@ -43,7 +43,7 @@ defmodule Game.Command.GreetTest do
       :ok = Greet.run({:greet, "player"}, state)
 
       [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(greet {blue}Player{/blue}), mail)
+      assert Regex.match?(~r(greet {player}Player{/player}), mail)
     end
   end
 end

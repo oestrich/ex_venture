@@ -25,7 +25,7 @@ defmodule Game.Command.Target do
     Targets an enemy for skills
 
     Example:
-    [ ] > {white}target bandit{/white}
+    [ ] > {command}target bandit{/command}
     """
   end
 
@@ -70,9 +70,9 @@ defmodule Game.Command.Target do
   @spec target_npc(NPC.t(), pid, map) :: {:update, map}
   def target_npc(npc, socket, state)
 
-  def target_npc(npc = %{id: id, name: name}, socket, state = %{user: user}) do
+  def target_npc(npc = %{id: id}, socket, state = %{user: user}) do
     Character.being_targeted({:npc, id}, {:user, user})
-    socket |> @socket.echo("You are now targeting {yellow}#{name}{/yellow}.")
+    socket |> @socket.echo("You are now targeting #{Format.npc_name(npc)}.")
     state |> GMCP.target({:npc, npc})
     {:update, Map.put(state, :target, {:npc, id})}
   end
@@ -90,9 +90,9 @@ defmodule Game.Command.Target do
     :ok
   end
 
-  def target_user(%{id: id, name: name}, socket, state = %{user: user}) do
+  def target_user(player = %{id: id}, socket, state = %{user: user}) do
     Character.being_targeted({:user, id}, {:user, user})
-    socket |> @socket.echo("You are now targeting {blue}#{name}{/blue}.")
+    socket |> @socket.echo("You are now targeting #{Format.player_name(player)}.")
     state |> GMCP.target({:user, user})
     {:update, Map.put(state, :target, {:user, id})}
   end
@@ -113,7 +113,7 @@ defmodule Game.Command.Target do
         socket |> @socket.echo("Your target could not be found.")
 
       npc ->
-        socket |> @socket.echo("Your target is {yellow}#{npc.name}{/yellow}")
+        socket |> @socket.echo("Your target is #{Format.npc_name(npc)}")
     end
   end
 
@@ -123,7 +123,7 @@ defmodule Game.Command.Target do
         socket |> @socket.echo("Your target could not be found.")
 
       user ->
-        socket |> @socket.echo("Your target is {blue}#{user.name}{/blue}")
+        socket |> @socket.echo("Your target is #{Format.player_name(user)}")
     end
   end
 

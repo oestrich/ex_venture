@@ -16,7 +16,7 @@ defmodule Game.Command.Version do
     View the full version of ExVenture running
 
     Example:
-    [ ] > {white}version{/white}
+    [ ] > {command}version{/command}
     """
   end
 

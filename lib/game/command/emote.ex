@@ -16,11 +16,11 @@ defmodule Game.Command.Emote do
     Performs an emote. Anything you type after emote will be added to your name.
 
     Example:
-    [ ] > {white}emote does something{/white}
-    #{Format.emote({:user, %{name: "player"}}, "does something")}
+    [ ] > {command}emote does something{/command}
+    Player does something
 
-    [ ] > {white}*does something{/white}
-    #{Format.emote({:user, %{name: "player"}}, "does something")}
+    [ ] > {command}*does something{/command}
+    Player does something
     """
   end
 

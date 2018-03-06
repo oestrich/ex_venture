@@ -104,6 +104,19 @@ defmodule Game.Color do
   def format_color("{map:green}"), do: "\e[38;5;34m"
   def format_color("{map:grey}"), do: "\e[38;5;247m"
   def format_color("{map:light-grey}"), do: "\e[38;5;252m"
+
+  def format_color("{npc}"), do: "\e[33m"
+  def format_color("{item}"), do: "\e[36m"
+  def format_color("{player}"), do: "\e[34m"
+  def format_color("{skill}"), do: "\e[37m"
+  def format_color("{quest}"), do: "\e[33m"
+  def format_color("{room}"), do: "\e[32m"
+  def format_color("{say}"), do: "\e[32m"
+  def format_color("{command}"), do: "\e[37m"
+  def format_color("{exit}"), do: "\e[37m"
+  def format_color("{shop}"), do: "\e[35m"
+  def format_color("{hint}"), do: "\e[36m"
+
   def format_color(_), do: "\e[0m"
 
   @doc """
@@ -114,15 +127,6 @@ defmodule Game.Color do
   """
   @spec strip_color(String.t()) :: String.t()
   def strip_color(string) do
-    string
-    |> String.replace("{black}", "")
-    |> String.replace("{red}", "")
-    |> String.replace("{green}", "")
-    |> String.replace("{yellow}", "")
-    |> String.replace("{blue}", "")
-    |> String.replace("{magenta}", "")
-    |> String.replace("{cyan}", "")
-    |> String.replace("{white}", "")
-    |> String.replace(~r/{\/\w+}/, "")
+    string |> String.replace(~r/{\/?\w+}/, "")
   end
 end

@@ -394,17 +394,17 @@ defmodule Game.SessionTest do
   describe "event notification" do
     test "player enters the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:user, %{id: 1, name: "Player"}}, :enter}}}, state)
-      [{_, "{blue}Player{/blue} enters"}] = @socket.get_echos()
+      [{_, "{player}Player{/player} enters"}] = @socket.get_echos()
     end
 
     test "npc enters the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, :enter}}}, state)
-      [{_, "{yellow}Bandit{/yellow} enters"}] = @socket.get_echos()
+      [{_, "{npc}Bandit{/npc} enters"}] = @socket.get_echos()
     end
 
     test "player leaves the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, :leave}}}, state)
-      [{_, "{blue}Player{/blue} leaves"}] = @socket.get_echos()
+      [{_, "{player}Player{/player} leaves"}] = @socket.get_echos()
     end
 
     test "player leaves the room and they were the target", %{socket: socket} do
@@ -415,7 +415,7 @@ defmodule Game.SessionTest do
 
     test "npc leaves the room", state do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, :leave}}}, state)
-      [{_, "{yellow}Bandit{/yellow} leaves"}] = @socket.get_echos()
+      [{_, "{npc}Bandit{/npc} leaves"}] = @socket.get_echos()
     end
 
     test "npc leaves the room and they were the target", %{socket: socket} do

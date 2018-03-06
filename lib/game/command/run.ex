@@ -23,7 +23,7 @@ defmodule Game.Command.Run do
     #{help(:short)}. You will stop running if an exit cannot be found.
 
     Example:
-    [ ] > {white}run 3en4s{/white}
+    [ ] > {command}run 3en4s{/command}
     """
   end
 

@@ -23,7 +23,7 @@ defmodule Game.Command.PickUp do
     #{help(:short)}.
 
     Example:
-    [ ] > {white}pick up sword{/white}
+    [ ] > {command}pick up sword{/command}
     """
   end
 
@@ -105,7 +105,7 @@ defmodule Game.Command.PickUp do
   def run({verb, :help}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "You don't know what to #{verb}. See {white}help get{/white} for more information."
+      "You don't know what to #{verb}. See {command}help get{/command} for more information."
     )
 
     :ok

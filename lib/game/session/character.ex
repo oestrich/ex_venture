@@ -119,7 +119,7 @@ defmodule Game.Session.Character do
 
   def notify(state, {"mail/new", mail}) do
     state.socket
-    |> @socket.echo("You have new mail. {white}mail read #{mail.id}{/white} to read it")
+    |> @socket.echo("You have new mail. {command}mail read #{mail.id}{/command} to read it")
 
     state |> GMCP.mail_new(mail)
     state

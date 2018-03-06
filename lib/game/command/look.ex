@@ -23,11 +23,11 @@ defmodule Game.Command.Look do
     View information about the room you are in.
 
     Example:
-    [ ] > {white}look{/white}
-    [ ] > {white}look at guard{/white}
-    [ ] > {white}look at player{/white}
-    [ ] > {white}look at sword{/white}
-    [ ] > {white}look north{/white}
+    [ ] > {command}look{/command}
+    [ ] > {command}look at guard{/command}
+    [ ] > {command}look at player{/command}
+    [ ] > {command}look at sword{/command}
+    [ ] > {command}look north{/command}
     """
   end
 

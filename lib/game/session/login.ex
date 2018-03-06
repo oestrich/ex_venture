@@ -30,7 +30,7 @@ defmodule Game.Session.Login do
 
     socket
     |> @socket.prompt(
-      "What is your player name (Enter {white}create{/white} for a new account)? "
+      "What is your player name (Enter {command}create{/command} for a new account)? "
     )
   end
 

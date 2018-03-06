@@ -5,20 +5,21 @@ defmodule Game.Format.Shop do
 
   use Game.Currency
 
+  alias Game.Format
   alias Game.Format.Table
 
   def list(shop, items)
 
-  def list(%{name: name}, items) do
+  def list(shop, items) do
     rows =
       items
       |> Enum.map(&item/1)
 
-    Table.format("{magenta}#{name}{/magenta}", rows, [10, 10, 30])
+    Table.format(Format.shop_name(shop), rows, [10, 10, 30])
   end
 
   defp item(item) do
-    ["#{item.price} #{currency()}", quantity(item.quantity), "{cyan}#{item.name}{/cyan}"]
+    ["#{item.price} #{currency()}", quantity(item.quantity), Format.item_name(item)]
   end
 
   defp quantity(-1), do: "unlimited"

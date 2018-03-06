@@ -18,7 +18,7 @@ defmodule Game.Command.Examine do
     #{help(:short)}
 
     Example:
-    [ ] > {white}examine short sword{/white}
+    [ ] > {command}examine short sword{/command}
     """
   end
 
@@ -47,7 +47,7 @@ defmodule Game.Command.Examine do
   def run({}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "You don't know what to examine. See {white}help examine{/white} for more information."
+      "You don't know what to examine. See {command}help examine{/command} for more information."
     )
 
     :ok

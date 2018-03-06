@@ -29,7 +29,7 @@ defmodule Game.Command.Skills do
     a target before using a skill.
 
     Example:
-    [ ] > {white}skills{/white}
+    [ ] > {command}skills{/command}
     """
   end
 
@@ -157,7 +157,7 @@ defmodule Game.Command.Skills do
           false ->
             remaining_seconds = round((skill.cooldown_time - difference) / 1000)
 
-            state.socket |> @socket.echo("{white}#{skill.name}{/white} is not ready yet.")
+            state.socket |> @socket.echo("#{Format.skill_name(skill)} is not ready yet.")
             Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
 
             :ok

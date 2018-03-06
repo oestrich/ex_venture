@@ -22,8 +22,8 @@ defmodule Game.Command.Wield do
     The default hand is your right hand. You can only wield one weapon.
 
     Example:
-    [ ] > {white}wield [left|right] sword{/white}
-    [ ] > {white}unwield [left|right]{/white}
+    [ ] > {command}wield [left|right] sword{/command}
+    [ ] > {command}unwield [left|right]{/command}
     """
   end
 

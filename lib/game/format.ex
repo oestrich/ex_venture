@@ -36,7 +36,7 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.channel_say(%{name: "global", color: "red"}, {:npc, %{name: "NPC"}}, "Hello")
-      ~s({red}[global]{/red} {yellow}NPC{/yellow} says, {green}"Hello"{/green})
+      ~s({red}[global]{/red} {npc}NPC{/npc} says, {say}"Hello"{/say})
   """
   @spec channel_say(String.t(), Character.t(), String.t()) :: String.t()
   def channel_say(channel, sender, message) do
@@ -73,40 +73,36 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.say({:npc, %{name: "NPC"}}, "Hello")
-      ~s[{yellow}NPC{/yellow} says, {green}"Hello"{/green}]
+      ~s[{npc}NPC{/npc} says, {say}"Hello"{/say}]
 
       iex> Game.Format.say({:user, %{name: "Player"}}, "Hello")
-      ~s[{blue}Player{/blue} says, {green}"Hello"{/green}]
+      ~s[{player}Player{/player} says, {say}"Hello"{/say}]
   """
   @spec say(Character.t(), String.t()) :: String.t()
-  def say({:npc, %{name: name}}, message) do
-    ~s[{yellow}#{name}{/yellow} says, {green}"#{message}"{/green}]
-  end
-
-  def say({:user, %{name: name}}, message) do
-    ~s[{blue}#{name}{/blue} says, {green}"#{message}"{/green}]
+  def say(character, message) do
+    ~s[#{name(character)} says, {say}"#{message}"{/say}]
   end
 
   @doc """
   Format a tell message
 
       iex> Game.Format.tell({:user, %{name: "Player"}}, "secret message")
-      ~s[{blue}Player{/blue} tells you, {green}"secret message"{/green}]
+      ~s[{player}Player{/player} tells you, {say}"secret message"{/say}]
   """
   @spec tell(Character.t(), String.t()) :: String.t()
   def tell(sender, message) do
-    ~s[#{name(sender)} tells you, {green}"#{message}"{/green}]
+    ~s[#{name(sender)} tells you, {say}"#{message}"{/say}]
   end
 
   @doc """
   Format a tell message, for display of the sender
 
       iex> Game.Format.send_tell({:user, %{name: "Player"}}, "secret message")
-      ~s[You tell {blue}Player{/blue}, {green}"secret message"{/green}]
+      ~s[You tell {player}Player{/player}, {say}"secret message"{/say}]
   """
   @spec send_tell(Character.t(), String.t()) :: String.t()
   def send_tell(character, message) do
-    ~s[You tell #{name(character)}, {green}"#{message}"{/green}]
+    ~s[You tell #{name(character)}, {say}"#{message}"{/say}]
   end
 
   @doc """
@@ -115,18 +111,14 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.emote({:npc, %{name: "NPC"}}, "does something")
-      ~s[{yellow}NPC{/yellow} {green}does something{/green}]
+      ~s[{npc}NPC{/npc} {say}does something{/say}]
 
       iex> Game.Format.emote({:user, %{name: "Player"}}, "does something")
-      ~s[{blue}Player{/blue} {green}does something{/green}]
+      ~s[{player}Player{/player} {say}does something{/say}]
   """
   @spec emote(Character.t(), String.t()) :: String.t()
-  def emote({:npc, %{name: name}}, emote) do
-    ~s[{yellow}#{name}{/yellow} {green}#{emote}{/green}]
-  end
-
-  def emote({:user, %{name: name}}, emote) do
-    ~s[{blue}#{name}{/blue} {green}#{emote}{/green}]
+  def emote(character, emote) do
+    ~s[#{name(character)} {say}#{emote}{/say}]
   end
 
   @doc """
@@ -149,7 +141,7 @@ defmodule Game.Format do
   end
 
   def room_name(room) do
-    "{green}#{room.name}{/green}"
+    "{room}#{room.name}{/room}"
   end
 
   @doc """
@@ -170,11 +162,11 @@ defmodule Game.Format do
   Example:
 
     iex> Game.Format.peak_room(%{name: "Hallway"}, "north")
-    "{green}Hallway{/green} is north."
+    "{room}Hallway{/room} is north."
   """
   @spec peak_room(Room.t(), String.t()) :: String.t()
   def peak_room(room, direction) do
-    "{green}#{room.name}{/green} is #{direction}."
+    "#{room_name(room)} is #{direction}."
   end
 
   @doc """
@@ -185,7 +177,7 @@ defmodule Game.Format do
       iex> Game.Format.underline("Room Name")
       "-------------"
 
-      iex> Game.Format.underline("{blue}Player{/blue}")
+      iex> Game.Format.underline("{player}Player{/player}")
       "----------"
   """
   def underline(nil), do: ""
@@ -261,10 +253,10 @@ defmodule Game.Format do
     |> Enum.map(fn direction ->
       case Exit.exit_to(room, direction) do
         %{id: exit_id, has_door: true} ->
-          "{white}#{direction} (#{Door.get(exit_id)}){/white}"
+          "{exit}#{direction} (#{Door.get(exit_id)}){/exit}"
 
         _ ->
-          "{white}#{direction}{/white}"
+          "{exit}#{direction}{/exit}"
       end
     end)
     |> Enum.join(", ")
@@ -276,7 +268,7 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", status_line: "{name} is here."}]})
-      "{blue}Mordred{/blue} is here. {yellow}Arthur{/yellow} is here."
+      "{player}Mordred{/player} is here. {npc}Arthur{/npc} is here."
   """
   def who_is_here(room) do
     [players(room), npcs(room)]
@@ -290,12 +282,12 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.players(%{players: [%{name: "Mordred"}, %{name: "Arthur"}]})
-      "{blue}Mordred{/blue} is here. {blue}Arthur{/blue} is here."
+      "{player}Mordred{/player} is here. {player}Arthur{/player} is here."
   """
   @spec players(Room.t()) :: String.t()
   def players(%{players: players}) do
     players
-    |> Enum.map(fn player -> "{blue}#{player.name}{/blue} is here." end)
+    |> Enum.map(fn player -> "#{player_name(player)} is here." end)
     |> Enum.join(" ")
   end
 
@@ -316,7 +308,7 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.npcs(%{npcs: [%{name: "Mordred", status_line: "{name} is in the room."}, %{name: "Arthur", status_line: "{name} is here."}]})
-      "{yellow}Mordred{/yellow} is in the room. {yellow}Arthur{/yellow} is here."
+      "{npc}Mordred{/npc} is in the room. {npc}Arthur{/npc} is here."
   """
   @spec npcs(Room.t()) :: String.t()
   def npcs(%{npcs: npcs}) do
@@ -377,10 +369,10 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]})
-      "Shops: {magenta}Hole in the Wall{/magenta}\\n"
+      "Shops: {shop}Hole in the Wall{/shop}\\n"
 
       iex> Game.Format.shops(%{shops: [%{name: "Hole in the Wall"}]}, label: false)
-      "  - {magenta}Hole in the Wall{/magenta}"
+      "  - {shop}Hole in the Wall{/shop}"
   """
   @spec shops(Room.t()) :: String.t()
   def shops(room, opts \\ [])
@@ -388,14 +380,14 @@ defmodule Game.Format do
 
   def shops(%{shops: shops}, label: false) do
     shops
-    |> Enum.map(fn shop -> "  - {magenta}#{shop.name}{/magenta}" end)
+    |> Enum.map(fn shop -> "  - #{shop_name(shop)}" end)
     |> Enum.join(", ")
   end
 
   def shops(%{shops: shops}, _) do
     shops =
       shops
-      |> Enum.map(fn shop -> "{magenta}#{shop.name}{/magenta}" end)
+      |> Enum.map(&shop_name/1)
       |> Enum.join(", ")
 
     "Shops: #{shops}\n"
@@ -452,7 +444,7 @@ defmodule Game.Format do
       items
       |> Enum.map(fn
         %{item: item, quantity: 1} -> "  - #{item_name(item)}"
-        %{item: item, quantity: quantity} -> "  - {cyan}#{item.name} x#{quantity}{/cyan}"
+        %{item: item, quantity: quantity} -> "  - {item}#{item.name} x#{quantity}{/item}"
       end)
       |> Enum.join("\n")
 
@@ -473,7 +465,7 @@ defmodule Game.Format do
       iex> wearing = %{chest: %{name: "Leather Armor"}}
       iex> wielding = %{right: %{name: "Short Sword"}, left: %{name: "Shield"}}
       iex> Game.Format.equipment(wearing, wielding)
-      "You are wearing:\\n  - {cyan}Leather Armor{/cyan} on your chest\\nYou are wielding:\\n  - a {cyan}Shield{/cyan} in your left hand\\n  - a {cyan}Short Sword{/cyan} in your right hand"
+      "You are wearing:\\n  - {item}Leather Armor{/item} on your chest\\nYou are wielding:\\n  - a {item}Shield{/item} in your left hand\\n  - a {item}Short Sword{/item} in your right hand"
   """
   @spec equipment(map(), map()) :: String.t()
   def equipment(wearing, wielding) do
@@ -593,7 +585,7 @@ defmodule Game.Format do
 
       iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
       iex> Game.Format.skill_user(%{user_text: "You slash away at {target}"}, effects, {:npc, %{name: "Bandit"}})
-      "You slash away at {yellow}Bandit{/yellow}\\n10 slashing damage is dealt."
+      "You slash away at {npc}Bandit{/npc}\\n10 slashing damage is dealt."
   """
   def skill_user(skill, effects, target)
 
@@ -609,7 +601,7 @@ defmodule Game.Format do
       "Slash away"
 
       iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by {user}"}, user: {:npc, %{name: "Bandit"}})
-      "You were slashed at by {yellow}Bandit{/yellow}"
+      "You were slashed at by {npc}Bandit{/npc}"
   """
   def skill_usee(skill, opts \\ [])
 
@@ -626,7 +618,7 @@ defmodule Game.Format do
   Message for users of items
 
       iex> Game.Format.user_item(%{name: "Potion", user_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
-      "You used {cyan}Potion{/cyan} on {yellow}Bandit{/yellow}."
+      "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def user_item(item, opts \\ []) do
     item.user_text
@@ -639,7 +631,7 @@ defmodule Game.Format do
   Message for usees of items
 
       iex> Game.Format.usee_item(%{name: "Potion", usee_text: "You used {name} on {target}."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
-      "You used {cyan}Potion{/cyan} on {yellow}Bandit{/yellow}."
+      "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def usee_item(item, opts \\ []) do
     item.usee_text
@@ -652,10 +644,10 @@ defmodule Game.Format do
   Format a target name, blue for user, yellow for npc
 
     iex> Game.Format.target_name({:user, %{name: "Player"}})
-    "{blue}Player{/blue}"
+    "{player}Player{/player}"
 
     iex> Game.Format.target_name({:npc, %{name: "Bandit"}})
-    "{yellow}Bandit{/yellow}"
+    "{npc}Bandit{/npc}"
   """
   @spec target_name(Character.t()) :: String.t()
   def target_name({:npc, npc}), do: npc_name(npc)
@@ -667,13 +659,13 @@ defmodule Game.Format do
   Colorize a user's name
   """
   @spec player_name(User.t()) :: String.t()
-  def player_name(user), do: "{blue}#{user.name}{/blue}"
+  def player_name(user), do: "{player}#{user.name}{/player}"
 
   @doc """
   Colorize an npc's name
   """
   @spec npc_name(NPC.t()) :: String.t()
-  def npc_name(npc), do: "{yellow}#{npc.name}{/yellow}"
+  def npc_name(npc), do: "{npc}#{npc.name}{/npc}"
 
   def npc_name_for_status(npc) do
     case Map.get(npc, :is_quest_giver, false) do
@@ -686,32 +678,42 @@ defmodule Game.Format do
   Format a quest name
 
     iex> Game.Format.quest_name(%{name: "Into the Dungeon"})
-    "{yellow}Into the Dungeon{/yellow}"
+    "{quest}Into the Dungeon{/quest}"
   """
   def quest_name(quest) do
-    "{yellow}#{quest.name}{/yellow}"
+    "{quest}#{quest.name}{/quest}"
   end
 
   @doc """
   Format an items name, cyan
 
     iex> Game.Format.item_name(%{name: "Potion"})
-    "{cyan}Potion{/cyan}"
+    "{item}Potion{/item}"
   """
   @spec item_name(Item.t()) :: String.t()
   def item_name(item) do
-    "{cyan}#{item.name}{/cyan}"
+    "{item}#{item.name}{/item}"
   end
 
   @doc """
   Format a skill name, white
 
     iex> Game.Format.skill_name(%{name: "Slash"})
-    "{white}Slash{/white}"
+    "{skill}Slash{/skill}"
   """
   @spec skill_name(Skill.t()) :: String.t()
   def skill_name(skill) do
-    "{white}#{skill.name}{/white}"
+    "{skill}#{skill.name}{/skill}"
+  end
+
+  @doc """
+  Format a shop name, magenta
+
+     iex> Game.Format.shop_name(%{name: "Shop"})
+     "{shop}Shop{/shop}"
+  """
+  def shop_name(shop) do
+    "{shop}#{shop.name}{/shop}"
   end
 
   @doc """
@@ -769,21 +771,21 @@ defmodule Game.Format do
   An item was dropped message
 
       iex> Game.Format.dropped({:npc, %{name: "NPC"}}, %{name: "Sword"})
-      "{yellow}NPC{/yellow} dropped a Sword."
+      "{npc}NPC{/npc} dropped a {item}Sword{/item}."
 
       iex> Game.Format.dropped({:user, %{name: "Player"}}, %{name: "Sword"})
-      "{blue}Player{/blue} dropped a Sword."
+      "{player}Player{/player} dropped a {item}Sword{/item}."
 
       iex> Game.Format.dropped({:user, %{name: "Player"}}, {:currency, 100})
-      "{blue}Player{/blue} dropped 100 gold."
+      "{player}Player{/player} dropped {item}100 gold{/item}."
   """
   @spec dropped(Character.t(), Item.t()) :: String.t()
   def dropped(who, {:currency, amount}) do
-    "#{name(who)} dropped #{amount} #{currency()}."
+    "#{name(who)} dropped {item}#{amount} #{currency()}{/item}."
   end
 
   def dropped(who, item) do
-    "#{name(who)} dropped a #{item.name}."
+    "#{name(who)} dropped a #{item_name(item)}."
   end
 
   @doc """
@@ -804,7 +806,7 @@ defmodule Game.Format do
   Format a single piece of mail for a user
 
       iex> Game.Format.display_mail(%{id: 1,sender: %{name: "Player"}, title: "hello", body: "A\\nlong message"})
-      "1 - {blue}Player{/blue} - hello\\n----------------------\\n\\nA\\nlong message"
+      "1 - {player}Player{/player} - hello\\n----------------------\\n\\nA\\nlong message"
   """
   @spec display_mail(Mail.t()) :: String.t()
   def display_mail(mail) do
@@ -896,7 +898,7 @@ defmodule Game.Format do
     rows =
       socials
       |> Enum.map(fn social ->
-        [social.name, "{white}#{social.command}{/white}"]
+        [social.name, "{command}#{social.command}{/command}"]
       end)
 
     rows = [["Name", "Command"] | rows]
@@ -911,11 +913,11 @@ defmodule Game.Format do
     """
     #{social.name}
     #{underline(social.name)}
-    Command: {white}#{social.command}{/white}
+    Command: {command}#{social.command}{/command}
 
-    With a target: {green}#{social.with_target}{/green}
+    With a target: {say}#{social.with_target}{/say}
 
-    Without a target: {green}#{social.without_target}{/green}
+    Without a target: {say}#{social.without_target}{/say}
     """
   end
 
@@ -923,7 +925,7 @@ defmodule Game.Format do
   Format the social without_target text
   """
   def social_without_target(social, user) do
-    "{green}#{social.without_target}{green}"
+    "{say}#{social.without_target}{say}"
     |> template(%{user: player_name(user)})
   end
 
@@ -931,7 +933,7 @@ defmodule Game.Format do
   Format the social with_target text
   """
   def social_with_target(social, user, target) do
-    "{green}#{social.with_target}{green}"
+    "{say}#{social.with_target}{say}"
     |> template(%{user: player_name(user), target: name(target)})
   end
 

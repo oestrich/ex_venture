@@ -20,10 +20,10 @@ defmodule Game.Command.Info do
     #{help(:short)}. You can also view stats about another character.
 
     Example:
-    [ ] > {white}info{/white}
-    [ ] > {white}score{/white}
+    [ ] > {command}info{/command}
+    [ ] > {command}score{/command}
 
-    [ ] > {white}info player{/white}
+    [ ] > {command}info player{/command}
     """
   end
 

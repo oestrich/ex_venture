@@ -21,7 +21,7 @@ defmodule Game.Command.Use do
     #{help(:short)}
 
     Example:
-    [ ] > {white}use potion{/white}
+    [ ] > {command}use potion{/command}
     """
   end
 
@@ -43,7 +43,7 @@ defmodule Game.Command.Use do
   def run({}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "You are not sure what to use. See {white}help use{/white} for more information."
+      "You are not sure what to use. See {command}help use{/command} for more information."
     )
 
     :ok

@@ -19,9 +19,9 @@ defmodule Game.Command.Who do
     #{help(:short)}
 
     Example:
-    [ ] > {white}who{/white}
+    [ ] > {command}who{/command}
 
-    [ ] > {white}who player{/white}
+    [ ] > {command}who player{/command}
     """
   end
 

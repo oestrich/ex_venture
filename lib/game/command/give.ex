@@ -24,7 +24,7 @@ defmodule Game.Command.Give do
     """
     #{help(:short)}. Give an item to a player or NPC in your room.
 
-    [ ] > {white}give potion to guard{/white}
+    [ ] > {command}give potion to guard{/command}
     """
   end
 

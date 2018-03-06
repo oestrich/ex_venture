@@ -16,8 +16,8 @@ defmodule Game.Command.Say do
     Talk to other players in the same room.
 
     Example:
-    [ ] > {white}say Hello, everyone!{/white}
-    #{Format.say({:user, %{name: "Player"}}, "Hello, everyone!")}
+    [ ] > {command}say Hello, everyone!{/command}
+    Player says, "Hello, everyone!"
     """
   end
 

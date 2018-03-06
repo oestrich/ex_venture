@@ -6,7 +6,7 @@ defmodule Game.HintTest do
   @socket Test.Networking.Socket
 
   test "formats hints" do
-    assert Hint.hint("quests.new", %{id: 10}) == "You can view this with {white}quest info 10{/white}"
+    assert Hint.hint("quests.new", %{id: 10}) == "You can view this with {command}quest info 10{/command}."
   end
 
   describe "gating hints" do

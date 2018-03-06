@@ -18,8 +18,8 @@ defmodule Game.Command.Help do
     #{help(:short)}
 
     Example:
-    [ ] > {white}help{/white}
-    [ ] > {white}help move{/white}
+    [ ] > {command}help{/command}
+    [ ] > {command}help move{/command}
     """
   end
 

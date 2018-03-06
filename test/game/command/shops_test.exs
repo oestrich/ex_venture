@@ -29,7 +29,7 @@ defmodule Game.Command.ShopsTest do
     Command.Shops.run({:help}, %{socket: socket})
 
     [{^socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(see {white}help shops{/white}), look)
+    assert Regex.match?(~r(see {command}help shops{/command}), look)
   end
 
   test "view shops in the room", %{socket: socket} do

@@ -21,7 +21,7 @@ defmodule Game.Command.Typo do
     be able to enter in multi line text for further information.
 
     Example:
-    [ ] > {white}typo title{/white}
+    [ ] > {command}typo title{/command}
     """
   end
 
@@ -31,7 +31,7 @@ defmodule Game.Command.Typo do
   def run({}, %{socket: socket}) do
     socket
     |> @socket.echo(
-      "Please provide a typo title. See {white}help typo{/white} for more information."
+      "Please provide a typo title. See {command}help typo{/command} for more information."
     )
 
     :ok
