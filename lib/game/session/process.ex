@@ -330,6 +330,12 @@ defmodule Game.Session.Process do
   end
 
   # Check if the session is inactive, disconnect if it is
+  defp check_for_inactive(state = %{is_afk: true}) do
+    self() |> schedule_inactive_check()
+
+    state
+  end
+
   defp check_for_inactive(state = %{last_recv: last_recv}) do
     self() |> schedule_inactive_check()
 
