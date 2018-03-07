@@ -15,6 +15,7 @@ defmodule Game.Session.Process do
   alias Game.Command.Move
   alias Game.Command.Pager
   alias Game.Format
+  alias Game.Hint
   alias Game.Session
   alias Game.Session.Channels
   alias Game.Session.Character, as: SessionCharacter
@@ -330,13 +331,22 @@ defmodule Game.Session.Process do
 
   # Check if the session is inactive, disconnect if it is
   defp check_for_inactive(state = %{last_recv: last_recv}) do
+    self() |> schedule_inactive_check()
+
     case Timex.diff(Timex.now(), last_recv, :seconds) do
       time when time > @timeout_seconds ->
         Logger.info("Idle player #{inspect(self())} - setting afk", type: :session)
-        %{state | is_afk: true}
+
+        state = %{state | is_afk: true}
+        Session.Registry.update(%{state.user | save: state.save}, state)
+
+        state.socket |> @socket.echo("You seem to be idle, setting you to {command}AFK{/command}")
+        Hint.gate(state, "afk.started")
+
+        state
 
       _ ->
-        self() |> schedule_inactive_check()
+        state
     end
   end
 end

@@ -18,8 +18,8 @@ defmodule Game.SessionTest do
     @socket.clear_messages()
     @room.clear_notifies()
 
-    user = %{id: 1, name: "user"}
-    {:ok, %{socket: socket, user: user, save: %{}}}
+    user = %{id: 1, name: "user", save: base_save()}
+    {:ok, %{socket: socket, user: user, save: user.save}}
   end
 
   test "echoing messages", state = %{socket: socket} do
@@ -151,10 +151,20 @@ defmodule Game.SessionTest do
     assert @socket.get_disconnects() == []
   end
 
-  test "checking for inactive players - inactive" do
-    {:noreply, state} = Process.handle_info(:inactive_check, %{is_afk: false, last_recv: Timex.now() |> Timex.shift(minutes: -66)})
+  test "checking for inactive players - inactive", %{socket: socket, user: user, save: save} do
+    state = %{
+      socket: socket,
+      user: user,
+      save: save,
+      is_afk: false,
+      last_recv: Timex.now() |> Timex.shift(minutes: -66),
+    }
+
+    {:noreply, state} = Process.handle_info(:inactive_check, state)
 
     assert state.is_afk
+  after
+    Session.Registry.unregister()
   end
 
   describe "disconnects" do

@@ -1,3 +1,6 @@
+afk.started:
+  You are now set to away from keyboard (AFK). See {command}help afk{/command} for more information when you get back.
+
 quests.new:
   You can view this with {command}quest info [id]{/command}.
 
