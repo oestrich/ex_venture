@@ -82,6 +82,7 @@ defmodule Game.Command do
     Command.Inventory,
 
     # Alphabetical
+    Command.AFK,
     Command.Bug,
     Command.Config,
     Command.Crash,

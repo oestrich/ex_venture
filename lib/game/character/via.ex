@@ -20,10 +20,10 @@ defmodule Game.Character.Via do
   def whereis_name({:user, id}) do
     player =
       Session.Registry.connected_players()
-      |> Enum.find(&(elem(&1, 1).id == id))
+      |> Enum.find(&(&1.user.id == id))
 
     case player do
-      {pid, _} -> pid
+      %{pid: pid} -> pid
       _ -> :undefined
     end
   end

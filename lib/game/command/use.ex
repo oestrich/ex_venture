@@ -55,7 +55,7 @@ defmodule Game.Command.Use do
   end
 
   defp use_item(%{socket: socket}, {_, item = %{is_usable: false}}) do
-    socket |> @socket.echo("\"#{Format.item_name(item)}\" could not be used")
+    socket |> @socket.echo("#{Format.item_name(item)} could not be used")
     :ok
   end
 

@@ -156,7 +156,7 @@ defmodule Web.User do
   @spec connected_players() :: [User.t()]
   def connected_players() do
     SessionRegistry.connected_players()
-    |> Enum.map(&elem(&1, 1))
+    |> Enum.map(&(&1.user))
   end
 
   @doc """
@@ -184,11 +184,11 @@ defmodule Web.User do
   def teleport_player_in_game(user, room_id) do
     player =
       SessionRegistry.connected_players()
-      |> Enum.find(fn {_, player} -> player.id == user.id end)
+      |> Enum.find(fn %{user: player} -> player.id == user.id end)
 
     case player do
       nil -> nil
-      {pid, _} -> pid |> Session.teleport(room_id)
+      %{pid: pid} -> pid |> Session.teleport(room_id)
     end
   end
 
@@ -230,8 +230,8 @@ defmodule Web.User do
   @spec disconnect() :: :ok
   def disconnect() do
     SessionRegistry.connected_players()
-    |> Enum.each(fn {session, _} ->
-      Session.disconnect(session, force: true)
+    |> Enum.each(fn %{pid: pid} ->
+      Session.disconnect(pid, force: true)
     end)
 
     :ok

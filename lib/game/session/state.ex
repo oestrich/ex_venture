@@ -23,6 +23,7 @@ defmodule Game.Session.State do
   - `:reply_to` - User who the player should respond to
   - `:commands` - Temporary command storage, for continuing, editing, etc
   - `:skills` - Similar to `:commands`, but for skills (last used at)
+  - `:is_afk` - Flag for if the user is AFK or not
   - `:continuous_effects` - Continuous effects that the user has, list
   """
   @enforce_keys [:socket, :state, :mode]
@@ -39,6 +40,7 @@ defmodule Game.Session.State do
     :reply_to,
     :commands,
     :skills,
+    :is_afk,
     mode: "comands",
     continuous_effects: [],
     stats: %SessionStats{}

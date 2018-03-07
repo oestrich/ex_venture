@@ -7,6 +7,10 @@ defmodule Game.Session.Registry do
 
   alias Data.User
 
+  defmodule Metadata do
+    defstruct [:is_afk]
+  end
+
   @doc false
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -17,15 +21,15 @@ defmodule Game.Session.Registry do
   """
   @spec register(User.t()) :: :ok
   def register(user) do
-    GenServer.cast(__MODULE__, {:register, self(), user})
+    GenServer.cast(__MODULE__, {:register, self(), user, %Metadata{is_afk: false}})
   end
 
   @doc """
-  Update user's information
+  Update user's information, pulls out metadata from the session state
   """
-  @spec update(User.t()) :: :ok
-  def update(user) do
-    GenServer.cast(__MODULE__, {:update, self(), user})
+  @spec update(User.t(), State.t()) :: :ok
+  def update(user, state) do
+    GenServer.cast(__MODULE__, {:update, self(), user, %Metadata{is_afk: state.is_afk}})
   end
 
   @doc """
@@ -54,21 +58,17 @@ defmodule Game.Session.Registry do
   end
 
   def handle_call(:connected_players, _from, state) do
-    players =
-      state.connected_players
-      |> Enum.map(&{&1.pid, &1.user})
-
-    {:reply, players, state}
+    {:reply, state.connected_players, state}
   end
 
-  def handle_cast({:register, pid, user}, state = %{connected_players: connected_players}) do
+  def handle_cast({:register, pid, user, metadata}, state = %{connected_players: connected_players}) do
     Process.link(pid)
-    connected_players = [%{user: user, pid: pid} | connected_players]
+    connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
     {:noreply, %{state | connected_players: connected_players}}
   end
 
-  def handle_cast({:update, pid, user}, state = %{connected_players: connected_players}) do
-    connected_players = [%{user: user, pid: pid} | connected_players]
+  def handle_cast({:update, pid, user, metadata}, state = %{connected_players: connected_players}) do
+    connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
 
     connected_players =
       connected_players

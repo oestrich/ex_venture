@@ -37,7 +37,7 @@ defmodule Game.Server do
 
   def handle_info(:tick, state) do
     Session.Registry.connected_players()
-    |> Enum.map(&elem(&1, 1))
+    |> Enum.map(& &1.user)
     |> PlayerInstrumenter.set_player_count()
 
     {:noreply, state}

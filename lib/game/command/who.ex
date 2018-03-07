@@ -37,9 +37,9 @@ defmodule Game.Command.Who do
 
     names =
       players
-      |> Enum.map(fn {_pid, user} ->
+      |> Enum.map(fn %{user: user, metadata: metadata} ->
         prompt = "[#{user.save.level} #{user.class.name} #{user.race.name}]"
-        "#{prompt} #{Format.player_name(user)} #{Format.player_flags(user, none: false)}"
+        "#{prompt} #{Format.player_name(user)} #{Format.player_flags(user, none: false)} #{afk(metadata)}"
       end)
       |> Enum.join("\n")
 
@@ -48,4 +48,7 @@ defmodule Game.Command.Who do
   end
 
   def run({name}, state), do: Info.run({name}, state)
+
+  defp afk(%{is_afk: true}), do: "AFK"
+  defp afk(_), do: ""
 end

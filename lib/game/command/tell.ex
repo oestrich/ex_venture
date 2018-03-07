@@ -74,7 +74,7 @@ defmodule Game.Command.Tell do
 
     player =
       Session.Registry.connected_players()
-      |> Enum.find(fn {_, user} ->
+      |> Enum.find(fn %{user: user} ->
         user.name |> String.downcase() == player_name |> String.downcase()
       end)
 
@@ -82,7 +82,7 @@ defmodule Game.Command.Tell do
       nil ->
         state
 
-      {_, user} ->
+      %{user: user} ->
         socket |> @socket.echo(Format.send_tell({:user, user}, message))
         Channel.tell({:user, user}, {:user, from}, Message.tell(from, message))
         {:update, %{state | reply_to: {:user, user}}}
@@ -125,7 +125,7 @@ defmodule Game.Command.Tell do
   defp reply_to_player(message, reply_to, %{socket: socket, user: from}) do
     player =
       Session.Registry.connected_players()
-      |> Enum.find(fn {_, player} -> player.id == reply_to.id end)
+      |> Enum.find(fn %{user: player} -> player.id == reply_to.id end)
 
     case player do
       nil ->

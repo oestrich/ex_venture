@@ -179,6 +179,6 @@ defmodule Game.Session.Login do
 
   defp already_signed_in?(user) do
     Session.Registry.connected_players()
-    |> Enum.any?(&(elem(&1, 1).id == user.id))
+    |> Enum.any?(&(&1.user.id == user.id))
   end
 end

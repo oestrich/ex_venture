@@ -67,7 +67,8 @@ defmodule Game.Session.Process do
       reply_to: nil,
       commands: %{},
       skills: %{},
-      stats: %SessionStats{}
+      stats: %SessionStats{},
+      is_afk: false
     }
   end
 

@@ -62,7 +62,7 @@ defmodule Game.Session do
   def echo(user = %User{}, message) do
     case find_connected_player(user) do
       nil -> :ok
-      {pid, _} -> echo(pid, message)
+      %{pid: pid} -> echo(pid, message)
     end
   end
 
@@ -85,7 +85,7 @@ defmodule Game.Session do
   def notify(user = %User{}, action) do
     case find_connected_player(user) do
       nil -> :ok
-      {pid, _} -> notify(pid, action)
+      %{pid: pid} -> notify(pid, action)
     end
   end
 
@@ -123,8 +123,8 @@ defmodule Game.Session do
   @spec find_connected_player(User.t()) :: pid()
   def find_connected_player(user) do
     Session.Registry.connected_players()
-    |> Enum.find(fn {_, connected_user} ->
-      connected_user.id == user.id
+    |> Enum.find(fn %{user: player} ->
+      player.id == user.id
     end)
   end
 end
