@@ -271,8 +271,7 @@ defmodule Game.Session.Process do
   end
 
   def handle_info(:inactive_check, state) do
-    state |> check_for_inactive()
-    {:noreply, state}
+    {:noreply, check_for_inactive(state)}
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
@@ -330,11 +329,11 @@ defmodule Game.Session.Process do
   end
 
   # Check if the session is inactive, disconnect if it is
-  defp check_for_inactive(%{socket: socket, last_recv: last_recv}) do
+  defp check_for_inactive(state = %{last_recv: last_recv}) do
     case Timex.diff(Timex.now(), last_recv, :seconds) do
       time when time > @timeout_seconds ->
-        Logger.info("Idle player #{inspect(self())} - disconnecting", type: :session)
-        socket |> @socket.disconnect()
+        Logger.info("Idle player #{inspect(self())} - setting afk", type: :session)
+        %{state | is_afk: true}
 
       _ ->
         self() |> schedule_inactive_check()

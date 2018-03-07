@@ -9,7 +9,7 @@ config :ex_venture,
 
 config :ex_venture, :game,
   currency: "gold",
-  timeout_seconds: 60 * 60,
+  timeout_seconds: 10 * 60,
   rand: :rand,
   random_damage: 25..25
 

@@ -151,10 +151,10 @@ defmodule Game.SessionTest do
     assert @socket.get_disconnects() == []
   end
 
-  test "checking for inactive players - inactive", %{socket: socket} do
-    {:noreply, _state} = Process.handle_info(:inactive_check, %{socket: socket, last_recv: Timex.now() |> Timex.shift(minutes: -66)})
+  test "checking for inactive players - inactive" do
+    {:noreply, state} = Process.handle_info(:inactive_check, %{is_afk: false, last_recv: Timex.now() |> Timex.shift(minutes: -66)})
 
-    assert @socket.get_disconnects() == [socket]
+    assert state.is_afk
   end
 
   describe "disconnects" do
