@@ -3,5 +3,5 @@ defmodule Web.Help do
   Gather help text for the admin in a common place
   """
 
-  use ExVenture.HelpCompiler, "help/web.help"
+  use ExVenture.TextCompiler, "help/web.help"
 end

@@ -1,4 +1,4 @@
-defmodule ExVenture.HelpCompiler do
+defmodule ExVenture.TextCompiler do
   @moduledoc """
   Compiler for the help text.
   """

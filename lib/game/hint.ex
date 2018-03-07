@@ -3,7 +3,7 @@ defmodule Game.Hint do
   Module to help guard for hiding hints
   """
 
-  use ExVenture.HelpCompiler, "help/hint.help"
+  use ExVenture.TextCompiler, "help/hint.help"
   use Networking.Socket
 
   alias Game.Format
