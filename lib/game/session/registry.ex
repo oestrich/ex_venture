@@ -8,6 +8,10 @@ defmodule Game.Session.Registry do
   alias Data.User
 
   defmodule Metadata do
+    @moduledoc """
+    Struct for internal registry metadata
+    """
+
     defstruct [:is_afk]
   end
 
