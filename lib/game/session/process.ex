@@ -94,6 +94,11 @@ defmodule Game.Session.Process do
     {:stop, :normal, state}
   end
 
+  def handle_cast(:disconnect, state) do
+    Logger.info(fn -> "Disconnecting the session - Fall through" end, type: :session)
+    {:stop, :normal, state}
+  end
+
   def handle_cast({:disconnect, [force: true]}, state = %{socket: socket}) do
     socket |> @socket.echo("The server will be shutting down shortly.")
 
