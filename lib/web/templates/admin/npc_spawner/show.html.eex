@@ -26,6 +26,12 @@
           <table class="table">
             <tbody>
               <tr>
+                <th>Name</th>
+                <td>
+                  <%= npc_name(@npc_spawner) %>
+                </td>
+              </tr>
+              <tr>
                 <th>Zone</th>
                 <td><%= link(@npc_spawner.zone.name, to: zone_path(@conn, :show, @npc_spawner.zone_id)) %></td>
               </tr>
@@ -69,6 +75,6 @@
 
 <script type="application/javascript">
 $(function () {
-  new NPCSocket(<%= @npc_spawner.id %>).connect();
+  new NPCSocket(<%= @npc_spawner.id %>, "<%= npc_name(@npc_spawner) %>").connect();
 });
 </script>

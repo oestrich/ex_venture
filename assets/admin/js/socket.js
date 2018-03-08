@@ -4,8 +4,9 @@ import $ from "jquery"
 import format from "./color"
 
 export class NPCSocket {
-  constructor(spawnerId) {
+  constructor(spawnerId, npcName) {
     this.spawnerId = spawnerId
+    this.npcName = npcName
   }
 
   formatName(character) {
@@ -28,11 +29,11 @@ export class NPCSocket {
     this.channel = this.socket.channel("npc:" + this.spawnerId, {})
 
     this.channel.on("character/died", msg => {
-      this.append(`{npc}NPC{/npc} died`)
+      this.append(`{npc}${this.npcName}{/npc} died`)
     });
 
     this.channel.on("character/respawned", msg => {
-      this.append(`{npc}NPC{/npc} respawned`)
+      this.append(`{npc}${this.npcName}{/npc} respawned`)
     });
 
     this.channel.on("character/targeted", msg => {
@@ -40,11 +41,11 @@ export class NPCSocket {
     });
 
     this.channel.on("combat/targeted", msg => {
-      this.append(`{npc}NPC{/npc} targeted by ${this.formatName(msg)}`)
+      this.append(`{npc}${this.npcName}{/npc} targeted by ${this.formatName(msg)}`)
     });
 
     this.channel.on("combat/action", msg => {
-      let combatText = `{npc}NPC{/npc} attacks ${this.formatName(msg.target)}: ${msg.text}`
+      let combatText = `{npc}${this.npcName}{/npc} attacks ${this.formatName(msg.target)}: ${msg.text}`
       msg.effects.map(effect => {
         combatText += "\n" + JSON.stringify(effect)
       })
@@ -52,7 +53,7 @@ export class NPCSocket {
     });
 
     this.channel.on("combat/effects", msg => {
-      let combatText = `{npc}NPC{/npc} received effects from ${this.formatName(msg.from)}: ${msg.text}`
+      let combatText = `{npc}${this.npcName}{/npc} received effects from ${this.formatName(msg.from)}: ${msg.text}`
       msg.effects.map(effect => {
         combatText += "\n" + JSON.stringify(effect)
       })
