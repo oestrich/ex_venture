@@ -8,6 +8,16 @@ export class NPCSocket {
     this.spawnerId = spawnerId
   }
 
+  formatName(character) {
+    if (character.type === "user") {
+      return `{player}${character.name}{/player}`;
+    }
+
+    if (character.type === "npc") {
+      return `{npc}${character.name}{/npc}`;
+    }
+  }
+
   connect() {
     let body = $("body")
     let userToken = body.data("user-token")
@@ -17,17 +27,49 @@ export class NPCSocket {
 
     this.channel = this.socket.channel("npc:" + this.spawnerId, {})
 
+    this.channel.on("character/died", msg => {
+      this.append(`{npc}NPC{/npc} died`)
+    });
+
+    this.channel.on("character/respawned", msg => {
+      this.append(`{npc}NPC{/npc} respawned`)
+    });
+
+    this.channel.on("character/targeted", msg => {
+      this.append(`${this.formatName(msg)} targeted`)
+    });
+
+    this.channel.on("combat/targeted", msg => {
+      this.append(`{npc}NPC{/npc} targeted by ${this.formatName(msg)}`)
+    });
+
+    this.channel.on("combat/action", msg => {
+      let combatText = `{npc}NPC{/npc} attacks ${this.formatName(msg.target)}: ${msg.text}`
+      msg.effects.map(effect => {
+        combatText += "\n" + JSON.stringify(effect)
+      })
+      this.append(combatText)
+    });
+
+    this.channel.on("combat/effects", msg => {
+      let combatText = `{npc}NPC{/npc} received effects from ${this.formatName(msg.from)}: ${msg.text}`
+      msg.effects.map(effect => {
+        combatText += "\n" + JSON.stringify(effect)
+      })
+      this.append(combatText)
+    });
+
     this.channel.on("room/entered", msg => {
-      this.append(`${msg.name} entered`)
-    })
+      this.append(`${this.formatName(msg)} entered`)
+    });
 
     this.channel.on("room/leave", msg => {
-      this.append(`${msg.name} left`)
-    })
+      this.append(`${this.formatName(msg)} left`)
+    });
 
     this.channel.on("room/heard", msg => {
       this.append(msg.formatted);
-    })
+    });
 
     $(".npc-chat").on("keyup", e => {
       if (e.which == 13 && $(".npc-chat").val() != "") {
@@ -45,7 +87,7 @@ export class NPCSocket {
 
   append(text) {
     let console = $(".npc-console")
-    console.append(format(`${text}\n`))
+    console.append(format(`\n${text}\n`))
     console.scrollTop(console.prop("scrollHeight"))
   }
 }
@@ -65,7 +107,7 @@ export class UserSocket {
     this.channel = this.socket.channel("user:" + this.userId, {})
 
     this.channel.on("echo", msg => {
-      this.append(format(msg.data))
+      this.append(msg.data)
     })
 
     this.append("Connecting...")

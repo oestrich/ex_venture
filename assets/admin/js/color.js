@@ -14,12 +14,25 @@ function formatColor(string) {
   string = string.replace(/{map:green}/g, "<span class='map-green'>")
   string = string.replace(/{map:grey}/g, "<span class='map-grey'>")
   string = string.replace(/{map:light-grey}/g, "<span class='map-light-grey'>")
+  string = string.replace(/{npc}/g, "<span class='yellow'>")
+  string = string.replace(/{item}/g, "<span class='cyan'>")
+  string = string.replace(/{player}/g, "<span class='blue'>")
+  string = string.replace(/{skill}/g, "<span class='white'>")
+  string = string.replace(/{quest}/g, "<span class='yellow'>")
+  string = string.replace(/{room}/g, "<span class='green'>")
+  string = string.replace(/{say}/g,  "<span class='green'>")
+  string = string.replace(/{command}/g,  "<span class='white'>")
+  string = string.replace(/{exit}/g,  "<span class='white'>")
+  string = string.replace(/{shop}/g,  "<span class='magenta'>")
+  string = string.replace(/{hint}/g,  "<span class='cyan'>")
   string = string.replace(/{\/[\w:-]+}/g, "</span>")
   return string;
 }
 
 function formatLines(string) {
-  return string.replace(/\n/g, "<br />")
+  string = string.replace(/\n/g, "<br />")
+  string = string.replace(/\r/g, "")
+  return string;
 }
 
 function format(string) {

@@ -196,6 +196,12 @@ defmodule Game.NPC.Events do
       Format.skill_usee(action.text, user: {:npc, npc})
     )
 
+    broadcast(npc, "combat/action", %{
+      target: who(target),
+      text: Format.skill_usee(action.text, user: {:npc, npc}),
+      effects: effects,
+    })
+
     delay = round(Float.ceil(action.delay * 1000))
     notify_delayed({"combat/tick"}, delay)
 
@@ -222,16 +228,17 @@ defmodule Game.NPC.Events do
   def act_on_room_entered(state, character, event)
 
   def act_on_room_entered(state, {:user, _}, %{action: %{type: "say", message: message}}) do
-    %{room_id: room_id, npc: npc} = state
-    room_id |> @room.say({:npc, npc}, Message.npc(npc, message))
+    state |> say_to_room(message)
     state
   end
 
   def act_on_room_entered(state = %{npc: npc, combat: false}, {:user, user}, %{
         action: %{type: "target"}
       }) do
+
     Character.being_targeted({:user, user}, {:npc, npc})
     notify_delayed({"combat/tick"}, 1500)
+    broadcast(npc, "character/targeted", who({:user, user}))
     %{state | combat: true, target: Character.who({:user, user})}
   end
 
@@ -337,16 +344,32 @@ defmodule Game.NPC.Events do
   @doc """
   Emote the NPC's message to the room
   """
-  def emote_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
-    room_id |> @room.emote({:npc, npc}, Message.npc_emote(npc, message))
+  def emote_to_room(state, %{action: %{message: message}}) do
+    emote_to_room(state, message)
+  end
+
+  def emote_to_room(state = %{room_id: room_id, npc: npc}, message) when is_binary(message) do
+    message = Message.npc_emote(npc, message)
+
+    room_id |> @room.emote({:npc, npc}, message)
+    broadcast(npc, "room/heard", message)
+
     state
   end
 
   @doc """
   Say the NPC's message to the room
   """
-  def say_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{message: message}}) do
-    room_id |> @room.say({:npc, npc}, Message.npc_say(npc, message))
+  def say_to_room(state, %{action: %{message: message}}) do
+    say_to_room(state, message)
+  end
+
+  def say_to_room(state = %{room_id: room_id, npc: npc}, message) when is_binary(message) do
+    message = Message.npc_say(npc, message)
+
+    room_id |> @room.say({:npc, npc}, message)
+    broadcast(npc, "room/heard", message)
+
     state
   end
 
@@ -355,21 +378,34 @@ defmodule Game.NPC.Events do
   """
   def say_random_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{messages: messages}}) do
     message = Enum.random(messages)
-    room_id |> @room.say({:npc, npc}, Message.npc_say(npc, message))
+    message = Message.npc_say(npc, message)
+
+    broadcast(npc, "room/heard", message)
+    room_id |> @room.say({:npc, npc}, message)
+
     state
   end
 
-  defp broadcast(npc, action) do
-    broadcast(npc, action, %{})
+  @doc """
+  Broadcast a message to the NPC channel
+  """
+  def broadcast(npc, action, message \\ %{})
+
+  def broadcast(npc, action, message = %Message{}) do
+    broadcast(npc, action, %{
+      type: message.type,
+      name: message.sender.name,
+      message: message.message,
+      formatted: message.formatted
+    })
   end
 
-  defp broadcast(%{id: id}, action, message) do
+  def broadcast(%{id: id}, action, message) do
     Web.Endpoint.broadcast("npc:#{id}", action, message)
   end
 
-  defp who({:npc, npc}), do: %{type: :npc, name: npc.name}
-  defp who({:user, user}), do: %{type: :user, name: user.name}
-  defp who({:user, _, user}), do: %{type: :user, name: user.name}
+  def who({:npc, npc}), do: %{type: :npc, name: npc.name}
+  def who({:user, user}), do: %{type: :user, name: user.name}
 
   defp notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})

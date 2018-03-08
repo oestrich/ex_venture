@@ -47,7 +47,7 @@
           <h3 class="box-title">Chat</h3>
         </div>
         <div class="box-body">
-          <pre class="npc-console" style="height: 200px; overflow-y: scroll"></pre>
+          <pre class="console npc-console" style="height: 350px; overflow-y: scroll; white-space: pre-wrap;"></pre>
         </div>
         <div class="box-footer">
           <div class="form-group">

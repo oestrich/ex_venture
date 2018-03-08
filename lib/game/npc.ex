@@ -11,7 +11,6 @@ defmodule Game.NPC do
   alias Data.NPCSpawner
   alias Data.Stats
   alias Game.Channel
-  alias Game.Message
   alias Game.NPC.Actions
   alias Game.NPC.Conversation
   alias Game.NPC.Events
@@ -238,13 +237,13 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_cast({:say, message}, state = %{npc: npc, room_id: room_id}) do
-    room_id |> @room.say({:npc, npc}, Message.npc(npc, message))
+  def handle_cast({:say, message}, state) do
+    state |> Events.say_to_room(message)
     {:noreply, state}
   end
 
-  def handle_cast({:emote, message}, state = %{npc: npc, room_id: room_id}) do
-    room_id |> @room.emote({:npc, npc}, Message.npc_emote(npc, message))
+  def handle_cast({:emote, message}, state) do
+    state |> Events.emote_to_room(message)
     {:noreply, state}
   end
 
@@ -252,15 +251,22 @@ defmodule Game.NPC do
   # Character callbacks
   #
 
-  def handle_cast({:targeted, _player}, state) do
+  def handle_cast({:targeted, who}, state) do
+    Events.broadcast(state.npc, "combat/targeted", Events.who(who))
     {:noreply, state}
   end
 
-  def handle_cast({:apply_effects, effects, from, _description}, state = %{npc: npc}) do
+  def handle_cast({:apply_effects, effects, from, description}, state = %{npc: npc}) do
     Logger.info(
       "Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})",
       type: :npc
     )
+
+    Events.broadcast(npc, "combat/effects", %{
+      from: Events.who(from),
+      text: description,
+      effects: effects,
+    })
 
     state = Actions.apply_effects(state, effects, from)
     {:noreply, state}

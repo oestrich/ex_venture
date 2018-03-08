@@ -16,6 +16,7 @@ defmodule Game.NPC.Actions do
   alias Game.Character
   alias Game.Effect
   alias Game.Items
+  alias Game.NPC.Events
 
   @doc """
   Clean up conversation state, after 5 minutes remove the state of the user
@@ -34,6 +35,7 @@ defmodule Game.NPC.Actions do
   def handle_respawn(state = %{npc: npc, npc_spawner: npc_spawner}) do
     npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
     npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
+    Events.broadcast(npc, "character/respawned")
     %{state | npc: npc, room_id: npc_spawner.room_id}
   end
 
@@ -54,6 +56,8 @@ defmodule Game.NPC.Actions do
 
     room_id |> @room.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
     room_id |> @room.leave({:npc, npc}, :death)
+
+    Events.broadcast(npc, "character/died")
 
     drop_currency(room_id, npc, npc.currency)
     npc |> drop_items(room_id)
