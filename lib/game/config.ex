@@ -101,10 +101,4 @@ defmodule Game.Config do
         save
     end
   end
-
-  @doc """
-  Starting prompt
-  """
-  @spec default_prompt() :: String.t()
-  def default_prompt(), do: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"
 end

@@ -435,8 +435,9 @@ defmodule Seeds do
     create_help_topic(%{name: "Fighter", keywords: ["fighter"], body: "This class uses physical skills"})
     create_help_topic(%{name: "Mage", keywords: ["mage"], body: "This class uses arcane skills"})
 
-    save = Game.Config.starting_save()
-    |> Map.put(:stats, dwarf.starting_stats())
+    save =
+      Game.Config.starting_save()
+      |> Map.put(:stats, dwarf.starting_stats())
 
     create_user(%{
       name: "eric",

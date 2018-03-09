@@ -25,4 +25,10 @@ defmodule Data.Save.Config do
       _ -> false
     end
   end
+
+  @doc """
+  Starting prompt
+  """
+  @spec default_prompt() :: String.t()
+  def default_prompt(), do: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"
 end

@@ -7,6 +7,7 @@ defmodule Data.Save do
 
   alias Data.Item
   alias Data.Stats
+  alias Data.Save.Config
 
   @type t :: %{
           room_id: integer,
@@ -74,6 +75,7 @@ defmodule Data.Save do
       |> atomize_wearing()
       |> atomize_wielding()
       |> migrate()
+      |> migrate_config()
       |> load_items()
 
     {:ok, struct(__MODULE__, save)}
@@ -145,6 +147,28 @@ defmodule Data.Save do
   end
 
   defp load_items(save), do: save
+
+  @doc """
+  Migrate the user's config to ensure defaults are present
+  """
+  @spec migrate_config(t()) :: t()
+  def migrate_config(save) do
+    config =
+      save.config
+      |> ensure_config(:prompt, Config.default_prompt())
+
+    %{save | config: config}
+  end
+
+  defp ensure_config(config, key, default) do
+    case Map.get(config, key, nil) do
+      nil ->
+        Map.put(config, key, default)
+
+      _ ->
+        config
+    end
+  end
 
   @impl Ecto.Type
   def dump(save) when is_map(save), do: {:ok, Map.delete(save, :__struct__)}

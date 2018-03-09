@@ -145,7 +145,6 @@ defmodule Game.Account do
     user
     |> migrate_items()
     |> migrate_skills()
-    |> migrate_config()
   end
 
   @doc """
@@ -190,28 +189,6 @@ defmodule Game.Account do
     skill_ids = Enum.uniq(skill_ids)
 
     %{user | save: %{user.save | skill_ids: skill_ids}}
-  end
-
-  @doc """
-  Migrate the user's config to ensure defaults are present
-  """
-  @spec migrate_config(User.t()) :: User.t()
-  def migrate_config(user) do
-    config =
-      user.save.config
-      |> ensure_config(:prompt, Config.default_prompt())
-
-    %{user | save: %{user.save | config: config}}
-  end
-
-  defp ensure_config(config, key, default) do
-    case Map.get(config, key, nil) do
-      nil ->
-        Map.put(config, key, default)
-
-      _ ->
-        config
-    end
   end
 
   @doc """

@@ -4,6 +4,7 @@ defmodule Data.SaveTest do
   doctest Data.Save
 
   alias Data.Save
+  alias Data.Save.Config
 
   describe "loading" do
     test "converts strings to atoms as keys" do
@@ -57,6 +58,16 @@ defmodule Data.SaveTest do
 
       assert save.version > 0
       assert [%{id: 1}] = save.items
+    end
+  end
+
+  describe "migrating config" do
+    test "adds prompt" do
+      save = %{config: %{}}
+
+      save = Save.migrate_config(save)
+
+      assert save.config.prompt == Config.default_prompt()
     end
   end
 end
