@@ -28,3 +28,25 @@
     [ ]> {command}slash{/command}
 
     [ ]> {command}slash bandit{/command}
+
+- id: e4a0ca55-1460-4d2f-abc9-762bd7bb32d6
+  name: Prompt
+  short: Your prompt and configuration options
+  full: |
+    The prompt shows helpful information and alerts you to when the game is expecting input from you.
+
+    You can configure your prompt in the game with the following options.
+
+      {white}%h{/white} - Your current health points
+      {white}%H{/white} - Your maximum health points
+      {white}%s{/white} - Your current skill points
+      {white}%S{/white} - Your maximum skill points
+      {white}%m{/white} - Your current movement points
+      {white}%M{/white} - Your maximum movement points
+      {white}%x{/white} - The XP required for next level
+
+    The default prompt is: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"
+
+    To configure your prompt use the {command}config{/command} command as follows:
+
+      [ ] > {command}config set prompt %h/%Hhp %s/%Ssp %m/%Mmv %xxp{/command}

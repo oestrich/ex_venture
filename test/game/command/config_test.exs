@@ -59,4 +59,31 @@ defmodule Game.Command.ConfigTest do
       assert Regex.match?(~r/unknown/i, echo)
     end
   end
+
+  describe "config setting" do
+    test "set to a string - prompt", %{state: state} do
+      state = %{state | save: %{state.save | config: %{prompt: ""}}}
+
+      {:update, %{save: save}} = Config.run({:set, "prompt %h/%Hhp"}, state)
+
+      assert save.config.prompt == "%h/%Hhp"
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/set/, echo)
+    end
+
+    test "cannot set non-string config options - like hint", %{state: state} do
+      :ok = Config.run({:set, "hints true"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/cannot/i, echo)
+    end
+
+    test "cannot set unknown config options", %{state: state} do
+      :ok = Config.run({:set, "unknown hi"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/unknown/i, echo)
+    end
+  end
 end

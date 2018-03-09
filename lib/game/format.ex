@@ -49,20 +49,24 @@ defmodule Game.Format do
   Example:
 
       iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10, move_points: 4, max_move_points: 10}
-      iex> Game.Format.prompt(%{name: "user"}, %{experience_points: 1010, stats: stats})
+      ...> config = %{prompt: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"}
+      ...> Game.Format.prompt(%{name: "user"}, %{experience_points: 1010, stats: stats, config: config})
       "[50/75hp 9/10sp 4/10mv 10xp] > "
   """
   @spec prompt(User.t(), Save.t()) :: String.t()
   def prompt(user, save)
 
-  def prompt(_user, %{experience_points: exp, stats: stats}) do
+  def prompt(_user, %{experience_points: exp, stats: stats, config: config}) do
     exp = rem(exp, 1000)
 
-    health = "#{stats.health}/#{stats.max_health}hp"
-    skill = "#{stats.skill_points}/#{stats.max_skill_points}sp"
-    move = "#{stats.move_points}/#{stats.max_move_points}mv"
-
-    "[#{health} #{skill} #{move} #{exp}xp] > "
+    "[#{config.prompt}] > "
+    |> String.replace("%h", to_string(stats.health))
+    |> String.replace("%H", to_string(stats.max_health))
+    |> String.replace("%s", to_string(stats.skill_points))
+    |> String.replace("%S", to_string(stats.max_skill_points))
+    |> String.replace("%m", to_string(stats.move_points))
+    |> String.replace("%M", to_string(stats.max_move_points))
+    |> String.replace("%x", to_string(exp))
   end
 
   def prompt(_user, _save), do: "> "
@@ -957,7 +961,18 @@ defmodule Game.Format do
 
     rows = [["Name", "On?"] | rows]
 
-    Table.format("Config", rows, [20, 20])
+    max_size =
+      rows
+      |> Enum.map(fn row ->
+        row
+        |> Enum.at(1)
+        |> to_string()
+        |> Color.strip_color()
+        |> String.length()
+      end)
+      |> Enum.max()
+
+    Table.format("Config", rows, [10, max_size])
   end
 
   @doc """

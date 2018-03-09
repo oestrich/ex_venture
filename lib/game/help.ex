@@ -139,6 +139,7 @@ defmodule Game.Help do
   defp format_built_in_topic(built_in) do
     """
     #{built_in.name}
+    #{Format.underline(built_in.name)}
 
     #{built_in.full}
     """

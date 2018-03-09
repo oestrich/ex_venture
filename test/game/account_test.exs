@@ -4,6 +4,7 @@ defmodule Game.AccountTest do
   alias Data.Item
   alias Data.User
   alias Game.Account
+  alias Game.Config
 
   test "updating the save force saves it" do
     user = create_user(%{name: "user", password: "password"})
@@ -105,6 +106,21 @@ defmodule Game.AccountTest do
       user = Account.migrate_skills(user)
 
       assert user.save.skill_ids == [skill.id]
+    end
+  end
+
+  describe "migrating config" do
+    setup do
+      user = create_user(%{name: "user", password: "password"})
+      %{user: user}
+    end
+
+    test "adds prompt", %{user: user} do
+      user = %{user | save: %{user.save | config: %{}}}
+
+      user = Account.migrate_config(user)
+
+      assert user.save.config.prompt == Config.default_prompt()
     end
   end
 end

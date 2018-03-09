@@ -5,6 +5,7 @@ defmodule Game.Command.Config do
 
   use Game.Command
 
+  alias Data.Save.Config, as: PlayerConfig
   alias Game.Format
 
   commands(["config"], parse: false)
@@ -15,7 +16,16 @@ defmodule Game.Command.Config do
 
   def help(:full) do
     """
-    #{help(:short)}
+    The {command}config{/command} command lets you view and set your player configuration options.
+
+    You can change the following options:
+
+      {white}hints{/white}:
+        A true/false option to show hints in the game, use {command}config [on|off]{/command}
+
+      {white}prompt{/white}:
+        A string that is formatted to display your prompt, use {command}config set{/command}. See more
+        about prompts at {command}help prompt{/command}.
 
     View a list of configuration options
     [ ] > {command}config{/command}
@@ -25,6 +35,9 @@ defmodule Game.Command.Config do
 
     Turn a config off:
     [ ] > {command}config off hints{/command}
+
+    Set a config:
+    [ ] > {command}config set prompt %h/%Hhp{/command}
     """
   end
 
@@ -41,6 +54,9 @@ defmodule Game.Command.Config do
       iex> Game.Command.Config.parse("config off hints")
       {:off, "hints"}
 
+      iex> Game.Command.Config.parse("config set prompt %h/%Hhp")
+      {:set, "prompt %h/%Hhp"}
+
       iex> Game.Command.Config.parse("unknown hi")
       {:error, :bad_parse, "unknown hi"}
   """
@@ -49,6 +65,7 @@ defmodule Game.Command.Config do
   def parse("config"), do: {:list}
   def parse("config on " <> config), do: {:on, config}
   def parse("config off " <> config), do: {:off, config}
+  def parse("config set " <> config), do: {:set, config}
 
   @impl Game.Command
   @doc """
@@ -60,8 +77,8 @@ defmodule Game.Command.Config do
     {:paginate, Format.config(save), state}
   end
 
-  def run({:on, config_name}, state = %{save: save}) do
-    case is_config?(config_name, save) do
+  def run({:on, config_name}, state) do
+    case is_config?(config_name) do
       true ->
         {:update, update_config(config_name, true, state)}
 
@@ -70,8 +87,8 @@ defmodule Game.Command.Config do
     end
   end
 
-  def run({:off, config_name}, state = %{save: save}) do
-    case is_config?(config_name, save) do
+  def run({:off, config_name}, state) do
+    case is_config?(config_name) do
       true ->
         {:update, update_config(config_name, false, state)}
 
@@ -80,14 +97,26 @@ defmodule Game.Command.Config do
     end
   end
 
-  defp is_config?(config_name, save) do
-    keys =
-      save.config
-      |> Map.keys()
-      |> Enum.map(&to_string/1)
+  def run({:set, config}, state) do
+    [config_name | value] = String.split(config)
+    value = Enum.join(value, " ")
 
-    Enum.member?(keys, String.downcase(config_name))
+    case is_config?(config_name) do
+      true ->
+        case PlayerConfig.settable?(config_name) do
+          true ->
+            {:update, update_config(config_name, value, state)}
+
+          false ->
+            state.socket |> @socket.echo("Cannot set #{config_name} directly. See {command}help config{/command} for more information.")
+        end
+
+      false ->
+        state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
+    end
   end
+
+  defp is_config?(config_name), do: PlayerConfig.option?(config_name)
 
   defp update_config(config_name, value, state = %{save: save}) do
     config_atom =
@@ -110,6 +139,8 @@ defmodule Game.Command.Config do
         state.socket |> @socket.echo("#{config_name} is turned on")
       false ->
         state.socket |> @socket.echo("#{config_name} is turned off")
+      string when is_binary(string) ->
+        state.socket |> @socket.echo("#{config_name} is set to \"#{string}\"")
     end
 
     state

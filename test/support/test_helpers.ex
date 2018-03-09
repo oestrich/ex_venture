@@ -59,7 +59,7 @@ defmodule TestHelpers do
       stats: base_stats(),
       wearing: %{},
       wielding: %{},
-      config: %{hints: true},
+      config: %{hints: true, prompt: "%h/%Hhp"},
       version: 6,
     }
   end

@@ -20,6 +20,7 @@ defmodule Data.Save do
           items: [Item.instance()],
           config: %{
             hints: boolean(),
+            prompt: String.t(),
           },
           wearing: %{
             chest: integer
@@ -255,10 +256,10 @@ defmodule Data.Save do
   @doc """
   Validate config are correct
 
-      iex> Data.Save.valid_config?(%{config: %{hints: true}})
+      iex> Data.Save.valid_config?(%{config: %{hints: true, prompt: ""}})
       true
 
-      iex> Data.Save.valid_config?(%{config: %{hints: false}})
+      iex> Data.Save.valid_config?(%{config: %{hints: false, prompt: "Hi"}})
       true
 
       iex> Data.Save.valid_config?(%{config: [:bad]})
@@ -271,7 +272,7 @@ defmodule Data.Save do
   def valid_config?(save)
 
   def valid_config?(%{config: config}) do
-    is_map(config) && keys(config) == [:hints] && is_boolean(config.hints)
+    is_map(config) && keys(config) == [:hints, :prompt] && is_boolean(config.hints) && is_binary(config.prompt)
   end
 
   @doc """
