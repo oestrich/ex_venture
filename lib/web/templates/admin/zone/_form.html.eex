@@ -36,6 +36,15 @@
         <%= number_input f, :ending_level, class: "form-control" %>
         <%= error_tag f, :ending_level %>
       </div>
+
+      <%= if @edit_name_layers do %>
+        <%= Enum.map(layers(@zone), fn (layer) -> %>
+          <div class="form-group">
+            <label for="zone_map_layer_names_<%= layer %>">Map Layer <%= layer %></label>
+            <input type="text" id="zone_map_layer_names_<%= layer %>" name="zone[map_layer_names][<%= layer %>]" value="<%= layer_name(@zone, layer) %>" class="form-control" />
+          </div>
+        <% end) %>
+      <% end %>
     </div>
 
     <div class="box-footer">

@@ -76,7 +76,7 @@
             <ul class="nav nav-tabs">
               <%= Enum.map(layers(@zone), fn (layer) -> %>
                 <li class="<%= layer_class(@room.map_layer, layer) %>">
-                  <%= link("Layer #{layer}", to: "#layer-#{layer}", data: [toggle: "tab"]) %>
+                  <%= link(ZoneView.layer_name(@zone, layer), to: "#layer-#{layer}", data: [toggle: "tab"]) %>
                 </li>
               <% end)%>
             </ul>

@@ -18,7 +18,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render "_form.html", path: zone_path(@conn, :update, @zone.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+      <%= render "_form.html", path: zone_path(@conn, :update, @zone.id), edit_name_layers: true, zone: @zone, changeset: @changeset, title: "Edit", submit: "Update" %>
     </div>
   </div>
 </section>

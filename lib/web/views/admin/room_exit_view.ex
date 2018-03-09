@@ -1,8 +1,9 @@
 defmodule Web.Admin.RoomExitView do
   use Web, :view
 
-  alias Web.Zone
   alias Game.Map
+  alias Web.Admin.ZoneView
+  alias Web.Zone
 
   defdelegate map(zone, opts), to: Map
 
