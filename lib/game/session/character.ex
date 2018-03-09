@@ -127,8 +127,17 @@ defmodule Game.Session.Character do
 
   def notify(state, {"room/entered", {character, reason}}) do
     case reason do
-      :enter -> state.socket |> @socket.echo("#{Format.name(character)} enters")
-      :respawn -> state.socket |> @socket.echo("#{Format.name(character)} respawns")
+      {:enter, direction} ->
+        state.socket |> @socket.echo("#{Format.name(character)} enters from the {command}#{direction}{/command}.")
+
+      :teleport ->
+        state.socket |> @socket.echo("#{Format.name(character)} warps in")
+
+      :login ->
+        state.socket |> @socket.echo("#{Format.name(character)} logs in")
+
+      :respawn ->
+        state.socket |> @socket.echo("#{Format.name(character)} respawns")
     end
 
     state |> GMCP.character_enter(character)
@@ -137,8 +146,17 @@ defmodule Game.Session.Character do
 
   def notify(state, {"room/leave", {character, reason}}) do
     case reason do
-      :leave -> state.socket |> @socket.echo("#{Format.name(character)} leaves")
-      :death -> :ok
+      {:leave, direction} ->
+        state.socket |> @socket.echo("#{Format.name(character)} leaves heading {command}#{direction}{/command}.")
+
+      :signout ->
+        state.socket |> @socket.echo("#{Format.name(character)} signs out")
+
+      :teleport ->
+        :ok
+
+      :death ->
+        :ok
     end
 
     state |> GMCP.character_leave(character)

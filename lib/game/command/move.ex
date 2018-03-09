@@ -97,7 +97,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:east) do
-      room_exit = %{east_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{east_id: id} -> maybe_move_to(state, id, room_exit, :east)
       _ -> {:error, :no_exit}
     end
   end
@@ -106,7 +106,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:north) do
-      room_exit = %{north_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{north_id: id} -> maybe_move_to(state, id, room_exit, :north)
       _ -> {:error, :no_exit}
     end
   end
@@ -115,7 +115,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:south) do
-      room_exit = %{south_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{south_id: id} -> maybe_move_to(state, id, room_exit, :south)
       _ -> {:error, :no_exit}
     end
   end
@@ -124,7 +124,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:west) do
-      room_exit = %{west_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{west_id: id} -> maybe_move_to(state, id, room_exit, :west)
       _ -> {:error, :no_exit}
     end
   end
@@ -133,7 +133,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:up) do
-      room_exit = %{up_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{up_id: id} -> maybe_move_to(state, id, room_exit, :up)
       _ -> {:error, :no_exit}
     end
   end
@@ -142,7 +142,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:down) do
-      room_exit = %{down_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{down_id: id} -> maybe_move_to(state, id, room_exit, :down)
       _ -> {:error, :no_exit}
     end
   end
@@ -151,7 +151,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:in) do
-      room_exit = %{in_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{in_id: id} -> maybe_move_to(state, id, room_exit, :in)
       _ -> {:error, :no_exit}
     end
   end
@@ -160,7 +160,7 @@ defmodule Game.Command.Move do
     room = @room.look(room_id)
 
     case room |> Exit.exit_to(:out) do
-      room_exit = %{out_id: id} -> maybe_move_to(state, id, room_exit)
+      room_exit = %{out_id: id} -> maybe_move_to(state, id, room_exit, :out)
       _ -> {:error, :no_exit}
     end
   end
@@ -204,30 +204,35 @@ defmodule Game.Command.Move do
 
   They require at least 1 movement point to proceed
   """
-  def maybe_move_to(state, room_id, room_exit \\ %{})
+  def maybe_move_to(state, room_id, room_exit, direction)
 
   def maybe_move_to(
         state = %{socket: socket},
         room_id,
-        room_exit = %{id: exit_id, has_door: true}
+        room_exit = %{id: exit_id, has_door: true},
+        direction
       ) do
+
     case Door.get(exit_id) do
       "open" ->
-        maybe_move_to(state, room_id, %{})
+        maybe_move_to(state, room_id, %{}, direction)
 
       "closed" ->
         Door.set(exit_id, "open")
         socket |> @socket.echo("You opened the door.")
-        maybe_move_to(state, room_id, room_exit)
+        maybe_move_to(state, room_id, room_exit, direction)
     end
   end
 
-  def maybe_move_to(state = %{save: %{stats: stats}}, room_id, _) do
+  def maybe_move_to(state = %{save: %{stats: stats}}, room_id, _, direction) do
     case stats.move_points > 0 do
       true ->
         stats = %{stats | move_points: stats.move_points - 1}
         save = %{state.save | stats: stats}
-        move_to(Map.put(state, :save, save), room_id)
+
+        state
+        |> Map.put(:save, save)
+        |> move_to(room_id, {:leave, direction}, {:enter, Exit.opposite(direction)})
 
       false ->
         state.socket |> @socket.echo("You have no movement points to move in that direction.")
@@ -241,9 +246,10 @@ defmodule Game.Command.Move do
   def move_to(
         state = %{save: save, user: user},
         room_id,
-        leave_reason \\ :leave,
-        enter_reason \\ :enter
+        leave_reason,
+        enter_reason
       ) do
+
     @room.unlink(save.room_id)
     @room.leave(save.room_id, {:user, user}, leave_reason)
 

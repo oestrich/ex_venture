@@ -305,7 +305,7 @@ defmodule Game.NPC.Events do
     new_room = @room.look(Map.get(room_exit, String.to_atom("#{direction}_id")))
 
     case can_move?(event.action, starting_room, room_exit, new_room) do
-      true -> move_room(state, room, new_room)
+      true -> move_room(state, room, new_room, direction)
       false -> state
     end
   end
@@ -319,10 +319,10 @@ defmodule Game.NPC.Events do
     !(room_exit.has_door && Door.closed?(room_exit.id))
   end
 
-  def move_room(state = %{npc: npc}, old_room, new_room) do
+  def move_room(state = %{npc: npc}, old_room, new_room, direction) do
     @room.unlink(old_room.id)
-    @room.leave(old_room.id, {:npc, npc})
-    @room.enter(new_room.id, {:npc, npc})
+    @room.leave(old_room.id, {:npc, npc}, {:leave, direction})
+    @room.enter(new_room.id, {:npc, npc}, {:enter, Exit.opposite(direction)})
     @room.link(old_room.id)
 
     Enum.each(new_room.players, fn player ->

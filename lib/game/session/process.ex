@@ -88,7 +88,7 @@ defmodule Game.Session.Process do
     Logger.info(fn -> "Disconnecting the session" end, type: :session)
     %{user: user, save: save, session_started_at: session_started_at, stats: stats} = state
     Session.Registry.unregister()
-    @room.leave(save.room_id, {:user, user})
+    @room.leave(save.room_id, {:user, user}, :signout)
     @room.unlink(save.room_id)
     user |> Account.save_session(save, session_started_at, Timex.now(), stats)
     {:stop, :normal, state}
@@ -167,19 +167,8 @@ defmodule Game.Session.Process do
     end
   end
 
-  def handle_cast({:room_crashed, room_id}, state) do
-    case state.save.room_id == room_id do
-      true ->
-        :erlang.send_after(500, self(), :reenter)
-        {:noreply, state}
-
-      false ->
-        {:noreply, state}
-    end
-  end
-
   def handle_cast({:teleport, room_id}, state) do
-    {:update, state} = Move.move_to(state, room_id)
+    {:update, state} = Move.move_to(state, room_id, :teleport, :teleport)
     state |> prompt()
     {:noreply, state}
   end
@@ -247,11 +236,6 @@ defmodule Game.Session.Process do
     self() |> schedule_save()
     self() |> schedule_inactive_check()
 
-    {:noreply, state}
-  end
-
-  def handle_info(:reenter, state = %{save: save}) do
-    @room.enter(save.room_id, {:user, state.user})
     {:noreply, state}
   end
 

@@ -403,34 +403,34 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:user, %{id: 1, name: "Player"}}, :enter}}}, state)
-      [{_, "{player}Player{/player} enters"}] = @socket.get_echos()
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:user, %{id: 1, name: "Player"}}, {:enter, :south}}}}, state)
+      [{_, "{player}Player{/player} enters from the {command}south{/command}."}] = @socket.get_echos()
     end
 
     test "npc enters the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, :enter}}}, state)
-      [{_, "{npc}Bandit{/npc} enters"}] = @socket.get_echos()
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, {:enter, :south}}}}, state)
+      [{_, "{npc}Bandit{/npc} enters from the {command}south{/command}."}] = @socket.get_echos()
     end
 
     test "player leaves the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, :leave}}}, state)
-      [{_, "{player}Player{/player} leaves"}] = @socket.get_echos()
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, {:leave, :north}}}}, state)
+      [{_, "{player}Player{/player} leaves heading {command}north{/command}."}] = @socket.get_echos()
+    end
+
+    test "npc leaves the room", state do
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, {:leave, :north}}}}, state)
+      [{_, "{npc}Bandit{/npc} leaves heading {command}north{/command}."}] = @socket.get_echos()
     end
 
     test "player leaves the room and they were the target", %{socket: socket} do
       state = %{target: {:user, 1}, socket: socket}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, :leave}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, {:leave, :north}}}}, state)
       assert is_nil(state.target)
-    end
-
-    test "npc leaves the room", state do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, :leave}}}, state)
-      [{_, "{npc}Bandit{/npc} leaves"}] = @socket.get_echos()
     end
 
     test "npc leaves the room and they were the target", %{socket: socket} do
       state = %{target: {:npc, 1}, socket: socket}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, :leave}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, {:leave, :north}}}}, state)
       assert is_nil(state.target)
     end
 
