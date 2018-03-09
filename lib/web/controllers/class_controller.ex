@@ -9,7 +9,11 @@ defmodule Web.ClassController do
   end
 
   def show(conn, %{"id" => id}) do
-    class = Class.get(id)
-    conn |> render("show.html", class: class)
+    case Class.get(id) do
+      nil ->
+        conn |> redirect(to: public_page_path(conn, :index))
+      class ->
+        conn |> render("show.html", class: class)
+    end
   end
 end

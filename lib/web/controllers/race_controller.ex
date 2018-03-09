@@ -9,7 +9,11 @@ defmodule Web.RaceController do
   end
 
   def show(conn, %{"id" => id}) do
-    race = Race.get(id)
-    conn |> render("show.html", race: race)
+    case Race.get(id) do
+      nil ->
+        conn |> redirect(to: public_page_path(conn, :index))
+      race ->
+        conn |> render("show.html", race: race)
+    end
   end
 end

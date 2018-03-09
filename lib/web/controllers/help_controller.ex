@@ -9,8 +9,12 @@ defmodule Web.HelpController do
   end
 
   def show(conn, %{"id" => id}) do
-    help_topic = HelpTopic.get(id)
-    conn |> render("show.html", help_topic: help_topic)
+    case HelpTopic.get(id) do
+      nil ->
+        conn |> redirect(to: public_page_path(conn, :index))
+      help_topic ->
+        conn |> render("show.html", help_topic: help_topic)
+    end
   end
 
   def commands(conn, _params) do
@@ -19,12 +23,20 @@ defmodule Web.HelpController do
   end
 
   def command(conn, %{"command" => command}) do
-    command = HelpTopic.command(command)
-    conn |> render("command.html", command: command)
+    case HelpTopic.command(command) do
+      nil ->
+        conn |> redirect(to: public_page_path(conn, :index))
+      command ->
+        conn |> render("command.html", command: command)
+    end
   end
 
   def built_in(conn, %{"id" => id}) do
-    built_in = HelpTopic.built_in(id)
-    conn |> render("built_in.html", built_in: built_in)
+    case HelpTopic.built_in(id) do
+      nil ->
+        conn |> redirect(to: public_page_path(conn, :index))
+      built_in ->
+        conn |> render("built_in.html", built_in: built_in)
+    end
   end
 end

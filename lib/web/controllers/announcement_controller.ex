@@ -4,7 +4,11 @@ defmodule Web.AnnouncementController do
   alias Web.Announcement
 
   def show(conn, %{"id" => id}) do
-    announcement = Announcement.get_by_uuid(id)
-    conn |> render("show.html", announcement: announcement)
+    case Announcement.get_by_uuid(id) do
+      nil ->
+        conn |> redirect(to: public_page_path(conn, :index))
+      announcement ->
+        conn |> render("show.html", announcement: announcement)
+    end
   end
 end
