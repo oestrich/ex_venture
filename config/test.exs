@@ -20,6 +20,7 @@ config :ex_venture, :game,
   shop: Test.Game.Shop,
   zone: Test.Game.Zone,
   rand: Test.ChanceSuccess,
+  report_users: false,
   continue_wait: 10,
   random_damage: 0..0
 
