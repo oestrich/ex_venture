@@ -4,7 +4,7 @@
     <%= Enum.map(@announcements, fn announcement -> %>
       <li class="list-group-item">
         <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1"><%= link(announcement.title, to: public_announcement_path(@conn, :show, announcement.id)) %></h5>
+          <h5 class="mb-1"><%= link(announcement.title, to: public_announcement_path(@conn, :show, announcement.uuid)) %></h5>
           <small><%= TimeView.relative(announcement.inserted_at) %></small>
         </div>
       </li>

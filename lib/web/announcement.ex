@@ -32,13 +32,28 @@ defmodule Web.Announcement do
   end
 
   @doc """
-  Get a bug
+  Get an announcement
   """
   @spec get(integer()) :: [Announcement.t()]
   def get(id) do
     Announcement
     |> where([b], b.id == ^id)
     |> Repo.one()
+  end
+
+  @doc """
+  Get an announcement by uuid
+  """
+  def get_by_uuid(uuid) do
+    case Ecto.UUID.cast(uuid) do
+      {:ok, uuid} ->
+        Announcement
+        |> where([b], b.uuid == ^uuid)
+        |> Repo.one()
+
+      _ ->
+        nil
+    end
   end
 
   @doc """

@@ -1,10 +1,9 @@
-
 <div announcement="row">
   <div announcement="col-md-12">
     <div class="card">
       <div class="card-body">
         <h3 class="cart-title">
-          <%= link(@announcement.title, to: public_announcement_path(@conn, :show, @announcement.id)) %>
+          <%= link(@announcement.title, to: public_announcement_path(@conn, :show, @announcement.uuid)) %>
         </h3>
         <div class="card-subtitle text-muted">
           <%= TimeView.time(@announcement.inserted_at) %>

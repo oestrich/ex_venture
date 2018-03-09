@@ -9,6 +9,7 @@ defmodule Data.Announcement do
     field(:title, :string)
     field(:body, :string)
     field(:tags, {:array, :string}, default: [])
+    field(:uuid, Ecto.UUID, read_on_write: true)
 
     timestamps()
   end
