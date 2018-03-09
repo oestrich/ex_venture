@@ -15,6 +15,7 @@ defmodule Game.Room do
   alias Game.Room.Repo
   alias Game.Session
   alias Game.Zone
+  alias Metrics.CommunicationInstrumenter
 
   @type t :: map
 
@@ -301,10 +302,12 @@ defmodule Game.Room do
   end
 
   def handle_cast({:say, sender, message}, state) do
+    CommunicationInstrumenter.say()
     handle_cast({:notify, sender, {"room/heard", message}}, state)
   end
 
   def handle_cast({:emote, sender, message}, state) do
+    CommunicationInstrumenter.emote()
     handle_cast({:notify, sender, {"room/heard", message}}, state)
   end
 
