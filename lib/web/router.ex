@@ -44,6 +44,8 @@ defmodule Web.Router do
 
     resources("/account/mail", MailController, only: [:index, :show])
 
+    resources("/announcements", AnnouncementController, only: [:show])
+
     resources("/classes", ClassController, only: [:index, :show])
 
     get("/help/commands", HelpController, :commands)
@@ -69,6 +71,8 @@ defmodule Web.Router do
     pipe_through(:browser)
 
     get("/", DashboardController, :index)
+
+    resources("/announcements", AnnouncementController, except: [:delete])
 
     resources "/bugs", BugController, only: [:index, :show] do
       post("/complete", BugController, :complete, as: :complete)

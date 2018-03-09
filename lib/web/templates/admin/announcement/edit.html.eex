@@ -1,0 +1,24 @@
+<section class="content-header">
+  <h1>
+    <%= @announcement.title %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Announcements", to: announcement_path(@conn, :index)) %></li>
+    <li><%= link(@announcement.title, to: announcement_path(@conn, :show, @announcement.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: announcement_path(@conn, :update, @announcement.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+    </div>
+  </div>
+</section>

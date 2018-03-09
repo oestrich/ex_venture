@@ -114,6 +114,12 @@
               <% end %>
             </li>
             <li class="header">THE GAME</li>
+            <li class="<%= tab_selected(@conn, "announcements") %>">
+              <%= link(to: announcement_path(@conn, :index)) do %>
+                <i class="fa fa-map-pin"></i>
+                <span>Announcements</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "bugs") %>">
               <%= link(to: bug_path(@conn, :index)) do %>
                 <i class="fa fa-bug"></i>

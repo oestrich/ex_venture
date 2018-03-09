@@ -1,0 +1,13 @@
+<%= if length(@announcements) > 0 do %>
+  <h3>Announcements</h3>
+  <ul class="list-group">
+    <%= Enum.map(@announcements, fn announcement -> %>
+      <li class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1"><%= link(announcement.title, to: public_announcement_path(@conn, :show, announcement.id)) %></h5>
+          <small><%= TimeView.relative(announcement.inserted_at) %></small>
+        </div>
+      </li>
+    <% end) %>
+  </ul>
+<% end %>

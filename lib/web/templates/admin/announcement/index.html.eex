@@ -1,0 +1,54 @@
+<section class="content-header">
+  <h1>
+    Announcements
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Announcements</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Announcement", to: announcement_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @announcements, fn (announcement) -> %>
+                <tr>
+                  <td><%= announcement.id %></td>
+                  <td><%= announcement.title %></td>
+                  <td><%= announcement.inserted_at |> TimeView.time() %></td>
+                  <td>
+                    <%= link("View", to: announcement_path(@conn, :show, announcement.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: announcement_path(@conn, :edit, announcement.id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+          <%= render(SharedView, "_pagination.html", path: announcement_path(@conn, :index), pagination: @pagination) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,4 +1,4 @@
-<div class="row align-items-center">
+<div class="row">
   <div class="col-md-6 text-center text-md-left">
     <h1 class="mb-3"><%= Config.game_name() %></h1>
 
@@ -21,5 +21,9 @@
     <%= link(to: public_play_path(@conn, :show), class: "btn btn-lg btn-primary") do %>
       Play Now &raquo;
     <% end %>
+  </div>
+
+  <div class="col-md-6">
+    <%= render("_announcements.html", conn: @conn, announcements: @announcements) %>
   </div>
 </div>

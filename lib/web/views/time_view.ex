@@ -8,4 +8,8 @@ defmodule Web.TimeView do
     |> Timex.Timezone.convert(new_york)
     |> Timex.format!("%Y-%m-%d %I:%M %p", :strftime)
   end
+
+  def relative(time) do
+    Timex.format!(time, "{relative}", :relative)
+  end
 end

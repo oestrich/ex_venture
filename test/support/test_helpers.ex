@@ -1,4 +1,5 @@
 defmodule TestHelpers do
+  alias Data.Announcement
   alias Data.Bug
   alias Data.Channel
   alias Data.Class
@@ -430,6 +431,20 @@ defmodule TestHelpers do
       command: "smile",
       with_target: "{user} smile at {target}",
       without_target: "{user} smiles",
+    }, params)
+  end
+
+  def create_announcement(params) do
+    %Announcement{}
+    |> Announcement.changeset(announcement_attributes(params))
+    |> Repo.insert!
+  end
+
+  def announcement_attributes(params) do
+    Map.merge(%{
+      title: "Gods",
+      body: "There are gods in this world.",
+      tags: ["gods", "magic"],
     }, params)
   end
 end

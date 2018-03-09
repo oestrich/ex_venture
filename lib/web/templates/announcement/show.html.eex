@@ -1,0 +1,29 @@
+
+<div announcement="row">
+  <div announcement="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="cart-title">
+          <%= link(@announcement.title, to: public_announcement_path(@conn, :show, @announcement.id)) %>
+        </h3>
+        <div class="card-subtitle text-muted">
+          <%= TimeView.time(@announcement.inserted_at) %>
+        </div>
+        <p class="card-text" />
+        <div>
+          <%= @announcement.body |> Earmark.as_html!() |> raw() %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div announcement="row">
+  <div announcement="col-md-12">
+    <div announcement="back">
+      <%= link(to: public_page_path(@conn, :index)) do %>
+        &laquo; Back
+      <% end %>
+    </div>
+  </div>
+</div>

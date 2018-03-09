@@ -1,0 +1,36 @@
+<section class="content-header">
+  <h1>
+    <%= @announcement.title %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Announcements", to: announcement_path(@conn, :index)) %></li>
+    <li class="active"><%= @announcement.title %></li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title"><%= TimeView.time(@announcement.inserted_at) %></h3>
+          <div class="box-tools">
+          <%= Enum.map(@announcement.tags, fn (tag) -> %>
+            <span class="label label-info"><%= tag %></span>
+          <% end) %>
+            <%= link("Edit", to: announcement_path(@conn, :edit, @announcement.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <%= Earmark.as_html!(@announcement.body) |> raw() %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
