@@ -65,6 +65,9 @@ defmodule Game.Help do
 
   defp format_command_help(command) do
     lines = [
+      command.help(:topic),
+      Format.underline(command.help(:topic)),
+      " ",
       "Commands: #{command.commands |> Enum.join(", ")}",
       aliases(command),
       " ",
