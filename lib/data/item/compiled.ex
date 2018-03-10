@@ -19,7 +19,8 @@ defmodule Data.Item.Compiled do
     :user_text,
     :usee_text,
     :is_usable,
-    :amount
+    :amount,
+    :whitelist_effects
   ]
 
   defstruct @fields

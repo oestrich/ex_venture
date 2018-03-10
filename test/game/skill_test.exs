@@ -5,7 +5,7 @@ defmodule Game.SkillTest do
   alias Game.Skill
 
   test "filtering out effects that don't match" do
-    skill = %Data.Skill{white_list_effects: ["damage"]}
+    skill = %Data.Skill{whitelist_effects: ["damage"]}
     effects = [
       %{kind: "damage"},
       %{kind: "damage/over-time"},

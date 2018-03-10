@@ -145,4 +145,14 @@ defmodule Game.Item do
 
     save.items ++ wearing ++ wielding
   end
+
+  @doc """
+  Filter out effects that don't match the items's whitelist
+  """
+  @spec filter_effects([Effect.t()], Item.t()) :: [Effect.t()]
+  def filter_effects(effects, item) do
+    Enum.filter(effects, fn effect ->
+      effect.kind in item.whitelist_effects
+    end)
+  end
 end

@@ -2,10 +2,11 @@ defmodule Web.Admin.ItemView do
   use Web, :view
   use Game.Currency
 
-  alias Web.Item
-  alias Web.ItemAspect
+  alias Data.Effect
   alias Data.Stats
   alias Web.Admin.SharedView
+  alias Web.Item
+  alias Web.ItemAspect
 
   import Web.KeywordsHelper
   import Web.JSONHelper

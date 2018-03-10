@@ -1,3 +1,6 @@
+item.whitelist_effects:
+  Effects in this whitelist will be calculated when using the item. Anything not in the list will be filtered out.
+
 npc.events:
   NPCs interact with the world based on these definitions.
 
@@ -61,7 +64,7 @@ room.zone_exit:
 skill.cooldown_time:
   Milliseconds the player must wait before the skill can be used again.
 
-skill.white_list_effects:
+skill.whitelist_effects:
   Effects in this whitelist will be calculated when using the skill. Anything not in the list will be filtered out.
 
 zone.name:

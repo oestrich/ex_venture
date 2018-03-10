@@ -152,4 +152,16 @@ defmodule Data.ItemTest do
     assert instance.created_at
     assert instance.amount == 10
   end
+
+  describe "validates white list effects" do
+    test "real types are valid" do
+      changeset = %Item{} |> Item.changeset(%{whitelist_effects: ["damage"]})
+      refute changeset.errors[:whitelist_effects]
+    end
+
+    test "unknown types are invalid" do
+      changeset = %Item{} |> Item.changeset(%{whitelist_effects: ["unknown"]})
+      assert changeset.errors[:whitelist_effects]
+    end
+  end
 end

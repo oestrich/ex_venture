@@ -43,4 +43,14 @@ defmodule Game.ItemTest do
       assert [%{id: 1}, %{id: 2}, %{id: 3}] = Item.all_items(save)
     end
   end
+
+  test "filtering out effects that don't match" do
+    skill = %Data.Item{whitelist_effects: ["damage"]}
+    effects = [
+      %{kind: "damage"},
+      %{kind: "damage/over-time"},
+    ]
+
+    assert Item.filter_effects(effects, skill) == [%{kind: "damage"}]
+  end
 end

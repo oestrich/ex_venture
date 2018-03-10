@@ -77,11 +77,11 @@
               <tr>
                 <th>
                   White Listed Effect Types
-                  <%= SharedView.help_tooltip("skill.white_list_effects") %>
+                  <%= SharedView.help_tooltip("skill.whitelist_effects") %>
                 </th>
                 <td>
                   <ul>
-                    <%= Enum.map(@skill.white_list_effects, fn effect -> %>
+                    <%= Enum.map(@skill.whitelist_effects, fn effect -> %>
                       <li><code><%= effect %></code></li>
                     <% end) %>
                   </ul>

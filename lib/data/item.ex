@@ -36,7 +36,8 @@ defmodule Data.Item do
     :user_text,
     :usee_text,
     :is_usable,
-    :amount
+    :amount,
+    :whitelist_effects
   ]
 
   schema "items" do
@@ -53,6 +54,7 @@ defmodule Data.Item do
     field(:usee_text, :string, default: "[user] uses [name] on you.")
     field(:is_usable, :boolean, default: false)
     field(:amount, :integer, default: 1)
+    field(:whitelist_effects, {:array, :string}, default: [])
 
     has_many(:item_aspectings, ItemAspecting)
     has_many(:item_aspects, through: [:item_aspectings, :item_aspect])
@@ -113,6 +115,7 @@ defmodule Data.Item do
     |> validate_stats()
     |> Effect.validate_effects()
     |> validate_effects()
+    |> validate_whitelist()
   end
 
   defp ensure_keywords(changeset) do
@@ -160,6 +163,26 @@ defmodule Data.Item do
     case effects |> Enum.all?(&(&1.kind in @valid_effects[type])) do
       true -> changeset
       false -> add_error(changeset, :effects, "can only include damage or stats effects")
+    end
+  end
+
+  defp validate_whitelist(changeset) do
+    case get_field(changeset, :whitelist_effects) do
+      nil ->
+        changeset
+
+      whitelist_effects ->
+        _validate_whitelist(changeset, whitelist_effects)
+    end
+  end
+
+  defp _validate_whitelist(changeset, whitelist_effects) do
+    case Enum.all?(whitelist_effects, & &1 in Effect.types()) do
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :whitelist_effects, "must all be a real type")
     end
   end
 end

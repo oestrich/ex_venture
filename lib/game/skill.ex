@@ -54,7 +54,7 @@ defmodule Game.Skill do
   @spec filter_effects([Effect.t()], Skill.t()) :: [Effect.t()]
   def filter_effects(effects, skill) do
     Enum.filter(effects, fn effect ->
-      effect.kind in skill.white_list_effects
+      effect.kind in skill.whitelist_effects
     end)
   end
 end

@@ -19,7 +19,7 @@ defmodule Data.Skill do
     field(:usee_text, :string)
     field(:command, :string)
     field(:cooldown_time, :integer, default: 3000)
-    field(:white_list_effects, {:array, :string}, default: [])
+    field(:whitelist_effects, {:array, :string}, default: [])
     field(:effects, {:array, Effect})
     field(:tags, {:array, :string}, default: [])
     field(:is_global, :boolean, default: false)
@@ -41,7 +41,7 @@ defmodule Data.Skill do
       :usee_text,
       :command,
       :cooldown_time,
-      :white_list_effects,
+      :whitelist_effects,
       :effects,
       :tags,
       :is_global
@@ -55,33 +55,33 @@ defmodule Data.Skill do
       :usee_text,
       :command,
       :cooldown_time,
-      :white_list_effects,
+      :whitelist_effects,
       :effects,
       :tags,
       :is_global
     ])
     |> validate_effects()
-    |> validate_white_list()
+    |> validate_whitelist()
     |> validate_number(:cooldown_time, greater_than_or_equal_to: 0)
   end
 
-  defp validate_white_list(changeset) do
-    case get_field(changeset, :white_list_effects) do
+  defp validate_whitelist(changeset) do
+    case get_field(changeset, :whitelist_effects) do
       nil ->
         changeset
 
-      white_list_effects ->
-        _validate_white_list(changeset, white_list_effects)
+      whitelist_effects ->
+        _validate_whitelist(changeset, whitelist_effects)
     end
   end
 
-  defp _validate_white_list(changeset, white_list_effects) do
-    case Enum.all?(white_list_effects, & &1 in Effect.types()) do
+  defp _validate_whitelist(changeset, whitelist_effects) do
+    case Enum.all?(whitelist_effects, & &1 in Effect.types()) do
       true ->
         changeset
 
       false ->
-        add_error(changeset, :white_list_effects, "must all be a real type")
+        add_error(changeset, :whitelist_effects, "must all be a real type")
     end
   end
 end

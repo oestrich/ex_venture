@@ -74,10 +74,10 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :white_list_effects %>
-        <%= multiple_select f, :white_list_effects, Effect.types(), multiple: true, class: "form-control", size: 5 %>
-        <%= error_tag f, :white_list_effects %>
-        <span class="help-block"><%= Help.get("skill.white_list_effects") %></span>
+        <%= label f, :whitelist_effects %>
+        <%= multiple_select f, :whitelist_effects, Effect.types(), multiple: true, class: "form-control", size: 5 %>
+        <%= error_tag f, :whitelist_effects %>
+        <span class="help-block"><%= Help.get("skill.whitelist_effects") %></span>
       </div>
 
       <div class="form-group">

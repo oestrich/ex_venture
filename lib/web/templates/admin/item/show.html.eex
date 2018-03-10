@@ -69,6 +69,19 @@
                 <th>Amount</th>
                 <td><%= @item.amount %></td>
               </tr>
+              <tr>
+                <th>
+                  White Listed Effect Types
+                  <%= SharedView.help_tooltip("item.whitelist_effects") %>
+                </th>
+                <td>
+                  <ul>
+                    <%= Enum.map(@item.whitelist_effects, fn effect -> %>
+                      <li><code><%= effect %></code></li>
+                    <% end) %>
+                  </ul>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
