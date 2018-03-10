@@ -48,8 +48,9 @@ defmodule ExVenture.Mixfile do
     [
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.4.0"},
+      {:bcrypt_elixir, "~> 1.0"},
       {:cachex, "~> 3.0"},
-      {:comeonin, "~> 3.2"},
+      {:comeonin, "~> 4.0"},
       {:cowboy, "~> 1.0"},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},

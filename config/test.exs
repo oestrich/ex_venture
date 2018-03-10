@@ -24,5 +24,4 @@ config :ex_venture, :game,
   continue_wait: 10,
   random_damage: 0..0
 
-config :comeonin, :bcrypt_log_rounds, 4
-config :comeonin, :pbkdf2_rounds, 1
+config :bcrypt_elixir, :log_rounds, 4
