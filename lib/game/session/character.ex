@@ -175,6 +175,27 @@ defmodule Game.Session.Character do
     state
   end
 
+  def notify(state, {"room/overheard", characters, message}) do
+    skip_echo? =
+      Enum.any?(characters, fn character ->
+        character == {:user, state.user}
+      end)
+
+    case skip_echo? do
+      true ->
+        state
+      false ->
+        state.socket |> @socket.echo(message)
+        state
+    end
+  end
+
+  def notify(state, {"room/whisper", message}) do
+    state |> GMCP.room_whisper(message)
+    state.socket |> @socket.echo(message.formatted)
+    state
+  end
+
   def notify(state, {"quest/new", quest}) do
     state.socket |> @socket.echo("You received a new quest, #{Format.quest_name(quest)} (#{quest.id})")
     Hint.gate(state, "quests.new", id: quest.id)

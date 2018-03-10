@@ -253,6 +253,10 @@ defmodule Game.CommandTest do
     test "afk", %{user: user} do
       assert %Command{module: Command.AFK, args: {:toggle}} = Command.parse("afk", user)
     end
+
+    test "whisper", %{user: user} do
+      assert %Command{module: Command.Whisper, args: {:whisper, "player hi"}} = Command.parse("whisper player hi", user)
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{socket: socket} do

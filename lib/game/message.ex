@@ -53,6 +53,15 @@ defmodule Game.Message do
     }
   end
 
+  def whisper(user, message) do
+    %__MODULE__{
+      type: :user,
+      sender: user,
+      message: message,
+      formatted: Format.whisper({:user, user}, message)
+    }
+  end
+
   def npc(npc, message), do: npc_say(npc, message)
 
   def npc_say(npc, message) do

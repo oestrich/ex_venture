@@ -214,6 +214,19 @@ defmodule Game.Session.GMCP do
   end
 
   @doc """
+  Push a new room whisper
+  """
+  @spec room_whisper(State.t(), Message.t()) :: :ok
+  def room_whisper(%{socket: socket}, message) do
+    data = %{
+      from: character_info({message.type, message.sender}),
+      message: message.message
+    }
+
+    socket |> @socket.push_gmcp("Room.Whisper", Poison.encode!(data))
+  end
+
+  @doc """
   Push a new mail
   """
   @spec mail_new(State.t(), Mail.t()) :: :ok

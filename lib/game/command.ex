@@ -107,6 +107,7 @@ defmodule Game.Command do
     Command.Use,
     Command.Version,
     Command.Wear,
+    Command.Whisper,
     Command.Who,
     Command.Wield,
 

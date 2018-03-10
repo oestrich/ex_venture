@@ -126,6 +126,39 @@ defmodule Game.Format do
   end
 
   @doc """
+  Format a whisper message
+
+      iex> Game.Format.whisper({:user, %{name: "Player"}}, "secret message")
+      ~s[{player}Player{/player} whispers to you, {say}"secret message"{/say}]
+  """
+  @spec whisper(Character.t(), String.t()) :: String.t()
+  def whisper(sender, message) do
+    ~s[#{name(sender)} whispers to you, {say}"#{message}"{/say}]
+  end
+
+  @doc """
+  Format a whisper message from the user
+
+      iex> Game.Format.send_whisper({:user, %{name: "Player"}}, "secret message")
+      ~s[You whisper to {player}Player{/player}, {say}"secret message"{/say}]
+  """
+  @spec send_whisper(Character.t(), String.t()) :: String.t()
+  def send_whisper(receiver, message) do
+    ~s[You whisper to #{name(receiver)}, {say}"#{message}"{/say}]
+  end
+
+  @doc """
+  Format a whisper overheard message for others in the room
+
+      iex> Game.Format.whisper_overheard({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}})
+      ~s[You overhear {player}Player{/player} whispering to {npc}Guard{/npc}.]
+  """
+  @spec whisper_overheard(Character.t(), String.t()) :: String.t()
+  def whisper_overheard(sender, receiver) do
+    ~s[You overhear #{name(sender)} whispering to #{name(receiver)}.]
+  end
+
+  @doc """
   Format full text for a room
   """
   @spec room(Room.t(), [Item.t()], Map.t()) :: String.t()
