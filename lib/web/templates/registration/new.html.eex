@@ -18,9 +18,9 @@
       <h5>Race</h5>
       <%= error_tag f, :race_id %>
       <%= Enum.map(Race.races, fn (race) -> %>
-        <div race="form-check">
-          <label race="form-check-label">
-            <%= radio_button f, :race_id, race.id, race: "form-check-input" %>
+        <div class="form-check">
+          <label class="form-check-label">
+            <%= radio_button f, :race_id, to_string(race.id), class: "form-check-input" %>
             <%= race.name %>
           </label>
         </div>
@@ -31,7 +31,7 @@
       <%= Enum.map(Class.classes, fn (class) -> %>
         <div class="form-check">
           <label class="form-check-label">
-            <%= radio_button f, :class_id, class.id, class: "form-check-input" %>
+            <%= radio_button f, :class_id, to_string(class.id), class: "form-check-input" %>
             <%= class.name %>
           </label>
         </div>
