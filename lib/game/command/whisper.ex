@@ -5,6 +5,8 @@ defmodule Game.Command.Whisper do
 
   use Game.Command
 
+  import Game.Room.Helpers, only: [find_character: 3]
+
   alias Game.Character
   alias Game.Utility
 
@@ -49,7 +51,7 @@ defmodule Game.Command.Whisper do
   def run({:whisper, who_and_message}, state = %{user: user, save: save}) do
     room = @room.look(save.room_id)
 
-    case find_character(room, who_and_message) do
+    case find_character(room, who_and_message, message: true) do
       {:error, :not_found} ->
         state.socket |> @socket.echo("No character could be found matching your text.")
 
@@ -66,29 +68,5 @@ defmodule Game.Command.Whisper do
     end
 
     :ok
-  end
-
-  @doc """
-  Find a character in a room by name.
-  """
-  @spec find_character(Room.t(), String.t()) ::
-          {:error, :not_found}
-          | {:npc, NPC.t()}
-          | {:user, User.t()}
-
-  def find_character(room, who_and_message) do
-    case room.players |> Enum.find(&Utility.name_matches?(&1, who_and_message)) do
-      nil ->
-        case room.npcs |> Enum.find(&Utility.name_matches?(&1, who_and_message)) do
-          nil ->
-            {:error, :not_found}
-
-          npc ->
-            {:npc, npc}
-        end
-
-      player ->
-        {:user, player}
-    end
   end
 end

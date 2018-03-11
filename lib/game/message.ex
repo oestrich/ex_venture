@@ -26,6 +26,15 @@ defmodule Game.Message do
     }
   end
 
+  def say_to(user, character, message) do
+    %__MODULE__{
+      type: :user,
+      sender: user,
+      message: message,
+      formatted: Format.say_to({:user, user}, character, message)
+    }
+  end
+
   def emote(user, message) do
     %__MODULE__{
       type: :user,

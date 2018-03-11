@@ -76,6 +76,9 @@ defmodule Game.Format do
 
   Example:
 
+      iex> Game.Format.say(:you, "Hello")
+      ~s[You say, {say}"Hello"{/say}]
+
       iex> Game.Format.say({:npc, %{name: "NPC"}}, "Hello")
       ~s[{npc}NPC{/npc} says, {say}"Hello"{/say}]
 
@@ -83,8 +86,33 @@ defmodule Game.Format do
       ~s[{player}Player{/player} says, {say}"Hello"{/say}]
   """
   @spec say(Character.t(), String.t()) :: String.t()
+  def say(:you, message) do
+    ~s[You say, {say}"#{message}"{/say}]
+  end
   def say(character, message) do
     ~s[#{name(character)} says, {say}"#{message}"{/say}]
+  end
+
+  @doc """
+  Format a say to message
+
+  Example:
+
+      iex> Game.Format.say_to(:you, {:user, %{name: "Player"}}, "Hello")
+      ~s[You say to {player}Player{/player}, {say}"Hello"{/say}]
+
+      iex> Game.Format.say_to({:npc, %{name: "NPC"}}, {:user, %{name: "Player"}}, "Hello")
+      ~s[{npc}NPC{/npc} says to {player}Player{/player}, {say}"Hello"{/say}]
+
+      iex> Game.Format.say_to({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}}, "Hello")
+      ~s[{player}Player{/player} says to {npc}Guard{/npc}, {say}"Hello"{/say}]
+  """
+  @spec say_to(Character.t(), Character.t(), String.t()) :: String.t()
+  def say_to(:you, sayee, message) do
+    ~s[You say to #{name(sayee)}, {say}"#{message}"{/say}]
+  end
+  def say_to(sayer, sayee, message) do
+    ~s[#{name(sayer)} says to #{name(sayee)}, {say}"#{message}"{/say}]
   end
 
   @doc """
