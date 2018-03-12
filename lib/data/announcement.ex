@@ -6,6 +6,7 @@ defmodule Data.Announcement do
   use Data.Schema
 
   schema "announcements" do
+    field(:is_published, :boolean, default: false)
     field(:title, :string)
     field(:body, :string)
     field(:tags, {:array, :string}, default: [])
@@ -16,7 +17,7 @@ defmodule Data.Announcement do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:title, :body, :tags])
-    |> validate_required([:title, :body])
+    |> cast(params, [:title, :body, :tags, :is_published])
+    |> validate_required([:title, :body, :is_published])
   end
 end

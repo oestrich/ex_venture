@@ -6,6 +6,13 @@
   <%= form_for @changeset, @path, fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
+        <%= label f, :is_published do %>
+          <%= checkbox f, :is_published %> Is published?
+        <% end %>
+        <%= error_tag f, :is_published %>
+      </div>
+
+      <div class="form-group">
         <%= label f, :title %>
         <%= text_input f, :title, class: "form-control" %>
         <%= error_tag f, :title %>

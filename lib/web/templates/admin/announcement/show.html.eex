@@ -1,6 +1,9 @@
 <section class="content-header">
   <h1>
     <%= @announcement.title %>
+    <%= if @announcement.is_published do %>
+      (Published)
+    <% end %>
   </h1>
 
   <ol class="breadcrumb">
@@ -19,7 +22,9 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
-          <h3 class="box-title"><%= TimeView.time(@announcement.inserted_at) %></h3>
+          <h3 class="box-title">
+            <%= TimeView.time(@announcement.inserted_at) %>
+          </h3>
           <div class="box-tools">
           <%= Enum.map(@announcement.tags, fn (tag) -> %>
             <span class="label label-info"><%= tag %></span>

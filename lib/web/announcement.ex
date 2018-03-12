@@ -17,7 +17,7 @@ defmodule Web.Announcement do
     opts = Enum.into(opts, %{})
 
     Announcement
-    |> order_by([b], desc: b.id)
+    |> order_by([a], desc: a.id)
     |> Pagination.paginate(opts)
   end
 
@@ -26,7 +26,8 @@ defmodule Web.Announcement do
   """
   def recent() do
     Announcement
-    |> order_by([b], desc: b.id)
+    |> order_by([a], desc: a.id)
+    |> where([a], a.is_published)
     |> limit(5)
     |> Repo.all()
   end
