@@ -10,8 +10,8 @@ defmodule Game.ExperienceTest do
     @socket.clear_messages
     class = %{
       each_level_stats: %{
-        health: 5,
-        max_health: 5,
+        health_points: 5,
+        max_health_points: 5,
         strength: 3,
         dexterity: 3,
         intelligence: 3,
@@ -39,8 +39,8 @@ defmodule Game.ExperienceTest do
     state = Experience.apply(state, level: 2, experience_points: 1000)
 
     assert state.save.stats == %{
-      health: 57,
-      max_health: 57,
+      health_points: 57,
+      max_health_points: 57,
       skill_points: 57,
       max_skill_points: 57,
       strength: 15,

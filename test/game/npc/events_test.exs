@@ -310,7 +310,7 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "does nothing if the NPC has no health", %{state: state, event: event} do
-      stats = %{state.npc.stats | health: 0}
+      stats = %{state.npc.stats | health_points: 0}
       npc = %{state.npc | stats: stats}
       state = %{state | npc: npc}
 

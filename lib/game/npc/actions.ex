@@ -33,7 +33,7 @@ defmodule Game.NPC.Actions do
   end
 
   def handle_respawn(state = %{npc: npc, npc_spawner: npc_spawner}) do
-    npc = %{npc | stats: %{npc.stats | health: npc.stats.max_health}}
+    npc = %{npc | stats: %{npc.stats | health_points: npc.stats.max_health_points}}
     npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
     Events.broadcast(npc, "character/respawned")
     %{state | npc: npc, room_id: npc_spawner.room_id}
@@ -44,7 +44,7 @@ defmodule Game.NPC.Actions do
   """
   @spec maybe_died(map, map, Character.t()) :: :ok
   def maybe_died(stats, state, from)
-  def maybe_died(%{health: health}, state, from) when health < 1, do: died(state, from)
+  def maybe_died(%{health_points: health_points}, state, from) when health_points < 1, do: died(state, from)
   def maybe_died(_stats, state, _from), do: state
 
   @doc """

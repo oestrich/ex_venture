@@ -8,11 +8,11 @@ defmodule Game.Stats do
   @doc """
   Regen statistics (hp/sp) every few ticks
 
-    iex> Game.Stats.regen(:health, %{health: 10, max_health: 15}, 3)
-    %{health: 13, max_health: 15}
+    iex> Game.Stats.regen(:health_points, %{health_points: 10, max_health_points: 15}, 3)
+    %{health_points: 13, max_health_points: 15}
 
-    iex> Game.Stats.regen(:health, %{health: 13, max_health: 15}, 3)
-    %{health: 15, max_health: 15}
+    iex> Game.Stats.regen(:health_points, %{health_points: 13, max_health_points: 15}, 3)
+    %{health_points: 15, max_health_points: 15}
 
     iex> Game.Stats.regen(:skill_points, %{skill_points: 10, max_skill_points: 15}, 3)
     %{skill_points: 13, max_skill_points: 15}
@@ -29,10 +29,10 @@ defmodule Game.Stats do
   @spec regen(atom, Stats.t(), map) :: Stats.t()
   def regen(field, stats, regen)
 
-  def regen(:health, stats, health) do
-    case %{stats | health: stats.health + health} do
-      %{health: health, max_health: max_health} when health > max_health ->
-        %{stats | health: max_health}
+  def regen(:health_points, stats, health_points) do
+    case %{stats | health_points: stats.health_points + health_points} do
+      %{health_points: health_points, max_health_points: max_health_points} when health_points > max_health_points ->
+        %{stats | health_points: max_health_points}
 
       stats ->
         stats

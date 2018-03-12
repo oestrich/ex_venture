@@ -57,7 +57,7 @@ defmodule Game.Session.Regen do
   end
 
   defp hp_max?(%{save: save}) do
-    save.stats.health == save.stats.max_health
+    save.stats.health_points == save.stats.max_health_points
   end
 
   defp sp_max?(%{save: save}) do
@@ -107,7 +107,7 @@ defmodule Game.Session.Regen do
   def handle_regen(state = %{regen: %{count: count}}, count) do
     %{user: user = %{class: class}, save: save} = state
 
-    stats = Stats.regen(:health, save.stats, class.regen_health * save.level)
+    stats = Stats.regen(:health_points, save.stats, class.regen_health_points * save.level)
     stats = Stats.regen(:skill_points, stats, class.regen_skill_points * save.level)
 
     echo_health(save.stats, stats)
@@ -131,14 +131,14 @@ defmodule Game.Session.Regen do
   """
   @spec echo_health(Stats.t(), Stats.t()) :: nil
   def echo_health(starting_stats, stats) do
-    starting_hp = starting_stats.health
+    starting_hp = starting_stats.health_points
     starting_sp = starting_stats.skill_points
 
     case stats do
-      %{health: ^starting_hp, skill_points: ^starting_sp} ->
+      %{health_points: ^starting_hp, skill_points: ^starting_sp} ->
         nil
 
-      %{health: ^starting_hp} ->
+      %{health_points: ^starting_hp} ->
         echo(self(), "You regenerated some skill points.")
 
       %{skill_points: ^starting_sp} ->

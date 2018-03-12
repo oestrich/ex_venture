@@ -278,9 +278,9 @@ defmodule Game.Session.Process do
   def handle_info({:resurrect, graveyard_id}, state) do
     %{save: %{stats: stats}} = state
 
-    case stats.health do
-      health when health < 1 ->
-        stats = Map.put(stats, :health, 1)
+    case stats.health_points do
+      health_points when health_points < 1 ->
+        stats = Map.put(stats, :health_points, 1)
         save = Map.put(state.save, :stats, stats)
         user = Map.put(state.user, :save, save)
 

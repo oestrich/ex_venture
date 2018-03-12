@@ -8,7 +8,7 @@ defmodule Web.ClassTest do
     params = %{
       "name" => "Fighter",
       "description" => "A fighter",
-      "regen_health" => 1,
+      "regen_health_points" => 1,
       "regen_skill_points" => 1,
       "each_level_stats" => base_stats() |> Poison.encode!(),
     }
@@ -16,7 +16,7 @@ defmodule Web.ClassTest do
     {:ok, class} = Class.create(params)
 
     assert class.name == "Fighter"
-    assert class.each_level_stats.health == 50
+    assert class.each_level_stats.health_points == 50
   end
 
   test "updating a class" do

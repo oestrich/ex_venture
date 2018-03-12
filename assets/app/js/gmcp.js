@@ -29,14 +29,14 @@ let character = (channel, data) => {
  * Character.Vitals module
  */
 let characterVitals = (channel, data) => {
-  let healthWidth = data.health / data.max_health;
+  let healthWidth = data.health_points / data.max_health_points;
   let skillWidth = data.skill_points / data.max_skill_points;
   let moveWidth = data.move_points / data.max_move_points;
 
   let health = _.first(Sizzle("#health .percentage"));
   health.style.width = `${healthWidth * 100}%`;
   let healthStat = _.first(Sizzle("#health .stat"));
-  healthStat.innerHTML = `${data.health}/${data.max_health} hp`;
+  healthStat.innerHTML = `${data.health_points}/${data.max_health_points} hp`;
 
   let skill = _.first(Sizzle("#skills .percentage"));
   skill.style.width = `${skillWidth * 100}%`;

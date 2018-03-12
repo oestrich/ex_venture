@@ -39,9 +39,9 @@ Character.Vitals {
   "move_points": 10,
   "max_skill_points": 20,
   "max_move_points": 10,
-  "max_health": 30,
+  "max_health_points": 30,
   "intelligence": 15,
-  "health": 30,
+  "health_points": 30,
   "dexterity": 15
 }
 ```

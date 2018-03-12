@@ -191,7 +191,7 @@ defmodule Game.Command do
     case module.must_be_alive? do
       true ->
         case state do
-          %{save: %{stats: %{health: health}}} when health <= 0 ->
+          %{save: %{stats: %{health_points: health_points}}} when health_points <= 0 ->
             socket |> @socket.echo("You are passed out and cannot perform this action.")
             :ok
 

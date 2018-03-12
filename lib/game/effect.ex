@@ -139,8 +139,8 @@ defmodule Game.Effect do
   Apply effects to stats.
 
       iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
-      iex> Game.Effect.apply(effects, %{health: 25})
-      %{health: 15}
+      iex> Game.Effect.apply(effects, %{health_points: 25})
+      %{health_points: 15}
   """
   @spec apply([Effect.t()], Stats.t()) :: Stats.t()
   def apply(effects, stats) do
@@ -151,26 +151,26 @@ defmodule Game.Effect do
   Apply an effect to stats
 
       iex> effect = %{kind: "damage", type: :slashing, amount: 10}
-      iex> Game.Effect.apply_effect(effect, %{health: 25})
-      %{health: 15}
+      iex> Game.Effect.apply_effect(effect, %{health_points: 25})
+      %{health_points: 15}
   """
   @spec apply_effect(Effect.t(), Stats.t()) :: Stats.t()
   def apply_effect(effect, stats)
 
   def apply_effect(effect = %{kind: "damage"}, stats) do
-    %{health: health} = stats
-    Map.put(stats, :health, health - effect.amount)
+    %{health_points: health_points} = stats
+    Map.put(stats, :health_points, health_points - effect.amount)
   end
 
   def apply_effect(effect = %{kind: "damage/over-time"}, stats) do
-    %{health: health} = stats
-    Map.put(stats, :health, health - effect.amount)
+    %{health_points: health_points} = stats
+    Map.put(stats, :health_points, health_points - effect.amount)
   end
 
   def apply_effect(effect = %{kind: "recover", type: "health"}, stats) do
-    %{health: health, max_health: max_health} = stats
-    health = max_recover(health, effect.amount, max_health)
-    %{stats | health: health}
+    %{health_points: health_points, max_health_points: max_health_points} = stats
+    health_points = max_recover(health_points, effect.amount, max_health_points)
+    %{stats | health_points: health_points}
   end
 
   def apply_effect(effect = %{kind: "recover", type: "skill"}, stats) do

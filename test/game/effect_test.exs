@@ -22,10 +22,10 @@ defmodule Game.EffectTest do
   end
 
   describe "applying effects" do
-    test "recover health" do
+    test "recover health points" do
       effect = %{kind: "recover", type: "health", amount: 10}
-      stats = Game.Effect.apply_effect(effect, %{health: 25, max_health: 30})
-      assert stats == %{health: 30, max_health: 30}
+      stats = Game.Effect.apply_effect(effect, %{health_points: 25, max_health_points: 30})
+      assert stats == %{health_points: 30, max_health_points: 30}
     end
 
     test "recover skill points" do

@@ -270,7 +270,7 @@ defmodule Game.NPC.Events do
   @doc """
   Act on a tick event
   """
-  def act_on_tick(state = %{npc: %{stats: %{health: health}}}, _event) when health < 1, do: state
+  def act_on_tick(state = %{npc: %{stats: %{health_points: health_points}}}, _event) when health_points < 1, do: state
 
   def act_on_tick(state, event = %{action: %{type: "move"}}) do
     maybe_move_room(state, event)

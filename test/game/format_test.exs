@@ -124,8 +124,8 @@ defmodule Game.FormatTest do
   describe "info formatting" do
     setup do
       stats = %{
-        health: 50,
-        max_health: 55,
+        health_points: 50,
+        max_health_points: 55,
         skill_points: 10,
         max_skill_points: 10,
         move_points: 10,

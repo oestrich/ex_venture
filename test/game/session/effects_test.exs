@@ -14,7 +14,7 @@ defmodule Game.Session.EffectsTest do
     @room.clear_update_characters()
 
     user = %{id: 2, name: "user", class: class_attributes(%{})}
-    stats = %{health: 25}
+    stats = %{health_points: 25}
     %{state: %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}}
   end
 
@@ -29,7 +29,7 @@ defmodule Game.Session.EffectsTest do
     test "applying effects with continuous effects", %{state: state, effect: effect} do
       state = Effects.handle_continuous_effect(state, effect.id)
 
-      assert state.save.stats.health == 15
+      assert state.save.stats.health_points == 15
       [{:socket, ~s(10 slashing damage is dealt.)}] = @socket.get_echos()
 
       [{_, %{id: :id, count: 2}}] = state.continuous_effects
@@ -43,7 +43,7 @@ defmodule Game.Session.EffectsTest do
       state = %{state | continuous_effects: [{from, effect}]}
 
       state = Effects.handle_continuous_effect(state, :id)
-      assert state.save.stats.health == -1
+      assert state.save.stats.health_points == -1
 
       assert state.continuous_effects == []
     end

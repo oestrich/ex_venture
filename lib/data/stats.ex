@@ -8,8 +8,8 @@ defmodule Data.Stats do
   alias Data.Stats.Damage
 
   @type character :: %{
-          health: integer,
-          max_health: integer,
+          health_points: integer,
+          max_health_points: integer,
           skill_points: integer,
           max_skill_points: integer,
           move_points: integer,
@@ -63,8 +63,9 @@ defmodule Data.Stats do
   @spec default(Stats.t()) :: Stats.t()
   def default(stats) do
     stats
-    |> ensure(:health, 10)
-    |> ensure(:max_health, 10)
+    |> migrate()
+    |> ensure(:health_points, 10)
+    |> ensure(:max_health_points, 10)
     |> ensure(:skill_points, 10)
     |> ensure(:max_skill_points, 10)
     |> ensure(:move_points, 10)
@@ -74,6 +75,16 @@ defmodule Data.Stats do
     |> ensure(:intelligence, 10)
     |> ensure(:wisdom, 10)
   end
+
+  defp migrate(stats = %{health: health, max_health: max_health}) do
+    stats
+    |> Map.put(:health_points, health)
+    |> Map.put(:max_health_points, max_health)
+    |> Map.delete(:health)
+    |> Map.delete(:max_health)
+  end
+
+  defp migrate(stats), do: stats
 
   defp ensure(stats, field, default) do
     case Map.has_key?(stats, field) do
@@ -96,9 +107,9 @@ defmodule Data.Stats do
   def fields(),
     do: [
       :dexterity,
-      :health,
+      :health_points,
       :intelligence,
-      :max_health,
+      :max_health_points,
       :max_move_points,
       :max_skill_points,
       :move_points,
@@ -110,7 +121,7 @@ defmodule Data.Stats do
   @doc """
   Validate a character's stats
 
-      iex> Data.Stats.valid_character?(%{health: 50, strength: 10})
+      iex> Data.Stats.valid_character?(%{health_points: 50, strength: 10})
       false
 
       iex> Data.Stats.valid_character?(%{})
@@ -118,8 +129,8 @@ defmodule Data.Stats do
   """
   @spec valid_character?(Stats.character()) :: boolean()
   def valid_character?(stats) do
-    keys(stats) == fields() && is_integer(stats.dexterity) && is_integer(stats.health) &&
-      is_integer(stats.intelligence) && is_integer(stats.max_health) && is_integer(stats.strength) &&
+    keys(stats) == fields() && is_integer(stats.dexterity) && is_integer(stats.health_points) &&
+      is_integer(stats.intelligence) && is_integer(stats.max_health_points) && is_integer(stats.strength) &&
       is_integer(stats.skill_points) && is_integer(stats.max_skill_points) &&
       is_integer(stats.wisdom)
   end
