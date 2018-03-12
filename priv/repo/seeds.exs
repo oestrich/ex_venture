@@ -1,5 +1,6 @@
 alias Data.Repo
 
+alias Data.Channel
 alias Data.Class
 alias Data.ClassSkill
 alias Data.Config
@@ -13,6 +14,7 @@ alias Data.Race
 alias Data.Room
 alias Data.RoomItem
 alias Data.Skill
+alias Data.Social
 alias Data.User
 alias Data.Zone
 
@@ -43,85 +45,97 @@ defmodule Helpers do
   def create_config(name, value) do
     %Config{}
     |> Config.changeset(%{name: name, value: value})
-    |> Repo.insert
+    |> Repo.insert!()
   end
 
   def create_item(attributes) do
     %Item{}
     |> Item.changeset(attributes)
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 
   def create_npc(attributes) do
     %NPC{}
     |> NPC.changeset(attributes)
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 
   def update_npc(npc, attributes) do
     npc
     |> NPC.changeset(attributes)
-    |> Repo.update!
+    |> Repo.update!()
   end
 
   def create_room(zone, attributes) do
     %Room{}
     |> Room.changeset(Map.merge(attributes, %{zone_id: zone.id}))
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 
   def update_room(room, attributes) do
     room
     |> Room.changeset(attributes)
-    |> Repo.update!
+    |> Repo.update!()
   end
 
   def create_exit(attributes) do
     %Exit{}
     |> Exit.changeset(attributes)
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 
   def create_user(attributes) do
     %User{}
     |> User.changeset(attributes)
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 
   def create_zone(attributes) do
     %Zone{}
     |> Zone.changeset(attributes)
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 
   def create_race(attributes) do
     %Race{}
     |> Race.changeset(attributes)
-    |> Repo.insert
+    |> Repo.insert!()
   end
 
   def create_class(attributes) do
     %Class{}
     |> Class.changeset(attributes)
-    |> Repo.insert
+    |> Repo.insert!()
   end
 
   def create_skill(attributes) do
     %Skill{}
     |> Skill.changeset(attributes)
-    |> Repo.insert
+    |> Repo.insert!()
   end
 
   def create_class_skill(class, skill) do
     %ClassSkill{}
     |> ClassSkill.changeset(%{class_id: class.id, skill_id: skill.id})
-    |> Repo.insert
+    |> Repo.insert!()
   end
 
   def create_help_topic(attributes) do
     %HelpTopic{}
     |> HelpTopic.changeset(attributes)
-    |> Repo.insert!
+    |> Repo.insert!()
+  end
+
+  def create_social(attributes) do
+    %Social{}
+    |> Social.changeset(attributes)
+    |> Repo.insert!()
+  end
+
+  def create_channel(name, color \\ "red") do
+    %Channel{}
+    |> Channel.changeset(%{name: name, color: color})
+    |> Repo.insert!()
   end
 end
 
@@ -295,7 +309,7 @@ defmodule Seeds do
     })
     entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
 
-    save =  %Data.Save{
+    save = %Data.Save{
       version: 1,
       room_id: entrance.id,
       channels: ["global", "newbie"],
@@ -306,13 +320,13 @@ defmodule Seeds do
       wielding: %{},
     }
 
-    {:ok, _} = create_config("game_name", "ExVenture MUD")
-    {:ok, _} = create_config("motd", "Welcome to the {white}MUD{/white}")
-    {:ok, _} = create_config("after_sign_in_message", "Thanks for checking out the game!")
-    {:ok, _} = create_config("starting_save", save |> Poison.encode!)
-    {:ok, _} = create_config("regen_tick_count", "7")
+    create_config("game_name", "ExVenture MUD")
+    create_config("motd", "Welcome to the {white}MUD{/white}")
+    create_config("after_sign_in_message", "Thanks for checking out the game!")
+    create_config("starting_save", save |> Poison.encode!)
+    create_config("regen_tick_count", "7")
 
-    {:ok, _human} = create_race(%{
+    create_race(%{
       name: "Human",
       description: "A human",
       starting_stats: %{
@@ -329,7 +343,7 @@ defmodule Seeds do
       },
     })
 
-    {:ok, dwarf} = create_race(%{
+    dwarf = create_race(%{
       name: "Dwarf",
       description: "A dwarf",
       starting_stats: %{
@@ -346,7 +360,7 @@ defmodule Seeds do
       },
     })
 
-    {:ok, _elf} = create_race(%{
+    create_race(%{
       name: "Elf",
       description: "An elf",
       starting_stats: %{
@@ -363,7 +377,7 @@ defmodule Seeds do
       },
     })
 
-    {:ok, fighter} = create_class(%{
+    fighter = create_class(%{
       name: "Fighter",
       description: "Uses strength and swords to overcome.",
       regen_health_points: 2,
@@ -382,7 +396,7 @@ defmodule Seeds do
       },
     })
 
-    {:ok, mage} = create_class(%{
+    mage = create_class(%{
       name: "Mage",
       description: "Uses intelligence and magic to overcome.",
       regen_health_points: 1,
@@ -401,7 +415,7 @@ defmodule Seeds do
       },
     })
 
-    {:ok, slash} = create_skill(%{
+    slash = create_skill(%{
       level: 1,
       name: "Slash",
       description: "Use your weapon to slash at your target",
@@ -409,13 +423,14 @@ defmodule Seeds do
       user_text: "You slash at [target].",
       usee_text: "You were slashed at by [user].",
       command: "slash",
+      whitelist_effects: ["damage", "damage/type", "stats"],
       effects: [
         %{kind: "damage", type: :slashing, amount: 10},
         %{kind: "damage/type", types: [:slashing]},
       ],
     })
 
-    {:ok, magic_missile} = create_skill(%{
+    magic_missile = create_skill(%{
       level: 1,
       name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
@@ -423,6 +438,7 @@ defmodule Seeds do
       user_text: "You shoot a bolt of arcane energy at [target].",
       usee_text: "[user] shoots a bolt of arcane energy at you.",
       command: "magic missile",
+      whitelist_effects: ["damage", "damage/type", "stats"],
       effects: [
         %{kind: "damage", type: :arcane, amount: 10},
         %{kind: "damage/type", types: [:arcane]},
@@ -434,6 +450,16 @@ defmodule Seeds do
 
     create_help_topic(%{name: "Fighter", keywords: ["fighter"], body: "This class uses physical skills"})
     create_help_topic(%{name: "Mage", keywords: ["mage"], body: "This class uses arcane skills"})
+
+    create_social(%{
+      name: "Smile",
+      command: "smile",
+      with_target: "[user] smiles at [target].",
+      without_target: "[user] smiles.",
+    })
+
+    create_channel("global")
+    create_channel("newbie", "cyan")
 
     save =
       Game.Config.starting_save()
