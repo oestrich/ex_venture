@@ -24,12 +24,25 @@ defmodule Web.Announcement do
   @doc """
   Get recent announcements, the most recent 5
   """
-  def recent() do
+  def sticky() do
     Announcement
-    |> order_by([a], desc: a.id)
-    |> where([a], a.is_published)
-    |> limit(5)
+    |> order_by([a], desc: a.published_at)
+    |> where([a], a.is_sticky)
     |> Repo.all()
+  end
+
+  @doc """
+  Get recent announcements, the most recent 5
+  """
+  def recent() do
+    recent =
+      Announcement
+      |> order_by([a], desc: a.published_at)
+      |> where([a], a.is_published and not a.is_sticky)
+      |> limit(5)
+      |> Repo.all()
+
+    sticky() ++ recent
   end
 
   @doc """

@@ -29,6 +29,7 @@
                 <th>ID</th>
                 <th>Title</th>
                 <td>Is Published?</th>
+                <td>Is Sticky?</th>
                 <td>Date</th>
                 <th>Actions</th>
               </tr>
@@ -39,7 +40,8 @@
                   <td><%= announcement.id %></td>
                   <td><%= announcement.title %></td>
                   <td><code><%= announcement.is_published %></code></td>
-                  <td><%= announcement.inserted_at |> TimeView.time() %></td>
+                  <td><code><%= announcement.is_sticky %></code></td>
+                  <td><%= announcement.published_at |> TimeView.time() %></td>
                   <td>
                     <%= link("View", to: announcement_path(@conn, :show, announcement.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: announcement_path(@conn, :edit, announcement.id), class: "btn btn-default btn-xs") %>

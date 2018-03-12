@@ -4,6 +4,9 @@
     <%= if @announcement.is_published do %>
       (Published)
     <% end %>
+    <%= if @announcement.is_sticky do %>
+      (Sticky)
+    <% end %>
   </h1>
 
   <ol class="breadcrumb">
@@ -23,7 +26,7 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">
-            <%= TimeView.time(@announcement.inserted_at) %>
+            <%= TimeView.time(@announcement.published_at) %>
           </h3>
           <div class="box-tools">
           <%= Enum.map(@announcement.tags, fn (tag) -> %>
