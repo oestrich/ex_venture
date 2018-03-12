@@ -184,6 +184,27 @@ defmodule Data.Save do
     end
   end
 
+  defp _migrate(save = %{version: 6, stats: stats}) when stats != nil do
+    stats =
+      stats
+      |> Map.put(:health_points, stats.health)
+      |> Map.put(:max_health_points, stats.max_health)
+      |> Map.delete(:health)
+      |> Map.delete(:max_health)
+
+    save
+    |> Map.put(:stats, stats)
+    |> Map.put(:version, 7)
+    |> _migrate()
+  end
+
+  # for the startin save which has empty stats, migrate the version forward
+  defp _migrate(save = %{version: 6}) do
+    save
+    |> Map.put(:version, 7)
+    |> _migrate()
+  end
+
   defp _migrate(save = %{version: 5}) do
     save
     |> Map.put(:config, %{hints: true})

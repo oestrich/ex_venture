@@ -19,8 +19,8 @@ defmodule Web.NPCTest do
         %{"key" => "start", "message" => "Hi"},
       ] |> Poison.encode!(),
       "stats" => %{
-        health: 25,
-        max_health: 25,
+        health_points: 25,
+        max_health_points: 25,
         strength: 10,
         dexterity: 10,
         intelligence: 10,

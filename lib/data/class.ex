@@ -13,7 +13,7 @@ defmodule Data.Class do
     field(:description, :string)
     field(:each_level_stats, Stats)
 
-    field(:regen_health, :integer)
+    field(:regen_health_points, :integer)
     field(:regen_skill_points, :integer)
 
     has_many(:class_skills, ClassSkill)
@@ -26,14 +26,14 @@ defmodule Data.Class do
       :name,
       :description,
       :each_level_stats,
-      :regen_health,
+      :regen_health_points,
       :regen_skill_points
     ])
     |> validate_required([
       :name,
       :description,
       :each_level_stats,
-      :regen_health,
+      :regen_health_points,
       :regen_skill_points
     ])
     |> validate_stats()

@@ -222,8 +222,8 @@ defmodule Seeds do
     create_exit(%{west_id: shack.id, east_id: forest_path.id})
 
     stats = %{
-      health: 25,
-      max_health: 25,
+      health_points: 25,
+      max_health_points: 25,
       skill_points: 10,
       max_skill_points: 10,
       move_points: 10,
@@ -316,8 +316,8 @@ defmodule Seeds do
       name: "Human",
       description: "A human",
       starting_stats: %{
-        health: 40,
-        max_health: 40,
+        health_points: 40,
+        max_health_points: 40,
         skill_points: 15,
         max_skill_points: 15,
         move_points: 15,
@@ -333,8 +333,8 @@ defmodule Seeds do
       name: "Dwarf",
       description: "A dwarf",
       starting_stats: %{
-        health: 50,
-        max_health: 50,
+        health_points: 50,
+        max_health_points: 50,
         skill_points: 15,
         max_skill_points: 15,
         move_points: 15,
@@ -350,8 +350,8 @@ defmodule Seeds do
       name: "Elf",
       description: "An elf",
       starting_stats: %{
-        health: 15,
-        max_health: 35,
+        health_points: 15,
+        max_health_points: 35,
         skill_points: 35,
         max_skill_points: 15,
         move_points: 15,
@@ -366,11 +366,11 @@ defmodule Seeds do
     {:ok, fighter} = create_class(%{
       name: "Fighter",
       description: "Uses strength and swords to overcome.",
-      regen_health: 2,
+      regen_health_points: 2,
       regen_skill_points: 1,
       each_level_stats: %{
-        health: 5,
-        max_health: 5,
+        health_points: 5,
+        max_health_points: 5,
         skill_points: 2,
         max_skill_points: 2,
         move_points: 3,
@@ -385,11 +385,11 @@ defmodule Seeds do
     {:ok, mage} = create_class(%{
       name: "Mage",
       description: "Uses intelligence and magic to overcome.",
-      regen_health: 1,
+      regen_health_points: 1,
       regen_skill_points: 2,
       each_level_stats: %{
-        health: 3,
-        max_health: 3,
+        health_points: 3,
+        max_health_points: 3,
         skill_points: 5,
         max_skill_points: 5,
         move_points: 3,
@@ -406,8 +406,8 @@ defmodule Seeds do
       name: "Slash",
       description: "Use your weapon to slash at your target",
       points: 1,
-      user_text: "You slash at {target}.",
-      usee_text: "You were slashed at by {user}.",
+      user_text: "You slash at [target].",
+      usee_text: "You were slashed at by [user].",
       command: "slash",
       effects: [
         %{kind: "damage", type: :slashing, amount: 10},
@@ -420,8 +420,8 @@ defmodule Seeds do
       name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
       points: 3,
-      user_text: "You shoot a bolt of arcane energy at {target}.",
-      usee_text: "{user} shoots a bolt of arcane energy at you.",
+      user_text: "You shoot a bolt of arcane energy at [target].",
+      usee_text: "[user] shoots a bolt of arcane energy at you.",
       command: "magic missile",
       effects: [
         %{kind: "damage", type: :arcane, amount: 10},

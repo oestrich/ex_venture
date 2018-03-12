@@ -34,8 +34,8 @@ defmodule TestHelpers do
 
   def base_stats() do
     %{
-      health: 50,
-      max_health: 50,
+      health_points: 50,
+      max_health_points: 50,
       skill_points: 50,
       max_skill_points: 50,
       move_points: 10,
@@ -61,7 +61,7 @@ defmodule TestHelpers do
       wearing: %{},
       wielding: %{},
       config: %{hints: true, prompt: "%h/%Hhp"},
-      version: 6,
+      version: 7,
     }
   end
 
@@ -181,8 +181,8 @@ defmodule TestHelpers do
       name: "Human",
       description: "A human",
       starting_stats: %{
-        health: 25,
-        max_health: 25,
+        health_points: 25,
+        max_health_points: 25,
         strength: 10,
         dexterity: 10,
         intelligence: 10,
@@ -205,11 +205,11 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "Fighter",
       description: "A fighter",
-      regen_health: 1,
+      regen_health_points: 1,
       regen_skill_points: 1,
       each_level_stats: %{
-        health: 5,
-        max_health: 5,
+        health_points: 5,
+        max_health_points: 5,
         strength: 1,
         dexterity: 1,
         intelligence: 1,
@@ -269,8 +269,8 @@ defmodule TestHelpers do
       status_line: "{name} is here.",
       description: "{status_line}",
       stats: %{
-        health: 25,
-        max_health: 25,
+        health_points: 25,
+        max_health_points: 25,
         skill_points: 10,
         max_skill_points: 10,
         strength: 13,

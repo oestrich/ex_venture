@@ -260,7 +260,7 @@ defmodule Game.CommandTest do
   end
 
   test "limit commands to be above 0 hp to perform", %{socket: socket} do
-    save = %{stats: %{health: 0}}
+    save = %{stats: %{health_points: 0}}
     command = %Command{module: Command.Move, args: {:north}}
     :ok = Command.run(command, %{socket: socket, save: save})
     assert @socket.get_echos() == [{socket, "You are passed out and cannot perform this action."}]

@@ -12,7 +12,7 @@ defmodule Game.NPC.ActionsTest do
     setup do
       @room.clear_enters()
 
-      npc = %{id: 1, stats: %{health: 10, max_health: 15}}
+      npc = %{id: 1, stats: %{health_points: 10, max_health_points: 15}}
       npc_spawner = %{room_id: 1, spawn_interval: 10}
 
       state = %State{npc: npc, npc_spawner: npc_spawner, room_id: 2}
@@ -21,11 +21,11 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "respawns the npc", %{state: state, npc: npc} do
-      state = %{state | npc: put_in(npc, [:stats, :health], 0)}
+      state = %{state | npc: put_in(npc, [:stats, :health_points], 0)}
 
       state = Actions.handle_respawn(state)
 
-      assert state.npc.stats.health == 15
+      assert state.npc.stats.health_points == 15
       assert state.room_id == 1
       assert [{1, {:npc, _}, :respawn}] = @room.get_enters()
     end
@@ -117,7 +117,7 @@ defmodule Game.NPC.ActionsTest do
     setup do
       effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
       from = {:user, %{id: 1, name: "Player"}}
-      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health: 25}}
+      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25}}
       npc_spawner = %{id: 1, spawn_interval: 0}
 
       state = %State{
@@ -137,7 +137,7 @@ defmodule Game.NPC.ActionsTest do
 
       effect_id = effect.id
       assert [{^from, %{id: :id, count: 2}}] = state.continuous_effects
-      assert state.npc.stats.health == 15
+      assert state.npc.stats.health_points == 15
       assert_receive {:continuous_effect, ^effect_id}
     end
 

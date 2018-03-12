@@ -5,7 +5,7 @@ defmodule Web.Admin.ClassControllerTest do
     params = %{
       "name" => "Fighter",
       "description" => "A fighter",
-      "regen_health" => 1,
+      "regen_health_points" => 1,
       "regen_skill_points" => 1,
       "each_level_stats" => base_stats() |> Poison.encode!(),
     }

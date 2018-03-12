@@ -10,7 +10,7 @@
       <legend>Starting Stats</legend>
       <tr>
         <th>Health</th>
-        <td><%= @race |> stat(:health) %>/<%= @race |> stat(:max_health) %></td>
+        <td><%= @race |> stat(:health_points) %>/<%= @race |> stat(:max_health_points) %></td>
       </tr>
       <tr>
         <th>Skill Points</th>

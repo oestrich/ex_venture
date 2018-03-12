@@ -25,9 +25,9 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :regen_health %>
-        <%= text_input f, :regen_health, class: "form-control" %>
-        <%= error_tag f, :regen_health %>
+        <%= label f, :regen_health_points %>
+        <%= text_input f, :regen_health_points, class: "form-control" %>
+        <%= error_tag f, :regen_health_points %>
         <span class="help-block">Number of health each regen tick will give.</span>
       </div>
 

@@ -48,7 +48,7 @@ defmodule Game.Format do
 
   Example:
 
-      iex> stats = %{health: 50, max_health: 75, skill_points: 9, max_skill_points: 10, move_points: 4, max_move_points: 10}
+      iex> stats = %{health_points: 50, max_health_points: 75, skill_points: 9, max_skill_points: 10, move_points: 4, max_move_points: 10}
       ...> config = %{prompt: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"}
       ...> Game.Format.prompt(%{name: "user"}, %{experience_points: 1010, stats: stats, config: config})
       "[50/75hp 9/10sp 4/10mv 10xp] > "
@@ -60,8 +60,8 @@ defmodule Game.Format do
     exp = rem(exp, 1000)
 
     "[#{config.prompt}] > "
-    |> String.replace("%h", to_string(stats.health))
-    |> String.replace("%H", to_string(stats.max_health))
+    |> String.replace("%h", to_string(stats.health_points))
+    |> String.replace("%H", to_string(stats.max_health_points))
     |> String.replace("%s", to_string(stats.skill_points))
     |> String.replace("%S", to_string(stats.max_skill_points))
     |> String.replace("%m", to_string(stats.move_points))
@@ -564,7 +564,7 @@ defmodule Game.Format do
       ["Level", save.level],
       ["XP", save.experience_points],
       ["Spent XP", save.spent_experience_points],
-      ["Health Points", "#{stats.health}/#{stats.max_health}"],
+      ["Health Points", "#{stats.health_points}/#{stats.max_health_points}"],
       ["Skill Points", "#{stats.skill_points}/#{stats.max_skill_points}"],
       ["Movement Points", "#{stats.move_points}/#{stats.max_move_points}"],
       ["Strength", stats.strength],

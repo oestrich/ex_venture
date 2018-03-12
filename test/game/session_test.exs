@@ -30,8 +30,8 @@ defmodule Game.SessionTest do
 
   describe "regenerating" do
     setup do
-      stats = %{health: 10, max_health: 15, skill_points: 9, max_skill_points: 12, move_points: 8, max_move_points: 10}
-      class = %{regen_health: 1, regen_skill_points: 1}
+      stats = %{health_points: 10, max_health_points: 15, skill_points: 9, max_skill_points: 12, move_points: 8, max_move_points: 10}
+      class = %{regen_health_points: 1, regen_skill_points: 1}
       %{user: %{class: class}, save: %{room_id: 1, level: 2, stats: stats}, regen: %{is_regenerating: true, count: 5}}
     end
 
@@ -40,7 +40,7 @@ defmodule Game.SessionTest do
 
       {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Process.handle_info(:regen, state)
 
-      assert stats.health == 12
+      assert stats.health_points == 12
       assert stats.skill_points == 11
       assert stats.move_points == 9
 
@@ -50,12 +50,12 @@ defmodule Game.SessionTest do
     end
 
     test "does not echo if stats did not change", state do
-      stats = %{health: 15, max_health: 15, skill_points: 12, max_skill_points: 12, move_points: 10, max_move_points: 10}
+      stats = %{health_points: 15, max_health_points: 15, skill_points: 12, max_skill_points: 12, move_points: 10, max_move_points: 10}
       save = %{room_id: 1, level: 2, stats: stats}
 
       {:noreply, %{save: %{stats: stats}}} = Process.handle_info(:regen, %{state | save: save})
 
-      assert stats.health == 15
+      assert stats.health_points == 15
       assert stats.skill_points == 12
       assert stats.move_points == 10
 
@@ -65,7 +65,7 @@ defmodule Game.SessionTest do
     test "does not regen, only increments count if not high enough", state do
       {:noreply, %{regen: %{count: 2}, save: %{stats: stats}}} = Process.handle_info(:regen, %{state | regen: %{is_regenerating: true, count: 1}})
 
-      assert stats.health == 10
+      assert stats.health_points == 10
       assert stats.skill_points == 9
     end
   end
@@ -137,12 +137,12 @@ defmodule Game.SessionTest do
 
   test "save the user's save" do
     user = create_user(%{name: "player", password: "password"})
-    save = %{user.save | stats: %{user.save.stats | health: 10}}
+    save = %{user.save | stats: %{user.save.stats | health_points: 10}}
 
     {:noreply, _state} = Process.handle_info(:save, %{state: "active", user: user, save: save, session_started_at: Timex.now()})
 
     user = Data.User |> Data.Repo.get(user.id)
-    assert user.save.stats.health == 10
+    assert user.save.stats.health_points == 10
   end
 
   test "checking for inactive players - not inactive", %{socket: socket} do
@@ -194,30 +194,30 @@ defmodule Game.SessionTest do
     @room.clear_update_characters()
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health: 25}
+    stats = %{health_points: 25}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
-    assert state.save.stats.health == 15
+    assert state.save.stats.health_points == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
 
-    assert [{1, {:user,  %{name: "user", save: %{room_id: 1, stats: %{health: 15}}}}}] = @room.get_update_characters()
+    assert [{1, {:user,  %{name: "user", save: %{room_id: 1, stats: %{health_points: 15}}}}}] = @room.get_update_characters()
   end
 
   test "applying effects with continuous effects", %{socket: socket} do
     @room.clear_update_characters()
 
     effect = %{kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
-    stats = %{health: 25}
+    stats = %{health_points: 25}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     from = {:npc, %{id: 1, name: "Bandit"}}
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}
 
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], from, "description"}, state)
 
-    assert state.save.stats.health == 15
+    assert state.save.stats.health_points == 15
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
 
     [{^from, effect}] = state.continuous_effects
@@ -232,12 +232,12 @@ defmodule Game.SessionTest do
     Session.Registry.register(%{id: 2})
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health: 5}
+    stats = %{health_points: 5}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
-    assert state.save.stats.health == -5
+    assert state.save.stats.health_points == -5
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
     assert [{1, {"character/died", _, _, _}}] = @room.get_notifies()
@@ -252,14 +252,14 @@ defmodule Game.SessionTest do
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, 2))
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health: 5}
+    stats = %{health_points: 5}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     save = %{room_id: 1, stats: stats}
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: save, is_targeting: MapSet.new()}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
 
-    assert state.save.stats.health == -5
+    assert state.save.stats.health_points == -5
 
     assert_receive {:resurrect, 2}
   after
@@ -274,14 +274,14 @@ defmodule Game.SessionTest do
     @zone.set_graveyard({:error, :no_graveyard})
 
     effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health: 5}
+    stats = %{health_points: 5}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     save = %{room_id: 1, stats: stats}
 
     state = %State{socket: socket, state: "active", mode: "commands", user: user, save: save, is_targeting: MapSet.new()}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
 
-    assert state.save.stats.health == -5
+    assert state.save.stats.health_points == -5
 
     refute_receive {:"$gen_cast", {:teleport, _}}
   after
@@ -371,18 +371,18 @@ defmodule Game.SessionTest do
       @room.clear_leaves()
     end
 
-    test "sets health to 1 if < 0", state do
-      save = %{stats: %{health: -1}, room_id: 2}
+    test "sets health_points to 1 if < 0", state do
+      save = %{stats: %{health_points: -1}, room_id: 2}
       state = %{state | save: save}
 
       {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
 
-      assert state.save.stats.health == 1
-      assert state.user.save.stats.health == 1
+      assert state.save.stats.health_points == 1
+      assert state.user.save.stats.health_points == 1
     end
 
     test "leaves old room, enters new room", state do
-      save = %{stats: %{health: -1}, room_id: 1}
+      save = %{stats: %{health_points: -1}, room_id: 1}
       state = %{state | save: save}
 
       {:noreply, _state} = Process.handle_info({:resurrect, 2}, state)
@@ -391,13 +391,13 @@ defmodule Game.SessionTest do
       [{2, {:user, _}, :respawn}] = @room.get_enters()
     end
 
-    test "does not touch health if > 0", state do
-      save = %{stats: %{health: 2}}
+    test "does not touch health_points if > 0", state do
+      save = %{stats: %{health_points: 2}}
       state = %{state | save: save}
 
       {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
 
-      assert state.save.stats.health == 2
+      assert state.save.stats.health_points == 2
     end
   end
 

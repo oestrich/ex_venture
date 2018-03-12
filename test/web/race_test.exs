@@ -9,8 +9,8 @@ defmodule Web.RaceTest do
       "name" => "Human",
       "description" => "A human",
       "starting_stats" => %{
-        health: 25,
-        max_health: 25,
+        health_points: 25,
+        max_health_points: 25,
         strength: 10,
         dexterity: 10,
         intelligence: 10,
@@ -25,7 +25,7 @@ defmodule Web.RaceTest do
     {:ok, race} = Race.create(params)
 
     assert race.name == "Human"
-    assert race.starting_stats.health == 25
+    assert race.starting_stats.health_points == 25
   end
 
   test "updating a race" do

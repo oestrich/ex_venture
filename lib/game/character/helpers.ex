@@ -45,14 +45,14 @@ defmodule Game.Character.Helpers do
   @doc """
   Determine if the Character is alive still
 
-      iex> Game.Character.Helpers.is_alive?(%{stats: %{health: 10}})
+      iex> Game.Character.Helpers.is_alive?(%{stats: %{health_points: 10}})
       true
 
-      iex> Game.Character.Helpers.is_alive?(%{stats: %{health: -1}})
+      iex> Game.Character.Helpers.is_alive?(%{stats: %{health_points: -1}})
       false
   """
   @spec is_alive?(map()) :: boolean()
   def is_alive?(save)
-  def is_alive?(%{stats: %{health: health}}) when health > 0, do: true
+  def is_alive?(%{stats: %{health_points: health_points}}) when health_points > 0, do: true
   def is_alive?(_), do: false
 end

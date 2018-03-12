@@ -12,10 +12,12 @@ defmodule Data.SaveTest do
       assert save.room_id == 1
     end
 
-    test "loads stats" do
-      {:ok, %Data.Save{stats: stats}} = Data.Save.load(%{"stats" => %{"health" => 50, "strength" => 10, "dexterity" => 10}})
+    test "loads and migrates stats" do
+      save = %{"stats" => %{"health" => 50, "max_health" => 50, "strength" => 10, "dexterity" => 10}}
 
-      assert stats == %{health: 50, strength: 10, dexterity: 10}
+      {:ok, %Data.Save{stats: stats}} = Data.Save.load(save)
+
+      assert %{health_points: 50, max_health_points: 50, strength: 10, dexterity: 10} = stats
     end
 
     test "loads wearing" do
