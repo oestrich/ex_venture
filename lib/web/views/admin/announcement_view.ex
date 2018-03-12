@@ -2,6 +2,7 @@ defmodule Web.Admin.AnnouncementView do
   use Web, :view
 
   alias Web.Admin.SharedView
+  alias Web.Color
   alias Web.TimeView
 
   import Ecto.Changeset, only: [get_field: 2]

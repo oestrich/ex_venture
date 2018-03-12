@@ -9,8 +9,8 @@
           <%= TimeView.time(@announcement.inserted_at) %>
         </div>
         <p class="card-text" />
-        <div>
-          <%= @announcement.body |> Earmark.as_html!() |> raw() %>
+        <div class="announcement">
+          <%= @announcement.body |> Earmark.as_html!() |> Color.format() |> raw() %>
         </div>
       </div>
     </div>

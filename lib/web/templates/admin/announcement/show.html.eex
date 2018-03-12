@@ -27,8 +27,8 @@
             <%= link("Edit", to: announcement_path(@conn, :edit, @announcement.id), class: "btn btn-primary") %>
           </div>
         </div>
-        <div class="box-body">
-          <%= Earmark.as_html!(@announcement.body) |> raw() %>
+        <div class="box-body announcement">
+          <%= Earmark.as_html!(@announcement.body) |> Color.format() |> raw() %>
         </div>
         <div class="box-footer">
           <%= link("View on homepage", to: public_announcement_path(@conn, :show, @announcement.uuid), target: "_blank", class: "btn btn-default") %>

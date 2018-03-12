@@ -12,8 +12,11 @@ footer {
   margin-top: 1em;
 }
 
+.announcement pre,
 .terminal {
   background-color: #002833;
   color: #839496;
   padding: 10px;
+  font-size: 1em;
+  font-family: "Lucida Console", Monaco, monospace;
 }
