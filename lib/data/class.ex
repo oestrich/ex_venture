@@ -6,7 +6,6 @@ defmodule Data.Class do
   use Data.Schema
 
   alias Data.ClassSkill
-  alias Data.Stats
 
   schema "classes" do
     field(:name, :string)
