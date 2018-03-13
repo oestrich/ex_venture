@@ -6,6 +6,9 @@
           <%= link(@announcement.title, to: public_announcement_path(@conn, :show, @announcement.uuid)) %>
         </h3>
         <div class="card-subtitle text-muted">
+          <%= if @announcement.is_sticky do %>
+            <i class="fas fa-thumbtack"></i>
+          <% end %>
           <%= TimeView.time(@announcement.inserted_at) %>
         </div>
         <p class="card-text" />
