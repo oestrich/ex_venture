@@ -207,18 +207,6 @@ defmodule TestHelpers do
       description: "A fighter",
       regen_health_points: 1,
       regen_skill_points: 1,
-      each_level_stats: %{
-        health_points: 5,
-        max_health_points: 5,
-        strength: 1,
-        dexterity: 1,
-        intelligence: 1,
-        wisdom: 1,
-        skill_points: 5,
-        max_skill_points: 5,
-        move_points: 2,
-        max_move_points: 10,
-      },
     }, attributes)
   end
 

@@ -8,7 +8,6 @@ defmodule Web.Class do
   alias Data.Class
   alias Data.ClassSkill
   alias Data.Repo
-  alias Data.Stats
   alias Web.Pagination
 
   @doc """
@@ -78,7 +77,7 @@ defmodule Web.Class do
   @spec create(map) :: {:ok, Class.t()} | {:error, map}
   def create(params) do
     %Class{}
-    |> Class.changeset(cast_params(params))
+    |> Class.changeset(params)
     |> Repo.insert()
   end
 
@@ -89,36 +88,8 @@ defmodule Web.Class do
   def update(id, params) do
     id
     |> get()
-    |> Class.changeset(cast_params(params))
+    |> Class.changeset(params)
     |> Repo.update()
-  end
-
-  @doc """
-  Cast params into what `Data.Class` expects
-  """
-  @spec cast_params(map) :: map
-  def cast_params(params) do
-    params
-    |> parse_stats()
-  end
-
-  defp parse_stats(params = %{"each_level_stats" => stats}) do
-    case Poison.decode(stats) do
-      {:ok, stats} -> stats |> cast_stats(params)
-      _ -> params
-    end
-  end
-
-  defp parse_stats(params), do: params
-
-  defp cast_stats(stats, params) do
-    case stats |> Stats.load() do
-      {:ok, stats} ->
-        Map.put(params, "each_level_stats", stats)
-
-      _ ->
-        params
-    end
   end
 
   #

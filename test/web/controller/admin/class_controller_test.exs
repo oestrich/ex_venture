@@ -7,7 +7,6 @@ defmodule Web.Admin.ClassControllerTest do
       "description" => "A fighter",
       "regen_health_points" => 1,
       "regen_skill_points" => 1,
-      "each_level_stats" => base_stats() |> Poison.encode!(),
     }
 
     conn = post conn, class_path(conn, :create), class: params

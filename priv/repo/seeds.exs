@@ -424,18 +424,6 @@ defmodule Seeds do
       description: "Uses strength and swords to overcome.",
       regen_health_points: 2,
       regen_skill_points: 1,
-      each_level_stats: %{
-        health_points: 5,
-        max_health_points: 5,
-        skill_points: 2,
-        max_skill_points: 2,
-        move_points: 3,
-        max_move_points: 3,
-        strength: 3,
-        dexterity: 1,
-        intelligence: 1,
-        wisdom: 1,
-      },
     })
 
     mage = create_class(%{
@@ -443,18 +431,6 @@ defmodule Seeds do
       description: "Uses intelligence and magic to overcome.",
       regen_health_points: 1,
       regen_skill_points: 2,
-      each_level_stats: %{
-        health_points: 3,
-        max_health_points: 3,
-        skill_points: 5,
-        max_skill_points: 5,
-        move_points: 3,
-        max_move_points: 3,
-        strength: 1,
-        dexterity: 2,
-        intelligence: 3,
-        wisdom: 3,
-      },
     })
 
     slash = create_skill(%{

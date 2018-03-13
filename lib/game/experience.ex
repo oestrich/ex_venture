@@ -6,7 +6,6 @@ defmodule Game.Experience do
   use Networking.Socket
 
   alias Data.Save
-  alias Data.Stats
 
   @doc """
   Apply experience points to the user's save
@@ -15,7 +14,7 @@ defmodule Game.Experience do
   """
   @spec apply(map(), level: integer(), experience_points: integer()) :: {:update, map()}
   def apply(state, level: level, experience_points: exp) do
-    %{socket: socket, user: user, save: save} = state
+    %{socket: socket, save: save} = state
 
     exp = calculate_experience(save, level, exp)
     save = add_experience(state.save, exp)
@@ -26,7 +25,7 @@ defmodule Game.Experience do
       case leveled_up?(state.save, save) do
         true ->
           socket |> @socket.echo("You leveled up!")
-          level_up(save, user.class)
+          level_up(save)
 
         false ->
           save
@@ -120,25 +119,20 @@ defmodule Game.Experience do
   @doc """
   Level up after receing experience points
 
-      iex> Game.Experience.level_up(%{level: 1, experience_points: 1000, stats: %{}}, %{each_level_stats: %{}})
+      iex> Game.Experience.level_up(%{level: 1, experience_points: 1000, stats: %{}})
       %{level: 2, experience_points: 1000, stats: %{}}
 
-      iex> Game.Experience.level_up(%{level: 10, experience_points: 10030, stats: %{}}, %{each_level_stats: %{}})
+      iex> Game.Experience.level_up(%{level: 10, experience_points: 10030, stats: %{}})
       %{level: 11, experience_points: 10030, stats: %{}}
   """
-  @spec level_up(Save.t(), Class.t()) :: Save.t()
-  def level_up(save = %{experience_points: xp}, class) do
+  @spec level_up(Save.t()) :: Save.t()
+  def level_up(save = %{experience_points: xp}) do
     level = div(xp, 1000) + 1
-
-    each_level_stats =
-      class.each_level_stats
-      |> Stats.default()
 
     stats =
       save.stats
       |> Enum.reduce(%{}, fn {key, val}, stats ->
-        class_boost = Map.get(each_level_stats, key, 0)
-        Map.put(stats, key, val + level + class_boost)
+        Map.put(stats, key, val + level)
       end)
 
     save

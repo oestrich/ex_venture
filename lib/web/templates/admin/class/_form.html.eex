@@ -18,13 +18,6 @@
       </div>
 
       <div class="form-group">
-        <%= label f, :each_level_stats %>
-        <%= textarea f, :each_level_stats, value: @changeset |> each_level_stats(), class: "form-control", rows: 10 %>
-        <%= error_tag f, :each_level_stats %>
-        <span class="help-block">The stat boost that each level will give the player.</span>
-      </div>
-
-      <div class="form-group">
         <%= label f, :regen_health_points %>
         <%= text_input f, :regen_health_points, class: "form-control" %>
         <%= error_tag f, :regen_health_points %>
