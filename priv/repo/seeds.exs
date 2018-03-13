@@ -10,9 +10,12 @@ alias Data.Item
 alias Data.NPC
 alias Data.NPCItem
 alias Data.NPCSpawner
+alias Data.Quest
+alias Data.QuestStep
 alias Data.Race
 alias Data.Room
 alias Data.RoomItem
+alias Data.Script
 alias Data.Skill
 alias Data.Social
 alias Data.User
@@ -137,6 +140,18 @@ defmodule Helpers do
     |> Channel.changeset(%{name: name, color: color})
     |> Repo.insert!()
   end
+
+  def create_quest(params) do
+    %Quest{}
+    |> Quest.changeset(params)
+    |> Repo.insert!()
+  end
+
+  def create_quest_step(quest, params) do
+    %QuestStep{}
+    |> QuestStep.changeset(Map.merge(params, %{quest_id: quest.id}))
+    |> Repo.insert!
+  end
 end
 
 defmodule Seeds do
@@ -255,6 +270,7 @@ defmodule Seeds do
       experience_points: 124,
       stats: stats,
       events: [],
+      is_quest_giver: true,
     })
     add_npc_to_zone(bandit_hideout, bran, %{
       room_id: entrance.id,
@@ -267,7 +283,21 @@ defmodule Seeds do
       currency: 100,
       experience_points: 230,
       stats: stats,
-      events: [],
+      events: [
+        %{type: "room/entered", action: %{type: "target"}},
+        %{
+          type: "combat/tick",
+          action: %{
+            type: "target/effects",
+            weight: 10,
+            text: "[user] slashes at you.",
+            effects: [
+              %{kind: "damage", type: :slashing, amount: 2},
+            ],
+            delay: 2.0,
+          }
+        },
+      ],
     })
     add_npc_to_zone(bandit_hideout, bandit, %{
       room_id: great_room.id,
@@ -297,7 +327,6 @@ defmodule Seeds do
       keywords: ["leather"],
     })
     entrance = entrance |> add_item_to_room(leather_armor, %{spawn_interval: 15})
-    _bandit = bandit |> add_item_to_npc(leather_armor, %{drop_rate: 100})
 
     elven_armor = create_item(%{
       name: "Elven armor",
@@ -308,6 +337,19 @@ defmodule Seeds do
       keywords: ["elven"],
     })
     entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
+
+    potion = create_item(%{
+      name: "Potion",
+      description: "A healing potion",
+      type: "basic",
+      stats: %{},
+      effects: [%{kind: "recover", type: "health", amount: 10}],
+      whitelist_effects: ["recover", "stats"],
+      is_usable: true,
+      amount: 1,
+      keywords: [],
+    })
+    bandit |> add_item_to_npc(potion, %{drop_rate: 80})
 
     save = %Data.Save{
       version: 1,
@@ -445,6 +487,21 @@ defmodule Seeds do
       ],
     })
 
+    create_skill(%{
+      level: 1,
+      name: "Heal",
+      is_global: true,
+      description: "Heal yourself a small amount",
+      points: 1,
+      user_text: "You heal [target].",
+      usee_text: "You were healed by [user].",
+      command: "heal",
+      whitelist_effects: ["recover", "stats"],
+      effects: [
+        %{kind: "recover", type: "health", amount: 10},
+      ],
+    })
+
     create_class_skill(fighter, slash)
     create_class_skill(mage, magic_missile)
 
@@ -460,6 +517,32 @@ defmodule Seeds do
 
     create_channel("global")
     create_channel("newbie", "cyan")
+
+    quest = create_quest(%{
+      giver_id: bran.id,
+      name: "Finding a Guard",
+      description: "You must take out the bandits further down the cave.",
+      completed_message: "You did it!",
+      script: [
+        %Script.Line{
+          key: "start",
+          message: "Can you take out some bandits?",
+          listeners: [
+            %{phrase: "yes|bandit", key: "accept"},
+          ],
+        },
+        %Script.Line{
+          key: "accept",
+          message: "Great!",
+          trigger: "quest",
+        },
+      ],
+      level: 1,
+      experience: 100,
+      currency: 100,
+    })
+
+    create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: bandit.id})
 
     save =
       Game.Config.starting_save()
