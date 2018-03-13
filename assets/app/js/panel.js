@@ -15,11 +15,13 @@ let scrollToBottom = (callback) => {
 
 let appendMessage = (payload) => {
   let message = format(payload.message)
+  var fragment = document.createDocumentFragment();
   let html = document.createElement('span');
   html.innerHTML = message;
+  fragment.appendChild(html);
 
   scrollToBottom(() => {
-    document.getElementById("terminal").append(html)
+    document.getElementById("terminal").appendChild(fragment);
   })
 }
 
