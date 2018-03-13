@@ -110,8 +110,11 @@ defmodule Game.NPC.Events do
     target = Map.get(state, :target, nil)
 
     case Character.who(character) do
-      ^target -> {:update, %{state | target: nil}}
-      _ -> :ok
+      ^target ->
+        {:update, %{state | target: nil}}
+
+      _ ->
+        :ok
     end
   end
 
@@ -232,17 +235,27 @@ defmodule Game.NPC.Events do
     state
   end
 
-  def act_on_room_entered(state = %{npc: npc, combat: false}, {:user, user}, %{
-        action: %{type: "target"}
-      }) do
-
-    Character.being_targeted({:user, user}, {:npc, npc})
-    notify_delayed({"combat/tick"}, 1500)
-    broadcast(npc, "character/targeted", who({:user, user}))
-    %{state | combat: true, target: Character.who({:user, user})}
+  def act_on_room_entered(state, {:user, user}, %{action: %{type: "target"}}) do
+    case state do
+      %{combat: false} -> start_combat(state, user)
+      %{target: nil} -> start_combat(state, user)
+      _ -> state
+    end
   end
 
   def act_on_room_entered(state, _character, _event), do: state
+
+  defp start_combat(state = %{npc: npc}, user) do
+    Character.being_targeted({:user, user}, {:npc, npc})
+
+    case state.combat do
+      true -> :ok
+      _ -> notify_delayed({"combat/tick"}, 1500)
+    end
+
+    broadcast(npc, "character/targeted", who({:user, user}))
+    %{state | combat: true, target: Character.who({:user, user})}
+  end
 
   def act_on_room_heard(room_id, npc, event, message)
   def act_on_room_heard(_, %{id: id}, _, %{type: :npc, sender: %{id: id}}), do: :ok

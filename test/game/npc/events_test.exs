@@ -141,6 +141,18 @@ defmodule Game.NPC.EventsTest do
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
 
+    test "target the player when they entered - target if target is nil and in combat" do
+      Registry.register(%{id: 2})
+
+      npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
+      state = %State{room_id: 1, npc: npc, combat: true, target: nil}
+
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
+      assert state.target == {:user, 2}
+
+      assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
+    end
+
     test "target the player when they entered - do nothing if already in combat" do
       Registry.register(%{id: 2})
 
@@ -163,10 +175,12 @@ defmodule Game.NPC.EventsTest do
   describe "room/leave" do
     test "clears the target when player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
-      state = %State{room_id: 1, npc: npc, target: {:user, 2}}
+      state = %State{room_id: 1, npc: npc, target: {:user, 2}, combat: true}
 
       {:update, state} = Events.act_on(state, {"room/leave", {{:user, %{id: 2, name: "Player"}}, :leave}})
+
       assert is_nil(state.target)
+      assert state.combat
     end
 
     test "does not touch the target if another player leaves" do
