@@ -22,6 +22,7 @@ defmodule Data.User do
     field(:flags, {:array, :string})
     field(:token, Ecto.UUID)
     field(:seconds_online, :integer)
+    field(:notes, :string)
 
     field(:totp_secret, :string)
     field(:totp_verified_at, Timex.Ecto.DateTime)
@@ -46,7 +47,8 @@ defmodule Data.User do
       :flags,
       :race_id,
       :class_id,
-      :seconds_online
+      :seconds_online,
+      :notes
     ])
     |> validate_required([:name, :save, :race_id, :class_id])
     |> validate_save()
