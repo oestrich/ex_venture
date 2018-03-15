@@ -32,11 +32,11 @@ defmodule Web.Color do
     |> String.replace("{skill}", "<span class='white'>")
     |> String.replace("{quest}", "<span class='yellow'>")
     |> String.replace("{room}", "<span class='green'>")
-    |> String.replace("{say}",  "<span class='green'>")
-    |> String.replace("{command}",  "<span class='white'>")
-    |> String.replace("{exit}",  "<span class='white'>")
-    |> String.replace("{shop}",  "<span class='magenta'>")
-    |> String.replace("{shop}",  "<span class='cyan'>")
+    |> String.replace("{say}", "<span class='green'>")
+    |> String.replace("{command}", "<span class='white'>")
+    |> String.replace("{exit}", "<span class='white'>")
+    |> String.replace("{shop}", "<span class='magenta'>")
+    |> String.replace("{shop}", "<span class='cyan'>")
     |> String.replace(~r/{\/[\w:-]+}/, "</span>")
   end
 end

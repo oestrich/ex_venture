@@ -95,7 +95,8 @@ defmodule Web.Announcement do
   @doc """
   Update a announcement
   """
-  @spec update(id :: integer, params :: map) :: {:ok, Announcement.t()} | {:error, changeset :: map}
+  @spec update(id :: integer, params :: map) ::
+          {:ok, Announcement.t()} | {:error, changeset :: map}
   def update(id, params) do
     id
     |> get()

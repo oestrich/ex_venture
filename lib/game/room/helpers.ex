@@ -36,7 +36,7 @@ defmodule Game.Room.Helpers do
           | {:npc, NPC.t()}
           | {:user, User.t()}
 
-  def find_character(room, who_and_message, [message: true]) do
+  def find_character(room, who_and_message, message: true) do
     case room.players |> Enum.find(&Utility.name_matches?(&1, who_and_message)) do
       nil ->
         case room.npcs |> Enum.find(&Utility.name_matches?(&1, who_and_message)) do

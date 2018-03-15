@@ -156,7 +156,7 @@ defmodule Web.User do
   @spec connected_players() :: [User.t()]
   def connected_players() do
     SessionRegistry.connected_players()
-    |> Enum.map(&(&1.user))
+    |> Enum.map(& &1.user)
   end
 
   @doc """

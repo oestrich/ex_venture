@@ -20,7 +20,7 @@ defmodule Data.Announcement do
   def changeset(struct, params) do
     struct
     |> cast(params, [:title, :body, :tags, :is_published, :is_sticky, :published_at])
-    |> ensure(:published_at, Timex.now)
+    |> ensure(:published_at, Timex.now())
     |> validate_required([:title, :body, :is_published, :is_sticky, :published_at])
   end
 end

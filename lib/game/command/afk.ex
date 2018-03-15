@@ -43,6 +43,7 @@ defmodule Game.Command.AFK do
     case state.is_afk do
       true ->
         state.socket |> @socket.echo("You are now AFK.")
+
       false ->
         state |> welcome_back()
     end

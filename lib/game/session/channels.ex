@@ -62,5 +62,6 @@ defmodule Game.Session.Channels do
     Hint.gate(state, "tells.new")
     state
   end
+
   def maybe_hint_tell(state), do: state
 end

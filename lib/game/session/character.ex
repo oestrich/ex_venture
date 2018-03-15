@@ -128,7 +128,10 @@ defmodule Game.Session.Character do
   def notify(state, {"room/entered", {character, reason}}) do
     case reason do
       {:enter, direction} ->
-        state.socket |> @socket.echo("#{Format.name(character)} enters from the {command}#{direction}{/command}.")
+        state.socket
+        |> @socket.echo(
+          "#{Format.name(character)} enters from the {command}#{direction}{/command}."
+        )
 
       :teleport ->
         state.socket |> @socket.echo("#{Format.name(character)} warps in")
@@ -147,7 +150,10 @@ defmodule Game.Session.Character do
   def notify(state, {"room/leave", {character, reason}}) do
     case reason do
       {:leave, direction} ->
-        state.socket |> @socket.echo("#{Format.name(character)} leaves heading {command}#{direction}{/command}.")
+        state.socket
+        |> @socket.echo(
+          "#{Format.name(character)} leaves heading {command}#{direction}{/command}."
+        )
 
       :signout ->
         state.socket |> @socket.echo("#{Format.name(character)} signs out")
@@ -184,6 +190,7 @@ defmodule Game.Session.Character do
     case skip_echo? do
       true ->
         state
+
       false ->
         state.socket |> @socket.echo(message)
         state
@@ -197,7 +204,9 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"quest/new", quest}) do
-    state.socket |> @socket.echo("You received a new quest, #{Format.quest_name(quest)} (#{quest.id})")
+    state.socket
+    |> @socket.echo("You received a new quest, #{Format.quest_name(quest)} (#{quest.id})")
+
     Hint.gate(state, "quests.new", id: quest.id)
 
     Quest.track_quest(state.user, quest.id)

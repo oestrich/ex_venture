@@ -143,6 +143,7 @@ defmodule Game.Command.Skills do
   end
 
   defp check_cooldown(:ok, _state), do: :ok
+
   defp check_cooldown(skill, state = %{skills: skills}) do
     case Map.get(skills, skill.id) do
       nil ->
@@ -150,6 +151,7 @@ defmodule Game.Command.Skills do
 
       last_used_at ->
         difference = Timex.diff(Timex.now(), last_used_at, :milliseconds)
+
         case difference > skill.cooldown_time do
           true ->
             skill
@@ -166,6 +168,7 @@ defmodule Game.Command.Skills do
   end
 
   defp use_skill(:ok, _target, _state), do: :ok
+
   defp use_skill(skill, target, state) do
     %{socket: socket, user: user, save: save = %{stats: stats}} = state
 
@@ -178,7 +181,7 @@ defmodule Game.Command.Skills do
         player_effects = save |> Item.effects_on_player()
 
         effects =
-          player_effects ++ skill.effects
+          (player_effects ++ skill.effects)
           |> Skill.filter_effects(skill)
 
         effects = stats |> Effect.calculate(effects)

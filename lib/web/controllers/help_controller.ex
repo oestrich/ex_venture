@@ -12,6 +12,7 @@ defmodule Web.HelpController do
     case HelpTopic.get(id) do
       nil ->
         conn |> redirect(to: public_page_path(conn, :index))
+
       help_topic ->
         conn |> render("show.html", help_topic: help_topic)
     end
@@ -26,6 +27,7 @@ defmodule Web.HelpController do
     case HelpTopic.command(command) do
       nil ->
         conn |> redirect(to: public_page_path(conn, :index))
+
       command ->
         conn |> render("command.html", command: command)
     end
@@ -35,6 +37,7 @@ defmodule Web.HelpController do
     case HelpTopic.built_in(id) do
       nil ->
         conn |> redirect(to: public_page_path(conn, :index))
+
       built_in ->
         conn |> render("built_in.html", built_in: built_in)
     end

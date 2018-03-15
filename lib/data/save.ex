@@ -21,7 +21,7 @@ defmodule Data.Save do
           items: [Item.instance()],
           config: %{
             hints: boolean(),
-            prompt: String.t(),
+            prompt: String.t()
           },
           wearing: %{
             chest: integer
@@ -118,7 +118,6 @@ defmodule Data.Save do
 
   defp load_items(save = %{items: items, wearing: wearing, wielding: wielding})
        when is_list(items) do
-
     items =
       items
       |> Enum.map(fn item ->
@@ -295,7 +294,7 @@ defmodule Data.Save do
       :wielding
     ] && valid_channels?(save) && valid_currency?(save) && valid_stats?(save) &&
       valid_items?(save) && valid_room_id?(save) && valid_wearing?(save) && valid_wielding?(save) &&
-        valid_config?(save)
+      valid_config?(save)
   end
 
   @doc """
@@ -317,7 +316,8 @@ defmodule Data.Save do
   def valid_config?(save)
 
   def valid_config?(%{config: config}) do
-    is_map(config) && keys(config) == [:hints, :prompt] && is_boolean(config.hints) && is_binary(config.prompt)
+    is_map(config) && keys(config) == [:hints, :prompt] && is_boolean(config.hints) &&
+      is_binary(config.prompt)
   end
 
   @doc """

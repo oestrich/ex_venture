@@ -12,6 +12,7 @@ defmodule Web.SkillController do
     case Skill.get(id) do
       nil ->
         conn |> redirect(to: public_page_path(conn, :index))
+
       skill ->
         conn |> render("show.html", skill: skill)
     end

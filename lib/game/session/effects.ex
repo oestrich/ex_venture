@@ -57,7 +57,8 @@ defmodule Game.Session.Effects do
   @spec maybe_died(User.t(), State.t(), Character.t()) :: :ok
   def maybe_died(user, state, from)
 
-  def maybe_died(user = %{save: %{stats: %{health_points: health_points}}}, state, from) when health_points < 1 do
+  def maybe_died(user = %{save: %{stats: %{health_points: health_points}}}, state, from)
+      when health_points < 1 do
     user |> maybe_transport_to_graveyard()
 
     state.save.room_id

@@ -64,7 +64,7 @@ defmodule Data.Effect do
       "damage/over-time",
       "damage/type",
       "recover",
-      "stats",
+      "stats"
     ]
   end
 

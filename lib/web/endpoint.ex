@@ -40,7 +40,7 @@ defmodule Web.Endpoint do
   plug(
     Plug.Session,
     store: :cookie,
-    max_age: 24*60*60*31,
+    max_age: 24 * 60 * 60 * 31,
     key: "_ex_venture_key",
     signing_salt: "dJUOZQux"
   )

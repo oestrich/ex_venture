@@ -89,6 +89,7 @@ defmodule Game.Format do
   def say(:you, message) do
     ~s[You say, {say}"#{message}"{/say}]
   end
+
   def say(character, message) do
     ~s[#{name(character)} says, {say}"#{message}"{/say}]
   end
@@ -111,6 +112,7 @@ defmodule Game.Format do
   def say_to(:you, sayee, message) do
     ~s[You say to #{name(sayee)}, {say}"#{message}"{/say}]
   end
+
   def say_to(sayer, sayee, message) do
     ~s[#{name(sayer)} says to #{name(sayee)}, {say}"#{message}"{/say}]
   end
@@ -693,7 +695,7 @@ defmodule Game.Format do
     |> template(%{
       name: item_name(item),
       target: target_name(Keyword.get(opts, :target)),
-      user: target_name(Keyword.get(opts, :user)),
+      user: target_name(Keyword.get(opts, :user))
     })
   end
 
@@ -708,7 +710,7 @@ defmodule Game.Format do
     |> template(%{
       name: item_name(item),
       target: target_name(Keyword.get(opts, :target)),
-      user: target_name(Keyword.get(opts, :user)),
+      user: target_name(Keyword.get(opts, :user))
     })
   end
 

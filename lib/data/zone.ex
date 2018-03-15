@@ -25,7 +25,14 @@ defmodule Data.Zone do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :graveyard_id, :starting_level, :ending_level, :map_layer_names])
+    |> cast(params, [
+      :name,
+      :description,
+      :graveyard_id,
+      :starting_level,
+      :ending_level,
+      :map_layer_names
+    ])
     |> validate_required([:name, :description, :map_layer_names])
   end
 end

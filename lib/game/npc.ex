@@ -265,7 +265,7 @@ defmodule Game.NPC do
     Events.broadcast(npc, "combat/effects", %{
       from: Events.who(from),
       text: description,
-      effects: effects,
+      effects: effects
     })
 
     state = Actions.apply_effects(state, effects, from)

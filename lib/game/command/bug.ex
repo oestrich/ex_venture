@@ -59,6 +59,7 @@ defmodule Game.Command.Bug do
     case Bugs.get(state.user, id) do
       {:error, :not_found} ->
         state.socket |> @socket.echo("Bug ##{id} not found")
+
       {:ok, bug} ->
         state.socket |> @socket.echo(Format.show_bug(bug))
     end

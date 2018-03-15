@@ -44,7 +44,10 @@ defmodule Game.NPC.Actions do
   """
   @spec maybe_died(map, map, Character.t()) :: :ok
   def maybe_died(stats, state, from)
-  def maybe_died(%{health_points: health_points}, state, from) when health_points < 1, do: died(state, from)
+
+  def maybe_died(%{health_points: health_points}, state, from) when health_points < 1,
+    do: died(state, from)
+
   def maybe_died(_stats, state, _from), do: state
 
   @doc """

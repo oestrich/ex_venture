@@ -85,7 +85,8 @@ defmodule Game.Command.Target do
   @spec target_user(User.t(), pid, map) :: :ok | {:update, map}
   def target_user(user, socket, state)
 
-  def target_user(user = %{save: %{stats: %{health_points: health_points}}}, socket, _state) when health_points < 1 do
+  def target_user(user = %{save: %{stats: %{health_points: health_points}}}, socket, _state)
+      when health_points < 1 do
     socket |> @socket.echo("#{Format.target_name({:user, user})} could not be targeted.")
     :ok
   end

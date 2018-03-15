@@ -12,6 +12,7 @@ defmodule Web.RaceController do
     case Race.get(id) do
       nil ->
         conn |> redirect(to: public_page_path(conn, :index))
+
       race ->
         conn |> render("show.html", race: race)
     end

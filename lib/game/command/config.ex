@@ -108,7 +108,10 @@ defmodule Game.Command.Config do
             {:update, update_config(config_name, value, state)}
 
           false ->
-            state.socket |> @socket.echo("Cannot set #{config_name} directly. See {command}help config{/command} for more information.")
+            state.socket
+            |> @socket.echo(
+              "Cannot set #{config_name} directly. See {command}help config{/command} for more information."
+            )
         end
 
       false ->
@@ -137,8 +140,10 @@ defmodule Game.Command.Config do
     case value do
       true ->
         state.socket |> @socket.echo("#{config_name} is turned on")
+
       false ->
         state.socket |> @socket.echo("#{config_name} is turned off")
+
       string when is_binary(string) ->
         state.socket |> @socket.echo("#{config_name} is set to \"#{string}\"")
     end

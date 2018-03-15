@@ -63,7 +63,7 @@ defmodule Game.Command.Use do
     player_effects = save |> Item.effects_on_player()
 
     effects =
-      player_effects ++ item.effects
+      (player_effects ++ item.effects)
       |> Item.filter_effects(item)
 
     effects = save.stats |> Effect.calculate(effects)

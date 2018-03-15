@@ -213,7 +213,6 @@ defmodule Game.Command.Move do
         room_exit = %{id: exit_id, has_door: true},
         direction
       ) do
-
     case Door.get(exit_id) do
       "open" ->
         maybe_move_to(state, room_id, %{}, direction)
@@ -250,7 +249,6 @@ defmodule Game.Command.Move do
         leave_reason,
         enter_reason
       ) do
-
     @room.unlink(save.room_id)
     @room.leave(save.room_id, {:user, user}, leave_reason)
 
@@ -258,7 +256,7 @@ defmodule Game.Command.Move do
 
     save = %{save | room_id: room_id}
 
-        state |> maybe_welcome_back()
+    state |> maybe_welcome_back()
 
     state =
       state

@@ -31,7 +31,8 @@ defmodule Game.Stats do
 
   def regen(:health_points, stats, health_points) do
     case %{stats | health_points: stats.health_points + health_points} do
-      %{health_points: health_points, max_health_points: max_health_points} when health_points > max_health_points ->
+      %{health_points: health_points, max_health_points: max_health_points}
+      when health_points > max_health_points ->
         %{stats | health_points: max_health_points}
 
       stats ->

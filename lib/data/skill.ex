@@ -76,7 +76,7 @@ defmodule Data.Skill do
   end
 
   defp _validate_whitelist(changeset, whitelist_effects) do
-    case Enum.all?(whitelist_effects, & &1 in Effect.types()) do
+    case Enum.all?(whitelist_effects, &(&1 in Effect.types())) do
       true ->
         changeset
 

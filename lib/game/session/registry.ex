@@ -65,7 +65,10 @@ defmodule Game.Session.Registry do
     {:reply, state.connected_players, state}
   end
 
-  def handle_cast({:register, pid, user, metadata}, state = %{connected_players: connected_players}) do
+  def handle_cast(
+        {:register, pid, user, metadata},
+        state = %{connected_players: connected_players}
+      ) do
     Process.link(pid)
     connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
     {:noreply, %{state | connected_players: connected_players}}

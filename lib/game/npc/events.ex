@@ -202,7 +202,7 @@ defmodule Game.NPC.Events do
     broadcast(npc, "combat/action", %{
       target: who(target),
       text: Format.skill_usee(action.text, user: {:npc, npc}),
-      effects: effects,
+      effects: effects
     })
 
     delay = round(Float.ceil(action.delay * 1000))
@@ -283,7 +283,9 @@ defmodule Game.NPC.Events do
   @doc """
   Act on a tick event
   """
-  def act_on_tick(state = %{npc: %{stats: %{health_points: health_points}}}, _event) when health_points < 1, do: state
+  def act_on_tick(state = %{npc: %{stats: %{health_points: health_points}}}, _event)
+      when health_points < 1,
+      do: state
 
   def act_on_tick(state, event = %{action: %{type: "move"}}) do
     maybe_move_room(state, event)

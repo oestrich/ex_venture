@@ -12,6 +12,7 @@ defmodule Web.ClassController do
     case Class.get(id) do
       nil ->
         conn |> redirect(to: public_page_path(conn, :index))
+
       class ->
         conn |> render("show.html", class: class)
     end
