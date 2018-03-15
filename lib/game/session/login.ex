@@ -46,6 +46,7 @@ defmodule Game.Session.Login do
   @spec login(map, pid, map) :: map
   def login(user, socket, state) do
     Session.Registry.register(user)
+    Session.Registry.player_online(user)
 
     PlayerInstrumenter.login(user)
 

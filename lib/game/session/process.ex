@@ -87,10 +87,15 @@ defmodule Game.Session.Process do
   def handle_cast(:disconnect, state = %{state: "active"}) do
     Logger.info(fn -> "Disconnecting the session" end, type: :session)
     %{user: user, save: save, session_started_at: session_started_at, stats: stats} = state
+
     Session.Registry.unregister()
+    Session.Registry.player_offline(state.user)
+
     @room.leave(save.room_id, {:user, user}, :signout)
     @room.unlink(save.room_id)
+
     user |> Account.save_session(save, session_started_at, Timex.now(), stats)
+
     {:stop, :normal, state}
   end
 

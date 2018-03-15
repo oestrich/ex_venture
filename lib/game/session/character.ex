@@ -125,6 +125,16 @@ defmodule Game.Session.Character do
     state
   end
 
+  def notify(state, {"player/offline", player}) do
+    state.socket |> @socket.echo("#{Format.player_name(player)} went offline.")
+    state
+  end
+
+  def notify(state, {"player/online", player}) do
+    state.socket |> @socket.echo("#{Format.player_name(player)} is now online.")
+    state
+  end
+
   def notify(state, {"room/entered", {character, reason}}) do
     case reason do
       {:enter, direction} ->

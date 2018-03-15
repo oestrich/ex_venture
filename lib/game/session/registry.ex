@@ -6,6 +6,7 @@ defmodule Game.Session.Registry do
   use GenServer
 
   alias Data.User
+  alias Game.Character
 
   defmodule Metadata do
     @moduledoc """
@@ -50,6 +51,34 @@ defmodule Game.Session.Registry do
   @spec connected_players() :: [{pid, User.t()}]
   def connected_players() do
     GenServer.call(__MODULE__, :connected_players)
+  end
+
+  @doc """
+  Player has gone offline
+  """
+  @spec player_offline(User.t()) :: nil
+  def player_offline(disconnecting_user) do
+    connected_players()
+    |> Enum.reject(fn %{user: user} ->
+      user.id == disconnecting_user.id
+    end)
+    |> Enum.each(fn %{user: user} ->
+      Character.notify({:user, user}, {"player/offline", disconnecting_user})
+    end)
+  end
+
+  @doc """
+  Player has come online
+  """
+  @spec player_online(User.t()) :: nil
+  def player_online(connecting_user) do
+    connected_players()
+    |> Enum.reject(fn %{user: user} ->
+      user.id == connecting_user.id
+    end)
+    |> Enum.each(fn %{user: user} ->
+      Character.notify({:user, user}, {"player/online", connecting_user})
+    end)
   end
 
   #
