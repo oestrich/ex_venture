@@ -1,0 +1,21 @@
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><%= Config.game_name %></title>
+  <link href="<%= public_announcement_url(@conn, :feed) %>" rel="self"/>
+  <link href="<%= public_page_url(@conn, :index) %>"/>
+  <updated><%= Timex.now() |> Timex.format!("{ISO:Extended}") %></updated>
+  <id><%= public_page_url(@conn, :index) %></id>
+  <author>
+    <name><%= Config.game_name %></name>
+  </author>
+  <%= Enum.map(@announcements, fn announcement -> %>
+    <entry>
+      <title><%= announcement.title %></title>
+      <link href="<%= public_announcement_url(@conn, :show, announcement.uuid) %>" />
+      <id><%= public_announcement_url(@conn, :show, announcement.uuid) %></id>
+      <updated><%= announcement.published_at |> Timex.format!("{ISO:Extended}") %></updated>
+      <content type="html">
+        <%= announcement.body |> Earmark.as_html!() |> Color.format() |> html_escape() |> elem(1) %>
+      </content>
+    </entry>
+  <% end) %>
+</feed>

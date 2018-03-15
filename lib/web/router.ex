@@ -44,6 +44,7 @@ defmodule Web.Router do
 
     resources("/account/mail", MailController, only: [:index, :show])
 
+    get("/announcements/atom", AnnouncementController, :feed)
     resources("/announcements", AnnouncementController, only: [:show])
 
     resources("/classes", ClassController, only: [:index, :show])

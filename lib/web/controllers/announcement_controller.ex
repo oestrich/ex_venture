@@ -3,8 +3,12 @@ defmodule Web.AnnouncementController do
 
   alias Web.Announcement
 
-  plug(:fetch_announcement)
-  plug(:check_published)
+  plug(:fetch_announcement when action in [:show])
+  plug(:check_published when action in [:show])
+
+  def feed(conn, _params) do
+    render(conn, "feed.xml", announcements: Announcement.recent(sticky: false))
+  end
 
   def show(conn, _params) do
     conn |> render("show.html")

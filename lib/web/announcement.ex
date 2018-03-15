@@ -35,14 +35,15 @@ defmodule Web.Announcement do
   Get recent announcements, the most recent 5
   """
   def recent() do
-    recent =
-      Announcement
-      |> order_by([a], desc: a.published_at)
-      |> where([a], a.is_published and not a.is_sticky)
-      |> limit(5)
-      |> Repo.all()
+    sticky() ++ recent([sticky: false])
+  end
 
-    sticky() ++ recent
+  def recent([sticky: false]) do
+    Announcement
+    |> order_by([a], desc: a.published_at)
+    |> where([a], a.is_published and not a.is_sticky)
+    |> limit(5)
+    |> Repo.all()
   end
 
   @doc """
