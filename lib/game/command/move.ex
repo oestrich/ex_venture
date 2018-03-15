@@ -7,6 +7,7 @@ defmodule Game.Command.Move do
   use Game.Zone
 
   alias Data.Exit
+  alias Game.Command.AFK
   alias Game.Door
   alias Game.Quest
   alias Game.Session.GMCP
@@ -257,11 +258,14 @@ defmodule Game.Command.Move do
 
     save = %{save | room_id: room_id}
 
+        state |> maybe_welcome_back()
+
     state =
       state
       |> Map.put(:save, save)
       |> Map.put(:target, nil)
       |> Map.put(:is_targeting, MapSet.new())
+      |> Map.put(:is_afk, false)
 
     @room.enter(room_id, {:user, user}, enter_reason)
     @room.link(room_id)
@@ -302,6 +306,19 @@ defmodule Game.Command.Move do
     end
 
     state
+  end
+
+  @doc """
+  Open a door, if the door was closed
+  """
+  def maybe_welcome_back(state) do
+    case state.is_afk do
+      true ->
+        state |> AFK.welcome_back()
+
+      _ ->
+        :ok
+    end
   end
 
   @doc """

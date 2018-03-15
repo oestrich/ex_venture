@@ -3,13 +3,14 @@ defmodule Game.Command.RunTest do
   doctest Game.Command.Run
 
   alias Game.Command
+  alias Game.Session
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
   setup do
     user = %{id: 10, save: %{room_id: 1, stats: %{move_points: 10}}}
-    state = %{socket: :socket, user: user, save: user.save}
+    state = %Session.State{state: "active", mode: "command", socket: :socket, user: user, save: user.save}
     {:ok, %{socket: :socket, state: state}}
   end
 
@@ -48,7 +49,7 @@ defmodule Game.Command.RunTest do
   end
 
   test "out of movement stops the run", %{state: state} do
-    state = put_in(state[:save][:stats][:move_points], 0)
+    state = %{state | save: %{state.save | stats: %{state.save.stats | move_points: 0}}}
     @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
 
     :ok = Command.Run.run({[:north, :east]}, state)

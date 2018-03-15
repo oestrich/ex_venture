@@ -7,6 +7,7 @@ defmodule Game.Command.MoveTest do
   alias Game.Command
   alias Game.Door
   alias Game.Session.Registry
+  alias Game.Session.State
 
   setup do
     @socket.clear_messages
@@ -14,7 +15,9 @@ defmodule Game.Command.MoveTest do
 
     socket = :socket
     user = %{id: 10}
-    state = %{
+    state = %State{
+      state: "active",
+      mode: "command",
       socket: socket,
       user: user,
     }
