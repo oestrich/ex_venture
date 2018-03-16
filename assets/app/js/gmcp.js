@@ -159,7 +159,7 @@ let zoneMap = (channel, data) => {
   let map = _.first(Sizzle(".room-info .map"))
 
   let html = document.createElement('pre')
-  let mapString = format(data.map)
+  let mapString = format({message: data.map})
   html.innerHTML = `<code>${mapString}</lcodei>`
 
   map.innerHTML = ""

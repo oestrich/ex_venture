@@ -181,7 +181,7 @@ defmodule Game.Command do
       type: :command
     )
 
-    socket |> @socket.echo("Unknown command, type {white}help{/white} for assistance.")
+    socket |> @socket.echo("Unknown command, type {command}help{/command} for assistance.")
     :ok
   end
 

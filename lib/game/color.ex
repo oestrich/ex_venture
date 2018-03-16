@@ -24,10 +24,19 @@ defmodule Game.Color do
   end
 
   @doc """
+  For commands coming in from a player, delink them so they are only color.
+  """
+  def delink_commands(string) do
+    string
+    |> String.replace(~r/{command( send='.*')?}/i, "{command click=false}")
+  end
+
+  @doc """
   Format a string for colors
   """
   @spec format(String.t()) :: String.t()
   def format(string) do
+    string = string |> strip_commands()
     split = Regex.split(@color_regex, string, include_captures: true)
 
     split
@@ -48,6 +57,17 @@ defmodule Game.Color do
       false ->
         _format(tail, [head | lines], stack)
     end
+  end
+
+  @doc """
+  Strip extra attributes from command color tags. Used for going out via
+  the telnet client.
+  """
+  @spec strip_commands(String.t()) :: String.t()
+  def strip_commands(string) do
+    string
+    |> String.replace(~r/{command send='.*'}/, "{command}")
+    |> String.replace(~r/{command click=false}/, "{command}")
   end
 
   @doc """

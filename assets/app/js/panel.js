@@ -14,7 +14,7 @@ let scrollToBottom = (callback) => {
 }
 
 let appendMessage = (payload) => {
-  let message = format(payload.message)
+  let message = format(payload);
   var fragment = document.createDocumentFragment();
   let html = document.createElement('span');
   html.innerHTML = message;

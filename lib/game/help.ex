@@ -24,13 +24,13 @@ defmodule Game.Help do
       Game.Command.commands()
       |> Enum.map(fn command ->
         key = command.help(:topic)
-        "\t{command}#{key}{/command}: #{command.help(:short)}\n"
+        "\t{command send='help #{key}'}#{key}{/command}: #{command.help(:short)}\n"
       end)
 
     built_ins =
       HelpAgent.built_in()
       |> Enum.map(fn built_in ->
-        "\t{command}#{built_in.name}{/command}: #{built_in.short}\n"
+        "\t{command send='help #{built_in.name}'}#{built_in.name}{/command}: #{built_in.short}\n"
       end)
 
     topics =

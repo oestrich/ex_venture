@@ -1,4 +1,6 @@
-function formatColor(string) {
+function formatColor(payload) {
+  let string = payload.message;
+
   string = string.replace(/{black}/g, "<span class='black'>")
   string = string.replace(/{red}/g, "<span class='red'>")
   string = string.replace(/{green}/g, "<span class='green'>")
@@ -20,11 +22,24 @@ function formatColor(string) {
   string = string.replace(/{quest}/g, "<span class='yellow'>")
   string = string.replace(/{room}/g, "<span class='green'>")
   string = string.replace(/{say}/g,  "<span class='green'>")
-  string = string.replace(/{command}/g,  "<span class='white'>")
-  string = string.replace(/{exit}/g,  "<span class='white'>")
+  string = string.replace(/{exit}/g,  "<span class='white command'>")
   string = string.replace(/{shop}/g,  "<span class='magenta'>")
   string = string.replace(/{hint}/g,  "<span class='cyan'>")
   string = string.replace(/{\/[\w:-]+}/g, "</span>")
+
+  string = string.replace(/{command click=false}/g, "<span class='white'>");
+  string = string.replace(/{command( send='(?<command>.*)')?}/g, (_match, _fullSend, command) => {
+    if (payload.delink == undefined || payload.delink == false) {
+      if (command != undefined) {
+        return "<span class='white command' data-command='" + command + "'>";
+      } else {
+        return "<span class='white command'>";
+      }
+    } else {
+      return "<span class='white'>";
+    }
+  });
+
   return string;
 }
 
@@ -34,8 +49,8 @@ function formatLines(string) {
   return string;
 }
 
-function format(string) {
-  return formatLines(formatColor(string));
+function format(payload) {
+  return formatLines(formatColor(payload));
 }
 
 export default format

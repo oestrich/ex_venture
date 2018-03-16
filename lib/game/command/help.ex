@@ -7,6 +7,7 @@ defmodule Game.Command.Help do
 
   commands(["help"])
 
+  alias Game.Color
   alias Game.Help
 
   @impl Game.Command
@@ -34,6 +35,11 @@ defmodule Game.Command.Help do
   end
 
   def run({topic}, state) do
-    {:paginate, Help.topic(topic), state}
+    help =
+      topic
+      |> Help.topic()
+      |> Color.delink_commands()
+
+    {:paginate, help, state}
   end
 end

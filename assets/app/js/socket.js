@@ -89,18 +89,31 @@ document.getElementById("prompt").addEventListener("keydown", e => {
   }
 })
 
+let sendCommand = command => {
+  if (options.echo) {
+    commandHistory.add(command);
+    appendMessage({message: command + "<br />", delink: true});
+  }
+
+  document.getElementById("prompt").value = "";
+  channelWrapper.send(command);
+}
+
 document.getElementById("prompt").addEventListener("keypress", e => {
   if (e.keyCode == 13) {
     var command = document.getElementById("prompt").value
-
-    if (options.echo) {
-      commandHistory.add(command);
-      appendMessage({message: command + "<br />"});
-    }
-
-    document.getElementById("prompt").value = ""
-    channelWrapper.send(command)
+    sendCommand(command);
   }
 })
+
+document.addEventListener("click", e => {
+  if (e.target.classList.contains("command")){
+    if (e.target.dataset.command != undefined) {
+      sendCommand(e.target.dataset.command);
+    } else {
+      sendCommand(e.target.innerText);
+    }
+  }
+}, false);
 
 export {channel}

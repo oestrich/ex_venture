@@ -3,6 +3,7 @@ defmodule Game.Session.Commands do
   Module to hold functions related to command processing
   """
 
+  alias Game.Color
   alias Game.Command
   alias Game.Command.Pager
   alias Game.Session
@@ -15,7 +16,11 @@ defmodule Game.Session.Commands do
   @spec process_command(State.t(), String.t()) :: tuple()
   def process_command(state = %{user: user}, message) do
     state = Map.merge(state, %{last_recv: Timex.now()})
-    message |> Command.parse(user) |> run_command(state)
+
+    message
+    |> Color.delink_commands()
+    |> Command.parse(user)
+    |> run_command(state)
   end
 
   @doc """
