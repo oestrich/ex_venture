@@ -9,7 +9,7 @@
           <%= if @announcement.is_sticky do %>
             <i class="fas fa-thumbtack"></i>
           <% end %>
-          <%= TimeView.time(@announcement.inserted_at) %>
+          <%= TimeView.time(@announcement.published_at) %>
         </div>
         <p class="card-text" />
         <div class="announcement">

@@ -100,7 +100,7 @@
         <%= Enum.map(@announcements, fn announcement -> %>
           <li class="list-group-item">
             <h4><%= link(announcement.title, to: announcement_path(@conn, :show, announcement)) %></h4>
-            <small><%= TimeView.relative(announcement.inserted_at) %></small>
+            <small><%= TimeView.relative(announcement.published_at) %></small>
           </li>
         <% end) %>
       </ul>

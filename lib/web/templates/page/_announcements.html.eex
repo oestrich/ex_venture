@@ -10,7 +10,7 @@
             <% end %>
             <%= link(announcement.title, to: public_announcement_path(@conn, :show, announcement.uuid)) %>
           </h5>
-          <small><%= TimeView.relative(announcement.inserted_at) %></small>
+          <small><%= TimeView.relative(announcement.published_at) %></small>
         </div>
       </li>
     <% end) %>
