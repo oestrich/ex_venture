@@ -17,10 +17,33 @@ defmodule Game.Command.Map do
 
   def help(:full) do
     """
-    #{help(:short)}
+    View the map of the zone your are in. A room is shown as the [ ] symbols. Rooms that
+    are connected by open spaces between the [ ] symbols. Walls are drawn between rooms
+    that are next to each other but do not have an exit connecting them.
 
-    Example:
-    [ ] > {command}map{/command}
+    Sample map:
+
+           +---+
+           |[ ]|
+       +---+   +---+
+       |[ ]=[X]=[ ]|
+       +---+   +---+
+           |[ ]|
+           +---+
+
+    Map Legend:
+       X  - You
+      [ ] - Room
+       =  - Closed Door
+       /  - Open Door
+
+    Map colors show what the room's ecology might be:
+    {map:blue}[ ]{/map:blue} - Ocean, lake, or river
+    {map:brown}[ ]{/map:brown} - Mount, or road
+    {map:dark-green}[ ]{/map:dark-green} - Hill, field, or meadow
+    {map:green}[ ]{/map:green} - Forest, or jungle
+    {map:grey}[ ]{/map:grey} - Town, or dungeon
+    {map:light-grey}[ ]{/map:light-grey} - Inside
     """
   end
 
