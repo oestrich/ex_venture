@@ -20,6 +20,13 @@ defmodule Game.FormatTest do
         "{blue}this{/blue} line {yellow}will be{/yellow} split up into two lines because it is longer than 80\ncharacters"
     end
 
+    test "wraps at 80 chars - ignores {command} codes when counting" do
+      line =
+        "{command send='help text'}this{/command} line {yellow}will be{/yellow} split up into two lines because it is longer than 80 characters"
+      assert Format.wrap(line) ==
+        "{command send='help text'}this{/command} line {yellow}will be{/yellow} split up into two lines because it is longer than 80\ncharacters"
+    end
+
     test "wraps and does not chuck newlines" do
       assert Format.wrap("hi\nthere") == "hi\nthere"
       assert Format.wrap("hi\n\n\nthere") == "hi\n\n\nthere"

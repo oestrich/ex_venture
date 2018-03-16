@@ -144,9 +144,14 @@ defmodule Game.Color do
 
       iex> Game.Color.strip_color("{blue}Item{/blue}")
       "Item"
+
+      iex> Game.Color.strip_color("{command send='help item'}Item{/command}")
+      "Item"
   """
   @spec strip_color(String.t()) :: String.t()
   def strip_color(string) do
-    string |> String.replace(~r/{\/?\w+}/, "")
+    string
+    |> strip_commands()
+    |> String.replace(~r/{\/?\w+}/, "")
   end
 end

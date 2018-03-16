@@ -34,6 +34,8 @@ defmodule Web.Color do
     |> String.replace("{room}", "<span class='green'>")
     |> String.replace("{say}", "<span class='green'>")
     |> String.replace("{command}", "<span class='white'>")
+    |> String.replace(~r/{command send='.*'}/, "<span class='white'>")
+    |> String.replace("{command click=false}", "<span class='white'>")
     |> String.replace("{exit}", "<span class='white'>")
     |> String.replace("{shop}", "<span class='magenta'>")
     |> String.replace("{shop}", "<span class='cyan'>")

@@ -261,8 +261,9 @@ defmodule Game.Format do
   @spec wrap(String.t()) :: String.t()
   def wrap(string) do
     string
-    |> String.replace("\n", " {newline} ")
-    |> String.split()
+    |> String.replace("\n", "{newline}")
+    |> String.replace("\r", "")
+    |> String.split(~r/( |{[^}]*})/, include_captures: true)
     |> _wrap("", "")
   end
 
@@ -289,14 +290,14 @@ defmodule Game.Format do
   end
 
   defp _wrap([word | left], line, string) do
-    test_line = "#{line} #{word}" |> Color.strip_color()
+    test_line = "#{line} #{word}" |> Color.strip_color() |> String.trim()
 
     case String.length(test_line) do
       len when len < 80 ->
-        _wrap(left, join(line, word, " "), string)
+        _wrap(left, join(line, word, ""), string)
 
       _ ->
-        _wrap(left, word, join(string, line, "\n"))
+        _wrap(left, word, join(string, String.trim(line), "\n"))
     end
   end
 
@@ -320,7 +321,7 @@ defmodule Game.Format do
     |> Enum.map(fn direction ->
       case Exit.exit_to(room, direction) do
         %{id: exit_id, has_door: true} ->
-          "{exit}#{direction} (#{Door.get(exit_id)}){/exit}"
+          "{exit}#{direction}{/exit} (#{Door.get(exit_id)})"
 
         _ ->
           "{exit}#{direction}{/exit}"
