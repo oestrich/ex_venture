@@ -45,6 +45,9 @@ defmodule Game.SessionTest do
         max_skill_points: 12,
         move_points: 8,
         max_move_points: 10,
+
+        intelligence: 20,
+        constitution: 20,
       }
 
       state = Map.merge(state, %{
@@ -77,7 +80,15 @@ defmodule Game.SessionTest do
     end
 
     test "does not echo if stats did not change", %{state: state} do
-      stats = %{health_points: 15, max_health_points: 15, skill_points: 12, max_skill_points: 12, move_points: 10, max_move_points: 10}
+      stats = Map.merge(state.save.stats, %{
+        health_points: 15,
+        max_health_points: 15,
+        skill_points: 12,
+        max_skill_points: 12,
+        move_points: 10,
+        max_move_points: 10,
+      })
+
       save = %{room_id: 1, level: 2, stats: stats}
 
       {:noreply, %{save: %{stats: stats}}} = Process.handle_info(:regen, %{state | save: save})

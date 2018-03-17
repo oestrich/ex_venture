@@ -8,16 +8,18 @@ defmodule Data.Stats do
   alias Data.Stats.Damage
 
   @type character :: %{
-          health_points: integer,
-          max_health_points: integer,
-          skill_points: integer,
-          max_skill_points: integer,
-          move_points: integer,
-          max_move_points: integer,
-          strength: integer,
-          intelligence: integer,
-          dexterity: integer,
-          wisdom: integer
+          health_points: integer(),
+          max_health_points: integer(),
+          skill_points: integer(),
+          max_skill_points: integer(),
+          move_points: integer(),
+          max_move_points: integer(),
+
+          strength: integer(),
+          dexterity: integer(),
+          constitution: integer(),
+          intelligence: integer(),
+          wisdom: integer()
         }
   @type armor :: %{
           slot: :atom
@@ -72,6 +74,7 @@ defmodule Data.Stats do
     |> ensure(:max_move_points, 10)
     |> ensure(:strength, 10)
     |> ensure(:dexterity, 10)
+    |> ensure(:constitution, 10)
     |> ensure(:intelligence, 10)
     |> ensure(:wisdom, 10)
   end
@@ -106,6 +109,7 @@ defmodule Data.Stats do
   @spec fields() :: [atom]
   def fields(),
     do: [
+      :constitution,
       :dexterity,
       :health_points,
       :intelligence,
@@ -132,7 +136,7 @@ defmodule Data.Stats do
     keys(stats) == fields() && is_integer(stats.dexterity) && is_integer(stats.health_points) &&
       is_integer(stats.intelligence) && is_integer(stats.max_health_points) &&
       is_integer(stats.strength) && is_integer(stats.skill_points) &&
-      is_integer(stats.max_skill_points) && is_integer(stats.wisdom)
+      is_integer(stats.max_skill_points) && is_integer(stats.wisdom) && is_integer(stats.constitution)
   end
 
   @doc """

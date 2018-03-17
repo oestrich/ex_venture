@@ -88,7 +88,7 @@ defmodule Game.Session.Regen do
   """
   @spec regen_movement(map) :: map
   def regen_movement(state = %{user: user, save: save = %{stats: stats}}) do
-    stats = Stats.regen(:move_points, stats, @movement_regen)
+    stats = Stats.regen(stats, :move_points, @movement_regen)
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
@@ -106,9 +106,12 @@ defmodule Game.Session.Regen do
   @spec handle_regen(map, integer) :: map
   def handle_regen(state = %{regen: %{count: count}}, count) do
     %{user: user, save: save} = state
+    %{stats: stats} = save
 
-    stats = Stats.regen(:health_points, save.stats, save.level)
-    stats = Stats.regen(:skill_points, stats, save.level)
+    stats =
+      stats
+      |> Stats.regen(:health_points, round(0.1 * stats.constitution))
+      |> Stats.regen(:skill_points, round(0.1 * stats.intelligence))
 
     echo_health(save.stats, stats)
 

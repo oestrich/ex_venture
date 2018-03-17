@@ -139,6 +139,7 @@ defmodule Game.FormatTest do
         max_move_points: 10,
         strength: 10,
         dexterity: 10,
+        constitution: 10,
         intelligence: 10,
         wisdom: 10,
       }
@@ -198,6 +199,10 @@ defmodule Game.FormatTest do
 
     test "includes player dexterity", %{user: user} do
       assert Regex.match?(~r/Dexterity.+|.+10/, Format.info(user))
+    end
+
+    test "includes player constitution", %{user: user} do
+      assert Regex.match?(~r/Constitution.+|.+10/, Format.info(user))
     end
 
     test "includes player intelligence", %{user: user} do

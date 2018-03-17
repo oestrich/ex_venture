@@ -31,6 +31,7 @@ defmodule Game.ExperienceTest do
       max_skill_points: 52,
       strength: 12,
       dexterity: 12,
+      constitution: 12,
       intelligence: 12,
       wisdom: 12,
       move_points: 12,

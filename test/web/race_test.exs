@@ -13,6 +13,7 @@ defmodule Web.RaceTest do
         max_health_points: 25,
         strength: 10,
         dexterity: 10,
+        constitution: 13,
         intelligence: 10,
         wisdom: 10,
         skill_points: 10,

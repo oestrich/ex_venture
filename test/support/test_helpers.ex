@@ -42,6 +42,7 @@ defmodule TestHelpers do
       max_move_points: 10,
       strength: 10,
       dexterity: 10,
+      constitution: 10,
       intelligence: 10,
       wisdom: 10,
     }
@@ -189,6 +190,7 @@ defmodule TestHelpers do
         max_health_points: 25,
         strength: 10,
         dexterity: 10,
+        constitution: 10,
         intelligence: 10,
         wisdom: 10,
         skill_points: 10,
@@ -265,6 +267,7 @@ defmodule TestHelpers do
         max_skill_points: 10,
         strength: 13,
         dexterity: 10,
+        constitution: 13,
         intelligence: 10,
         wisdom: 10,
         move_points: 1,
