@@ -11,6 +11,7 @@ defmodule Data.Save.Config do
     case to_string(config) do
       "prompt" -> true
       "hints" -> true
+      "pager_size" -> true
       _ -> false
     end
   end
@@ -22,7 +23,25 @@ defmodule Data.Save.Config do
   def settable?(config) do
     case to_string(config) do
       "prompt" -> true
+      "pager_size" -> true
       _ -> false
+    end
+  end
+
+  @doc """
+  Cast a configuration option if it is settable
+  """
+  @spec cast_config(String.t() | atom(), any()) :: any()
+  def cast_config(config, value) do
+    case to_string(config) do
+      "prompt" ->
+        {:ok, to_string(value)}
+
+      "pager_size" ->
+        Ecto.Type.cast(:integer, value)
+
+      _ ->
+        {:error, :bad_config}
     end
   end
 

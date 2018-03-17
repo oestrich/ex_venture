@@ -59,7 +59,7 @@ defmodule Game.Session.Commands do
           state
           |> Map.put(:pagination, %{text: text})
 
-        {:noreply, Pager.paginate(state)}
+        {:noreply, Pager.paginate(state, lines: state.save.config.pager_size)}
 
       {:editor, module, state} ->
         state =

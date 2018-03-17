@@ -60,7 +60,11 @@ defmodule TestHelpers do
       stats: base_stats(),
       wearing: %{},
       wielding: %{},
-      config: %{hints: true, prompt: "%h/%Hhp"},
+      config: %{
+        hints: true,
+        prompt: "%h/%Hhp",
+        pager_size: 20,
+      },
       version: 7,
     }
   end

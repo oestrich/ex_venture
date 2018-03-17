@@ -155,6 +155,7 @@ defmodule Data.Save do
     config =
       save.config
       |> ensure_config(:prompt, Config.default_prompt())
+      |> ensure_config(:pager_size, 20)
 
     %{save | config: config}
   end
@@ -300,10 +301,10 @@ defmodule Data.Save do
   @doc """
   Validate config are correct
 
-      iex> Data.Save.valid_config?(%{config: %{hints: true, prompt: ""}})
+      iex> Data.Save.valid_config?(%{config: %{hints: true, prompt: "", pager_size: 20}})
       true
 
-      iex> Data.Save.valid_config?(%{config: %{hints: false, prompt: "Hi"}})
+      iex> Data.Save.valid_config?(%{config: %{hints: false, prompt: "Hi", pager_size: 30}})
       true
 
       iex> Data.Save.valid_config?(%{config: [:bad]})
@@ -316,8 +317,8 @@ defmodule Data.Save do
   def valid_config?(save)
 
   def valid_config?(%{config: config}) do
-    is_map(config) && keys(config) == [:hints, :prompt] && is_boolean(config.hints) &&
-      is_binary(config.prompt)
+    is_map(config) && keys(config) == [:hints, :pager_size, :prompt] && is_boolean(config.hints) &&
+      is_binary(config.prompt) && is_integer(config.pager_size)
   end
 
   @doc """

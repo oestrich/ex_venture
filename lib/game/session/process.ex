@@ -145,7 +145,7 @@ defmodule Game.Session.Process do
   end
 
   def handle_cast({:recv, message}, state = %{state: "active", mode: "paginate"}) do
-    {:noreply, Pager.paginate(state, command: message)}
+    {:noreply, Pager.paginate(state, command: message, lines: state.save.config.pager_size)}
   end
 
   def handle_cast({:recv, _message}, state = %{state: "active", mode: "continuing"}) do

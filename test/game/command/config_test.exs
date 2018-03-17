@@ -72,6 +72,17 @@ defmodule Game.Command.ConfigTest do
       assert Regex.match?(~r/set/, echo)
     end
 
+    test "set to an integer - pager_size", %{state: state} do
+      state = %{state | save: %{state.save | config: %{pager_size: 20}}}
+
+      {:update, %{save: save}} = Config.run({:set, "pager_size 25"}, state)
+
+      assert save.config.pager_size == 25
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/set/, echo)
+    end
+
     test "cannot set non-string config options - like hint", %{state: state} do
       :ok = Config.run({:set, "hints true"}, state)
 

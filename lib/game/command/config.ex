@@ -23,6 +23,10 @@ defmodule Game.Command.Config do
       {white}hints{/white}:
         A true/false option to show hints in the game, use {command}config [on|off]{/command}
 
+      {white}pager_size{/white}:
+        The amount of lines that should be returned in a single page for a
+        paginated response. Default is 20 lines.
+
       {white}prompt{/white}:
         A string that is formatted to display your prompt, use {command}config set{/command}. See more
         about prompts at {command}help prompt{/command}.
@@ -105,7 +109,7 @@ defmodule Game.Command.Config do
       true ->
         case PlayerConfig.settable?(config_name) do
           true ->
-            {:update, update_config(config_name, value, state)}
+            {:update, cast_and_set_config(config_name, value, state)}
 
           false ->
             state.socket
@@ -120,6 +124,19 @@ defmodule Game.Command.Config do
   end
 
   defp is_config?(config_name), do: PlayerConfig.option?(config_name)
+
+  defp cast_and_set_config(config_name, value, state) do
+    case PlayerConfig.cast_config(config_name, value) do
+      {:ok, value} ->
+        update_config(config_name, value, state)
+
+      :error ->
+        state.socket |> @socket.echo("There was a problem saving your config, it appears to be in the wrong format.")
+
+      {:error, :bad_config} ->
+        state.socket |> @socket.echo("There was a problem saving your config, this config cannot be set.")
+    end
+  end
 
   defp update_config(config_name, value, state = %{save: save}) do
     config_atom =
@@ -146,6 +163,9 @@ defmodule Game.Command.Config do
 
       string when is_binary(string) ->
         state.socket |> @socket.echo("#{config_name} is set to \"#{string}\"")
+
+      integer when is_integer(integer) ->
+        state.socket |> @socket.echo("#{config_name} is set to \"#{integer}\"")
     end
 
     state
