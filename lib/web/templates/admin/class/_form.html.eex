@@ -16,20 +16,6 @@
         <%= textarea f, :description, class: "form-control" %>
         <%= error_tag f, :description %>
       </div>
-
-      <div class="form-group">
-        <%= label f, :regen_health_points %>
-        <%= text_input f, :regen_health_points, class: "form-control" %>
-        <%= error_tag f, :regen_health_points %>
-        <span class="help-block">Number of health each regen tick will give.</span>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :regen_skill_points %>
-        <%= text_input f, :regen_skill_points, class: "form-control" %>
-        <%= error_tag f, :regen_skill_points %>
-        <span class="help-block">Number of skill points each regen tick will give.</span>
-      </div>
     </div>
 
     <div class="box-footer">

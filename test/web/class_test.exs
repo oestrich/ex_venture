@@ -8,8 +8,6 @@ defmodule Web.ClassTest do
     params = %{
       "name" => "Fighter",
       "description" => "A fighter",
-      "regen_health_points" => 1,
-      "regen_skill_points" => 1,
     }
 
     {:ok, class} = Class.create(params)

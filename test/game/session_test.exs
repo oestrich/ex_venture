@@ -38,13 +38,27 @@ defmodule Game.SessionTest do
 
   describe "regenerating" do
     setup %{state: state} do
-      stats = %{health_points: 10, max_health_points: 15, skill_points: 9, max_skill_points: 12, move_points: 8, max_move_points: 10}
-      class = %{regen_health_points: 1, regen_skill_points: 1}
+      stats = %{
+        health_points: 10,
+        max_health_points: 15,
+        skill_points: 9,
+        max_skill_points: 12,
+        move_points: 8,
+        max_move_points: 10,
+      }
+
       state = Map.merge(state, %{
-        user: %{class: class},
-        save: %{room_id: 1, level: 2, stats: stats},
-        regen: %{is_regenerating: true, count: 5}
+        save: %{
+          room_id: 1,
+          level: 2,
+          stats: stats,
+        },
+        regen: %{
+          is_regenerating: true,
+          count: 5,
+        },
       })
+
       %{state: state}
     end
 

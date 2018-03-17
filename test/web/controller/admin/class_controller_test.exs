@@ -5,8 +5,6 @@ defmodule Web.Admin.ClassControllerTest do
     params = %{
       "name" => "Fighter",
       "description" => "A fighter",
-      "regen_health_points" => 1,
-      "regen_skill_points" => 1,
     }
 
     conn = post conn, class_path(conn, :create), class: params

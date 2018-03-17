@@ -209,8 +209,6 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "Fighter",
       description: "A fighter",
-      regen_health_points: 1,
-      regen_skill_points: 1,
     }, attributes)
   end
 

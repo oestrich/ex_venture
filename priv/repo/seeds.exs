@@ -422,15 +422,11 @@ defmodule Seeds do
     fighter = create_class(%{
       name: "Fighter",
       description: "Uses strength and swords to overcome.",
-      regen_health_points: 2,
-      regen_skill_points: 1,
     })
 
     mage = create_class(%{
       name: "Mage",
       description: "Uses intelligence and magic to overcome.",
-      regen_health_points: 1,
-      regen_skill_points: 2,
     })
 
     slash = create_skill(%{

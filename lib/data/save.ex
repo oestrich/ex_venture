@@ -198,7 +198,7 @@ defmodule Data.Save do
     |> _migrate()
   end
 
-  # for the startin save which has empty stats, migrate the version forward
+  # for the starting save which has empty stats, migrate the version forward
   defp _migrate(save = %{version: 6}) do
     save
     |> Map.put(:version, 7)

@@ -105,10 +105,10 @@ defmodule Game.Session.Regen do
   """
   @spec handle_regen(map, integer) :: map
   def handle_regen(state = %{regen: %{count: count}}, count) do
-    %{user: user = %{class: class}, save: save} = state
+    %{user: user, save: save} = state
 
-    stats = Stats.regen(:health_points, save.stats, class.regen_health_points * save.level)
-    stats = Stats.regen(:skill_points, stats, class.regen_skill_points * save.level)
+    stats = Stats.regen(:health_points, save.stats, save.level)
+    stats = Stats.regen(:skill_points, stats, save.level)
 
     echo_health(save.stats, stats)
 
