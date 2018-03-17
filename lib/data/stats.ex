@@ -133,10 +133,13 @@ defmodule Data.Stats do
   """
   @spec valid_character?(Stats.character()) :: boolean()
   def valid_character?(stats) do
-    keys(stats) == fields() && is_integer(stats.dexterity) && is_integer(stats.health_points) &&
-      is_integer(stats.intelligence) && is_integer(stats.max_health_points) &&
-      is_integer(stats.strength) && is_integer(stats.skill_points) &&
-      is_integer(stats.max_skill_points) && is_integer(stats.wisdom) && is_integer(stats.constitution)
+    keys(stats) == fields() && _integer_fields(stats)
+  end
+
+  def _integer_fields(stats) do
+    Enum.all?(fields(), fn field ->
+      is_integer(Map.get(stats, field))
+    end)
   end
 
   @doc """
