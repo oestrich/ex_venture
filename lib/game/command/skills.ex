@@ -9,6 +9,7 @@ defmodule Game.Command.Skills do
   alias Game.Command
   alias Game.Command.Target
   alias Game.Effect
+  alias Game.Experience
   alias Game.Hint
   alias Game.Item
   alias Game.Skill
@@ -195,14 +196,23 @@ defmodule Game.Command.Skills do
 
         socket |> @socket.echo(Format.skill_user(skill, effects, target))
 
-        state = state |> set_timeout(skill)
+        state =
+          state
+          |> set_timeout(skill)
+          |> Map.put(:save, save)
+          |> track_stat_usage(effects)
 
-        {:update, %{state | save: save}}
+        {:update, state}
 
       {:error, _} ->
         socket |> @socket.echo(~s(You don't have enough skill points to use "#{skill.command}"))
         {:update, state}
     end
+  end
+
+  defp track_stat_usage(state = %{save: save}, effects) do
+    save = Experience.track_stat_usage(save, effects)
+    %{state | save: save}
   end
 
   def maybe_change_target(target, state) do

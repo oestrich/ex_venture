@@ -53,6 +53,7 @@ defmodule TestHelpers do
       room_id: 1,
       channels: [],
       level: 1,
+      level_stats: %{},
       experience_points: 0,
       spent_experience_points: 0,
       currency: 0,
@@ -66,7 +67,7 @@ defmodule TestHelpers do
         prompt: "%h/%Hhp",
         pager_size: 20,
       },
-      version: 7,
+      version: 8,
     }
   end
 

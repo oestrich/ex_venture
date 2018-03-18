@@ -13,6 +13,7 @@ defmodule Data.Save do
           room_id: integer,
           channels: [String.t()],
           level: integer,
+          level_stats: map(),
           experience_points: integer(),
           spent_experience_points: integer(),
           stats: map,
@@ -33,17 +34,18 @@ defmodule Data.Save do
         }
 
   defstruct [
-    :version,
-    :config,
-    :room_id,
     :channels,
-    :level,
+    :config,
+    :currency,
     :experience_points,
+    :items,
+    :level,
+    :level_stats,
+    :room_id,
+    :skill_ids,
     :spent_experience_points,
     :stats,
-    :currency,
-    :skill_ids,
-    :items,
+    :version,
     :wearing,
     :wielding
   ]
@@ -184,6 +186,13 @@ defmodule Data.Save do
     end
   end
 
+  defp _migrate(save = %{version: 7}) do
+    save
+    |> Map.put(:level_stats, %{})
+    |> Map.put(:version, 8)
+    |> _migrate()
+  end
+
   defp _migrate(save = %{version: 6, stats: stats}) when stats != nil do
     stats =
       stats
@@ -286,6 +295,7 @@ defmodule Data.Save do
       :experience_points,
       :items,
       :level,
+      :level_stats,
       :room_id,
       :skill_ids,
       :spent_experience_points,

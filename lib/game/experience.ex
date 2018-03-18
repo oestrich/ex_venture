@@ -6,6 +6,7 @@ defmodule Game.Experience do
   use Networking.Socket
 
   alias Data.Save
+  alias Data.Stats.Damage
 
   @doc """
   Apply experience points to the user's save
@@ -120,10 +121,10 @@ defmodule Game.Experience do
   Level up after receing experience points
 
       iex> Game.Experience.level_up(%{level: 1, experience_points: 1000, stats: %{}})
-      %{level: 2, experience_points: 1000, stats: %{}}
+      %{level: 2, level_stats: %{}, experience_points: 1000, stats: %{}}
 
       iex> Game.Experience.level_up(%{level: 10, experience_points: 10030, stats: %{}})
-      %{level: 11, experience_points: 10030, stats: %{}}
+      %{level: 11, level_stats: %{}, experience_points: 10030, stats: %{}}
   """
   @spec level_up(Save.t()) :: Save.t()
   def level_up(save = %{experience_points: xp}) do
@@ -132,11 +133,178 @@ defmodule Game.Experience do
     stats =
       save.stats
       |> Enum.reduce(%{}, fn {key, val}, stats ->
-        Map.put(stats, key, val + level)
+        Map.put(stats, key, val + stat_boost_on_level(save.level_stats, key))
       end)
 
     save
     |> Map.put(:level, level)
+    |> Map.put(:level_stats, %{})
     |> Map.put(:stats, stats)
+  end
+
+  @doc """
+  Calculate the increase of a stat each level
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :health_points)
+      5
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :max_health_points)
+      5
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :skill_points)
+      5
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :max_skill_points)
+      5
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :move_points)
+      2
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :max_move_points)
+      2
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :strength)
+      1
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :dexterity)
+      1
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :constitution)
+      1
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :intelligence)
+      1
+
+      iex> Game.Experience.stat_boost_on_level(%{}, :wisdom)
+      1
+  """
+  @spec stat_boost_on_level(map(), atom()) :: integer()
+  def stat_boost_on_level(level_stats, :health_points) do
+    5 + health_usage(level_stats)
+  end
+  def stat_boost_on_level(level_stats, :max_health_points) do
+    5 + health_usage(level_stats)
+  end
+
+  def stat_boost_on_level(level_stats, :skill_points) do
+    5 + skill_usage(level_stats)
+  end
+  def stat_boost_on_level(level_stats, :max_skill_points) do
+    5 + skill_usage(level_stats)
+  end
+
+  def stat_boost_on_level(_, :move_points), do: 2
+  def stat_boost_on_level(_, :max_move_points), do: 2
+
+  def stat_boost_on_level(level_stats, :strength) do
+    case :strength in top_stats_used_in_level(level_stats) do
+      true -> 2
+      false -> 1
+    end
+  end
+
+  def stat_boost_on_level(level_stats, :dexterity) do
+    case :dexterity in top_stats_used_in_level(level_stats) do
+      true -> 2
+      false -> 1
+    end
+  end
+
+  def stat_boost_on_level(level_stats, :constitution) do
+    case :constitution in top_stats_used_in_level(level_stats) do
+      true -> 2
+      false -> 1
+    end
+  end
+
+  def stat_boost_on_level(level_stats, :intelligence) do
+    case :intelligence in top_stats_used_in_level(level_stats) do
+      true -> 2
+      false -> 1
+    end
+  end
+
+  def stat_boost_on_level(level_stats, :wisdom) do
+    case :wisdom in top_stats_used_in_level(level_stats) do
+      true -> 2
+      false -> 1
+    end
+  end
+
+  defp health_usage(level_stats) do
+    level_stats
+    |> Map.take([:strength, :dexterity, :constitution])
+    |> Map.to_list()
+    |> Enum.map(fn {_, count} -> count end)
+    |> Enum.sum()
+    |> Kernel.*(0.2)
+    |> round()
+  end
+
+  defp skill_usage(level_stats) do
+    level_stats
+    |> Map.take([:intelligence, :wisdom])
+    |> Map.to_list()
+    |> Enum.map(fn {_, count} -> count end)
+    |> Enum.sum()
+    |> Kernel.*(0.2)
+    |> round()
+  end
+
+  defp top_stats_used_in_level(level_stats) do
+    level_stats
+    |> Map.to_list()
+    |> Enum.sort_by(fn {_, val} -> val end)
+    |> Enum.reverse()
+    |> Enum.take(2)
+    |> Enum.map(fn {stat, _} -> stat end)
+  end
+
+  @doc """
+  Track usage of stats when using skills (or anything with effects)
+  """
+  @spec track_stat_usage(Save.t(), [Effect.t()]) :: Save.t()
+  def track_stat_usage(save, effects) do
+    Enum.reduce(effects, save, &_track_stat_usage(&1, &2))
+  end
+
+  defp _track_stat_usage(effect = %{kind: "damage"}, save) do
+    cond do
+      Damage.physical?(effect.type) ->
+        increment_level_stat(save, :strength)
+
+      Damage.magical?(effect.type) ->
+        increment_level_stat(save, :intelligence)
+
+      true ->
+        save
+    end
+  end
+
+  defp _track_stat_usage(effect = %{kind: "damage/over-time"}, save) do
+    cond do
+      Damage.physical?(effect.type) ->
+        increment_level_stat(save, :strength)
+
+      Damage.magical?(effect.type) ->
+        increment_level_stat(save, :intelligence)
+
+      true ->
+        save
+    end
+  end
+
+  defp _track_stat_usage(%{kind: "recover"}, save) do
+    increment_level_stat(save, :wisdom)
+  end
+
+  defp _track_stat_usage(_, save), do: save
+
+  defp increment_level_stat(save, stat) do
+    level_stats =
+      save.level_stats
+      |> Map.put(stat, Map.get(save.level_stats, stat, 0) + 1)
+
+    %{save | level_stats: level_stats}
   end
 end

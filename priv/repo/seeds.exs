@@ -370,6 +370,7 @@ defmodule Seeds do
       room_id: entrance.id,
       channels: ["global", "newbie"],
       level: 1,
+      level_stats: %{},
       experience_points: 0,
       items: [Item.instantiate(sword)],
       wearing: %{},
