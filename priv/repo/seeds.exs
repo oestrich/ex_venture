@@ -258,8 +258,9 @@ defmodule Seeds do
       move_points: 10,
       max_move_points: 10,
       strength: 13,
-      intelligence: 10,
       dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
       wisdom: 10,
     }
 
@@ -340,7 +341,7 @@ defmodule Seeds do
 
     potion = create_item(%{
       name: "Potion",
-      description: "A healing potion",
+      description: "A healing potion, recover health points",
       type: "basic",
       stats: %{},
       effects: [%{kind: "recover", type: "health", amount: 10}],
@@ -350,6 +351,19 @@ defmodule Seeds do
       keywords: [],
     })
     bandit |> add_item_to_npc(potion, %{drop_rate: 80})
+
+    elixir = create_item(%{
+      name: "Elixir",
+      description: "A healing elixir, recover skill points",
+      type: "basic",
+      stats: %{},
+      effects: [%{kind: "recover", type: "skill", amount: 10}],
+      whitelist_effects: ["recover", "stats"],
+      is_usable: true,
+      amount: 1,
+      keywords: [],
+    })
+    bandit |> add_item_to_npc(elixir, %{drop_rate: 80})
 
     save = %Data.Save{
       version: 1,
@@ -380,6 +394,7 @@ defmodule Seeds do
         max_move_points: 15,
         strength: 10,
         dexterity: 10,
+        constitution: 10,
         intelligence: 10,
         wisdom: 10,
       },
@@ -397,6 +412,7 @@ defmodule Seeds do
         max_move_points: 15,
         strength: 12,
         dexterity: 8,
+        constitution: 10,
         intelligence: 10,
         wisdom: 10,
       },
@@ -414,6 +430,7 @@ defmodule Seeds do
         max_move_points: 15,
         strength: 8,
         dexterity: 12,
+        constitution: 10,
         intelligence: 10,
         wisdom: 10,
       },
@@ -448,7 +465,7 @@ defmodule Seeds do
       level: 1,
       name: "Magic Missile",
       description: "You shoot a bolt of arcane energy out of your hand",
-      points: 3,
+      points: 2,
       user_text: "You shoot a bolt of arcane energy at [target].",
       usee_text: "[user] shoots a bolt of arcane energy at you.",
       command: "magic missile",
@@ -510,7 +527,7 @@ defmodule Seeds do
         },
       ],
       level: 1,
-      experience: 100,
+      experience: 400,
       currency: 100,
     })
 
