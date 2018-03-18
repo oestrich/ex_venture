@@ -11,6 +11,22 @@ defmodule Data.NPC do
   alias Data.NPCItem
   alias Data.NPCSpawner
 
+  @fields [
+    :level,
+    :name,
+    :tags,
+    :status_line,
+    :description,
+    :experience_points,
+    :currency,
+    :is_quest_giver,
+    :is_trainer,
+    :stats,
+    :events,
+    :script,
+    :notes,
+  ]
+
   schema "npcs" do
     field(:original_id, :integer, virtual: true)
     field(:name, :string)
@@ -36,6 +52,12 @@ defmodule Data.NPC do
 
     timestamps()
   end
+
+  @doc """
+  Get fields for an NPC, used for cloning.
+  """
+  @spec fields() :: [atom()]
+  def fields(), do: @fields
 
   def changeset(struct, params) do
     struct

@@ -17,8 +17,15 @@ defmodule Web.Admin.NPCController do
     conn |> render("show.html", npc: npc)
   end
 
-  def new(conn, _params) do
-    changeset = NPC.new()
+  def new(conn, params) do
+    changeset =
+      case params do
+        %{"clone_id" => id} ->
+          NPC.clone(id)
+        _ ->
+          NPC.new()
+      end
+
     conn |> render("new.html", changeset: changeset)
   end
 

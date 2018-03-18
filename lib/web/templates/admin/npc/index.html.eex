@@ -45,6 +45,7 @@
                   <td>
                     <%= link("View", to: npc_path(@conn, :show, npc.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: npc_path(@conn, :edit, npc.id), class: "btn btn-default btn-xs") %>
+                    <%= link("Clone", to: npc_path(@conn, :new, clone_id: npc.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>
               <% end %>

@@ -86,6 +86,20 @@ defmodule Web.NPC do
   def new(), do: %NPC{} |> NPC.changeset(%{})
 
   @doc """
+  Get a changeset for a new page
+  """
+  @spec clone(integer()) :: changeset :: map
+  def clone(id) do
+    case get(id) do
+      nil ->
+        new()
+
+      npc ->
+        %NPC{} |> NPC.changeset(Map.take(npc, NPC.fields()))
+    end
+  end
+
+  @doc """
   Get a changeset for an edit page
   """
   @spec edit(npc :: NPC.t()) :: changeset :: map
