@@ -239,6 +239,7 @@ defmodule Game.Experience do
     |> Enum.sum()
     |> Kernel.*(0.2)
     |> round()
+    |> min(10)
   end
 
   defp skill_usage(level_stats) do
@@ -249,6 +250,7 @@ defmodule Game.Experience do
     |> Enum.sum()
     |> Kernel.*(0.2)
     |> round()
+    |> min(10)
   end
 
   defp top_stats_used_in_level(level_stats) do
