@@ -572,7 +572,7 @@ defmodule Game.Format do
       ["Movement Points", "#{stats.move_points}/#{stats.max_move_points}"],
       ["Strength", stats.strength],
       ["Dexterity", stats.dexterity],
-      ["Constituion", stats.constitution],
+      ["Constitution", stats.constitution],
       ["Intelligence", stats.intelligence],
       ["Wisdom", stats.wisdom],
       ["Play Time", play_time(user.seconds_online)]
