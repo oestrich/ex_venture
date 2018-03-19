@@ -207,7 +207,7 @@ defmodule Game.NPC do
   def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
     state = state |> Events.start_tick_events(npc)
     Channel.join_tell({:npc, npc})
-    @room.enter(room_id, {:npc, npc})
+    @room.enter(room_id, {:npc, npc}, :respawn)
     @room.link(room_id)
     {:noreply, state}
   end

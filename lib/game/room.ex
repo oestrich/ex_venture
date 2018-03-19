@@ -65,7 +65,7 @@ defmodule Game.Room do
   Valid enter reasons: `:enter`, `:respawn`
   """
   @spec enter(integer(), Character.t(), atom()) :: :ok
-  def enter(id, character, reason \\ :enter)
+  def enter(id, character, reason)
 
   def enter(id, character, reason) do
     GenServer.cast(pid(id), {:enter, character, reason})
