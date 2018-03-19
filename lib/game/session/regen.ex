@@ -113,7 +113,7 @@ defmodule Game.Session.Regen do
       |> Stats.regen(:health_points, round(0.1 * stats.constitution))
       |> Stats.regen(:skill_points, round(0.1 * stats.intelligence))
 
-    echo_health(save.stats, stats)
+    echo_health(save, stats)
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
@@ -132,8 +132,18 @@ defmodule Game.Session.Regen do
   @doc """
   Display regen text to the user
   """
-  @spec echo_health(Stats.t(), Stats.t()) :: nil
-  def echo_health(starting_stats, stats) do
+  @spec echo_health(Save.t(), Stats.t()) :: nil
+  def echo_health(%{stats: starting_stats, config: config}, stats) do
+    case config.regen_notifications do
+      true ->
+        _echo_health(starting_stats, stats)
+
+      false ->
+        :ok
+    end
+  end
+
+  defp _echo_health(starting_stats, stats) do
     starting_hp = starting_stats.health_points
     starting_sp = starting_stats.skill_points
 

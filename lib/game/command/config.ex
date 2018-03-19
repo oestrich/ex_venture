@@ -31,6 +31,9 @@ defmodule Game.Command.Config do
         A string that is formatted to display your prompt, use {command}config set{/command}. See more
         about prompts at {command}help prompt{/command}.
 
+      {white}regen_notifications{/white}:
+        A true/false option that will show regeneration notifications, use {command}config [on|off]{/command}
+
     View a list of configuration options
     [ ] > {command}config{/command}
 
@@ -151,8 +154,6 @@ defmodule Game.Command.Config do
     save = %{save | config: config}
     user = %{state.user | save: save}
     state = %{state | user: user, save: save}
-
-    config_name = config_name |> String.capitalize()
 
     case value do
       true ->

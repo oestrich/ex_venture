@@ -12,6 +12,7 @@ defmodule Data.Save.Config do
       "prompt" -> true
       "hints" -> true
       "pager_size" -> true
+      "regen_notifications" -> true
       _ -> false
     end
   end

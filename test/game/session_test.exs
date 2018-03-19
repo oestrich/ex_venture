@@ -55,6 +55,9 @@ defmodule Game.SessionTest do
           room_id: 1,
           level: 2,
           stats: stats,
+          config: %{
+            regen_notifications: true,
+          },
         },
         regen: %{
           is_regenerating: true,
@@ -89,7 +92,7 @@ defmodule Game.SessionTest do
         max_move_points: 10,
       })
 
-      save = %{room_id: 1, level: 2, stats: stats}
+      save = %{state.save | stats: stats}
 
       {:noreply, %{save: %{stats: stats}}} = Process.handle_info(:regen, %{state | save: save})
 
@@ -98,6 +101,22 @@ defmodule Game.SessionTest do
       assert stats.move_points == 10
 
       refute_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
+    end
+
+    test "does not echo if config is off", %{state: state} do
+      save = Map.merge(state.save, %{
+        config: %{
+          regen_notifications: false,
+        },
+      })
+
+      {:noreply, %{save: %{stats: stats}}} = Process.handle_info(:regen, %{state | save: save})
+
+      assert stats.health_points == 12
+      assert stats.skill_points == 11
+      assert stats.move_points == 9
+
+      refute_receive {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
     end
 
     test "does not regen, only increments count if not high enough", %{state: state} do

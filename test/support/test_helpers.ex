@@ -66,6 +66,7 @@ defmodule TestHelpers do
         hints: true,
         prompt: "%h/%Hhp",
         pager_size: 20,
+        regen_notifications: true,
       },
       version: 8,
     }

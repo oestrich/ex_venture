@@ -1021,7 +1021,7 @@ defmodule Game.Format do
     rows =
       save.config
       |> Enum.map(fn {key, value} ->
-        [String.capitalize(to_string(key)), value]
+        [to_string(key), value]
       end)
 
     rows = [["Name", "On?"] | rows]
@@ -1037,7 +1037,7 @@ defmodule Game.Format do
       end)
       |> Enum.max()
 
-    Table.format("Config", rows, [10, max_size])
+    Table.format("Config", rows, [20, max_size])
   end
 
   @doc """
