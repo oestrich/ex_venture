@@ -7,7 +7,7 @@
     <meta name="description" content="<%= Config.game_name() %>">
     <meta name="author" content="">
 
-    <title><%= Config.game_name() %></title>
+    <title><%= page_title(@conn, assigns) %></title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/home.css") %>">
     <link rel="alternate" type="application/rss+xml" title="<%= Config.game_name %> » Announcements" href="<%= public_announcement_url(@conn, :feed) %>">
   </head>

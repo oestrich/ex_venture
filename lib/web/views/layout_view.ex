@@ -32,4 +32,13 @@ defmodule Web.LayoutView do
 
   def is_admin?(%{assigns: %{user: user}}), do: "admin" in user.flags
   def is_admin?(_), do: false
+
+  def page_title(conn, assigns) do
+    case render_existing(view_module(conn), "title", assigns) do
+      nil ->
+        Config.game_name()
+      title ->
+        "#{title} - #{Config.game_name()}"
+    end
+  end
 end
