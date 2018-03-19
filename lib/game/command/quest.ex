@@ -107,12 +107,18 @@ defmodule Game.Command.Quest do
   end
 
   def run({:show, quest_id}, %{socket: socket, user: user, save: save}) do
-    case Quest.progress_for(user, quest_id) do
-      nil ->
-        socket |> @socket.echo("You have not started this quest.")
+    case Ecto.Type.cast(:integer, quest_id) do
+      {:ok, quest_id} ->
+        case Quest.progress_for(user, quest_id) do
+          nil ->
+            socket |> @socket.echo("You have not started this quest.")
 
-      progress ->
-        socket |> @socket.echo(Format.quest_detail(progress, save))
+          progress ->
+            socket |> @socket.echo(Format.quest_detail(progress, save))
+        end
+
+      :error ->
+        socket |> @socket.echo("Could not parse the quest ID, please try again.")
     end
 
     :ok

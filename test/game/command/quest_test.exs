@@ -91,6 +91,13 @@ defmodule Game.Command.QuestTest do
       [{_, quest}] = @socket.get_echos()
       assert Regex.match?(~r/You have not started this quest/, quest)
     end
+
+    test "sending not an integer as the id", %{state: state} do
+      :ok = Quest.run({:show, "anything"}, state)
+
+      [{_, quest}] = @socket.get_echos()
+      assert Regex.match?(~r/could not parse/i, quest)
+    end
   end
 
   describe "complete a quest" do
