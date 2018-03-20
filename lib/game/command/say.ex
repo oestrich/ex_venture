@@ -5,8 +5,6 @@ defmodule Game.Command.Say do
 
   use Game.Command
 
-  alias Game.Utility
-
   import Game.Room.Helpers, only: [find_character: 3]
 
   defmodule ParsedMessage do
@@ -18,10 +16,12 @@ defmodule Game.Command.Say do
     - `message`: the full string of the user
     - `is_directed`: if the user is directing this at someone, if the message starts with a `>`
     """
-    defstruct [:message, :is_directed]
+    defstruct [:message, :is_directed, :adverb_phrase]
   end
 
   commands([{"say", ["'"]}], parse: false)
+
+  @adverb_regex ~r/\[(?<adverb>.*)\]/
 
   @impl Game.Command
   def help(:topic), do: "Say"
@@ -36,8 +36,13 @@ defmodule Game.Command.Say do
     [ ] > {command}say Hello, everyone!{/command}
     Player says, "Hello, everyone!"
 
+    Say directly to a character in the room:
     [ ] > {command}say >guard Hello!{/command}
     Player says to Guard, "Hello!"
+
+    Add an adverb phrase
+    [ ] > {command}say [meakly] Hello{/command}
+    Player says meakly, "Hello"
     """
   end
 
@@ -64,7 +69,12 @@ defmodule Game.Command.Say do
   def parse("say " <> string), do: {string}
   def parse("'" <> string), do: {string}
 
+  @doc """
+  Parse a message that a user wants to say. Pulls out if the user wants to
+  direct at someone, and the adverb phrase.
+  """
   def parse_message(string) do
+    {string, adverb_phrase} = parse_adverb_phrase(string)
     is_directed = String.starts_with?(string, ">")
 
     string =
@@ -75,8 +85,24 @@ defmodule Game.Command.Say do
 
     %ParsedMessage{
       message: string,
+      adverb_phrase: adverb_phrase,
       is_directed: is_directed,
     }
+  end
+
+  defp parse_adverb_phrase(string) do
+    case Regex.run(@adverb_regex, string) do
+      nil ->
+        {string, nil}
+
+      [match, adverb_phrase] ->
+        string =
+          string
+          |> String.replace(match, "")
+          |> String.trim()
+
+          {string, adverb_phrase}
+    end
   end
 
   @impl Game.Command
@@ -90,32 +116,29 @@ defmodule Game.Command.Say do
 
     case parsed_message.is_directed do
       true ->
-        say_directed(parsed_message.message, state)
+        state |> say_directed(parsed_message)
 
       false ->
-        say(parsed_message.message, state)
+        state |> say(parsed_message)
     end
 
     :ok
   end
 
-  def say(message, state = %{user: user, save: save}) do
-    state.socket |> @socket.echo(Format.say(:you, message))
-    save.room_id |> @room.say({:user, user}, Message.new(user, message))
+  def say(state = %{user: user, save: save}, parsed_message) do
+    state.socket |> @socket.echo(Format.say(:you, parsed_message))
+    save.room_id |> @room.say({:user, user}, Message.new(user, parsed_message))
   end
 
-  def say_directed(who_and_message, state = %{user: user, save: save}) do
+  def say_directed(state = %{user: user, save: save}, parsed_message) do
     room = @room.look(save.room_id)
-
-    case find_character(room, who_and_message, message: true) do
+    case find_character(room, parsed_message.message, message: true) do
       {:error, :not_found} ->
         state.socket |> @socket.echo("No character could be found matching your text.")
 
       character ->
-        message = Utility.strip_name(elem(character, 1), who_and_message)
-        state.socket |> @socket.echo(Format.say_to(:you, character, message))
-
-        room.id |> @room.say({:user, user}, Message.say_to(user, character, message))
+        state.socket |> @socket.echo(Format.say_to(:you, character, parsed_message))
+        room.id |> @room.say({:user, user}, Message.say_to(user, character, parsed_message))
     end
   end
 end

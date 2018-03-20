@@ -15,7 +15,9 @@ defmodule Game.Format do
   alias Game.Color
   alias Game.Door
   alias Game.Format.Table
+  alias Game.Format.Template
   alias Game.Quest
+  alias Game.Utility
 
   @doc """
   Template a string
@@ -23,11 +25,8 @@ defmodule Game.Format do
       iex> Game.Format.template("[name] says hello", %{name: "Player"})
       "Player says hello"
   """
-  def template(string, map) do
-    map
-    |> Enum.reduce(string, fn {key, val}, string ->
-      String.replace(string, "[#{key}]", to_string(val))
-    end)
+  def template(string, context) do
+    Template.render(string, context)
   end
 
   @doc """
@@ -35,12 +34,12 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.channel_say(%{name: "global", color: "red"}, {:npc, %{name: "NPC"}}, "Hello")
+      iex> Game.Format.channel_say(%{name: "global", color: "red"}, {:npc, %{name: "NPC"}}, %{message: "Hello"})
       ~s({red}[global]{/red} {npc}NPC{/npc} says, {say}"Hello"{/say})
   """
-  @spec channel_say(String.t(), Character.t(), String.t()) :: String.t()
-  def channel_say(channel, sender, message) do
-    ~s({#{channel.color}}[#{channel.name}]{/#{channel.color}} #{say(sender, message)})
+  @spec channel_say(String.t(), Character.t(), map()) :: String.t()
+  def channel_say(channel, sender, parsed_message) do
+    ~s({#{channel.color}}[#{channel.name}]{/#{channel.color}} #{say(sender, parsed_message)})
   end
 
   @doc """
@@ -76,22 +75,34 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.say(:you, "Hello")
+      iex> Game.Format.say(:you, %{message: "Hello"})
       ~s[You say, {say}"Hello"{/say}]
 
-      iex> Game.Format.say({:npc, %{name: "NPC"}}, "Hello")
+      iex> Game.Format.say({:npc, %{name: "NPC"}}, %{message: "Hello"})
       ~s[{npc}NPC{/npc} says, {say}"Hello"{/say}]
 
-      iex> Game.Format.say({:user, %{name: "Player"}}, "Hello")
+      iex> Game.Format.say({:user, %{name: "Player"}}, %{message: "Hello"})
       ~s[{player}Player{/player} says, {say}"Hello"{/say}]
+
+      iex> Game.Format.say({:user, %{name: "Player"}}, %{adverb_phrase: "softly", message: "Hello"})
+      ~s[{player}Player{/player} says softly, {say}"Hello"{/say}]
   """
-  @spec say(Character.t(), String.t()) :: String.t()
+  @spec say(Character.t(), map()) :: String.t()
   def say(:you, message) do
-    ~s[You say, {say}"#{message}"{/say}]
+    ~s(You say[ adverb_phrase], {say}"[message]"{/say})
+    |> template(%{
+      message: message.message,
+      adverb_phrase: Map.get(message, :adverb_phrase, nil),
+    })
   end
 
   def say(character, message) do
-    ~s[#{name(character)} says, {say}"#{message}"{/say}]
+    ~s([name] says[ adverb_phrase], {say}"[message]"{/say})
+    |> template(%{
+      name: name(character),
+      message: message.message,
+      adverb_phrase: Map.get(message, :adverb_phrase, nil),
+    })
   end
 
   @doc """
@@ -99,22 +110,42 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.say_to(:you, {:user, %{name: "Player"}}, "Hello")
+      iex> Game.Format.say_to(:you, {:user, %{name: "Player"}}, %{message: "Hello"})
       ~s[You say to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Game.Format.say_to({:npc, %{name: "NPC"}}, {:user, %{name: "Player"}}, "Hello")
+      iex> Game.Format.say_to(:you, {:user, %{name: "Player"}}, %{message: "Hello", adverb_phrase: "softly"})
+      ~s[You say softly to {player}Player{/player}, {say}"Hello"{/say}]
+
+      iex> Game.Format.say_to({:npc, %{name: "NPC"}}, {:user, %{name: "Player"}}, %{message: "Hello"})
       ~s[{npc}NPC{/npc} says to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Game.Format.say_to({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}}, "Hello")
+      iex> Game.Format.say_to({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello"})
       ~s[{player}Player{/player} says to {npc}Guard{/npc}, {say}"Hello"{/say}]
+
+      iex> Game.Format.say_to({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello", adverb_phrase: "softly"})
+      ~s[{player}Player{/player} says softly to {npc}Guard{/npc}, {say}"Hello"{/say}]
   """
-  @spec say_to(Character.t(), Character.t(), String.t()) :: String.t()
-  def say_to(:you, sayee, message) do
-    ~s[You say to #{name(sayee)}, {say}"#{message}"{/say}]
+  @spec say_to(Character.t(), Character.t(), map()) :: String.t()
+  def say_to(:you, sayee, parsed_message) do
+    message = Utility.strip_name(elem(sayee, 1), parsed_message.message)
+    ~s(You say[ adverb_phrase] to [sayee], {say}"[message]"{/say})
+    |> template(%{
+      sayee: name(sayee),
+      message: message,
+      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil),
+    })
   end
 
-  def say_to(sayer, sayee, message) do
-    ~s[#{name(sayer)} says to #{name(sayee)}, {say}"#{message}"{/say}]
+  def say_to(sayer, sayee, parsed_message) do
+    message = Utility.strip_name(elem(sayee, 1), parsed_message.message)
+
+    ~s([sayer] says[ adverb_phrase] to [sayee], {say}"[message]"{/say})
+    |> template(%{
+      sayer: name(sayer),
+      sayee: name(sayee),
+      message: message,
+      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil),
+    })
   end
 
   @doc """

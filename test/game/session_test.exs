@@ -487,7 +487,8 @@ defmodule Game.SessionTest do
     end
 
     test "room heard", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/heard", Message.say(%{id: 1, name: "Player"}, "hi")}}, state)
+      message = Message.say(%{id: 1, name: "Player"}, %{message: "hi"})
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/heard", message}}, state)
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r(hi), echo)
