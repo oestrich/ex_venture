@@ -9,7 +9,19 @@ defmodule Game.Command.Say do
 
   import Game.Room.Helpers, only: [find_character: 3]
 
-  commands(["say"], parse: false)
+  defmodule ParsedMessage do
+    @moduledoc """
+    A parsed string of the user's message
+    """
+
+    @doc """
+    - `message`: the full string of the user
+    - `is_directed`: if the user is directing this at someone, if the message starts with a `>`
+    """
+    defstruct [:message, :is_directed]
+  end
+
+  commands([{"say", ["'"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Say"
@@ -24,7 +36,7 @@ defmodule Game.Command.Say do
     [ ] > {command}say Hello, everyone!{/command}
     Player says, "Hello, everyone!"
 
-    [ ] > {command}say to guard Hello!{/command}
+    [ ] > {command}say >guard Hello!{/command}
     Player says to Guard, "Hello!"
     """
   end
@@ -39,8 +51,8 @@ defmodule Game.Command.Say do
       iex> Game.Command.Say.parse("'hello")
       {"hello"}
 
-      iex> Game.Command.Say.parse("say to guard hello")
-      {:to, "guard hello"}
+      iex> Game.Command.Say.parse("say >guard hello")
+      {">guard hello"}
 
       iex> Game.Command.Say.parse("say")
       {:error, :bad_parse, "say"}
@@ -49,9 +61,23 @@ defmodule Game.Command.Say do
       {:error, :bad_parse, "unknown"}
   """
   def parse(command)
-  def parse("say to " <> string), do: {:to, string}
   def parse("say " <> string), do: {string}
   def parse("'" <> string), do: {string}
+
+  def parse_message(string) do
+    is_directed = String.starts_with?(string, ">")
+
+    string =
+      string
+      |> String.replace(~r/^>/, "")
+      |> String.replace(~r/^"/, "")
+      |> String.replace(~r/"$/, "")
+
+    %ParsedMessage{
+      message: string,
+      is_directed: is_directed,
+    }
+  end
 
   @impl Game.Command
   @doc """
@@ -59,13 +85,26 @@ defmodule Game.Command.Say do
   """
   def run(command, state)
 
-  def run({message}, %{socket: socket, user: user, save: %{room_id: room_id}}) do
-    socket |> @socket.echo(Format.say(:you, message))
-    room_id |> @room.say({:user, user}, Message.new(user, message))
+  def run({message}, state) do
+    parsed_message = parse_message(message)
+
+    case parsed_message.is_directed do
+      true ->
+        say_directed(parsed_message.message, state)
+
+      false ->
+        say(parsed_message.message, state)
+    end
+
     :ok
   end
 
-  def run({:to, who_and_message}, state = %{user: user, save: save}) do
+  def say(message, state = %{user: user, save: save}) do
+    state.socket |> @socket.echo(Format.say(:you, message))
+    save.room_id |> @room.say({:user, user}, Message.new(user, message))
+  end
+
+  def say_directed(who_and_message, state = %{user: user, save: save}) do
     room = @room.look(save.room_id)
 
     case find_character(room, who_and_message, message: true) do
