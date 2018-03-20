@@ -7,6 +7,8 @@ defmodule Game.Command.Say do
 
   import Game.Room.Helpers, only: [find_character: 3]
 
+  alias Game.Hint
+
   defmodule ParsedMessage do
     @moduledoc """
     A parsed string of the user's message
@@ -16,7 +18,7 @@ defmodule Game.Command.Say do
     - `message`: the full string of the user
     - `is_directed`: if the user is directing this at someone, if the message starts with a `>`
     """
-    defstruct [:message, :is_directed, :adverb_phrase]
+    defstruct [:message, :is_directed, :is_quoted, :adverb_phrase]
   end
 
   commands([{"say", ["'"]}], parse: false)
@@ -76,6 +78,7 @@ defmodule Game.Command.Say do
   def parse_message(string) do
     {string, adverb_phrase} = parse_adverb_phrase(string)
     is_directed = String.starts_with?(string, ">")
+    is_quoted = String.starts_with?(string, "\"")
 
     string =
       string
@@ -87,6 +90,7 @@ defmodule Game.Command.Say do
       message: string,
       adverb_phrase: adverb_phrase,
       is_directed: is_directed,
+      is_quoted: is_quoted,
     }
   end
 
@@ -113,6 +117,8 @@ defmodule Game.Command.Say do
 
   def run({message}, state) do
     parsed_message = parse_message(message)
+
+    state |> maybe_hint_on_quotes(parsed_message)
 
     case parsed_message.is_directed do
       true ->
@@ -141,4 +147,7 @@ defmodule Game.Command.Say do
         room.id |> @room.say({:user, user}, Message.say_to(user, character, parsed_message))
     end
   end
+
+  defp maybe_hint_on_quotes(state, %{is_quoted: true}), do: Hint.gate(state, "say.quoted")
+  defp maybe_hint_on_quotes(_state, _message), do: :ok
 end

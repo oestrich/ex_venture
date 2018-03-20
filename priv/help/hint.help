@@ -4,6 +4,9 @@ afk.started:
 quests.new:
   You can view this with {command}quest info [id]{/command}.
 
+say.quoted:
+  You don't need to add quotes when using the {command click=false}say{/command} command, they are added for you.
+
 skills.cooldown_time:
   You must wait [remaining_seconds] seconds longer to use this skill.
 
