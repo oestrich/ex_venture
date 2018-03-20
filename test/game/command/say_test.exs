@@ -14,6 +14,24 @@ defmodule Game.Command.SayTest do
     %{state: %{socket: :socket, user: user, save: user.save}}
   end
 
+  describe "say" do
+    test "say to the", %{state: state} do
+      :ok = Say.run({"hi"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/"hi"/, echo)
+    end
+  end
+
+  describe "say with an adverb phrase" do
+    test "appends to after", %{state: state} do
+      :ok = Say.run({"[softly] hi"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/say softly,/, echo)
+    end
+  end
+
   describe "say to someone" do
     test "to a player", %{state: state} do
       player = %{id: 1, name: "Player"}
@@ -48,6 +66,7 @@ defmodule Game.Command.SayTest do
   describe "parsing a say message" do
     test "simple" do
       assert %ParsedMessage{message: "hello"} = Say.parse_message("hello")
+      assert %ParsedMessage{adverb_phrase: nil} = Say.parse_message("hello")
     end
 
     test "strips surrounding quotes" do
@@ -56,6 +75,11 @@ defmodule Game.Command.SayTest do
 
     test "directed at someone" do
       assert %ParsedMessage{message: "guard hello", is_directed: true} = Say.parse_message(">guard hello")
+    end
+
+    test "adverb phrase" do
+      assert %ParsedMessage{adverb_phrase: "softly"} = Say.parse_message("[softly] hello")
+      assert %ParsedMessage{message: "hello"} = Say.parse_message("[softly] hello")
     end
   end
 end

@@ -4,10 +4,8 @@ defmodule Game.CommandTest do
 
   alias Game.Command
   alias Game.Insight
-  alias Game.Message
 
   @socket Test.Networking.Socket
-  @room Test.Game.Room
 
   setup do
     @socket.clear_messages
@@ -317,19 +315,6 @@ defmodule Game.CommandTest do
       {:paginate, text, _state} = Command.run(command, %{socket: socket})
 
       assert Regex.match?(~r(say), text)
-    end
-  end
-
-  describe "say" do
-    setup do
-      @room.clear_says()
-    end
-
-    test "says to the room", %{socket: socket} do
-      command = %Command{module: Command.Say, args: {"hi"}}
-      Command.run(command, %{socket: socket, user: %{name: "user"}, save: %{room_id: 1}})
-
-      assert @room.get_says() == [{1, Message.new(%{name: "user"}, "hi")}]
     end
   end
 end

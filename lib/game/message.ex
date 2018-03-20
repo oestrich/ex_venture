@@ -17,21 +17,21 @@ defmodule Game.Message do
 
   def new(user, message), do: say(user, message)
 
-  def say(user, message) do
+  def say(user, parsed_message) do
     %__MODULE__{
       type: :user,
       sender: user,
-      message: message,
-      formatted: Format.say({:user, user}, message)
+      message: parsed_message.message,
+      formatted: Format.say({:user, user}, parsed_message)
     }
   end
 
-  def say_to(user, character, message) do
+  def say_to(user, character, parsed_message) do
     %__MODULE__{
       type: :user,
       sender: user,
-      message: message,
-      formatted: Format.say_to({:user, user}, character, message)
+      message: parsed_message.message,
+      formatted: Format.say_to({:user, user}, character, parsed_message)
     }
   end
 
@@ -78,7 +78,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: Format.say({:npc, npc}, message)
+      formatted: Format.say({:npc, npc}, %{message: message})
     }
   end
 
