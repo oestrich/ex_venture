@@ -15,6 +15,7 @@ defmodule Game.Format do
   alias Game.Color
   alias Game.Door
   alias Game.Format.Table
+  alias Game.Format.Template
   alias Game.Quest
   alias Game.Utility
 
@@ -24,11 +25,8 @@ defmodule Game.Format do
       iex> Game.Format.template("[name] says hello", %{name: "Player"})
       "Player says hello"
   """
-  def template(string, map) do
-    map
-    |> Enum.reduce(string, fn {key, val}, string ->
-      String.replace(string, "[#{key}]", to_string(val))
-    end)
+  def template(string, context) do
+    Template.render(string, context)
   end
 
   @doc """
@@ -91,22 +89,20 @@ defmodule Game.Format do
   """
   @spec say(Character.t(), map()) :: String.t()
   def say(:you, message) do
-    ~s(You say [adverb_phrase], {say}"[message]"{/say})
+    ~s(You say[ adverb_phrase], {say}"[message]"{/say})
     |> template(%{
       message: message.message,
       adverb_phrase: Map.get(message, :adverb_phrase, nil),
     })
-    |> String.replace("say ,", "say,")
   end
 
   def say(character, message) do
-    ~s([name] says [adverb_phrase], {say}"[message]"{/say})
+    ~s([name] says[ adverb_phrase], {say}"[message]"{/say})
     |> template(%{
       name: name(character),
       message: message.message,
       adverb_phrase: Map.get(message, :adverb_phrase, nil),
     })
-    |> String.replace("says ,", "says,")
   end
 
   @doc """
@@ -132,26 +128,24 @@ defmodule Game.Format do
   @spec say_to(Character.t(), Character.t(), map()) :: String.t()
   def say_to(:you, sayee, parsed_message) do
     message = Utility.strip_name(elem(sayee, 1), parsed_message.message)
-    ~s(You say [adverb_phrase] to [sayee], {say}"[message]"{/say})
+    ~s(You say[ adverb_phrase] to [sayee], {say}"[message]"{/say})
     |> template(%{
       sayee: name(sayee),
       message: message,
       adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil),
     })
-    |> String.replace("say  to", "say to")
   end
 
   def say_to(sayer, sayee, parsed_message) do
     message = Utility.strip_name(elem(sayee, 1), parsed_message.message)
 
-    ~s([sayer] says [adverb_phrase] to [sayee], {say}"[message]"{/say})
+    ~s([sayer] says[ adverb_phrase] to [sayee], {say}"[message]"{/say})
     |> template(%{
       sayer: name(sayer),
       sayee: name(sayee),
       message: message,
       adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil),
     })
-    |> String.replace("says  to", "says to")
   end
 
   @doc """
