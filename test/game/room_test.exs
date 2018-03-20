@@ -113,10 +113,9 @@ defmodule Game.RoomTest do
     assert state.npcs == [%{id: 10, name: "Name"}]
   end
 
-  test "updating npc data - not in the room, considers it an 'enter'" do
+  test "updating npc data - not in the room, does nothing" do
     {:noreply, state} = Room.handle_cast({:update_character, {:npc, %{id: 11, name: "Name"}}}, %{npcs: [%{id: 10}], players: []})
 
     assert state.npcs == [%{id: 10}]
-    assert_receive {:"$gen_cast", {:enter, {:npc, %{id: 11}}}}
   end
 end
