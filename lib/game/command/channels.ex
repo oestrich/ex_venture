@@ -6,6 +6,7 @@ defmodule Game.Command.Channels do
   use Game.Command
 
   alias Game.Channel
+  alias Game.Command.Say
   alias Game.Message
 
   commands(["channels"], parse: false)
@@ -101,7 +102,8 @@ defmodule Game.Command.Channels do
             nil
 
           channel ->
-            Channel.broadcast(channel.name, Message.broadcast(user, channel, message))
+            parsed_message = Say.parse_message(message)
+            Channel.broadcast(channel.name, Message.broadcast(user, channel, parsed_message))
         end
 
       false ->

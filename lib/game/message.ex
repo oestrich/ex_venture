@@ -44,12 +44,12 @@ defmodule Game.Message do
     }
   end
 
-  def broadcast(user, channel, message) do
+  def broadcast(user, channel, parsed_message) do
     %__MODULE__{
       type: :user,
       sender: user,
-      message: message,
-      formatted: Format.channel_say(channel, {:user, user}, message)
+      message: parsed_message.message,
+      formatted: Format.channel_say(channel, {:user, user}, parsed_message)
     }
   end
 
