@@ -36,12 +36,20 @@ defmodule Game.Command.ChannelsTest do
     assert Regex.match?(~r(newbie), echo)
   end
 
-  test "send a message to a channel", %{socket: socket, user: user} do
-    :ok = Channel.join("global")
+  describe "broadcasting messages" do
+    setup %{user: user} do
+      state = %{socket: :socket, user: user}
 
-    :ok = Channels.run({"global", "hello"}, %{socket: socket, user: user})
+      %{state: state}
+    end
 
-    assert_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}
+    test "send a message to a channel", %{state: state} do
+      :ok = Channel.join("global")
+
+      :ok = Channels.run({"global", "hello"}, state)
+
+      assert_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}
+    end
   end
 
   test "does not send a message if the user is not subscribed to the channel", %{socket: socket, user: user} do

@@ -35,11 +35,19 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.channel_say(%{name: "global", color: "red"}, {:npc, %{name: "NPC"}}, %{message: "Hello"})
-      ~s({red}[global]{/red} {npc}NPC{/npc} says, {say}"Hello"{/say})
+      ~s([{red}global{/red}] {npc}NPC{/npc} says, {say}"Hello"{/say})
   """
   @spec channel_say(String.t(), Character.t(), map()) :: String.t()
   def channel_say(channel, sender, parsed_message) do
-    ~s({#{channel.color}}[#{channel.name}]{/#{channel.color}} #{say(sender, parsed_message)})
+    ~s([#{channel_name(channel)}] #{say(sender, parsed_message)})
+  end
+
+  @doc """
+  Color the channel's name
+  """
+  @spec channel_name(Channel.t()) :: String.t()
+  def channel_name(channel) do
+    "{#{channel.color}}#{channel.name}{/#{channel.color}}"
   end
 
   @doc """

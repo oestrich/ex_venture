@@ -77,59 +77,58 @@ defmodule Game.Command.Channels do
     :ok
   end
 
-  def run({:join, channel}, %{user: user}) do
-    join_channel(channel, user)
-    :ok
+  def run({:join, channel}, state = %{user: user}) do
+    with {:ok, channel} <- get_channel(channel),
+         false <- in_channel?(channel.name, user) do
+      Channel.join(channel.name)
+    else
+      _ ->
+        state.socket |> @socket.echo("You are already part of this channel.")
+    end
   end
 
-  def run({:leave, channel}, %{user: user}) do
-    case in_channel?(channel, user) do
-      true ->
-        Channel.leave(channel)
+  def run({:leave, channel}, state) do
+    case get_joined_channel(channel, state) do
+      {:ok, channel} ->
+        Channel.leave(channel.name)
+        state.socket |> @socket.echo("You have left #{Format.channel_name(channel)}.")
 
-      false ->
-        nil
+      {:error, :not_found} ->
+        state.socket |> @socket.echo("You are not part of that channel.")
     end
-
-    :ok
   end
 
-  def run({channel, message}, %{user: user}) do
-    case in_channel?(channel, user) do
-      true ->
-        case Game.Channels.get(channel) do
-          nil ->
-            nil
+  def run({channel, message}, state) do
+    with {:ok, channel} <- get_joined_channel(channel, state) do
+      parsed_message = Say.parse_message(message)
+      Channel.broadcast(channel.name, Message.broadcast(state.user, channel, parsed_message))
+    else
+      {:error, :not_found} ->
+        state.socket |> @socket.echo("You are not part of this channel.")
+    end
+  end
 
-          channel ->
-            parsed_message = Say.parse_message(message)
-            Channel.broadcast(channel.name, Message.broadcast(user, channel, parsed_message))
-        end
+  defp get_joined_channel(channel, state) do
+    case in_channel?(channel, state.user) do
+      true ->
+        get_channel(channel)
 
       false ->
-        nil
+        {:error, :not_found}
     end
+  end
 
-    :ok
+  defp get_channel(channel) do
+    case Game.Channels.get(channel) do
+      nil ->
+        {:error, :not_found}
+
+      channel ->
+        {:ok, channel}
+    end
   end
 
   defp in_channel?(channel, %{save: %{channels: channels}}) do
     channel in channels
-  end
-
-  defp join_channel(channel, user) do
-    case Game.Channels.get(channel) do
-      nil ->
-        nil
-
-      _ ->
-        case in_channel?(channel, user) do
-          false ->
-            Channel.join(channel)
-
-          true ->
-            nil
-        end
-    end
   end
 end
