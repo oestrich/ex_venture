@@ -116,4 +116,14 @@ document.addEventListener("click", e => {
   }
 }, false);
 
+document.addEventListener("mouseover", e => {
+  if (e.target.classList.contains("command")) {
+    if (e.target.dataset.command != undefined) {
+      e.target.setAttribute("data-title", e.target.dataset.command);
+    } else {
+      e.target.setAttribute("data-title", e.target.innerText);
+    }
+  }
+}, false);
+
 export {channel}

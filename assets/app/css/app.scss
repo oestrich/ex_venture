@@ -84,9 +84,9 @@ body {
       white-space: pre;
 
       @media only screen
-        and (min-device-width: 1200px)
-        and (max-device-width: 1600px)
-        and (-webkit-min-device-pixel-ratio: 1) {
+      and (min-device-width: 1200px)
+      and (max-device-width: 1600px)
+      and (-webkit-min-device-pixel-ratio: 1) {
         font-size: 0.8em;
       }
     }
@@ -205,4 +205,25 @@ input {
   pre {
     white-space: pre-wrap;
   }
+}
+
+/**
+ * Tooltips
+ */
+
+.command {
+  position: relative;
+}
+
+.command:hover:after {
+  background: #333;
+  background: rgb(101, 123, 131);
+  border-radius: 5px;
+  bottom: 26px;
+  content: attr(data-title);
+  left: 20%;
+  padding: 5px 15px;
+  position: absolute;
+  z-index: 98;
+  white-space: nowrap;
 }

@@ -25,7 +25,6 @@ function formatColor(payload) {
   string = string.replace(/{exit}/g,  "<span class='white command'>")
   string = string.replace(/{shop}/g,  "<span class='magenta'>")
   string = string.replace(/{hint}/g,  "<span class='cyan'>")
-  string = string.replace(/{\/[\w:-]+}/g, "</span>")
 
   string = string.replace(/{command click=false}/g, "<span class='white'>");
   string = string.replace(/{command( send='(?<command>.*)')?}/g, (_match, _fullSend, command) => {
@@ -39,6 +38,9 @@ function formatColor(payload) {
       return "<span class='white'>";
     }
   });
+
+  // Closing tags
+  string = string.replace(/{\/[\w:-]+}/g, "</span>")
 
   return string;
 }
