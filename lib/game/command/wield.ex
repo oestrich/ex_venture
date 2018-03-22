@@ -50,14 +50,23 @@ defmodule Game.Command.Wield do
   """
   def run(command, state)
 
-  def run({:wield, item_name}, state = %{socket: socket, save: %{items: items}}) do
+  def run({:wield, item_name}, state) do
     {hand, item_name} = pick_hand(item_name)
 
-    items = Items.items(items)
+    with {:ok, item} <- find_item(state, item_name),
+         {:ok, item} <- check_item_level(state.save, item),
+         {:ok, item} <- check_can_wield(item) do
+      state |> item_found(hand, item)
+    else
+      {:error, :level_too_low, item} ->
+        message = "You cannot wield #{Format.item_name(item)}, you are not high enough level."
+        state.socket |> @socket.echo(message)
 
-    case Item.find_item(items, item_name) do
-      nil -> socket |> item_not_found(item_name)
-      item -> socket |> item_found(hand, item, state)
+      {:error, :cannot_wield, item} ->
+        state.socket |> @socket.echo(~s(#{item.name} cannot be wielded))
+
+      {:error, :not_found} ->
+        state.socket |> @socket.echo(~s("#{item_name}" could not be found."))
     end
   end
 
@@ -71,53 +80,65 @@ defmodule Game.Command.Wield do
 
       _ ->
         socket |> @socket.echo("Unknown hand")
-        :ok
     end
   end
 
-  defp item_not_found(socket, item_name) do
-    socket |> @socket.echo(~s("#{item_name}" could not be found."))
-    :ok
+  defp find_item(%{save: save}, item_name) do
+    items = Items.items(save.items)
+
+    case Item.find_item(items, item_name) do
+      nil ->
+        {:error, :not_found}
+
+      item ->
+        {:ok, item}
+    end
+  end
+
+  defp check_item_level(save, item) do
+    case save.level < item.level do
+      true ->
+        {:error, :level_too_low, item}
+
+      false ->
+        {:ok, item}
+    end
+  end
+
+  defp check_can_wield(item) do
+    case item.type do
+      "weapon" ->
+        {:ok, item}
+
+      _ ->
+        {:error, :cannot_wield, item}
+    end
   end
 
   # Unwield the current item in your hand, adding to inventory
   # Wield the new item, removing from inventory
-  defp item_found(socket, _, item = %{level: item_level, type: "weapon"}, %{save: %{level: level}})
-       when level < item_level do
-    socket
-    |> @socket.echo(
-      "You cannot wield \"#{Format.item_name(item)}\", you are not high enough level."
-    )
-
-    :ok
-  end
-
-  defp item_found(socket, hand, item = %{type: "weapon"}, state) do
+  defp item_found(state, hand, item) do
     %{save: save} = state
-    %{items: items} = save
 
-    {wielding, items} = unwield(hand, save.wielding, items)
+    {wielding, items} = unwield(hand, save.wielding, save.items)
     {wielding, items} = unwield(opposite_hand(hand), wielding, items)
     {instance, items} = Item.remove(items, item)
+
     wielding = Map.put(wielding, hand, instance)
     save = %{save | items: items, wielding: wielding}
 
-    socket |> @socket.echo(~s(#{item.name} is now in your #{hand} hand.))
+    state.socket |> @socket.echo(~s(#{item.name} is now in your #{hand} hand.))
+
     {:update, Map.put(state, :save, save)}
   end
 
-  defp item_found(socket, _, item, _state) do
-    socket |> @socket.echo(~s(#{item.name} cannot be wielded))
-    :ok
-  end
-
   defp run_unwield(hand, state) do
-    %{save: save, socket: socket} = state
-    %{items: items} = save
+    %{save: save} = state
 
-    {wielding, items} = unwield(hand, save.wielding, items)
+    {wielding, items} = unwield(hand, save.wielding, save.items)
     save = %{save | items: items, wielding: wielding}
-    socket |> @socket.echo(~s(Your #{hand} hand is now empty.))
+    state.socket |> @socket.echo(~s(Your #{hand} hand is now empty.))
+
     {:update, Map.put(state, :save, save)}
   end
 
