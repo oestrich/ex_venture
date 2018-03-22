@@ -53,12 +53,21 @@ defmodule Game.Command.Wear do
   """
   def run(command, state)
 
-  def run({:wear, item_name}, state = %{socket: socket, save: %{items: items}}) do
-    items = Items.items(items)
+  def run({:wear, item_name}, state) do
+    with {:ok, item} <- find_item(state, item_name),
+         {:ok, item} <- check_item_level(state.save, item),
+         {:ok, item} <- check_can_wear(item) do
+      state |> item_found(item)
+    else
+      {:error, :level_too_low, item} ->
+        message = "You cannot wear \"#{Format.item_name(item)}\", you are not high enough level."
+        state.socket |> @socket.echo(message)
 
-    case Item.find_item(items, item_name) do
-      nil -> socket |> item_not_found(item_name)
-      item -> socket |> item_found(item, state)
+      {:error, :cannot_wear, item} ->
+        state.socket |> @socket.echo(~s(You cannot wear #{item.name}.))
+
+      {:error, :not_found} ->
+        state.socket |> @socket.echo(~s("#{item_name}" could not be found."))
     end
   end
 
@@ -75,22 +84,39 @@ defmodule Game.Command.Wear do
     end
   end
 
-  defp item_not_found(socket, item_name) do
-    socket |> @socket.echo(~s("#{item_name}" could not be found."))
-    :ok
+  defp find_item(%{save: save}, item_name) do
+    items = Items.items(save.items)
+
+    case Item.find_item(items, item_name) do
+      nil ->
+        {:error, :not_found}
+
+      item ->
+        {:ok, item}
+    end
   end
 
-  defp item_found(socket, item = %{level: item_level, type: "armor"}, %{save: %{level: level}})
-       when level < item_level do
-    socket
-    |> @socket.echo(
-      "You cannot wear \"#{Format.item_name(item)}\", you are not high enough level."
-    )
+  defp check_item_level(save, item) do
+    case save.level < item.level do
+      true ->
+        {:error, :level_too_low, item}
 
-    :ok
+      false ->
+        {:ok, item}
+    end
   end
 
-  defp item_found(socket, item = %{type: "armor"}, state) do
+  defp check_can_wear(item) do
+    case item.type do
+      "armor" ->
+        {:ok, item}
+
+      _ ->
+        {:error, :cannot_wear, item}
+    end
+  end
+
+  defp item_found(state, item) do
     %{save: save} = state
     %{items: items} = save
 
@@ -100,13 +126,9 @@ defmodule Game.Command.Wear do
 
     save = %{save | items: items, wearing: wearing}
 
-    socket |> @socket.echo(~s(You are now wearing #{item.name}))
-    {:update, Map.put(state, :save, save)}
-  end
+    state.socket |> @socket.echo(~s(You are now wearing #{item.name}))
 
-  defp item_found(socket, item, _state) do
-    socket |> @socket.echo(~s(You cannot wear #{item.name}))
-    :ok
+    {:update, Map.put(state, :save, save)}
   end
 
   defp run_remove(slot, state = %{socket: socket, save: save}) do
