@@ -5,6 +5,7 @@ defmodule Game.Command.Examine do
 
   use Game.Command
 
+  alias Game.Item
   alias Game.Items
 
   commands(["examine"])
@@ -28,20 +29,22 @@ defmodule Game.Command.Examine do
   """
   def run(command, state)
 
-  def run({item_name}, %{socket: socket, save: save}) do
-    %{wearing: wearing, wielding: wielding, items: items} = save
+  def run({item_name}, state) do
+    %{wearing: wearing, wielding: wielding, items: items} = state.save
 
     wearing_instances = Enum.map(wearing, &elem(&1, 1))
     wielding_instances = Enum.map(wielding, &elem(&1, 1))
 
     items = Items.items(wearing_instances ++ wielding_instances ++ items)
 
-    case Enum.find(items, &Game.Item.matches_lookup?(&1, item_name)) do
-      nil -> nil
-      item -> socket |> @socket.echo(Format.item(item))
-    end
+    case Item.find_item(items, item_name) do
+      {:error, :not_found} ->
+        :ok
+        state.socket |> @socket.echo("\"#{item_name}\" could not be found.")
 
-    :ok
+      {:ok, item} ->
+        state.socket |> @socket.echo(Format.item(item))
+    end
   end
 
   def run({}, %{socket: socket}) do
