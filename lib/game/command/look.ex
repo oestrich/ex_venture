@@ -96,10 +96,10 @@ defmodule Game.Command.Look do
       |> Item.find_item(item_name)
 
     case item do
-      nil ->
+      {:error, :not_found} ->
         room
 
-      {_instance, item} ->
+      {:ok, {_instance, item}} ->
         socket |> @socket.echo(Format.item(item))
         :ok
     end

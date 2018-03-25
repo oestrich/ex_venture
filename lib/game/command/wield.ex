@@ -52,10 +52,11 @@ defmodule Game.Command.Wield do
 
   def run({:wield, item_name}, state) do
     {hand, item_name} = pick_hand(item_name)
+    items = Items.items(state.save.items)
 
-    with {:ok, item} <- find_item(state, item_name),
-         {:ok, item} <- check_item_level(state.save, item),
-         {:ok, item} <- check_can_wield(item) do
+    with {:ok, item} <- Item.find_item(items, item_name),
+         {:ok, item} <- Item.check_item_level(item, state.save),
+         {:ok, item} <- Item.check_can_wield(item) do
       state |> item_found(hand, item)
     else
       {:error, :level_too_low, item} ->
@@ -80,38 +81,6 @@ defmodule Game.Command.Wield do
 
       _ ->
         socket |> @socket.echo("Unknown hand")
-    end
-  end
-
-  defp find_item(%{save: save}, item_name) do
-    items = Items.items(save.items)
-
-    case Item.find_item(items, item_name) do
-      nil ->
-        {:error, :not_found}
-
-      item ->
-        {:ok, item}
-    end
-  end
-
-  defp check_item_level(save, item) do
-    case save.level < item.level do
-      true ->
-        {:error, :level_too_low, item}
-
-      false ->
-        {:ok, item}
-    end
-  end
-
-  defp check_can_wield(item) do
-    case item.type do
-      "weapon" ->
-        {:ok, item}
-
-      _ ->
-        {:error, :cannot_wield, item}
     end
   end
 

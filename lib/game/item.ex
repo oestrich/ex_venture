@@ -36,19 +36,32 @@ defmodule Game.Item do
   Example:
 
       iex> Game.Item.find_item([%{name: "Short sword", keywords: ["sword"]}], "sword")
-      %{name: "Short sword", keywords: ["sword"]}
+      {:ok, %{name: "Short sword", keywords: ["sword"]}}
 
       iex> Game.Item.find_item([%{name: "Sword", keywords: []}, %{name: "Shield", keywords: []}], "shield")
-      %{name: "Shield", keywords: []}
+      {:ok, %{name: "Shield", keywords: []}}
 
       iex> Game.Item.find_item([%{name: "Sword", keywords: []}], "shield")
-      nil
+      {:error, :not_found}
   """
   @spec find_item([Item.t()], String.t()) :: Item.t() | nil
   def find_item(items, item_name) do
+    case _find_item(items, item_name) do
+      nil ->
+        {:error, :not_found}
+
+      item ->
+        {:ok, item}
+    end
+  end
+
+  def _find_item(items, item_name) do
     Enum.find(items, fn
-      {_instance, item} -> matches_lookup?(item, item_name)
-      item -> matches_lookup?(item, item_name)
+      {_instance, item} ->
+        matches_lookup?(item, item_name)
+
+      item ->
+        matches_lookup?(item, item_name)
     end)
   end
 
@@ -154,5 +167,47 @@ defmodule Game.Item do
     Enum.filter(effects, fn effect ->
       effect.kind in item.whitelist_effects
     end)
+  end
+
+  @doc """
+  Check the item against the player's save to see if it is their level
+  """
+  @spec check_item_level(Item.t(), Save.t()) :: {:ok, Item.t()} | {:error, :level_too_low, Item.t()}
+  def check_item_level(item, save) do
+    case save.level < item.level do
+      true ->
+        {:error, :level_too_low, item}
+
+      false ->
+        {:ok, item}
+    end
+  end
+
+  @doc """
+  Check if an item can be wielded
+  """
+  @spec check_can_wield(Item.t()) :: {:ok, Item.t()} | {:error, :cannot_wield, Item.t()}
+  def check_can_wield(item) do
+    case item.type do
+      "weapon" ->
+        {:ok, item}
+
+      _ ->
+        {:error, :cannot_wield, item}
+    end
+  end
+
+  @doc """
+  Check if an item can be worn
+  """
+  @spec check_can_wear(Item.t()) :: {:ok, Item.t()} | {:error, :cannot_wear, Item.t()}
+  def check_can_wear(item) do
+    case item.type do
+      "armor" ->
+        {:ok, item}
+
+      _ ->
+        {:error, :cannot_wear, item}
+    end
   end
 end

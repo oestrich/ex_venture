@@ -35,8 +35,11 @@ defmodule Game.Command.Use do
     items = Items.items_keep_instance(items)
 
     case Item.find_item(items, item_name) do
-      nil -> socket |> item_not_found(item_name)
-      item -> state |> use_item(item)
+      {:error, :not_found} ->
+        socket |> item_not_found(item_name)
+
+      {:ok, item} ->
+        state |> use_item(item)
     end
   end
 

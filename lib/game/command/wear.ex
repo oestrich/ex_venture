@@ -54,9 +54,11 @@ defmodule Game.Command.Wear do
   def run(command, state)
 
   def run({:wear, item_name}, state) do
-    with {:ok, item} <- find_item(state, item_name),
-         {:ok, item} <- check_item_level(state.save, item),
-         {:ok, item} <- check_can_wear(item) do
+    items = Items.items(state.save.items)
+
+    with {:ok, item} <- Item.find_item(items, item_name),
+         {:ok, item} <- Item.check_item_level(item, state.save),
+         {:ok, item} <- Item.check_can_wear(item) do
       state |> item_found(item)
     else
       {:error, :level_too_low, item} ->
@@ -81,38 +83,6 @@ defmodule Game.Command.Wear do
       false ->
         socket |> @socket.echo("Unknown armor slot")
         :ok
-    end
-  end
-
-  defp find_item(%{save: save}, item_name) do
-    items = Items.items(save.items)
-
-    case Item.find_item(items, item_name) do
-      nil ->
-        {:error, :not_found}
-
-      item ->
-        {:ok, item}
-    end
-  end
-
-  defp check_item_level(save, item) do
-    case save.level < item.level do
-      true ->
-        {:error, :level_too_low, item}
-
-      false ->
-        {:ok, item}
-    end
-  end
-
-  defp check_can_wear(item) do
-    case item.type do
-      "armor" ->
-        {:ok, item}
-
-      _ ->
-        {:error, :cannot_wear, item}
     end
   end
 
