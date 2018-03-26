@@ -64,7 +64,7 @@ defmodule Game.Command.Wield do
         state.socket |> @socket.echo(message)
 
       {:error, :cannot_wield, item} ->
-        state.socket |> @socket.echo(~s(#{item.name} cannot be wielded))
+        state.socket |> @socket.echo(~s(#{Format.item_name(item)} cannot be wielded))
 
       {:error, :not_found} ->
         state.socket |> @socket.echo(~s("#{item_name}" could not be found."))
@@ -96,7 +96,7 @@ defmodule Game.Command.Wield do
     wielding = Map.put(wielding, hand, instance)
     save = %{save | items: items, wielding: wielding}
 
-    state.socket |> @socket.echo(~s(#{item.name} is now in your #{hand} hand.))
+    state.socket |> @socket.echo(~s(#{Format.item_name(item)} is now in your #{hand} hand.))
 
     {:update, Map.put(state, :save, save)}
   end

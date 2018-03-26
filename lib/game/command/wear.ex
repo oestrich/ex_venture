@@ -66,7 +66,7 @@ defmodule Game.Command.Wear do
         state.socket |> @socket.echo(message)
 
       {:error, :cannot_wear, item} ->
-        state.socket |> @socket.echo(~s(You cannot wear #{item.name}.))
+        state.socket |> @socket.echo(~s(You cannot wear #{Format.item_name(item)}.))
 
       {:error, :not_found} ->
         state.socket |> @socket.echo(~s("#{item_name}" could not be found."))
@@ -96,7 +96,7 @@ defmodule Game.Command.Wear do
 
     save = %{save | items: items, wearing: wearing}
 
-    state.socket |> @socket.echo(~s(You are now wearing #{item.name}))
+    state.socket |> @socket.echo(~s(You are now wearing #{Format.item_name(item)}))
 
     {:update, Map.put(state, :save, save)}
   end
@@ -110,7 +110,7 @@ defmodule Game.Command.Wear do
         {wearing, items} = remove(slot, wearing, items)
         save = %{save | wearing: wearing, items: items}
 
-        socket |> @socket.echo("You removed #{item.name} from your #{slot}")
+        socket |> @socket.echo("You removed #{Format.item_name(item)} from your #{slot}")
         {:update, Map.put(state, :save, save)}
 
       false ->

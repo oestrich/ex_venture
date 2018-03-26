@@ -28,7 +28,7 @@ defmodule Game.Command.WieldTest do
       assert state.save.items == []
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Sword is now in your right hand), look)
+      assert Regex.match?(~r({item}Sword{/item} is now in your right hand), look)
     end
 
     test "can only wield a weapon", %{socket: socket} do
@@ -36,7 +36,7 @@ defmodule Game.Command.WieldTest do
       :ok = Command.Wield.run({:wield, "potion"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Potion cannot be wielded), look)
+      assert Regex.match?(~r({item}Potion{/item} cannot be wielded), look)
     end
 
     test "wield an item - puts current item back in inventory", %{socket: socket} do
@@ -50,7 +50,7 @@ defmodule Game.Command.WieldTest do
       assert state.save.items == [sword]
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Axe is now in your right hand), look)
+      assert Regex.match?(~r({item}Axe{/item} is now in your right hand), look)
     end
 
     test "wield an item in other hand - puts current item back in inventory", %{socket: socket} do
@@ -64,7 +64,7 @@ defmodule Game.Command.WieldTest do
       assert state.save.items == [sword]
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Axe is now in your right hand), look)
+      assert Regex.match?(~r({item}Axe{/item} is now in your right hand), look)
     end
 
     test "cannot wield higher level weapons", %{socket: socket} do

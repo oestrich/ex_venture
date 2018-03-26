@@ -29,7 +29,7 @@ defmodule Game.Command.WearTest do
       assert state.save.items == []
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(You are now wearing Leather Chest), look)
+      assert Regex.match?(~r(You are now wearing {item}Leather Chest{/item}), look)
     end
 
     test "wearing armor replaces the old set", %{socket: socket} do
@@ -43,7 +43,7 @@ defmodule Game.Command.WearTest do
       assert state.save.items == [mail_chest]
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(You are now wearing Leather Chest), look)
+      assert Regex.match?(~r(You are now wearing {item}Leather Chest{/item}), look)
     end
 
     test "wearing only armor", %{socket: socket} do
@@ -51,7 +51,7 @@ defmodule Game.Command.WearTest do
       :ok = Command.Wear.run({:wear, "axe"}, %{socket: socket, save: save})
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(You cannot wear Axe), look)
+      assert Regex.match?(~r(You cannot wear {item}Axe{/item}), look)
     end
 
     test "wearing armor - cannot wear higher level armor", %{socket: socket} do
@@ -83,7 +83,7 @@ defmodule Game.Command.WearTest do
       assert state.save.items == [leather_chest]
 
       [{^socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(You removed Leather Chest from your chest), look)
+      assert Regex.match?(~r(You removed {item}Leather Chest{/item} from your chest), look)
     end
 
     test "does not fail when removing a slot that is empty", %{socket: socket} do
