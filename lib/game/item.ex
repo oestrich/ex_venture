@@ -172,7 +172,8 @@ defmodule Game.Item do
   @doc """
   Check the item against the player's save to see if it is their level
   """
-  @spec check_item_level(Item.t(), Save.t()) :: {:ok, Item.t()} | {:error, :level_too_low, Item.t()}
+  @spec check_item_level(Item.t(), Save.t()) ::
+          {:ok, Item.t()} | {:error, :level_too_low, Item.t()}
   def check_item_level(item, save) do
     case save.level < item.level do
       true ->

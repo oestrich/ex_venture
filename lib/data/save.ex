@@ -328,8 +328,9 @@ defmodule Data.Save do
   def valid_config?(save)
 
   def valid_config?(%{config: config}) do
-    is_map(config) && keys(config) == [:hints, :pager_size, :prompt, :regen_notifications] && is_boolean(config.hints) &&
-      is_binary(config.prompt) && is_integer(config.pager_size) && is_boolean(config.regen_notifications)
+    is_map(config) && keys(config) == [:hints, :pager_size, :prompt, :regen_notifications] &&
+      is_boolean(config.hints) && is_binary(config.prompt) && is_integer(config.pager_size) &&
+      is_boolean(config.regen_notifications)
   end
 
   @doc """

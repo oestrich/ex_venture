@@ -182,6 +182,7 @@ defmodule Game.Experience do
   def stat_boost_on_level(level_stats, :health_points) do
     5 + health_usage(level_stats)
   end
+
   def stat_boost_on_level(level_stats, :max_health_points) do
     5 + health_usage(level_stats)
   end
@@ -189,6 +190,7 @@ defmodule Game.Experience do
   def stat_boost_on_level(level_stats, :skill_points) do
     5 + skill_usage(level_stats)
   end
+
   def stat_boost_on_level(level_stats, :max_skill_points) do
     5 + skill_usage(level_stats)
   end

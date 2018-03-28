@@ -90,7 +90,7 @@ defmodule Game.Command.Say do
       message: string,
       adverb_phrase: adverb_phrase,
       is_directed: is_directed,
-      is_quoted: is_quoted,
+      is_quoted: is_quoted
     }
   end
 
@@ -105,7 +105,7 @@ defmodule Game.Command.Say do
           |> String.replace(match, "")
           |> String.trim()
 
-          {string, adverb_phrase}
+        {string, adverb_phrase}
     end
   end
 
@@ -138,6 +138,7 @@ defmodule Game.Command.Say do
 
   def say_directed(state = %{user: user, save: save}, parsed_message) do
     room = @room.look(save.room_id)
+
     case find_character(room, parsed_message.message, message: true) do
       {:error, :not_found} ->
         state.socket |> @socket.echo("No character could be found matching your text.")

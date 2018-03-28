@@ -134,10 +134,14 @@ defmodule Game.Command.Config do
         update_config(config_name, value, state)
 
       :error ->
-        state.socket |> @socket.echo("There was a problem saving your config, it appears to be in the wrong format.")
+        state.socket
+        |> @socket.echo(
+          "There was a problem saving your config, it appears to be in the wrong format."
+        )
 
       {:error, :bad_config} ->
-        state.socket |> @socket.echo("There was a problem saving your config, this config cannot be set.")
+        state.socket
+        |> @socket.echo("There was a problem saving your config, this config cannot be set.")
     end
   end
 

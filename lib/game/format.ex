@@ -100,7 +100,7 @@ defmodule Game.Format do
     ~s(You say[ adverb_phrase], {say}"[message]"{/say})
     |> template(%{
       message: message.message,
-      adverb_phrase: Map.get(message, :adverb_phrase, nil),
+      adverb_phrase: Map.get(message, :adverb_phrase, nil)
     })
   end
 
@@ -109,7 +109,7 @@ defmodule Game.Format do
     |> template(%{
       name: name(character),
       message: message.message,
-      adverb_phrase: Map.get(message, :adverb_phrase, nil),
+      adverb_phrase: Map.get(message, :adverb_phrase, nil)
     })
   end
 
@@ -136,11 +136,12 @@ defmodule Game.Format do
   @spec say_to(Character.t(), Character.t(), map()) :: String.t()
   def say_to(:you, sayee, parsed_message) do
     message = Utility.strip_name(elem(sayee, 1), parsed_message.message)
+
     ~s(You say[ adverb_phrase] to [sayee], {say}"[message]"{/say})
     |> template(%{
       sayee: name(sayee),
       message: message,
-      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil),
+      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil)
     })
   end
 
@@ -152,7 +153,7 @@ defmodule Game.Format do
       sayer: name(sayer),
       sayee: name(sayee),
       message: message,
-      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil),
+      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil)
     })
   end
 

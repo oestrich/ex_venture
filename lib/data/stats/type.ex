@@ -13,6 +13,7 @@ defmodule Data.Stats.Type do
   @impl Ecto.Type
   def cast(stat) do
     fields = Stats.basic_fields() |> Enum.map(&to_string/1)
+
     case stat in fields do
       true ->
         {:ok, String.to_atom(stat)}
@@ -31,5 +32,6 @@ defmodule Data.Stats.Type do
   def dump(stat) when is_atom(stat) do
     {:ok, to_string(stat)}
   end
+
   def dump(_), do: :error
 end

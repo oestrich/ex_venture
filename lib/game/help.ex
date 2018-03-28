@@ -24,6 +24,7 @@ defmodule Game.Help do
       Game.Command.commands()
       |> Enum.map(fn command ->
         key = command.help(:topic)
+
         "\t{command send='help #{String.downcase(key)}'}#{key}{/command}: #{command.help(:short)}\n"
       end)
 

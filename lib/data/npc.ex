@@ -24,7 +24,7 @@ defmodule Data.NPC do
     :stats,
     :events,
     :script,
-    :notes,
+    :notes
   ]
 
   schema "npcs" do

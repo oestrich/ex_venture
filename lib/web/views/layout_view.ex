@@ -37,6 +37,7 @@ defmodule Web.LayoutView do
     case render_existing(view_module(conn), "title", assigns) do
       nil ->
         Config.game_name()
+
       title ->
         "#{title} - #{Config.game_name()}"
     end

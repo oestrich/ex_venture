@@ -222,7 +222,7 @@ defmodule Data.Effect do
   def valid_damage_type?(effect)
 
   def valid_damage_type?(%{types: types}) when is_list(types) do
-    Enum.all?(types, &(is_binary(&1)))
+    Enum.all?(types, &is_binary(&1))
   end
 
   def valid_damage_type?(_), do: false
@@ -246,8 +246,8 @@ defmodule Data.Effect do
   def valid_damage_over_time?(effect)
 
   def valid_damage_over_time?(%{type: type, amount: amount, every: every, count: count}) do
-    is_binary(type) && is_integer(amount) && is_integer(every) && every > 0 &&
-      is_integer(count) && count > 0
+    is_binary(type) && is_integer(amount) && is_integer(every) && every > 0 && is_integer(count) &&
+      count > 0
   end
 
   def valid_damage_over_time?(_), do: false

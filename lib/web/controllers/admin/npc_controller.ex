@@ -22,6 +22,7 @@ defmodule Web.Admin.NPCController do
       case params do
         %{"clone_id" => id} ->
           NPC.clone(id)
+
         _ ->
           NPC.new()
       end

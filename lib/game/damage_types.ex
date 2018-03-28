@@ -30,6 +30,7 @@ defmodule Game.DamageTypes do
 
   defp create_default_damage_type(key) do
     changeset = %DamageType{} |> DamageType.changeset(%{key: key, stat_modifier: "strength"})
+
     case changeset |> Repo.insert() do
       {:ok, damage_type} ->
         Cachex.set(@cache_key, damage_type.key, damage_type)

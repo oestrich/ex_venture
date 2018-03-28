@@ -35,10 +35,10 @@ defmodule Web.Announcement do
   Get recent announcements, the most recent 5
   """
   def recent() do
-    sticky() ++ recent([sticky: false])
+    sticky() ++ recent(sticky: false)
   end
 
-  def recent([sticky: false]) do
+  def recent(sticky: false) do
     Announcement
     |> order_by([a], desc: a.published_at)
     |> where([a], a.is_published and not a.is_sticky)

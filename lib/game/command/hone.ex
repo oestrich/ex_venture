@@ -129,19 +129,33 @@ defmodule Game.Command.Hone do
     Which statistic do you want to hone?
 
     {command send='hone strength'}Strength{/command}
-      Your strength is currently at #{save.stats.strength}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
+      Your strength is currently at #{save.stats.strength}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
     {command send='hone dexterity'}Dexterity{/command}
-      Your dexterity is currently at #{save.stats.dexterity}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
+      Your dexterity is currently at #{save.stats.dexterity}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
     {command send='hone constitution'}Constitution{/command}
-      Your constitution is currently at #{save.stats.constitution}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
+      Your constitution is currently at #{save.stats.constitution}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
     {command send='hone intelligence'}Intelligence{/command}
-      Your intelligence is currently at #{save.stats.intelligence}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
+      Your intelligence is currently at #{save.stats.intelligence}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
     {command send='hone wisdom'}Wisdom{/command}
-      Your wisdom is currently at #{save.stats.wisdom}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
+      Your wisdom is currently at #{save.stats.wisdom}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
     {command send='hone health'}Health{/command} Points
-      Your max health points are currently at #{save.stats.max_health_points}, honing will add {yellow}#{@hone_points_boost}{/yellow}
+      Your max health points are currently at #{save.stats.max_health_points}, honing will add {yellow}#{
+      @hone_points_boost
+    }{/yellow}
     {command send='hone skill'}Skill{/command} Points
-      Your max skill points are currently at #{save.stats.max_skill_points}, honing will add {yellow}#{@hone_points_boost}{/yellow}
+      Your max skill points are currently at #{save.stats.max_skill_points}, honing will add {yellow}#{
+      @hone_points_boost
+    }{/yellow}
 
     Honing costs #{@hone_cost} xp. You have #{spendable_experience} xp left to spend.
     """
