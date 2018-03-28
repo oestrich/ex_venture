@@ -1,8 +1,8 @@
 damage_type.key:
   This key is used in damage effects, this should be a single word and lower case.
 
-damage_type.percentage_boost:
-  The percentage boost that the stat should increase the damage.
+damage_type.boost_ratio:
+  The ratio that the stat should increase the damage.
 
 damage_type.stat_modifier:
   This is the player statistics that boosts the effect by a percentage of the stat.

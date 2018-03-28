@@ -10,17 +10,17 @@ defmodule Data.DamageType do
   schema "damage_types" do
     field(:key, :string)
     field(:stat_modifier, Stats.Type)
-    field(:percentage_boost, :integer, default: 20)
+    field(:boost_ratio, :integer, default: 20)
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:key, :stat_modifier, :percentage_boost])
-    |> validate_required([:key, :stat_modifier, :percentage_boost])
+    |> cast(params, [:key, :stat_modifier, :boost_ratio])
+    |> validate_required([:key, :stat_modifier, :boost_ratio])
     |> validate_inclusion(:stat_modifier, Stats.basic_fields())
-    |> validate_number(:percentage_boost, greater_than_or_equal_to: 0, less_than_or_equal_to: 100)
+    |> validate_number(:boost_ratio, greater_than_or_equal_to: 0, less_than_or_equal_to: 100)
     |> unique_constraint(:key)
   end
 end

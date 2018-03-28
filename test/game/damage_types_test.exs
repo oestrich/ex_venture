@@ -14,7 +14,7 @@ defmodule Game.DamageTypesTest do
 
       assert bashing.key == "bashing"
       assert bashing.stat_modifier == :strength
-      assert bashing.percentage_boost == 20
+      assert bashing.boost_ratio == 20
     end
   end
 end

@@ -11,7 +11,7 @@ config :ex_venture, :game,
   currency: "gold",
   timeout_seconds: 10 * 60,
   rand: :rand,
-  random_damage: 25..25,
+  random_damage: -25..25,
   report_users: true
 
 # Configures the endpoint

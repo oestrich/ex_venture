@@ -71,8 +71,8 @@ defmodule Game.Effect do
     case DamageTypes.get(effect.type) do
       {:ok, damage_type} ->
         stat = Map.get(stats, damage_type.stat_modifier)
-
-        modifier = 1 + stat / damage_type.percentage_boost + Enum.random(@random_damage) / 100
+        random_swing = Enum.random(@random_damage)
+        modifier = 1 + (stat / damage_type.boost_ratio) + (random_swing / 100)
         modified_amount = round(Float.ceil(effect.amount * modifier))
         effect |> Map.put(:amount, modified_amount)
 

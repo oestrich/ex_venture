@@ -16,7 +16,7 @@ defmodule Game.NPC.EventsTest do
     @room.clear_says()
     start_and_clear_damage_types()
 
-    %{key: "slashing", stat_modifier: :strength, percentage_boost: 20}
+    %{key: "slashing", stat_modifier: :strength, boost_ratio: 20}
     |> insert_damage_type()
 
     :ok

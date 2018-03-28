@@ -9,13 +9,13 @@ defmodule Game.EffectTest do
   setup do
     start_and_clear_damage_types()
 
-    %{key: "arcane", stat_modifier: :intelligence, percentage_boost: 20}
+    %{key: "arcane", stat_modifier: :intelligence, boost_ratio: 20}
     |> insert_damage_type()
 
-    %{key: "slashing", stat_modifier: :strength, percentage_boost: 20}
+    %{key: "slashing", stat_modifier: :strength, boost_ratio: 20}
     |> insert_damage_type()
 
-    %{key: "bludgeoning", stat_modifier: :strength, percentage_boost: 20}
+    %{key: "bludgeoning", stat_modifier: :strength, boost_ratio: 20}
     |> insert_damage_type()
 
     :ok
