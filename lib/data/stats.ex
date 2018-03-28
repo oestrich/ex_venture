@@ -12,7 +12,6 @@ defmodule Data.Stats do
           max_skill_points: integer(),
           move_points: integer(),
           max_move_points: integer(),
-
           strength: integer(),
           dexterity: integer(),
           constitution: integer(),
@@ -226,23 +225,4 @@ defmodule Data.Stats do
   def valid_slot?(%{slot: slot}) do
     slot in slots()
   end
-
-  #@doc """
-  #Validate if the damage is right
-
-  #    iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: 10})
-  #    true
-  #    iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: nil})
-  #    false
-  #    iex> Data.Stats.valid_damage?(%{damage_type: :finger})
-  #    false
-  #"""
-  #@spec valid_damage?(Stats.t()) :: boolean()
-  #def valid_damage?(stats)
-
-  #def valid_damage?(%{damage_type: damage_type, damage: damage}) do
-  #  damage_type in Damage.types() && is_integer(damage)
-  #end
-
-  #def valid_damage?(_), do: false
 end
