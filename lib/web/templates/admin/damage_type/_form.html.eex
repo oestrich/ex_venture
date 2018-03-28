@@ -1,0 +1,36 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, fn (f) -> %>
+    <div class="box-body">
+      <%= if @key do %>
+        <div class="form-group">
+          <%= label f, :key %>
+          <%= text_input f, :key, class: "form-control" %>
+          <%= error_tag f, :key %>
+          <span class="help-block"><%= Help.get("damage_type.key") %></span>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= label f, :stat_modifier %>
+        <%= select f, :stat_modifier, Stats.basic_fields(), prompt: "Select a stat", class: "form-control" %>
+        <%= error_tag f, :stat_modifier %>
+        <span class="help-block"><%= Help.get("damage_type.stat_modifier") %></span>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :percentage_boost %>
+        <%= number_input f, :percentage_boost, class: "form-control", min: 0, max: 100 %>
+        <%= error_tag f, :percentage_boost %>
+        <span class="help-block"><%= Help.get("damage_type.percentage_boost") %></span>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

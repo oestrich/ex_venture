@@ -17,7 +17,7 @@ defmodule Web.ItemTest do
     end
 
     test "parses effects" do
-      effects = [%{kind: "damage", type: :arcane, amount: 10}]
+      effects = [%{kind: "damage", type: "arcane", amount: 10}]
       assert Item.cast_params(%{"effects" => ~s([{"kind":"damage","type":"arcane","amount":10}])})["effects"] == effects
     end
 

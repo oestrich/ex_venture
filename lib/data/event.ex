@@ -217,7 +217,7 @@ defmodule Data.Event do
 
       iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [], weight: 10, text: ""})
       true
-      iex> effect = %{kind: "damage", type: :slashing, amount: 10}
+      iex> effect = %{kind: "damage", type: "slashing", amount: 10}
       iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect], weight: 10, text: ""})
       true
       iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [%{}], text: ""})

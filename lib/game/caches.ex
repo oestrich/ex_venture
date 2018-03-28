@@ -13,6 +13,7 @@ defmodule Game.Caches do
   def init(_) do
     children = [
       worker(Cachex, [:channels, []], id: :channels_cache),
+      worker(Cachex, [:damage_types, []], id: :damage_type_cache),
       worker(Cachex, [:doors, []], id: :doors_cache),
       worker(Cachex, [:items, []], id: :items_cache),
       worker(Cachex, [:skills, []], id: :skills_cache),

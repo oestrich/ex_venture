@@ -143,6 +143,12 @@
                 <span>Config</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "damage_types") %>">
+              <%= link(to: damage_type_path(@conn, :index)) do %>
+                <i class="fa fa-tint"></i>
+                <span>Damage Types</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "help_topics") %>">
               <%= link(to: help_topic_path(@conn, :index)) do %>
                 <i class="fa fa-folder"></i>

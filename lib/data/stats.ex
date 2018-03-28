@@ -5,8 +5,6 @@ defmodule Data.Stats do
 
   import Data.Type
 
-  alias Data.Stats.Damage
-
   @type character :: %{
           health_points: integer(),
           max_health_points: integer(),
@@ -102,6 +100,19 @@ defmodule Data.Stats do
   @spec slots() :: [atom]
   def slots(),
     do: [:chest, :head, :shoulders, :neck, :back, :hands, :waist, :legs, :feet, :finger]
+
+  @doc """
+  Fields in the statistics map
+  """
+  @spec basic_fields() :: [atom]
+  def basic_fields(),
+    do: [
+      :constitution,
+      :dexterity,
+      :intelligence,
+      :strength,
+      :wisdom
+    ]
 
   @doc """
   Fields in the statistics map
@@ -216,22 +227,22 @@ defmodule Data.Stats do
     slot in slots()
   end
 
-  @doc """
-  Validate if the damage is right
+  #@doc """
+  #Validate if the damage is right
 
-      iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: 10})
-      true
-      iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: nil})
-      false
-      iex> Data.Stats.valid_damage?(%{damage_type: :finger})
-      false
-  """
-  @spec valid_damage?(Stats.t()) :: boolean()
-  def valid_damage?(stats)
+  #    iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: 10})
+  #    true
+  #    iex> Data.Stats.valid_damage?(%{damage_type: :slashing, damage: nil})
+  #    false
+  #    iex> Data.Stats.valid_damage?(%{damage_type: :finger})
+  #    false
+  #"""
+  #@spec valid_damage?(Stats.t()) :: boolean()
+  #def valid_damage?(stats)
 
-  def valid_damage?(%{damage_type: damage_type, damage: damage}) do
-    damage_type in Damage.types() && is_integer(damage)
-  end
+  #def valid_damage?(%{damage_type: damage_type, damage: damage}) do
+  #  damage_type in Damage.types() && is_integer(damage)
+  #end
 
-  def valid_damage?(_), do: false
+  #def valid_damage?(_), do: false
 end

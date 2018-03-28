@@ -1,6 +1,8 @@
 defmodule Game.NPC.EventsTest do
   use Data.ModelCase
 
+  import Test.DamageTypesHelper
+
   @room Test.Game.Room
 
   alias Game.Channel
@@ -12,6 +14,12 @@ defmodule Game.NPC.EventsTest do
 
   setup do
     @room.clear_says()
+    start_and_clear_damage_types()
+
+    %{key: "slashing", stat_modifier: :strength, percentage_boost: 20}
+    |> insert_damage_type()
+
+    :ok
   end
 
   describe "character/died" do
@@ -52,7 +60,7 @@ defmodule Game.NPC.EventsTest do
           text: "A skill was used",
           weight: 10,
           effects: [
-            %{kind: "damage", type: :slashing, amount: 10},
+            %{kind: "damage", type: "slashing", amount: 10},
           ],
         },
       }
@@ -104,7 +112,7 @@ defmodule Game.NPC.EventsTest do
 
       assert state.target
 
-      assert_receive {:"$gen_cast", {:apply_effects, [%{amount: 15, kind: "damage", type: :slashing}], {:npc, _}, "A skill was used"}}
+      assert_receive {:"$gen_cast", {:apply_effects, [%{amount: 15, kind: "damage", type: "slashing"}], {:npc, _}, "A skill was used"}}
       assert_receive {:"$gen_cast", {:notify, {"combat/tick"}}}
     end
   end

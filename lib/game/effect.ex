@@ -5,7 +5,7 @@ defmodule Game.Effect do
 
   alias Data.Effect
   alias Data.Stats
-  alias Data.Stats.Damage
+  alias Game.DamageTypes
 
   @random_damage Application.get_env(:ex_venture, :game)[:random_damage]
 
@@ -13,12 +13,6 @@ defmodule Game.Effect do
   Calculate effects based on the user
 
   Filters out stat boosting effects, then deals with damage & recovery
-
-      iex> Game.Effect.calculate(%{}, [])
-      []
-
-      iex> Game.Effect.calculate(%{strength: 10}, [%{kind: "damage", type: :slashing, amount: 10}])
-      [%{kind: "damage", amount: 15, type: :slashing}]
   """
   @spec calculate(Stats.t(), [Effect.t()]) :: [map()]
   def calculate(stats, effects) do
@@ -71,29 +65,19 @@ defmodule Game.Effect do
 
   @doc """
   Calculate damage
-
-  Physical:
-      iex> effect = %{kind: "damage", amount: 10, type: :slashing}
-      iex> Game.Effect.calculate_damage(effect, %{strength: 10})
-      %{kind: "damage", amount: 15, type: :slashing}
-
-  Magical:
-      iex> effect = %{kind: "damage", amount: 10, type: :arcane}
-      iex> Game.Effect.calculate_damage(effect, %{intelligence: 10})
-      %{kind: "damage", amount: 15, type: :arcane}
   """
   @spec calculate_damage(Effect.t(), Stats.t()) :: map()
   def calculate_damage(effect, stats) do
-    case Damage.physical?(effect.type) do
-      true ->
-        strength_modifier = 1 + stats.strength / 20.0 + Enum.random(@random_damage) / 100
-        modified_amount = round(Float.ceil(effect.amount * strength_modifier))
+    case DamageTypes.get(effect.type) do
+      {:ok, damage_type} ->
+        stat = Map.get(stats, damage_type.stat_modifier)
+
+        modifier = 1 + stat / damage_type.percentage_boost + Enum.random(@random_damage) / 100
+        modified_amount = round(Float.ceil(effect.amount * modifier))
         effect |> Map.put(:amount, modified_amount)
 
-      false ->
-        intelligence_modifier = 1 + stats.intelligence / 20.0 + Enum.random(@random_damage) / 100
-        modified_amount = round(Float.ceil(effect.amount * intelligence_modifier))
-        effect |> Map.put(:amount, modified_amount)
+      _ ->
+        effect
     end
   end
 
@@ -115,10 +99,10 @@ defmodule Game.Effect do
   Calculate damage type effects
 
   Damage:
-      iex> effect = %{kind: "damage/type", types: [:slashing]}
-      iex> damage = %{kind: "damage", amount: 10, type: :bludgeoning}
+      iex> effect = %{kind: "damage/type", types: ["slashing"]}
+      iex> damage = %{kind: "damage", amount: 10, type: "bludgeoning"}
       iex> Game.Effect.calculate_damage_type(effect, [damage])
-      [%{kind: "damage", amount: 5, type: :bludgeoning}]
+      [%{kind: "damage", amount: 5, type: "bludgeoning"}]
   """
   @spec calculate_damage_type(Effect.t(), Stats.t()) :: map()
   def calculate_damage_type(effect, damages) do
@@ -138,7 +122,7 @@ defmodule Game.Effect do
   @doc """
   Apply effects to stats.
 
-      iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
+      iex> effects = [%{kind: "damage", type: "slashing", amount: 10}]
       iex> Game.Effect.apply(effects, %{health_points: 25})
       %{health_points: 15}
   """
@@ -150,7 +134,7 @@ defmodule Game.Effect do
   @doc """
   Apply an effect to stats
 
-      iex> effect = %{kind: "damage", type: :slashing, amount: 10}
+      iex> effect = %{kind: "damage", type: "slashing", amount: 10}
       iex> Game.Effect.apply_effect(effect, %{health_points: 25})
       %{health_points: 15}
   """

@@ -15,12 +15,18 @@ defmodule Data.SkillTest do
     end
 
     test "valid if all effects are valid" do
-      changeset = %Skill{} |> Skill.changeset(%{effects: [%{kind: "damage", amount: 10, type: :slashing}]})
+      changeset =
+        %Skill{}
+        |> Skill.changeset(%{effects: [%{kind: "damage", amount: 10, type: "slashing"}]})
+
       refute changeset.errors[:effects]
     end
 
     test "invalid if any are invalid" do
-      changeset = %Skill{} |> Skill.changeset(%{effects: [%{kind: "damage", amount: 10, type: :slashing}, %{kind: :damage}]})
+      changeset =
+        %Skill{}
+        |> Skill.changeset(%{effects: [%{kind: "damage", amount: 10, type: "slashing"}, %{kind: :damage}]})
+
       assert changeset.errors[:effects]
     end
   end

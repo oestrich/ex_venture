@@ -6,7 +6,7 @@ defmodule Game.Experience do
   use Networking.Socket
 
   alias Data.Save
-  alias Data.Stats.Damage
+  alias Game.DamageTypes
 
   @doc """
   Apply experience points to the user's save
@@ -271,27 +271,21 @@ defmodule Game.Experience do
   end
 
   defp _track_stat_usage(effect = %{kind: "damage"}, save) do
-    cond do
-      Damage.physical?(effect.type) ->
-        increment_level_stat(save, :strength)
+    case DamageTypes.get(effect.type) do
+      {:ok, damage_type} ->
+        increment_level_stat(save, damage_type.stat_modifier)
 
-      Damage.magical?(effect.type) ->
-        increment_level_stat(save, :intelligence)
-
-      true ->
+      _ ->
         save
     end
   end
 
   defp _track_stat_usage(effect = %{kind: "damage/over-time"}, save) do
-    cond do
-      Damage.physical?(effect.type) ->
-        increment_level_stat(save, :strength)
+    case DamageTypes.get(effect.type) do
+      {:ok, damage_type} ->
+        increment_level_stat(save, damage_type.stat_modifier)
 
-      Damage.magical?(effect.type) ->
-        increment_level_stat(save, :intelligence)
-
-      true ->
+      _ ->
         save
     end
   end

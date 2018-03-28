@@ -2,6 +2,8 @@ defmodule Game.ExperienceTest do
   use Data.ModelCase
   doctest Game.Experience
 
+  import Test.DamageTypesHelper
+
   alias Game.Experience
 
   @socket Test.Networking.Socket
@@ -60,11 +62,19 @@ defmodule Game.ExperienceTest do
         level_stats: %{},
       }
 
+      start_and_clear_damage_types()
+
+      %{key: "arcane", stat_modifier: :intelligence}
+      |> insert_damage_type()
+
+      %{key: "slashing", stat_modifier: :strength}
+      |> insert_damage_type()
+
       %{save: save}
     end
 
     test "damage effects - strength", %{save: save} do
-      effect = %{kind: "damage", type: :slashing, amount: 10}
+      effect = %{kind: "damage", type: "slashing", amount: 10}
 
       save = Experience.track_stat_usage(save, [effect])
 
@@ -72,7 +82,7 @@ defmodule Game.ExperienceTest do
     end
 
     test "damage effects - intelligence", %{save: save} do
-      effect = %{kind: "damage", type: :arcane, amount: 10}
+      effect = %{kind: "damage", type: "arcane", amount: 10}
 
       save = Experience.track_stat_usage(save, [effect])
 
@@ -80,7 +90,7 @@ defmodule Game.ExperienceTest do
     end
 
     test "damage over time effects - strength", %{save: save} do
-      effect = %{kind: "damage/over-time", type: :slashing, amount: 10}
+      effect = %{kind: "damage/over-time", type: "slashing", amount: 10}
 
       save = Experience.track_stat_usage(save, [effect])
 
@@ -88,7 +98,7 @@ defmodule Game.ExperienceTest do
     end
 
     test "damage over time effects - intelligence", %{save: save} do
-      effect = %{kind: "damage/over-time", type: :arcane, amount: 10}
+      effect = %{kind: "damage/over-time", type: "arcane", amount: 10}
 
       save = Experience.track_stat_usage(save, [effect])
 
