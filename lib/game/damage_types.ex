@@ -29,9 +29,15 @@ defmodule Game.DamageTypes do
   end
 
   defp create_default_damage_type(key) do
-    %DamageType{}
-    |> DamageType.changeset(%{key: key, stat_modifier: "strength"})
-    |> Repo.insert()
+    changeset = %DamageType{} |> DamageType.changeset(%{key: key, stat_modifier: "strength"})
+    case changeset |> Repo.insert() do
+      {:ok, damage_type} ->
+        Cachex.set(@cache_key, damage_type.key, damage_type)
+        {:ok, damage_type}
+
+      {:error, _changeset} ->
+        raise "Error creating the damage type dynamically"
+    end
   end
 
   @spec damage_types([integer()]) :: [DamageType.t()]
