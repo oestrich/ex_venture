@@ -51,8 +51,8 @@ defmodule Data.ItemTest do
     end
 
     test "merges effects together" do
-      item_aspect = create_item_aspect(%{effects: [%{kind: "damage/type", types: [:slashing]}]})
-      item = create_item(%{effects: [%{kind: "damage", type: :slashing, amount: 30}]})
+      item_aspect = create_item_aspect(%{effects: [%{kind: "damage/type", types: ["slashing"]}]})
+      item = create_item(%{effects: [%{kind: "damage", type: "slashing", amount: 30}]})
       create_item_aspecting(item, item_aspect)
       item = Repo.preload(item, [item_aspectings: [:item_aspect]])
 
@@ -60,16 +60,16 @@ defmodule Data.ItemTest do
 
       assert %Item.Compiled{} = compiled_item
       assert compiled_item.effects == [
-        %{kind: "damage", type: :slashing, amount: 30},
-        %{kind: "damage/type", types: [:slashing]},
+        %{kind: "damage", type: "slashing", amount: 30},
+        %{kind: "damage/type", types: ["slashing"]},
       ]
     end
 
     test "effects scale with levels" do
       item_aspect = create_item_aspect(%{
         effects: [
-          %{kind: "damage/type", types: [:slashing]},
-          %{kind: "damage", type: :slashing, amount: 10},
+          %{kind: "damage/type", types: ["slashing"]},
+          %{kind: "damage", type: "slashing", amount: 10},
         ],
       })
 
@@ -81,8 +81,8 @@ defmodule Data.ItemTest do
 
       assert %Item.Compiled{} = compiled_item
       assert compiled_item.effects == [
-        %{kind: "damage/type", types: [:slashing]},
-        %{kind: "damage", type: :slashing, amount: 20},
+        %{kind: "damage/type", types: ["slashing"]},
+        %{kind: "damage", type: "slashing", amount: 20},
       ]
     end
   end
@@ -99,23 +99,23 @@ defmodule Data.ItemTest do
     end
 
     test "valid if all effects are valid" do
-      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage", amount: 10, type: :slashing}]})
+      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage", amount: 10, type: "slashing"}]})
       refute changeset.errors[:effects]
     end
 
     test "invalid if any are invalid" do
-      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}, %{kind: :damage}]})
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: "slashing"}, %{kind: :damage}]})
       assert changeset.errors[:effects]
     end
 
     test "must be a damage/stats type for weapons" do
-      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage", amount: 10, type: :slashing}]})
+      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage", amount: 10, type: "slashing"}]})
       refute changeset.errors[:effects]
 
       changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "stats", field: :strength, amount: 10}]})
       refute changeset.errors[:effects]
 
-      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage/type", types: [:slashing]}]})
+      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage/type", types: ["slashing"]}]})
       refute changeset.errors[:effects]
 
       changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "other"}]})
@@ -126,10 +126,10 @@ defmodule Data.ItemTest do
       changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "stats", field: :strength, amount: 10}]})
       refute changeset.errors[:effects]
 
-      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: :slashing}]})
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: "slashing"}]})
       assert changeset.errors[:effects]
 
-      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage/type", types: [:slashing]}]})
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage/type", types: ["slashing"]}]})
       refute changeset.errors[:effects]
     end
   end

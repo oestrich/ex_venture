@@ -2,23 +2,54 @@ defmodule Game.EffectTest do
   use ExUnit.Case
   doctest Game.Effect
 
+  import Test.DamageTypesHelper
+
   alias Game.Effect
+
+  setup do
+    start_and_clear_damage_types()
+
+    %{key: "arcane", stat_modifier: :intelligence, percentage_boost: 20}
+    |> insert_damage_type()
+
+    %{key: "slashing", stat_modifier: :strength, percentage_boost: 20}
+    |> insert_damage_type()
+
+    %{key: "bludgeoning", stat_modifier: :strength, percentage_boost: 20}
+    |> insert_damage_type()
+
+    :ok
+  end
 
   test "filters out stats effects first and processes those" do
     stat_effect = %{kind: "stats", field: :strength, amount: 10}
-    damage_effect = %{kind: "damage", type: :slashing, amount: 10}
+    damage_effect = %{kind: "damage", type: "slashing", amount: 10}
 
     calculated_effects = Effect.calculate(%{strength: 10}, [damage_effect, stat_effect])
-    assert calculated_effects == [%{kind: "damage", amount: 20, type: :slashing}]
+    assert calculated_effects == [%{kind: "damage", amount: 20, type: "slashing"}]
   end
 
   test "changes damage for the damage/type effect" do
-    slashing_effect = %{kind: "damage", type: :slashing, amount: 10}
-    bludeonging_effect = %{kind: "damage", type: :bludgeoning, amount: 10}
-    damage_type_effect = %{kind: "damage/type", types: [:bludgeoning]}
+    slashing_effect = %{kind: "damage", type: "slashing", amount: 10}
+    bludeonging_effect = %{kind: "damage", type: "bludgeoning", amount: 10}
+    damage_type_effect = %{kind: "damage/type", types: ["bludgeoning"]}
 
     calculated_effects = Effect.calculate(%{strength: 10}, [slashing_effect, bludeonging_effect, damage_type_effect])
-    assert calculated_effects == [%{kind: "damage", amount: 8, type: :slashing}, %{kind: "damage", amount: 15, type: :bludgeoning}]
+    assert calculated_effects == [%{kind: "damage", amount: 8, type: "slashing"}, %{kind: "damage", amount: 15, type: "bludgeoning"}]
+  end
+
+  describe "calculating damage effects" do
+    test "strength boosts" do
+      effect = %{kind: "damage", amount: 10, type: "slashing"}
+      effect =  Game.Effect.calculate_damage(effect, %{strength: 10})
+      assert effect == %{kind: "damage", amount: 15, type: "slashing"}
+    end
+
+    test "intelligence boosts" do
+      effect = %{kind: "damage", amount: 10, type: "arcane"}
+      effect =  Game.Effect.calculate_damage(effect, %{intelligence: 10})
+      assert effect == %{kind: "damage", amount: 15, type: "arcane"}
+    end
   end
 
   describe "applying effects" do

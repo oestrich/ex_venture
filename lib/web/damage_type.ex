@@ -7,6 +7,7 @@ defmodule Web.DamageType do
 
   alias Data.DamageType
   alias Data.Repo
+  alias Game.DamageTypes
 
   @doc """
   Get all bugs
@@ -49,6 +50,7 @@ defmodule Web.DamageType do
 
     case changeset |> Repo.insert() do
       {:ok, damage_type} ->
+        DamageTypes.insert(damage_type)
         {:ok, damage_type}
 
       {:error, changeset} ->
@@ -66,6 +68,7 @@ defmodule Web.DamageType do
 
     case changeset |> Repo.update() do
       {:ok, damage_type} ->
+        DamageTypes.reload(damage_type)
         {:ok, damage_type}
 
       anything ->

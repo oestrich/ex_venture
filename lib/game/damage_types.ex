@@ -1,0 +1,96 @@
+defmodule Game.DamageTypes do
+  @moduledoc """
+  GenServer to keep track of damage_types in the game.
+
+  Stores them in an ETS table
+  """
+
+  use GenServer
+
+  alias Data.DamageType
+  alias Data.Repo
+
+  @cache_key :damage_types
+
+  @doc false
+  def start_link() do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  @spec get(integer() | String.t()) :: DamageType.t() | nil
+  def get(key) when is_binary(key) do
+    case Cachex.get(@cache_key, key) do
+      {:ok, damage_type} when damage_type != nil ->
+        {:ok, damage_type}
+
+      _ ->
+        create_default_damage_type(key)
+    end
+  end
+
+  defp create_default_damage_type(key) do
+    %DamageType{}
+    |> DamageType.changeset(%{key: key, stat_modifier: "strength"})
+    |> Repo.insert()
+  end
+
+  @spec damage_types([integer()]) :: [DamageType.t()]
+  def damage_types(ids) do
+    ids
+    |> Enum.map(&get/1)
+    |> Enum.reject(&is_nil/1)
+  end
+
+  @doc """
+  Insert a new damage_type into the loaded data
+  """
+  @spec insert(DamageType.t()) :: :ok
+  def insert(damage_type) do
+    GenServer.call(__MODULE__, {:insert, damage_type})
+  end
+
+  @doc """
+  Trigger an damage_type reload
+  """
+  @spec reload(DamageType.t()) :: :ok
+  def reload(damage_type), do: insert(damage_type)
+
+  @doc """
+  For testing only: clear the EST table
+  """
+  def clear() do
+    GenServer.call(__MODULE__, :clear)
+  end
+
+  #
+  # Server
+  #
+
+  def init(_) do
+    GenServer.cast(self(), :load_damage_types)
+
+    {:ok, %{}}
+  end
+
+  def handle_cast(:load_damage_types, state) do
+    damage_types = DamageType |> Repo.all()
+
+    Enum.each(damage_types, fn damage_type ->
+      Cachex.set(@cache_key, damage_type.key, damage_type)
+    end)
+
+    {:noreply, state}
+  end
+
+  def handle_call({:insert, damage_type}, _from, state) do
+    Cachex.set(@cache_key, damage_type.key, damage_type)
+
+    {:reply, :ok, state}
+  end
+
+  def handle_call(:clear, _from, state) do
+    Cachex.clear(:damage_types)
+
+    {:reply, :ok, state}
+  end
+end

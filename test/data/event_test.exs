@@ -25,7 +25,7 @@ defmodule Data.EventTest do
         delay: 2.1,
         text: "A skill was used",
         effects: [
-          %{type: :slashing, kind: "damage", amount: 10},
+          %{type: "slashing", kind: "damage", amount: 10},
         ],
       },
     }
