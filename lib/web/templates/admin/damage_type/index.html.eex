@@ -29,7 +29,7 @@
                 <th>ID</th>
                 <th>Key</th>
                 <th>Stat Modifier</th>
-                <th>Percentage Boost</th>
+                <th>Boost Ratio</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -39,7 +39,7 @@
                   <td><%= damage_type.id %></td>
                   <td><%= damage_type.key %></td>
                   <td><%= damage_type.stat_modifier %></td>
-                  <td><%= damage_type.boost_ratio %>%</td>
+                  <td><%= damage_type.boost_ratio %></td>
                   <td>
                     <%= link("Edit", to: damage_type_path(@conn, :edit, damage_type.id), class: "btn btn-default btn-xs") %>
                   </td>
