@@ -89,6 +89,8 @@ defmodule Web.Router do
 
     resources("/config", ConfigController, only: [:index, :edit, :update])
 
+    resources("/damage_types", DamageTypeController, only: [:index, :new, :create, :edit, :update])
+
     resources("/exits", RoomExitController, only: [:delete], as: :exit)
 
     resources(

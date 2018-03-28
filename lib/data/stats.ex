@@ -106,6 +106,19 @@ defmodule Data.Stats do
   @doc """
   Fields in the statistics map
   """
+  @spec basic_fields() :: [atom]
+  def basic_fields(),
+    do: [
+      :constitution,
+      :dexterity,
+      :intelligence,
+      :strength,
+      :wisdom
+    ]
+
+  @doc """
+  Fields in the statistics map
+  """
   @spec fields() :: [atom]
   def fields(),
     do: [

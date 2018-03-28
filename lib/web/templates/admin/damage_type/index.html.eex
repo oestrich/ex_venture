@@ -1,0 +1,54 @@
+<section class="content-header">
+  <h1>
+    Damage Types
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Damage Types</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Damage Type", to: damage_type_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Key</th>
+                <th>Stat Modifier</th>
+                <th>Percentage Boost</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @damage_types, fn (damage_type) -> %>
+                <tr>
+                  <td><%= damage_type.id %></td>
+                  <td><%= damage_type.key %></td>
+                  <td><%= damage_type.stat_modifier %></td>
+                  <td><%= damage_type.percentage_boost %>%</td>
+                  <td>
+                    <%= link("Edit", to: damage_type_path(@conn, :edit, damage_type.id), class: "btn btn-default btn-xs") %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
