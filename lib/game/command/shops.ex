@@ -121,17 +121,13 @@ defmodule Game.Command.Shops do
       _ ->
         socket |> @socket.echo(Format.shops(room, label: false))
     end
-
-    :ok
   end
 
   def run({:help}, %{socket: socket}) do
-    socket
-    |> @socket.echo(
+    message =
       "Unknown usage of the shop(s) command. Please see {command}help shops{/command} for more information."
-    )
 
-    :ok
+    socket |> @socket.echo(message)
   end
 
   def run({:list, shop_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
@@ -140,7 +136,6 @@ defmodule Game.Command.Shops do
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
-        :ok
 
       {:ok, shop} ->
         list_items(shop, state)
@@ -153,11 +148,9 @@ defmodule Game.Command.Shops do
     case one_shop(room.shops) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
-        :ok
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
-        :ok
 
       {:ok, shop} ->
         list_items(shop, state)
@@ -172,7 +165,6 @@ defmodule Game.Command.Shops do
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
-        :ok
 
       {:ok, shop} ->
         show_item(shop, item_name, state)
@@ -185,11 +177,9 @@ defmodule Game.Command.Shops do
     case one_shop(room.shops) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
-        :ok
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
-        :ok
 
       {:ok, shop} ->
         show_item(shop, item_name, state)
@@ -204,7 +194,6 @@ defmodule Game.Command.Shops do
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
-        :ok
 
       {:ok, shop} ->
         buy_item(shop, item_name, state)
@@ -217,11 +206,9 @@ defmodule Game.Command.Shops do
     case one_shop(room.shops) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
-        :ok
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
-        :ok
 
       {:ok, shop} ->
         buy_item(shop, item_name, state)
@@ -236,7 +223,6 @@ defmodule Game.Command.Shops do
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
-        :ok
 
       {:ok, shop} ->
         sell_item(shop, item_name, state)
@@ -249,11 +235,9 @@ defmodule Game.Command.Shops do
     case one_shop(room.shops) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
-        :ok
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
-        :ok
 
       {:ok, shop} ->
         sell_item(shop, item_name, state)
@@ -283,7 +267,6 @@ defmodule Game.Command.Shops do
       end)
 
     socket |> @socket.echo(Format.list_shop(shop, items))
-    :ok
   end
 
   defp one_shop(shops) do
@@ -302,23 +285,24 @@ defmodule Game.Command.Shops do
   defp buy_item(shop, item_name, state = %{socket: socket, save: save}) do
     case shop.id |> @shop.buy(item_name, save) do
       {:ok, save, item} ->
-        socket |> @socket.echo("You bought #{item.name} from #{shop.name}.")
+        message = "You bought #{Format.item_name(item)} from #{Format.shop_name(shop)}."
+        socket |> @socket.echo(message)
+
         state = %{state | save: save}
         {:update, state}
 
       {:error, :item_not_found} ->
         socket |> @socket.echo("The \"#{item_name}\" item could not be found.")
-        :ok
 
       {:error, :not_enough_currency, item} ->
-        socket |> @socket.echo("You do not have enought #{currency()} for #{item.name}.")
-        :ok
+        message = "You do not have enough #{currency()} for #{Format.item_name(item)}."
+        socket |> @socket.echo(message)
 
       {:error, :not_enough_quantity, item} ->
-        socket
-        |> @socket.echo("\"#{shop.name}\" does not have enough of #{item.name} for you to buy.")
+        message =
+          "#{Format.shop_name(shop)} does not have enough of #{Format.item_name(item)} for you to buy."
 
-        :ok
+        socket |> @socket.echo(message)
     end
   end
 
@@ -326,14 +310,17 @@ defmodule Game.Command.Shops do
     case shop.id |> @shop.sell(item_name, save) do
       {:ok, save, item} ->
         socket
-        |> @socket.echo("You sold #{item.name} to #{shop.name} for #{item.cost} #{currency()}.")
+        |> @socket.echo(
+          "You sold #{Format.item_name(item)} to #{Format.shop_name(shop)} for #{item.cost} #{
+            currency()
+          }."
+        )
 
         state = %{state | save: save}
         {:update, state}
 
       {:error, :item_not_found} ->
         socket |> @socket.echo("The \"#{item_name}\" item could not be found.")
-        :ok
     end
   end
 
@@ -341,16 +328,21 @@ defmodule Game.Command.Shops do
     items = Enum.map(shop.shop_items, &Items.item(&1.item_id))
 
     case Enum.find(items, &Game.Item.matches_lookup?(&1, item_name)) do
-      nil -> socket |> @socket.echo("The \"#{item_name}\" could not be found in #{shop.name}.")
-      item -> socket |> @socket.echo(Format.item(item))
+      nil ->
+        socket
+        |> @socket.echo("The \"#{item_name}\" could not be found in #{Format.shop_name(shop)}.")
+
+      item ->
+        socket |> @socket.echo(Format.item(item))
     end
   end
 
   defp more_than_one_shop(socket) do
-    socket
-    |> @socket.echo("""
+    message = """
     There is more than one shop in the room, please add the shop you want to use to the command.
     See {command}help shops{/command} for more information.
-    """)
+    """
+
+    socket |> @socket.echo(message)
   end
 end

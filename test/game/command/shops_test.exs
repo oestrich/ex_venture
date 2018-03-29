@@ -238,7 +238,7 @@ defmodule Game.Command.ShopsTest do
     assert [{_id, "sword", _save}] = @shop.get_buys()
 
     [{^socket, buy}] = @socket.get_echos()
-    assert Regex.match?(~r("Tree Stand Shop" does not ), buy)
+    assert Regex.match?(~r( does not ), buy)
   end
 
   test "sell an item to a shop", %{socket: socket} do
