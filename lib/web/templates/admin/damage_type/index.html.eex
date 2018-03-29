@@ -26,7 +26,6 @@
           <table class="table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Key</th>
                 <th>Stat Modifier</th>
                 <th>Boost Ratio</th>
@@ -36,7 +35,6 @@
             <tbody>
               <%= Enum.map @damage_types, fn (damage_type) -> %>
                 <tr>
-                  <td><%= damage_type.id %></td>
                   <td><%= damage_type.key %></td>
                   <td><%= damage_type.stat_modifier %></td>
                   <td><%= damage_type.boost_ratio %></td>
