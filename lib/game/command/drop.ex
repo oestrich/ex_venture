@@ -41,12 +41,10 @@ defmodule Game.Command.Drop do
   end
 
   def run({}, %{socket: socket}) do
-    socket
-    |> @socket.echo(
+    message =
       "Please provide an item to drop. See {command}help drop{/command} for more information."
-    )
 
-    :ok
+    socket |> @socket.echo(message)
   end
 
   defp drop_currency(amount_to_drop, state = %{socket: socket, save: %{currency: currency}}) do
@@ -62,7 +60,6 @@ defmodule Game.Command.Drop do
 
       false ->
         socket |> @socket.echo("You do not have enough #{currency()} to drop #{amount}.")
-        :ok
     end
   end
 
@@ -70,6 +67,7 @@ defmodule Game.Command.Drop do
     save = %{state.save | currency: currency - amount}
     socket |> @socket.echo("You dropped #{amount} #{currency()}")
     @room.drop_currency(save.room_id, {:user, state.user}, amount)
+
     {:update, Map.put(state, :save, save)}
   end
 
@@ -79,7 +77,6 @@ defmodule Game.Command.Drop do
     case Enum.find(items, &Item.matches_lookup?(&1, item_name)) do
       nil ->
         socket |> @socket.echo(~s(Could not find "#{item_name}"))
-        :ok
 
       item ->
         _drop_item(item, state)
@@ -89,8 +86,10 @@ defmodule Game.Command.Drop do
   defp _drop_item(item, state = %{socket: socket, user: user, save: save}) do
     {instance, items} = Item.remove(save.items, item)
     save = %{save | items: items}
-    socket |> @socket.echo("You dropped #{item.name}")
     @room.drop(save.room_id, {:user, user}, instance)
+
+    socket |> @socket.echo("You dropped #{Format.item_name(item)}")
+
     {:update, Map.put(state, :save, save)}
   end
 end
