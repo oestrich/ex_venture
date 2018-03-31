@@ -56,8 +56,11 @@ defmodule Game.Command.Channels do
     [channel | message] = String.split(channel_message)
 
     case Game.Channels.get(channel) do
-      nil -> {:error, :bad_parse, channel_message}
-      _ -> {channel, Enum.join(message, " ")}
+      nil ->
+        {:error, :bad_parse, channel_message}
+
+      _ ->
+        {channel, Enum.join(message, " ")}
     end
   end
 
@@ -74,7 +77,6 @@ defmodule Game.Command.Channels do
       |> Enum.join("\n")
 
     socket |> @socket.echo("You are subscribed to:\n#{channels}")
-    :ok
   end
 
   def run({:join, channel}, state = %{user: user}) do
