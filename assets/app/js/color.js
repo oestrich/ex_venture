@@ -27,7 +27,7 @@ function formatColor(payload) {
   string = string.replace(/{hint}/g,  "<span class='cyan'>")
 
   string = string.replace(/{command click=false}/g, "<span class='white'>");
-  string = string.replace(/{command( send='(?<command>.*)')?}/g, (_match, _fullSend, command) => {
+  string = string.replace(/{command( send='(.*)')?}/g, (_match, _fullSend, command) => {
     if (payload.delink == undefined || payload.delink == false) {
       if (command != undefined) {
         return "<span class='white command' data-command='" + command + "'>";
