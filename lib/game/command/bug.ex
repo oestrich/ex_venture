@@ -66,10 +66,10 @@ defmodule Game.Command.Bug do
   end
 
   def run({:new, bug_title}, state = %{socket: socket}) do
-    socket
-    |> @socket.echo(
+    message =
       "Please enter in any more information you have (an empty new line will finish entering text): "
-    )
+
+    socket |> @socket.echo(message)
 
     commands =
       state
@@ -80,12 +80,10 @@ defmodule Game.Command.Bug do
   end
 
   def run({:unknown}, %{socket: socket}) do
-    socket
-    |> @socket.echo(
+    message =
       "Please provide a bug title. See {command}help bug{/command} for more information."
-    )
 
-    :ok
+    socket |> @socket.echo(message)
   end
 
   @impl Game.Command.Editor
@@ -94,6 +92,7 @@ defmodule Game.Command.Bug do
     lines = Map.get(bug, :lines) ++ [line]
     bug = Map.put(bug, :lines, lines)
     state = %{state | commands: %{state.commands | bug: bug}}
+
     {:update, state}
   end
 
