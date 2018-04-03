@@ -1,5 +1,5 @@
 defmodule Game.EffectTest do
-  use ExUnit.Case
+  use Data.ModelCase
   doctest Game.Effect
 
   import Test.DamageTypesHelper
@@ -9,14 +9,29 @@ defmodule Game.EffectTest do
   setup do
     start_and_clear_damage_types()
 
-    %{key: "arcane", stat_modifier: :intelligence, boost_ratio: 20}
-    |> insert_damage_type()
+    insert_damage_type(%{
+      key: "arcane",
+      stat_modifier: :intelligence,
+      boost_ratio: 20,
+      reverse_stat: :wisdom,
+      reverse_boost: 20,
+    })
 
-    %{key: "slashing", stat_modifier: :strength, boost_ratio: 20}
-    |> insert_damage_type()
+    insert_damage_type(%{
+      key: "slashing",
+      stat_modifier: :strength,
+      boost_ratio: 20,
+      reverse_stat: :dexterity,
+      reverse_boost: 20,
+    })
 
-    %{key: "bludgeoning", stat_modifier: :strength, boost_ratio: 20}
-    |> insert_damage_type()
+    insert_damage_type(%{
+      key: "bludgeoning",
+      stat_modifier: :strength,
+      boost_ratio: 20,
+      reverse_stat: :constitution,
+      reverse_boost: 20,
+    })
 
     :ok
   end
@@ -52,7 +67,25 @@ defmodule Game.EffectTest do
     end
   end
 
-  describe "applying effects" do
+  describe "adjusting effects before applying - damage" do
+    setup do
+      %{stats: base_stats()}
+    end
+
+    test "damage", %{stats: stats} do
+      effects = [%{kind: "damage", type: "slashing", amount: 15}]
+      [effect] = Game.Effect.adjust_effects(effects, stats)
+      assert effect.amount == 10
+    end
+
+    test "strength based", %{stats: stats} do
+      effects = [%{kind: "damage/over-time", type: "slashing", amount: 15}]
+      [effect] = Game.Effect.adjust_effects(effects, stats)
+      assert effect.amount == 10
+    end
+  end
+
+  describe "applying effects - recovery" do
     test "recover health points" do
       effect = %{kind: "recover", type: "health", amount: 10}
       stats = Game.Effect.apply_effect(effect, %{health_points: 25, max_health_points: 30})

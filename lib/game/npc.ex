@@ -272,6 +272,10 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
+  def handle_cast({:effects_applied, _effects, _target}, state) do
+    {:noreply, state}
+  end
+
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc}) do
     room_id |> @room.leave({:npc, npc})
     {:stop, :normal, state}

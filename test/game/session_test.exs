@@ -245,8 +245,8 @@ defmodule Game.SessionTest do
   test "applying effects", %{state: state} do
     @room.clear_update_characters()
 
-    effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health_points: 25}
+    effect = %{kind: "damage", type: "slashing", amount: 15}
+    stats = %{health_points: 25, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %{state | user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
@@ -261,8 +261,8 @@ defmodule Game.SessionTest do
   test "applying effects with continuous effects", %{state: state} do
     @room.clear_update_characters()
 
-    effect = %{kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
-    stats = %{health_points: 25}
+    effect = %{kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
+    stats = %{health_points: 25, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     from = {:npc, %{id: 1, name: "Bandit"}}
     state = %{state | user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}
@@ -283,8 +283,8 @@ defmodule Game.SessionTest do
   test "applying effects - died", %{state: state} do
     Session.Registry.register(%{id: 2})
 
-    effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health_points: 5}
+    effect = %{kind: "damage", type: "slashing", amount: 15}
+    stats = %{health_points: 5, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %{state | user: user, save: %{room_id: 1, stats: stats}}
@@ -303,8 +303,8 @@ defmodule Game.SessionTest do
     @room.set_room(@room._room())
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, 2))
 
-    effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health_points: 5}
+    effect = %{kind: "damage", type: "slashing", amount: 15}
+    stats = %{health_points: 5, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     save = %{room_id: 1, stats: stats}
 
@@ -325,8 +325,8 @@ defmodule Game.SessionTest do
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, nil))
     @zone.set_graveyard({:error, :no_graveyard})
 
-    effect = %{kind: "damage", type: :slashing, amount: 10}
-    stats = %{health_points: 5}
+    effect = %{kind: "damage", type: "slashing", amount: 15}
+    stats = %{health_points: 5, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     save = %{room_id: 1, stats: stats}
 

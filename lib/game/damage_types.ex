@@ -29,7 +29,13 @@ defmodule Game.DamageTypes do
   end
 
   defp create_default_damage_type(key) do
-    changeset = %DamageType{} |> DamageType.changeset(%{key: key, stat_modifier: "strength"})
+    changeset =
+      %DamageType{}
+      |> DamageType.changeset(%{
+        key: key,
+        stat_modifier: "strength",
+        reverse_stat: "strength",
+      })
 
     case changeset |> Repo.insert() do
       {:ok, damage_type} ->

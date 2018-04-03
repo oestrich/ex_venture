@@ -2,6 +2,8 @@ defmodule Game.Session.EffectsTest do
   use GenServerCase
   use Data.ModelCase
 
+  import Test.DamageTypesHelper
+
   alias Game.Session.Effects
   alias Game.Session.State
 
@@ -13,16 +15,29 @@ defmodule Game.Session.EffectsTest do
     @socket.clear_messages
     @room.clear_update_characters()
 
+    start_and_clear_damage_types()
+
     user = %{id: 2, name: "user", class: class_attributes(%{})}
-    stats = %{health_points: 25}
-    %{state: %State{socket: socket, state: "active", mode: "commands", user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}}
+    stats = %{health_points: 25, strength: 10}
+
+    state = %State{
+      socket: socket,
+      state: "active",
+      mode: "commands",
+      user: user,
+      save: %{room_id: 1, stats: stats},
+      is_targeting: MapSet.new(),
+    }
+
+    %{state: state}
   end
 
   describe "continuous effects" do
     setup %{state: state} do
       from = {:npc, %{id: 1, name: "Bandit"}}
-      effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
+      effect = %{id: :id, kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
       state = %{state | continuous_effects: [{from, effect}]}
+
       %{state: state, effect: effect, from: from}
     end
 
@@ -39,7 +54,7 @@ defmodule Game.Session.EffectsTest do
     end
 
     test "handles death", %{state: state, effect: effect, from: from} do
-      effect = %{effect | amount: 26}
+      effect = %{effect | amount: 38}
       state = %{state | continuous_effects: [{from, effect}]}
 
       state = Effects.handle_continuous_effect(state, :id)

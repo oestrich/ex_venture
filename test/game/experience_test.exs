@@ -64,11 +64,8 @@ defmodule Game.ExperienceTest do
 
       start_and_clear_damage_types()
 
-      %{key: "arcane", stat_modifier: :intelligence}
-      |> insert_damage_type()
-
-      %{key: "slashing", stat_modifier: :strength}
-      |> insert_damage_type()
+      insert_damage_type(%{key: "arcane", stat_modifier: :intelligence})
+      insert_damage_type(%{key: "slashing", stat_modifier: :strength})
 
       %{save: save}
     end
