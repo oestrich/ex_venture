@@ -689,21 +689,17 @@ defmodule Game.Format do
   @doc """
   Format a skill, from perspective of the user
 
-      iex> Game.Format.skill_user(%{user_text: "Slash away"}, [], {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_user(%{user_text: "Slash away"}, {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> effects = [%{kind: "damage", type: :slashing, amount: 10}]
-      iex> Game.Format.skill_user(%{user_text: "You slash away at [target]"}, effects, {:npc, %{name: "Bandit"}})
-      "You slash away at {npc}Bandit{/npc}\\n10 slashing damage is dealt."
+      iex> Game.Format.skill_user(%{user_text: "You slash away at [target]"}, {:npc, %{name: "Bandit"}})
+      "You slash away at {npc}Bandit{/npc}"
   """
-  def skill_user(skill, effects, target)
+  def skill_user(skill, target)
 
-  def skill_user(%{user_text: user_text}, skill_effects, target) do
-    user_text =
-      user_text
-      |> template(%{target: target_name(target)})
-
-    [user_text | effects(skill_effects)] |> Enum.join("\n")
+  def skill_user(%{user_text: user_text}, target) do
+    user_text
+    |> template(%{target: target_name(target)})
   end
 
   @doc """
@@ -835,27 +831,27 @@ defmodule Game.Format do
   @doc """
   Format effects for display.
   """
-  def effects([]), do: []
+  def effects([], _target), do: []
 
-  def effects([effect | remaining]) do
+  def effects([effect | remaining], target) do
     case effect do
       %{kind: "damage"} ->
-        ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
+        ["#{effect.amount} #{effect.type} damage is dealt to #{name(target)}." | effects(remaining, target)]
 
       %{kind: "damage/over-time"} ->
-        ["#{effect.amount} #{effect.type} damage is dealt." | effects(remaining)]
+        ["#{effect.amount} #{effect.type} damage is dealt to #{name(target)}." | effects(remaining, target)]
 
       %{kind: "recover", type: "health"} ->
-        ["#{effect.amount} damage is healed." | effects(remaining)]
+        ["#{effect.amount} damage is healed to #{name(target)}." | effects(remaining, target)]
 
       %{kind: "recover", type: "skill"} ->
-        ["#{effect.amount} skill points are recovered." | effects(remaining)]
+        ["#{effect.amount} skill points are recovered." | effects(remaining, target)]
 
       %{kind: "recover", type: "move"} ->
-        ["#{effect.amount} move points are recovered." | effects(remaining)]
+        ["#{effect.amount} move points are recovered." | effects(remaining, target)]
 
       _ ->
-        effects(remaining)
+        effects(remaining, target)
     end
   end
 

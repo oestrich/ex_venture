@@ -26,6 +26,7 @@ defmodule Game.Session.Effects do
   def apply(effects, from, description, state) do
     %{user: user, save: save} = state
 
+    effects = effects |> Effect.adjust_effects(save.stats)
     continuous_effects = effects |> Effect.continuous_effects(from)
     stats = effects |> Effect.apply(save.stats)
 
@@ -35,6 +36,7 @@ defmodule Game.Session.Effects do
     state = %{state | user: user, save: save}
 
     user |> echo_effects(from, description, effects)
+    from |> Character.effects_applied(effects, {:user, user})
     user |> maybe_died(state, from)
 
     Enum.each(continuous_effects, fn {_from, effect} ->
@@ -98,7 +100,7 @@ defmodule Game.Session.Effects do
         :ok
 
       _ ->
-        description = [description | Format.effects(effects)]
+        description = [description | Format.effects(effects, {:user, user})]
         echo(self(), description |> Enum.join("\n"))
     end
   end
@@ -121,13 +123,15 @@ defmodule Game.Session.Effects do
   def apply_continuous_effect(state, {from, effect}) do
     %{socket: socket, user: user, save: save} = state
 
-    stats = [effect] |> Effect.apply(save.stats)
+    effects = [effect] |> Effect.adjust_effects(save.stats)
+    stats = effects |> Effect.apply(save.stats)
+
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
     save.room_id |> update_character(user)
     state = %{state | user: user, save: save}
 
-    socket |> @socket.echo([effect] |> Format.effects() |> Enum.join("\n"))
+    socket |> @socket.echo(effects |> Format.effects({:user, user}) |> Enum.join("\n"))
 
     user |> maybe_died(state, from)
     state |> Process.prompt()

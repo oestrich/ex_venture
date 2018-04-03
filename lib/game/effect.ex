@@ -120,11 +120,53 @@ defmodule Game.Effect do
   end
 
   @doc """
-  Apply effects to stats.
+  Adjust effects before applying them to a character
+  """
+  @spec adjust_effects([Effect.t()], Stats.t()) :: [Effect.t()]
+  def adjust_effects(effects, stats) do
+    effects |> Enum.map(&adjust_effect(&1, stats))
+  end
 
-      iex> effects = [%{kind: "damage", type: "slashing", amount: 10}]
-      iex> Game.Effect.apply(effects, %{health_points: 25})
-      %{health_points: 15}
+  @doc """
+  Adjust a single effect
+  """
+  @spec adjust_effect(Effect.t(), Stats.t()) :: Effect.t()
+  def adjust_effect(effect, stats)
+
+  def adjust_effect(effect = %{kind: "damage"}, stats) do
+    case DamageTypes.get(effect.type) do
+      {:ok, damage_type} ->
+        stat = Map.get(stats, damage_type.reverse_stat)
+        random_swing = Enum.random(@random_damage)
+        modifier = 1 + stat / damage_type.reverse_boost + random_swing / 100
+        modified_amount = round(Float.ceil(effect.amount / modifier))
+
+        effect |> Map.put(:amount, modified_amount)
+
+      _ ->
+        effect
+    end
+  end
+
+  def adjust_effect(effect = %{kind: "damage/over-time"}, stats) do
+    case DamageTypes.get(effect.type) do
+      {:ok, damage_type} ->
+        stat = Map.get(stats, damage_type.reverse_stat)
+        random_swing = Enum.random(@random_damage)
+        modifier = 1 + stat / damage_type.reverse_boost + random_swing / 100
+        modified_amount = round(Float.ceil(effect.amount / modifier))
+
+        effect |> Map.put(:amount, modified_amount)
+
+      _ ->
+        effect
+    end
+  end
+
+  def adjust_effect(effect, _stats), do: effect
+
+  @doc """
+  Apply effects to stats.
   """
   @spec apply([Effect.t()], Stats.t()) :: Stats.t()
   def apply(effects, stats) do
@@ -133,10 +175,6 @@ defmodule Game.Effect do
 
   @doc """
   Apply an effect to stats
-
-      iex> effect = %{kind: "damage", type: "slashing", amount: 10}
-      iex> Game.Effect.apply_effect(effect, %{health_points: 25})
-      %{health_points: 15}
   """
   @spec apply_effect(Effect.t(), Stats.t()) :: Stats.t()
   def apply_effect(effect, stats)

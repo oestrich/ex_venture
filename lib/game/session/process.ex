@@ -196,6 +196,10 @@ defmodule Game.Session.Process do
     {:noreply, SessionCharacter.apply_effects(state, effects, from, description)}
   end
 
+  def handle_cast({:effects_applied, effects, target}, state = %{state: "active"}) do
+    {:noreply, SessionCharacter.effects_applied(state, effects, target)}
+  end
+
   def handle_cast({:notify, event}, state) do
     {:noreply, SessionCharacter.notify(state, event)}
   end
