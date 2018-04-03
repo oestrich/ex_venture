@@ -81,7 +81,7 @@ defmodule Game.Command.SkillsTest do
   test "using a skill", %{state: state, save: save, slash: slash} do
     state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
 
-    {:update, state} = Skills.run({slash, "slash"}, state)
+    {:skip, :prompt, state} = Skills.run({slash, "slash"}, state)
     assert state.save.stats.skill_points == 8
     assert state.skills[slash.id]
 
@@ -92,7 +92,7 @@ defmodule Game.Command.SkillsTest do
   test "using a skill - set your target", %{state: state, save: save, slash: slash} do
     state = %{state | save: Map.merge(save, %{room_id: 1}), target: nil}
 
-    {:update, state} = Skills.run({slash, "slash bandit"}, state)
+    {:skip, :prompt, state} = Skills.run({slash, "slash bandit"}, state)
     assert state.save.stats.skill_points == 8
     assert state.target == {:npc, 1}
 
@@ -103,7 +103,7 @@ defmodule Game.Command.SkillsTest do
   test "using a skill - change your target", %{state: state, save: save, slash: slash} do
     state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:user, 3}}
 
-    {:update, state} = Skills.run({slash, "slash bandit"}, state)
+    {:skip, :prompt, state} = Skills.run({slash, "slash bandit"}, state)
     assert state.save.stats.skill_points == 8
     assert state.target == {:npc, 1}
 

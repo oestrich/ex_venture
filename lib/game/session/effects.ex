@@ -35,6 +35,7 @@ defmodule Game.Session.Effects do
     state = %{state | user: user, save: save}
 
     user |> echo_effects(from, description, effects)
+    from |> Character.effects_applied(effects, {:user, user})
     user |> maybe_died(state, from)
 
     Enum.each(continuous_effects, fn {_from, effect} ->
@@ -98,7 +99,7 @@ defmodule Game.Session.Effects do
         :ok
 
       _ ->
-        description = [description | Format.effects(effects)]
+        description = [description | Format.effects(effects, {:user, user})]
         echo(self(), description |> Enum.join("\n"))
     end
   end
@@ -127,7 +128,7 @@ defmodule Game.Session.Effects do
     save.room_id |> update_character(user)
     state = %{state | user: user, save: save}
 
-    socket |> @socket.echo([effect] |> Format.effects() |> Enum.join("\n"))
+    socket |> @socket.echo([effect] |> Format.effects({:user, user}) |> Enum.join("\n"))
 
     user |> maybe_died(state, from)
     state |> Process.prompt()

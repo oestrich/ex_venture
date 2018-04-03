@@ -37,6 +37,15 @@ defmodule Game.Session.Character do
   end
 
   @doc """
+  Callback for after a player sent effects to another character
+  """
+  def effects_applied(state, effects, target) do
+    state.socket |> @socket.echo(Format.effects(effects, target))
+    state |> Session.Process.prompt()
+    state
+  end
+
+  @doc """
   Callback for being notified of events
   """
   def notify(state, event)
@@ -52,8 +61,6 @@ defmodule Game.Session.Character do
           state
           |> apply_experience(character)
           |> track_quest_progress(character)
-
-        state |> Session.Process.prompt()
 
         case Character.who(character) == Character.who(state.target) do
           true ->

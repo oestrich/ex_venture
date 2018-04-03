@@ -133,7 +133,9 @@ defmodule Game.NPC.Actions do
   def apply_effects(state = %{npc: npc}, effects, from) do
     continuous_effects = effects |> Effect.continuous_effects(from)
     stats = effects |> Effect.apply(npc.stats)
+    from |> Character.effects_applied(effects, {:npc, npc})
     state = stats |> maybe_died(state, from)
+
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}
 

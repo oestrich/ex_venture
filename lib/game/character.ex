@@ -39,6 +39,14 @@ defmodule Game.Character do
   end
 
   @doc """
+  Reply to the sending character what effects were applied
+  """
+  @spec effects_applied(Character.t(), [Effect.t()], Character.t()) :: :ok
+  def effects_applied(from, effects, target) do
+    GenServer.cast({:via, Via, who(from)}, {:effects_applied, effects, target})
+  end
+
+  @doc """
   Get character information about the character
   """
   @spec info(Character.t()) :: Character.t()

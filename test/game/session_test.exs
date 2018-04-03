@@ -253,7 +253,7 @@ defmodule Game.SessionTest do
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health_points == 15
 
-    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
+    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
 
     assert [{1, {:user,  %{name: "user", save: %{room_id: 1, stats: %{health_points: 15}}}}}] = @room.get_update_characters()
   end
@@ -270,7 +270,7 @@ defmodule Game.SessionTest do
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], from, "description"}, state)
 
     assert state.save.stats.health_points == 15
-    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
+    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
 
     [{^from, effect}] = state.continuous_effects
     assert effect.kind == "damage/over-time"
@@ -291,7 +291,7 @@ defmodule Game.SessionTest do
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health_points == -5
 
-    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt.)}}
+    assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
     assert [{1, {"character/died", _, _, _}}] = @room.get_notifies()
   after
     Session.Registry.unregister()

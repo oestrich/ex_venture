@@ -194,7 +194,7 @@ defmodule Game.Command.Skills do
           Format.skill_usee(skill, user: {:user, user})
         )
 
-        socket |> @socket.echo(Format.skill_user(skill, effects, target))
+        socket |> @socket.echo(Format.skill_user(skill, target))
 
         state =
           state
@@ -202,7 +202,7 @@ defmodule Game.Command.Skills do
           |> Map.put(:save, save)
           |> track_stat_usage(effects)
 
-        {:update, state}
+        {:skip, :prompt, state}
 
       {:error, _} ->
         socket |> @socket.echo(~s(You don't have enough skill points to use "#{skill.command}"))
