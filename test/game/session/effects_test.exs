@@ -17,8 +17,16 @@ defmodule Game.Session.EffectsTest do
 
     start_and_clear_damage_types()
 
+    insert_damage_type(%{
+      key: "slashing",
+      stat_modifier: :strength,
+      boost_ratio: 20,
+      reverse_stat: :dexterity,
+      reverse_boost: 20,
+    })
+
     user = %{id: 2, name: "user", class: class_attributes(%{})}
-    stats = %{health_points: 25, strength: 10}
+    stats = %{health_points: 25, dexterity: 10}
 
     state = %State{
       socket: socket,

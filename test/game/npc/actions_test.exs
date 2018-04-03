@@ -1,12 +1,28 @@
 defmodule Game.NPC.ActionsTest do
   use ExUnit.Case
-  import Test.ItemsHelper
   doctest Game.NPC.Actions
+
+  import Test.ItemsHelper
+  import Test.DamageTypesHelper
 
   alias Game.NPC.Actions
   alias Game.NPC.State
 
   @room Test.Game.Room
+
+  setup do
+    start_and_clear_damage_types()
+
+    insert_damage_type(%{
+      key: "slashing",
+      stat_modifier: :strength,
+      boost_ratio: 20,
+      reverse_stat: :dexterity,
+      reverse_boost: 20,
+    })
+
+    :ok
+  end
 
   describe "tick - respawning the npc" do
     setup do
@@ -115,9 +131,9 @@ defmodule Game.NPC.ActionsTest do
 
   describe "continuous effects" do
     setup do
-      effect = %{id: :id, kind: "damage/over-time", type: :slashing, every: 10, count: 3, amount: 10}
+      effect = %{id: :id, kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
       from = {:user, %{id: 1, name: "Player"}}
-      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25}}
+      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25, dexterity: 10}}
       npc_spawner = %{id: 1, spawn_interval: 0}
 
       state = %State{
@@ -142,7 +158,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "handles death", %{state: state, effect: effect, from: from} do
-      effect = %{effect | amount: 26}
+      effect = %{effect | amount: 38}
       state = %{state | continuous_effects: [{from, effect}]}
 
       state = Actions.handle_continuous_effect(state, :id)
