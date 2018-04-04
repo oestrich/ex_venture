@@ -7,6 +7,7 @@ defmodule Web.ColorCode do
 
   alias Data.ColorCode
   alias Data.Repo
+  alias Game.ColorCodes
 
   @cache_key :web
 
@@ -20,10 +21,16 @@ defmodule Web.ColorCode do
         version
 
       _ ->
-        all()
-        |> Enum.map(& &1.updated_at |> Timex.to_unix())
-        |> Enum.max()
-        |> set_latest_version()
+        case all() do
+          [] ->
+            Timex.now() |> Timex.to_unix()
+
+          all ->
+            all
+            |> Enum.map(& &1.updated_at |> Timex.to_unix())
+            |> Enum.max()
+            |> set_latest_version()
+        end
     end
   end
 
@@ -77,6 +84,8 @@ defmodule Web.ColorCode do
         |> Timex.to_unix()
         |> set_latest_version()
 
+        color_code |> ColorCodes.insert()
+
         {:ok, color_code}
 
       {:error, changeset} ->
@@ -97,6 +106,8 @@ defmodule Web.ColorCode do
         color_code.updated_at
         |> Timex.to_unix()
         |> set_latest_version()
+
+        color_code |> ColorCodes.reload()
 
         {:ok, color_code}
 
