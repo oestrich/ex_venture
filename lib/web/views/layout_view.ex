@@ -3,7 +3,12 @@ defmodule Web.LayoutView do
 
   alias Game.Config
   alias Web.Bug
+  alias Web.ColorCode
   alias Web.Mail
+
+  def color_code_css_path(conn) do
+    "#{public_color_code_path(conn, :index)}?version=#{ColorCode.latest_version()}"
+  end
 
   def tab_selected(conn, "dashboard") do
     case conn.path_info do

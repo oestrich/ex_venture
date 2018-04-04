@@ -1,0 +1,25 @@
+
+<section class="content-header">
+  <h1>
+    <%= @color_code.key %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Color Codes", to: color_code_path(@conn, :index)) %></li>
+    <li><%= @color_code.key %></li>
+    <li class="active">Edit</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: color_code_path(@conn, :update, @color_code.id), key: false, color_code: @color_code, changeset: @changeset, title: "Edit", submit: "Update" %>
+    </div>
+  </div>
+</section>
