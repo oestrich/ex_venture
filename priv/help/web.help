@@ -1,3 +1,12 @@
+color_code.ansi_escape:
+  This is the ANSI escape sequence when someone is connected via telnet, see [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)
+
+color_code.hex_code:
+  This is the CSS hex color, this should include the `#` sign. E.g. `#FF0055`
+
+color_code.key:
+  This key is used when adding color to game text fields, e.g. if the key was `gold`, you would use it as `{gold}text{/gold}`
+
 damage_type.key:
   This key is used in damage effects, this should be a single word and lower case.
 
