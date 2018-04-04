@@ -5,7 +5,11 @@ defmodule Game.Color do
   Replaces "{black}{/black}" with ANSII escape codes for the color
   """
 
+  alias Game.ColorCodes
+
   @color_regex ~r/{\/?[\w:-]+}/
+
+  def color_regex(), do: @color_regex
 
   @doc """
   Valid color codes
@@ -137,7 +141,21 @@ defmodule Game.Color do
   def format_color("{shop}"), do: "\e[35m"
   def format_color("{hint}"), do: "\e[36m"
 
-  def format_color(_), do: "\e[0m"
+  def format_color("{/" <> _), do: "\e[0m"
+  def format_color(key) do
+    key =
+      key
+      |> String.replace("{", "")
+      |> String.replace("}", "")
+
+    case ColorCodes.get(key) do
+      {:ok, color_code} ->
+        String.replace(color_code.ansi_escape, "\\e", "\e")
+
+      {:error, :not_found} ->
+        "\e[0m"
+    end
+  end
 
   @doc """
   Strip color information from a string
@@ -152,6 +170,6 @@ defmodule Game.Color do
   def strip_color(string) do
     string
     |> strip_commands()
-    |> String.replace(~r/{\/?\w+}/, "")
+    |> String.replace(~r/{\/?[\w-]+}/, "")
   end
 end

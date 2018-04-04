@@ -31,6 +31,8 @@ defmodule Web.Router do
   scope "/", Web, as: :public do
     pipe_through([:browser, :public])
 
+    get("/css/color-codes.css", ColorCodeController, :index)
+
     get("/", PageController, :index)
 
     get("/account", AccountController, :show)
@@ -87,13 +89,11 @@ defmodule Web.Router do
 
     resources("/class_skills", ClassSkillController, only: [:delete])
 
+    resources("/color_codes", ColorCodeController, except: [:show, :delete])
+
     resources("/config", ConfigController, only: [:index, :edit, :update])
 
-    resources(
-      "/damage_types",
-      DamageTypeController,
-      only: [:index, :new, :create, :edit, :update]
-    )
+    resources("/damage_types", DamageTypeController, except: [:show, :delete])
 
     resources("/exits", RoomExitController, only: [:delete], as: :exit)
 

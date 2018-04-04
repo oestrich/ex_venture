@@ -2,6 +2,8 @@ defmodule Game.ColorTest do
   use ExUnit.Case
   doctest Game.Color
 
+  alias Game.ColorCodes
+
   import Game.Color, only: [format: 1]
 
   test "replaces multiple colors" do
@@ -77,6 +79,18 @@ defmodule Game.ColorTest do
     test "resets the color if there is stack left" do
       assert format("{green}hi there {white}command{/white} green again") ==
         "\e[32mhi there \e[37mcommand\e[32m green again\e[0m"
+    end
+  end
+
+  describe "handles dynamic colors" do
+    setup do
+      ColorCodes.reload(%{key: "new-white", ansi_escape: "\\e[38;2;255;255;255;m"})
+
+      :ok
+    end
+
+    test "converts dynamic colors" do
+      assert format("{new-white}hi there {/new-white}") == "\e[38;2;255;255;255;mhi there \e[0m"
     end
   end
 end

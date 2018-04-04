@@ -9,6 +9,7 @@
 
     <title><%= Config.game_name() %> Admin</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/admin.css") %>">
+    <link rel="stylesheet" href="<%= color_code_css_path(@conn) %>">
     <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
   </head>
 
@@ -135,6 +136,12 @@
               <%= link(to: channel_path(@conn, :index)) do %>
                 <i class="fa fa-bullhorn"></i>
                 <span>Channels</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "color_codes") %>">
+              <%= link(to: color_code_path(@conn, :index)) do %>
+                <i class="fa fa-code"></i>
+                <span>Color Codes</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "config") %>">

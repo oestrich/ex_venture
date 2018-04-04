@@ -39,6 +39,11 @@ function formatColor(payload) {
     }
   });
 
+  // assume all other tags are custom colors
+  string = string.replace(/{([\w:-]+)}/g, (_match, color) => {
+    return `<span class='color-code-${color}'>`;
+  });
+
   // Closing tags
   string = string.replace(/{\/[\w:-]+}/g, "</span>")
 

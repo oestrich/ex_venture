@@ -3,6 +3,8 @@ defmodule Web.Color do
   Interface to the game color module
   """
 
+  alias Game.ColorCodes
+
   def options() do
     Game.Color.options()
     |> Enum.map(fn color ->
@@ -39,6 +41,28 @@ defmodule Web.Color do
     |> String.replace("{exit}", "<span class='white'>")
     |> String.replace("{shop}", "<span class='magenta'>")
     |> String.replace("{shop}", "<span class='cyan'>")
+    |> custom_colors()
     |> String.replace(~r/{\/[\w:-]+}/, "</span>")
   end
+
+  defp custom_colors(string) do
+    Game.Color.color_regex()
+    |> Regex.split(string, include_captures: true)
+    |> Enum.map(&replace_color_code/1)
+    |> Enum.join()
+  end
+
+  defp replace_color_code("{/" <> code), do: "{/#{code}"
+  defp replace_color_code("{" <> code) do
+    key = code |> String.replace("}", "")
+
+    case ColorCodes.get(key) do
+      {:ok, color_code} ->
+        "<span class='color-code-#{color_code.key}'>"
+
+      {:error, :not_found} ->
+        "<span>"
+    end
+  end
+  defp replace_color_code(string), do: string
 end
