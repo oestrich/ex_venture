@@ -293,7 +293,7 @@ defmodule Seeds do
             weight: 10,
             text: "[user] slashes at you.",
             effects: [
-              %{kind: "damage", type: :slashing, amount: 2},
+              %{kind: "damage", type: "slashing", amount: 2},
             ],
             delay: 2.0,
           }
@@ -457,8 +457,8 @@ defmodule Seeds do
       command: "slash",
       whitelist_effects: ["damage", "damage/type", "stats"],
       effects: [
-        %{kind: "damage", type: :slashing, amount: 10},
-        %{kind: "damage/type", types: [:slashing]},
+        %{kind: "damage", type: "slashing", amount: 10},
+        %{kind: "damage/type", types: ["slashing"]},
       ],
     })
 
@@ -472,8 +472,8 @@ defmodule Seeds do
       command: "magic missile",
       whitelist_effects: ["damage", "damage/type", "stats"],
       effects: [
-        %{kind: "damage", type: :arcane, amount: 10},
-        %{kind: "damage/type", types: [:arcane]},
+        %{kind: "damage", type: "arcane", amount: 10},
+        %{kind: "damage/type", types: ["arcane"]},
       ],
     })
 
