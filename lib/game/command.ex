@@ -84,6 +84,7 @@ defmodule Game.Command do
     # Alphabetical
     Command.AFK,
     Command.Bug,
+    Command.Colors,
     Command.Config,
     Command.Crash,
     Command.Drop,

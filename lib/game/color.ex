@@ -28,6 +28,20 @@ defmodule Game.Color do
   end
 
   @doc """
+  Valid map color codes
+  """
+  def map_colors() do
+    [
+      "blue",
+      "brown",
+      "dark-green",
+      "green",
+      "grey",
+      "light-grey",
+    ]
+  end
+
+  @doc """
   For commands coming in from a player, delink them so they are only color.
   """
   def delink_commands(string) do

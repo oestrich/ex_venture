@@ -17,6 +17,32 @@ defmodule Game.ColorCodes do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  @doc """
+  Get all color codes that are cached
+  """
+  @spec all() :: [ColorCode.t()]
+  def all() do
+    case Cachex.keys(@cache_key) do
+      {:ok, keys} ->
+        keys
+        |> Enum.map(&all_get/1)
+        |> Enum.reject(&is_nil/1)
+
+      _ ->
+        []
+    end
+  end
+
+  defp all_get(key) do
+    case get(key) do
+      {:ok, key} ->
+        key
+
+      _ ->
+        nil
+    end
+  end
+
   @spec get(integer() | String.t()) :: ColorCode.t() | nil
   def get(key) when is_binary(key) do
     case Cachex.get(@cache_key, key) do
