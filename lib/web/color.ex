@@ -53,6 +53,7 @@ defmodule Web.Color do
   end
 
   defp replace_color_code("{/" <> code), do: "{/#{code}"
+
   defp replace_color_code("{" <> code) do
     key = code |> String.replace("}", "")
 
@@ -64,5 +65,6 @@ defmodule Web.Color do
         "<span>"
     end
   end
+
   defp replace_color_code(string), do: string
 end

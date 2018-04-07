@@ -37,7 +37,7 @@ defmodule Game.Color do
       "dark-green",
       "green",
       "grey",
-      "light-grey",
+      "light-grey"
     ]
   end
 
@@ -156,6 +156,7 @@ defmodule Game.Color do
   def format_color("{hint}"), do: "\e[36m"
 
   def format_color("{/" <> _), do: "\e[0m"
+
   def format_color(key) do
     key =
       key

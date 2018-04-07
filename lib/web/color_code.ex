@@ -27,7 +27,7 @@ defmodule Web.ColorCode do
 
           all ->
             all
-            |> Enum.map(& &1.updated_at |> Timex.to_unix())
+            |> Enum.map(&(&1.updated_at |> Timex.to_unix()))
             |> Enum.max()
             |> set_latest_version()
         end

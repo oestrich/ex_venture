@@ -8,7 +8,7 @@ defmodule Web.Admin.ColorCodeView do
         content_tag(:span, color_code.key, class: "color-code-#{color_code.key}"),
         " ",
         link("Edit", to: color_code_path(conn, :edit, color_code.id)),
-        "\n",
+        "\n"
       ]
     end)
   end

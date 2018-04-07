@@ -80,8 +80,7 @@ defmodule Game.Command.Bug do
   end
 
   def run({:unknown}, %{socket: socket}) do
-    message =
-      "Please provide a bug title. See {command}help bug{/command} for more information."
+    message = "Please provide a bug title. See {command}help bug{/command} for more information."
 
     socket |> @socket.echo(message)
   end

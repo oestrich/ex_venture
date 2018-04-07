@@ -34,7 +34,7 @@ defmodule Game.DamageTypes do
       |> DamageType.changeset(%{
         key: key,
         stat_modifier: "strength",
-        reverse_stat: "strength",
+        reverse_stat: "strength"
       })
 
     case changeset |> Repo.insert() do

@@ -15,7 +15,7 @@ defmodule Web.Supervisor do
       supervisor(Web.Endpoint, []),
       worker(Web.NPCChannel.Monitor, []),
       worker(Web.TelnetChannel.Monitor, []),
-      worker(Cachex, [:web, []], id: :web_cache),
+      worker(Cachex, [:web, []], id: :web_cache)
     ]
 
     supervise(children, strategy: :one_for_one)

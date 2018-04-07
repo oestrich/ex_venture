@@ -836,10 +836,16 @@ defmodule Game.Format do
   def effects([effect | remaining], target) do
     case effect do
       %{kind: "damage"} ->
-        ["#{effect.amount} #{effect.type} damage is dealt to #{name(target)}." | effects(remaining, target)]
+        [
+          "#{effect.amount} #{effect.type} damage is dealt to #{name(target)}."
+          | effects(remaining, target)
+        ]
 
       %{kind: "damage/over-time"} ->
-        ["#{effect.amount} #{effect.type} damage is dealt to #{name(target)}." | effects(remaining, target)]
+        [
+          "#{effect.amount} #{effect.type} damage is dealt to #{name(target)}."
+          | effects(remaining, target)
+        ]
 
       %{kind: "recover", type: "health"} ->
         ["#{effect.amount} damage is healed to #{name(target)}." | effects(remaining, target)]
