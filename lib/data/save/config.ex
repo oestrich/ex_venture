@@ -3,6 +3,9 @@ defmodule Data.Save.Config do
   Helpers for the player's configuration
   """
 
+  alias Data.Color
+  alias Game.ColorCodes
+
   @doc """
   Determine if a string is a configuration option
   """
@@ -13,7 +16,7 @@ defmodule Data.Save.Config do
       "hints" -> true
       "pager_size" -> true
       "regen_notifications" -> true
-      _ -> false
+      config -> color_config?(config)
     end
   end
 
@@ -25,7 +28,7 @@ defmodule Data.Save.Config do
     case to_string(config) do
       "prompt" -> true
       "pager_size" -> true
-      _ -> false
+      config -> color_config?(config)
     end
   end
 
@@ -41,9 +44,35 @@ defmodule Data.Save.Config do
       "pager_size" ->
         Ecto.Type.cast(:integer, value)
 
-      _ ->
+      config ->
+        maybe_cast_color(config, value)
+    end
+  end
+
+  defp maybe_cast_color(config, value) do
+    case color_config?(config) do
+      true ->
+        cast_color(value)
+
+      false ->
         {:error, :bad_config}
     end
+  end
+
+  defp cast_color(value) do
+    case is_a_color?(value) do
+      true ->
+        {:ok, value}
+
+      false ->
+        {:error, :bad_config}
+    end
+  end
+
+  # NOTE: Eventually move this into the Game directory or get all of the caches living in
+  # the data layer. This shouldn't really be reaching across boundaries.
+  defp is_a_color?(value) do
+    Enum.any?(Color.options(), &(&1 == value)) || Enum.any?(ColorCodes.all(), &(&1.key == value))
   end
 
   @doc """
@@ -51,4 +80,14 @@ defmodule Data.Save.Config do
   """
   @spec default_prompt() :: String.t()
   def default_prompt(), do: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"
+
+  @doc """
+  Check if a key is color configuration
+  """
+  def color_config?(key) do
+    Color.color_tags()
+    |> Enum.any?(fn tag ->
+      "color_#{tag}" == to_string(key)
+    end)
+  end
 end

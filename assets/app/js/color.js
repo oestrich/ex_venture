@@ -22,11 +22,13 @@ function formatColor(payload) {
   string = string.replace(/{quest}/g, "<span class='yellow'>")
   string = string.replace(/{room}/g, "<span class='green'>")
   string = string.replace(/{say}/g,  "<span class='green'>")
-  string = string.replace(/{exit}/g,  "<span class='white command'>")
   string = string.replace(/{shop}/g,  "<span class='magenta'>")
   string = string.replace(/{hint}/g,  "<span class='cyan'>")
+  string = string.replace(/{exit}/g,  "<span class='white command'>")
 
   string = string.replace(/{command click=false}/g, "<span class='white'>");
+  string = string.replace(/{exit click=false}/g, "<span class='white'>");
+
   string = string.replace(/{command( send='(.*)')?}/g, (_match, _fullSend, command) => {
     if (payload.delink == undefined || payload.delink == false) {
       if (command != undefined) {

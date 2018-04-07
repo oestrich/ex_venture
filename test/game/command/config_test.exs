@@ -72,6 +72,17 @@ defmodule Game.Command.ConfigTest do
       assert Regex.match?(~r/set/, echo)
     end
 
+    test "set to a color - color_npc", %{state: state} do
+      state = %{state | save: %{state.save | config: %{prompt: ""}}}
+
+      {:update, %{save: save}} = Config.run({:set, "color_npc green"}, state)
+
+      assert save.config.color_npc == "green"
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/set/, echo)
+    end
+
     test "set to an integer - pager_size", %{state: state} do
       state = %{state | save: %{state.save | config: %{pager_size: 20}}}
 

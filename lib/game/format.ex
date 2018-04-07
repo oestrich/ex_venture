@@ -1066,7 +1066,7 @@ defmodule Game.Format do
         [to_string(key), value]
       end)
 
-    rows = [["Name", "On?"] | rows]
+    rows = [["Name", "Value"] | rows]
 
     max_size =
       rows

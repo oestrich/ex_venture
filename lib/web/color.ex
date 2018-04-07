@@ -6,7 +6,7 @@ defmodule Web.Color do
   alias Game.ColorCodes
 
   def options() do
-    Game.Color.options()
+    Data.Color.options()
     |> Enum.map(fn color ->
       {String.capitalize(color), color}
     end)

@@ -12,36 +12,6 @@ defmodule Game.Color do
   def color_regex(), do: @color_regex
 
   @doc """
-  Valid color codes
-  """
-  def options() do
-    [
-      "black",
-      "red",
-      "green",
-      "yellow",
-      "blue",
-      "magenta",
-      "cyan",
-      "white"
-    ]
-  end
-
-  @doc """
-  Valid map color codes
-  """
-  def map_colors() do
-    [
-      "blue",
-      "brown",
-      "dark-green",
-      "green",
-      "grey",
-      "light-grey"
-    ]
-  end
-
-  @doc """
   For commands coming in from a player, delink them so they are only color.
   """
   def delink_commands(string) do

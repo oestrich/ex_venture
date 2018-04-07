@@ -87,7 +87,7 @@ defmodule Game.Command.Config do
   def run({:on, config_name}, state) do
     case is_config?(config_name) do
       true ->
-        {:update, update_config(config_name, true, state)}
+        update_config(config_name, true, state)
 
       false ->
         state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
@@ -97,7 +97,7 @@ defmodule Game.Command.Config do
   def run({:off, config_name}, state) do
     case is_config?(config_name) do
       true ->
-        {:update, update_config(config_name, false, state)}
+        update_config(config_name, false, state)
 
       false ->
         state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
@@ -112,7 +112,7 @@ defmodule Game.Command.Config do
       true ->
         case PlayerConfig.settable?(config_name) do
           true ->
-            {:update, cast_and_set_config(config_name, value, state)}
+            cast_and_set_config(config_name, value, state)
 
           false ->
             state.socket
@@ -173,6 +173,6 @@ defmodule Game.Command.Config do
         state.socket |> @socket.echo("#{config_name} is set to \"#{integer}\"")
     end
 
-    state
+    {:update, state}
   end
 end
