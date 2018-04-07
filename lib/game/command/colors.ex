@@ -5,10 +5,12 @@ defmodule Game.Command.Colors do
 
   use Game.Command
 
-  alias Game.Color
+  alias Data.Color
+  alias Data.Save.Config
   alias Game.ColorCodes
+  alias Game.Command.Config, as: CommandConfig
 
-  commands(["colors"], parse: false)
+  commands([{"colors", ["color"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Colors"
@@ -18,8 +20,14 @@ defmodule Game.Command.Colors do
     """
     #{help(:short)}.
 
-    Example:
+    View all colors, including map colors:
     [ ] > {command}colors{/command}
+
+    View all color 'tags':
+    [ ] > {command}color tags{/command}
+
+    Reset your configured colors:
+    [ ] > {command}colors reset{/command}
     """
   end
 
@@ -30,12 +38,27 @@ defmodule Game.Command.Colors do
       iex> Game.Command.Colors.parse("colors")
       {:list}
 
+      iex> Game.Command.Colors.parse("color list")
+      {:list}
+      iex> Game.Command.Colors.parse("colors list")
+      {:list}
+
+      iex> Game.Command.Colors.parse("colors reset")
+      {:reset}
+
+      iex> Game.Command.Colors.parse("color tags")
+      {:semantic}
+
       iex> Game.Command.Colors.parse("unknown")
       {:error, :bad_parse, "unknown"}
   """
   @spec parse(String.t()) :: {any()}
   def parse(command)
   def parse("colors"), do: {:list}
+  def parse("colors list"), do: {:list}
+  def parse("color list"), do: {:list}
+  def parse("colors reset"), do: {:reset}
+  def parse("color tags"), do: {:semantic}
 
   @impl Game.Command
   def run(command, state)
@@ -51,6 +74,40 @@ defmodule Game.Command.Colors do
 
     Map Colors:
     #{map_colors()}
+    """
+
+    {:paginate, message, state}
+  end
+
+  def run({:reset}, state) do
+    save = state.save
+
+    config =
+      save.config
+      |> Enum.reject(fn {key, _val} ->
+        Config.color_config?(key)
+      end)
+      |> Enum.into(%{})
+
+    save = %{save | config: config}
+    user = %{state.user | save: save}
+    state = %{state | user: user, save: save}
+
+    state |> CommandConfig.push_config(config)
+    state.socket |> @socket.echo("Your colors have been reset")
+
+    {:update, state}
+  end
+
+  def run({:semantic}, state) do
+    message = """
+    Color Tags
+    #{Format.underline("Colors")}
+
+    The available color tags are in the following list. You can configure these with
+    the {command send='help config'}config{/command} command.
+
+    #{color_tags()}
     """
 
     {:paginate, message, state}
@@ -76,6 +133,23 @@ defmodule Game.Command.Colors do
     Color.map_colors()
     |> Enum.map(fn color ->
       "{map:#{color}}#{color}{/map:#{color}}"
+    end)
+    |> Enum.join("\n")
+  end
+
+  defp color_tags() do
+    Color.color_tags()
+    |> Enum.map(fn tag ->
+      case tag do
+        "command" ->
+          "{#{tag} click=false}#{tag}{/#{tag}}"
+
+        "exit" ->
+          "{#{tag} click=false}#{tag}{/#{tag}}"
+
+        _ ->
+          "{#{tag}}#{tag}{/#{tag}}"
+      end
     end)
     |> Enum.join("\n")
   end

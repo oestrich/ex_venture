@@ -3,6 +3,7 @@ defmodule Data.Save.ConfigTest do
   doctest Data.Save.Config
 
   alias Data.Save.Config
+  alias Game.ColorCodes
 
   describe "is a configuration option" do
     test "prompt is" do
@@ -18,6 +19,11 @@ defmodule Data.Save.ConfigTest do
     test "pager_size is" do
       assert Config.option?("pager_size")
       assert Config.option?(:pager_size)
+    end
+
+    test "color config is" do
+      assert Config.option?("color_npc")
+      assert Config.option?(:color_npc)
     end
 
     test "unknown is not" do
@@ -41,6 +47,11 @@ defmodule Data.Save.ConfigTest do
       assert Config.settable?("pager_size")
       assert Config.settable?(:pager_size)
     end
+
+    test "color config is settable" do
+      assert Config.settable?("color_npc")
+      assert Config.settable?(:color_npc)
+    end
   end
 
   describe "cast configuration" do
@@ -55,6 +66,24 @@ defmodule Data.Save.ConfigTest do
 
     test "casting non-settable config" do
       assert Config.cast_config("hint", "true") == {:error, :bad_config}
+    end
+
+    test "casting a color value" do
+      assert Config.cast_config("color_npc", "green") == {:ok, "green"}
+
+      ColorCodes.insert(%{key: "pink"})
+      assert Config.cast_config("color_npc", "pink") == {:ok, "pink"}
+    end
+  end
+
+  describe "color config" do
+    test "true for valid tags" do
+      assert Config.color_config?("color_npc")
+      assert Config.color_config?("color_quest")
+    end
+
+    test "false for invalid tags" do
+      refute Config.color_config?("color_potion")
     end
   end
 end

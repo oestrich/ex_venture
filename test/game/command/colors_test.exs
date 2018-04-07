@@ -9,7 +9,8 @@ defmodule Game.Command.ColorsTest do
 
   setup do
     @socket.clear_messages()
-    %{state: %{socket: :socket}}
+    save = base_save()
+    %{state: %{socket: :socket, user: %{save: save}, save: save}}
   end
 
   describe "viewing a list of colors" do
@@ -31,6 +32,24 @@ defmodule Game.Command.ColorsTest do
       {:paginate, echo, _state} = Colors.run({:list}, state)
 
       assert Regex.match?(~r/pink/, echo)
+    end
+  end
+
+  describe "resetting your base colors" do
+    test "includes npcs, exits, etc in their current colors", %{state: state} do
+      state = %{state | save: %{state.save | config: %{color_npc: "green"}}}
+
+      {:update, state} = Colors.run({:reset}, state)
+
+      refute Map.has_key?(state.save.config, :color_npc)
+    end
+  end
+
+  describe "viewing semantic colors" do
+    test "includes npcs, exits, etc in their current colors", %{state: state} do
+      {:paginate, echo, _state} = Colors.run({:semantic}, state)
+
+      assert Regex.match?(~r/npc/i, echo)
     end
   end
 end

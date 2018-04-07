@@ -5,7 +5,7 @@ defmodule Data.Channel do
 
   use Data.Schema
 
-  alias Game.Color
+  alias Data.Color
 
   schema "channels" do
     field(:name, :string)

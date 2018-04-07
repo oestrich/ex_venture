@@ -7,6 +7,7 @@ defmodule Game.Command.Config do
 
   alias Data.Save.Config, as: PlayerConfig
   alias Game.Format
+  alias Game.Session.GMCP
 
   commands(["config"], parse: false)
 
@@ -33,6 +34,10 @@ defmodule Game.Command.Config do
 
       {white}regen_notifications{/white}:
         A true/false option that will show regeneration notifications, use {command}config [on|off]{/command}
+
+      {white}color_[color]{/white}:
+        Replace {white}[color]{/white} with a color tag from the {command}color tags{/command} list. You can set via
+        {command}config set color_npc blue{/command} for instance. You can reset your colors with {command}color reset{/command}.
 
     View a list of configuration options
     [ ] > {command}config{/command}
@@ -87,7 +92,7 @@ defmodule Game.Command.Config do
   def run({:on, config_name}, state) do
     case is_config?(config_name) do
       true ->
-        {:update, update_config(config_name, true, state)}
+        update_config(config_name, true, state)
 
       false ->
         state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
@@ -97,7 +102,7 @@ defmodule Game.Command.Config do
   def run({:off, config_name}, state) do
     case is_config?(config_name) do
       true ->
-        {:update, update_config(config_name, false, state)}
+        update_config(config_name, false, state)
 
       false ->
         state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
@@ -112,7 +117,7 @@ defmodule Game.Command.Config do
       true ->
         case PlayerConfig.settable?(config_name) do
           true ->
-            {:update, cast_and_set_config(config_name, value, state)}
+            cast_and_set_config(config_name, value, state)
 
           false ->
             state.socket
@@ -173,6 +178,18 @@ defmodule Game.Command.Config do
         state.socket |> @socket.echo("#{config_name} is set to \"#{integer}\"")
     end
 
-    state
+    state |> push_config(config)
+
+    {:update, state}
+  end
+
+  @doc """
+  Push config to the network and client layer
+  """
+  @spec push_config(State.t(), map()) :: :ok
+  def push_config(state, config) do
+    state.socket |> @socket.set_config(config)
+    state |> GMCP.config(config)
+    :ok
   end
 end

@@ -781,7 +781,7 @@ defmodule Game.Format do
 
   def npc_name_for_status(npc) do
     case Map.get(npc, :is_quest_giver, false) do
-      true -> "#{npc_name(npc)} ({yellow}!{/yellow})"
+      true -> "#{npc_name(npc)} ({quest}!{/quest})"
       false -> npc_name(npc)
     end
   end
@@ -1066,7 +1066,7 @@ defmodule Game.Format do
         [to_string(key), value]
       end)
 
-    rows = [["Name", "On?"] | rows]
+    rows = [["Name", "Value"] | rows]
 
     max_size =
       rows

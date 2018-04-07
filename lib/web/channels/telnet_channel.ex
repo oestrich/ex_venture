@@ -130,7 +130,7 @@ defmodule Web.TelnetChannel do
 
     def init(socket) do
       GenServer.cast(self(), :start_session)
-      {:ok, %{socket: socket, user_id: nil}}
+      {:ok, %{socket: socket, user_id: nil, config: %{}}}
     end
 
     def handle_cast({:command, _, command}, state) do
@@ -209,6 +209,11 @@ defmodule Web.TelnetChannel do
       {:noreply, %{state | user_id: user_id}}
     end
 
+    def handle_cast({:config, config}, state) do
+      send(state.socket.channel_pid, {:config, config})
+      {:noreply, %{state | config: config}}
+    end
+
     def handle_cast(:restart_session, state) do
       Logger.info(fn -> "Restarting a session" end, type: :session)
       {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
@@ -251,6 +256,10 @@ defmodule Web.TelnetChannel do
 
   def handle_info({:user_id, user_id}, state) do
     {:noreply, Map.put(state, :user_id, user_id)}
+  end
+
+  def handle_info({:config, config}, state) do
+    {:noreply, Map.put(state, :config, config)}
   end
 
   def handle_info({:option, :echo, flag}, socket) do

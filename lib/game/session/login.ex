@@ -12,6 +12,7 @@ defmodule Game.Session.Login do
   require Logger
 
   alias Game.Authentication
+  alias Game.Command.Config, as: CommandConfig
   alias Game.Config
   alias Game.Channel
   alias Game.Mail
@@ -58,6 +59,7 @@ defmodule Game.Session.Login do
 
     socket |> @socket.echo("Welcome, #{user.name}!")
     socket |> @socket.set_user_id(user.id)
+    state |> CommandConfig.push_config(user.save.config)
 
     socket |> @socket.echo(Config.after_sign_in_message())
 
