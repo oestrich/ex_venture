@@ -1,7 +1,7 @@
 import Sizzle from "sizzle"
 import _ from "underscore"
 
-import format from "./color"
+import {format, defaultColorCSS} from "./color"
 
 import Notifacations from "./notifications"
 
@@ -97,16 +97,19 @@ let renderRoom = (channel, room) => {
     exits.append(html)
   })
 
+  let npcColor = defaultColorCSS("npc", "yellow");
+  let playerColor = defaultColorCSS("player", "blue");
+
   let characters = _.first(Sizzle(".room-info .characters"))
   characters.innerHTML = ""
   _.each(room.npcs, (npc) => {
     let html = document.createElement('div')
-    html.innerHTML = `<li class="yellow">${npc.name}</li>`
+    html.innerHTML = `<li class="${npcColor}">${npc.name}</li>`
     _.each(html.children, (li) => { characters.append(li) })
   })
   _.each(room.players, (player) => {
     let html = document.createElement('div')
-    html.innerHTML = `<li class="blue">${player.name}</li>`
+    html.innerHTML = `<li class="${playerColor}">${player.name}</li>`
     _.each(html.children, (li) => { characters.append(li) })
   })
 }

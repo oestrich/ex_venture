@@ -7,8 +7,8 @@ let defaultColor = (tag, color) => {
   };
 };
 
-let defaultCommandColorCSS = (tag) => {
-  let configuredColor = gameConfig["color_" + tag] || "white";
+export function defaultColorCSS(tag, color) {
+  let configuredColor = gameConfig["color_" + tag] || color;
   if (DEFAULT_COLORS.includes(configuredColor)) {
     return configuredColor;
   } else {
@@ -30,14 +30,14 @@ function formatColor(payload) {
   string = string.replace(/{hint}/g, defaultColor("hint", "cyan"));
 
   string = string.replace(/{exit}/g, () => {
-    return `<span class='${defaultCommandColorCSS("exit")} command'>`;
+    return `<span class='${defaultColorCSS("exit", "white")} command'>`;
   });
 
   string = string.replace(/{command click=false}/g, defaultColor("command", "white"));
   string = string.replace(/{exit click=false}/g, defaultColor("exit", "white"));
 
   string = string.replace(/{command( send='(.*)')?}/g, (_match, _fullSend, command) => {
-    let color = defaultCommandColorCSS("command");
+    let color = defaultColorCSS("command", "white");
     if (payload.delink == undefined || payload.delink == false) {
       if (command != undefined) {
         return `<span class='${color} command' data-command='${command}'>`;
@@ -81,8 +81,6 @@ function formatLines(string) {
   return string;
 }
 
-function format(payload) {
+export function format(payload) {
   return formatLines(formatColor(payload));
 }
-
-export default format

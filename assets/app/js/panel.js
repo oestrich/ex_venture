@@ -1,7 +1,7 @@
 import Sizzle from "sizzle"
 import _ from "underscore"
 
-import format from "./color"
+import {format} from "./color"
 
 let scrollToBottom = (callback) => {
   let panel = _.first(Sizzle(".panel"))
