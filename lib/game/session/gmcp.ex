@@ -239,4 +239,12 @@ defmodule Game.Session.GMCP do
 
     socket |> @socket.push_gmcp("Mail.New", Poison.encode!(data))
   end
+
+  @doc """
+  Push player configuration to the client
+  """
+  @spec config(State.t(), map()) :: :ok
+  def config(%{socket: socket}, config) do
+    socket |> @socket.push_gmcp("Config.Update", Poison.encode!(config))
+  end
 end

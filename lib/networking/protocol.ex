@@ -95,6 +95,11 @@ defmodule Networking.Protocol do
     GenServer.cast(socket, {:user_id, user_id})
   end
 
+  @impl Networking.Socket
+  def set_config(socket, config) do
+    GenServer.cast(socket, {:config, config})
+  end
+
   def init(ref, socket, transport) do
     Logger.info("Player connecting", type: :socket)
     PlayerInstrumenter.session_started(:telnet)
@@ -110,7 +115,8 @@ defmodule Networking.Protocol do
       transport: transport,
       gmcp: false,
       gmcp_supports: [],
-      user_id: nil
+      user_id: nil,
+      config: %{}
     })
   end
 
@@ -146,13 +152,17 @@ defmodule Networking.Protocol do
     {:noreply, Map.put(state, :user_id, user_id)}
   end
 
+  def handle_cast({:config, config}, state) do
+    {:noreply, Map.put(state, :config, config)}
+  end
+
   def handle_cast({:echo, message}, state) do
-    send_data(state, "\n#{message |> Color.format()}\n")
+    send_data(state, "\n#{message |> Color.format(state.config)}\n")
     {:noreply, state}
   end
 
   def handle_cast({:echo, message, :prompt}, state) do
-    send_data(state, "\n#{message |> Color.format()}")
+    send_data(state, "\n#{message |> Color.format(state.config)}")
     {:noreply, state}
   end
 

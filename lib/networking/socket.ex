@@ -6,6 +6,7 @@ defmodule Networking.Socket do
   """
 
   @callback set_user_id(socket :: pid, user_id :: integer()) :: :ok
+  @callback set_config(socket :: pid, config :: map()) :: :ok
   @callback echo(socket :: pid, message :: String.t()) :: :ok
   @callback prompt(socket :: pid, message :: String.t()) :: :ok
   @callback disconnect(socket :: pid) :: :ok

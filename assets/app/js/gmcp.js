@@ -50,6 +50,13 @@ let characterVitals = (channel, data) => {
 }
 
 /**
+ * Config.Update module
+ */
+let configUpdate = (channel, data) => {
+  window.gameConfig = data;
+}
+
+/**
  * Mail.New module
  */
 let mailNew = (channel, data) => {
@@ -171,6 +178,7 @@ let gmcp = {
   "Channels.Tell": tell,
   "Character": character,
   "Character.Vitals": characterVitals,
+  "Config.Update": configUpdate,
   "Mail.New": mailNew,
   "Room.Heard": roomHeard,
   "Room.Info": roomInfo,

@@ -4,7 +4,7 @@ defmodule Game.ColorTest do
 
   alias Game.ColorCodes
 
-  import Game.Color, only: [format: 1]
+  import Game.Color, only: [format: 1, format: 2]
 
   test "replaces multiple colors" do
     assert format("{black}word{/black} {blue}word{/blue}") == "\e[30mword\e[0m \e[34mword\e[0m"
@@ -50,7 +50,7 @@ defmodule Game.ColorTest do
     assert format("{map:dark-green}[ ]{/map:dark-green}") == "\e[38;5;22m[ ]\e[0m"
   end
 
-  describe "statemachine" do
+  describe "state machine" do
     test "replaces a color after another color is reset" do
       assert format("{green}hi there {white}command{/white} green again{/green}") ==
         "\e[32mhi there \e[37mcommand\e[32m green again\e[0m"
@@ -79,6 +79,14 @@ defmodule Game.ColorTest do
     test "resets the color if there is stack left" do
       assert format("{green}hi there {white}command{/white} green again") ==
         "\e[32mhi there \e[37mcommand\e[32m green again\e[0m"
+    end
+  end
+
+  describe "configure the colors" do
+    test "players can configure semantic colors" do
+      config = %{color_npc: "green"}
+
+      assert format("{npc}Guard{/npc}", config) == "\e[32mGuard\e[0m"
     end
   end
 

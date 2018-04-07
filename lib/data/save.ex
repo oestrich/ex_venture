@@ -328,9 +328,19 @@ defmodule Data.Save do
   def valid_config?(save)
 
   def valid_config?(%{config: config}) do
-    is_map(config) && keys(config) == [:hints, :pager_size, :prompt, :regen_notifications] &&
+    is_map(config) && config_keys(config) == [:hints, :pager_size, :prompt, :regen_notifications] &&
       is_boolean(config.hints) && is_binary(config.prompt) && is_integer(config.pager_size) &&
       is_boolean(config.regen_notifications)
+  end
+
+  defp config_keys(config) do
+    config
+    |> keys()
+    |> Enum.reject(fn color ->
+      color
+      |> to_string()
+      |> String.starts_with?("color")
+    end)
   end
 
   @doc """

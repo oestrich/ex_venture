@@ -8,6 +8,7 @@ defmodule Game.Command.Colors do
   alias Data.Color
   alias Data.Save.Config
   alias Game.ColorCodes
+  alias Game.Command.Config, as: CommandConfig
 
   commands([{"colors", ["color"]}], parse: false)
 
@@ -89,6 +90,8 @@ defmodule Game.Command.Colors do
     save = %{save | config: config}
     user = %{state.user | save: save}
     state = %{state | user: user, save: save}
+
+    state |> CommandConfig.push_config(config)
 
     {:update, state}
   end

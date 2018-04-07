@@ -7,6 +7,7 @@ defmodule Game.Command.Config do
 
   alias Data.Save.Config, as: PlayerConfig
   alias Game.Format
+  alias Game.Session.GMCP
 
   commands(["config"], parse: false)
 
@@ -173,6 +174,18 @@ defmodule Game.Command.Config do
         state.socket |> @socket.echo("#{config_name} is set to \"#{integer}\"")
     end
 
+    state |> push_config(config)
+
     {:update, state}
+  end
+
+  @doc """
+  Push config to the network and client layer
+  """
+  @spec push_config(State.t(), map()) :: :ok
+  def push_config(state, config) do
+    state.socket |> @socket.set_config(config)
+    state |> GMCP.config(config)
+    :ok
   end
 end
