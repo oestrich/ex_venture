@@ -20,12 +20,14 @@ defmodule Game.Command.Colors do
     """
     #{help(:short)}.
 
-    Example:
+    View all colors, including map colors:
     [ ] > {command}colors{/command}
 
-    [ ] > {command}colors reset{/command}
-
+    View all color 'tags':
     [ ] > {command}color tags{/command}
+
+    Reset your configured colors:
+    [ ] > {command}colors reset{/command}
     """
   end
 
@@ -92,6 +94,7 @@ defmodule Game.Command.Colors do
     state = %{state | user: user, save: save}
 
     state |> CommandConfig.push_config(config)
+    state.socket |> @socket.echo("Your colors have been reset")
 
     {:update, state}
   end

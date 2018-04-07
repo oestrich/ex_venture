@@ -35,6 +35,10 @@ defmodule Game.Command.Config do
       {white}regen_notifications{/white}:
         A true/false option that will show regeneration notifications, use {command}config [on|off]{/command}
 
+      {white}color_[color]{/white}:
+        Replace {white}[color]{/white} with a color tag from the {command}color tags{/command} list. You can set via
+        {command}config set color_npc blue{/command} for instance. You can reset your colors with {command}color reset{/command}.
+
     View a list of configuration options
     [ ] > {command}config{/command}
 
