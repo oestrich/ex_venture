@@ -2,7 +2,7 @@ defmodule Data.Repo.Migrations.AddUuidToAnnouncements do
   use Ecto.Migration
 
   def up do
-    execute "create extension \"uuid-ossp\";"
+    execute "create extension if not exists \"uuid-ossp\";"
 
     alter table(:announcements) do
       add :uuid, :uuid, default: fragment("uuid_generate_v4()"), null: false
