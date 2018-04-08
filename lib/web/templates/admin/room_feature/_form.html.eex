@@ -16,8 +16,13 @@
       <div class="form-group">
         <%= label :feature, :short_description %>
         <%= text_input :feature, :short_description, value: Map.get(@feature, :short_description, ""), class: "form-control" %>
-        <span class="help-block">The key should be included in this description, it will be color coded white to show it can be looked at further</span>
+        <span class="help-block"><%= Help.get("room_feature.short_description") %></span>
       </div>
+
+      <div class="form-group">
+        <%= label :feature, :listen %>
+        <%= text_input :feature, :listen, value: Map.get(@feature, :listen, ""), class: "form-control" %>
+        <span class="help-block"><%= Help.get("room_feature.listen") %></span>
 
       <div class="form-group">
         <%= label :feature, :description %>

@@ -5,3 +5,4 @@
 <br />
 <span class="white">Who</span>: <%= @room |> who(@conn) %>
 <span class="white">Items</span>: <%= @room |> items(@conn) %>
+<%= @room |> listen() %>

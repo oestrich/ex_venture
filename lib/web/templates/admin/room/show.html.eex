@@ -188,6 +188,7 @@
                 <th>Key</th>
                 <th>Short Description</th>
                 <th>Description</th>
+                <th>Listen</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -197,6 +198,7 @@
                   <td><%= feature.key %></td>
                   <td><%= feature.short_description %></td>
                   <td><%= feature.description %></td>
+                  <td><%= feature.listen %></td>
                   <td>
                     <%= link("Edit", to: room_feature_path(@conn, :edit, @room.id, feature.id), class: "btn btn-default btn-xs") %>
                     <%= link(to: room_feature_path(@conn, :delete, @room.id, feature.id), method: :delete, class: "btn btn-warning btn-xs") do %>

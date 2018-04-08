@@ -79,6 +79,12 @@ room.items:
 room.zone_exit:
   A room that is a zone exit will always show up in the room selection box when creating exits, not just for the current zone.
 
+room_feature.listen:
+  What the user will hear when they listen in the room.
+
+room_feature.short_description:
+  The key should be included in this description, it will be color coded white to show it can be looked at further
+
 skill.cooldown_time:
   Milliseconds the player must wait before the skill can be used again.
 
