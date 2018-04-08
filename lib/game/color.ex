@@ -110,17 +110,17 @@ defmodule Game.Color do
     end
   end
 
-  def format_semantic_color("{npc}"), do: {:npc, :yellow} #"\e[33m"
-  def format_semantic_color("{item}"), do: {:item, :cyan} #"\e[36m"
-  def format_semantic_color("{player}"), do: {:player, :blue} #"\e[34m"
-  def format_semantic_color("{skill}"), do: {:skill, :white} #"\e[37m"
-  def format_semantic_color("{quest}"), do: {:quest, :yellow} #"\e[33m"
-  def format_semantic_color("{room}"), do: {:room, :green} #"\e[32m"
-  def format_semantic_color("{say}"), do: {:say, :green} #"\e[32m"
-  def format_semantic_color("{command}"), do: {:command, :white} #"\e[37m"
-  def format_semantic_color("{exit}"), do: {:exit, :white} #"\e[37m"
-  def format_semantic_color("{shop}"), do: {:shop, :magenta} #"\e[35m"
-  def format_semantic_color("{hint}"), do: {:hint, :cyan} #"\e[36m"
+  def format_semantic_color("{npc}"), do: {:npc, :yellow}
+  def format_semantic_color("{item}"), do: {:item, :cyan}
+  def format_semantic_color("{player}"), do: {:player, :blue}
+  def format_semantic_color("{skill}"), do: {:skill, :white}
+  def format_semantic_color("{quest}"), do: {:quest, :yellow}
+  def format_semantic_color("{room}"), do: {:room, :green}
+  def format_semantic_color("{say}"), do: {:say, :green}
+  def format_semantic_color("{command}"), do: {:command, :white}
+  def format_semantic_color("{exit}"), do: {:exit, :white}
+  def format_semantic_color("{shop}"), do: {:shop, :magenta}
+  def format_semantic_color("{hint}"), do: {:hint, :cyan}
   def format_semantic_color(_), do: :error
 
   @doc """
