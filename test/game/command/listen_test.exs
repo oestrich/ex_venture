@@ -20,6 +20,9 @@ defmodule Game.Command.ListenTest do
         features: [
           %{key: "flag", listen: "A flag is flapping in the breeze"},
         ],
+        npcs: [
+          %{name: "Guard", status_listen: "[name] is yelling."},
+        ],
       }
       @room.set_room(Map.merge(@room._room(), room))
 
@@ -47,6 +50,13 @@ defmodule Game.Command.ListenTest do
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r/flapping/, echo)
+    end
+
+    test "includes the room's npcs", %{state: state} do
+      :ok = Listen.run({}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/guard .+ yelling/i, echo)
     end
   end
 

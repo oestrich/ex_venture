@@ -19,6 +19,9 @@ damage_type.stat_modifier:
 item.whitelist_effects:
   Effects in this whitelist will be calculated when using the item. Anything not in the list will be filtered out.
 
+npc.description:
+  Valid template replacements: `[status_line]`, `[name]`
+
 npc.events:
   NPCs interact with the world based on these definitions.
 
@@ -45,6 +48,9 @@ npc.spawner_name:
 
 npc.spawners:
   These are what the player interacts with. They are spawned as processes.
+
+npc.status_listen:
+  Can be empty, players will see this when they listen in the same room as the NPC. Can include the template `[name]`.
 
 quest.completed_message:
   A message the NPC will say after the quest is completed
