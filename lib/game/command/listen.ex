@@ -11,14 +11,19 @@ defmodule Game.Command.Listen do
 
   @impl Game.Command
   def help(:topic), do: "Listen"
-  def help(:short), do: "Listen to your surrounding"
+  def help(:short), do: "Listen to your surroundings"
 
   def help(:full) do
     """
-    #{help(:short)}
+    This will return anything that can be heard from your surroundings including
+    the room, it's features, and any NPCs in the room. You can direct your listening
+    towards a room's exit and listen in on the adjacent room.
 
-    Example:
+    Listen to the current room:
     [ ] > {command}listen{/command}
+
+    Listen to an adjacent room:
+    [ ] > {command}listen north{/command}
     """
   end
 
