@@ -8,8 +8,11 @@ defmodule Game.Format.Listen do
   def to_room(room) do
     features =
       room.features
-      |> Enum.map(& &1.listen)
-      |> Enum.reject(&(is_nil(&1) || &1 == ""))
+      |> Enum.reject(&(is_nil(&1.listen) || &1.listen == ""))
+      |> Enum.map(fn feature ->
+        feature.listen
+        |> String.replace(feature.key, "{white}#{feature.key}{/white}")
+      end)
 
     npcs =
       room.npcs
