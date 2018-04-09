@@ -13,8 +13,20 @@ defmodule Game.Format.TemplateTest do
       assert Template.render("[ name]", %{name: "Player"}) == " Player"
     end
 
+    test "includes newlines" do
+      assert Template.render("[\nname]", %{name: "Player"}) == "\nPlayer"
+    end
+
     test "if key not found skips the space" do
       assert Template.render("[ name]", %{}) == ""
+    end
+
+    test "if key not found skips newlines" do
+      assert Template.render("[\nname]", %{}) == ""
+    end
+
+    test "empty strings are considered 'nil'" do
+      assert Template.render("[\nname]", %{name: ""}) == ""
     end
   end
 

@@ -7,7 +7,7 @@ defmodule Data.Room.Feature do
 
   import Ecto.Changeset
 
-  defstruct [:id, :key, :short_description, :description]
+  defstruct [:id, :key, :short_description, :description, :listen]
 
   @impl Ecto.Type
   def type, do: :map

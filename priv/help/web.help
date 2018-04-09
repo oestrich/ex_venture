@@ -19,6 +19,9 @@ damage_type.stat_modifier:
 item.whitelist_effects:
   Effects in this whitelist will be calculated when using the item. Anything not in the list will be filtered out.
 
+npc.description:
+  Valid template replacements: `[status_line]`, `[name]`
+
 npc.events:
   NPCs interact with the world based on these definitions.
 
@@ -45,6 +48,9 @@ npc.spawner_name:
 
 npc.spawners:
   These are what the player interacts with. They are spawned as processes.
+
+npc.status_listen:
+  Can be empty, players will see this when they listen in the same room as the NPC. Can include the template `[name]`.
 
 quest.completed_message:
   A message the NPC will say after the quest is completed
@@ -78,6 +84,15 @@ room.items:
 
 room.zone_exit:
   A room that is a zone exit will always show up in the room selection box when creating exits, not just for the current zone.
+
+room_feature.listen:
+  What the user will hear when they listen in the room. If the key is in this text, it will be highlighted white.
+
+room_feature.key:
+  This will be used as the lookup key for the `look` command
+
+room_feature.short_description:
+  The key should be included in this description, it will be color coded white to show it can be looked at further
 
 skill.cooldown_time:
   Milliseconds the player must wait before the skill can be used again.

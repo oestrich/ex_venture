@@ -106,4 +106,15 @@ defmodule Web.Admin.RoomView do
     |> Color.format()
     |> raw()
   end
+
+  def listen(%{listen: nil}), do: ""
+  def listen(room) do
+    text =
+      room.listen
+      |> Format.wrap()
+      |> Color.format()
+      |> raw()
+
+    ["\n", content_tag(:span, "You hear:", class: "white"), "\n", text]
+  end
 end

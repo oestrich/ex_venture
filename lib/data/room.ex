@@ -34,6 +34,7 @@ defmodule Data.Room do
     field(:currency, :integer)
     field(:items, {:array, Item.Instance})
     field(:features, {:array, Feature}, default: [])
+    field(:listen, :string)
 
     field(:players, {:array, :map}, default: [], virtual: true)
     field(:npcs, {:array, :map}, default: [], virtual: true)
@@ -65,6 +66,7 @@ defmodule Data.Room do
       :zone_id,
       :name,
       :description,
+      :listen,
       :x,
       :y,
       :map_layer,

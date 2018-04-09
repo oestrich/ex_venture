@@ -102,6 +102,26 @@ defmodule Data.Exit do
   end
 
   @doc """
+  Check if a string is a valid exit
+
+      iex> Data.Exit.exit?("north")
+      true
+
+      iex> Data.Exit.exit?("outside")
+      false
+  """
+  @spec exit?(String.t()) :: boolean()
+  def exit?("north"), do: true
+  def exit?("south"), do: true
+  def exit?("east"), do: true
+  def exit?("west"), do: true
+  def exit?("in"), do: true
+  def exit?("out"), do: true
+  def exit?("up"), do: true
+  def exit?("down"), do: true
+  def exit?(_), do: false
+
+  @doc """
   From a direction find the opposite direction's id
 
       iex> Data.Exit.opposite_id("north")

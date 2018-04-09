@@ -39,6 +39,7 @@ defmodule Data.NPC do
     field(:notes, :string)
     field(:tags, {:array, :string}, default: [])
     field(:status_line, :string, default: "[name] is here.")
+    field(:status_listen, :string)
     field(:description, :string, default: "[status_line]")
     field(:is_quest_giver, :boolean, default: false)
 
@@ -72,6 +73,7 @@ defmodule Data.NPC do
       :events,
       :script,
       :status_line,
+      :status_listen,
       :description,
       :is_quest_giver,
       :is_trainer

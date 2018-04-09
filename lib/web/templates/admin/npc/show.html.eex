@@ -61,6 +61,10 @@
               <td><pre><%= @npc.status_line %></pre></td>
             </tr>
             <tr>
+              <th>Status Listen</th>
+              <td><pre><%= @npc.status_listen %></pre></td>
+            </tr>
+            <tr>
               <th>Description</th>
               <td><pre><%= @npc.description %></pre></td>
             </tr>

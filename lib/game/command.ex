@@ -95,6 +95,7 @@ defmodule Game.Command do
     Command.Greet,
     Command.Help,
     Command.Hone,
+    Command.Listen,
     Command.Mail,
     Command.Map,
     Command.Mistake,

@@ -14,6 +14,7 @@ defmodule Game.Format do
   alias Data.Skill
   alias Game.Color
   alias Game.Door
+  alias Game.Format.Listen
   alias Game.Format.Table
   alias Game.Format.Template
   alias Game.Quest
@@ -1111,4 +1112,9 @@ defmodule Game.Format do
     #{bug.body}
     """
   end
+
+  @doc """
+  Format listen text for a room
+  """
+  def listen_room(room), do: Listen.to_room(room)
 end
