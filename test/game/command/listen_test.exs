@@ -56,7 +56,8 @@ defmodule Game.Command.ListenTest do
       :ok = Listen.run({}, state)
 
       [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/guard .+ yelling/i, echo)
+      assert Regex.match?(~r/guard/i, echo)
+      assert Regex.match?(~r/yelling/i, echo)
     end
   end
 
