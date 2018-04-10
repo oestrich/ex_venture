@@ -6,6 +6,7 @@ defmodule Game.Command.Listen do
   use Game.Command
 
   alias Data.Exit
+  alias Game.Room.Helpers, as: RoomHelpers
 
   commands(["listen"], parse: false)
 
@@ -74,7 +75,7 @@ defmodule Game.Command.Listen do
   def run({direction}, state = %{save: save}) do
     room = @room.look(save.room_id)
 
-    with {:ok, room} <- room |> get_exit(direction),
+    with {:ok, room} <- room |> RoomHelpers.get_exit(direction),
          true <- room_has_noises?(room) do
       state.socket |> @socket.echo(Format.listen_room(room))
     else
@@ -88,17 +89,5 @@ defmodule Game.Command.Listen do
 
   defp room_has_noises?(room) do
     !is_nil(room.listen) || Enum.any?(room.features, &(!is_nil(&1.listen)))
-  end
-
-  def get_exit(room, direction) do
-    id_key = String.to_atom("#{direction}_id")
-    case room |> Exit.exit_to(direction) do
-      %{^id_key => room_id} ->
-        room = @room.look(room_id)
-        {:ok, room}
-
-      _ ->
-        {:error, :not_found}
-    end
   end
 end
