@@ -1,8 +1,9 @@
 # ExVenture
 
 [![Trello](https://img.shields.io/badge/issues-trello-blue.svg)](https://trello.com/b/PFGmFWmu/exventure)
+[![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/GPEa6dB)
 
-A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir. 
+A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
 
 ## Docs
 
