@@ -18,7 +18,14 @@ defmodule Game.Caches do
       worker(Cachex, [:doors, []], id: :doors_cache),
       worker(Cachex, [:items, []], id: :items_cache),
       worker(Cachex, [:skills, []], id: :skills_cache),
-      worker(Cachex, [:socials, []], id: :socials_cache)
+      worker(Cachex, [:socials, []], id: :socials_cache),
+      worker(Game.Channels, []),
+      worker(Game.ColorCodes, []),
+      worker(Game.DamageTypes, []),
+      worker(Game.Door, []),
+      worker(Game.Items, []),
+      worker(Game.Skills, []),
+      worker(Game.Socials, [])
     ]
 
     supervise(children, strategy: :one_for_one)
