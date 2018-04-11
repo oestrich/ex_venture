@@ -1,18 +1,18 @@
 # GMCP Events
 
-## Channel.Broadcast
+## Channels.Broadcast
 
 A channel you are in had a message broadcast to it.
 
 ```
-Channel.Broadcast {
+Channels.Broadcast {
   "channel": "global",
   "from": {"id": 1, "name": "Player"},
   "message": "Hi"
 }
 ```
 
-## Channel.Tell
+## Channels.Tell
 
 A new tell message was sent to your character.
 
@@ -43,6 +43,16 @@ Character.Vitals {
   "intelligence": 15,
   "health_points": 30,
   "dexterity": 15
+}
+```
+
+## Config.Update
+
+This will contain the full config that the player has, anytime it is updated.
+
+```
+Config.Update {
+  "color_npc": "blue"
 }
 ```
 
@@ -79,14 +89,40 @@ Room.Info {
 
 ## Room.Characters.Enter
 
+Sent when a character enters the player's room.
+
 ```
 Room.Characters.Enter {"type": "player", "name": "Player", "id": 3}
 ```
 
 ## Room.Characters.Leave
 
+Sent when a character leaves the player's room.
+
 ```
 Room.Characters.Leave {"type": "player", "name": "Player", "id": 3}
+```
+
+## Room.Heard
+
+Sent whenever someone `say`s to the room the player is in.
+
+```
+Room.Heard {
+  "from": {"type": "player", "name": "Player", "id": 3},
+  "message": "hi"
+}
+```
+
+## Room.Whisper
+
+Sent when the player is whispered to.
+
+```
+Room.Whisper {
+  "from": {"type": "player", "name": "Player", "id": 3},
+  "message": "hi"
+}
 ```
 
 ## Target.Character

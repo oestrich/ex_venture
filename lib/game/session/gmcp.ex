@@ -38,19 +38,11 @@ defmodule Game.Session.GMCP do
   Does not push directly to the socket
   """
   @spec character_enter(map, Character.t()) :: {String.t(), map}
-  def character_enter(%{socket: socket}, {:user, user}) do
+  def character_enter(%{socket: socket}, character) do
     socket
     |> @socket.push_gmcp(
       "Room.Character.Enter",
-      %{type: :player, id: user.id, name: user.name} |> Poison.encode!()
-    )
-  end
-
-  def character_enter(%{socket: socket}, {:npc, npc}) do
-    socket
-    |> @socket.push_gmcp(
-      "Room.Character.Enter",
-      %{type: :npc, id: npc.id, name: npc.name} |> Poison.encode!()
+      character |> character_info() |> Poison.encode!()
     )
   end
 
@@ -60,19 +52,11 @@ defmodule Game.Session.GMCP do
   Does not push directly to the socket
   """
   @spec character_leave(map, Character.t()) :: {String.t(), map}
-  def character_leave(%{socket: socket}, {:user, user}) do
+  def character_leave(%{socket: socket}, character) do
     socket
     |> @socket.push_gmcp(
       "Room.Character.Leave",
-      %{type: :player, id: user.id, name: user.name} |> Poison.encode!()
-    )
-  end
-
-  def character_leave(%{socket: socket}, {:npc, npc}) do
-    socket
-    |> @socket.push_gmcp(
-      "Room.Character.Leave",
-      %{type: :npc, id: npc.id, name: npc.name} |> Poison.encode!()
+      character |> character_info() |> Poison.encode!()
     )
   end
 
@@ -80,24 +64,17 @@ defmodule Game.Session.GMCP do
   Send the player's target info
   """
   @spec target(map, Character.t()) :: :ok
-  def target(%{socket: socket}, {:user, user}) do
-    socket |> @socket.push_gmcp("Target.Character", user |> user_info() |> Poison.encode!())
-  end
-
-  def target(%{socket: socket}, {:npc, npc}) do
-    socket |> @socket.push_gmcp("Target.Character", npc |> npc_info() |> Poison.encode!())
+  def target(%{socket: socket}, character) do
+    socket
+    |> @socket.push_gmcp("Target.Character", character |> character_info() |> Poison.encode!())
   end
 
   @doc """
   A character targeted the player
   """
   @spec counter_targeted(map, Character.t()) :: :ok
-  def counter_targeted(%{socket: socket}, {:user, user}) do
-    socket |> @socket.push_gmcp("Target.You", user |> user_info() |> Poison.encode!())
-  end
-
-  def counter_targeted(%{socket: socket}, {:npc, npc}) do
-    socket |> @socket.push_gmcp("Target.You", npc |> npc_info() |> Poison.encode!())
+  def counter_targeted(%{socket: socket}, character) do
+    socket |> @socket.push_gmcp("Target.You", character |> character_info() |> Poison.encode!())
   end
 
   @doc """
@@ -114,63 +91,6 @@ defmodule Game.Session.GMCP do
   @spec map(map, String.t()) :: :ok
   def map(%{socket: socket}, map) do
     socket |> @socket.push_gmcp("Zone.Map", %{map: map} |> Poison.encode!())
-  end
-
-  defp room_info(room, items) do
-    room
-    |> Map.take([:name, :description, :ecology, :zone_id, :x, :y])
-    |> Map.merge(%{
-      items: render_many(items),
-      players: render_many(room, :players),
-      npcs: render_many(room, :npcs),
-      shops: render_many(room, :shops),
-      exits: Room.exits(room)
-    })
-  end
-
-  @doc """
-  Get info for an NPC or a User
-  """
-  @spec character_info(Character.t()) :: map()
-  def character_info({:user, user}), do: user_info(user)
-  def character_info({:npc, npc}), do: npc_info(npc)
-
-  @doc """
-  Gather information for a user
-  """
-  @spec user_info(User.t()) :: map
-  def user_info(user) do
-    %{
-      type: :player,
-      id: user.id,
-      name: user.name
-    }
-  end
-
-  @doc """
-  Gather information for a npc
-  """
-  @spec npc_info(NPC.t()) :: map
-  def npc_info(npc) do
-    %{
-      type: :npc,
-      id: npc.id,
-      name: npc.name
-    }
-  end
-
-  defp render_many(data) when is_list(data) do
-    Enum.map(data, &%{id: &1.id, name: &1.name})
-  end
-
-  defp render_many(struct, key) do
-    case struct do
-      %{^key => data} when data != nil ->
-        render_many(data)
-
-      _ ->
-        []
-    end
   end
 
   @doc """
@@ -246,5 +166,62 @@ defmodule Game.Session.GMCP do
   @spec config(State.t(), map()) :: :ok
   def config(%{socket: socket}, config) do
     socket |> @socket.push_gmcp("Config.Update", Poison.encode!(config))
+  end
+
+  defp room_info(room, items) do
+    room
+    |> Map.take([:name, :description, :ecology, :zone_id, :x, :y])
+    |> Map.merge(%{
+      items: render_many(items),
+      players: render_many(room, :players),
+      npcs: render_many(room, :npcs),
+      shops: render_many(room, :shops),
+      exits: Room.exits(room)
+    })
+  end
+
+  @doc """
+  Get info for an NPC or a User
+  """
+  @spec character_info(Character.t()) :: map()
+  def character_info({:user, user}), do: user_info(user)
+  def character_info({:npc, npc}), do: npc_info(npc)
+
+  @doc """
+  Gather information for a user
+  """
+  @spec user_info(User.t()) :: map
+  def user_info(user) do
+    %{
+      type: :player,
+      id: user.id,
+      name: user.name
+    }
+  end
+
+  @doc """
+  Gather information for a npc
+  """
+  @spec npc_info(NPC.t()) :: map
+  def npc_info(npc) do
+    %{
+      type: :npc,
+      id: npc.id,
+      name: npc.name
+    }
+  end
+
+  defp render_many(data) when is_list(data) do
+    Enum.map(data, &%{id: &1.id, name: &1.name})
+  end
+
+  defp render_many(struct, key) do
+    case struct do
+      %{^key => data} when data != nil ->
+        render_many(data)
+
+      _ ->
+        []
+    end
   end
 end
