@@ -28,7 +28,12 @@ defmodule Game.NPC.ActionsTest do
     setup do
       @room.clear_enters()
 
-      npc = %{id: 1, stats: %{health_points: 10, max_health_points: 15}}
+      npc = %{
+        id: 1,
+        stats: %{health_points: 10, max_health_points: 15},
+        status_line: "[name] is here",
+        status_listen: nil
+      }
       npc_spawner = %{room_id: 1, spawn_interval: 10}
 
       state = %State{npc: npc, npc_spawner: npc_spawner, room_id: 2}

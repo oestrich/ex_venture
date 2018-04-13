@@ -10,6 +10,7 @@ defmodule Game.NPC.EventsTest do
   alias Game.Message
   alias Game.NPC.Events
   alias Game.NPC.State
+  alias Game.NPC.Status
   alias Game.Session.Registry
 
   setup do
@@ -434,12 +435,23 @@ defmodule Game.NPC.EventsTest do
           message: "fidgets",
           chance: 50,
           wait: 10,
+          status: %{
+            key: "running",
+            line: "[name] is running in place",
+          }
         },
       }
 
       @room.clear_emotes()
 
-      npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
+      npc = %{
+        id: 1,
+        name: "Mayor",
+        events: [event],
+        stats: base_stats(),
+        status_line: "[name] is here",
+        status_listen: nil
+      }
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
 
       %{state: state, event: event}
@@ -450,6 +462,29 @@ defmodule Game.NPC.EventsTest do
 
       [{_, message}] = @room.get_emotes()
       assert message.message == "fidgets"
+    end
+
+    test "changes the status", %{state: state, event: event} do
+      state = Events.act_on_tick(state, event)
+      assert state.status == %Status{key: "running", line: "[name] is running in place"}
+    end
+
+    test "handles reset status", %{state: state} do
+      event = %{
+        type: "tick",
+        action: %{
+          type: "emote",
+          message: "fidgets",
+          chance: 50,
+          wait: 10,
+          status: %{
+            reset: true
+          }
+        },
+      }
+
+      state = Events.act_on_tick(state, event)
+      assert state.status == %Status{key: "start", line: "[name] is here"}
     end
   end
 
