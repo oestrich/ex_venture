@@ -63,6 +63,16 @@ defmodule Data.Event do
     %{action | effects: effects}
   end
 
+  defp load_action(action = %{type: "emote"}) do
+    case action do
+      %{status: status} ->
+        status = for {key, val} <- status, into: %{}, do: {String.to_atom(key), val}
+        %{action | status: status}
+      _ ->
+        action
+    end
+  end
+
   defp load_action(action), do: action
 
   @impl Ecto.Type
@@ -94,7 +104,10 @@ defmodule Data.Event do
   end
 
   def starting_event("tick") do
-    %{type: "tick", action: %{type: "move", max_distance: 3, chance: 25, wait: 10}}
+    %{
+      type: "tick",
+      action: %{type: "move", max_distance: 3, chance: 25, wait: 10},
+    }
   end
 
   @doc """
@@ -211,6 +224,8 @@ defmodule Data.Event do
 
       iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10})
       true
+      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
+      true
 
       iex> Data.Event.valid_action?(%{type: "target"})
       true
@@ -230,7 +245,7 @@ defmodule Data.Event do
   def valid_action?(event_type \\ nil, action)
 
   def valid_action?(_, action = %{type: "emote", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && wait?(action)
+    is_binary(string) && is_integer(chance) && wait?(action) && status?(action)
   end
 
   def valid_action?(_, action = %{type: "move", max_distance: max_distance, chance: chance}) do
@@ -265,6 +280,39 @@ defmodule Data.Event do
 
   defp wait?(%{wait: wait}), do: is_integer(wait)
   defp wait?(_), do: false
+
+  defp status?(%{status: status}), do: valid_status?(status)
+  defp status?(_), do: true
+
+  @doc """
+  Validate status changing attributes
+  """
+  @spec valid_status?(map()) :: boolean()
+  def valid_status?(action) do
+    case keys(action) do
+      [:reset] ->
+        action.reset
+
+      keys ->
+        :key in keys && Enum.all?(action, &validate_status_key_value/1)
+    end
+  end
+
+  defp validate_status_key_value({key, value}) do
+    case key do
+      :key ->
+        is_binary(value)
+
+      :line ->
+        is_binary(value)
+
+      :listen ->
+        is_binary(value)
+
+      _ ->
+        false
+    end
+  end
 
   @doc """
   Validate events of the NPC

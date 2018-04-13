@@ -15,6 +15,7 @@ defmodule Game.NPC do
   alias Game.NPC.Conversation
   alias Game.NPC.Events
   alias Game.NPC.Repo, as: NPCRepo
+  alias Game.NPC.Status
   alias Game.Zone
 
   defmacro __using__(_opts) do
@@ -34,6 +35,7 @@ defmodule Game.NPC do
       :room_id,
       :target,
       :last_controlled_at,
+      :status,
       combat: false,
       tick_events: [],
       conversations: %{},
@@ -169,6 +171,7 @@ defmodule Game.NPC do
 
     npc = customize_npc(npc_spawner, npc_spawner.npc)
     npc = %{npc | stats: Stats.default(npc.stats)}
+    status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
 
     npc_spawner.zone_id |> Zone.npc_online(npc)
 
@@ -178,6 +181,7 @@ defmodule Game.NPC do
       state
       |> Map.put(:npc_spawner, npc_spawner)
       |> Map.put(:npc, npc)
+      |> Map.put(:status, status)
       |> Map.put(:room_id, npc_spawner.room_id)
 
     GenServer.cast(self(), :enter)

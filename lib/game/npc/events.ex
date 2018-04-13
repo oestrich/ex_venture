@@ -18,6 +18,7 @@ defmodule Game.NPC.Events do
   alias Game.Message
   alias Game.NPC
   alias Game.NPC.Combat
+  alias Game.NPC.Status
   alias Game.Quest
 
   @doc """
@@ -118,7 +119,7 @@ defmodule Game.NPC.Events do
     end
   end
 
-  def act_on(%{room_id: room_id, npc: npc}, {"room/heard", message}) do
+  def act_on(state = %{npc: npc}, {"room/heard", message}) do
     broadcast(npc, "room/heard", %{
       type: message.type,
       name: message.sender.name,
@@ -128,19 +129,19 @@ defmodule Game.NPC.Events do
 
     npc.events
     |> Enum.filter(&(&1.type == "room/heard"))
-    |> Enum.each(&act_on_room_heard(room_id, npc, &1, message))
+    |> Enum.each(&act_on_room_heard(state, &1, message))
 
     :ok
   end
 
-  def act_on(%{npc: npc}, {"quest/completed", user, quest}) do
+  def act_on(state = %{npc: npc}, {"quest/completed", user, quest}) do
     broadcast(npc, "quest/completed", %{
       user: %{id: user.id, name: user.name},
       quest: %{id: quest.id}
     })
 
     message = Message.npc_tell(npc, quest.completed_message)
-    Channel.tell({:user, user}, {:npc, npc}, message)
+    Channel.tell({:user, user}, npc(state), message)
 
     :ok
   end
@@ -195,13 +196,13 @@ defmodule Game.NPC.Events do
     Character.apply_effects(
       target,
       effects,
-      {:npc, npc},
-      Format.skill_usee(action.text, user: {:npc, npc})
+      npc(state),
+      Format.skill_usee(action.text, user: npc(state))
     )
 
     broadcast(npc, "combat/action", %{
       target: who(target),
-      text: Format.skill_usee(action.text, user: {:npc, npc}),
+      text: Format.skill_usee(action.text, user: npc(state)),
       effects: effects
     })
 
@@ -246,7 +247,7 @@ defmodule Game.NPC.Events do
   def act_on_room_entered(state, _character, _event), do: state
 
   defp start_combat(state = %{npc: npc}, user) do
-    Character.being_targeted({:user, user}, {:npc, npc})
+    Character.being_targeted({:user, user}, npc(state))
 
     case state.combat do
       true -> :ok
@@ -257,23 +258,23 @@ defmodule Game.NPC.Events do
     %{state | combat: true, target: Character.who({:user, user})}
   end
 
-  def act_on_room_heard(room_id, npc, event, message)
-  def act_on_room_heard(_, %{id: id}, _, %{type: :npc, sender: %{id: id}}), do: :ok
+  def act_on_room_heard(state, event, message)
+  def act_on_room_heard(%{npc: %{id: id}}, _, %{type: :npc, sender: %{id: id}}), do: :ok
 
-  def act_on_room_heard(room_id, npc, event, message) do
+  def act_on_room_heard(state, event, message) do
     case event do
       %{condition: %{regex: condition}, action: %{type: "say", message: event_message}}
       when condition != nil ->
         case Regex.match?(~r/#{condition}/i, message.message) do
           true ->
-            room_id |> @room.say({:npc, npc}, Message.npc(npc, event_message))
+            state.room_id |> @room.say(npc(state), Message.npc(state.npc, event_message))
 
           false ->
             :ok
         end
 
       %{action: %{type: "say", message: event_message}} ->
-        room_id |> @room.say({:npc, npc}, Message.npc(npc, event_message))
+        state.room_id |> @room.say(npc(state), Message.npc(state.npc, event_message))
 
       _ ->
         :ok
@@ -334,10 +335,10 @@ defmodule Game.NPC.Events do
     !(room_exit.has_door && Door.closed?(room_exit.id))
   end
 
-  def move_room(state = %{npc: npc}, old_room, new_room, direction) do
+  def move_room(state, old_room, new_room, direction) do
     @room.unlink(old_room.id)
-    @room.leave(old_room.id, {:npc, npc}, {:leave, direction})
-    @room.enter(new_room.id, {:npc, npc}, {:enter, Exit.opposite(direction)})
+    @room.leave(old_room.id, npc(state), {:leave, direction})
+    @room.enter(new_room.id, npc(state), {:enter, Exit.opposite(direction)})
     @room.link(old_room.id)
 
     Enum.each(new_room.players, fn player ->
@@ -359,17 +360,47 @@ defmodule Game.NPC.Events do
   @doc """
   Emote the NPC's message to the room
   """
-  def emote_to_room(state, %{action: %{message: message}}) do
-    emote_to_room(state, message)
+  def emote_to_room(state, %{action: action}) do
+    emote_to_room(state, action.message)
+
+    case action do
+      %{status: status} ->
+        state
+        |> merge_status(status)
+        |> update_character()
+
+      _ ->
+        state
+    end
   end
 
-  def emote_to_room(state = %{room_id: room_id, npc: npc}, message) when is_binary(message) do
-    message = Message.npc_emote(npc, message)
+  def emote_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
+    message = Message.npc_emote(state.npc, message)
+    room_id |> @room.emote(npc(state), message)
+    broadcast(state.npc, "room/heard", message)
+  end
 
-    room_id |> @room.emote({:npc, npc}, message)
-    broadcast(npc, "room/heard", message)
+  def merge_status(state, status) do
+    status =
+      case status do
+        %{reset: true} ->
+          %{npc: npc} = state
 
-    state
+          %Status{
+            key: "start",
+            line: npc.status_line,
+            listen: npc.status_listen
+          }
+
+        _ ->
+          %Status{
+            key: status.key,
+            line: Map.get(status, :line, nil),
+            listen: Map.get(status, :listen, nil)
+          }
+      end
+
+    %{state | status: status}
   end
 
   @doc """
@@ -379,11 +410,10 @@ defmodule Game.NPC.Events do
     say_to_room(state, message)
   end
 
-  def say_to_room(state = %{room_id: room_id, npc: npc}, message) when is_binary(message) do
-    message = Message.npc_say(npc, message)
-
-    room_id |> @room.say({:npc, npc}, message)
-    broadcast(npc, "room/heard", message)
+  def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
+    message = Message.npc_say(state.npc, message)
+    room_id |> @room.say(npc(state), message)
+    broadcast(state.npc, "room/heard", message)
 
     state
   end
@@ -391,12 +421,12 @@ defmodule Game.NPC.Events do
   @doc """
   Say a random message to the room
   """
-  def say_random_to_room(state = %{room_id: room_id, npc: npc}, %{action: %{messages: messages}}) do
+  def say_random_to_room(state = %{room_id: room_id}, %{action: %{messages: messages}}) do
     message = Enum.random(messages)
-    message = Message.npc_say(npc, message)
+    message = Message.npc_say(state.npc, message)
 
-    broadcast(npc, "room/heard", message)
-    room_id |> @room.say({:npc, npc}, message)
+    broadcast(state.npc, "room/heard", message)
+    room_id |> @room.say(npc(state), message)
 
     state
   end
@@ -421,6 +451,17 @@ defmodule Game.NPC.Events do
 
   def who({:npc, npc}), do: %{type: :npc, name: npc.name}
   def who({:user, user}), do: %{type: :user, name: user.name}
+
+  defp npc(%{npc: npc, status: status}) when status != nil do
+    {:npc, %{npc | status_line: status.line, status_listen: status.listen}}
+  end
+
+  defp npc(%{npc: npc}), do: {:npc, npc}
+
+  defp update_character(state) do
+    state.room_id |> @room.update_character(npc(state))
+    state
+  end
 
   defp notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})

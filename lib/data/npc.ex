@@ -16,6 +16,7 @@ defmodule Data.NPC do
     :name,
     :tags,
     :status_line,
+    :status_listen,
     :description,
     :experience_points,
     :currency,

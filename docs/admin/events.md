@@ -111,6 +111,43 @@ The move action takes a `max_distance` that the NPC will stray from their origin
 
 The emote action takes a `message` that the NPC will emote into the room. `chance` is the percent chance that the NPC will do this action on each tick. `wait` is optional and will enforce a delay of `wait` seconds since the last emote. Multiple emote ticks update the same timestamp of when an emote occured.
 
+#### Status change
+
+You can also include a `status` key to change the status of the NPC during the emote.
+
+```
+{
+  "type": "tick",
+  "action": {
+    "type": "emote",
+    "message": "moves about the store",
+    "chance": 50,
+    "wait": 15
+    "status": {
+      "line": "[name] is moving around the store",
+      "listen": "[name] is whistling"
+    }
+  }
+}
+```
+
+You can also reset the status to the NPC's default:
+
+```
+{
+  "type": "tick",
+  "action": {
+    "type": "emote",
+    "message": "pauses for a second",
+    "chance": 50,
+    "wait": 15
+    "status": {
+      "reset": true
+    }
+  }
+}
+```
+
 ### say
 
 ```
