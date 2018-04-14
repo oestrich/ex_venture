@@ -204,76 +204,82 @@ defmodule Data.Event do
 
   @doc """
   Validate the arguments matches the action
-
-      iex> Data.Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 50, wait: 10})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 150})
-      false
-
-      iex> Data.Event.valid_action?(%{type: "say", message: "hi"})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50, wait: 20})
-      true
-
-      iex> Data.Event.valid_action?(%{type: "say/random", messages: ["hi"]})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "say/random", messages: ["hi"], chance: 50, wait: 20})
-      true
-      iex> Data.Event.valid_action?(%{type: "say/random", messages: []})
-      false
-
-      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
-      true
-
-      iex> Data.Event.valid_action?(%{type: "target"})
-      true
-
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [], weight: 10, text: ""})
-      true
-      iex> effect = %{kind: "damage", type: "slashing", amount: 10}
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect], weight: 10, text: ""})
-      true
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [%{}], text: ""})
-      false
-
-      iex> Data.Event.valid_action?(%{type: "leave"})
-      false
   """
   @spec valid_action?(String.t(), map()) :: boolean()
   def valid_action?(event_type \\ nil, action)
 
-  def valid_action?(_, action = %{type: "emote", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && wait?(action) && status?(action)
+  def valid_action?(_, action = %{type: "emote"}) do
+    case action do
+      %{message: string, chance: chance} ->
+        is_binary(string) && is_integer(chance) && wait?(action) && status?(action)
+
+      _ ->
+        false
+    end
   end
 
-  def valid_action?(_, action = %{type: "move", max_distance: max_distance, chance: chance}) do
-    is_integer(max_distance) && is_integer(chance) && wait?(action)
+  def valid_action?(_, action = %{type: "move"}) do
+    case action do
+      %{max_distance: max_distance, chance: chance} ->
+        is_integer(max_distance) && is_integer(chance) && wait?(action)
+
+      _ ->
+        false
+    end
   end
 
-  def valid_action?("tick", action = %{type: "say", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && wait?(action)
+  def valid_action?("tick", action = %{type: "say"}) do
+    case action do
+      %{message: string, chance: chance} ->
+        is_binary(string) && is_integer(chance) && wait?(action)
+
+      _ ->
+        false
+    end
   end
 
-  def valid_action?(_, %{type: "say", message: string}) when is_binary(string), do: true
+  def valid_action?(_, action = %{type: "say"}) do
+    case action do
+      %{message: string} ->
+        is_binary(string)
 
-  def valid_action?("tick", action = %{type: "say/random", messages: messages, chance: chance})
-      when is_list(messages) do
-    length(messages) > 0 && Enum.all?(messages, &is_binary/1) && is_integer(chance) &&
-      wait?(action)
+      _ ->
+        false
+    end
   end
 
-  def valid_action?(_, action = %{type: "say/random", messages: messages})
-      when is_list(messages) do
-    length(messages) > 0 && Enum.all?(messages, &is_binary/1)
+  def valid_action?("tick", action = %{type: "say/random"}) do
+    case action do
+      %{messages: messages, chance: chance} ->
+        is_list(messages) && length(messages) > 0 && Enum.all?(messages, &is_binary/1) && is_integer(chance) && wait?(action)
+
+      _ ->
+        false
+    end
   end
 
-  def valid_action?(_, %{type: "target"}), do: true
+  def valid_action?(_, action = %{type: "say/random"}) do
+    case action do
+      %{messages: messages} ->
+        is_list(messages) && length(messages) > 0 && Enum.all?(messages, &is_binary/1)
+
+      _ ->
+        false
+    end
+  end
+
+  def valid_action?(_, action = %{type: "target"}) do
+    keys(action) == [:type]
+  end
 
   def valid_action?(_, action = %{type: "target/effects"}) do
-    Map.has_key?(action, :weight) && is_integer(action.weight) && is_binary(action.text) &&
-      is_float(action.delay) && Enum.all?(action.effects, &Effect.valid?/1)
+    case action do
+      %{weight: weight, text: text, delay: delay, effects: effects} ->
+        is_integer(weight) && is_binary(text) && is_float(delay) && Enum.all?(effects, &Effect.valid?/1)
+
+      _ ->
+        false
+    end
   end
 
   def valid_action?(_, _), do: false
