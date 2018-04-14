@@ -31,6 +31,33 @@ defmodule Data.EventTest do
     }
   end
 
+  describe "valid actions for types" do
+    test "combat tickets" do
+      assert Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "target/effects"}})
+      refute Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "say"}})
+    end
+
+    test "room entered" do
+      assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
+      assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say/random"}})
+      assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
+      refute Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "move"}})
+    end
+
+    test "room heard" do
+      assert Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "say"}})
+      refute Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "move"}})
+    end
+
+    test "tick" do
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "move"}})
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "emote"}})
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "say"}})
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "say/random"}})
+      refute Event.valid_action_for_type?(%{type: "tick", action: %{type: "target/effects"}})
+    end
+  end
+
   describe "validates the status attribute" do
     test "requires the key" do
       assert Event.valid_status?(%{key: "status"})
@@ -59,11 +86,11 @@ defmodule Data.EventTest do
 
   describe "validate actions" do
     test "move actions, tick" do
-      assert Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 50, wait: 10})
+      assert Event.valid_tick_action?(%{type: "move", max_distance: 3, chance: 50, wait: 10})
     end
 
     test "move actions, tick - must have a wait" do
-      refute Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 150})
+      refute Event.valid_tick_action?(%{type: "move", max_distance: 3, chance: 150})
     end
 
     test "say action" do
@@ -71,8 +98,8 @@ defmodule Data.EventTest do
     end
 
     test "say action, tick" do
-      assert Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50, wait: 20})
-      refute Event.valid_action?("tick", %{type: "say", message: "hi"})
+      assert Event.valid_tick_action?(%{type: "say", message: "hi", chance: 50, wait: 20})
+      refute Event.valid_tick_action?(%{type: "say", message: "hi"})
     end
 
     test "say random" do
@@ -81,18 +108,18 @@ defmodule Data.EventTest do
     end
 
     test "say random, tick" do
-      assert Event.valid_action?("tick", %{type: "say/random", messages: ["hi"], chance: 50, wait: 20})
-      refute Event.valid_action?("tick", %{type: "say/random", messages: ["hi"]})
+      assert Event.valid_tick_action?(%{type: "say/random", messages: ["hi"], chance: 50, wait: 20})
+      refute Event.valid_tick_action?(%{type: "say/random", messages: ["hi"]})
     end
 
     test "emote, tick" do
-      assert Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10})
-      refute Event.valid_action?("tick", %{type: "emote", message: "hi"})
+      assert Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10})
+      refute Event.valid_tick_action?(%{type: "emote", message: "hi"})
     end
 
     test "emote, tick - changing status" do
-      assert Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
-      refute Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10, status: %{}})
+      assert Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
+      refute Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{}})
     end
 
     test "target" do

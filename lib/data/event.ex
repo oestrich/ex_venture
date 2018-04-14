@@ -146,49 +146,32 @@ defmodule Data.Event do
 
   @doc """
   Validate the action matches the type
-
-      iex> Data.Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "target/effects"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "leave"}})
-      false
-
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say/random"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "leave"}})
-      false
-
-      iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "say"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "leave"}})
-      false
-
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "move"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "emote"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "say"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "say/random"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "leave"}})
-      false
   """
-  def valid_action_for_type?(%{type: "combat/tick", action: action}),
-    do: action.type in ["target/effects"]
+  @spec valid_action_for_type?(t()) :: boolean()
+  def valid_action_for_type?(event = %{action: action}) do
+    event.type
+    |> valid_type_actions()
+    |> Enum.member?(action.type)
+  end
 
-  def valid_action_for_type?(%{type: "room/entered", action: action}),
-    do: action.type in ["say", "say/random", "target"]
+  defp valid_type_actions(type) do
+    case type do
+      "combat/tick" ->
+        ["target/effects"]
 
-  def valid_action_for_type?(%{type: "room/heard", action: action}), do: action.type in ["say"]
+      "room/entered" ->
+        ["say", "say/random", "target"]
 
-  def valid_action_for_type?(%{type: "tick", action: action}),
-    do: action.type in ["emote", "move", "say", "say/random"]
+      "room/heard" ->
+        ["say"]
 
-  def valid_action_for_type?(_), do: false
+      "tick" ->
+        ["emote", "move", "say", "say/random"]
+
+      _ ->
+        []
+    end
+  end
 
   @doc """
   Validate the arguments matches the action
@@ -206,25 +189,21 @@ defmodule Data.Event do
   Validate the arguments matches the action
   """
   @spec valid_action?(String.t(), map()) :: boolean()
-  def valid_action?(event_type \\ nil, action)
+  def valid_action?(event_type, action) do
+    case event_type do
+      "tick" ->
+        valid_tick_action?(action)
 
-  def valid_action?(_, action = %{type: "emote"}) do
-    action
-    |> validate()
-    |> validate_keys(required: [:message, :chance, :wait, :type], optional: [:status])
-    |> validate_values(&validate_emote_action_values/1)
-    |> Map.get(:valid?)
+      _ ->
+        valid_action?(action)
+    end
   end
 
-  def valid_action?(_, action = %{type: "move"}) do
-    action
-    |> validate()
-    |> validate_keys(required: [:chance, :max_distance, :type, :wait])
-    |> validate_values(&validate_move_action_values/1)
-    |> Map.get(:valid?)
-  end
-
-  def valid_action?("tick", action = %{type: "say"}) do
+  @doc """
+  Validate tick actions
+  """
+  @spec valid_tick_action?(map()) :: boolean()
+  def valid_tick_action?(action = %{type: "say"}) do
     action
     |> validate()
     |> validate_keys(required: [:chance, :message, :type, :wait])
@@ -232,15 +211,7 @@ defmodule Data.Event do
     |> Map.get(:valid?)
   end
 
-  def valid_action?(_, action = %{type: "say"}) do
-    action
-    |> validate()
-    |> validate_keys(required: [:message, :type])
-    |> validate_values(&validate_say_action_values/1)
-    |> Map.get(:valid?)
-  end
-
-  def valid_action?("tick", action = %{type: "say/random"}) do
+  def valid_tick_action?(action = %{type: "say/random"}) do
     action
     |> validate()
     |> validate_keys(required: [:chance, :messages, :type, :wait])
@@ -248,7 +219,45 @@ defmodule Data.Event do
     |> Map.get(:valid?)
   end
 
-  def valid_action?(_, action = %{type: "say/random"}) do
+  def valid_tick_action?(action = %{type: "emote"}) do
+    valid_action?(action)
+  end
+
+  def valid_tick_action?(action = %{type: "move"}) do
+    valid_action?(action)
+  end
+
+  def valid_tick_action?(_), do: false
+
+  @doc """
+  Validate all other event type actions
+  """
+  @spec valid_action?(map()) :: boolean()
+  def valid_action?(action = %{type: "emote"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:message, :chance, :wait, :type], optional: [:status])
+    |> validate_values(&validate_emote_action_values/1)
+    |> Map.get(:valid?)
+  end
+
+  def valid_action?(action = %{type: "move"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:chance, :max_distance, :type, :wait])
+    |> validate_values(&validate_move_action_values/1)
+    |> Map.get(:valid?)
+  end
+
+  def valid_action?(action = %{type: "say"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:message, :type])
+    |> validate_values(&validate_say_action_values/1)
+    |> Map.get(:valid?)
+  end
+
+  def valid_action?(action = %{type: "say/random"}) do
     action
     |> validate()
     |> validate_keys(required: [:messages, :type])
@@ -256,14 +265,14 @@ defmodule Data.Event do
     |> Map.get(:valid?)
   end
 
-  def valid_action?(_, action = %{type: "target"}) do
+  def valid_action?(action = %{type: "target"}) do
     action
     |> validate()
     |> validate_keys(required: [:type])
     |> Map.get(:valid?)
   end
 
-  def valid_action?(_, action = %{type: "target/effects"}) do
+  def valid_action?(action = %{type: "target/effects"}) do
     action
     |> validate()
     |> validate_keys(required: [:delay, :effects, :weight, :text, :type])
@@ -271,7 +280,7 @@ defmodule Data.Event do
     |> Map.get(:valid?)
   end
 
-  def valid_action?(_, _), do: false
+  def valid_action?(_), do: false
 
   defp validate_emote_action_values({key, value}) do
     case key do
