@@ -92,6 +92,7 @@ defmodule Data.EventTest do
 
     test "emote, tick - changing status" do
       assert Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
+      refute Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10, status: %{}})
     end
 
     test "target" do

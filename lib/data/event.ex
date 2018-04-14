@@ -209,86 +209,170 @@ defmodule Data.Event do
   def valid_action?(event_type \\ nil, action)
 
   def valid_action?(_, action = %{type: "emote"}) do
-    case action do
-      %{message: string, chance: chance} ->
-        is_binary(string) && is_integer(chance) && wait?(action) && status?(action)
-
-      _ ->
-        false
-    end
+    action
+    |> validate()
+    |> validate_keys(required: [:message, :chance, :wait, :type], optional: [:status])
+    |> validate_values(&validate_emote_action_values/1)
+    |> Map.get(:valid?)
   end
 
   def valid_action?(_, action = %{type: "move"}) do
-    case action do
-      %{max_distance: max_distance, chance: chance} ->
-        is_integer(max_distance) && is_integer(chance) && wait?(action)
-
-      _ ->
-        false
-    end
+    action
+    |> validate()
+    |> validate_keys(required: [:chance, :max_distance, :type, :wait])
+    |> validate_values(&validate_move_action_values/1)
+    |> Map.get(:valid?)
   end
 
   def valid_action?("tick", action = %{type: "say"}) do
-    case action do
-      %{message: string, chance: chance} ->
-        is_binary(string) && is_integer(chance) && wait?(action)
-
-      _ ->
-        false
-    end
+    action
+    |> validate()
+    |> validate_keys(required: [:chance, :message, :type, :wait])
+    |> validate_values(&validate_say_action_values/1)
+    |> Map.get(:valid?)
   end
 
   def valid_action?(_, action = %{type: "say"}) do
-    case action do
-      %{message: string} ->
-        is_binary(string)
-
-      _ ->
-        false
-    end
+    action
+    |> validate()
+    |> validate_keys(required: [:message, :type])
+    |> validate_values(&validate_say_action_values/1)
+    |> Map.get(:valid?)
   end
 
   def valid_action?("tick", action = %{type: "say/random"}) do
-    case action do
-      %{messages: messages, chance: chance} ->
-        is_list(messages) && length(messages) > 0 && Enum.all?(messages, &is_binary/1) && is_integer(chance) && wait?(action)
-
-      _ ->
-        false
-    end
+    action
+    |> validate()
+    |> validate_keys(required: [:chance, :messages, :type, :wait])
+    |> validate_values(&validate_say_random_action_values/1)
+    |> Map.get(:valid?)
   end
 
   def valid_action?(_, action = %{type: "say/random"}) do
-    case action do
-      %{messages: messages} ->
-        is_list(messages) && length(messages) > 0 && Enum.all?(messages, &is_binary/1)
-
-      _ ->
-        false
-    end
+    action
+    |> validate()
+    |> validate_keys(required: [:messages, :type])
+    |> validate_values(&validate_say_random_action_values/1)
+    |> Map.get(:valid?)
   end
 
   def valid_action?(_, action = %{type: "target"}) do
-    keys(action) == [:type]
+    action
+    |> validate()
+    |> validate_keys(required: [:type])
+    |> Map.get(:valid?)
   end
 
   def valid_action?(_, action = %{type: "target/effects"}) do
-    case action do
-      %{weight: weight, text: text, delay: delay, effects: effects} ->
-        is_integer(weight) && is_binary(text) && is_float(delay) && Enum.all?(effects, &Effect.valid?/1)
-
-      _ ->
-        false
-    end
+    action
+    |> validate()
+    |> validate_keys(required: [:delay, :effects, :weight, :text, :type])
+    |> validate_values(&validate_target_effects_action_values/1)
+    |> Map.get(:valid?)
   end
 
   def valid_action?(_, _), do: false
 
-  defp wait?(%{wait: wait}), do: is_integer(wait)
-  defp wait?(_), do: false
+  defp validate_emote_action_values({key, value}) do
+    case key do
+      :chance ->
+        is_integer(value)
 
-  defp status?(%{status: status}), do: valid_status?(status)
-  defp status?(_), do: true
+      :message ->
+        is_binary(value)
+
+      :status ->
+        valid_status?(value)
+
+      :type ->
+        value == "emote"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_move_action_values({key, value}) do
+    case key do
+      :max_distance ->
+        is_integer(value)
+
+      :chance ->
+        is_integer(value)
+
+      :type ->
+        value == "move"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_say_action_values({key, value}) do
+    case key do
+      :message ->
+        is_binary(value)
+
+      :chance ->
+        is_integer(value)
+
+      :type ->
+        value == "say"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_say_random_action_values({key, value}) do
+    case key do
+      :messages ->
+        is_list(value) && length(value) > 0 && Enum.all?(value, &is_binary/1)
+
+      :chance ->
+        is_integer(value)
+
+      :type ->
+        value == "say/random"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_target_effects_action_values({key, value}) do
+    case key do
+      :delay ->
+        is_float(value)
+
+      :effects ->
+        is_list(value) && Enum.all?(value, &Effect.valid?/1)
+
+      :text ->
+        is_binary(value)
+
+      :type ->
+        value == "target/effects"
+
+      :weight ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
 
   @doc """
   Validate status changing attributes
