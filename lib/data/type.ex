@@ -3,7 +3,9 @@ defmodule Data.Type do
   Helper functions for types saved to the database
   """
 
-  @type changeset :: %{data: map(), valid?: boolean}
+  alias Data.Type.Changeset
+
+  @type changeset :: Changeset.t()
 
   @doc """
   Load all non-nil keys from a struct
@@ -27,7 +29,7 @@ defmodule Data.Type do
   Start data validation
   """
   @spec validate(map()) :: changeset()
-  def validate(data), do: %{data: data, valid?: true}
+  def validate(data), do: %Changeset{data: data, valid?: true}
 
   @doc """
   Validate the right keys are in the map
