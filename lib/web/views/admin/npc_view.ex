@@ -2,14 +2,12 @@ defmodule Web.Admin.NPCView do
   use Web, :view
   use Game.Currency
 
-  alias Data.Event
   alias Data.Stats
   alias Game.Skills
   alias Web.Admin.EventView
   alias Web.Admin.SharedView
   alias Web.Zone
 
-  import Web.JSONHelper
   import Ecto.Changeset
 
   def stats(changeset) do

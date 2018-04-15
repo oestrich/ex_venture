@@ -10,7 +10,7 @@ defmodule Web.Admin.NPCEventController do
 
   def new(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
-    conn |> render("new.html", npc: npc, event: %{})
+    conn |> render("new.html", npc: npc, field: "")
   end
 
   def create(conn, %{"npc_id" => npc_id, "event" => %{"body" => event}}) do
@@ -24,7 +24,7 @@ defmodule Web.Admin.NPCEventController do
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "There was a problem updating.")
-        |> redirect(to: npc_event_path(conn, :index, npc.id))
+        |> render("new.html", npc: npc, field: event)
     end
   end
 
@@ -35,22 +35,28 @@ defmodule Web.Admin.NPCEventController do
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
 
       event ->
-        conn |> render("edit.html", npc: npc, event: event)
+        conn |> render("edit.html", npc: npc, event: event, field: Poison.encode!(event, pretty: true))
     end
   end
 
-  def update(conn, %{"npc_id" => npc_id, "id" => id, "event" => %{"body" => event}}) do
+  def update(conn, %{"npc_id" => npc_id, "id" => id, "event" => %{"body" => body}}) do
     npc = NPC.get(npc_id)
-    case NPC.edit_event(npc, id, event) do
-      {:ok, _npc} ->
-        conn
-        |> put_flash(:info, "Event updated!")
-        |> redirect(to: npc_event_path(conn, :index, npc.id))
+    case Enum.find(npc.events, &(&1.id == id)) do
+      nil ->
+        conn |> redirect(to: npc_event_path(conn, :index, npc.id))
 
-      {:error, _changeset} ->
-        conn
-        |> put_flash(:error, "There was a problem updating.")
-        |> redirect(to: npc_event_path(conn, :index, npc.id))
+      event ->
+        case NPC.edit_event(npc, id, body) do
+          {:ok, _npc} ->
+            conn
+            |> put_flash(:info, "Event updated!")
+            |> redirect(to: npc_event_path(conn, :index, npc.id))
+
+          {:error, _changeset} ->
+            conn
+            |> put_flash(:error, "There was a problem updating.")
+            |> render("edit.html", npc: npc, event: event, field: body)
+        end
     end
   end
 

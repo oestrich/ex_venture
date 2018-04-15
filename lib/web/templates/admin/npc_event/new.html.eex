@@ -18,7 +18,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <%= render "_form.html", path: npc_event_path(@conn, :create, @npc.id), method: "POST", event: @event, title: "New", submit: "Create" %>
+      <%= render "_form.html", path: npc_event_path(@conn, :create, @npc.id), method: "POST", event: @field, title: "New", submit: "Create", events: true %>
     </div>
   </div>
 </section>
