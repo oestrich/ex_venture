@@ -71,4 +71,18 @@ defmodule Data.Type do
         Changeset.add_error(changeset, :values, "invalid types for: #{Enum.join(fields, ",")}")
     end
   end
+
+  @doc """
+  Ensure that a field exists in a map/struct
+  """
+  @spec ensure(map(), atom(), any()) :: map()
+  def ensure(data, field, default) do
+    case Map.has_key?(data, field) do
+      true ->
+        data
+
+      false ->
+        Map.put(data, field, default)
+    end
+  end
 end

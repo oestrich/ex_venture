@@ -18,7 +18,8 @@ defmodule Data.EventTest do
     }
 
     {:ok, event} = Event.load(event)
-    assert event == %{
+    assert event.id
+    assert Map.take(event, [:type, :action]) == %{
       type: "combat/tick",
       action: %{
         type: "target/effects",
@@ -33,24 +34,68 @@ defmodule Data.EventTest do
 
   describe "valid?" do
     test "validate combat/tick" do
-      assert Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}})
-      refute Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: :invalid}})
+      assert Event.valid?(%{
+        id: "id",
+        type: "combat/tick",
+        action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""},
+      })
+
+      refute Event.valid?(%{
+        id: "id",
+        type: "combat/tick",
+        action: %{type: "target/effects", effects: :invalid},
+      })
     end
 
     test "validate room/entered" do
-      assert Event.valid?(%{type: "room/entered", action: %{type: "say", message: "hi"}})
-      refute Event.valid?(%{type: "room/entered", action: %{type: "say", message: :invalid}})
+      assert Event.valid?(%{
+        id: "id",
+        type: "room/entered",
+        action: %{type: "say", message: "hi"},
+      })
+
+      refute Event.valid?(%{
+        id: "id",
+        type: "room/entered",
+        action: %{type: "say", message: :invalid},
+      })
     end
 
     test "validate room/heard" do
-      assert Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "hi"}})
-      refute Event.valid?(%{type: "room/heard", condition: nil, action: %{type: "say", message: "hi"}})
-      refute Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
+      assert Event.valid?(%{
+        id: "id",
+        type: "room/heard",
+        condition: %{regex: "hello"},
+        action: %{type: "say", message: "hi"},
+      })
+
+      refute Event.valid?(%{
+        id: "id",
+        type: "room/heard",
+        condition: nil,
+        action: %{type: "say", message: "hi"},
+      })
+
+      refute Event.valid?(%{
+        id: "id",
+        type: "room/heard",
+        condition: %{regex: "hello"},
+        action: %{type: "say", message: nil},
+      })
     end
 
     test "validate tick" do
-      assert Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50, wait: 10}})
-      refute Event.valid?(%{type: "tick", action: %{type: "move"}})
+      assert Event.valid?(%{
+        id: "id",
+        type: "tick",
+        action: %{type: "move", max_distance: 3, chance: 50, wait: 10},
+      })
+
+      refute Event.valid?(%{
+        id: "id",
+        type: "tick",
+        action: %{type: "move"},
+      })
     end
   end
 

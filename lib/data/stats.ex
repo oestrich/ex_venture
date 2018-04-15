@@ -86,13 +86,6 @@ defmodule Data.Stats do
 
   defp migrate(stats), do: stats
 
-  defp ensure(stats, field, default) do
-    case Map.has_key?(stats, field) do
-      true -> stats
-      false -> Map.put(stats, field, default)
-    end
-  end
-
   @doc """
   Slots on a character
   """

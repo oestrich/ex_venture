@@ -33,10 +33,15 @@ defmodule Data.Event do
   @impl Ecto.Type
   def load(event) do
     event = for {key, val} <- event, into: %{}, do: {String.to_atom(key), val}
-    event = load_condition(event)
     action = for {key, val} <- event.action, into: %{}, do: {String.to_atom(key), val}
     action = load_action(action)
-    event = %{event | action: action}
+
+    event =
+      event
+      |> load_condition()
+      |> ensure(:id, UUID.uuid4())
+      |> Map.put(:action, action)
+
     {:ok, event}
   end
 
@@ -117,8 +122,9 @@ defmodule Data.Event do
       valid_action?(event.type, event.action) && valid_condition?(event)
   end
 
-  defp valid_keys("room/heard"), do: [:action, :condition, :type]
-  defp valid_keys(_type), do: [:action, :type]
+  # alphabetical
+  defp valid_keys("room/heard"), do: [:action, :condition, :id, :type]
+  defp valid_keys(_type), do: [:action, :id, :type]
 
   @doc """
   Validate the action matches the type
