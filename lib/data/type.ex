@@ -40,21 +40,15 @@ defmodule Data.Type do
     optional = Keyword.get(opts, :optional, [])
     keys = keys(changeset.data)
 
-    all_required_keys? = Enum.all?(required, &Enum.member?(keys, &1))
+    missing_keys = Enum.reject(required, &Enum.member?(keys, &1))
     no_extra_keys? = Enum.empty?((keys -- required) -- optional)
 
-    case changeset.valid? do
+    case Enum.empty?(missing_keys) && no_extra_keys? do
       true ->
-        case all_required_keys? && no_extra_keys? do
-          true ->
-            changeset
-
-          false ->
-            %{changeset | valid?: false}
-        end
+        changeset
 
       false ->
-        changeset
+        Changeset.add_error(changeset, :keys, "missing keys: #{Enum.join(missing_keys, ", ")}")
     end
   end
 
@@ -63,18 +57,18 @@ defmodule Data.Type do
   """
   @spec validate_values(changeset(), ({any(), any()} -> boolean())) :: changeset()
   def validate_values(changeset, fun) do
-    case changeset.valid? do
-      true ->
-        case Enum.all?(changeset.data, fun) do
-          true ->
-            changeset
+    fields =
+      changeset.data
+      |> Enum.reject(fun)
+      |> Enum.into(%{})
+      |> Map.keys()
 
-          false ->
-            %{changeset | valid?: false}
-        end
+    case Enum.empty?(fields)  do
+      true ->
+        changeset
 
       false ->
-        changeset
+        Changeset.add_error(changeset, :values, "invalid types for: #{Enum.join(fields, ",")}")
     end
   end
 end

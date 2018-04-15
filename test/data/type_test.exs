@@ -3,58 +3,76 @@ defmodule Data.TypeTest do
   doctest Data.Type
 
   alias Data.Type
+  alias Data.Type.Changeset
 
   describe "validating keys of a map" do
     setup do
-      changeset = %{data: %{type: "emote"}, valid?: true}
-
+      changeset = %Changeset{data: %{type: "emote"}, valid?: true}
       %{changeset: changeset}
     end
 
     test "required keys", %{changeset: changeset} do
-      changeset = Type.validate_keys(changeset, required: [:type])
-      assert changeset.valid?
+      expected_changeset = Type.validate_keys(changeset, required: [:type])
+      assert expected_changeset.valid?
 
-      changeset = Type.validate_keys(changeset, required: [:message])
-      refute changeset.valid?
+      expected_changeset = Type.validate_keys(changeset, required: [:message])
+      refute expected_changeset.valid?
+      assert expected_changeset.errors[:keys] == ["missing keys: message"]
 
-      changeset = Type.validate_keys(changeset, required: [:type, :message])
-      refute changeset.valid?
+      expected_changeset = Type.validate_keys(changeset, required: [:type, :message])
+      refute expected_changeset.valid?
+      assert expected_changeset.errors[:keys] == ["missing keys: message"]
     end
 
     test "optional keys", %{changeset: changeset} do
-      changeset = Type.validate_keys(changeset, required: [], optional: [:type])
-      assert changeset.valid?
+      expected_changeset = Type.validate_keys(changeset, required: [], optional: [:type])
+      assert expected_changeset.valid?
 
-      changeset = Type.validate_keys(changeset, required: [:type], optional: [:message])
-      assert changeset.valid?
+      expected_changeset = Type.validate_keys(changeset, required: [:type], optional: [:message])
+      assert expected_changeset.valid?
     end
 
-    test "does nothing if already failing", %{changeset: changeset} do
+    test "continues to validate if already invalid", %{changeset: changeset} do
       changeset = %{changeset | valid?: false}
-      changeset = Type.validate_keys(changeset, required: [])
-      refute changeset.valid?
+
+      expected_changeset = Type.validate_keys(changeset, required: [:message])
+
+      refute expected_changeset.valid?
+      assert expected_changeset.errors[:keys] == ["missing keys: message"]
     end
   end
 
   describe "validating values of a map" do
     setup do
-      changeset = %{data: %{type: "emote"}, valid?: true}
-
+      changeset = %Changeset{data: %{type: "emote"}, valid?: true}
       %{changeset: changeset}
     end
 
     test "calls the function", %{changeset: changeset} do
-      changeset = Type.validate_values(changeset, fn _ -> true end)
-      assert changeset.valid?
+      expected_changeset = Type.validate_values(changeset, fn _ -> true end)
+      assert expected_changeset.valid?
 
-      changeset = Type.validate_values(changeset, fn _ -> false end)
-      refute changeset.valid?
+      expected_changeset = Type.validate_values(changeset, fn _ -> false end)
+      refute expected_changeset.valid?
+      assert expected_changeset.errors[:values] == ["invalid types for: type"]
     end
 
     test "does nothing if already failing", %{changeset: changeset} do
       changeset = %{changeset | valid?: false}
-      changeset = Type.validate_values(changeset, fn _ -> true end)
+      expected_changeset = Type.validate_values(changeset, fn _ -> true end)
+      refute expected_changeset.valid?
+    end
+  end
+
+  describe "adding errors" do
+    setup do
+      changeset = %Changeset{data: %{type: "emote"}, valid?: true}
+      %{changeset: changeset}
+    end
+
+    test "sets to invalid", %{changeset: changeset} do
+      changeset = Changeset.add_error(changeset, :keys, "missing keys")
+      assert changeset.errors[:keys] == ["missing keys"]
       refute changeset.valid?
     end
   end
