@@ -31,6 +31,56 @@ defmodule Data.EventTest do
     }
   end
 
+  describe "valid?" do
+    test "validate combat/tick" do
+      assert Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}})
+      refute Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: :invalid}})
+    end
+
+    test "validate room/entered" do
+      assert Event.valid?(%{type: "room/entered", action: %{type: "say", message: "hi"}})
+      refute Event.valid?(%{type: "room/entered", action: %{type: "say", message: :invalid}})
+    end
+
+    test "validate room/heard" do
+      assert Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "hi"}})
+      refute Event.valid?(%{type: "room/heard", condition: nil, action: %{type: "say", message: "hi"}})
+      refute Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
+    end
+
+    test "validate tick" do
+      assert Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50, wait: 10}})
+      refute Event.valid?(%{type: "tick", action: %{type: "move"}})
+    end
+  end
+
+  describe "valid actions for types" do
+    test "combat tickets" do
+      assert Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "target/effects"}})
+      refute Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "say"}})
+    end
+
+    test "room entered" do
+      assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
+      assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say/random"}})
+      assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
+      refute Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "move"}})
+    end
+
+    test "room heard" do
+      assert Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "say"}})
+      refute Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "move"}})
+    end
+
+    test "tick" do
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "move"}})
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "emote"}})
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "say"}})
+      assert Event.valid_action_for_type?(%{type: "tick", action: %{type: "say/random"}})
+      refute Event.valid_action_for_type?(%{type: "tick", action: %{type: "target/effects"}})
+    end
+  end
+
   describe "validates the status attribute" do
     test "requires the key" do
       assert Event.valid_status?(%{key: "status"})
@@ -54,6 +104,78 @@ defmodule Data.EventTest do
 
     test "cannot include reset with other attributes" do
       refute Event.valid_status?(%{key: "status", line: "line text", listen: "listen text", reset: true})
+    end
+  end
+
+  describe "validate actions" do
+    test "move actions, tick" do
+      assert Event.valid_tick_action?(%{type: "move", max_distance: 3, chance: 50, wait: 10})
+    end
+
+    test "move actions, tick - must have a wait" do
+      refute Event.valid_tick_action?(%{type: "move", max_distance: 3, chance: 150})
+    end
+
+    test "say action" do
+      assert Event.valid_action?(%{type: "say", message: "hi"})
+    end
+
+    test "say action, tick" do
+      assert Event.valid_tick_action?(%{type: "say", message: "hi", chance: 50, wait: 20})
+      refute Event.valid_tick_action?(%{type: "say", message: "hi"})
+    end
+
+    test "say random" do
+      assert Event.valid_action?(%{type: "say/random", messages: ["hi"]})
+      refute Event.valid_action?(%{type: "say/random", messages: []})
+    end
+
+    test "say random, tick" do
+      assert Event.valid_tick_action?(%{type: "say/random", messages: ["hi"], chance: 50, wait: 20})
+      refute Event.valid_tick_action?(%{type: "say/random", messages: ["hi"]})
+    end
+
+    test "emote, tick" do
+      assert Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10})
+      refute Event.valid_tick_action?(%{type: "emote", message: "hi"})
+    end
+
+    test "emote, tick - changing status" do
+      assert Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
+      refute Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{}})
+    end
+
+    test "target" do
+      assert Event.valid_action?(%{type: "target"})
+      refute Event.valid_action?(%{type: "target", extra: "keys"})
+    end
+
+    test "target/effects" do
+      assert Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [], weight: 10, text: ""})
+      refute Event.valid_action?(%{type: "target/effects", effects: [], weight: 10, text: ""})
+    end
+
+    test "target/effects - validates the effects" do
+      effect = %{kind: "damage", type: "slashing", amount: 10}
+      assert Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect], weight: 10, text: ""})
+
+      refute Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [%{}], text: ""})
+    end
+
+    test "invalid if type is bad" do
+      refute Event.valid_action?(%{type: "leave"})
+    end
+  end
+
+  describe "valdiation conditions" do
+    test "room heard - regex" do
+      assert Event.valid_condition?(%{type: "room/heard", condition: %{regex: "hello"}})
+      refute Event.valid_condition?(%{type: "room/heard", condition: %{regex: :hello}})
+    end
+
+    test "any other type" do
+      assert Event.valid_condition?(%{type: "combat/tick"})
+      refute Event.valid_condition?(%{type: "combat/tick", condition: %{regex: "hello"}})
     end
   end
 end

@@ -29,9 +29,6 @@ defmodule Data.Event do
   Load an event from a stored map
 
   Cast it properly
-
-      iex> Data.Event.load(%{"type" => "room/entered", "action" => %{"type" => "say", "message" => "Welcome!"}})
-      {:ok, %{type: "room/entered", action: %{type: "say", message: "Welcome!"}}}
   """
   @impl Ecto.Type
   def load(event) do
@@ -68,6 +65,7 @@ defmodule Data.Event do
       %{status: status} ->
         status = for {key, val} <- status, into: %{}, do: {String.to_atom(key), val}
         %{action | status: status}
+
       _ ->
         action
     end
@@ -106,39 +104,17 @@ defmodule Data.Event do
   def starting_event("tick") do
     %{
       type: "tick",
-      action: %{type: "move", max_distance: 3, chance: 25, wait: 10},
+      action: %{type: "move", max_distance: 3, chance: 25, wait: 10}
     }
   end
 
   @doc """
   Validate an event based on type
-
-      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}})
-      true
-      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: :invalid}})
-      false
-
-      iex> Data.Event.valid?(%{type: "room/entered", action: %{type: "say", message: "hi"}})
-      true
-      iex> Data.Event.valid?(%{type: "room/entered", action: %{type: "say", message: :invalid}})
-      false
-
-      iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "hi"}})
-      true
-      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: %{type: "say", message: "hi"}})
-      false
-      iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
-      false
-
-      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50, wait: 10}})
-      true
-      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move"}})
-      false
   """
-  @spec valid?(t) :: boolean
+  @spec valid?(t()) :: boolean
   def valid?(event) do
     keys(event) == valid_keys(event.type) && valid_action_for_type?(event) &&
-      valid_action?(event.type, event.action)
+      valid_action?(event.type, event.action) && valid_condition?(event)
   end
 
   defp valid_keys("room/heard"), do: [:action, :condition, :type]
@@ -146,143 +122,257 @@ defmodule Data.Event do
 
   @doc """
   Validate the action matches the type
-
-      iex> Data.Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "target/effects"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "leave"}})
-      false
-
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say/random"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "leave"}})
-      false
-
-      iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "say"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "leave"}})
-      false
-
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "move"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "emote"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "say"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "say/random"}})
-      true
-      iex> Data.Event.valid_action_for_type?(%{type: "tick", action: %{type: "leave"}})
-      false
   """
-  def valid_action_for_type?(%{type: "combat/tick", action: action}),
-    do: action.type in ["target/effects"]
+  @spec valid_action_for_type?(t()) :: boolean()
+  def valid_action_for_type?(event = %{action: action}) do
+    event.type
+    |> valid_type_actions()
+    |> Enum.member?(action.type)
+  end
 
-  def valid_action_for_type?(%{type: "room/entered", action: action}),
-    do: action.type in ["say", "say/random", "target"]
+  defp valid_type_actions(type) do
+    case type do
+      "combat/tick" ->
+        ["target/effects"]
 
-  def valid_action_for_type?(%{type: "room/heard", action: action}), do: action.type in ["say"]
+      "room/entered" ->
+        ["say", "say/random", "target"]
 
-  def valid_action_for_type?(%{type: "tick", action: action}),
-    do: action.type in ["emote", "move", "say", "say/random"]
+      "room/heard" ->
+        ["say"]
 
-  def valid_action_for_type?(_), do: false
+      "tick" ->
+        ["emote", "move", "say", "say/random"]
+
+      _ ->
+        []
+    end
+  end
 
   @doc """
   Validate the arguments matches the action
-
-      iex> Data.Event.valid_condition?(%{regex: "hello"})
-      true
-
-      iex> Data.Event.valid_condition?(nil)
-      false
   """
-  def valid_condition?(%{regex: string}) when is_binary(string), do: true
-  def valid_condition?(_), do: false
+  def valid_condition?(event) do
+    case event.type do
+      "room/heard" ->
+        event.condition
+        |> validate()
+        |> validate_keys(required: [:regex])
+        |> validate_values(&validate_condition_values/1)
+        |> Map.get(:valid?)
+
+      _ ->
+        !Map.has_key?(event, :condition)
+    end
+  end
+
+  defp validate_condition_values({key, value}) do
+    case key do
+      :regex ->
+        is_binary(value)
+
+      _ ->
+        false
+    end
+  end
 
   @doc """
   Validate the arguments matches the action
-
-      iex> Data.Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 50, wait: 10})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "move", max_distance: 3, chance: 150})
-      false
-
-      iex> Data.Event.valid_action?(%{type: "say", message: "hi"})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "say", message: "hi", chance: 50, wait: 20})
-      true
-
-      iex> Data.Event.valid_action?(%{type: "say/random", messages: ["hi"]})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "say/random", messages: ["hi"], chance: 50, wait: 20})
-      true
-      iex> Data.Event.valid_action?(%{type: "say/random", messages: []})
-      false
-
-      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10})
-      true
-      iex> Data.Event.valid_action?("tick", %{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
-      true
-
-      iex> Data.Event.valid_action?(%{type: "target"})
-      true
-
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [], weight: 10, text: ""})
-      true
-      iex> effect = %{kind: "damage", type: "slashing", amount: 10}
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect], weight: 10, text: ""})
-      true
-      iex> Data.Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [%{}], text: ""})
-      false
-
-      iex> Data.Event.valid_action?(%{type: "leave"})
-      false
   """
   @spec valid_action?(String.t(), map()) :: boolean()
-  def valid_action?(event_type \\ nil, action)
+  def valid_action?(event_type, action) do
+    case event_type do
+      "tick" ->
+        valid_tick_action?(action)
 
-  def valid_action?(_, action = %{type: "emote", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && wait?(action) && status?(action)
+      _ ->
+        valid_action?(action)
+    end
   end
 
-  def valid_action?(_, action = %{type: "move", max_distance: max_distance, chance: chance}) do
-    is_integer(max_distance) && is_integer(chance) && wait?(action)
+  @doc """
+  Validate tick actions
+  """
+  @spec valid_tick_action?(map()) :: boolean()
+  def valid_tick_action?(action = %{type: "say"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:chance, :message, :type, :wait])
+    |> validate_values(&validate_say_action_values/1)
+    |> Map.get(:valid?)
   end
 
-  def valid_action?("tick", action = %{type: "say", message: string, chance: chance}) do
-    is_binary(string) && is_integer(chance) && wait?(action)
+  def valid_tick_action?(action = %{type: "say/random"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:chance, :messages, :type, :wait])
+    |> validate_values(&validate_say_random_action_values/1)
+    |> Map.get(:valid?)
   end
 
-  def valid_action?(_, %{type: "say", message: string}) when is_binary(string), do: true
-
-  def valid_action?("tick", action = %{type: "say/random", messages: messages, chance: chance})
-      when is_list(messages) do
-    length(messages) > 0 && Enum.all?(messages, &is_binary/1) && is_integer(chance) &&
-      wait?(action)
+  def valid_tick_action?(action = %{type: "emote"}) do
+    valid_action?(action)
   end
 
-  def valid_action?(_, action = %{type: "say/random", messages: messages})
-      when is_list(messages) do
-    length(messages) > 0 && Enum.all?(messages, &is_binary/1)
+  def valid_tick_action?(action = %{type: "move"}) do
+    valid_action?(action)
   end
 
-  def valid_action?(_, %{type: "target"}), do: true
+  def valid_tick_action?(_), do: false
 
-  def valid_action?(_, action = %{type: "target/effects"}) do
-    Map.has_key?(action, :weight) && is_integer(action.weight) && is_binary(action.text) &&
-      is_float(action.delay) && Enum.all?(action.effects, &Effect.valid?/1)
+  @doc """
+  Validate all other event type actions
+  """
+  @spec valid_action?(map()) :: boolean()
+  def valid_action?(action = %{type: "emote"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:message, :chance, :wait, :type], optional: [:status])
+    |> validate_values(&validate_emote_action_values/1)
+    |> Map.get(:valid?)
   end
 
-  def valid_action?(_, _), do: false
+  def valid_action?(action = %{type: "move"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:chance, :max_distance, :type, :wait])
+    |> validate_values(&validate_move_action_values/1)
+    |> Map.get(:valid?)
+  end
 
-  defp wait?(%{wait: wait}), do: is_integer(wait)
-  defp wait?(_), do: false
+  def valid_action?(action = %{type: "say"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:message, :type])
+    |> validate_values(&validate_say_action_values/1)
+    |> Map.get(:valid?)
+  end
 
-  defp status?(%{status: status}), do: valid_status?(status)
-  defp status?(_), do: true
+  def valid_action?(action = %{type: "say/random"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:messages, :type])
+    |> validate_values(&validate_say_random_action_values/1)
+    |> Map.get(:valid?)
+  end
+
+  def valid_action?(action = %{type: "target"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:type])
+    |> Map.get(:valid?)
+  end
+
+  def valid_action?(action = %{type: "target/effects"}) do
+    action
+    |> validate()
+    |> validate_keys(required: [:delay, :effects, :weight, :text, :type])
+    |> validate_values(&validate_target_effects_action_values/1)
+    |> Map.get(:valid?)
+  end
+
+  def valid_action?(_), do: false
+
+  defp validate_emote_action_values({key, value}) do
+    case key do
+      :chance ->
+        is_integer(value)
+
+      :message ->
+        is_binary(value)
+
+      :status ->
+        valid_status?(value)
+
+      :type ->
+        value == "emote"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_move_action_values({key, value}) do
+    case key do
+      :max_distance ->
+        is_integer(value)
+
+      :chance ->
+        is_integer(value)
+
+      :type ->
+        value == "move"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_say_action_values({key, value}) do
+    case key do
+      :message ->
+        is_binary(value)
+
+      :chance ->
+        is_integer(value)
+
+      :type ->
+        value == "say"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_say_random_action_values({key, value}) do
+    case key do
+      :messages ->
+        is_list(value) && length(value) > 0 && Enum.all?(value, &is_binary/1)
+
+      :chance ->
+        is_integer(value)
+
+      :type ->
+        value == "say/random"
+
+      :wait ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
+
+  defp validate_target_effects_action_values({key, value}) do
+    case key do
+      :delay ->
+        is_float(value)
+
+      :effects ->
+        is_list(value) && Enum.all?(value, &Effect.valid?/1)
+
+      :text ->
+        is_binary(value)
+
+      :type ->
+        value == "target/effects"
+
+      :weight ->
+        is_integer(value)
+
+      _ ->
+        false
+    end
+  end
 
   @doc """
   Validate status changing attributes
