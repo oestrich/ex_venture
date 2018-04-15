@@ -31,6 +31,29 @@ defmodule Data.EventTest do
     }
   end
 
+  describe "valid?" do
+    test "validate combat/tick" do
+      assert Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}})
+      refute Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: :invalid}})
+    end
+
+    test "validate room/entered" do
+      assert Event.valid?(%{type: "room/entered", action: %{type: "say", message: "hi"}})
+      refute Event.valid?(%{type: "room/entered", action: %{type: "say", message: :invalid}})
+    end
+
+    test "validate room/heard" do
+      assert Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "hi"}})
+      refute Event.valid?(%{type: "room/heard", condition: nil, action: %{type: "say", message: "hi"}})
+      refute Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
+    end
+
+    test "validate tick" do
+      assert Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50, wait: 10}})
+      refute Event.valid?(%{type: "tick", action: %{type: "move"}})
+    end
+  end
+
   describe "valid actions for types" do
     test "combat tickets" do
       assert Event.valid_action_for_type?(%{type: "combat/tick", action: %{type: "target/effects"}})
@@ -141,6 +164,18 @@ defmodule Data.EventTest do
 
     test "invalid if type is bad" do
       refute Event.valid_action?(%{type: "leave"})
+    end
+  end
+
+  describe "valdiation conditions" do
+    test "room heard - regex" do
+      assert Event.valid_condition?(%{type: "room/heard", condition: %{regex: "hello"}})
+      refute Event.valid_condition?(%{type: "room/heard", condition: %{regex: :hello}})
+    end
+
+    test "any other type" do
+      assert Event.valid_condition?(%{type: "combat/tick"})
+      refute Event.valid_condition?(%{type: "combat/tick", condition: %{regex: "hello"}})
     end
   end
 end

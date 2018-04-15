@@ -29,9 +29,6 @@ defmodule Data.Event do
   Load an event from a stored map
 
   Cast it properly
-
-      iex> Data.Event.load(%{"type" => "room/entered", "action" => %{"type" => "say", "message" => "Welcome!"}})
-      {:ok, %{type: "room/entered", action: %{type: "say", message: "Welcome!"}}}
   """
   @impl Ecto.Type
   def load(event) do
@@ -68,6 +65,7 @@ defmodule Data.Event do
       %{status: status} ->
         status = for {key, val} <- status, into: %{}, do: {String.to_atom(key), val}
         %{action | status: status}
+
       _ ->
         action
     end
@@ -106,39 +104,17 @@ defmodule Data.Event do
   def starting_event("tick") do
     %{
       type: "tick",
-      action: %{type: "move", max_distance: 3, chance: 25, wait: 10},
+      action: %{type: "move", max_distance: 3, chance: 25, wait: 10}
     }
   end
 
   @doc """
   Validate an event based on type
-
-      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}})
-      true
-      iex> Data.Event.valid?(%{type: "combat/tick", action: %{type: "target/effects", effects: :invalid}})
-      false
-
-      iex> Data.Event.valid?(%{type: "room/entered", action: %{type: "say", message: "hi"}})
-      true
-      iex> Data.Event.valid?(%{type: "room/entered", action: %{type: "say", message: :invalid}})
-      false
-
-      iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: "hi"}})
-      true
-      iex> Data.Event.valid?(%{type: "room/heard", condition: nil, action: %{type: "say", message: "hi"}})
-      false
-      iex> Data.Event.valid?(%{type: "room/heard", condition: %{regex: "hello"}, action: %{type: "say", message: nil}})
-      false
-
-      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move", max_distance: 3, chance: 50, wait: 10}})
-      true
-      iex> Data.Event.valid?(%{type: "tick", action: %{type: "move"}})
-      false
   """
-  @spec valid?(t) :: boolean
+  @spec valid?(t()) :: boolean
   def valid?(event) do
     keys(event) == valid_keys(event.type) && valid_action_for_type?(event) &&
-      valid_action?(event.type, event.action)
+      valid_action?(event.type, event.action) && valid_condition?(event)
   end
 
   defp valid_keys("room/heard"), do: [:action, :condition, :type]
@@ -175,15 +151,30 @@ defmodule Data.Event do
 
   @doc """
   Validate the arguments matches the action
-
-      iex> Data.Event.valid_condition?(%{regex: "hello"})
-      true
-
-      iex> Data.Event.valid_condition?(nil)
-      false
   """
-  def valid_condition?(%{regex: string}) when is_binary(string), do: true
-  def valid_condition?(_), do: false
+  def valid_condition?(event) do
+    case event.type do
+      "room/heard" ->
+        event.condition
+        |> validate()
+        |> validate_keys(required: [:regex])
+        |> validate_values(&validate_condition_values/1)
+        |> Map.get(:valid?)
+
+      _ ->
+        !Map.has_key?(event, :condition)
+    end
+  end
+
+  defp validate_condition_values({key, value}) do
+    case key do
+      :regex ->
+        is_binary(value)
+
+      _ ->
+        false
+    end
+  end
 
   @doc """
   Validate the arguments matches the action
