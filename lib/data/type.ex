@@ -68,7 +68,7 @@ defmodule Data.Type do
         changeset
 
       false ->
-        Changeset.add_error(changeset, :values, "invalid types for: #{Enum.join(fields, ",")}")
+        Changeset.add_error(changeset, :values, "invalid types for: #{Enum.join(fields, ", ")}")
     end
   end
 

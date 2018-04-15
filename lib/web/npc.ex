@@ -444,4 +444,96 @@ defmodule Web.NPC do
         {:error, changeset}
     end
   end
+
+  #
+  # Events
+  #
+
+  @spec force_save_events(NPC.t()) :: {:ok, NPC.t()}
+  def force_save_events(npc) do
+    events = npc.events
+    # to force an update, set this to blank so something changed
+    npc = %{npc | events: []} 
+
+    changeset = npc |> NPC.changeset(%{events: events})
+    case changeset |> Repo.update() do
+      {:ok, npc} ->
+        push_update(npc)
+        {:ok, npc}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  @spec add_event(NPC.t(), String.t()) :: {:ok, NPC.t()}
+  def add_event(npc, event) do
+    with {:ok, event} <- parse_event(event) do
+      changeset = npc |> NPC.changeset(%{events: [event | npc.events]})
+      case changeset |> Repo.update() do
+        {:ok, npc} ->
+          push_update(npc)
+          {:ok, npc}
+
+        {:error, changeset} ->
+          {:error, changeset}
+      end
+    end
+  end
+
+  @spec edit_event(NPC.t(), String.t(), String.t()) :: {:ok, NPC.t()}
+  def edit_event(npc, id, event) do
+    with {:ok, event} <- parse_event(event) do
+      events =
+        npc.events
+        |> Enum.reject(fn event ->
+          event.id == id
+        end)
+
+      changeset = npc |> NPC.changeset(%{events: [event | events]})
+      case changeset |> Repo.update() do
+        {:ok, npc} ->
+          push_update(npc)
+          {:ok, npc}
+
+        {:error, changeset} ->
+          {:error, changeset}
+      end
+    end
+  end
+
+  defp parse_event(event) do
+    case Poison.decode(event) do
+      {:ok, event} ->
+        case Event.load(event) do
+          {:ok, event} ->
+            {:ok, event}
+
+          _ ->
+            {:error, :invalid}
+        end
+
+      _ ->
+        {:error, :invalid}
+    end
+  end
+
+  @spec delete_event(NPC.t(), String.t()) :: {:ok, NPC.t()}
+  def delete_event(npc, id) do
+    events =
+      npc.events
+      |> Enum.reject(fn event ->
+        event.id == id
+      end)
+
+    changeset = npc |> NPC.changeset(%{events: events})
+    case changeset |> Repo.update() do
+      {:ok, npc} ->
+        push_update(npc)
+        {:ok, npc}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
 end

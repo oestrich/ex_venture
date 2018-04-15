@@ -1,0 +1,24 @@
+<section class="content-header">
+  <h1>
+    <%= @npc.name %>'s Event
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("NPCs", to: npc_path(@conn, :index)) %></li>
+    <li><%= link(@npc.name, to: npc_path(@conn, :show, @npc.id)) %></li>
+    <li class="active">New Event</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render "_form.html", path: npc_event_path(@conn, :create, @npc.id), method: "POST", event: @event, title: "New", submit: "Create" %>
+    </div>
+  </div>
+</section>

@@ -106,6 +106,9 @@
         <div class="box-header">
           <h3 class="box-title">Events</h3>
           <%= SharedView.help_tooltip("npc.events") %>
+          <div class="box-tools">
+            <%= link("View Details", to: npc_event_path(@conn, :index, @npc.id), class: "btn btn-primary") %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">

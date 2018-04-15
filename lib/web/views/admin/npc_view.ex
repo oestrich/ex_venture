@@ -26,13 +26,6 @@ defmodule Web.Admin.NPCView do
     end
   end
 
-  def events(changeset) do
-    case get_field(changeset, :events) do
-      nil -> [] |> Poison.encode!(pretty: true)
-      events -> events |> Poison.encode!(pretty: true)
-    end
-  end
-
   def script(changeset) do
     case get_field(changeset, :script) do
       nil -> ""

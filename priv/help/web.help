@@ -52,6 +52,9 @@ npc.spawners:
 npc.status_listen:
   Can be empty, players will see this when they listen in the same room as the NPC. Can include the template `[name]`.
 
+npc_events.reload:
+  Force a save of NPC events, this saves the generated ID
+
 quest.completed_message:
   A message the NPC will say after the quest is completed
 
