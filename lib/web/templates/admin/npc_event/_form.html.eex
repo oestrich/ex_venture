@@ -7,12 +7,10 @@
     <div class="box-body">
       <%= if @errors do %>
         <div class="alert alert-danger">
-        <b>Errors</b>
-        <p>
+          <h4>Errors</h4>
           <%= Enum.map(@errors, fn {key, value} -> %>
-            <b><%= String.capitalize(to_string(key)) %></b>: <%= value %>
+            <p><b><%= String.capitalize(to_string(key)) %></b>: <%= value %></p>
           <% end) %>
-        </p>
         </div>
       <% end %>
 

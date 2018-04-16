@@ -34,14 +34,12 @@ defmodule Data.Event do
   @impl Ecto.Type
   def load(event) do
     event = for {key, val} <- event, into: %{}, do: {String.to_atom(key), val}
-    action = for {key, val} <- event.action, into: %{}, do: {String.to_atom(key), val}
-    action = load_action(action)
 
     event =
       event
       |> load_condition()
+      |> load_action()
       |> ensure(:id, UUID.uuid4())
-      |> Map.put(:action, action)
 
     {:ok, event}
   end
@@ -53,7 +51,18 @@ defmodule Data.Event do
 
   defp load_condition(event), do: event
 
-  defp load_action(action = %{type: "target/effects"}) do
+  defp load_action(event) do
+    case event do
+      %{action: action} when action != nil ->
+        action = for {key, val} <- event.action, into: %{}, do: {String.to_atom(key), val}
+        %{event | action: _load_action(action)}
+
+      _ ->
+        event
+    end
+  end
+
+  defp _load_action(action = %{type: "target/effects"}) do
     effects =
       action.effects
       |> Enum.map(fn effect ->
@@ -66,7 +75,7 @@ defmodule Data.Event do
     %{action | effects: effects}
   end
 
-  defp load_action(action = %{type: "emote"}) do
+  defp _load_action(action = %{type: "emote"}) do
     case action do
       %{status: status} ->
         status = for {key, val} <- status, into: %{}, do: {String.to_atom(key), val}
@@ -77,7 +86,7 @@ defmodule Data.Event do
     end
   end
 
-  defp load_action(action), do: action
+  defp _load_action(action), do: action
 
   @impl Ecto.Type
   def dump(stats) when is_map(stats), do: {:ok, Map.delete(stats, :__struct__)}
