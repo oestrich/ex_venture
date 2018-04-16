@@ -1,0 +1,61 @@
+<div class="box">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_tag(@path, [method: @method]) do %>
+    <div class="box-body">
+      <%= if @errors do %>
+        <div class="alert alert-danger">
+        <b>Errors</b>
+        <p>
+          <%= Enum.map(@errors, fn {key, value} -> %>
+            <b><%= String.capitalize(to_string(key)) %></b>: <%= value %>
+          <% end) %>
+        </p>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= textarea :event, :body, value: @event, class: "form-control", rows: 15 %>
+      </div>
+
+      <%= if @events do %>
+        <h3>Starting Events</h3>
+        <p>Warning: these will clear your text field</p>
+        <script type"application/javascript">
+$(function() {
+  var basicEvents = {
+    "combat/tick": <%= Event.starting_event("combat/tick") |> encode_json() %>,
+    "room/entered": <%= Event.starting_event("room/entered") |> encode_json() %>,
+    "room/heard": <%= Event.starting_event("room/heard") |> encode_json() %>,
+    "tick": <%= Event.starting_event("tick") |> encode_json() %>,
+  };
+
+  $(".add-event").on("click", function (e) {
+    e.preventDefault();
+
+    var type = $(e.target).data("type");
+    $("#event_body").val(JSON.stringify(basicEvents[type], null, 2));
+  });
+});
+        </script>
+
+        <span class="help-block">
+          <%= link("Add 'combat/tick'", to: "#", class: "btn btn-default add-event", data: [type: "combat/tick"]) %>
+          <%= link("Add 'room/entered'", to: "#", class: "btn btn-default add-event", data: [type: "room/entered"]) %>
+          <%= link("Add 'room/heard'", to: "#", class: "btn btn-default add-event", data: [type: "room/heard"]) %>
+          <%= link("Add 'tick'", to: "#", class: "btn btn-default add-event", data: [type: "tick"]) %>
+        </span>
+        <span class="help-block">
+          <%= link("View event documentation", to: "https://exventure.org/admin/events/", target: "_blank", class: "btn btn-default") %>
+          <%= link("View effect documentation", to: "https://exventure.org/admin/effects/", target: "_blank", class: "btn btn-default") %>
+        </span>
+      <% end %>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

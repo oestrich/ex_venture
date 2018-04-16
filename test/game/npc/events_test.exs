@@ -244,16 +244,6 @@ defmodule Game.NPC.EventsTest do
   end
 
   describe "ticking events" do
-    test "adds UUIDs" do
-      events = [
-        %{type: "tick"},
-        %{type: "room/heard"},
-        %{type: "tick"},
-      ]
-
-      assert [%{id: _}, %{id: _}] = Events.instantiate_ticks(events)
-    end
-
     test "calculates the delay" do
       event = %{
         type: "tick",

@@ -1,0 +1,43 @@
+<section class="content-header">
+  <h1>
+    <%= @npc.name %>'s Events
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("NPCs", to: npc_path(@conn, :index)) %></li>
+    <li><%= link(@npc.name, to: npc_path(@conn, :show, @npc.id)) %></li>
+    <li class="active">Events</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Events</h3>
+          <div class="box-tools">
+            <%= link(to: npc_npc_event_path(@conn, :reload, @npc.id), method: :post, class: "btn btn-primary") do %>
+              Reload Events
+              <%= SharedView.help_tooltip("npc_events.reload") %>
+            <% end %>
+            <%= link("New Event", to: npc_event_path(@conn, :new, @npc.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <%= Enum.map(@npc.events, fn event -> %>
+            <pre><%= Poison.encode!(event, pretty: true) %></pre>
+            <%= link("Edit", to: npc_event_path(@conn, :edit, @npc.id, event.id), class: "btn btn-default") %>
+            <%= link("Delete", to: npc_event_path(@conn, :delete, @npc.id, event.id), method: :delete, class: "btn btn-danger") %>
+            <hr />
+          <% end) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

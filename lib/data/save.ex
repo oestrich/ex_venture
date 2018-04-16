@@ -83,13 +83,6 @@ defmodule Data.Save do
     {:ok, struct(__MODULE__, save)}
   end
 
-  defp ensure(save, field, default) do
-    case Map.get(save, field, nil) do
-      nil -> Map.put(save, field, default)
-      _ -> save
-    end
-  end
-
   defp atomize_config(save = %{config: config}) when config != nil do
     config = for {key, val} <- config, into: %{}, do: {String.to_atom(key), val}
     %{save | config: config}

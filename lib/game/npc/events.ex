@@ -22,23 +22,18 @@ defmodule Game.NPC.Events do
   alias Game.Quest
 
   @doc """
-  Filters to tick events and adds a UUID
-  """
-  def instantiate_ticks(events) do
-    events
-    |> Enum.filter(&(&1.type == "tick"))
-    |> Enum.map(fn event ->
-      Map.put(event, :id, UUID.uuid4())
-    end)
-  end
-
-  @doc """
   Instantiate events and start their ticking
   """
   @spec start_tick_events(State.t(), NPC.t()) :: State.t()
   def start_tick_events(state, npc) do
-    tick_events = npc.events |> instantiate_ticks()
+    tick_events =
+      npc.events
+      |> Enum.filter(fn event ->
+        event.type == "tick"
+      end)
+
     tick_events |> Enum.each(&delay_event/1)
+
     %{state | tick_events: tick_events}
   end
 

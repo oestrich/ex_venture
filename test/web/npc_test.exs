@@ -163,6 +163,59 @@ defmodule Web.NPCTest do
     assert state.npc.npc_items == []
   end
 
+  describe "events" do
+    setup do
+      npc = create_npc(%{
+        events: [
+          %{
+            id: UUID.uuid4(),
+            type: "room/entered",
+            action: %{type: "say", message: "Hi"}
+          }
+        ]
+      })
+
+      %{npc: npc, event: List.first(npc.events)}
+    end
+
+    test "force save of loaded events", %{npc: npc} do
+      {:ok, npc} = NPC.force_save_events(npc)
+
+      assert length(npc.events) == 1
+    end
+
+    test "add an event", %{npc: npc} do
+      event = %{
+        type: "room/entered",
+        action: %{type: "say", message: "Hi"}
+      }
+
+      {:ok, npc} = NPC.add_event(npc, Poison.encode!(event))
+
+      assert length(npc.events) == 2
+    end
+
+    test "add an event - invalid", %{npc: npc} do
+      event = %{type: "room/entered", action: %{type: "say"}}
+
+      {:error, :invalid, changeset} = NPC.add_event(npc, Poison.encode!(event))
+      assert changeset.errors
+    end
+
+    test "edit an event", %{npc: npc, event: event} do
+      event = %{event | action: %{type: "say", message: "Hello"}}
+      {:ok, npc} = NPC.edit_event(npc, event.id, Poison.encode!(event))
+
+      event = List.first(npc.events)
+      assert event.action.message == "Hello"
+    end
+
+    test "delete an event", %{npc: npc, event: event} do
+      {:ok, npc} = NPC.delete_event(npc, event.id)
+      assert Enum.empty?(npc.events)
+    end
+  end
+
   describe "trainable skills" do
     setup do
       npc = create_npc(%{is_trainer: true})
