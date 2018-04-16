@@ -25,6 +25,10 @@ defmodule Web.Admin.NPCEventController do
         conn
         |> put_flash(:error, "There was a problem updating.")
         |> render("new.html", npc: npc, field: event)
+
+      {:error, :invalid, changeset} ->
+        conn
+        |> render("new.html", npc: npc, field: event, errors: changeset.errors)
     end
   end
 
@@ -56,6 +60,10 @@ defmodule Web.Admin.NPCEventController do
             conn
             |> put_flash(:error, "There was a problem updating.")
             |> render("edit.html", npc: npc, event: event, field: body)
+
+          {:error, :invalid, changeset} ->
+            conn
+            |> render("edit.html", npc: npc, event: event, field: body, errors: changeset.errors)
         end
     end
   end

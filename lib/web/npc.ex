@@ -468,7 +468,8 @@ defmodule Web.NPC do
 
   @spec add_event(NPC.t(), String.t()) :: {:ok, NPC.t()}
   def add_event(npc, event) do
-    with {:ok, event} <- parse_event(event) do
+    with {:ok, event} <- parse_event(event),
+         {:ok, event} <- validate_event(event) do
       changeset = npc |> NPC.changeset(%{events: [event | npc.events]})
       case changeset |> Repo.update() do
         {:ok, npc} ->
@@ -481,9 +482,20 @@ defmodule Web.NPC do
     end
   end
 
+  def validate_event(event) do
+    case Event.validate_event(event) do
+      %{valid?: true} ->
+        {:ok, event}
+
+      changeset ->
+        {:error, :invalid, changeset}
+    end
+  end
+
   @spec edit_event(NPC.t(), String.t(), String.t()) :: {:ok, NPC.t()}
   def edit_event(npc, id, event) do
-    with {:ok, event} <- parse_event(event) do
+    with {:ok, event} <- parse_event(event),
+         {:ok, event} <- validate_event(event) do
       events =
         npc.events
         |> Enum.reject(fn event ->

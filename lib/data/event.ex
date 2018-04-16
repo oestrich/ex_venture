@@ -13,6 +13,7 @@ defmodule Data.Event do
   import Ecto.Changeset
 
   alias Data.Effect
+  alias Data.Type
 
   @type t :: map
 
@@ -114,17 +115,62 @@ defmodule Data.Event do
   end
 
   @doc """
-  Validate an event based on type
+  Validate an event to get errors out of the validation
   """
-  @spec valid?(t()) :: boolean
-  def valid?(event) do
-    keys(event) == valid_keys(event.type) && valid_action_for_type?(event) &&
-      valid_action?(event.type, event.action) && valid_condition?(event)
+  def validate_event(event) do
+    event
+    |> validate()
+    |> validate_keys(required: valid_keys(event.type))
+    |> validate_action_for_type()
+    |> validate_event_action()
+    |> validate_event_condition()
   end
 
   # alphabetical
-  defp valid_keys("room/heard"), do: [:action, :condition, :id, :type]
-  defp valid_keys(_type), do: [:action, :id, :type]
+  defp valid_keys("room/heard") do
+    [:action, :condition, :id, :type]
+  end
+
+  defp valid_keys(_type) do
+    [:action, :id, :type]
+  end
+
+  defp validate_action_for_type(changeset) do
+    case valid_action_for_type?(changeset.data) do
+      true ->
+        changeset
+
+      false ->
+        Type.Changeset.add_error(changeset, :action, "invalid type for event")
+    end
+  end
+
+  defp validate_event_action(changeset = %{data: event}) do
+    type = Map.get(event, :type)
+    action = Map.get(event, :action)
+
+    case validate_action(type, action) do
+      %{valid?: true} ->
+        changeset
+
+      action_changeset ->
+        Enum.reduce(action_changeset.errors, changeset, fn {key, val}, changeset ->
+          Type.Changeset.add_error(changeset, :action, "#{key}: #{Enum.join(val, ", ")}")
+        end)
+    end
+  end
+
+  defp validate_event_condition(changeset = %{data: event}) do
+    case validate_condition(event) do
+      %{valid?: true} ->
+        changeset
+
+      condition_changeset ->
+        Enum.reduce(condition_changeset.errors, changeset, fn {key, val}, changeset ->
+          Type.Changeset.add_error(changeset, :condition, "#{key}: #{Enum.join(val, ", ")}")
+        end)
+    end
+  end
 
   @doc """
   Validate the action matches the type
@@ -135,6 +181,8 @@ defmodule Data.Event do
     |> valid_type_actions()
     |> Enum.member?(action.type)
   end
+
+  def valid_action_for_type?(_), do: false
 
   defp valid_type_actions(type) do
     case type do
@@ -155,20 +203,34 @@ defmodule Data.Event do
     end
   end
 
+  def valid_condition?(event) do
+    validate_condition(event).valid?
+  end
+
   @doc """
   Validate the arguments matches the action
   """
-  def valid_condition?(event) do
+  def validate_condition(event) do
     case event.type do
       "room/heard" ->
-        event.condition
+        condition = Map.get(event, :condition, %{}) || %{}
+
+        condition
         |> validate()
         |> validate_keys(required: [:regex])
         |> validate_values(&validate_condition_values/1)
-        |> Map.get(:valid?)
 
       _ ->
-        !Map.has_key?(event, :condition)
+        case !Map.has_key?(event, :condition) do
+          true ->
+            event
+            |> validate()
+
+          false ->
+            event
+            |> validate()
+            |> Map.put(:valid?, false)
+        end
     end
   end
 
@@ -185,99 +247,103 @@ defmodule Data.Event do
   @doc """
   Validate the arguments matches the action
   """
-  @spec valid_action?(String.t(), map()) :: boolean()
-  def valid_action?(event_type, action) do
+  def validate_action(event_type, action) do
     case event_type do
       "tick" ->
-        valid_tick_action?(action)
+        validate_tick_action(action)
 
       _ ->
-        valid_action?(action)
+        validate_action(action)
     end
   end
+
+  #@spec valid_action?(String.t(), map()) :: boolean()
+  #def valid_action?(event_type, action) do
+  #  validate_action(event_type, action).valid?
+  #end
 
   @doc """
   Validate tick actions
   """
-  @spec valid_tick_action?(map()) :: boolean()
-  def valid_tick_action?(action = %{type: "say"}) do
+  @spec validate_tick_action(map()) :: boolean()
+  def validate_tick_action(action = %{type: "say"}) do
     action
     |> validate()
     |> validate_keys(required: [:chance, :message, :type, :wait])
     |> validate_values(&validate_say_action_values/1)
-    |> Map.get(:valid?)
   end
 
-  def valid_tick_action?(action = %{type: "say/random"}) do
+  def validate_tick_action(action = %{type: "say/random"}) do
     action
     |> validate()
     |> validate_keys(required: [:chance, :messages, :type, :wait])
     |> validate_values(&validate_say_random_action_values/1)
-    |> Map.get(:valid?)
   end
 
-  def valid_tick_action?(action = %{type: "emote"}) do
-    valid_action?(action)
+  def validate_tick_action(action = %{type: "emote"}) do
+    validate_action(action)
   end
 
-  def valid_tick_action?(action = %{type: "move"}) do
-    valid_action?(action)
+  def validate_tick_action(action = %{type: "move"}) do
+    validate_action(action)
   end
 
-  def valid_tick_action?(_), do: false
+  def validate_tick_action(action) do
+    action
+    |> validate()
+    |> Map.put(:valid?, false)
+  end
 
   @doc """
   Validate all other event type actions
   """
-  @spec valid_action?(map()) :: boolean()
-  def valid_action?(action = %{type: "emote"}) do
+  @spec validate_action(map()) :: boolean()
+  def validate_action(action = %{type: "emote"}) do
     action
     |> validate()
     |> validate_keys(required: [:message, :chance, :wait, :type], optional: [:status])
     |> validate_values(&validate_emote_action_values/1)
-    |> Map.get(:valid?)
   end
 
-  def valid_action?(action = %{type: "move"}) do
+  def validate_action(action = %{type: "move"}) do
     action
     |> validate()
     |> validate_keys(required: [:chance, :max_distance, :type, :wait])
     |> validate_values(&validate_move_action_values/1)
-    |> Map.get(:valid?)
   end
 
-  def valid_action?(action = %{type: "say"}) do
+  def validate_action(action = %{type: "say"}) do
     action
     |> validate()
     |> validate_keys(required: [:message, :type])
     |> validate_values(&validate_say_action_values/1)
-    |> Map.get(:valid?)
   end
 
-  def valid_action?(action = %{type: "say/random"}) do
+  def validate_action(action = %{type: "say/random"}) do
     action
     |> validate()
     |> validate_keys(required: [:messages, :type])
     |> validate_values(&validate_say_random_action_values/1)
-    |> Map.get(:valid?)
   end
 
-  def valid_action?(action = %{type: "target"}) do
+  def validate_action(action = %{type: "target"}) do
     action
     |> validate()
     |> validate_keys(required: [:type])
-    |> Map.get(:valid?)
   end
 
-  def valid_action?(action = %{type: "target/effects"}) do
+  def validate_action(action = %{type: "target/effects"}) do
     action
     |> validate()
     |> validate_keys(required: [:delay, :effects, :weight, :text, :type])
     |> validate_values(&validate_target_effects_action_values/1)
-    |> Map.get(:valid?)
   end
 
-  def valid_action?(_), do: false
+  def validate_action(action) do
+    action
+    |> validate()
+    |> Map.put(:valid?, false)
+  end
 
   defp validate_emote_action_values({key, value}) do
     case key do
@@ -423,8 +489,19 @@ defmodule Data.Event do
 
   defp _validate_events(changeset, events) do
     case events |> Enum.all?(&valid?/1) do
-      true -> changeset
-      false -> add_error(changeset, :events, "are invalid")
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :events, "are invalid")
     end
+  end
+
+  @doc """
+  Validate an event based on type
+  """
+  @spec valid?(t()) :: boolean
+  def valid?(event) do
+    validate_event(event).valid?
   end
 end

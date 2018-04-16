@@ -154,61 +154,61 @@ defmodule Data.EventTest do
 
   describe "validate actions" do
     test "move actions, tick" do
-      assert Event.valid_tick_action?(%{type: "move", max_distance: 3, chance: 50, wait: 10})
+      assert Event.validate_tick_action(%{type: "move", max_distance: 3, chance: 50, wait: 10}).valid?
     end
 
     test "move actions, tick - must have a wait" do
-      refute Event.valid_tick_action?(%{type: "move", max_distance: 3, chance: 150})
+      refute Event.validate_tick_action(%{type: "move", max_distance: 3, chance: 150}).valid?
     end
 
     test "say action" do
-      assert Event.valid_action?(%{type: "say", message: "hi"})
+      assert Event.validate_action(%{type: "say", message: "hi"}).valid?
     end
 
     test "say action, tick" do
-      assert Event.valid_tick_action?(%{type: "say", message: "hi", chance: 50, wait: 20})
-      refute Event.valid_tick_action?(%{type: "say", message: "hi"})
+      assert Event.validate_tick_action(%{type: "say", message: "hi", chance: 50, wait: 20}).valid?
+      refute Event.validate_tick_action(%{type: "say", message: "hi"}).valid?
     end
 
     test "say random" do
-      assert Event.valid_action?(%{type: "say/random", messages: ["hi"]})
-      refute Event.valid_action?(%{type: "say/random", messages: []})
+      assert Event.validate_action(%{type: "say/random", messages: ["hi"]}).valid?
+      refute Event.validate_action(%{type: "say/random", messages: []}).valid?
     end
 
     test "say random, tick" do
-      assert Event.valid_tick_action?(%{type: "say/random", messages: ["hi"], chance: 50, wait: 20})
-      refute Event.valid_tick_action?(%{type: "say/random", messages: ["hi"]})
+      assert Event.validate_tick_action(%{type: "say/random", messages: ["hi"], chance: 50, wait: 20}).valid?
+      refute Event.validate_tick_action(%{type: "say/random", messages: ["hi"]}).valid?
     end
 
     test "emote, tick" do
-      assert Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10})
-      refute Event.valid_tick_action?(%{type: "emote", message: "hi"})
+      assert Event.validate_tick_action(%{type: "emote", message: "hi", chance: 50, wait: 10}).valid?
+      refute Event.validate_tick_action(%{type: "emote", message: "hi"}).valid?
     end
 
     test "emote, tick - changing status" do
-      assert Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}})
-      refute Event.valid_tick_action?(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{}})
+      assert Event.validate_tick_action(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{reset: true}}).valid?
+      refute Event.validate_tick_action(%{type: "emote", message: "hi", chance: 50, wait: 10, status: %{}}).valid?
     end
 
     test "target" do
-      assert Event.valid_action?(%{type: "target"})
-      refute Event.valid_action?(%{type: "target", extra: "keys"})
+      assert Event.validate_action(%{type: "target"}).valid?
+      refute Event.validate_action(%{type: "target", extra: "keys"}).valid?
     end
 
     test "target/effects" do
-      assert Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [], weight: 10, text: ""})
-      refute Event.valid_action?(%{type: "target/effects", effects: [], weight: 10, text: ""})
+      assert Event.validate_action(%{type: "target/effects", delay: 1.5, effects: [], weight: 10, text: ""}).valid?
+      refute Event.validate_action(%{type: "target/effects", effects: [], weight: 10, text: ""}).valid?
     end
 
     test "target/effects - validates the effects" do
       effect = %{kind: "damage", type: "slashing", amount: 10}
-      assert Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [effect], weight: 10, text: ""})
+      assert Event.validate_action(%{type: "target/effects", delay: 1.5, effects: [effect], weight: 10, text: ""}).valid?
 
-      refute Event.valid_action?(%{type: "target/effects", delay: 1.5, effects: [%{}], text: ""})
+      refute Event.validate_action(%{type: "target/effects", delay: 1.5, effects: [%{}], text: ""}).valid?
     end
 
     test "invalid if type is bad" do
-      refute Event.valid_action?(%{type: "leave"})
+      refute Event.validate_action(%{type: "leave"}).valid?
     end
   end
 

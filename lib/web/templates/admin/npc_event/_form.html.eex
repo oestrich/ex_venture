@@ -5,8 +5,18 @@
 
   <%= form_tag(@path, [method: @method]) do %>
     <div class="box-body">
+      <%= if @errors do %>
+        <div class="alert alert-danger">
+        <b>Errors</b>
+        <p>
+          <%= Enum.map(@errors, fn {key, value} -> %>
+            <b><%= String.capitalize(to_string(key)) %></b>: <%= value %>
+          <% end) %>
+        </p>
+        </div>
+      <% end %>
+
       <div class="form-group">
-        <%= label :event, :body %>
         <%= textarea :event, :body, value: @event, class: "form-control", rows: 15 %>
       </div>
 

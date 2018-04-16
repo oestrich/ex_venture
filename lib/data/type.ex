@@ -5,6 +5,8 @@ defmodule Data.Type do
 
   alias Data.Type.Changeset
 
+  import Changeset, only: [add_error: 3]
+
   @type changeset :: Changeset.t()
 
   @doc """
@@ -48,7 +50,7 @@ defmodule Data.Type do
         changeset
 
       false ->
-        Changeset.add_error(changeset, :keys, "missing keys: #{Enum.join(missing_keys, ", ")}")
+        add_error(changeset, :keys, "missing keys: #{Enum.join(missing_keys, ", ")}")
     end
   end
 
@@ -68,7 +70,7 @@ defmodule Data.Type do
         changeset
 
       false ->
-        Changeset.add_error(changeset, :values, "invalid types for: #{Enum.join(fields, ", ")}")
+        add_error(changeset, :values, "invalid types for: #{Enum.join(fields, ", ")}")
     end
   end
 

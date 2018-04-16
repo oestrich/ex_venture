@@ -195,6 +195,13 @@ defmodule Web.NPCTest do
       assert length(npc.events) == 2
     end
 
+    test "add an event - invalid", %{npc: npc} do
+      event = %{type: "room/entered", action: %{type: "say"}}
+
+      {:error, :invalid, changeset} = NPC.add_event(npc, Poison.encode!(event))
+      assert changeset.errors
+    end
+
     test "edit an event", %{npc: npc, event: event} do
       event = %{event | action: %{type: "say", message: "Hello"}}
       {:ok, npc} = NPC.edit_event(npc, event.id, Poison.encode!(event))
