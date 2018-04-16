@@ -526,7 +526,8 @@ defmodule Web.NPC do
         end
 
       _ ->
-        {:error, :invalid}
+        errors = %{json: ["is invalid"]}
+        {:error, :invalid, %{errors: errors}}
     end
   end
 
