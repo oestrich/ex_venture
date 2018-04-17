@@ -23,7 +23,7 @@ config :ex_venture, Web.Endpoint,
 
 config :ex_venture, :networking,
   host: "localhost",
-  port: 5555,
+  port: {:system, "TELNET_PORT", 5555},
   server: true,
   socket_module: Networking.Protocol
 
