@@ -7,7 +7,7 @@ config :ex_venture, Data.Repo,
   pool_size: 10
 
 config :ex_venture, Web.Endpoint,
-  http: [port: 4000],
+  http: [port: {:system, "PORT"}],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
@@ -43,3 +43,11 @@ config :logger, :console,
 config :ex_venture, ExVenture.Mailer, adapter: Bamboo.LocalAdapter
 
 config :ex_venture, :mailer, from: "mud@example.com"
+
+config :libcluster,
+  topologies: [
+    local: [
+      strategy: Cluster.Strategy.Epmd,
+      config: [hosts: []]
+    ]
+  ]

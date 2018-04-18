@@ -32,7 +32,7 @@ defmodule Game.Shop do
   """
   @spec pid(integer()) :: atom
   def pid(id) do
-    {:via, Registry, {Game.Shop.Registry, id}}
+    {:via, :swarm, {Game.Shop, id}}
   end
 
   @doc """

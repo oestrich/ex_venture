@@ -30,7 +30,7 @@ defmodule Game.Room do
   end
 
   def pid(id) do
-    {:via, Registry, {Game.Room.Registry, id}}
+    {:via, :swarm, {Game.Room, id}}
   end
 
   @doc """

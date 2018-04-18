@@ -38,12 +38,10 @@ defmodule Game.World do
   end
 
   def init(_) do
-    children =
-      Zone.all()
-      |> Enum.map(fn zone ->
-        supervisor(Zone.Supervisor, [zone], id: zone.id, restart: :permanent)
-      end)
+    children = [
+      {Game.World.Master, []}
+    ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 end

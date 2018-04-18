@@ -59,7 +59,7 @@ defmodule Game.NPC do
   """
   @spec pid(integer()) :: atom
   def pid(id) do
-    {:via, Registry, {Game.NPC.Registry, id}}
+    {:via, :swarm, {Game.NPC, id}}
   end
 
   @doc """
