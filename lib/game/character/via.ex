@@ -14,7 +14,7 @@ defmodule Game.Character.Via do
   def whereis_name(who)
 
   def whereis_name({:npc, id}) do
-    Registry.whereis_name({Game.NPC.Registry, id})
+    :swarm.whereis_name({Game.NPC, id})
   end
 
   def whereis_name({:user, id}) do
@@ -35,7 +35,7 @@ defmodule Game.Character.Via do
   def send(who, message)
 
   def send({:npc, id}, message) do
-    Registry.send({Game.NPC.Registry, id}, message)
+    :swarm.send({Game.NPC, id}, message)
   end
 
   def send({:user, id}, message) do
