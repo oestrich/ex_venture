@@ -15,6 +15,7 @@ config :ex_venture, :networking,
   socket_module: Test.Networking.Socket
 
 config :ex_venture, :game,
+  world: false,
   npc: Test.Game.NPC,
   room: Test.Game.Room,
   shop: Test.Game.Shop,
@@ -25,3 +26,5 @@ config :ex_venture, :game,
   random_damage: 0..0
 
 config :bcrypt_elixir, :log_rounds, 4
+
+config :swarm, :sync_nodes_timeout, 0

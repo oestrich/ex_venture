@@ -12,6 +12,8 @@ defmodule Game.World.Master do
 
   require Logger
 
+  @start_world Application.get_env(:ex_venture, :game)[:world]
+
   def start_zone(pid, zone) do
     GenServer.cast(pid, {:start, zone})
   end
@@ -24,7 +26,9 @@ defmodule Game.World.Master do
     :ok = :pg2.create(:world)
     :ok = :pg2.join(:world, self())
 
-    Process.send_after(self(), :elect, 5_000 + :rand.uniform(5_000))
+    if @start_world do
+      Process.send_after(self(), :elect, 5_000 + :rand.uniform(5_000))
+    end
 
     {:ok, %{leader: nil}}
   end
@@ -35,17 +39,12 @@ defmodule Game.World.Master do
     {:noreply, state}
   end
 
-  def handle_info(:ping, state) do
-    IO.puts "PONG - #{inspect(self())} - #{inspect(state)}"
-    {:noreply, state}
-  end
-
   def handle_info(:elect, state) do
     case state.leader do
       nil ->
         :world
         |> :pg2.get_members()
-        |> Enum.map(fn pid ->
+        |> Enum.each(fn pid ->
           send(pid, {:leader, self()})
         end)
 
@@ -85,11 +84,10 @@ defmodule Game.World.Master do
 
   defp start_zones() do
     members = :pg2.get_members(:world)
-    IO.inspect members
 
     Zone.all()
     |> Enum.with_index()
-    |> Enum.map(fn {zone, index} ->
+    |> Enum.each(fn {zone, index} ->
       member = Enum.at(members, rem(index, length(members)))
       __MODULE__.start_zone(member, zone)
     end)
