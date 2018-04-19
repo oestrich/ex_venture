@@ -142,6 +142,15 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Crash a zone process with an unmatched cast
+
+  There should always remain no matching clause for this cast
+  """
+  def crash(id) do
+    GenServer.cast(pid(id), :crash)
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
