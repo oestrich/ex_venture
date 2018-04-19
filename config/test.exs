@@ -26,5 +26,3 @@ config :ex_venture, :game,
   random_damage: 0..0
 
 config :bcrypt_elixir, :log_rounds, 4
-
-config :swarm, :sync_nodes_timeout, 0

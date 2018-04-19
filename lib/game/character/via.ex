@@ -14,7 +14,7 @@ defmodule Game.Character.Via do
   def whereis_name(who)
 
   def whereis_name({:npc, id}) do
-    :swarm.whereis_name({Game.NPC, id})
+    :global.whereis_name({Game.NPC, id})
   end
 
   def whereis_name({:user, id}) do
@@ -35,7 +35,7 @@ defmodule Game.Character.Via do
   def send(who, message)
 
   def send({:npc, id}, message) do
-    :swarm.send({Game.NPC, id}, message)
+    :global.send({Game.NPC, id}, message)
   end
 
   def send({:user, id}, message) do

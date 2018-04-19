@@ -30,7 +30,7 @@ defmodule Game.Room do
   end
 
   def pid(id) do
-    {:via, :swarm, {Game.Room, id}}
+    {:global, {Game.Room, id}}
   end
 
   @doc """
@@ -170,12 +170,12 @@ defmodule Game.Room do
   Link the current process against the room's pid, finds by id
   """
   def link(id) do
-    case Registry.lookup(Game.Room.Registry, id) do
-      [{pid, _}] ->
-        Process.link(pid)
-
-      _ ->
+    case :global.whereis_name({Game.Room, id}) do
+      :undefined ->
         :ok
+
+      pid ->
+        Process.link(pid)
     end
   end
 
@@ -183,12 +183,12 @@ defmodule Game.Room do
   Unlink the current process against the room's pid, finds by id
   """
   def unlink(id) do
-    case Registry.lookup(Game.Room.Registry, id) do
-      [{pid, _}] ->
-        Process.unlink(pid)
-
-      _ ->
+    case :global.whereis_name({Game.Room, id}) do
+      :undefined ->
         :ok
+
+      pid ->
+        Process.unlink(pid)
     end
   end
 

@@ -27,7 +27,7 @@ defmodule Game.Zone do
   end
 
   defp pid(id) do
-    {:via, :swarm, {Game.Zone, id}}
+    {:global, {Game.Zone, id}}
   end
 
   @doc """
