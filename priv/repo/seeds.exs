@@ -285,8 +285,13 @@ defmodule Seeds do
       experience_points: 230,
       stats: stats,
       events: [
-        %{type: "room/entered", action: %{type: "target"}},
         %{
+          id: UUID.uuid4(),
+          type: "room/entered",
+          action: %{type: "target"},
+        },
+        %{
+          id: UUID.uuid4(),
           type: "combat/tick",
           action: %{
             type: "target/effects",
@@ -371,7 +376,9 @@ defmodule Seeds do
       channels: ["global", "newbie"],
       level: 1,
       level_stats: %{},
+      currency: 0,
       experience_points: 0,
+      spent_experience_points: 0,
       items: [Item.instantiate(sword)],
       wearing: %{},
       wielding: %{},
@@ -537,6 +544,13 @@ defmodule Seeds do
     save =
       Game.Config.starting_save()
       |> Map.put(:stats, dwarf.starting_stats())
+      |> Map.put(:config, %{
+        hints: true,
+        prompt: "%h/%Hhp %s/%Ssp %m/%Mmv %x",
+        pager_size: 20,
+        regen_notifications: true,
+      })
+      |> Map.put(:version, 8)
 
     create_user(%{
       name: "eric",
