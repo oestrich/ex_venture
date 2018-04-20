@@ -41,12 +41,12 @@ defmodule Game.ItemsTest do
       Items.insert(%{id: 1, name: "Sword"})
       ensure_process_caught_up(Items)
 
-      :ok = Items.reload(%{id: 1, name: "Sword"})
+      [:ok] = Items.reload(%{id: 1, name: "Sword"})
       assert Items.item(1) == %{id: 1, name: "Sword"}
     end
 
     test "push a new item in" do
-      :ok = Items.insert(%{id: 10, name: "Sword"})
+      [:ok] = Items.insert(%{id: 10, name: "Sword"})
       ensure_process_caught_up(Items)
       assert Items.item(10) == %{id: 10, name: "Sword"}
     end

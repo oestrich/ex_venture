@@ -10,7 +10,7 @@ defmodule Game.ColorCodes do
   alias Data.ColorCode
   alias Data.Repo
 
-  @cache_key :color_codes
+  @key :color_codes
 
   @doc false
   def start_link() do
@@ -22,7 +22,7 @@ defmodule Game.ColorCodes do
   """
   @spec all() :: [ColorCode.t()]
   def all() do
-    case Cachex.keys(@cache_key) do
+    case Cachex.keys(@key) do
       {:ok, keys} ->
         keys
         |> Enum.map(&all_get/1)
@@ -45,7 +45,7 @@ defmodule Game.ColorCodes do
 
   @spec get(integer() | String.t()) :: ColorCode.t() | nil
   def get(key) when is_binary(key) do
-    case Cachex.get(@cache_key, key) do
+    case Cachex.get(@key, key) do
       {:ok, color_code} when color_code != nil ->
         {:ok, color_code}
 
@@ -59,7 +59,10 @@ defmodule Game.ColorCodes do
   """
   @spec insert(ColorCode.t()) :: :ok
   def insert(color_code) do
-    GenServer.call(__MODULE__, {:insert, color_code})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:insert, color_code})
+    end)
   end
 
   @doc """
@@ -80,6 +83,9 @@ defmodule Game.ColorCodes do
   #
 
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     GenServer.cast(self(), :load_color_codes)
 
     {:ok, %{}}
@@ -89,20 +95,20 @@ defmodule Game.ColorCodes do
     color_codes = ColorCode |> Repo.all()
 
     Enum.each(color_codes, fn color_code ->
-      Cachex.set(@cache_key, color_code.key, color_code)
+      Cachex.set(@key, color_code.key, color_code)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, color_code}, _from, state) do
-    Cachex.set(@cache_key, color_code.key, color_code)
+    Cachex.set(@key, color_code.key, color_code)
 
     {:reply, :ok, state}
   end
 
   def handle_call(:clear, _from, state) do
-    Cachex.clear(@cache_key)
+    Cachex.clear(@key)
 
     {:reply, :ok, state}
   end

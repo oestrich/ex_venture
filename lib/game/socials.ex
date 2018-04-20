@@ -8,7 +8,7 @@ defmodule Game.Socials do
   alias Data.Social
   alias Data.Repo
 
-  @cache :socials
+  @key :socials
 
   @doc false
   def start_link() do
@@ -21,11 +21,11 @@ defmodule Game.Socials do
   end
 
   def social(id) when is_integer(id) do
-    _fetch_from_cache(@cache, id)
+    _fetch_from_cache(@key, id)
   end
 
   def social(command) when is_binary(command) do
-    _fetch_from_cache(@cache, command)
+    _fetch_from_cache(@key, command)
   end
 
   @spec socials([integer()]) :: [Social.t()]
@@ -40,7 +40,7 @@ defmodule Game.Socials do
   """
   @spec all() :: [Social.t()]
   def all() do
-    Cachex.execute!(@cache, fn cache ->
+    Cachex.execute!(@key, fn cache ->
       {:ok, keys} = Cachex.keys(cache)
       keys = Enum.filter(keys, &is_integer/1)
 
@@ -66,7 +66,10 @@ defmodule Game.Socials do
   """
   @spec insert(Social.t()) :: :ok
   def insert(social) do
-    GenServer.call(__MODULE__, {:insert, social})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:insert, social})
+    end)
   end
 
   @doc """
@@ -80,14 +83,17 @@ defmodule Game.Socials do
   """
   @spec remove_command(String.t()) :: :ok
   def remove_command(command) do
-    GenServer.call(__MODULE__, {:remove_command, command})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:remove_command, command})
+    end)
   end
 
   @doc """
   For testing only: clear the EST table
   """
   def clear() do
-    Cachex.clear(@cache)
+    Cachex.clear(@key)
   end
 
   #
@@ -95,7 +101,11 @@ defmodule Game.Socials do
   #
 
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     GenServer.cast(self(), :load_socials)
+
     {:ok, %{}}
   end
 
@@ -103,22 +113,22 @@ defmodule Game.Socials do
     socials = Social |> Repo.all()
 
     Enum.each(socials, fn social ->
-      Cachex.set(@cache, social.id, social)
-      Cachex.set(@cache, social.command, social)
+      Cachex.set(@key, social.id, social)
+      Cachex.set(@key, social.command, social)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, social}, _from, state) do
-    Cachex.set(@cache, social.id, social)
-    Cachex.set(@cache, social.command, social)
+    Cachex.set(@key, social.id, social)
+    Cachex.set(@key, social.command, social)
 
     {:reply, :ok, state}
   end
 
   def handle_call({:remove_command, command}, _from, state) do
-    Cachex.del(@cache, command)
+    Cachex.del(@key, command)
 
     {:reply, :ok, state}
   end

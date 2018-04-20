@@ -10,6 +10,8 @@ defmodule Game.Skills do
   alias Data.Skill
   alias Data.Repo
 
+  @key :skills
+
   @doc false
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -21,14 +23,14 @@ defmodule Game.Skills do
   end
 
   def skill(id) when is_integer(id) do
-    case Cachex.get(:skills, id) do
+    case Cachex.get(@key, id) do
       {:ok, skill} when skill != nil -> skill
       _ -> nil
     end
   end
 
   def skill(command) when is_binary(command) do
-    case Cachex.get(:skills, command) do
+    case Cachex.get(@key, command) do
       {:ok, skill} when skill != nil -> skill
       _ -> nil
     end
@@ -46,7 +48,10 @@ defmodule Game.Skills do
   """
   @spec insert(Skill.t()) :: :ok
   def insert(skill) do
-    GenServer.call(__MODULE__, {:insert, skill})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:insert, skill})
+    end)
   end
 
   @doc """
@@ -67,7 +72,11 @@ defmodule Game.Skills do
   #
 
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     GenServer.cast(self(), :load_skills)
+
     {:ok, %{}}
   end
 
@@ -75,21 +84,21 @@ defmodule Game.Skills do
     skills = Skill |> Repo.all()
 
     Enum.each(skills, fn skill ->
-      Cachex.set(:skills, skill.id, skill)
-      Cachex.set(:skills, skill.command, skill)
+      Cachex.set(@key, skill.id, skill)
+      Cachex.set(@key, skill.command, skill)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, skill}, _from, state) do
-    Cachex.set(:skills, skill.id, skill)
-    Cachex.set(:skills, skill.command, skill)
+    Cachex.set(@key, skill.id, skill)
+    Cachex.set(@key, skill.command, skill)
     {:reply, :ok, state}
   end
 
   def handle_call(:clear, _from, state) do
-    Cachex.clear(:skills)
+    Cachex.clear(@key)
 
     {:reply, :ok, state}
   end

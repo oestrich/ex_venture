@@ -8,7 +8,7 @@ defmodule Game.Channels do
   alias Data.Channel
   alias Data.Repo
 
-  @cache :channels
+  @key :channels
 
   @doc false
   def start_link() do
@@ -16,7 +16,7 @@ defmodule Game.Channels do
   end
 
   def get(channel) do
-    _fetch_from_cache(@cache, channel)
+    _fetch_from_cache(@key, channel)
   end
 
   @doc """
@@ -24,7 +24,10 @@ defmodule Game.Channels do
   """
   @spec insert(Channel.t()) :: :ok
   def insert(channel) do
-    GenServer.call(__MODULE__, {:insert, channel})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:insert, channel})
+    end)
   end
 
   @doc """
@@ -38,7 +41,7 @@ defmodule Game.Channels do
   """
   @spec all() :: [String.t()]
   def all() do
-    Cachex.execute!(@cache, fn cache ->
+    Cachex.execute!(@key, fn cache ->
       {:ok, keys} = Cachex.keys(cache)
       keys = Enum.filter(keys, &is_integer/1)
 
@@ -55,7 +58,7 @@ defmodule Game.Channels do
   For testing only: clear the EST table
   """
   def clear() do
-    Cachex.clear(@cache)
+    Cachex.clear(@key)
   end
 
   defp _fetch_from_cache(cache, key) do
@@ -71,7 +74,11 @@ defmodule Game.Channels do
   #
 
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     GenServer.cast(self(), :load_channels)
+
     {:ok, %{}}
   end
 
@@ -79,16 +86,16 @@ defmodule Game.Channels do
     channels = Channel |> Repo.all()
 
     Enum.each(channels, fn channel ->
-      Cachex.set(@cache, channel.id, channel)
-      Cachex.set(@cache, channel.name, channel)
+      Cachex.set(@key, channel.id, channel)
+      Cachex.set(@key, channel.name, channel)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, channel}, _from, state) do
-    Cachex.set(@cache, channel.id, channel)
-    Cachex.set(@cache, channel.name, channel)
+    Cachex.set(@key, channel.id, channel)
+    Cachex.set(@key, channel.name, channel)
 
     {:reply, :ok, state}
   end

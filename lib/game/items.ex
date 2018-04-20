@@ -10,6 +10,8 @@ defmodule Game.Items do
   alias Data.Item
   alias Data.Repo
 
+  @key :items
+
   @doc false
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -21,7 +23,7 @@ defmodule Game.Items do
   end
 
   def item(id) when is_integer(id) do
-    case Cachex.get(:items, id) do
+    case Cachex.get(@key, id) do
       {:ok, item} when item != nil -> item
       _ -> nil
     end
@@ -50,7 +52,10 @@ defmodule Game.Items do
   """
   @spec insert(Item.t()) :: :ok
   def insert(item) do
-    GenServer.call(__MODULE__, {:insert, item})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:insert, item})
+    end)
   end
 
   @doc """
@@ -71,7 +76,11 @@ defmodule Game.Items do
   #
 
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     GenServer.cast(self(), :load_items)
+
     {:ok, %{}}
   end
 
@@ -83,7 +92,7 @@ defmodule Game.Items do
 
     Enum.each(items, fn item ->
       item = Item.compile(item)
-      Cachex.set(:items, item.id, item)
+      Cachex.set(@key, item.id, item)
     end)
 
     {:noreply, state}
@@ -95,17 +104,17 @@ defmodule Game.Items do
       |> Repo.preload([:item_aspects])
       |> Item.compile()
 
-    Cachex.set(:items, item.id, item)
+    Cachex.set(@key, item.id, item)
     {:reply, :ok, state}
   end
 
   def handle_call({:insert, item}, _from, state) do
-    Cachex.set(:items, item.id, item)
+    Cachex.set(@key, item.id, item)
     {:reply, :ok, state}
   end
 
   def handle_call(:clear, _from, state) do
-    Cachex.clear(:items)
+    Cachex.clear(@key)
 
     {:reply, :ok, state}
   end
