@@ -43,6 +43,7 @@ defmodule Data.User do
       :name,
       :email,
       :password,
+      :password_confirmation,
       :save,
       :flags,
       :race_id,
@@ -51,7 +52,6 @@ defmodule Data.User do
       :notes
     ])
     |> validate_required([:name, :save, :race_id, :class_id])
-    |> validate_save()
     |> validate_name()
     |> validate_format(:email, ~r/.+@.+\..+/)
     |> ensure(:flags, [])
@@ -60,6 +60,7 @@ defmodule Data.User do
     |> hash_password
     |> validate_required([:password_hash])
     |> validate_confirmation(:password)
+    |> validate_save()
     |> unique_constraint(:name)
     |> unique_constraint(:email)
     |> foreign_key_constraint(:race_id)

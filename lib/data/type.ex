@@ -79,7 +79,7 @@ defmodule Data.Type do
   """
   @spec ensure(map(), atom(), any()) :: map()
   def ensure(data, field, default) do
-    case Map.has_key?(data, field) do
+    case Map.has_key?(data, field) && Map.get(data, field) != nil do
       true ->
         data
 

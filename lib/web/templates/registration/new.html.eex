@@ -1,8 +1,14 @@
 <div class="row">
-  <div class="col-md-4 offset-md-4">
+  <div class="col-md-6 offset-md-3">
     <h3>Sign In</h3>
 
     <%= form_for @changeset, public_registration_path(@conn, :create), [method: :post], fn (f) -> %>
+      <%= if @changeset.errors[:save] do %>
+        <div class="alert alert-danger">
+          There was a problem creating your account. Please contact the administrator.
+        </div>
+      <% end %>
+
       <div class="form-group has-feedback">
         <%= label f, :name %>
         <%= text_input f, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus" %>
