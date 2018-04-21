@@ -56,3 +56,7 @@ config :ex_venture, ExVenture.Mailer,
   password: {:system, "SMTP_PASSWORD"}
 
 config :ex_venture, :mailer, from: {:system, "EXVENTURE_MAILER_FROM"}
+
+if File.exists?("config/prod.secret.exs") do
+  import_config("prod.secret.exs")
+end

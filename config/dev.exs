@@ -45,10 +45,6 @@ config :ex_venture, ExVenture.Mailer, adapter: Bamboo.LocalAdapter
 
 config :ex_venture, :mailer, from: "mud@example.com"
 
-config :libcluster,
-  topologies: [
-    local: [
-      strategy: Cluster.Strategy.Epmd,
-      config: [hosts: []]
-    ]
-  ]
+if File.exists?("config/dev.local.exs") do
+  import_config("dev.local.exs")
+end
