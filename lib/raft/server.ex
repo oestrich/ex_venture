@@ -10,40 +10,67 @@ defmodule Raft.Server do
   @doc """
   Try to elect yourself as the leader
   """
-  def elect(state) do
-    with {:error, :no_leader} <- check_leader(state) do
-      PG.broadcast(fn pid ->
-        send(pid, {:leader, self()})
-      end)
+  def start_election(state, term) do
+    Logger.debug(fn ->
+      "Starting an election for term #{term}, announcing candidacy"
+    end)
 
-      Process.send_after(self(), :heartbeat, 1_000)
+    case term <= state.term do
+      true ->
+        Logger.debug(fn ->
+          "Someone already won this round, not starting"
+        end)
+
+      false ->
+        PG.broadcast([others: true], fn pid ->
+          Raft.announce_candidate(pid, term)
+        end)
     end
 
     {:ok, state}
   end
 
-  def set_leader(state, pid) do
-    with {:error, :no_leader} <- check_leader(state) do
-      Logger.info("Selecing a new leader #{inspect(self())}")
-      {:ok, %{state | leader: pid}}
-    else
-      _ ->
-        {:ok, state}
-    end
+  @doc """
+  Vote for the leader
+
+  TODO: check for term is newer
+  """
+  def vote_leader(state, pid, term) do
+    Logger.debug(fn ->
+      "Received ballot for term #{term}, from #{inspect(pid)}, voting"
+    end)
+
+    Raft.vote_for(pid, term)
+
+    {:ok, state}
   end
 
-  defp check_leader(state) do
-    pid = self()
+  @doc """
+  A vote came in from the cluster
 
-    case state.leader do
-      ^pid ->
-        {:ok, :leader}
+  TODO: check for term is newer
+  TODO: ensure majority of votes are in
+  """
+  def new_vote(state, pid, term) do
+    Logger.debug(fn ->
+      "Received a vote for leader for term #{term}, from #{inspect(pid)}"
+    end)
 
-      nil ->
-        {:error, :no_leader}
+    Raft.new_leader(pid, term)
 
-      _ ->
-        {:error, :node_only}
-    end
+    {:ok, state}
+  end
+
+  @doc """
+  Set the winner as leader
+
+  TODO: check for term is newer
+  """
+  def set_leader(state, pid, term) do
+    Logger.debug(fn ->
+      "Setting leader for term #{term} as #{inspect(pid)}"
+    end)
+
+    {:ok, %{state | term: term, leader_pid: pid}}
   end
 end
