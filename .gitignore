@@ -25,3 +25,5 @@ priv/static/
 /docs/site
 /backups
 /schema.sql
+/config/prod.secret.exs
+/config/dev.local.exs

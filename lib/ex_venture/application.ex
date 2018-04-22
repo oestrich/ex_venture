@@ -15,7 +15,6 @@ defmodule ExVenture.Application do
       [
         supervisor(Data.Repo, []),
         supervisor(Web.Supervisor, []),
-        supervisor(Game.Registries, []),
         supervisor(Game.Supervisor, []),
         listener()
       ]

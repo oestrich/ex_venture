@@ -8,6 +8,8 @@ defmodule Game.Session.Registry do
   alias Data.User
   alias Game.Character
 
+  @pg2_group :session
+
   defmodule Metadata do
     @moduledoc """
     Struct for internal registry metadata
@@ -50,7 +52,10 @@ defmodule Game.Session.Registry do
   """
   @spec connected_players() :: [{pid, User.t()}]
   def connected_players() do
-    GenServer.call(__MODULE__, :connected_players)
+    members = :pg2.get_members(@pg2_group)
+    Enum.flat_map(members, fn member ->
+      GenServer.call(member, :connected_players)
+    end)
   end
 
   @doc """
@@ -86,6 +91,9 @@ defmodule Game.Session.Registry do
   #
 
   def init(_) do
+    :ok = :pg2.create(@pg2_group)
+    :ok = :pg2.join(@pg2_group, self())
+
     Process.flag(:trap_exit, true)
     {:ok, %{connected_players: []}}
   end
@@ -94,10 +102,8 @@ defmodule Game.Session.Registry do
     {:reply, state.connected_players, state}
   end
 
-  def handle_cast(
-        {:register, pid, user, metadata},
-        state = %{connected_players: connected_players}
-      ) do
+  def handle_cast({:register, pid, user, metadata}, state) do
+    %{connected_players: connected_players} = state
     Process.link(pid)
     connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
     {:noreply, %{state | connected_players: connected_players}}

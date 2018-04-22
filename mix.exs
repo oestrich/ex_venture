@@ -58,6 +58,7 @@ defmodule ExVenture.Mixfile do
       {:earmark, "~> 1.2.3"},
       {:ecto, "~> 2.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:libcluster, "~> 2.1", only: [:dev, :prod]},
       {:logger_file_backend, "~> 0.0.10"},
       {:logster, "~> 0.4"},
       {:phoenix, "~> 1.3.0"},

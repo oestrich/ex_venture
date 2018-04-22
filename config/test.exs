@@ -15,7 +15,9 @@ config :ex_venture, :networking,
   socket_module: Test.Networking.Socket
 
 config :ex_venture, :game,
+  world: false,
   npc: Test.Game.NPC,
+  zone: Test.Game.Zone,
   room: Test.Game.Room,
   shop: Test.Game.Shop,
   zone: Test.Game.Zone,

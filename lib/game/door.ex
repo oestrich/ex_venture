@@ -12,7 +12,7 @@ defmodule Game.Door do
   """
   @type status :: String.t()
 
-  @cache_key :doors
+  @key :doors
   @closed "closed"
   @open "open"
 
@@ -40,7 +40,11 @@ defmodule Game.Door do
   def load(%{id: id}), do: load(id)
 
   def load(exit_id) do
-    GenServer.call(__MODULE__, {:load, exit_id})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:load, exit_id})
+    end)
+    @closed
   end
 
   @doc """
@@ -48,7 +52,7 @@ defmodule Game.Door do
   """
   @spec get(integer()) :: String.t()
   def get(exit_id) do
-    case Cachex.get(@cache_key, exit_id) do
+    case Cachex.get(@key, exit_id) do
       {:ok, state} when state != nil -> state
       _ -> nil
     end
@@ -62,7 +66,11 @@ defmodule Game.Door do
 
   @spec set(integer(), status()) :: :ok
   def set(exit_id, state) when state in [@open, @closed] do
-    GenServer.call(__MODULE__, {:set, exit_id, state})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:set, exit_id, state})
+    end)
+    state
   end
 
   @doc """
@@ -94,7 +102,10 @@ defmodule Game.Door do
   def remove(room_exit)
 
   def remove(%{id: id}) do
-    GenServer.call(__MODULE__, {:remove, id})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:remove, id})
+    end)
   end
 
   @doc """
@@ -109,26 +120,29 @@ defmodule Game.Door do
   #
 
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     {:ok, %{}}
   end
 
   def handle_call({:load, exit_id}, _from, state) do
-    Cachex.set(@cache_key, exit_id, @closed)
+    Cachex.set(@key, exit_id, @closed)
     {:reply, @closed, state}
   end
 
   def handle_call({:set, exit_id, door_state}, _from, state) do
-    Cachex.set(@cache_key, exit_id, door_state)
+    Cachex.set(@key, exit_id, door_state)
     {:reply, door_state, state}
   end
 
   def handle_call({:remove, exit_id}, _from, state) do
-    Cachex.del(@cache_key, exit_id)
+    Cachex.del(@key, exit_id)
     {:reply, :ok, state}
   end
 
   def handle_call(:clear, _from, state) do
-    Cachex.clear(@cache_key)
+    Cachex.clear(@key)
     {:reply, :ok, state}
   end
 end

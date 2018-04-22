@@ -35,7 +35,7 @@ defmodule Game.DoorTest do
     "closed" = Door.load(exit_id)
     assert Door.get(exit_id) == "closed"
 
-    :ok = Door.remove(%{id: exit_id})
+    Door.remove(%{id: exit_id})
     assert is_nil(Door.get(exit_id))
   end
 end

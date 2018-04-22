@@ -41,4 +41,8 @@ defmodule Test.Game.Zone do
       state |> Map.put(:graveyard, response)
     end)
   end
+
+  def crash(_zone_id) do
+    :ok
+  end
 end

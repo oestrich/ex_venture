@@ -22,28 +22,11 @@ defmodule Game.World do
     Supervisor.start_child(__MODULE__, child_spec)
   end
 
-  @doc """
-  Return all zones that are currently online
-  """
-  @spec zones() :: [pid]
-  def zones() do
-    __MODULE__
-    |> Supervisor.which_children()
-    |> Enum.flat_map(fn {_id, pid, _type, _module} ->
-      pid
-      |> Supervisor.which_children()
-      |> Enum.reject(&Regex.match?(~r(rooms|npcs|shops), to_string(elem(&1, 0))))
-      |> Enum.map(&elem(&1, 1))
-    end)
-  end
-
   def init(_) do
-    children =
-      Zone.all()
-      |> Enum.map(fn zone ->
-        supervisor(Zone.Supervisor, [zone], id: zone.id, restart: :permanent)
-      end)
+    children = [
+      {Game.World.Master, []}
+    ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 end

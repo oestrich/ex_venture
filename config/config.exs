@@ -8,6 +8,7 @@ config :ex_venture,
   timezone: "America/New_York"
 
 config :ex_venture, :game,
+  world: true,
   currency: "gold",
   timeout_seconds: 10 * 60,
   rand: :rand,

@@ -98,7 +98,7 @@ defmodule Web.NPCTest do
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
     assert Game.Zone._get_state(zone.id)
-    npc_pid = Registry.whereis_name({Game.NPC.Registry, npc_spawner.id})
+    npc_pid = :global.whereis_name({Game.NPC, npc_spawner.id})
     Process.link(npc_pid)
 
     assert {:ok, _npc_spanwer} = NPC.delete_spawner(npc_spawner.id)

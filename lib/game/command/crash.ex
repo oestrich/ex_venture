@@ -5,6 +5,8 @@ defmodule Game.Command.Crash do
 
   use Game.Command
 
+  @zone Application.get_env(:ex_venture, :game)[:zone]
+
   commands(["crash"], parse: false)
 
   @impl Game.Command
@@ -27,6 +29,9 @@ defmodule Game.Command.Crash do
       iex> Game.Command.Crash.parse("crash room")
       {:room}
 
+      iex> Game.Command.Crash.parse("crash zone")
+      {:zone}
+
       iex> Game.Command.Crash.parse("crash")
       {:error, :bad_parse, "crash"}
 
@@ -39,6 +44,7 @@ defmodule Game.Command.Crash do
   @spec parse(String.t()) :: {atom}
   def parse(command)
   def parse("crash room"), do: {:room}
+  def parse("crash zone"), do: {:zone}
 
   @impl Game.Command
   @doc """
@@ -51,6 +57,20 @@ defmodule Game.Command.Crash do
       true ->
         save.room_id |> @room.crash()
         socket |> @socket.echo("Sent a message to crash the room.")
+
+      false ->
+        socket |> @socket.echo("You must be an admin to perform this.")
+    end
+
+    :ok
+  end
+
+  def run({:zone}, %{user: user, save: save, socket: socket}) do
+    case "admin" in user.flags do
+      true ->
+        room = save.room_id |> @room.look()
+        room.zone_id |> @zone.crash()
+        socket |> @socket.echo("Sent a message to crash the zone.")
 
       false ->
         socket |> @socket.echo("You must be an admin to perform this.")

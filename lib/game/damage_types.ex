@@ -10,7 +10,7 @@ defmodule Game.DamageTypes do
   alias Data.DamageType
   alias Data.Repo
 
-  @cache_key :damage_types
+  @key :damage_types
 
   @doc false
   def start_link() do
@@ -19,7 +19,7 @@ defmodule Game.DamageTypes do
 
   @spec get(integer() | String.t()) :: DamageType.t() | nil
   def get(key) when is_binary(key) do
-    case Cachex.get(@cache_key, key) do
+    case Cachex.get(@key, key) do
       {:ok, damage_type} when damage_type != nil ->
         {:ok, damage_type}
 
@@ -39,7 +39,7 @@ defmodule Game.DamageTypes do
 
     case changeset |> Repo.insert() do
       {:ok, damage_type} ->
-        Cachex.set(@cache_key, damage_type.key, damage_type)
+        Cachex.set(@key, damage_type.key, damage_type)
         {:ok, damage_type}
 
       {:error, _changeset} ->
@@ -59,7 +59,10 @@ defmodule Game.DamageTypes do
   """
   @spec insert(DamageType.t()) :: :ok
   def insert(damage_type) do
-    GenServer.call(__MODULE__, {:insert, damage_type})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:insert, damage_type})
+    end)
   end
 
   @doc """
@@ -80,6 +83,9 @@ defmodule Game.DamageTypes do
   #
 
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     GenServer.cast(self(), :load_damage_types)
 
     {:ok, %{}}
@@ -89,14 +95,14 @@ defmodule Game.DamageTypes do
     damage_types = DamageType |> Repo.all()
 
     Enum.each(damage_types, fn damage_type ->
-      Cachex.set(@cache_key, damage_type.key, damage_type)
+      Cachex.set(@key, damage_type.key, damage_type)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, damage_type}, _from, state) do
-    Cachex.set(@cache_key, damage_type.key, damage_type)
+    Cachex.set(@key, damage_type.key, damage_type)
 
     {:reply, :ok, state}
   end

@@ -27,7 +27,7 @@ defmodule Game.Zone do
   end
 
   defp pid(id) do
-    {:via, Registry, {Game.Zone.Registry, id}}
+    {:global, {Game.Zone, id}}
   end
 
   @doc """
@@ -139,6 +139,15 @@ defmodule Game.Zone do
   """
   def graveyard(id) do
     GenServer.call(pid(id), :graveyard)
+  end
+
+  @doc """
+  Crash a zone process with an unmatched cast
+
+  There should always remain no matching clause for this cast
+  """
+  def crash(id) do
+    GenServer.cast(pid(id), :crash)
   end
 
   @doc """
