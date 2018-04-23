@@ -14,6 +14,12 @@ defmodule Game.World.Master do
 
   @start_world Application.get_env(:ex_venture, :game)[:world]
 
+  def leader_selected() do
+    if @start_world do
+      GenServer.cast(__MODULE__, :start_zones)
+    end
+  end
+
   def start_zone(pid, zone) do
     GenServer.cast(pid, {:start, zone})
   end
@@ -26,10 +32,6 @@ defmodule Game.World.Master do
     :ok = :pg2.create(:world)
     :ok = :pg2.join(:world, self())
 
-    if @start_world do
-      Process.send_after(self(), :elect, 5_000 + :rand.uniform(5_000))
-    end
-
     {:ok, %{leader: nil}}
   end
 
@@ -39,45 +41,10 @@ defmodule Game.World.Master do
     {:noreply, state}
   end
 
-  def handle_info(:elect, state) do
-    case state.leader do
-      nil ->
-        :world
-        |> :pg2.get_members()
-        |> Enum.each(fn pid ->
-          send(pid, {:leader, self()})
-        end)
-
-        Process.send_after(self(), :start_zones, 3_000)
-
-      _ ->
-        {:leader, :elected}
-    end
-
-    {:noreply, state}
-  end
-
-  def handle_info({:leader, pid}, state) do
-    case state.leader do
-      nil ->
-        Logger.info("Selecing a new leader #{inspect(self())}")
-
-        {:noreply, %{state | leader: pid}}
-
-      _ ->
-        {:noreply, state}
-    end
-  end
-
-  def handle_info(:start_zones, state) do
-    case state.leader == self() do
-      true ->
-        Logger.info("Starting zones")
-        start_zones()
-
-      false ->
-        :error
-    end
+  # This is started by the raft
+  def handle_cast(:start_zones, state) do
+    Logger.info("Starting zones")
+    start_zones()
 
     {:noreply, state}
   end

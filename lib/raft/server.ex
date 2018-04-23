@@ -7,6 +7,8 @@ defmodule Raft.Server do
 
   require Logger
 
+  @winner_subscriptions [Game.World.Master]
+
   @doc """
   Check for a leader already in the cluster
   """
@@ -97,6 +99,10 @@ defmodule Raft.Server do
 
       PG.broadcast([others: true], fn pid ->
         Raft.new_leader(pid, term)
+      end)
+
+      Enum.map(@winner_subscriptions, fn module ->
+        module.leader_selected()
       end)
 
       {:ok, state} = set_leader(state, self(), node(), term)
