@@ -7,6 +7,27 @@ defmodule Raft.Server do
 
   require Logger
 
+  def look_for_leader(state) do
+    Logger.debug("Checking for a current leader.")
+
+    PG.broadcast([others: true], fn pid ->
+      Raft.leader_check(pid)
+    end)
+
+    {:ok, state}
+  end
+
+  def leader_check(state, pid) do
+    case state.state do
+      "leader" ->
+        Raft.notify_of_leader(pid, state.term)
+        {:ok, state}
+
+      _ ->
+        {:ok, state}
+    end
+  end
+
   @doc """
   Try to elect yourself as the leader
   """

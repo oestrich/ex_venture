@@ -18,6 +18,20 @@ defmodule Raft do
   end
 
   @doc """
+  Check the state of the election, look for a current leader
+  """
+  def leader_check(pid) do
+    GenServer.cast(pid, {:leader, :check, self()})
+  end
+
+  @doc """
+  Let the new follower know about the current term and who the leader is
+  """
+  def notify_of_leader(pid, term) do
+    GenServer.cast(pid, {:leader, :notice, self(), term})
+  end
+
+  @doc """
   Announce a node as running for leader
   """
   def announce_candidate(pid, term) do
@@ -40,6 +54,8 @@ defmodule Raft do
 
   def init(_) do
     PG.join()
+
+    send(self(), {:election, :check})
     Process.send_after(self(), {:election, :start, 1}, 5_000 + :rand.uniform(5_000))
 
     state = %State{
@@ -51,6 +67,16 @@ defmodule Raft do
     }
 
     {:ok, state}
+  end
+
+  def handle_cast({:leader, :check, pid}, state) do
+    {:ok, state} = Server.leader_check(state, pid)
+    {:noreply, state}
+  end
+
+  def handle_cast({:leader, :notice, pid, term}, state) do
+    {:ok, state} = Server.set_leader(state, pid, term)
+    {:noreply, state}
   end
 
   def handle_cast({:election, :running, pid, term}, state) do
@@ -65,6 +91,11 @@ defmodule Raft do
 
   def handle_cast({:election, :winner, pid, term}, state) do
     {:ok, state} = Server.set_leader(state, pid, term)
+    {:noreply, state}
+  end
+
+  def handle_info({:election, :check}, state) do
+    {:ok, state} = Server.look_for_leader(state)
     {:noreply, state}
   end
 
