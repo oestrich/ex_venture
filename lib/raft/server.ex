@@ -7,6 +7,10 @@ defmodule Raft.Server do
 
   require Logger
 
+  @doc """
+  Check for a leader already in the cluster
+  """
+  @spec look_for_leader(State.t()) :: {:ok, State.t()}
   def look_for_leader(state) do
     Logger.debug("Checking for a current leader.")
 
@@ -17,6 +21,10 @@ defmodule Raft.Server do
     {:ok, state}
   end
 
+  @doc """
+  Reply to the leader check if the node is a leader
+  """
+  @spec leader_check(State.t(), pid()) :: {:ok, State.t()}
   def leader_check(state, pid) do
     case state.state do
       "leader" ->
@@ -108,27 +116,34 @@ defmodule Raft.Server do
 
   @doc """
   Set the winner as leader
-
-  TODO: check for term is newer
   """
   def set_leader(state, leader_pid, leader_node, term) do
-    Logger.debug(fn ->
-      "Setting leader for term #{term} as #{inspect(leader_pid)}"
-    end)
+    with {:ok, :newer} <- check_term_newer(state, term) do
+      Logger.debug(fn ->
+        "Setting leader for term #{term} as #{inspect(leader_pid)}"
+      end)
 
-    state =
-      state
-      |> Map.put(:term, term)
-      |> Map.put(:highest_seen_term, term)
-      |> Map.put(:leader_pid, leader_pid)
-      |> Map.put(:leader_node, leader_node)
-      |> Map.put(:state, "follower")
-      |> Map.put(:votes, [])
-      |> Map.put(:voted_for, nil)
+      state =
+        state
+        |> Map.put(:term, term)
+        |> Map.put(:highest_seen_term, term)
+        |> Map.put(:leader_pid, leader_pid)
+        |> Map.put(:leader_node, leader_node)
+        |> Map.put(:state, "follower")
+        |> Map.put(:votes, [])
+        |> Map.put(:voted_for, nil)
 
-    {:ok, state}
+      {:ok, state}
+    else
+      _ ->
+        {:ok, state}
+    end
   end
 
+  @doc """
+  A node went down, check if it was the leader
+  """
+  @spec node_down(State.t(), atom()) :: {:ok, State.t()}
   def node_down(state, node) do
     case state.leader_node do
       ^node ->
@@ -159,6 +174,10 @@ defmodule Raft.Server do
     {:ok, %{state | votes: [pid | state.votes]}}
   end
 
+  @doc """
+  Check if the node has a majority of the votes
+  """
+  @spec check_majority_votes(State.t()) :: {:ok, :majority} | {:error, :not_enough}
   def check_majority_votes(state) do
     case length(state.votes) >= length(PG.members()) / 2 do
       true ->
@@ -169,6 +188,10 @@ defmodule Raft.Server do
     end
   end
 
+  @doc """
+  Check if the ndoe has voted in this term
+  """
+  @spec check_voted(State.t()) :: {:ok, :not_voted} | {:error, :voted}
   def check_voted(state) do
     case state.voted_for do
       nil ->

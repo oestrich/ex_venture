@@ -13,12 +13,15 @@ defmodule Raft do
 
   require Logger
 
+  @election_initial_delay 500
+  @election_random_delay 300
+
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def start_election(term) do
-    Process.send_after(self(), {:election, :start, term}, 5_000 + :rand.uniform(5_000))
+    Process.send_after(self(), {:election, :start, term}, @election_initial_delay + :rand.uniform(@election_random_delay))
   end
 
   @doc """
