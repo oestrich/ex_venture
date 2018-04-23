@@ -17,6 +17,10 @@ defmodule Raft do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  def start_election(term) do
+    Process.send_after(self(), {:election, :start, term}, 5_000 + :rand.uniform(5_000))
+  end
+
   @doc """
   Check the state of the election, look for a current leader
   """
@@ -28,7 +32,7 @@ defmodule Raft do
   Let the new follower know about the current term and who the leader is
   """
   def notify_of_leader(pid, term) do
-    GenServer.cast(pid, {:leader, :notice, self(), term})
+    GenServer.cast(pid, {:leader, :notice, self(), node(), term})
   end
 
   @doc """
@@ -49,20 +53,21 @@ defmodule Raft do
   Set the node as the new leader for a term
   """
   def new_leader(pid, term) do
-    GenServer.cast(pid, {:election, :winner, self(), term})
+    GenServer.cast(pid, {:election, :winner, self(), node(), term})
   end
 
   def init(_) do
     PG.join()
 
     send(self(), {:election, :check})
-    Process.send_after(self(), {:election, :start, 1}, 5_000 + :rand.uniform(5_000))
+    start_election(1)
+
+    :ok = :net_kernel.monitor_nodes(true)
 
     state = %State{
       state: "candidate",
       term: 0,
       highest_seen_term: 0,
-      leader_pid: nil,
       votes: []
     }
 
@@ -74,8 +79,8 @@ defmodule Raft do
     {:noreply, state}
   end
 
-  def handle_cast({:leader, :notice, pid, term}, state) do
-    {:ok, state} = Server.set_leader(state, pid, term)
+  def handle_cast({:leader, :notice, leader_pid, leader_node, term}, state) do
+    {:ok, state} = Server.set_leader(state, leader_pid, leader_node, term)
     {:noreply, state}
   end
 
@@ -89,8 +94,8 @@ defmodule Raft do
     {:noreply, state}
   end
 
-  def handle_cast({:election, :winner, pid, term}, state) do
-    {:ok, state} = Server.set_leader(state, pid, term)
+  def handle_cast({:election, :winner, leader_pid, leader_node, term}, state) do
+    {:ok, state} = Server.set_leader(state, leader_pid, leader_node, term)
     {:noreply, state}
   end
 
@@ -101,6 +106,15 @@ defmodule Raft do
 
   def handle_info({:election, :start, term}, state) do
     {:ok, state} = Server.start_election(state, term)
+    {:noreply, state}
+  end
+
+  def handle_info({:nodeup, _node}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:nodedown, node}, state) do
+    {:ok, state} = Server.node_down(state, node)
     {:noreply, state}
   end
 end

@@ -91,7 +91,7 @@ defmodule Raft.Server do
         Raft.new_leader(pid, term)
       end)
 
-      {:ok, state} = set_leader(state, self(), term)
+      {:ok, state} = set_leader(state, self(), node(), term)
       {:ok, %{state | state: "leader"}}
     else
       {:error, :older} ->
@@ -111,21 +111,34 @@ defmodule Raft.Server do
 
   TODO: check for term is newer
   """
-  def set_leader(state, pid, term) do
+  def set_leader(state, leader_pid, leader_node, term) do
     Logger.debug(fn ->
-      "Setting leader for term #{term} as #{inspect(pid)}"
+      "Setting leader for term #{term} as #{inspect(leader_pid)}"
     end)
 
     state =
       state
       |> Map.put(:term, term)
       |> Map.put(:highest_seen_term, term)
-      |> Map.put(:leader_pid, pid)
+      |> Map.put(:leader_pid, leader_pid)
+      |> Map.put(:leader_node, leader_node)
       |> Map.put(:state, "follower")
       |> Map.put(:votes, [])
       |> Map.put(:voted_for, nil)
 
     {:ok, state}
+  end
+
+  def node_down(state, node) do
+    case state.leader_node do
+      ^node ->
+        Raft.start_election(state.term + 1)
+
+        {:ok, state}
+
+      _ ->
+        {:ok, state}
+    end
   end
 
   @doc """

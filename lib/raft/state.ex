@@ -8,6 +8,7 @@ defmodule Raft.State do
     :term,
     :highest_seen_term,
     :leader_pid,
+    :leader_node,
     :voted_for,
     :votes
   ]
