@@ -55,19 +55,32 @@ defmodule Raft do
   def init(_) do
     PG.join()
     Process.send_after(self(), {:election, :start, 1}, 5_000 + :rand.uniform(5_000))
-    {:ok, %State{state: :candidate, term: 0, leader_pid: nil}}
+
+    state = %State{
+      state: :candidate,
+      term: 0,
+      highest_seen_term: 0,
+      leader_pid: nil,
+      votes: []
+    }
+
+    {:ok, state}
   end
 
   # Receive a heartbeat
   def handle_cast({:heartbeat, pid}, state) do
-    Logger.debug("Heartbeat from #{inspect(pid)} - #{inspect(state)}")
+    Logger.debug(fn ->
+      "Heartbeat from #{inspect(pid)} - #{inspect(state)}"
+    end)
     heartbeat_response(pid)
     {:noreply, state}
   end
 
   # Respond to a heart beat
   def handle_cast({:heartbeat, :response, pid}, state) do
-    Logger.debug("Heartbeat back from #{inspect(pid)} - #{inspect(state)}")
+    Logger.debug(fn ->
+      "Heartbeat back from #{inspect(pid)} - #{inspect(state)}"
+    end)
     {:noreply, state}
   end
 
@@ -77,7 +90,7 @@ defmodule Raft do
   end
 
   def handle_cast({:election, :cast_vote, pid, term}, state) do
-    {:ok, state} = Server.new_vote(state, pid, term)
+    {:ok, state} = Server.vote_received(state, pid, term)
     {:noreply, state}
   end
 

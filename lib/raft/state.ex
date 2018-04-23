@@ -3,7 +3,14 @@ defmodule Raft.State do
   Struct for the state of the local process
   """
 
-  defstruct [:state, :term, :leader_pid, :votes]
+  defstruct [
+    :state,
+    :term,
+    :highest_seen_term,
+    :leader_pid,
+    :voted_for,
+    :votes
+  ]
 
   @doc """
   States of a node

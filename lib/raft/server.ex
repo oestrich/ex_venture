@@ -15,50 +15,69 @@ defmodule Raft.Server do
       "Starting an election for term #{term}, announcing candidacy"
     end)
 
-    case term <= state.term do
-      true ->
+    case check_term_newer(state, term) do
+      {:ok, :newer} ->
+        PG.broadcast([others: true], fn pid ->
+          Raft.announce_candidate(pid, term)
+        end)
+
+        {:ok, %{state | highest_seen_term: term}}
+
+      {:error, :older} ->
         Logger.debug(fn ->
           "Someone already won this round, not starting"
         end)
 
-      false ->
-        PG.broadcast([others: true], fn pid ->
-          Raft.announce_candidate(pid, term)
-        end)
+        {:ok, state}
     end
-
-    {:ok, state}
   end
 
   @doc """
   Vote for the leader
-
-  TODO: check for term is newer
   """
   def vote_leader(state, pid, term) do
     Logger.debug(fn ->
       "Received ballot for term #{term}, from #{inspect(pid)}, voting"
     end)
 
-    Raft.vote_for(pid, term)
-
-    {:ok, state}
+    with {:ok, :newer} <- check_term_newer(state, term) do
+      Raft.vote_for(pid, term)
+      {:ok, %{state | highest_seen_term: term}}
+    else
+      _ ->
+        {:ok, state}
+    end
   end
 
   @doc """
   A vote came in from the cluster
-
-  TODO: check for term is newer
-  TODO: ensure majority of votes are in
   """
-  def new_vote(state, pid, term) do
+  def vote_received(state, pid, term) do
     Logger.debug(fn ->
       "Received a vote for leader for term #{term}, from #{inspect(pid)}"
     end)
 
-    Raft.new_leader(pid, term)
+    with {:ok, :newer} <- check_term_newer(state, term),
+         {:ok, state} <- append_vote(state, pid),
+         {:ok, :majority} <- check_majority_votes(state) do
 
-    {:ok, state}
+      Logger.debug(fn ->
+        "Won the election for term #{term}"
+      end)
+      Raft.new_leader(pid, term)
+
+      {:ok, state}
+    else
+      {:error, :older} ->
+        Logger.debug("An old vote received - ignoring")
+
+        {:ok, state}
+
+      {:error, :not_enough} ->
+        Logger.debug("Not enough votes to be a winner")
+
+        append_vote(state, pid)
+    end
   end
 
   @doc """
@@ -71,6 +90,43 @@ defmodule Raft.Server do
       "Setting leader for term #{term} as #{inspect(pid)}"
     end)
 
-    {:ok, %{state | term: term, leader_pid: pid}}
+    state =
+      state
+      |> Map.put(:term, term)
+      |> Map.put(:highest_seen_term, term)
+      |> Map.put(:leader_pid, pid)
+      |> Map.put(:state, "follower")
+      |> Map.put(:votes, [])
+      |> Map.put(:voted_for, nil)
+
+    {:ok, state}
+  end
+
+  @doc """
+  Check if a term is newer than the local state
+  """
+  @spec check_term_newer(State.t(), integer()) :: boolean()
+  def check_term_newer(state, term) do
+    case term > state.term do
+      true ->
+        {:ok, :newer}
+
+      false ->
+        {:error, :older}
+    end
+  end
+
+  def append_vote(state, pid) do
+    {:ok, %{state | votes: [pid | state.votes]}}
+  end
+
+  def check_majority_votes(state) do
+    case length(state.votes) >= length(PG.members()) / 2 do
+      true ->
+        {:ok, :majority}
+
+      false ->
+        {:error, :not_enough}
+    end
   end
 end
