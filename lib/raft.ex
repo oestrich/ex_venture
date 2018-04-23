@@ -38,26 +38,12 @@ defmodule Raft do
     GenServer.cast(pid, {:election, :winner, self(), term})
   end
 
-  @doc """
-  Send a heartbeat from the leader to the connected nodes
-  """
-  def heartbeat(pid) do
-    GenServer.cast(pid, {:heartbeat, self()})
-  end
-
-  @doc """
-  Heartbeat response from the connected nodes
-  """
-  def heartbeat_response(pid) do
-    GenServer.cast(pid, {:heartbeat, :response, self()})
-  end
-
   def init(_) do
     PG.join()
     Process.send_after(self(), {:election, :start, 1}, 5_000 + :rand.uniform(5_000))
 
     state = %State{
-      state: :candidate,
+      state: "candidate",
       term: 0,
       highest_seen_term: 0,
       leader_pid: nil,
@@ -65,23 +51,6 @@ defmodule Raft do
     }
 
     {:ok, state}
-  end
-
-  # Receive a heartbeat
-  def handle_cast({:heartbeat, pid}, state) do
-    Logger.debug(fn ->
-      "Heartbeat from #{inspect(pid)} - #{inspect(state)}"
-    end)
-    heartbeat_response(pid)
-    {:noreply, state}
-  end
-
-  # Respond to a heart beat
-  def handle_cast({:heartbeat, :response, pid}, state) do
-    Logger.debug(fn ->
-      "Heartbeat back from #{inspect(pid)} - #{inspect(state)}"
-    end)
-    {:noreply, state}
   end
 
   def handle_cast({:election, :running, pid, term}, state) do
@@ -101,13 +70,6 @@ defmodule Raft do
 
   def handle_info({:election, :start, term}, state) do
     {:ok, state} = Server.start_election(state, term)
-    {:noreply, state}
-  end
-
-  # Trigger heartbeat as a leader
-  def handle_info(:heartbeat, state) do
-    PG.broadcast([others: true], &heartbeat/1)
-    Process.send_after(self(), :heartbeat, 1_000)
     {:noreply, state}
   end
 end

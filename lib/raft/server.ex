@@ -40,9 +40,10 @@ defmodule Raft.Server do
       "Received ballot for term #{term}, from #{inspect(pid)}, voting"
     end)
 
-    with {:ok, :newer} <- check_term_newer(state, term) do
+    with {:ok, :newer} <- check_term_newer(state, term),
+         {:ok, :not_voted} <- check_voted(state) do
       Raft.vote_for(pid, term)
-      {:ok, %{state | highest_seen_term: term}}
+      {:ok, %{state | voted_for: pid, highest_seen_term: term}}
     else
       _ ->
         {:ok, state}
@@ -64,9 +65,13 @@ defmodule Raft.Server do
       Logger.debug(fn ->
         "Won the election for term #{term}"
       end)
-      Raft.new_leader(pid, term)
 
-      {:ok, state}
+      PG.broadcast([others: true], fn pid ->
+        Raft.new_leader(pid, term)
+      end)
+
+      {:ok, state} = set_leader(state, self(), term)
+      {:ok, %{state | state: "leader"}}
     else
       {:error, :older} ->
         Logger.debug("An old vote received - ignoring")
@@ -127,6 +132,16 @@ defmodule Raft.Server do
 
       false ->
         {:error, :not_enough}
+    end
+  end
+
+  def check_voted(state) do
+    case state.voted_for do
+      nil ->
+        {:ok, :not_voted}
+
+      _ ->
+        {:error, :voted}
     end
   end
 end
