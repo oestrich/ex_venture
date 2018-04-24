@@ -20,10 +20,6 @@ defmodule Raft do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def start_election(term) do
-    Process.send_after(self(), {:election, :start, term}, @election_initial_delay + :rand.uniform(@election_random_delay))
-  end
-
   @doc """
   Check the state of the election, look for a current leader
   """
@@ -113,11 +109,21 @@ defmodule Raft do
   end
 
   def handle_info({:nodeup, _node}, state) do
+    Process.send_after(self(), :assert_leader, 300)
     {:noreply, state}
   end
 
   def handle_info({:nodedown, node}, state) do
     {:ok, state} = Server.node_down(state, node)
     {:noreply, state}
+  end
+
+  def handle_info(:assert_leader, state) do
+    {:ok, state} = Server.assert_leader(state)
+    {:noreply, state}
+  end
+
+  def start_election(term) do
+    Process.send_after(self(), {:election, :start, term}, @election_initial_delay + :rand.uniform(@election_random_delay))
   end
 end

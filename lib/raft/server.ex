@@ -7,6 +7,7 @@ defmodule Raft.Server do
 
   require Logger
 
+  @cluster_size Keyword.get(Application.get_env(:ex_venture, :cluster), :size, 1)
   @winner_subscriptions [Game.World.Master]
 
   @doc """
@@ -48,15 +49,26 @@ defmodule Raft.Server do
 
     case check_term_newer(state, term) do
       {:ok, :newer} ->
-        PG.broadcast([others: true], fn pid ->
-          Raft.announce_candidate(pid, term)
+        if @cluster_size == 1 do
+          voted_leader(state, 1)
+        else
+          PG.broadcast([others: true], fn pid ->
+            Raft.announce_candidate(pid, term)
+          end)
+
+          {:ok, %{state | highest_seen_term: term}}
+        end
+
+      {:error, :same} ->
+        Logger.debug(fn ->
+          "Someone already won this round, not starting"
         end)
 
-        {:ok, %{state | highest_seen_term: term}}
+        {:ok, state}
 
       {:error, :older} ->
         Logger.debug(fn ->
-          "Someone already won this round, not starting"
+          "This term has already completed, not starting"
         end)
 
         {:ok, state}
@@ -76,6 +88,13 @@ defmodule Raft.Server do
       Raft.vote_for(pid, term)
       {:ok, %{state | voted_for: pid, highest_seen_term: term}}
     else
+      {:error, :same} ->
+        Logger.debug(fn ->
+          "Received a vote for the same term"
+        end)
+
+        {:ok, state}
+
       _ ->
         {:ok, state}
     end
@@ -92,22 +111,17 @@ defmodule Raft.Server do
     with {:ok, :newer} <- check_term_newer(state, term),
          {:ok, state} <- append_vote(state, pid),
          {:ok, :majority} <- check_majority_votes(state) do
-
-      Logger.debug(fn ->
-        "Won the election for term #{term}"
-      end)
-
       PG.broadcast([others: true], fn pid ->
         Raft.new_leader(pid, term)
       end)
 
-      Enum.map(@winner_subscriptions, fn module ->
-        module.leader_selected()
-      end)
-
-      {:ok, state} = set_leader(state, self(), node(), term)
-      {:ok, %{state | state: "leader"}}
+      voted_leader(state, term)
     else
+      {:error, :same} ->
+        Logger.debug("An old vote received - ignoring")
+
+        {:ok, state}
+
       {:error, :older} ->
         Logger.debug("An old vote received - ignoring")
 
@@ -141,6 +155,37 @@ defmodule Raft.Server do
 
       {:ok, state}
     else
+      {:error, :same} ->
+        Logger.debug(fn ->
+          "Another node has the same term and is a leader, starting a new term"
+        end)
+
+        Raft.start_election(state.term + 1)
+
+        {:ok, state}
+
+      _ ->
+        {:ok, state}
+    end
+  end
+
+  @doc """
+  A new node joined the cluster, assert leadership
+  """
+  @spec assert_leader(State.t()) :: {:ok, State.t()}
+  def assert_leader(state) do
+    case state.state do
+      "leader" ->
+        Logger.debug(fn ->
+          "A new node came online, asserting leadership"
+        end)
+
+        PG.broadcast([others: true], fn pid ->
+          Raft.new_leader(pid, state.term)
+        end)
+
+        {:ok, state}
+
       _ ->
         {:ok, state}
     end
@@ -167,11 +212,14 @@ defmodule Raft.Server do
   """
   @spec check_term_newer(State.t(), integer()) :: boolean()
   def check_term_newer(state, term) do
-    case term > state.term do
-      true ->
+    cond do
+      term > state.term ->
         {:ok, :newer}
 
-      false ->
+      term == state.term ->
+        {:error, :same}
+
+      true ->
         {:error, :older}
     end
   end
@@ -185,7 +233,7 @@ defmodule Raft.Server do
   """
   @spec check_majority_votes(State.t()) :: {:ok, :majority} | {:error, :not_enough}
   def check_majority_votes(state) do
-    case length(state.votes) >= length(PG.members()) / 2 do
+    case length(state.votes) + 1 >= length(PG.members()) / 2 do
       true ->
         {:ok, :majority}
 
@@ -195,7 +243,7 @@ defmodule Raft.Server do
   end
 
   @doc """
-  Check if the ndoe has voted in this term
+  Check if the node has voted in this term
   """
   @spec check_voted(State.t()) :: {:ok, :not_voted} | {:error, :voted}
   def check_voted(state) do
@@ -206,5 +254,22 @@ defmodule Raft.Server do
       _ ->
         {:error, :voted}
     end
+  end
+
+  @doc """
+  Mark the current node as the new leader for the term
+  """
+  @spec voted_leader(State.t(), integer()) :: {:ok, State.t()}
+  def voted_leader(state, term) do
+    Logger.debug(fn ->
+      "Won the election for term #{term}"
+    end)
+
+    Enum.map(@winner_subscriptions, fn module ->
+      module.leader_selected()
+    end)
+
+    {:ok, state} = set_leader(state, self(), node(), term)
+    {:ok, %{state | state: "leader"}}
   end
 end
