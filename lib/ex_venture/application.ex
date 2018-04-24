@@ -13,6 +13,7 @@ defmodule ExVenture.Application do
     # Define workers and child supervisors to be supervised
     children =
       [
+        worker(Raft, []),
         supervisor(Data.Repo, []),
         supervisor(Web.Supervisor, []),
         supervisor(Game.Supervisor, []),
