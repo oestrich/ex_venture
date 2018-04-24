@@ -15,6 +15,8 @@ config :ex_venture, :game,
   random_damage: -25..25,
   report_users: true
 
+config :ex_venture, :cluster, size: 1
+
 # Configures the endpoint
 config :ex_venture, Web.Endpoint,
   url: [host: "localhost"],

@@ -7,7 +7,7 @@ defmodule Raft.Server do
 
   require Logger
 
-  @cluster_size Keyword.get(Application.get_env(:ex_venture, :cluster), :size, 1)
+  @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
   @winner_subscriptions [Game.World.Master]
 
   @doc """
@@ -265,7 +265,7 @@ defmodule Raft.Server do
       "Won the election for term #{term}"
     end)
 
-    Enum.map(@winner_subscriptions, fn module ->
+    Enum.each(@winner_subscriptions, fn module ->
       module.leader_selected()
     end)
 
