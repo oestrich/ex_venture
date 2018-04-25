@@ -20,6 +20,7 @@ defmodule Networking.Protocol do
   @sb 250
   @se 240
   @telnet_option_echo 1
+  @ga 249
 
   @mccp 86
   @mssp 70
@@ -158,11 +159,13 @@ defmodule Networking.Protocol do
 
   def handle_cast({:echo, message}, state) do
     send_data(state, "\n#{message |> Color.format(state.config)}\n")
+    send_data(state, [@iac, @ga])
     {:noreply, state}
   end
 
   def handle_cast({:echo, message, :prompt}, state) do
     send_data(state, "\n#{message |> Color.format(state.config)}")
+    send_data(state, [@iac, @ga])
     {:noreply, state}
   end
 
