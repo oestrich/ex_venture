@@ -267,6 +267,10 @@ defmodule Game.CommandTest do
     test "listen", %{user: user} do
       assert %Command{module: Command.Listen, args: {}} = Command.parse("listen", user)
     end
+
+    test "debug", %{user: user} do
+      assert %Command{module: Command.Debug, args: {:info}} = Command.parse("debug info", user)
+    end
   end
 
   test "limit commands to be above 0 hp to perform", %{socket: socket} do

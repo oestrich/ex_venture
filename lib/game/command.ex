@@ -87,6 +87,7 @@ defmodule Game.Command do
     Command.Colors,
     Command.Config,
     Command.Crash,
+    Command.Debug,
     Command.Drop,
     Command.Emote,
     Command.Equipment,

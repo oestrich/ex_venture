@@ -25,11 +25,9 @@ defmodule Raft.PG do
   @doc """
   Broadcast a message to the members
   """
-  @spec broadcast((pid() -> any())) :: :ok
+  @spec broadcast(Keyword.t(), (pid() -> any())) :: :ok
   def broadcast([others: true], fun) do
-    members()
-    |> Enum.reject(&(&1 == self()))
-    |> Enum.each(fun)
+    [others: true] |> members() |> Enum.each(fun)
   end
 
   @doc """
@@ -38,5 +36,13 @@ defmodule Raft.PG do
   @spec members() :: [pid()]
   def members() do
     :pg2.get_members(:raft)
+  end
+
+  @doc """
+  Get the other group members
+  """
+  @spec members(Keyword.t()) :: [pid()]
+  def members([others: true]) do
+    members() |> Enum.reject(&(&1 == self()))
   end
 end

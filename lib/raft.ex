@@ -55,6 +55,13 @@ defmodule Raft do
     GenServer.cast(pid, {:election, :winner, self(), node(), term})
   end
 
+  @doc """
+  Get debug information out of the raft server
+  """
+  def debug() do
+    GenServer.call(Raft, :debug)
+  end
+
   def init(_) do
     PG.join()
 
@@ -71,6 +78,15 @@ defmodule Raft do
     }
 
     {:ok, state}
+  end
+
+  def handle_call(:state, _from, state) do
+    {:reply, state, state}
+  end
+
+  def handle_call(:debug, _from, state) do
+    debug = Server.debug(state)
+    {:reply, debug, state}
   end
 
   def handle_cast({:leader, :check, pid}, state) do

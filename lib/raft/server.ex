@@ -10,6 +10,14 @@ defmodule Raft.Server do
   @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
   @winner_subscriptions [Game.World.Master]
 
+  def debug(state) do
+    members = PG.members(others: true)
+    debug_info = Enum.map(members, fn member ->
+      GenServer.call(member, :state)
+    end)
+    [state | debug_info]
+  end
+
   @doc """
   Check for a leader already in the cluster
   """
