@@ -24,9 +24,10 @@ defmodule Game.World do
 
   def init(_) do
     children = [
-      {Game.World.Master, []}
+      {Game.World.Master, []},
+      {Game.World.ZoneController, []}
     ]
 
-    Supervisor.init(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_all)
   end
 end

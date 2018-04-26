@@ -52,7 +52,7 @@ defmodule Raft.Server do
         if @cluster_size == 1 do
           voted_leader(state, 1)
         else
-          PG.broadcast([others: true], fn pid ->
+          PG.broadcast(fn pid ->
             Raft.announce_candidate(pid, term)
           end)
 
@@ -184,6 +184,10 @@ defmodule Raft.Server do
           Raft.new_leader(pid, state.term)
         end)
 
+        Enum.each(@winner_subscriptions, fn module ->
+          module.leader_selected()
+        end)
+
         {:ok, state}
 
       _ ->
@@ -233,7 +237,7 @@ defmodule Raft.Server do
   """
   @spec check_majority_votes(State.t()) :: {:ok, :majority} | {:error, :not_enough}
   def check_majority_votes(state) do
-    case length(state.votes) + 1 >= length(PG.members()) / 2 do
+    case length(state.votes) >= @cluster_size / 2 do
       true ->
         {:ok, :majority}
 

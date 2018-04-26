@@ -7,7 +7,7 @@ defmodule Game.World.Master do
 
   use GenServer
 
-  alias Game.World
+  alias Game.World.ZoneController
   alias Game.Zone
 
   require Logger
@@ -16,12 +16,8 @@ defmodule Game.World.Master do
 
   def leader_selected() do
     if @start_world do
-      GenServer.cast(__MODULE__, :start_zones)
+      GenServer.cast(__MODULE__, :rebalance_zones)
     end
-  end
-
-  def start_zone(pid, zone) do
-    GenServer.cast(pid, {:start, zone})
   end
 
   def start_link(_) do
@@ -29,34 +25,62 @@ defmodule Game.World.Master do
   end
 
   def init(_) do
-    :ok = :pg2.create(:world)
-    :ok = :pg2.join(:world, self())
-
-    {:ok, %{leader: nil}}
-  end
-
-  def handle_cast({:start, zone}, state) do
-    Logger.info("Starting zone #{zone.id}")
-    World.start_child(zone)
-    {:noreply, state}
+    {:ok, %{}}
   end
 
   # This is started by the raft
-  def handle_cast(:start_zones, state) do
+  def handle_cast(:rebalance_zones, state) do
     Logger.info("Starting zones")
-    start_zones()
-
+    rebalance_zones()
     {:noreply, state}
   end
 
-  defp start_zones() do
+  defp rebalance_zones() do
     members = :pg2.get_members(:world)
 
-    Zone.all()
-    |> Enum.with_index()
-    |> Enum.each(fn {zone, index} ->
-      member = Enum.at(members, rem(index, length(members)))
-      __MODULE__.start_zone(member, zone)
+    hosted_zones = get_member_zones(members)
+
+    zones = Zone.all()
+
+    zone_count = length(zones)
+    member_count = length(members)
+    max_zones = round(Float.ceil(zone_count / member_count))
+
+    zones
+    |> Enum.reject(fn (zone) ->
+      Enum.any?(hosted_zones, fn ({_, zone_ids}) ->
+        Enum.member?(zone_ids, zone.id)
+      end)
     end)
+    |> restart_zones(hosted_zones, max_zones)
+  end
+
+  defp get_member_zones(members) do
+    members
+    |> Enum.reject(&(&1 == self()))
+    |> Enum.map(fn (controller) ->
+      {controller, ZoneController.hosted_zones(controller)}
+    end)
+  end
+
+  defp restart_zones(zones, [], _max_zones) do
+    raise "Something bad happened, ran out of nodes to place these zones #{inspect(zones)}"
+  end
+
+  defp restart_zones([], _controllers, _max_zones), do: :ok
+
+  defp restart_zones([zone | zones], [{controller, controller_zones} | controllers_with_zones], max_zones) do
+    case length(controller_zones) >= max_zones do
+      true ->
+        restart_zones([zone | zones], controllers_with_zones, max_zones)
+
+      false ->
+        Logger.info("Starting zone on #{inspect(controller)}")
+
+        ZoneController.start_zone(controller, zone)
+
+        controller_zones = [zone | controller_zones]
+        restart_zones(zones, [{controller, controller_zones} | controllers_with_zones], max_zones)
+    end
   end
 end
