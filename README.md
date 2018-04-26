@@ -23,7 +23,7 @@ mix deps.get
 mix compile
 cd assets && npm install && node node_modules/brunch/bin/brunch build && cd ..
 mix ecto.reset
-mix run --no-halt
+PORT=4000 mix run --no-halt
 ```
 
 This will start a server on port 5555 that you can connect with using the `local.tin` tintin++ config. Ecto reset will include a sample area, classes, skills, and a login. You can also load [http://localhost:4000/](http://localhost:4000/) in your browser for the admin panel and web client.
