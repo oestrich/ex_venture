@@ -15,7 +15,7 @@ defmodule Raft.Server do
     debug_info = Enum.map(members, fn member ->
       GenServer.call(member, :state)
     end)
-    [state | debug_info]
+    [Map.put(state, :node, node()) | debug_info]
   end
 
   @doc """

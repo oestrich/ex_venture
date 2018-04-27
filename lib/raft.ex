@@ -81,7 +81,7 @@ defmodule Raft do
   end
 
   def handle_call(:state, _from, state) do
-    {:reply, state, state}
+    {:reply, Map.put(state, :node, node()), state}
   end
 
   def handle_call(:debug, _from, state) do

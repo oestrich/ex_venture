@@ -66,6 +66,7 @@ defmodule Game.Command.Debug do
     Raft.debug()
     |> Enum.map(fn debug ->
       """
+      {white}Node{/white}: #{debug.node}
       {white}State{/white}: #{debug.state}
       {white}Term{/white}: #{debug.term}
       {white}Leader{/white}: #{debug.leader_node}
