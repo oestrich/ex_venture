@@ -18,7 +18,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10 col-md-offset-1">
       <%= render "_form.html", path: room_feature_path(@conn, :update, @room.id, @feature.id), room: @room, feature: @feature, title: "Edit", submit: "Update" %>
     </div>
   </div>

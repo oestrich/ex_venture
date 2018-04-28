@@ -1,28 +1,32 @@
-<div class="box">
+<div class="box box-primary">
   <div class="box-header">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <div class="lead"><%= Help.get("room.item_spawns") %></div>
 
       <div class="form-group">
-        <%= label f, :item_id %>
-        <%= select f, :item_id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
-        <%= error_tag f, :item_id %>
+        <%= label f, :item_id, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :item_id, @items |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+          <%= error_tag f, :item_id %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :spawn_interval %>
-        <%= text_input f, :spawn_interval, class: "form-control" %>
-        <%= error_tag f, :spawn_interval %>
-        <span class="help-block">Time in seconds for a respawn</span>
+        <%= label f, :spawn_interval, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :spawn_interval, class: "form-control" %>
+          <%= error_tag f, :spawn_interval %>
+          <span class="help-block">Time in seconds for a respawn</span>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

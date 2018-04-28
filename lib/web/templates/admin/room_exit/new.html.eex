@@ -18,13 +18,13 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
-      <div class="box">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="box box-primary">
         <div class="box-header">
           <h3 class="box-title">New Exit</h3>
         </div>
 
-        <%= form_for @changeset, room_exit_path(@conn, :create, @room.id, direction: @direction), fn (f) -> %>
+        <%= form_for @changeset, room_exit_path(@conn, :create, @room.id, direction: @direction), [class: "form-horizontal"], fn (f) -> %>
           <div class="box-body">
             <%= if @direction == "north" do %>
               <%= render("_fields.html", f: f, room: @room, room_field: :south_id, select_field: :north_id) %>
@@ -52,13 +52,16 @@
             <% end %>
 
             <div class="form-group">
-              <%= label f, :has_door %>
-              <%= checkbox f, :has_door %>
+              <div class="col-md-8 col-md-offset-4">
+                <%= label f, :has_door do %>
+                  <%= checkbox f, :has_door %> Has Door?
+                <% end %>
+              </div>
             </div>
           </div>
 
           <div class="box-footer">
-            <%= submit "Create", class: "btn btn-primary" %>
+            <%= submit "Create", class: "btn btn-primary pull-right" %>
           </div>
         <% end %>
       </div>
@@ -66,7 +69,7 @@
   </div>
 
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10 col-md-offset-1">
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Map</h3>
@@ -93,7 +96,7 @@
                             <%= if @room.id == room.id do %>
                               <span class="btn btn-default"><%= room.id %> - <%= room.name %></span>
                             <% else %>
-                              <%= link("#{room.id} - #{room.name}", to: "javascript:selectRoom(#{room.id})", class: "room btn btn-success") %>
+                              <%= link("#{room.id} - #{room.name}", to: {:javascript, "selectRoom(#{room.id})"}, class: "room btn btn-success") %>
                             <% end %>
                           </td>
                         <% end) %>

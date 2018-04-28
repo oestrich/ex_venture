@@ -1,84 +1,111 @@
-<div class="box">
-  <div class="box-header">
-    <h3 class="box-title"><%= @title %></h3>
-  </div>
-
-  <%= form_for @changeset, @path, fn (f) -> %>
+<div class="box box-primary">
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
+      <h4>Basics</h4>
+      <hr />
+
       <div class="form-group">
-        <%= label f, :name %>
-        <%= text_input f, :name, class: "form-control" %>
-        <%= error_tag f, :name %>
+        <%= label f, :name, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :name, class: "form-control" %>
+          <%= error_tag f, :name %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :description %>
-        <%= textarea f, :description, class: "form-control", rows: 5 %>
-        <%= error_tag f, :description %>
+        <%= label f, :description, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :description, class: "form-control", rows: 5 %>
+          <%= error_tag f, :description %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :listen %>
-        <%= textarea f, :listen, class: "form-control", rows: 5 %>
-        <%= error_tag f, :listen %>
+        <%= label f, :listen, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :listen, class: "form-control", rows: 5 %>
+          <%= error_tag f, :listen %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :currency, currency() |> String.capitalize() %>
-        <%= number_input f, :currency, class: "form-control" %>
-        <%= error_tag f, :currency %>
+        <%= label f, :currency, currency() |> String.capitalize(), class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :currency, class: "form-control" %>
+          <%= error_tag f, :currency %>
+        </div>
+      </div>
+
+      <h4>Map</h4>
+      <hr />
+
+      <div class="form-group">
+        <%= label f, :x, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :x, class: "form-control" %>
+          <%= error_tag f, :x %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :x %>
-        <%= number_input f, :x, class: "form-control" %>
-        <%= error_tag f, :x %>
+        <%= label f, :y, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :y, class: "form-control" %>
+          <%= error_tag f, :y %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :y %>
-        <%= number_input f, :y, class: "form-control" %>
-        <%= error_tag f, :y %>
+        <%= label f, :map_layer, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :map_layer, class: "form-control" %>
+          <%= error_tag f, :map_layer %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :map_layer %>
-        <%= number_input f, :map_layer, class: "form-control" %>
-        <%= error_tag f, :map_layer %>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :ecology %>
-        <%= select f, :ecology, Room.ecologies(), class: "form-control" %>
-        <%= error_tag f, :ecology %>
-        <span class="help-block"><%= Help.get("room.ecology") %></span>
+        <%= label f, :ecology, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :ecology, Room.ecologies(), class: "form-control" %>
+          <%= error_tag f, :ecology %>
+          <span class="help-block"><%= Help.get("room.ecology") %></span>
+        </div>
       </div>
 
       <div class="checkbox">
-        <%= label f, :is_zone_exit do %>
-          <%= checkbox f, :is_zone_exit %> Is A Zone Exit?
-        <% end %>
-        <%= error_tag f, :is_zone_exit %>
-        <span class="help-block"><%= Help.get("room.zone_exit") %></span>
+        <div class="col-md-8 col-md-offset-4">
+          <%= label f, :is_zone_exit do %>
+            <%= checkbox f, :is_zone_exit %> Is A Zone Exit?
+          <% end %>
+          <%= error_tag f, :is_zone_exit %>
+          <span class="help-block"><%= Help.get("room.zone_exit") %></span>
+        </div>
       </div>
 
       <div class="checkbox">
-        <%= label f, :is_graveyard do %>
-          <%= checkbox f, :is_graveyard %> Is A Graveyard?
-        <% end %>
-        <%= error_tag f, :is_graveyard %>
-        <span class="help-block"><%= Help.get("room.graveyard") %></span>
+        <div class="col-md-8 col-md-offset-4">
+          <%= label f, :is_graveyard do %>
+            <%= checkbox f, :is_graveyard %> Is A Graveyard?
+          <% end %>
+          <%= error_tag f, :is_graveyard %>
+          <span class="help-block"><%= Help.get("room.graveyard") %></span>
+        </div>
       </div>
 
+      <h4>Miscellaneous</h4>
+      <hr />
+
       <div class="form-group">
-        <%= label f, :notes %>
-        <%= textarea f, :notes, class: "form-control", rows: 10 %>
-        <%= error_tag f, :notes %>
+        <%= label f, :notes, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :notes, class: "form-control", rows: 10 %>
+          <%= error_tag f, :notes %>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

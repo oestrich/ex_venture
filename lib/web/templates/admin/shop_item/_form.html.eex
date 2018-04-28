@@ -1,33 +1,39 @@
-<div class="box">
+<div class="box box-primary">
   <div class="box-header">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <%= if assigns[:items] do %>
         <div class="form-group">
-          <%= label :item, :id %>
-          <%= select :item, :id, @items |> Enum.map(&item_option/1), class: "form-control" %>
+          <%= label :item, :id, "ID", class: "col-md-4" %>
+          <div class="col-md-8">
+            <%= select :item, :id, @items |> Enum.map(&item_option/1), class: "form-control" %>
+          </div>
         </div>
       <% end %>
 
       <div class="form-group">
-        <%= label f, :price %>
-        <%= number_input f, :price, class: "form-control" %>
-        <%= error_tag f, :price %>
+        <%= label f, :price, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :price, class: "form-control" %>
+          <%= error_tag f, :price %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :quantity %>
-        <%= number_input f, :quantity, class: "form-control" %>
-        <%= error_tag f, :quantity %>
-        <span class="help-block">-1 is an unlimited quantity</span>
+        <%= label f, :quantity, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :quantity, class: "form-control" %>
+          <%= error_tag f, :quantity %>
+          <span class="help-block">-1 is an unlimited quantity</span>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

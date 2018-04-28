@@ -18,7 +18,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <div class="box">
+      <div class="box box-primary">
         <div class="box-header">
           <h3 class="box-title">Room View</h3>
           <div class="box-tools">
@@ -313,7 +313,7 @@
                   <td><%= link(room_item.item.name, to: item_path(@conn, :show, room_item.item_id)) %></td>
                   <td><%= room_item.spawn_interval %></td>
                   <td>
-                    <%= link(to: room_item_path(@conn, :delete, room_item.id), method: :delete, class: "btn btn-default btn-xs") do %>
+                    <%= link(to: room_item_path(@conn, :delete, room_item.id), method: :delete, class: "btn btn-warning btn-xs") do %>
                       <i class="fa fa-times"></i>
                     <% end %>
                   </td>

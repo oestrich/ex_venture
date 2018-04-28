@@ -19,7 +19,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-12">
-      <div class="box">
+      <div class="box box-primary">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
@@ -70,7 +70,7 @@
                   <td>
                     <%= link("Edit", to: shop_item_path(@conn, :edit, shop_item.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit (Item)", to: item_path(@conn, :edit, shop_item.item_id), class: "btn btn-default btn-xs") %>
-                    <%= link("Delete", to: shop_item_path(@conn, :delete, shop_item.id), method: :delete, class: "btn btn-default btn-xs") %>
+                    <%= link("Delete", to: shop_item_path(@conn, :delete, shop_item.id), method: :delete, class: "btn btn-warning btn-xs") %>
                   </td>
                 </tr>
               <% end %>
