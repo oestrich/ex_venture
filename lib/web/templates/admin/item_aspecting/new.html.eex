@@ -17,19 +17,21 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <%= form_for @changeset, item_aspecting_path(@conn, :create, @item.id), fn (f) -> %>
+    <div class="col-md-10 col-md-offset-1">
+      <div class="box box-primary">
+        <%= form_for @changeset, item_aspecting_path(@conn, :create, @item.id), [class: "form-horizontal"], fn (f) -> %>
           <div class="box-body">
             <div class="form-group">
-              <%= label f, :item_aspect_id, "Item Aspect" %>
-              <%= select f, :item_aspect_id, @item_aspects |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
-              <%= error_tag f, :item_aspect_id %>
+              <%= label f, :item_aspect_id, "Item Aspect", class: "col-md-4" %>
+              <div class="col-md-8">
+                <%= select f, :item_aspect_id, @item_aspects |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+                <%= error_tag f, :item_aspect_id %>
+              </div>
             </div>
           </div>
 
           <div class="box-footer">
-            <%= submit "Add", class: "btn btn-primary" %>
+            <%= submit "Add", class: "btn btn-primary pull-right" %>
           </div>
         <% end %>
       </div>

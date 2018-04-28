@@ -1,41 +1,49 @@
-<div class="box">
+<div class="box box-primary">
   <div class="box-header">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <%= if @new do %>
         <div class="form-group">
-          <%= label f, :zone_id %>
-          <%= select f, :zone_id, [{@zone.name, @zone.id}], disabled: true, class: "form-control"  %>
-          <%= hidden_input f, :zone_id, value: @zone.id %>
+          <%= label f, :zone_id, class: "col-md-4" %>
+          <div class="col-md-8">
+            <%= select f, :zone_id, [{@zone.name, @zone.id}], disabled: true, class: "form-control"  %>
+            <%= hidden_input f, :zone_id, value: @zone.id %>
+          </div>
         </div>
 
         <div class="form-group">
-          <%= label f, :room_id %>
-          <%= select f, :room_id, room_exits(@zone), class: "form-control" %>
-          <%= error_tag f, :room_id %>
+          <%= label f, :room_id, class: "col-md-4" %>
+          <div class="col-md-8">
+            <%= select f, :room_id, room_exits(@zone), class: "form-control" %>
+            <%= error_tag f, :room_id %>
+          </div>
         </div>
       <% end %>
 
       <div class="form-group">
-        <%= label f, :name %>
-        <%= text_input f, :name, class: "form-control", rows: 10 %>
-        <%= error_tag f, :name %>
-        <span class="help-block"><%= Help.get("npc.spawner_name") %></span>
+        <%= label f, :name, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :name, class: "form-control", rows: 10 %>
+          <%= error_tag f, :name %>
+          <span class="help-block"><%= Help.get("npc.spawner_name") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :spawn_interval %>
-        <%= number_input f, :spawn_interval, class: "form-control", rows: 10 %>
-        <%= error_tag f, :spawn_interval %>
-        <span class="help-block"><%= Help.get("npc.spawner_interval") %></span>
+        <%= label f, :spawn_interval, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :spawn_interval, class: "form-control", rows: 10 %>
+          <%= error_tag f, :spawn_interval %>
+          <span class="help-block"><%= Help.get("npc.spawner_interval") %></span>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

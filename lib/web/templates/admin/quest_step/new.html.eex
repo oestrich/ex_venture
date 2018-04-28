@@ -17,7 +17,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10 col-md-offset-1">
       <%= if @type == nil do %>
         <%= render "_type.html", path: quest_step_path(@conn, :new, @quest.id), changeset: @changeset, title: "Add Step", submit: "Next" %>
       <% else %>

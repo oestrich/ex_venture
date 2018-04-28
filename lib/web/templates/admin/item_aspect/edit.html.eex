@@ -2,11 +2,22 @@
   <h1>
     <%= @item_aspect.name %>
   </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Item Aspects", to: item_aspect_path(@conn, :index)) %></li>
+    <li><%= link(@item_aspect.name, to: item_aspect_path(@conn, :show, @item_aspect.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
 </section>
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10 col-md-offset-1">
       <%= render "_form.html", path: item_aspect_path(@conn, :update, @item_aspect.id), changeset: @changeset, title: "Edit", submit: "Update" %>
     </div>
   </div>

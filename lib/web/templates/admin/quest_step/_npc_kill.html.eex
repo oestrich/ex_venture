@@ -1,11 +1,15 @@
 <div class="form-group">
-  <%= label @f, :count %>
-  <%= number_input @f, :count, class: "form-control" %>
-  <%= error_tag @f, :count %>
+  <%= label @f, :count, class: "col-md-4" %>
+  <div class="col-md-8">
+    <%= number_input @f, :count, class: "form-control" %>
+    <%= error_tag @f, :count %>
+  </div>
 </div>
 
 <div class="form-group">
-  <%= label @f, :npc_id, "NPC" %>
-  <%= select @f, :npc_id, NPC.for_select(), prompt: "Select NPC", class: "form-control" %>
-  <%= error_tag @f, :npc_id %>
+  <%= label @f, :npc_id, "NPC", class: "col-md-4" %>
+  <div class="col-md-8">
+    <%= select @f, :npc_id, NPC.for_select(), prompt: "Select NPC", class: "form-control" %>
+    <%= error_tag @f, :npc_id %>
+  </div>
 </div>

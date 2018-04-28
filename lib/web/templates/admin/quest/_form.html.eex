@@ -1,67 +1,85 @@
-<div class="box">
-  <div class="box-header">
-    <h3 class="box-title"><%= @title %></h3>
-  </div>
-
-  <%= form_for @changeset, @path, fn (f) -> %>
+<div class="box box-primary">
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
+      <h4>Basics</h4>
+      <hr />
+
       <div class="form-group">
-        <%= label f, :level %>
-        <%= number_input f, :level, class: "form-control" %>
-        <%= error_tag f, :level %>
-        <span class="help-block"><%= Web.Help.get("quest.level") %></span>
+        <%= label f, :level, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :level, class: "form-control" %>
+          <%= error_tag f, :level %>
+          <span class="help-block"><%= Web.Help.get("quest.level") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :name %>
-        <%= text_input f, :name, class: "form-control" %>
-        <%= error_tag f, :name %>
+        <%= label f, :name, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :name, class: "form-control" %>
+          <%= error_tag f, :name %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :description %>
-        <%= textarea f, :description, class: "form-control", rows: 5 %>
-        <%= error_tag f, :description %>
-        <span class="help-block"><%= Help.get("quest.description") %></span>
+        <%= label f, :giver_id, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :giver_id, NPC.for_quest_select(), prompt: "Select NPC", class: "form-control" %>
+          <%= error_tag f, :giver_id %>
+          <span class="help-block"><%= Help.get("quest.giver") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :completed_message %>
-        <%= textarea f, :completed_message, class: "form-control", rows: 5 %>
-        <%= error_tag f, :completed_message %>
-        <span class="help-block"><%= Help.get("quest.completed_message") %></span>
+        <%= label f, :experience, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :experience, class: "form-control" %>
+          <%= error_tag f, :experience %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :script %>
-        <%= textarea f, :script, value: @changeset |> script(), class: "form-control", rows: 15 %>
-        <%= error_tag f, :script %>
-        <span class="help-block">Enter in valid JSON</span>
+        <%= label f, :currency, currency() |> String.capitalize(), class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :currency, class: "form-control" %>
+          <%= error_tag f, :currency %>
+          <span class="help-block">The amount of <%= currency() %> the player will receive on completion</span>
+        </div>
+      </div>
+
+      <h4>Descriptive</h4>
+      <hr />
+
+      <div class="form-group">
+        <%= label f, :description, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :description, class: "form-control", rows: 5 %>
+          <%= error_tag f, :description %>
+          <span class="help-block"><%= Help.get("quest.description") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :experience %>
-        <%= number_input f, :experience, class: "form-control" %>
-        <%= error_tag f, :experience %>
+        <%= label f, :completed_message, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :completed_message, class: "form-control", rows: 5 %>
+          <%= error_tag f, :completed_message %>
+          <span class="help-block"><%= Help.get("quest.completed_message") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :currency, currency() |> String.capitalize() %>
-        <%= number_input f, :currency, class: "form-control" %>
-        <%= error_tag f, :currency %>
-        <span class="help-block">The amount of <%= currency() %> the player will receive on completion</span>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :giver_id %>
-        <%= select f, :giver_id, NPC.for_quest_select(), prompt: "Select NPC", class: "form-control" %>
-        <%= error_tag f, :giver_id %>
-        <span class="help-block"><%= Help.get("quest.giver") %></span>
+        <%= label f, :script, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :script, value: @changeset |> script(), class: "form-control", rows: 15 %>
+          <%= error_tag f, :script %>
+          <span class="help-block">Enter in valid JSON</span>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

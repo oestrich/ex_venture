@@ -17,7 +17,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-6">
-      <div class="box">
+      <div class="box box-primary">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
@@ -140,18 +140,20 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Script</h3>
-        </div>
-        <div class="box-body">
-          <pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre>
+  <%= if @npc.script do %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Script</h3>
+          </div>
+          <div class="box-body">
+            <pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
   <div class="row">
     <div class="col-md-12">
@@ -294,18 +296,18 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Notes</h3>
-        </div>
-        <div class="box-body">
-          <%= if @npc.notes != nil do %>
+  <%= if @npc.notes do %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Notes</h3>
+          </div>
+          <div class="box-body">
             <%= Earmark.as_html!(@npc.notes) |> raw() %>
-          <% end %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 </section>

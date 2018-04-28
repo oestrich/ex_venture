@@ -1,48 +1,58 @@
-<div class="box">
-  <div class="box-header">
+<div class="box box-primary">
+  <div class="box-header with-border">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
-        <%= label f, :type %>
-        <%= select f, :type, types(), class: "form-control" %>
-        <%= error_tag f, :type %>
+        <%= label f, :type, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :type, types(), class: "form-control" %>
+          <%= error_tag f, :type %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :name %>
-        <%= text_input f, :name, class: "form-control" %>
-        <%= error_tag f, :name %>
+        <%= label f, :name, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :name, class: "form-control" %>
+          <%= error_tag f, :name %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :description %>
-        <%= textarea f, :description, class: "form-control" %>
-        <%= error_tag f, :description %>
+        <%= label f, :description, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :description, class: "form-control" %>
+          <%= error_tag f, :description %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :stats %>
-        <%= textarea f, :stats, value: @changeset |> json_field(:stats), class: "form-control", rows: 5 %>
-        <%= error_tag f, :stats %>
-        <span class="help-block">Enter in valid JSON</span>
-        <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
-        <%= render(SharedView, "_stats.html", stats_id: "item_aspect_stats", type_id: "item_aspect_type") %>
+        <%= label f, :stats, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :stats, value: @changeset |> json_field(:stats), class: "form-control", rows: 5 %>
+          <%= error_tag f, :stats %>
+          <span class="help-block">Enter in valid JSON</span>
+          <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
+          <%= render(SharedView, "_stats.html", stats_id: "item_aspect_stats", type_id: "item_aspect_type") %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :effects %>
-        <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
-        <%= error_tag f, :effects %>
-        <span class="help-block">Enter in valid JSON</span>
-        <%= render(SharedView, "_effects.html", id: "item_aspect_effects") %>
+        <%= label f, :effects, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
+          <%= error_tag f, :effects %>
+          <span class="help-block">Enter in valid JSON</span>
+          <%= render(SharedView, "_effects.html", id: "item_aspect_effects") %>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

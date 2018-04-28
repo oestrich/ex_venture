@@ -1,21 +1,23 @@
-<div class="box">
+<div class="box box-primary">
   <div class="box-header">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
-        <%= label f, :type %>
-        <%= select f, :type, types(), value: @type, readonly: true, class: "form-control" %>
-        <%= error_tag f, :type %>
+        <%= label f, :type, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :type, types(), value: @type, readonly: true, class: "form-control" %>
+          <%= error_tag f, :type %>
+        </div>
       </div>
 
       <%= render "#{type_form(@type)}.html", f: f, changeset: @changeset %>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

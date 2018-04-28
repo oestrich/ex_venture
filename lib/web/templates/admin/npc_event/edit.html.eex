@@ -17,7 +17,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10 col-md-offset-1">
       <%= render "_form.html", path: npc_event_path(@conn, :update, @npc.id, @event.id), method: "PUT", event: @field, title: "Edit", submit: "Update", events: false, errors: Map.get(assigns, :errors, nil) %>
     </div>
   </div>
