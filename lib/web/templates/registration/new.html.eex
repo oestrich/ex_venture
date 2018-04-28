@@ -3,7 +3,7 @@
     <h3>Sign In</h3>
 
     <%= form_for @changeset, public_registration_path(@conn, :create), [method: :post], fn (f) -> %>
-      <%= if @changeset.errors[:save] do %>
+      <%= if @changeset.action && @changeset.errors[:save] do %>
         <div class="alert alert-danger">
           There was a problem creating your account. Please contact the administrator.
         </div>
@@ -55,7 +55,9 @@
         <%= error_tag f, :password_confirmation %>
       </div>
 
-      <%= submit "Create Your Account", class: "btn btn-primary btn-block btn-flat" %>
+      <div class="actions">
+        <%= submit "Create Your Account", class: "btn btn-primary btn-block btn-flat" %>
+      </div>
     <% end %>
   </div>
 </div>

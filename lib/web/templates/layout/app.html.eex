@@ -14,7 +14,7 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="site-header navbar navbar-expand-lg">
       <div class="container">
         <%= link(Config.game_name(), to: public_page_path(@conn, :index), class: "navbar-brand") %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
             <% end %>
           </ul>
           <%= if Map.has_key?(@conn.assigns, :user) do %>
-            <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-primary") %>
+            <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-secondary") %>
           <% else %>
             <%= link("Sign in", to: public_session_path(@conn, :new), class: "btn btn-secondary") %>
           <% end %>
