@@ -8,7 +8,8 @@ defmodule Web.SkillView do
     %{
       collection: render_many(skills, __MODULE__, "show.json"),
       links: [
-        %{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :index)}
+        %{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :index)},
+        %{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
       ],
     }
   end

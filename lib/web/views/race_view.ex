@@ -15,7 +15,8 @@ defmodule Web.RaceView do
     %{
       collection: render_many(races, __MODULE__, "show.json"),
       links: [
-        %{rel: "self", href: RouteHelpers.public_race_url(Endpoint, :index)}
+        %{rel: "self", href: RouteHelpers.public_race_url(Endpoint, :index)},
+        %{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
       ]
     }
   end

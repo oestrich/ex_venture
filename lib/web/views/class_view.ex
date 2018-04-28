@@ -9,7 +9,8 @@ defmodule Web.ClassView do
     %{
       collection: render_many(classes, __MODULE__, "show.json"),
       links: [
-        %{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :index)}
+        %{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :index)},
+        %{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
       ],
     }
   end
