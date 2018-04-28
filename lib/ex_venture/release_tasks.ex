@@ -3,6 +3,8 @@ defmodule ExVenture.ReleaseTasks do
   @moduledoc false
 
   @start_apps [
+    :crypto,
+    :ssl,
     :postgrex,
     :ecto
   ]
