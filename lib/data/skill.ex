@@ -11,6 +11,7 @@ defmodule Data.Skill do
   alias Data.Effect
 
   schema "skills" do
+    field(:api_id, Ecto.UUID, read_after_writes: true)
     field(:name, :string)
     field(:description, :string)
     field(:level, :integer)

@@ -5,7 +5,9 @@ defmodule Web.SkillController do
 
   def index(conn, _params) do
     skills = Skill.all()
-    conn |> render("index.html", skills: skills)
+    conn
+    |> assign(:skills, skills)
+    |> render(:index)
   end
 
   def show(conn, %{"id" => id}) do
@@ -14,7 +16,10 @@ defmodule Web.SkillController do
         conn |> redirect(to: public_page_path(conn, :index))
 
       skill ->
-        conn |> render("show.html", skill: skill)
+        conn
+        |> assign(:skill, skill)
+        |> assign(:extended, true)
+        |> render(:show)
     end
   end
 end

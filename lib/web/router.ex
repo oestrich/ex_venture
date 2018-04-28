@@ -2,7 +2,7 @@ defmodule Web.Router do
   use Web, :router
 
   pipeline :browser do
-    plug(:accepts, ["html"])
+    plug(:accepts, ["html", "json"])
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:protect_from_forgery)
@@ -15,10 +15,6 @@ defmodule Web.Router do
 
   pipeline :public_2fa do
     plug(Web.Plug.LoadUser, verify: false)
-  end
-
-  pipeline :api do
-    plug(:accepts, ["json"])
   end
 
   scope "/", Web, as: :public do

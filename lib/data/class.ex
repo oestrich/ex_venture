@@ -8,6 +8,7 @@ defmodule Data.Class do
   alias Data.ClassSkill
 
   schema "classes" do
+    field(:api_id, Ecto.UUID, read_after_writes: true)
     field(:name, :string)
     field(:description, :string)
 

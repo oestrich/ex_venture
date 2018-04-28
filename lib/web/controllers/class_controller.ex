@@ -5,7 +5,10 @@ defmodule Web.ClassController do
 
   def index(conn, _params) do
     classes = Class.all(alpha: true)
-    conn |> render("index.html", classes: classes)
+
+    conn
+    |> assign(:classes, classes)
+    |> render(:index)
   end
 
   def show(conn, %{"id" => id}) do
@@ -14,7 +17,10 @@ defmodule Web.ClassController do
         conn |> redirect(to: public_page_path(conn, :index))
 
       class ->
-        conn |> render("show.html", class: class)
+        conn
+        |> assign(:class, class)
+        |> assign(:extended, true)
+        |> render(:show)
     end
   end
 end

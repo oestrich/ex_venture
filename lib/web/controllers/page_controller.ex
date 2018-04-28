@@ -5,7 +5,9 @@ defmodule Web.PageController do
   alias Web.User
 
   def index(conn, _params) do
-    render(conn, "index.html", announcements: Announcement.recent())
+    conn
+    |> assign(:announcements, Announcement.recent())
+    |> render(:index)
   end
 
   def who(conn, _params) do

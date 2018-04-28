@@ -9,6 +9,7 @@ defmodule Data.Race do
   alias Data.Stats
 
   schema "races" do
+    field(:api_id, Ecto.UUID, read_after_writes: true)
     field(:name, :string)
     field(:description, :string)
     field(:starting_stats, Stats)

@@ -5,7 +5,9 @@ defmodule Web.RaceController do
 
   def index(conn, _params) do
     races = Race.all(alpha: true)
-    conn |> render("index.html", races: races)
+    conn
+    |> assign(:races, races)
+    |> render(:index)
   end
 
   def show(conn, %{"id" => id}) do
@@ -14,7 +16,10 @@ defmodule Web.RaceController do
         conn |> redirect(to: public_page_path(conn, :index))
 
       race ->
-        conn |> render("show.html", race: race)
+        conn
+        |> assign(:race, race)
+        |> assign(:extended, true)
+        |> render(:show)
     end
   end
 end
