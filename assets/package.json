@@ -6,12 +6,12 @@
     "watch": "brunch watch --stdin"
   },
   "dependencies": {
-    "jquery": "^3.2.1",
-    "node-sass": "^4.5.3",
+    "jquery": "^3.3.1",
+    "node-sass": "^4.9.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "sizzle": "^2.3.3",
-    "underscore": "^1.8.3"
+    "underscore": "^1.9.0"
   },
   "devDependencies": {
     "babel-brunch": "6.1.1",
