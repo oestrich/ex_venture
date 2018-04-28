@@ -1,96 +1,124 @@
-<div class="box">
-  <div class="box-header">
-    <h3 class="box-title"><%= @title %></h3>
-  </div>
-
-  <%= form_for @changeset, @path, fn (f) -> %>
+<div class="box box-primary">
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
+      <h4>Basics</h4>
+      <hr />
       <div class="form-group">
-        <%= label f, :level %>
-        <%= number_input f, :level, class: "form-control" %>
-        <%= error_tag f, :level %>
-        <span class="help-block">Level that the skill unlocks at</span>
+        <%= label f, :level, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :level, class: "form-control" %>
+          <%= error_tag f, :level %>
+          <span class="help-block">Level that the skill unlocks at</span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :name %>
-        <%= text_input f, :name, class: "form-control" %>
-        <%= error_tag f, :name %>
+        <%= label f, :name, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :name, class: "form-control" %>
+          <%= error_tag f, :name %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :tags %>
-        <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
-        <%= error_tag f, :tags %>
+        <%= label f, :tags, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
+          <%= error_tag f, :tags %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :command %>
-        <%= text_input f, :command, class: "form-control" %>
-        <%= error_tag f, :command %>
-        <span class="help-block">What the user types in to use the skill</span>
+        <%= label f, :description, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :description, class: "form-control", rows: 5 %>
+          <%= error_tag f, :description %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :cooldown_time %>
-        <%= number_input f, :cooldown_time, class: "form-control" %>
-        <%= error_tag f, :cooldown_time %>
-        <span class="help-block"><%= Help.get("skill.cooldown_time") %></span>
+        <div class="col-md-8 col-md-offset-4">
+          <%= label f, :is_global do %>
+            <%= checkbox f, :is_global %> Is Global?
+          <% end %>
+          <%= error_tag f, :is_global %>
+          <span class="help-block">A global skill is something all players will unlock when they reach the skill level</span>
+        </div>
+      </div>
+
+      <h4>Usage</h4>
+      <hr />
+
+      <div class="form-group">
+        <%= label f, :points, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :points, class: "form-control" %>
+          <%= error_tag f, :points %>
+          <span class="help-block">Number of skill points required to spend</span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :description %>
-        <%= textarea f, :description, class: "form-control", rows: 5 %>
-        <%= error_tag f, :description %>
+        <%= label f, :command, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :command, class: "form-control" %>
+          <%= error_tag f, :command %>
+          <span class="help-block">What the user types in to use the skill</span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :user_text %>
-        <%= text_input f, :user_text, class: "form-control" %>
-        <%= error_tag f, :user_text %>
-        <span class="help-block">Available template variables: <code>[target]</code></span>
+        <%= label f, :cooldown_time, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :cooldown_time, class: "form-control" %>
+          <%= error_tag f, :cooldown_time %>
+          <span class="help-block"><%= Help.get("skill.cooldown_time") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :usee_text %>
-        <%= text_input f, :usee_text, class: "form-control" %>
-        <%= error_tag f, :usee_text %>
-        <span class="help-block">Available template variables: <code>[user]</code></span>
+        <%= label f, :user_text, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :user_text, class: "form-control" %>
+          <%= error_tag f, :user_text %>
+          <span class="help-block">Available template variables: <code>[target]</code></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :points %>
-        <%= text_input f, :points, class: "form-control" %>
-        <%= error_tag f, :points %>
-        <span class="help-block">Number of skill points required to spend</span>
+        <%= label f, :usee_text, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :usee_text, class: "form-control" %>
+          <%= error_tag f, :usee_text %>
+          <span class="help-block">Available template variables: <code>[user]</code></span>
+        </div>
+      </div>
+
+      <h4>Effects</h4>
+      <hr />
+
+      <div class="form-group">
+        <%= label f, :whitelist_effects, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= multiple_select f, :whitelist_effects, Effect.types(), multiple: true, class: "form-control", size: 5 %>
+          <%= error_tag f, :whitelist_effects %>
+          <span class="help-block"><%= Help.get("skill.whitelist_effects") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :is_global do %>
-          <%= checkbox f, :is_global %> Is Global?
-        <% end %>
-        <%= error_tag f, :is_global %>
-        <span class="help-block">A global skill is something all players will unlock when they reach the skill level</span>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :whitelist_effects %>
-        <%= multiple_select f, :whitelist_effects, Effect.types(), multiple: true, class: "form-control", size: 5 %>
-        <%= error_tag f, :whitelist_effects %>
-        <span class="help-block"><%= Help.get("skill.whitelist_effects") %></span>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :effects %>
-        <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
-        <%= error_tag f, :effects %>
-        <span class="help-block">Enter in valid JSON</span>
-        <%= render(SharedView, "_effects.html", id: "skill_effects") %>
+        <%= label f, :effects, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
+          <%= error_tag f, :effects %>
+          <span class="help-block">Enter in valid JSON</span>
+          <%= render(SharedView, "_effects.html", id: "skill_effects") %>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

@@ -1,40 +1,48 @@
-<div class="box">
-  <div class="box-header">
+<div class="box box-primary">
+  <div class="box-header with-border">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
-        <%= label f, :name %>
-        <%= text_input f, :name, class: "form-control" %>
-        <%= error_tag f, :name %>
+        <%= label f, :name, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :name, class: "form-control" %>
+          <%= error_tag f, :name %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :command %>
-        <%= text_input f, :command, class: "form-control" %>
-        <%= error_tag f, :command %>
-        <span class="help-block">This should be a single lowercase word</span>
+        <%= label f, :command, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :command, class: "form-control" %>
+          <%= error_tag f, :command %>
+          <span class="help-block"><%= Help.get("social.command") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :with_target %>
-        <%= textarea f, :with_target, class: "form-control", rows: 2 %>
-        <%= error_tag f, :with_target %>
-        <span class="help-block">When used with a target, template replacements: <code>[user]</code> and <code>[target]</code></span>
+        <%= label f, :with_target, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :with_target, class: "form-control", rows: 2 %>
+          <%= error_tag f, :with_target %>
+          <span class="help-block"><%= Help.get("social.with_target") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :without_target %>
-        <%= textarea f, :without_target, class: "form-control", rows: 2 %>
-        <%= error_tag f, :without_target %>
-        <span class="help-block">When used with out a target, template replacements: <code>[user]</code></span>
+        <%= label f, :without_target, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :without_target, class: "form-control", rows: 2 %>
+          <%= error_tag f, :without_target %>
+          <span class="help-block"><%= Help.get("social.without_target") %></span>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

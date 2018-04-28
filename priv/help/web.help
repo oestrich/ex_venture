@@ -103,6 +103,15 @@ skill.cooldown_time:
 skill.whitelist_effects:
   Effects in this whitelist will be calculated when using the skill. Anything not in the list will be filtered out.
 
+social.command:
+  This should be a single lowercase word
+
+social.with_target:
+  When used with a target, template replacements: `[user]` and `[target]`
+
+social.without_target:
+  When used with out a target, template replacements: `[user]`
+
 zone.name:
   This will be seen in the player's map.
 

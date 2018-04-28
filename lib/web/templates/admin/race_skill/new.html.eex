@@ -17,7 +17,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10 col-md-offset-1">
       <%= render "_form.html", path: race_skill_path(@conn, :create, @race.id), skills: @skills, changeset: @changeset, title: "New", submit: "Add" %>
     </div>
   </div>
