@@ -6,6 +6,27 @@
 
 <section class="content">
   <div class="row">
+    <div class="col-md-6">
+      <div class="box box-primary">
+        <div class="box-header">
+          <h3 class="box-title">Currently Connected Players</h3>
+          <div class="box-tools">
+            <%= link("Disconnect Players", to: user_path(@conn, :disconnect), method: "post", class: "btn btn-warning") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <ul class="list-group">
+            <%= Enum.map(@players, fn (player) -> %>
+              <li class="list-group-item">
+                <%= link(player.name, to: user_path(@conn, :show, player.id)) %>
+                <%= link("Teleport to", to: user_path(@conn, :teleport, room_id: player.save.room_id), method: "post", class: "pull-right") %>
+              </li>
+            <% end) %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <div class="col-md-3">
       <div class="info-box">
         <span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
@@ -25,8 +46,10 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="col-md-3">
+  <div class="row">
+    <div class="col-md-3 col-md-offset-6">
       <div class="info-box">
         <span class="info-box-icon bg-aqua"><i class="fa fa-flag"></i></span>
         <div class="info-box-content">
@@ -48,47 +71,22 @@
   </div>
 
   <div class="row">
-    <div class="col-md-6">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Currently Connected Players</h3>
-          <div class="box-tools">
-            <%= link("Disconnect Players", to: user_path(@conn, :disconnect), method: "post", class: "btn btn-warning") %>
-          </div>
-        </div>
-        <div class="box-body">
-          <ul class="list-group">
-            <%= Enum.map(@players, fn (player) -> %>
-              <li class="list-group-item">
-                <%= link(player.name, to: user_path(@conn, :show, player.id)) %>
-                <%= link("Teleport to", to: user_path(@conn, :teleport, room_id: player.save.room_id), method: "post", class: "pull-right") %>
-              </li>
-            <% end) %>
-          </ul>
+    <div class="col-md-3 col-md-offset-6">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-address-card"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">NPCs</span>
+          <span class="info-box-number"><%= Stats.npc_count() %></span>
         </div>
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="info-box">
-            <span class="info-box-icon bg-aqua"><i class="fa fa-address-card"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">NPCs</span>
-              <span class="info-box-number"><%= Stats.npc_count() %></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="info-box">
-            <span class="info-box-icon bg-aqua"><i class="fa fa-bug"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Bugs</span>
-              <span class="info-box-number"><%= Stats.bug_count() %></span>
-            </div>
-          </div>
+    <div class="col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-bug"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Bugs</span>
+          <span class="info-box-number"><%= Stats.bug_count() %></span>
         </div>
       </div>
     </div>
