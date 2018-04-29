@@ -6,6 +6,70 @@
 
 <section class="content">
   <div class="row">
+    <div class="col-md-4">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Users</span>
+          <span class="info-box-number"><%= Stats.user_count() %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-archive"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Items</span>
+          <span class="info-box-number"><%= Stats.item_count() %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-flag"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Zones</span>
+          <span class="info-box-number"><%= Stats.zone_count() %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-flag"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Rooms</span>
+          <span class="info-box-number"><%= Stats.room_count() %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-address-card"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">NPCs</span>
+          <span class="info-box-number"><%= Stats.npc_count() %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-bug"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">Bugs</span>
+          <span class="info-box-number"><%= Stats.bug_count() %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-md-6">
       <div class="box box-primary">
         <div class="box-header">
@@ -27,72 +91,6 @@
       </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="info-box">
-        <span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Users</span>
-          <span class="info-box-number"><%= Stats.user_count() %></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="info-box">
-        <span class="info-box-icon bg-aqua"><i class="fa fa-archive"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Items</span>
-          <span class="info-box-number"><%= Stats.item_count() %></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-3 col-md-offset-6">
-      <div class="info-box">
-        <span class="info-box-icon bg-aqua"><i class="fa fa-flag"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Zones</span>
-          <span class="info-box-number"><%= Stats.zone_count() %></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="info-box">
-        <span class="info-box-icon bg-aqua"><i class="fa fa-flag"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Rooms</span>
-          <span class="info-box-number"><%= Stats.room_count() %></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-3 col-md-offset-6">
-      <div class="info-box">
-        <span class="info-box-icon bg-aqua"><i class="fa fa-address-card"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">NPCs</span>
-          <span class="info-box-number"><%= Stats.npc_count() %></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="info-box">
-        <span class="info-box-icon bg-aqua"><i class="fa fa-bug"></i></span>
-        <div class="info-box-content">
-          <span class="info-box-text">Bugs</span>
-          <span class="info-box-number"><%= Stats.bug_count() %></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
     <div class="col-md-6">
       <ul class="list-group">
         <%= Enum.map(@announcements, fn announcement -> %>
