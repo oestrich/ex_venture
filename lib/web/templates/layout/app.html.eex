@@ -14,7 +14,7 @@
   </head>
 
   <body>
-    <nav class="site-header navbar navbar-expand-lg">
+    <nav class="site-header navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <%= link(Config.game_name(), to: public_page_path(@conn, :index), class: "navbar-brand") %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
