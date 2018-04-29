@@ -70,6 +70,7 @@ defmodule Game.NPC.Actions do
 
     room_id |> @room.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
     room_id |> @room.leave({:npc, npc}, :death)
+    room_id |> @room.unlink()
 
     Events.broadcast(npc, "character/died")
 
