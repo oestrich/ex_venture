@@ -1,51 +1,64 @@
-<div class="box">
-  <div class="box-header">
+<div class="box box-primary">
+  <div class="box-header with-border">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
-        <%= label f, :is_published do %>
-          <%= checkbox f, :is_published %> Is published?
-        <% end %>
-        <%= error_tag f, :is_published %>
+        <%= label f, :title, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :title, class: "form-control" %>
+          <%= error_tag f, :title %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :is_sticky do %>
-          <%= checkbox f, :is_sticky %> Is sticky?
-        <% end %>
-        <%= error_tag f, :is_sticky %>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :title %>
-        <%= text_input f, :title, class: "form-control" %>
-        <%= error_tag f, :title %>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :published_at %>
+        <%= label f, :published_at, class: "col-md-4" %>
+        <div class="col-md-8">
         <%= text_input f, :published_at, class: "form-control" %>
         <%= error_tag f, :published_at %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :tags %>
-        <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
-        <%= error_tag f, :tags %>
+        <%= label f, :tags, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
+          <%= error_tag f, :tags %>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :body %>
-        <%= textarea f, :body, class: "form-control", rows: 5 %>
-        <%= error_tag f, :body %>
+        <%= label f, :body, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= textarea f, :body, class: "form-control", rows: 10 %>
+          <%= error_tag f, :body %>
+        </div>
       </div>
+
+      <div class="form-group">
+        <div class="col-md-8 col-md-offset-4">
+          <%= label f, :is_published do %>
+            <%= checkbox f, :is_published %> Is published?
+          <% end %>
+          <%= error_tag f, :is_published %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-md-8 col-md-offset-4">
+          <%= label f, :is_sticky do %>
+            <%= checkbox f, :is_sticky %> Is sticky?
+          <% end %>
+          <%= error_tag f, :is_sticky %>
+        </div>
+      </div>
+
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>

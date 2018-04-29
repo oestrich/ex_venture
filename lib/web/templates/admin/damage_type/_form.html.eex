@@ -1,50 +1,60 @@
-<div class="box">
+<div class="box box-primary">
   <div class="box-header">
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <%= if @key do %>
         <div class="form-group">
-          <%= label f, :key %>
-          <%= text_input f, :key, class: "form-control" %>
-          <%= error_tag f, :key %>
-          <span class="help-block"><%= Help.get("damage_type.key") %></span>
+          <%= label f, :key, class: "col-md-4" %>
+          <div class="col-md-8">
+            <%= text_input f, :key, class: "form-control" %>
+            <%= error_tag f, :key %>
+            <span class="help-block"><%= Help.get("damage_type.key") %></span>
+          </div>
         </div>
       <% end %>
 
       <div class="form-group">
-        <%= label f, :stat_modifier %>
-        <%= select f, :stat_modifier, Stats.basic_fields(), prompt: "Select a stat", class: "form-control" %>
-        <%= error_tag f, :stat_modifier %>
-        <span class="help-block"><%= Help.get("damage_type.stat_modifier") %></span>
+        <%= label f, :stat_modifier, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :stat_modifier, Stats.basic_fields(), prompt: "Select a stat", class: "form-control" %>
+          <%= error_tag f, :stat_modifier %>
+          <span class="help-block"><%= Help.get("damage_type.stat_modifier") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :boost_ratio %>
-        <%= number_input f, :boost_ratio, class: "form-control", min: 0, max: 100 %>
-        <%= error_tag f, :boost_ratio %>
-        <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
+        <%= label f, :boost_ratio, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :boost_ratio, class: "form-control", min: 0, max: 100 %>
+          <%= error_tag f, :boost_ratio %>
+          <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :reverse_stat %>
-        <%= select f, :reverse_stat, Stats.basic_fields(), prompt: "Select a stat", class: "form-control" %>
-        <%= error_tag f, :reverse_stat %>
-        <span class="help-block"><%= Help.get("damage_type.stat_modifier") %></span>
+        <%= label f, :reverse_stat, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :reverse_stat, Stats.basic_fields(), prompt: "Select a stat", class: "form-control" %>
+          <%= error_tag f, :reverse_stat %>
+          <span class="help-block"><%= Help.get("damage_type.stat_modifier") %></span>
+        </div>
       </div>
 
       <div class="form-group">
-        <%= label f, :reverse_boost %>
-        <%= number_input f, :reverse_boost, class: "form-control", min: 0, max: 100 %>
-        <%= error_tag f, :reverse_boost %>
-        <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
+        <%= label f, :reverse_boost, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= number_input f, :reverse_boost, class: "form-control", min: 0, max: 100 %>
+          <%= error_tag f, :reverse_boost %>
+          <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
+        </div>
       </div>
     </div>
 
     <div class="box-footer">
-      <%= submit @submit, class: "btn btn-primary" %>
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
     </div>
   <% end %>
 </div>
