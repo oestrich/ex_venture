@@ -15,14 +15,9 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <%= label f, :spawn_interval, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :spawn_interval, class: "form-control" %>
-          <%= error_tag f, :spawn_interval %>
-          <span class="help-block">Time in seconds for a respawn</span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :spawn_interval) do %>
+        <span class="help-block">Time in seconds for a respawn</span>
+      <% end %>
     </div>
 
     <div class="box-footer">

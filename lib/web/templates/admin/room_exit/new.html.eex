@@ -51,13 +51,7 @@
               <%= render("_fields.html", f: f, room: @room, room_field: :in_id, select_field: :out_id) %>
             <% end %>
 
-            <div class="form-group">
-              <div class="col-md-8 col-md-offset-4">
-                <%= label f, :has_door do %>
-                  <%= checkbox f, :has_door %> Has Door?
-                <% end %>
-              </div>
-            </div>
+            <%= FormView.checkbox_field(f, :has_door, label: "Has Door?") %>
           </div>
 
           <div class="box-footer">

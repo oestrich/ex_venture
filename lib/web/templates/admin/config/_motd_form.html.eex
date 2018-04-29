@@ -1,7 +1,1 @@
-<div class="form-group">
-  <%= label @f, :value, class: "col-md-4" %>
-  <div class="col-md-8">
-    <%= textarea @f, :value, class: "form-control", rows: 15 %>
-    <%= error_tag @f, :value %>
-  </div>
-</div>
+<%= FormView.textarea_field(@f, :value, rows: 15) %>

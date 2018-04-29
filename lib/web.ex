@@ -41,6 +41,7 @@ defmodule Web do
       import Web.ErrorHelpers
       import Web.Gettext
 
+      alias Web.FormView
       alias Web.Views.Help
     end
   end

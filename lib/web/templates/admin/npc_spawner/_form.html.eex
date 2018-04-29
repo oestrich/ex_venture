@@ -23,23 +23,13 @@
         </div>
       <% end %>
 
-      <div class="form-group">
-        <%= label f, :name, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :name, class: "form-control", rows: 10 %>
-          <%= error_tag f, :name %>
-          <span class="help-block"><%= Help.get("npc.spawner_name") %></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :name) do %>
+        <span class="help-block"><%= Help.get("npc.spawner_name") %></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :spawn_interval, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :spawn_interval, class: "form-control", rows: 10 %>
-          <%= error_tag f, :spawn_interval %>
-          <span class="help-block"><%= Help.get("npc.spawner_interval") %></span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :spawn_interval) do %>
+        <span class="help-block"><%= Help.get("npc.spawner_interval") %></span>
+      <% end %>
     </div>
 
     <div class="box-footer">

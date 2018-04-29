@@ -13,14 +13,9 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <%= label f, :drop_rate, "Drop Rate", class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :drop_rate, class: "form-control" %>
-          <%= error_tag f, :drop_rate %>
-          <span class="help-block"><%= Help.get("npc.item_drop_rate") %></span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :drop_rate, label: "Drop Rate") do %>
+        <span class="help-block"><%= Help.get("npc.item_drop_rate") %></span>
+      <% end %>
     </div>
 
     <div class="box-footer">

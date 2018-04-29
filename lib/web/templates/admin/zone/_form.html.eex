@@ -5,22 +5,11 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
-      <div class="form-group">
-        <%= label f, :name, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :name, class: "form-control" %>
-          <%= error_tag f, :name %>
-          <span class="help-block"><%= Help.get("zone.name") %></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :name) do %>
+        <span class="help-block"><%= Help.get("zone.name") %></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :description, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :description, class: "form-control" %>
-          <%= error_tag f, :description %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :description) %>
 
       <div class="form-group">
         <%= label f, :graveyard_id, class: "col-md-4" %>
@@ -31,21 +20,9 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <%= label f, :starting_level, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :starting_level, class: "form-control" %>
-          <%= error_tag f, :starting_level %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :starting_level) %>
 
-      <div class="form-group">
-        <%= label f, :ending_level, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :ending_level, class: "form-control" %>
-          <%= error_tag f, :ending_level %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :ending_level) %>
 
       <%= if @edit_name_layers do %>
         <%= Enum.map(layers(@zone), fn (layer) -> %>

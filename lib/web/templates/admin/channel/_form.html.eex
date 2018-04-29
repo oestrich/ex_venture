@@ -6,14 +6,9 @@
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <%= if Ecto.get_meta(@changeset.data, :state) == :built do %>
-        <div class="form-group">
-          <%= label f, :name, class: "col-md-4" %>
-          <div class="col-md-8">
-            <%= text_input f, :name, class: "form-control" %>
-            <%= error_tag f, :name %>
-            <span class="help-block">This should be a single word and all lower case. It will be used as the command someone enters to speak on the channel.</span>
-          </div>
-        </div>
+        <%= FormView.text_field(f, :name) do %>
+          <span class="help-block">This should be a single word and all lower case. It will be used as the command someone enters to speak on the channel.</span>
+        <% end %>
       <% end %>
 
       <div class="form-group">

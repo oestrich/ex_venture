@@ -14,22 +14,11 @@
         </div>
       <% end %>
 
-      <div class="form-group">
-        <%= label f, :price, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :price, class: "form-control" %>
-          <%= error_tag f, :price %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :price) %>
 
-      <div class="form-group">
-        <%= label f, :quantity, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :quantity, class: "form-control" %>
-          <%= error_tag f, :quantity %>
-          <span class="help-block">-1 is an unlimited quantity</span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :quantity) do %>
+        <span class="help-block">-1 is an unlimited quantity</span>
+      <% end %>
     </div>
 
     <div class="box-footer">

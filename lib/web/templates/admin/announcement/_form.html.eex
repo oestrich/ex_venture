@@ -5,56 +5,17 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
-      <div class="form-group">
-        <%= label f, :title, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :title, class: "form-control" %>
-          <%= error_tag f, :title %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :title) %>
 
-      <div class="form-group">
-        <%= label f, :published_at, class: "col-md-4" %>
-        <div class="col-md-8">
-        <%= text_input f, :published_at, class: "form-control" %>
-        <%= error_tag f, :published_at %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :published_at) %>
 
-      <div class="form-group">
-        <%= label f, :tags, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
-          <%= error_tag f, :tags %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :tags, value: @changeset |> tags()) %>
 
-      <div class="form-group">
-        <%= label f, :body, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :body, class: "form-control", rows: 10 %>
-          <%= error_tag f, :body %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :body, rows: 10) %>
 
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_published do %>
-            <%= checkbox f, :is_published %> Is published?
-          <% end %>
-          <%= error_tag f, :is_published %>
-        </div>
-      </div>
+      <%= FormView.checkbox_field(f, :is_published, label: "Is Published?") %>
 
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_sticky do %>
-            <%= checkbox f, :is_sticky %> Is sticky?
-          <% end %>
-          <%= error_tag f, :is_sticky %>
-        </div>
-      </div>
-
+      <%= FormView.checkbox_field(f, :is_sticky, label: "Is Sticky?") %>
     </div>
 
     <div class="box-footer">

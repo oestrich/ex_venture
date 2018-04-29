@@ -6,33 +6,18 @@
   <%= form_for @changeset, @path, fn (f) -> %>
     <div class="box-body">
       <%= if @key do %>
-        <div class="form-group">
-          <%= label f, :key, class: "col-md-4" %>
-          <div class="col-md-8">
-            <%= text_input f, :key, class: "form-control" %>
-            <%= error_tag f, :key %>
-            <span class="help-block"><%= Help.get("color_code.key") %></span>
-          </div>
-        </div>
+        <%= FormView.text_field(f, :key) do %>
+          <span class="help-block"><%= Help.get("color_code.key") %></span>
+        <% end %>
       <% end %>
 
-      <div class="form-group">
-        <%= label f, :ansi_escape, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :ansi_escape, class: "form-control" %>
-          <%= error_tag f, :ansi_escape %>
-          <span class="help-block"><%= Help.get("color_code.ansi_escape") %></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :ansi_escape) do %>
+        <span class="help-block"><%= Help.get("color_code.ansi_escape") %></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :hex_code, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :hex_code, class: "form-control" %>
-          <%= error_tag f, :hex_code %>
-          <span class="help-block"><%= Help.get("color_code.hex_code") %></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :hex_code) do %>
+        <span class="help-block"><%= Help.get("color_code.hex_code") %></span>
+      <% end %>
     </div>
 
     <div class="box-footer">

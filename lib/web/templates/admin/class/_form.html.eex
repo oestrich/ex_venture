@@ -5,21 +5,8 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
-      <div class="form-group">
-        <%= label f, :name, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :name, class: "form-control" %>
-          <%= error_tag f, :name %>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <%= label f, :description, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :description, class: "form-control", rows: 10 %>
-          <%= error_tag f, :description %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :name) %>
+      <%= FormView.textarea_field(f, :description, [rows: 10]) %>
     </div>
 
     <div class="box-footer">

@@ -3,38 +3,16 @@
     <div class="box-body">
       <h4>Basics</h4>
       <hr />
-      <div class="form-group">
-        <%= label f, :level, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :level, class: "form-control" %>
-          <%= error_tag f, :level %>
-          <span class="help-block">Level that the skill unlocks at</span>
-        </div>
-      </div>
 
-      <div class="form-group">
-        <%= label f, :name, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :name, class: "form-control" %>
-          <%= error_tag f, :name %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :level) do %>
+        <span class="help-block">Level that the skill unlocks at</span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :tags, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
-          <%= error_tag f, :tags %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :name) %>
 
-      <div class="form-group">
-        <%= label f, :description, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :description, class: "form-control", rows: 5 %>
-          <%= error_tag f, :description %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :tags, value: @changeset |> tags()) %>
+
+      <%= FormView.textarea_field(f, :description, rows: 5) %>
 
       <div class="form-group">
         <div class="col-md-8 col-md-offset-4">
@@ -49,50 +27,25 @@
       <h4>Usage</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :points, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :points, class: "form-control" %>
-          <%= error_tag f, :points %>
-          <span class="help-block">Number of skill points required to spend</span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :points) do %>
+        <span class="help-block">Number of skill points required to spend</span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :command, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :command, class: "form-control" %>
-          <%= error_tag f, :command %>
-          <span class="help-block">What the user types in to use the skill</span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :command) do %>
+        <span class="help-block">What the user types in to use the skill</span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :cooldown_time, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :cooldown_time, class: "form-control" %>
-          <%= error_tag f, :cooldown_time %>
-          <span class="help-block"><%= Help.get("skill.cooldown_time") %></span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :cooldown_time) do %>
+        <span class="help-block"><%= Help.get("skill.cooldown_time") %></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :user_text, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :user_text, class: "form-control" %>
-          <%= error_tag f, :user_text %>
-          <span class="help-block">Available template variables: <code>[target]</code></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :user_text) do %>
+        <span class="help-block">Available template variables: <code>[target]</code></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :usee_text, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :usee_text, class: "form-control" %>
-          <%= error_tag f, :usee_text %>
-          <span class="help-block">Available template variables: <code>[user]</code></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :usee_text) do %>
+        <span class="help-block">Available template variables: <code>[user]</code></span>
+      <% end %>
 
       <h4>Effects</h4>
       <hr />
@@ -106,15 +59,10 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <%= label f, :effects, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
-          <%= error_tag f, :effects %>
-          <span class="help-block">Enter in valid JSON</span>
-          <%= render(SharedView, "_effects.html", id: "skill_effects") %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :effects, value: @changeset |> json_field(:effects), rows: 15) do %>
+        <span class="help-block">Enter in valid JSON</span>
+        <%= render(SharedView, "_effects.html", id: "skill_effects") %>
+      <% end %>
     </div>
 
     <div class="box-footer">

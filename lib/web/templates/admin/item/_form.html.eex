@@ -12,116 +12,48 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <%= label f, :level, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :level, class: "form-control" %>
-          <%= error_tag f, :level %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :level) %>
 
-      <div class="form-group">
-        <%= label f, :name, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :name, class: "form-control" %>
-          <%= error_tag f, :name %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :name) %>
 
-      <div class="form-group">
-        <%= label f, :description, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :description, class: "form-control" %>
-          <%= error_tag f, :description %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :description) %>
 
-      <div class="form-group">
-        <%= label f, :tags, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
-          <%= error_tag f, :tags %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :tags, value: @changeset |> tags()) %>
 
-      <div class="form-group">
-        <%= label f, :keywords, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :keywords, value: @changeset |> keywords(), class: "form-control" %>
-          <%= error_tag f, :keywords %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :keywords, value: @changeset |> keywords()) %>
 
-      <div class="form-group">
-        <%= label f, :cost, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :cost, class: "form-control" %>
-          <%= error_tag f, :cost %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :cost) %>
 
       <h4>Usage</h4>
       <hr />
 
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_usable do %>
-            <%= checkbox f, :is_usable %> Is Usable?
-          <% end %>
-          <%= error_tag f, :is_usable %>
-        </div>
-      </div>
+      <%= FormView.checkbox_field(f, :is_usable, label: "Is Usable?") %>
 
-      <div class="form-group">
-        <%= label f, :amount, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :amount, class: "form-control" %>
-          <%= error_tag f, :amount %>
-          <span class="help-block">Amount of use an item has if usable</span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :amount) do %>
+        <span class="help-block">Amount of use an item has if usable</span>
+      <% end %> 
 
-      <div class="form-group">
-        <%= label f, :user_text, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :user_text, class: "form-control" %>
-          <%= error_tag f, :user_text %>
-          <span class="help-block">Available replacements: <code>[user]</code>, <code>[name]</code>, <code>[target]</code></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :user_text) do %>
+        <span class="help-block">Available replacements: <code>[user]</code>, <code>[name]</code>, <code>[target]</code></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :usee_text, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :usee_text, class: "form-control" %>
-          <%= error_tag f, :usee_text %>
-          <span class="help-block">Available replacements: <code>[user]</code>, <code>[name]</code>, <code>[target]</code></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :usee_text) do %>
+        <span class="help-block">Available replacements: <code>[user]</code>, <code>[name]</code>, <code>[target]</code></span>
+      <% end %>
 
       <h4>Stats</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :stats, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :stats, value: @changeset |> json_field(:stats), class: "form-control", rows: 5 %>
-          <%= error_tag f, :stats %>
-          <span class="help-block">Enter in valid JSON</span>
-          <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
-          <%= render(SharedView, "_stats.html", stats_id: "item_stats", type_id: "item_type") %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :stats, value: @changeset |> json_field(:stats), rows: 5) do %>
+        <span class="help-block">Enter in valid JSON</span>
+        <span class="help-block">Valid slots are: <%= Stats.slots() |> Enum.join(", ") %></span>
+        <%= render(SharedView, "_stats.html", stats_id: "item_stats", type_id: "item_type") %>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :effects, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :effects, value: @changeset |> json_field(:effects), class: "form-control", rows: 15 %>
-          <%= error_tag f, :effects %>
-          <span class="help-block">Enter in valid JSON</span>
-          <%= render(SharedView, "_effects.html", id: "item_effects") %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :effects, value: @changeset |> json_field(:effects), rows: 15) do %>
+        <span class="help-block">Enter in valid JSON</span>
+        <%= render(SharedView, "_effects.html", id: "item_effects") %>
+      <% end %>
 
       <div class="form-group">
         <%= label f, :whitelist_effects, class: "col-md-4" %>

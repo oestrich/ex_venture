@@ -4,64 +4,22 @@
       <h4>Basics</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :name, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :name, class: "form-control" %>
-          <%= error_tag f, :name %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :name) %>
 
-      <div class="form-group">
-        <%= label f, :description, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :description, class: "form-control", rows: 5 %>
-          <%= error_tag f, :description %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :description, rows: 5) %>
 
-      <div class="form-group">
-        <%= label f, :listen, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :listen, class: "form-control", rows: 5 %>
-          <%= error_tag f, :listen %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :listen, rows: 5) %>
 
-      <div class="form-group">
-        <%= label f, :currency, currency() |> String.capitalize(), class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :currency, class: "form-control" %>
-          <%= error_tag f, :currency %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :currency, label: String.capitalize(currency())) %>
 
       <h4>Map</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :x, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :x, class: "form-control" %>
-          <%= error_tag f, :x %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :x) %>
 
-      <div class="form-group">
-        <%= label f, :y, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :y, class: "form-control" %>
-          <%= error_tag f, :y %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :y) %>
 
-      <div class="form-group">
-        <%= label f, :map_layer, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :map_layer, class: "form-control" %>
-          <%= error_tag f, :map_layer %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :map_layer) %>
 
       <div class="form-group">
         <%= label f, :ecology, class: "col-md-4" %>
@@ -72,36 +30,18 @@
         </div>
       </div>
 
-      <div class="checkbox">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_zone_exit do %>
-            <%= checkbox f, :is_zone_exit %> Is A Zone Exit?
-          <% end %>
-          <%= error_tag f, :is_zone_exit %>
-          <span class="help-block"><%= Help.get("room.zone_exit") %></span>
-        </div>
-      </div>
+      <%= FormView.checkbox_field(f, :is_zone_exit, label: "Is a Zone Exit?") do %>
+        <span class="help-block"><%= Help.get("room.zone_exit") %></span>
+      <% end %>
 
-      <div class="checkbox">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_graveyard do %>
-            <%= checkbox f, :is_graveyard %> Is A Graveyard?
-          <% end %>
-          <%= error_tag f, :is_graveyard %>
-          <span class="help-block"><%= Help.get("room.graveyard") %></span>
-        </div>
-      </div>
+      <%= FormView.checkbox_field(f, :is_graveyard, label: "Is a Graveyard?") do %>
+        <span class="help-block"><%= Help.get("room.graveyard") %></span>
+      <% end %>
 
       <h4>Miscellaneous</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :notes, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :notes, class: "form-control", rows: 10 %>
-          <%= error_tag f, :notes %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :notes, rows: 10) %>
     </div>
 
     <div class="box-footer">

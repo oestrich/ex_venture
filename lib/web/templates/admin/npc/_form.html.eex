@@ -4,127 +4,54 @@
       <h4>Basics</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :level, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :level, class: "form-control" %>
-          <%= error_tag f, :level %>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :level) %>
 
-      <div class="form-group">
-        <%= label f, :name, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :name, class: "form-control" %>
-          <%= error_tag f, :name %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :name) %>
 
-      <div class="form-group">
-        <%= label f, :tags, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :tags, value: @changeset |> tags(), class: "form-control" %>
-          <%= error_tag f, :tags %>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :tags, value: @changeset |> tags()) %>
 
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_quest_giver do %>
-            <%= checkbox f, :is_quest_giver %> Is a quest giver?
-          <% end %>
-          <%= error_tag f, :is_quest_giver %>
-        </div>
-      </div>
+      <%= FormView.checkbox_field(f, :is_quest_giver, label: "Is a quest giver?") %>
 
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_trainer do %>
-            <%= checkbox f, :is_trainer %> Is a skill tainer?
-          <% end %>
-          <%= error_tag f, :is_trainer %>
-        </div>
-      </div>
+      <%= FormView.checkbox_field(f, :is_trainer, label: "Is a skill trainer?") %>
 
       <h4>Descriptive</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :status_line, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :status_line, class: "form-control" %>
-          <%= error_tag f, :status_line %>
-          <span class="help-block">Make sure to include <code>[name]</code></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :status_line) do %>
+        <span class="help-block">Make sure to include <code>[name]</code></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :status_listen, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= text_input f, :status_listen, class: "form-control" %>
-          <%= error_tag f, :status_listen %>
-          <span class="help-block"><%= Help.get("npc.status_listen") %></span>
-        </div>
-      </div>
+      <%= FormView.text_field(f, :status_listen) do %>
+        <span class="help-block"><%= Help.get("npc.status_listen") %></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :description, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :description, class: "form-control", rows: 3 %>
-          <%= error_tag f, :description %>
-          <span class="help-block"><%= Help.get("npc.description") %></span>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :description) do %>
+        <span class="help-block"><%= Help.get("npc.description") %></span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :script, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :script, value: @changeset |> script(), class: "form-control", rows: 15 %>
-          <%= error_tag f, :script %>
-          <span class="help-block">Enter in valid JSON</span>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :script, value: @changeset |> script(), rows: 15) do %>
+        <span class="help-block">Enter in valid JSON</span>
+      <% end %>
 
       <h4>Stats</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :experience_points, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :experience_points, class: "form-control" %>
-          <%= error_tag f, :experience_points %>
-          <span class="help-block">Experience will scale based on the NPCs level</span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :experience_points) do %>
+        <span class="help-block">Experience will scale based on the NPCs level</span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :currency, currency() |> String.capitalize(), class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :currency, class: "form-control" %>
-          <%= error_tag f, :currency %>
-          <span class="help-block"><%= currency() |> String.capitalize() %> will drop in the room on defeat</span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :currency, label: String.capitalize(currency())) do %>
+        <span class="help-block"><%= currency() |> String.capitalize() %> will drop in the room on defeat</span>
+      <% end %>
 
-      <div class="form-group">
-        <%= label f, :stats, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :stats, value: @changeset |> stats(), class: "form-control", rows: 13 %>
-          <%= error_tag f, :stats %>
-          <span class="help-block">Enter in valid JSON</span>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :stats, value: @changeset |> stats(), rows: 13) do %>
+        <span class="help-block">Enter in valid JSON</span>
+      <% end %>
 
       <h4>Miscellaneous</h4>
       <hr />
 
-      <div class="form-group">
-        <%= label f, :notes, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= textarea f, :notes, class: "form-control", rows: 10 %>
-          <%= error_tag f, :notes %>
-        </div>
-      </div>
+      <%= FormView.textarea_field(f, :notes, rows: 10) %>
     </div>
 
     <div class="box-footer">

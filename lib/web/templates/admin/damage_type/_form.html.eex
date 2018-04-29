@@ -6,14 +6,9 @@
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <%= if @key do %>
-        <div class="form-group">
-          <%= label f, :key, class: "col-md-4" %>
-          <div class="col-md-8">
-            <%= text_input f, :key, class: "form-control" %>
-            <%= error_tag f, :key %>
-            <span class="help-block"><%= Help.get("damage_type.key") %></span>
-          </div>
-        </div>
+        <%= FormView.text_field(f, :key) do %>
+          <span class="help-block"><%= Help.get("damage_type.key") %></span>
+        <% end %>
       <% end %>
 
       <div class="form-group">
@@ -25,14 +20,9 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <%= label f, :boost_ratio, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :boost_ratio, class: "form-control", min: 0, max: 100 %>
-          <%= error_tag f, :boost_ratio %>
-          <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :boost_ratio, min: 0, max: 100) do %>
+        <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
+      <% end %>
 
       <div class="form-group">
         <%= label f, :reverse_stat, class: "col-md-4" %>
@@ -43,14 +33,9 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <%= label f, :reverse_boost, class: "col-md-4" %>
-        <div class="col-md-8">
-          <%= number_input f, :reverse_boost, class: "form-control", min: 0, max: 100 %>
-          <%= error_tag f, :reverse_boost %>
-          <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
-        </div>
-      </div>
+      <%= FormView.number_field(f, :reverse_boost, min: 0, max: 100) do %>
+        <span class="help-block"><%= Help.get("damage_type.boost_ratio") %></span>
+      <% end %>
     </div>
 
     <div class="box-footer">
