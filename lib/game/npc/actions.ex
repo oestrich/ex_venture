@@ -36,8 +36,17 @@ defmodule Game.NPC.Actions do
   def handle_respawn(state = %{npc: npc, npc_spawner: npc_spawner}) do
     npc = %{npc | stats: %{npc.stats | health_points: npc.stats.max_health_points}}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
+
     npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
+    npc_spawner.room_id |> @room.link()
+
+    room = @room.look(npc_spawner.room_id)
+    Enum.each(room.players, fn player ->
+      GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
+    end)
+
     Events.broadcast(npc, "character/respawned")
+
     %{state | npc: npc, status: status, room_id: npc_spawner.room_id}
   end
 
