@@ -5,7 +5,7 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
-      <%= FormView.text_input(f, :name) %>
+      <%= FormView.text_field(f, :name) %>
     </div>
 
     <div class="box-footer">
