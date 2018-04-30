@@ -104,6 +104,7 @@ defmodule Game.Command.Channels do
     with {:ok, channel} <- get_joined_channel(channel, state) do
       parsed_message = Say.parse_message(message)
       Channel.broadcast(channel.name, Message.broadcast(state.user, channel, parsed_message))
+      :ok
     else
       {:error, :not_found} ->
         state.socket |> @socket.echo("You are not part of this channel.")

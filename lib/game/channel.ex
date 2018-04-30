@@ -19,6 +19,8 @@ defmodule Game.Channel do
 
   @type state :: %__MODULE__{}
 
+  @key :channel
+
   @doc """
   Start the GenServer process for managing channels
   """
@@ -64,7 +66,10 @@ defmodule Game.Channel do
   """
   @spec broadcast(String.t(), Message.t()) :: :ok
   def broadcast(channel, message) do
-    GenServer.cast(__MODULE__, {:broadcast, channel, message})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:broadcast, channel, message})
+    end)
   end
 
   @doc """
@@ -72,7 +77,10 @@ defmodule Game.Channel do
   """
   @spec tell(Character.t(), Character.t(), Message.t()) :: :ok
   def tell(user, from, message) do
-    GenServer.cast(__MODULE__, {:tell, user, from, message})
+    members = :pg2.get_members(@key)
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:tell, user, from, message})
+    end)
   end
 
   @doc """
@@ -91,6 +99,9 @@ defmodule Game.Channel do
 
   @impl GenServer
   def init(_) do
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
+
     Process.flag(:trap_exit, true)
     {:ok, %__MODULE__{channels: %{}, tells: %{}}}
   end
