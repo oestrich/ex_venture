@@ -5,40 +5,68 @@ defmodule Web.Admin.RaceController do
 
   def index(conn, _params) do
     races = Race.all()
-    conn |> render("index.html", races: races)
+
+    conn
+    |> assign(:races, races)
+    |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do
     race = Race.get(id)
-    conn |> render("show.html", race: race)
+
+    conn
+    |> assign(:race, race)
+    |> render("show.html")
   end
 
   def new(conn, _params) do
     changeset = Race.new()
-    conn |> render("new.html", changeset: changeset)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"race" => params}) do
     case Race.create(params) do
-      {:ok, race} -> conn |> redirect(to: race_path(conn, :show, race.id))
-      {:error, changeset} -> conn |> render("new.html", changeset: changeset)
+      {:ok, race} ->
+        conn
+        |> put_flash(:info, "#{race.name} created!")
+        |> redirect(to: race_path(conn, :show, race.id))
+
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "There was a problem creating the race. Please try again.")
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 
   def edit(conn, %{"id" => id}) do
     race = Race.get(id)
     changeset = Race.edit(race)
-    conn |> render("edit.html", race: race, changeset: changeset)
+
+    conn
+    |> assign(:race, race)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "race" => params}) do
     case Race.update(id, params) do
       {:ok, race} ->
-        conn |> redirect(to: race_path(conn, :show, race.id))
+        conn
+        |> put_flash(:info, "#{race.name} updated!")
+        |> redirect(to: race_path(conn, :show, race.id))
 
       {:error, changeset} ->
         race = Race.get(id)
-        conn |> render("edit.html", race: race, changeset: changeset)
+
+        conn
+        |> put_flash(:error, "There was an issue updating #{race.name}. Please try again.")
+        |> assign(:race, race)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 end

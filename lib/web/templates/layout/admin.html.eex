@@ -188,7 +188,7 @@
         <%= if get_flash(@conn, :info) do %>
           <section class="content-header">
             <div class="callout callout-success">
-              <%= get_flash(@conn, :info) %>
+              <i class="fa fa-info-circle"></i> <%= get_flash(@conn, :info) %>
             </div>
           </section>
         <% end %>
@@ -196,7 +196,7 @@
         <%= if get_flash(@conn, :error) do %>
           <section class="content-header">
             <div class="callout callout-danger">
-              <%= get_flash(@conn, :error) %>
+              <i class="fa fa-exclamation-circle"></i> <%= get_flash(@conn, :error) %>
             </div>
           </section>
         <% end %>
