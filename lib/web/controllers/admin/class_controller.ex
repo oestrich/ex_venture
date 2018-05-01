@@ -8,40 +8,67 @@ defmodule Web.Admin.ClassController do
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
     %{page: classes, pagination: pagination} = Class.all(page: page, per: per)
-    conn |> render("index.html", classes: classes, pagination: pagination)
+
+    conn
+    |> assign(:classes, classes)
+    |> assign(:pagination, pagination)
+    |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do
     class = Class.get(id)
-    conn |> render("show.html", class: class)
+
+    conn
+    |> assign(:class, class)
+    |> render("show.html")
   end
 
   def new(conn, _params) do
     changeset = Class.new()
-    conn |> render("new.html", changeset: changeset)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"class" => params}) do
     case Class.create(params) do
-      {:ok, class} -> conn |> redirect(to: class_path(conn, :show, class.id))
-      {:error, changeset} -> conn |> render("new.html", changeset: changeset)
+      {:ok, class} ->
+        conn
+        |> put_flash(:info, "#{class.name} created")
+        |> redirect(to: class_path(conn, :show, class.id))
+
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "Problem creating class")
+        |> render("new.html", changeset: changeset)
     end
   end
 
   def edit(conn, %{"id" => id}) do
     class = Class.get(id)
     changeset = Class.edit(class)
-    conn |> render("edit.html", class: class, changeset: changeset)
+
+    conn
+    |> assign(:class, class)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "class" => params}) do
     case Class.update(id, params) do
       {:ok, class} ->
-        conn |> redirect(to: class_path(conn, :show, class.id))
+        conn
+        |> put_flash(:info, "#{class.name} updated")
+        |> redirect(to: class_path(conn, :show, class.id))
 
       {:error, changeset} ->
         class = Class.get(id)
-        conn |> render("edit.html", class: class, changeset: changeset)
+
+        conn
+        |> assign(:class, class)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 end
