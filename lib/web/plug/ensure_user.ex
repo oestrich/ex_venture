@@ -1,6 +1,5 @@
 defmodule Web.Plug.EnsureUser do
-  @moduledoc """
-  """
+  @moduledoc false
 
   import Plug.Conn
   import Phoenix.Controller, only: [redirect: 2]

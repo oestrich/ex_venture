@@ -131,7 +131,12 @@ defmodule Game.Session.Effects do
     save.room_id |> update_character(user)
     state = %{state | user: user, save: save}
 
-    socket |> @socket.echo(effects |> Format.effects({:user, user}) |> Enum.join("\n"))
+    effects_message =
+      effects
+      |> Format.effects({:user, user})
+      |> Enum.join("\n")
+
+    socket |> @socket.echo(effects_message)
 
     user |> maybe_died(state, from)
     state |> Process.prompt()

@@ -80,8 +80,8 @@ defmodule Game.Command.Use do
 
     description = Format.user_item(item, target: {:user, user}, user: {:user, user})
 
-    socket
-    |> @socket.echo([description | Format.effects(effects, {:user, user})] |> Enum.join("\n"))
+    effects_message = Enum.join([description | Format.effects(effects, {:user, user})], "\n")
+    socket |> @socket.echo(effects_message)
 
     spend_item(state, instance)
   end

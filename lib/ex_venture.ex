@@ -1,6 +1,5 @@
 defmodule ExVenture do
-  @moduledoc """
-  """
+  @moduledoc false
 
   @doc """
   Helper function for loading system environment variables in configuration

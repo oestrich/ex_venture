@@ -132,7 +132,7 @@ defmodule Web.RoomTest do
       {:ok, _room} = Room.edit_feature(room, feature.id, %{"key" => "log", "short_description" => "short", "description" => "longer"})
 
       state = Game.Room._get_state(room.id)
-      assert [%{description: "longer"}] =state.room.features
+      assert [%{description: "longer"}] = state.room.features
     end
 
     test "remove a room feature", %{zone: zone} do
