@@ -14,7 +14,7 @@
 
       <%= FormView.number_field(f, :level) %>
 
-      <%= FormView.number_field(f, :name) %>
+      <%= FormView.text_field(f, :name) %>
 
       <%= FormView.textarea_field(f, :description) %>
 
