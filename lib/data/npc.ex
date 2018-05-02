@@ -35,7 +35,7 @@ defmodule Data.NPC do
     # given after defeat
     field(:experience_points, :integer, default: 0)
     field(:stats, Data.Stats)
-    field(:events, {:array, Event})
+    field(:events, {:array, Event}, default: [])
     field(:script, {:array, Script.Line})
     field(:notes, :string)
     field(:tags, {:array, :string}, default: [])

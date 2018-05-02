@@ -9,12 +9,20 @@ defmodule Web.Admin.NPCController do
     %{page: page, per: per} = conn.assigns
     filter = Map.get(params, "npc", %{})
     %{page: npcs, pagination: pagination} = NPC.all(filter: filter, page: page, per: per)
-    conn |> render("index.html", npcs: npcs, filter: filter, pagination: pagination)
+
+    conn
+    |> assign(:npcs, npcs)
+    |> assign(:filter, filter)
+    |> assign(:pagination, pagination)
+    |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do
     npc = NPC.get(id)
-    conn |> render("show.html", npc: npc)
+
+    conn
+    |> assign(:npc, npc)
+    |> render("show.html")
   end
 
   def new(conn, params) do
@@ -27,30 +35,51 @@ defmodule Web.Admin.NPCController do
           NPC.new()
       end
 
-    conn |> render("new.html", changeset: changeset)
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"npc" => params}) do
     case NPC.create(params) do
-      {:ok, npc} -> conn |> redirect(to: npc_path(conn, :show, npc.id))
-      {:error, changeset} -> conn |> render("new.html", changeset: changeset)
+      {:ok, npc} ->
+        conn
+        |> put_flash(:info, "Created #{npc.name}!")
+        |> redirect(to: npc_path(conn, :show, npc.id))
+
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "There was an issue creating the NPC. Please try again.")
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 
   def edit(conn, %{"id" => id}) do
     npc = NPC.get(id)
     changeset = NPC.edit(npc)
-    conn |> render("edit.html", npc: npc, changeset: changeset)
+
+    conn
+    |> assign(:npc, npc)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "npc" => params}) do
     case NPC.update(id, params) do
       {:ok, npc} ->
-        conn |> redirect(to: npc_path(conn, :show, npc.id))
+        conn
+        |> put_flash(:info, "Updated #{npc.name}!")
+        |> redirect(to: npc_path(conn, :show, npc.id))
 
       {:error, changeset} ->
         npc = NPC.get(id)
-        conn |> render("edit.html", npc: npc, changeset: changeset)
+
+        conn
+        |> put_flash(:error, "There was an issue updating #{npc.name}. Please try again.")
+        |> assign(:npc, npc)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 end

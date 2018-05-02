@@ -5,12 +5,19 @@ defmodule Web.Admin.NPCEventController do
 
   def index(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
-    conn |> render("index.html", npc: npc)
+
+    conn
+    |> assign(:npc, npc)
+    |> render("index.html")
   end
 
   def new(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
-    conn |> render("new.html", npc: npc, field: "")
+
+    conn
+    |> assign(:npc, npc)
+    |> assign(:field, "")
+    |> render("new.html")
   end
 
   def create(conn, %{"npc_id" => npc_id, "event" => %{"body" => event}}) do
@@ -24,11 +31,16 @@ defmodule Web.Admin.NPCEventController do
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "There was a problem updating.")
-        |> render("new.html", npc: npc, field: event)
+        |> assign(:npc, npc)
+        |> assign(:field, event)
+        |> render("new.html")
 
       {:error, :invalid, changeset} ->
         conn
-        |> render("new.html", npc: npc, field: event, errors: changeset.errors)
+        |> assign(:npc, npc)
+        |> assign(:field, event)
+        |> assign(:errors, changeset.errors)
+        |> render("new.html")
     end
   end
 
@@ -39,7 +51,11 @@ defmodule Web.Admin.NPCEventController do
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
 
       event ->
-        conn |> render("edit.html", npc: npc, event: event, field: Poison.encode!(event, pretty: true))
+        conn
+        |> assign(:npc, npc)
+        |> assign(:event, event)
+        |> assign(:field, Poison.encode!(event, pretty: true))
+        |> render("edit.html")
     end
   end
 
@@ -59,11 +75,18 @@ defmodule Web.Admin.NPCEventController do
           {:error, _changeset} ->
             conn
             |> put_flash(:error, "There was a problem updating.")
-            |> render("edit.html", npc: npc, event: event, field: body)
+            |> assign(:npc, npc)
+            |> assign(:event, event)
+            |> assign(:field, body)
+            |> render("edit.html")
 
           {:error, :invalid, changeset} ->
             conn
-            |> render("edit.html", npc: npc, event: event, field: body, errors: changeset.errors)
+            |> assign(:npc, npc)
+            |> assign(:event, event)
+            |> assign(:field, body)
+            |> assign(:errors, changeset.errors)
+            |> render("edit.html")
         end
     end
   end

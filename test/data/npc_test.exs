@@ -16,7 +16,7 @@ defmodule Data.NPCTest do
   end
 
   test "validate effects" do
-    changeset = %NPC{} |> NPC.changeset(%{})
+    changeset = %NPC{} |> NPC.changeset(%{events: nil})
     assert changeset.errors[:events]
 
     changeset = %NPC{} |> NPC.changeset(%{events: []})
