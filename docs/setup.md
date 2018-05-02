@@ -125,7 +125,7 @@ mix run priv/repo/seeds.exs
 With that the app is up and running. You can boot it with:
 
 ```bash
-mix run --no-halt
+PORT=4000 mix run --no-halt
 ```
 
 And connect via telnet on 5555 and via web on 4000. Both of these are configurable via the file `config/dev.exs`.
