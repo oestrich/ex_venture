@@ -8,7 +8,7 @@ defmodule Web.FormView do
     opts = Keyword.merge(opts, dopts)
     text_opts = Keyword.take(opts, [:value, :rows])
 
-    content_tag(:div, class: "form-group") do
+    content_tag(:div, class: form_group_classes(form, field)) do
       [
         label(form, field, class: "col-md-4"),
         content_tag(:div, class: "col-md-8") do
@@ -38,7 +38,7 @@ defmodule Web.FormView do
           label(form, field, text, class: "col-md-4")
       end
 
-    content_tag(:div, class: "form-group") do
+    content_tag(:div, class: form_group_classes(form, field)) do
       [
         label,
         content_tag(:div, class: "col-md-8") do
@@ -59,7 +59,7 @@ defmodule Web.FormView do
     opts = Keyword.merge(opts, dopts)
     textarea_opts = Keyword.take(opts, [:value, :rows])
 
-    content_tag(:div, class: "form-group") do
+    content_tag(:div, class: form_group_classes(form, field)) do
       [
         label(form, field, class: "col-md-4"),
         content_tag(:div, class: "col-md-8") do
@@ -89,6 +89,16 @@ defmodule Web.FormView do
           Keyword.get(opts, :do, "")
         ]
       end
+    end
+  end
+
+  defp form_group_classes(form, field) do
+    case Keyword.has_key?(form.errors, field) do
+      true ->
+        "form-group has-error"
+
+      false ->
+        "form-group"
     end
   end
 end
