@@ -119,13 +119,13 @@ Next get the database set up:
 ```bash
 mix ecto.create
 mix ecto.migrate
-PORT=4000 mix run priv/repo/seeds.exs
+mix run priv/repo/seeds.exs
 ```
 
 With that the app is up and running. You can boot it with:
 
 ```bash
-PORT=4000 mix run --no-halt
+mix run --no-halt
 ```
 
 And connect via telnet on 5555 and via web on 4000. Both of these are configurable via the file `config/dev.exs`.
