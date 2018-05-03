@@ -92,6 +92,7 @@ defmodule Data.Room do
       :is_graveyard
     ])
     |> validate_inclusion(:ecology, @ecologies)
+    |> unique_constraint(:x, name: :rooms_zone_id_x_y_map_layer_index)
   end
 
   def feature_changeset(struct, params) do
