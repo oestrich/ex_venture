@@ -119,7 +119,7 @@ Next get the database set up:
 ```bash
 mix ecto.create
 mix ecto.migrate
-mix run priv/repo/seeds.exs
+PORT=4000 mix run priv/repo/seeds.exs
 ```
 
 With that the app is up and running. You can boot it with:
