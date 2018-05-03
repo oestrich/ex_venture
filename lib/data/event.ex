@@ -266,11 +266,6 @@ defmodule Data.Event do
     end
   end
 
-  #@spec valid_action?(String.t(), map()) :: boolean()
-  #def valid_action?(event_type, action) do
-  #  validate_action(event_type, action).valid?
-  #end
-
   @doc """
   Validate tick actions
   """
