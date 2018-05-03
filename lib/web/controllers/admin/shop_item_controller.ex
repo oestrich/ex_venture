@@ -9,7 +9,13 @@ defmodule Web.Admin.ShopItemController do
     shop = Shop.get(shop_id)
     room = Room.get(shop.room_id)
     changeset = Shop.new_item(shop)
-    conn |> render("new.html", items: Item.all(), shop: shop, room: room, changeset: changeset)
+
+    conn
+    |> assign(:items, Item.all())
+    |> assign(:shop, shop)
+    |> assign(:room, room)
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"shop_id" => shop_id, "item" => %{"id" => item_id}, "shop_item" => params}) do
@@ -18,13 +24,20 @@ defmodule Web.Admin.ShopItemController do
 
     case Shop.add_item(shop, item, params) do
       {:ok, shop_item} ->
-        conn |> redirect(to: shop_path(conn, :show, shop_item.shop_id))
+        conn
+        |> put_flash(:info, "Item added to #{shop.name}!")
+        |> redirect(to: shop_path(conn, :show, shop_item.shop_id))
 
       {:error, changeset} ->
         room = Room.get(shop.room_id)
 
         conn
-        |> render("new.html", items: Item.all(), shop: shop, room: room, changeset: changeset)
+        |> put_flash(:error, "There was an issue adding the item to the shop. Please try again.")
+        |> assign(:items, Item.all())
+        |> assign(:shop, shop)
+        |> assign(:room, room)
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 
@@ -35,33 +48,48 @@ defmodule Web.Admin.ShopItemController do
     changeset = Shop.edit_item(shop_item)
 
     conn
-    |> render(
-      "edit.html",
-      items: Item.all(),
-      shop_item: shop_item,
-      shop: shop,
-      room: room,
-      changeset: changeset
-    )
+    |> assign(:items, Item.all())
+    |> assign(:shop_item, shop_item)
+    |> assign(:shop, shop)
+    |> assign(:room, room)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "shop_item" => params}) do
     case Shop.update_item(id, params) do
       {:ok, shop_item} ->
-        conn |> redirect(to: shop_path(conn, :show, shop_item.shop_id))
+        conn
+        |> put_flash(:info, "Item updated!")
+        |> redirect(to: shop_path(conn, :show, shop_item.shop_id))
 
       {:error, changeset} ->
-        conn |> render("edit.html", changeset: changeset)
+        shop_item = Shop.get_item(id)
+        shop = Shop.get(shop_item.shop_id)
+        room = Room.get(shop.room_id)
+
+        conn
+        |> put_flash(:error, "There was an issue updating the item. Please try again.")
+        |> assign(:items, Item.all())
+        |> assign(:shop_item, shop_item)
+        |> assign(:shop, shop)
+        |> assign(:room, room)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 
   def delete(conn, %{"id" => id}) do
     case Shop.delete_item(id) do
       {:ok, shop_item} ->
-        conn |> redirect(to: shop_path(conn, :show, shop_item.shop_id))
+        conn
+        |> put_flash(:info, "Item deleted!")
+        |> redirect(to: shop_path(conn, :show, shop_item.shop_id))
 
       _ ->
-        conn |> redirect(to: dashboard_path(conn, :index))
+        conn
+        |> put_flash(:error, "There was an issue deleting the item from the shop. Please try again.")
+        |> redirect(to: dashboard_path(conn, :index))
     end
   end
 end

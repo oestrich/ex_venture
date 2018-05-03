@@ -9,40 +9,70 @@ defmodule Web.Admin.NoteController do
     %{page: page, per: per} = conn.assigns
     filter = Map.get(params, "note", %{})
     %{page: notes, pagination: pagination} = Note.all(filter: filter, page: page, per: per)
-    conn |> render("index.html", notes: notes, filter: filter, pagination: pagination)
+
+    conn
+    |> assign(:notes, notes)
+    |> assign(:filter, filter)
+    |> assign(:pagination, pagination)
+    |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do
     note = Note.get(id)
-    conn |> render("show.html", note: note)
+
+    conn
+    |> assign(:note, note)
+    |> render("show.html")
   end
 
   def new(conn, _params) do
     changeset = Note.new()
-    conn |> render("new.html", changeset: changeset)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"note" => params}) do
     case Note.create(params) do
-      {:ok, note} -> conn |> redirect(to: note_path(conn, :show, note.id))
-      {:error, changeset} -> conn |> render("new.html", changeset: changeset)
+      {:ok, note} ->
+        conn
+        |> put_flash(:info, "#{note.name} created!")
+        |> redirect(to: note_path(conn, :show, note.id))
+
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "There was an issue creating the note. Please try again.")
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 
   def edit(conn, %{"id" => id}) do
     note = Note.get(id)
     changeset = Note.edit(note)
-    conn |> render("edit.html", note: note, changeset: changeset)
+
+    conn
+    |> assign(:note, note)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "note" => params}) do
     case Note.update(id, params) do
       {:ok, note} ->
-        conn |> redirect(to: note_path(conn, :show, note.id))
+        conn
+        |> put_flash(:info, "#{note.name} updated!")
+        |> redirect(to: note_path(conn, :show, note.id))
 
       {:error, changeset} ->
         note = Note.get(id)
-        conn |> render("edit.html", note: note, changeset: changeset)
+
+        conn
+        |> put_flash(:error, "There was an issue updating #{note.name}. Please try again.")
+        |> assign(:note, note)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 end

@@ -8,43 +8,69 @@ defmodule Web.Admin.AnnouncementController do
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
     %{page: announcements, pagination: pagination} = Announcement.all(page: page, per: per)
-    conn |> render("index.html", announcements: announcements, pagination: pagination)
+
+    conn
+    |> assign(:announcements, announcements)
+    |> assign(:pagination, pagination)
+    |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do
     announcement = Announcement.get(id)
-    conn |> render("show.html", announcement: announcement)
+
+    conn
+    |> assign(:announcement, announcement)
+    |> render("show.html")
   end
 
   def new(conn, _params) do
     changeset = Announcement.new()
-    conn |> render("new.html", changeset: changeset)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"announcement" => params}) do
     case Announcement.create(params) do
       {:ok, announcement} ->
-        conn |> redirect(to: announcement_path(conn, :show, announcement.id))
+        conn
+        |> put_flash(:info, "#{announcement.title} created!")
+        |> redirect(to: announcement_path(conn, :show, announcement.id))
 
       {:error, changeset} ->
-        conn |> render("new.html", changeset: changeset)
+        conn
+        |> put_flash(:error, "There was a problem creating the announcement. Please try again.")
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 
   def edit(conn, %{"id" => id}) do
     announcement = Announcement.get(id)
     changeset = Announcement.edit(announcement)
-    conn |> render("edit.html", announcement: announcement, changeset: changeset)
+
+    conn
+    |> assign(:announcement, announcement)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "announcement" => params}) do
     case Announcement.update(id, params) do
       {:ok, announcement} ->
-        conn |> redirect(to: announcement_path(conn, :show, announcement.id))
+        conn
+        |> put_flash(:info, "#{announcement.title} updated!")
+        |> redirect(to: announcement_path(conn, :show, announcement.id))
 
       {:error, changeset} ->
         announcement = Announcement.get(id)
-        conn |> render("edit.html", announcement: announcement, changeset: changeset)
+
+        conn
+        |> put_flash(:error, "There was a problem updating #{announcement.title}. Please try again.")
+        |> assign(:announcement, announcement)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 end

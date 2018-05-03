@@ -70,7 +70,9 @@
                   <td>
                     <%= link("Edit", to: shop_item_path(@conn, :edit, shop_item.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit (Item)", to: item_path(@conn, :edit, shop_item.item_id), class: "btn btn-default btn-xs") %>
-                    <%= link("Delete", to: shop_item_path(@conn, :delete, shop_item.id), method: :delete, class: "btn btn-warning btn-xs") %>
+                    <%= link(to: shop_item_path(@conn, :delete, shop_item.id), method: :delete, class: "btn btn-warning btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

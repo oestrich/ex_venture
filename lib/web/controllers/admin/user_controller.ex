@@ -9,48 +9,74 @@ defmodule Web.Admin.UserController do
     %{page: page, per: per} = conn.assigns
     filter = Map.get(params, "user", %{})
     %{page: users, pagination: pagination} = User.all(filter: filter, page: page, per: per)
-    conn |> render("index.html", users: users, filter: filter, pagination: pagination)
+
+    conn
+    |> assign(:users, users)
+    |> assign(:filter, filter)
+    |> assign(:pagination, pagination)
+    |> render("index.html")
   end
 
   def show(conn, %{"id" => id}) do
     user = User.get(id)
-    conn |> render("show.html", user: user)
+
+    conn
+    |> assign(:user, user)
+    |> render("show.html")
   end
 
   def edit(conn, %{"id" => id}) do
     user = User.get(id)
     changeset = User.edit(user)
-    conn |> render("edit.html", user: user, changeset: changeset)
+
+    conn
+    |> assign(:user, user)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "user" => params}) do
     case User.update(id, params) do
       {:ok, user} ->
-        conn |> redirect(to: user_path(conn, :show, user.id))
+        conn
+        |> put_flash(:info, "#{user.name} updated!")
+        |> redirect(to: user_path(conn, :show, user.id))
 
       {:error, changeset} ->
         user = User.get(id)
-        conn |> render("edit.html", user: user, changeset: changeset)
+
+        conn
+        |> put_flash(:error, "There was an issue updating #{user.name}. Please try again.")
+        |> assign(:user, user)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 
   def watch(conn, %{"user_id" => id}) do
     user = User.get(id)
-    conn |> render("watch.html", user: user)
+
+    conn
+    |> assign(:user, user)
+    |> render("watch.html")
   end
 
   def teleport(conn, %{"room_id" => room_id}) do
     %{user: user} = conn.assigns
 
     case User.teleport(user, room_id) do
-      {:ok, _user} -> conn |> redirect(to: room_path(conn, :show, room_id))
-      _ -> conn |> redirect(to: room_path(conn, :show, room_id))
+      {:ok, _user} ->
+        conn |> redirect(to: room_path(conn, :show, room_id))
+
+      _ ->
+        conn |> redirect(to: room_path(conn, :show, room_id))
     end
   end
 
   def disconnect(conn, _params) do
     case User.disconnect() do
-      :ok -> conn |> redirect(to: dashboard_path(conn, :index))
+      :ok ->
+        conn |> redirect(to: dashboard_path(conn, :index))
     end
   end
 

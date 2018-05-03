@@ -10,17 +10,28 @@ defmodule Web.Admin.ConfigController do
   def edit(conn, %{"id" => name}) do
     config = Config.get(name)
     changeset = Config.edit(config)
-    conn |> render("edit.html", config: config, changeset: changeset)
+
+    conn
+    |> assign(:config, config)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => name, "config" => %{"value" => value}}) do
     case Config.update(name, value) do
       {:ok, _config} ->
-        conn |> redirect(to: config_path(conn, :index))
+        conn
+        |> put_flash(:info, "Config updated!")
+        |> redirect(to: config_path(conn, :index))
 
       {:error, changeset} ->
         config = Config.get(name)
-        conn |> render("edit.html", config: config, changeset: changeset)
+
+        conn
+        |> put_flash(:error, "There was an issue updating the config. Please try again.")
+        |> assign(:config, config)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 end

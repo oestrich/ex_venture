@@ -35,13 +35,14 @@ defmodule Web.Admin.ClassController do
     case Class.create(params) do
       {:ok, class} ->
         conn
-        |> put_flash(:info, "#{class.name} created")
+        |> put_flash(:info, "#{class.name} created!")
         |> redirect(to: class_path(conn, :show, class.id))
 
       {:error, changeset} ->
         conn
-        |> put_flash(:error, "Problem creating class")
-        |> render("new.html", changeset: changeset)
+        |> put_flash(:error, "There was an issue creating the class. Please try again.")
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 
@@ -59,13 +60,14 @@ defmodule Web.Admin.ClassController do
     case Class.update(id, params) do
       {:ok, class} ->
         conn
-        |> put_flash(:info, "#{class.name} updated")
+        |> put_flash(:info, "#{class.name} updated!")
         |> redirect(to: class_path(conn, :show, class.id))
 
       {:error, changeset} ->
         class = Class.get(id)
 
         conn
+        |> put_flash(:error, "There was an issue updating #{class.name}. Please try again.")
         |> assign(:class, class)
         |> assign(:changeset, changeset)
         |> render("edit.html")

@@ -5,28 +5,43 @@ defmodule Web.Admin.ChannelController do
 
   def index(conn, _params) do
     channels = Channel.all()
-    conn |> render("index.html", channels: channels)
+
+    conn
+    |> assign(:channels, channels)
+    |> render("index.html")
   end
 
   def new(conn, _params) do
     changeset = Channel.new()
-    conn |> render("new.html", changeset: changeset)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"channel" => params}) do
     case Channel.create(params) do
-      {:ok, _channel} ->
-        conn |> redirect(to: channel_path(conn, :index))
+      {:ok, channel} ->
+        conn
+        |> put_flash(:info, "#{channel.name} created!")
+        |> redirect(to: channel_path(conn, :index))
 
       {:error, changeset} ->
-        conn |> render("new.html", changeset: changeset)
+        conn
+        |> put_flash(:error, "There was an issue creating the channel. Please try again.")
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 
   def edit(conn, %{"id" => id}) do
     channel = Channel.get(id)
     changeset = Channel.edit(channel)
-    conn |> render("edit.html", channel: channel, changeset: changeset)
+
+    conn
+    |> assign(:channel, channel)
+    |> assign(:changeset, changeset)
+    |> render("edit.html")
   end
 
   def update(conn, %{"id" => id, "channel" => params}) do
@@ -34,10 +49,16 @@ defmodule Web.Admin.ChannelController do
 
     case Channel.update(channel, params) do
       {:ok, _channel} ->
-        conn |> redirect(to: channel_path(conn, :index))
+        conn
+        |> put_flash(:info, "#{channel.name} updated!")
+        |> redirect(to: channel_path(conn, :index))
 
       {:error, changeset} ->
-        conn |> render("edit.html", channel: channel, changeset: changeset)
+        conn
+        |> put_flash(:error, "There was an issue updating #{channel.name}. Please try again.")
+        |> assign(:channel, channel)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
     end
   end
 end
