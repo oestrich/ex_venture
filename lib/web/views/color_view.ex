@@ -1,4 +1,4 @@
-defmodule Web.ColorCodeView do
+defmodule Web.ColorView do
   use Web, :view
 
   def render("codes.css", %{color_codes: color_codes}) do

@@ -1,10 +1,12 @@
 /* This file is for your main application css. */
 @import "colors";
 
+/**
+ * Main layout
+ */
+
 body {
   margin: 0;
-  background-color: #002833;
-  color: #839496;
   font-family: "Lucida Console", Monaco, monospace;
 }
 
@@ -15,8 +17,6 @@ body {
   width: 80%;
   height: 88%;
   overflow-y: scroll;
-  border-right: 2px solid $base3;
-  border-bottom: 2px solid $base3;
 
   @media only screen and (max-width: 500px) {
     width: 100%;
@@ -43,9 +43,6 @@ body {
 .room-info {
   display: none;
 
-  background-color: $base3;
-  border-bottom: 2px solid $base3;
-  color: $base02;
   font-size: 1.25em;
   position: absolute;
   top: 0;
@@ -69,10 +66,6 @@ body {
       padding-right: 5px;
       text-decoration: underline;
       cursor: pointer;
-    }
-
-    .white {
-      color: $base1;
     }
   }
 
@@ -130,9 +123,7 @@ input {
   align-content: center;
 }
 
-@mixin stat-block {
-  background-color: $base2;
-  border: 2px solid $base2;
+.stat-block {
   display: inline-block;
   position: relative;
   font-size: 1.1em;
@@ -167,36 +158,6 @@ input {
   }
 }
 
-#health {
-  @include stat-block;
-  .container {
-    color: #fdf6e3;
-  }
-  .percentage {
-    background: #dc322f;
-  }
-}
-
-#skills {
-  @include stat-block;
-  .container {
-    color: #fdf6e3;
-  }
-  .percentage {
-    background: #859901;
-  }
-}
-
-#movement {
-  @include stat-block;
-  .container {
-    color: #fdf6e3;
-  }
-  .percentage {
-    background: #268bd2;
-  }
-}
-
 @media only screen and (max-width: 500px) {
   input {
     width: 90%;
@@ -216,8 +177,6 @@ input {
 }
 
 .command:hover:after {
-  background: #333;
-  background: rgb(101, 123, 131);
   border-radius: 5px;
   bottom: 26px;
   content: attr(data-title);

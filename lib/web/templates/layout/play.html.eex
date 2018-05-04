@@ -9,7 +9,7 @@
 
     <title><%= Config.game_name() %></title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
-    <link rel="stylesheet" href="<%= color_code_css_path(@conn) %>">
+    <link rel="stylesheet" href="<%= color_css_path(@conn, client: true) %>">
   </head>
 
   <body id="body" data-user-token="<%= @conn |> user_token() %>">

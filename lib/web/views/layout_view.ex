@@ -6,8 +6,9 @@ defmodule Web.LayoutView do
   alias Web.ColorCode
   alias Web.Mail
 
-  def color_code_css_path(conn) do
-    "#{public_color_code_path(conn, :index)}?version=#{ColorCode.latest_version()}"
+  def color_css_path(conn, opts \\ []) do
+    opts = Keyword.put(opts, :version, ColorCode.latest_version())
+    public_color_path(conn, :index, opts)
   end
 
   def tab_selected(conn, "dashboard") do

@@ -1,0 +1,67 @@
+<%= if @is_client do %>
+/**
+ * Web client colors
+ */
+
+body {
+  background-color: #002b36;
+  color: #93a1a1;
+}
+
+.panel {
+  border-right: 2px solid #fdf6e3;
+  border-bottom: 2px solid #fdf6e3;
+}
+
+.room-info {
+  background-color: #fdf6e3;
+  border-bottom: 2px solid #fdf6e3;
+  color: #073642;
+
+  .exits {
+    .white {
+      color: #93a1a1;
+    }
+  }
+}
+
+.stat-block {
+  background-color: #eee8d5;
+  border: 2px solid #eee8d5;
+}
+
+#health .container {
+  color: #fdf6e3;
+}
+#health .percentage {
+  background: #dc322f;
+}
+
+#skills .container {
+  color: #fdf6e3;
+}
+#skills .percentage {
+  background: #859900;
+}
+
+#movement .container {
+  color: #fdf6e3;
+}
+#movement .percentage {
+  background: #268bd2;
+}
+
+.command:hover:after {
+  background: #657b83;
+}
+<% end %>
+
+/**
+ * Custom colors
+ */
+
+<%= Enum.map(@color_codes, fn color_code -> %>
+.color-code-<%= color_code.key %> {
+  color: <%= color_code.hex_code %>;
+}
+<% end) %>

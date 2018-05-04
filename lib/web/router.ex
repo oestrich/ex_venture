@@ -27,7 +27,7 @@ defmodule Web.Router do
   scope "/", Web, as: :public do
     pipe_through([:browser, :public])
 
-    get("/css/color-codes.css", ColorCodeController, :index)
+    get("/css/colors.css", ColorController, :index)
 
     get("/", PageController, :index)
 
