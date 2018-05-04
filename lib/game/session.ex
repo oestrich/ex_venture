@@ -8,6 +8,7 @@ defmodule Game.Session do
   alias Data.User
   alias Game.Session
   alias Game.Session.Supervisor
+  alias Game.World.Master, as: WorldMaster
 
   @doc """
   Start a new session
@@ -106,7 +107,12 @@ defmodule Game.Session do
   """
   @spec sign_in(pid(), User.t()) :: :ok
   def sign_in(pid, user) do
-    GenServer.cast(pid, {:sign_in, user.id})
+    case WorldMaster.is_world_online?() do
+      true ->
+        GenServer.cast(pid, {:sign_in, user.id})
+      false ->
+        :ok
+    end
   end
 
   @doc """

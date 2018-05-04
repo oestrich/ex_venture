@@ -25,6 +25,7 @@ defmodule Game.Session.Process do
   alias Game.Session.Regen
   alias Game.Session.SessionStats
   alias Game.Session.State
+  alias Game.World.Master, as: WorldMaster
   alias Metrics.PlayerInstrumenter
 
   @save_period 15_000
@@ -233,10 +234,21 @@ defmodule Game.Session.Process do
   #
 
   def handle_info(:start, state) do
-    state.socket |> Session.Login.start()
-    self() |> schedule_save()
-    self() |> schedule_inactive_check()
+    case WorldMaster.is_world_online?() do
+      true ->
+        state.socket |> Session.Login.start()
+        self() |> schedule_save()
+        self() |> schedule_inactive_check()
+      false ->
+        state.socket |> @socket.echo("The world is not online yet. Please try again shortly.")
+        self() |> Process.send_after({:disconnect, :world_not_alive}, 750)
+    end
 
+    {:noreply, state}
+  end
+
+  def handle_info({:disconnect, :world_not_alive}, state) do
+    state.socket |> @socket.disconnect()
     {:noreply, state}
   end
 

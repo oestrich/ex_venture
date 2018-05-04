@@ -14,7 +14,7 @@ defmodule Game.World.ZoneController do
   end
 
   def start_zone(pid, zone) do
-    GenServer.cast(pid, {:start, zone})
+    GenServer.call(pid, {:start, zone})
   end
 
   def hosted_zones(pid) do
@@ -32,9 +32,9 @@ defmodule Game.World.ZoneController do
     {:reply, state.zones, state}
   end
 
-  def handle_cast({:start, zone}, state) do
+  def handle_call({:start, zone}, _from, state) do
     Logger.info("Starting zone #{zone.id}")
     World.start_child(zone)
-    {:noreply, %{state | zones: [zone.id | state.zones]}}
+    {:reply, :ok, %{state | zones: [zone.id | state.zones]}}
   end
 end
