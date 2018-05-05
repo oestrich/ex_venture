@@ -10,7 +10,7 @@
         <i class="fa fa-dashboard"></i> Home
       <% end %>
     </li>
-    <li><%= link("Color Codes", to: color_code_path(@conn, :index)) %></li>
+    <li><%= link("Colors", to: color_path(@conn, :index)) %></li>
     <li><%= @color_code.key %></li>
     <li class="active">Edit</li>
   </ol>

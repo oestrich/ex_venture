@@ -85,7 +85,11 @@ defmodule Web.Router do
 
     resources("/class_skills", ClassSkillController, only: [:delete])
 
-    resources("/color_codes", ColorCodeController, except: [:show, :delete])
+    get("/colors", ColorController, :index)
+    post("/colors", ColorController, :update)
+    delete("/colors", ColorController, :delete)
+
+    resources("/color_codes", ColorCodeController, only: [:new, :create, :edit, :update])
 
     resources("/config", ConfigController, only: [:index, :edit, :update])
 

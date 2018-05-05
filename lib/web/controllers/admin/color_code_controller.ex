@@ -3,14 +3,6 @@ defmodule Web.Admin.ColorCodeController do
 
   alias Web.ColorCode
 
-  def index(conn, _params) do
-    color_codes = ColorCode.all()
-
-    conn
-    |> assign(:color_codes, color_codes)
-    |> render("index.html")
-  end
-
   def new(conn, _params) do
     changeset = ColorCode.new()
 

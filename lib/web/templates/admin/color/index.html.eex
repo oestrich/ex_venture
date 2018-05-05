@@ -1,0 +1,136 @@
+<section class="content-header">
+  <h1>
+    Color Codes
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Color Codes</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Basic Colors</h3>
+        </div>
+        <div class="box-body">
+          <pre class="console"><%= render("_basic_colors.html") %></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Map Colors</h3>
+        </div>
+        <div class="box-body">
+          <pre class="console"><%= render("_map_colors.html") %></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Custom Colors</h3>
+          <div class="box-tools">
+            <%= link("New Color Code", to: color_code_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <pre class="console"><%= console_codes(@conn, @color_codes) %></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Web Client</h3>
+          <div class="box-tools">
+            <%= link("Reset", to: color_path(@conn, :delete), method: :delete, class: "btn btn-warning") %>
+          </div>
+        </div>
+        <%= form_tag color_path(@conn, :update), method: "post", class: "form-horizontal" do %>
+          <div class="box-body">
+            <%= color_field(:black, "Black") %>
+
+            <%= color_field(:red, "Red") %>
+
+            <%= color_field(:green, "Green") %>
+
+            <%= color_field(:yellow, "Yellow") %>
+
+            <%= color_field(:blue, "Blue") %>
+
+            <%= color_field(:magenta, "Magenta") %>
+
+            <%= color_field(:cyan, "Cyan") %>
+
+            <%= color_field(:white, "White") %>
+
+            <%= color_field(:map_blue, "Map Blue") %>
+
+            <%= color_field(:map_brown, "Map Brown") %>
+
+            <%= color_field(:map_dark_green, "Map Dark Green") %>
+
+            <%= color_field(:map_green, "Map Green") %>
+
+            <%= color_field(:map_grey, "Map Grey") %>
+
+            <%= color_field(:map_light_grey, "Map Light Grey") %>
+
+            <%= color_field(:background, "Background") %>
+
+            <%= color_field(:text_color, "Text Color") %>
+
+            <%= color_field(:panel_border, "Panel Border") %>
+
+            <%= color_field(:room_info_background, "Room Info Background") %>
+
+            <%= color_field(:room_info_text, "Room Info Text") %>
+
+            <%= color_field(:room_info_exit, "Room Info Exit") %>
+
+            <%= color_field(:stat_block_background, "Stat Block Background") %>
+
+            <%= color_field(:health_bar, "Health Bar") %>
+
+            <%= color_field(:health_bar_background, "Health Bar Background") %>
+
+            <%= color_field(:skill_bar, "Skill Bar") %>
+
+            <%= color_field(:skill_bar_background, "Skill Bar Background") %>
+
+            <%= color_field(:move_bar, "Move Bar") %>
+
+            <%= color_field(:move_bar_background, "Move Bar Background") %>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Save Colors", class: "btn btn-primary pull-right" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="application/javascript">
+$(function () {
+  $(".color-input").on("keyup", function (e) {
+    $(e.target).parents(".form-group").find(".color-preview").css("background-color", $(e.target).val());
+  });
+});
+</script>

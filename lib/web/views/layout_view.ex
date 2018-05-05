@@ -3,11 +3,11 @@ defmodule Web.LayoutView do
 
   alias Game.Config
   alias Web.Bug
-  alias Web.ColorCode
+  alias Web.Color
   alias Web.Mail
 
   def color_css_path(conn, opts \\ []) do
-    opts = Keyword.put(opts, :version, ColorCode.latest_version())
+    opts = Keyword.put(opts, :version, Color.latest_version())
     public_color_path(conn, :index, opts)
   end
 

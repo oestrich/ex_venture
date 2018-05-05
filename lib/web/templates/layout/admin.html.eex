@@ -138,10 +138,10 @@
                 <span>Channels</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "color_codes") %>">
-              <%= link(to: color_code_path(@conn, :index)) do %>
+            <li class="<%= tab_selected(@conn, "colors") %>">
+              <%= link(to: color_path(@conn, :index)) do %>
                 <i class="fa fa-code"></i>
-                <span>Color Codes</span>
+                <span>Colors</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "config") %>">
