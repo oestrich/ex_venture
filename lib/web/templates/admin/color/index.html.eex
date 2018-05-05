@@ -55,7 +55,7 @@
   <div class="row">
     <div class="col-md-12">
       <div class="box">
-        <div class="box-header">
+        <div class="box-header with-border">
           <h3 class="box-title">Web Client</h3>
           <div class="box-tools">
             <%= link("Reset", to: color_path(@conn, :delete), method: :delete, class: "btn btn-warning") %>
@@ -63,6 +63,9 @@
         </div>
         <%= form_tag color_path(@conn, :update), method: "post", class: "form-horizontal" do %>
           <div class="box-body">
+            <h4>Text Colors</h4>
+            <span class="help-block">These change the font color of text in the web client</span>
+
             <%= color_field(:black, "Black") %>
 
             <%= color_field(:red, "Red") %>
@@ -90,6 +93,9 @@
             <%= color_field(:map_grey, "Map Grey") %>
 
             <%= color_field(:map_light_grey, "Map Light Grey") %>
+
+            <h4>Client Colors</h4>
+            <span class="help-block">These change the "chrome" of the web client</span>
 
             <%= color_field(:background, "Background") %>
 
