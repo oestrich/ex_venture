@@ -4,7 +4,58 @@ defmodule Web.Color do
   """
 
   alias Game.ColorCodes
+  alias Game.Config
+  alias Web.ColorCode
 
+  @cache_key :web
+
+  @doc """
+  Get the latest version of the css
+  """
+  @spec latest_version() :: integer()
+  def latest_version() do
+    case Cachex.get(@cache_key, :latest_version) do
+      {:ok, version} when version != nil ->
+        version
+
+      _ ->
+        codes = ColorCode.all()
+        config = configured_colors()
+
+        case codes ++ config do
+          [] ->
+            Timex.now() |> Timex.to_unix()
+
+          all ->
+            all
+            |> Enum.map(&(&1.updated_at |> Timex.to_unix()))
+            |> Enum.max()
+            |> set_latest_version()
+        end
+    end
+  end
+
+  defp configured_colors() do
+    Config.color_config()
+    |> Map.keys()
+    |> Enum.map(&to_string/1)
+    |> Enum.map(&Web.Config.find_config/1)
+    |> Enum.reject(&is_nil/1)
+  end
+
+  @doc """
+  Set the latest version of the css, to clear caches
+  """
+  @spec set_latest_version(integer()) :: integer()
+  def set_latest_version(version) do
+    Cachex.set(@cache_key, :latest_version, version)
+    version
+  end
+
+  @doc """
+  Get the options for basic colors
+  """
+  @spec options() :: {String.t(), String.t()}
   def options() do
     Data.Color.options()
     |> Enum.map(fn color ->
@@ -67,4 +118,42 @@ defmodule Web.Color do
   end
 
   defp replace_color_code(string), do: string
+
+  @doc """
+  Update color configuration
+  """
+  @spec update(map()) :: :ok
+  def update(params) do
+    keys =
+      Config.color_config()
+      |> Map.keys()
+      |> Enum.map(&to_string/1)
+
+    params
+    |> Map.take(keys)
+    |> Enum.each(fn {key, value} ->
+      Web.Config.update(key, value)
+    end)
+
+    set_latest_version(Timex.now() |> Timex.to_unix())
+
+    :ok
+  end
+
+  @doc """
+  Clear configuration for colors
+  """
+  @spec reset() :: :ok
+  def reset() do
+    Config.color_config()
+    |> Map.keys()
+    |> Enum.map(&to_string/1)
+    |> Enum.each(fn key ->
+      Web.Config.clear(key)
+    end)
+
+    set_latest_version(Timex.now() |> Timex.to_unix())
+
+    :ok
+  end
 end

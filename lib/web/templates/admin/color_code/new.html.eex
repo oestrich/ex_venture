@@ -9,7 +9,7 @@
         <i class="fa fa-dashboard"></i> Home
       <% end %>
     </li>
-    <li><%= link("Color Codes", to: color_code_path(@conn, :index)) %></li>
+    <li><%= link("Color Codes", to: color_path(@conn, :index)) %></li>
     <li class="active">New</li>
   </ol>
 </section>

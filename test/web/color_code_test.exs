@@ -1,6 +1,7 @@
 defmodule Web.ColorCodeTest do
   use Data.ModelCase
 
+  alias Web.Color
   alias Web.ColorCode
 
   test "creating a code" do
@@ -8,7 +9,7 @@ defmodule Web.ColorCodeTest do
 
     {:ok, color_code} = ColorCode.create(params)
 
-    assert ColorCode.latest_version() == Timex.to_unix(color_code.updated_at)
+    assert Color.latest_version() == Timex.to_unix(color_code.updated_at)
   end
 
   test "updating a code" do
@@ -17,6 +18,6 @@ defmodule Web.ColorCodeTest do
     {:ok, color_code} = ColorCode.create(params)
     {:ok, color_code} = ColorCode.update(color_code.id, %{hex_code: "#FF4511"})
 
-    assert ColorCode.latest_version() == Timex.to_unix(color_code.updated_at)
+    assert Color.latest_version() == Timex.to_unix(color_code.updated_at)
   end
 end

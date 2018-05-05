@@ -1,6 +1,8 @@
 defmodule Web.ColorView do
   use Web, :view
 
+  alias Game.Config
+
   def render("codes.css", %{color_codes: color_codes}) do
     color_codes
     |> Enum.map(fn color_code ->

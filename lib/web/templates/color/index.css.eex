@@ -4,51 +4,51 @@
  */
 
 body {
-  background-color: #002b36;
-  color: #93a1a1;
+  background-color: <%= Config.color_background() %>;
+  color: <%= Config.color_text_color() %>;
 }
 
 .panel {
-  border-right: 2px solid #fdf6e3;
-  border-bottom: 2px solid #fdf6e3;
+  border-right: 2px solid <%= Config.color_panel_border() %>;
+  border-bottom: 2px solid <%= Config.color_panel_border() %>;
 }
 
 .room-info {
-  background-color: #fdf6e3;
-  border-bottom: 2px solid #fdf6e3;
-  color: #073642;
+  background-color: <%= Config.color_room_info_background() %>;
+  border-bottom: 2px solid <%= Config.color_room_info_background() %>;
+  color: <%= Config.color_room_info_text() %>;
 
   .exits {
     .white {
-      color: #93a1a1;
+      color: <%= Config.color_room_info_exit() %>;
     }
   }
 }
 
 .stat-block {
-  background-color: #eee8d5;
-  border: 2px solid #eee8d5;
+  background-color: <%= Config.color_stat_block_background() %>;
+  border: 2px solid <%= Config.color_stat_block_background() %>;
 }
 
 #health .container {
-  color: #fdf6e3;
+  color: <%= Config.color_health_bar_background() %>;
 }
 #health .percentage {
-  background: #dc322f;
+  background: <%= Config.color_health_bar() %>;
 }
 
 #skills .container {
-  color: #fdf6e3;
+  color: <%= Config.color_skill_bar_background() %>;
 }
 #skills .percentage {
-  background: #859900;
+  background: <%= Config.color_skill_bar() %>;
 }
 
 #movement .container {
-  color: #fdf6e3;
+  color: <%= Config.color_move_bar_background() %>;
 }
 #movement .percentage {
-  background: #268bd2;
+  background: <%= Config.color_move_bar() %>;
 }
 
 .command:hover:after {
@@ -61,72 +61,72 @@ body {
  */
 
 .black {
-  color: #003541;
+  color: <%= Config.color_black() %>;
   font-weight: bold;
 }
 
 .red {
-  color: #dc322f;
+  color: <%= Config.color_red() %>;
   font-weight: bold;
 }
 
 .green {
-  color: #859900;
+  color: <%= Config.color_green() %>;
   font-weight: bold;
 }
 
 .yellow {
-  color: #b58900;
+  color: <%= Config.color_yellow() %>;
   font-weight: bold;
 }
 
 .blue {
-  color: #268bd2;
+  color: <%= Config.color_blue() %>;
   font-weight: bold;
 }
 
 .magenta {
-  color: #d33682;
+  color: <%= Config.color_magenta() %>;
   font-weight: bold;
 }
 
 .cyan {
-  color: #2aa198;
+  color: <%= Config.color_cyan() %>;
   font-weight: bold;
 }
 
 .white {
-  color: #eee8d5;
+  color: <%= Config.color_white() %>;
   font-weight: bold;
 }
 
 .map-blue {
-  color: #005fd7;
+  color: <%= Config.color_map_blue() %>;
   font-weight: bold;
 }
 
 .map-brown {
-  color: #875f00;
+  color: <%= Config.color_map_brown() %>;
   font-weight: bold;
 }
 
 .map-dark-green {
-  color: #005f00;
+  color: <%= Config.color_map_dark_green() %>;
   font-weight: bold;
 }
 
 .map-green {
-  color: #00af00;
+  color: <%= Config.color_map_green() %>;
   font-weight: bold;
 }
 
 .map-grey {
-  color: #9e9e9e;
+  color: <%= Config.color_map_grey() %>;
   font-weight: bold;
 }
 
 .map-light-grey {
-  color: #d0d0d0;
+  color: <%= Config.color_map_light_grey() %>;
   font-weight: bold;
 }
 
@@ -139,3 +139,12 @@ body {
   color: <%= color_code.hex_code %>;
 }
 <% end) %>
+
+/**
+ * Home page, admin
+ */
+.announcement pre,
+.console {
+  background-color: <%= Config.color_background() %>;
+  color: <%= Config.color_text_color() %>;
+}

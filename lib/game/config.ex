@@ -6,10 +6,42 @@ defmodule Game.Config do
   alias Data.Config
   alias Data.Save
 
+  @color_config %{
+    color_background: "#002b36",
+    color_text_color: "#93a1a1",
+    color_panel_border: "#fdf6e3",
+    color_room_info_background: "#fdf6e3",
+    color_room_info_text: "#073642",
+    color_room_info_exit: "#93a1a1",
+    color_stat_block_background: "#eee8d5",
+    color_health_bar: "#dc322f",
+    color_health_bar_background: "#fdf6e3",
+    color_skill_bar: "#859900",
+    color_skill_bar_background: "#fdf6e3",
+    color_move_bar: "#268bd2",
+    color_move_bar_background: "#fdf6e3",
+    color_black: "#003541",
+    color_red: "#dc322f",
+    color_green: "#859900",
+    color_yellow: "#b58900",
+    color_blue: "#268bd2",
+    color_magenta: "#d33682",
+    color_cyan: "#2aa198",
+    color_white: "#eee8d5",
+    color_map_blue: "#005fd7",
+    color_map_brown: "#875f00",
+    color_map_dark_green: "#005f00",
+    color_map_green: "#00af00",
+    color_map_grey: "#9e9e9e",
+    color_map_light_grey: "#d0d0d0",
+  }
+
   @doc false
   def start_link() do
     Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
+
+  def color_config(), do: @color_config
 
   @doc """
   Reload a config from the database
@@ -101,4 +133,16 @@ defmodule Game.Config do
         save
     end
   end
+
+  Enum.each(@color_config, fn {config, default} ->
+    def unquote(config)() do
+      case find_config(to_string(unquote(config))) do
+        nil ->
+          unquote(default)
+
+        color ->
+          color
+      end
+    end
+  end)
 end

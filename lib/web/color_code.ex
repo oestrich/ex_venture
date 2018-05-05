@@ -8,36 +8,7 @@ defmodule Web.ColorCode do
   alias Data.ColorCode
   alias Data.Repo
   alias Game.ColorCodes
-
-  @cache_key :web
-
-  @doc """
-  Get the latest version of the css
-  """
-  @spec latest_version() :: integer()
-  def latest_version() do
-    case Cachex.get(@cache_key, :latest_version) do
-      {:ok, version} when version != nil ->
-        version
-
-      _ ->
-        case all() do
-          [] ->
-            Timex.now() |> Timex.to_unix()
-
-          all ->
-            all
-            |> Enum.map(&(&1.updated_at |> Timex.to_unix()))
-            |> Enum.max()
-            |> set_latest_version()
-        end
-    end
-  end
-
-  defp set_latest_version(version) do
-    Cachex.set(@cache_key, :latest_version, version)
-    version
-  end
+  alias Web.Color
 
   @doc """
   Get all bugs
@@ -82,7 +53,7 @@ defmodule Web.ColorCode do
       {:ok, color_code} ->
         color_code.updated_at
         |> Timex.to_unix()
-        |> set_latest_version()
+        |> Color.set_latest_version()
 
         color_code |> ColorCodes.insert()
 
@@ -105,7 +76,7 @@ defmodule Web.ColorCode do
       {:ok, color_code} ->
         color_code.updated_at
         |> Timex.to_unix()
-        |> set_latest_version()
+        |> Color.set_latest_version()
 
         color_code |> ColorCodes.reload()
 
