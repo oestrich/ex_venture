@@ -20,6 +20,8 @@ defmodule Game.NPC.Events do
   alias Game.NPC.Combat
   alias Game.NPC.Status
   alias Game.Quest
+  alias Metrics.CharacterInstrumenter
+  alias Metrics.CommunicationInstrumenter
 
   @doc """
   Instantiate events and start their ticking
@@ -340,6 +342,8 @@ defmodule Game.NPC.Events do
       GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
     end)
 
+    CharacterInstrumenter.movement(:npc)
+
     state
     |> Map.put(:room_id, new_room.id)
   end
@@ -372,6 +376,7 @@ defmodule Game.NPC.Events do
   def emote_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_emote(state.npc, message)
     room_id |> @room.emote(npc(state), message)
+    CommunicationInstrumenter.emote()
     broadcast(state.npc, "room/heard", message)
   end
 
@@ -408,6 +413,7 @@ defmodule Game.NPC.Events do
   def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_say(state.npc, message)
     room_id |> @room.say(npc(state), message)
+    CommunicationInstrumenter.say()
     broadcast(state.npc, "room/heard", message)
 
     state

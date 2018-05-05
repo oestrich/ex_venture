@@ -11,6 +11,7 @@ defmodule Game.Command.Move do
   alias Game.Door
   alias Game.Quest
   alias Game.Session.GMCP
+  alias Metrics.CharacterInstrumenter
 
   @must_be_alive true
 
@@ -269,6 +270,7 @@ defmodule Game.Command.Move do
     @room.link(room_id)
 
     Quest.track_progress(user, {:room, room_id})
+    CharacterInstrumenter.movement(:player)
 
     Game.Command.run(%Game.Command{module: Game.Command.Look, args: {}, system: true}, state)
     {:update, state}

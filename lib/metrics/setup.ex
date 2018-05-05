@@ -5,6 +5,7 @@ defmodule Metrics.Setup do
 
   def setup() do
     Metrics.AdminInstrumenter.setup()
+    Metrics.CharacterInstrumenter.setup()
     Metrics.CommandInstrumenter.setup()
     Metrics.CommunicationInstrumenter.setup()
     Metrics.PipelineInstrumenter.setup()

@@ -563,4 +563,102 @@ defmodule Seeds do
   end
 end
 
-Seeds.run
+defmodule Seeds.LargeScale do
+  import Helpers
+
+  defp generate_rooms(zone) do
+    Enum.flat_map(1..12, fn x ->
+      Enum.map(1..12, fn y ->
+        create_room(zone, %{
+          name: "Room #{x}-#{y}",
+          description: "A room",
+          currency: 0,
+          x: x,
+          y: y,
+          map_layer: 1,
+        })
+      end)
+    end)
+  end
+
+  defp generate_exits(rooms) do
+    Enum.each(1..12, fn x ->
+      Enum.each(1..12, fn y ->
+        room = Enum.find(rooms, &(&1.x == x && &1.y == y))
+        north_room = Enum.find(rooms, &(&1.x == x && &1.y == y - 1))
+        west_room = Enum.find(rooms, &(&1.x == x - 1 && &1.y == y))
+
+        if west_room, do: create_exit(%{west_id: west_room.id, east_id: room.id})
+        if north_room, do: create_exit(%{north_id: north_room.id, south_id: room.id})
+      end)
+    end)
+  end
+
+  def run do
+    Enum.each(1..100, fn zone_index ->
+      zone = create_zone(%{name: "Zone #{zone_index}", description: "A zone"})
+
+      rooms = generate_rooms(zone)
+      generate_exits(rooms)
+
+      stats = %{
+        health_points: 25,
+        max_health_points: 25,
+        skill_points: 10,
+        max_skill_points: 10,
+        move_points: 10,
+        max_move_points: 10,
+        strength: 13,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+      }
+
+      move_event = %{
+        type: "tick",
+        id: "d80a37c1-6f7b-4e55-a102-0c1549bab5bd",
+        action: %{
+          wait: 120,
+          type: "move",
+          max_distance: 2,
+          chance: 120,
+        }
+      }
+
+      emote_event = %{
+        type: "tick",
+        id: "5660c186-5fbc-4448-9dc6-20ef5c922d0a",
+        action: %{
+          wait: 60,
+          type: "emote",
+          message: "emotes something",
+          chance: 60
+        }
+      }
+
+      Enum.each(1..10, fn npc_index ->
+        npc = create_npc(%{
+          name: "NPC #{zone.id}-#{npc_index}",
+          level: 1,
+          currency: 0,
+          experience_points: 124,
+          stats: stats,
+          events: [move_event, emote_event],
+          is_quest_giver: false,
+        })
+
+        Enum.each(1..20, fn _spawn_index ->
+          room = Enum.random(rooms)
+          add_npc_to_zone(zone, npc, %{
+            room_id: room.id,
+            spawn_interval: 15,
+          })
+        end)
+      end)
+    end)
+  end
+end
+
+Seeds.run()
+#Seeds.LargeScale.run()
