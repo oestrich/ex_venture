@@ -244,36 +244,39 @@ defmodule Game.Command.Move do
   @doc """
   Move the player to a new room
   """
-  def move_to(
-        state = %{save: save, user: user},
-        room_id,
-        leave_reason,
-        enter_reason
-      ) do
-    @room.unlink(save.room_id)
-    @room.leave(save.room_id, {:user, user}, leave_reason)
-
-    clear_target(state)
-
-    save = %{save | room_id: room_id}
-
-    state |> maybe_welcome_back()
-
-    state =
-      state
-      |> Map.put(:save, save)
-      |> Map.put(:target, nil)
-      |> Map.put(:is_targeting, MapSet.new())
-      |> Map.put(:is_afk, false)
-
-    @room.enter(room_id, {:user, user}, enter_reason)
-    @room.link(room_id)
-
-    Quest.track_progress(user, {:room, room_id})
-    CharacterInstrumenter.movement(:player)
-
+  def move_to(state, room_id, leave_reason, enter_reason) do
+    state = move_to_instrumented(state, room_id, leave_reason, enter_reason)
     Game.Command.run(%Game.Command{module: Game.Command.Look, args: {}, system: true}, state)
     {:update, state}
+  end
+
+  defp move_to_instrumented(state, room_id, leave_reason, enter_reason) do
+    %{save: save, user: user} = state
+
+    CharacterInstrumenter.movement(:player, fn ->
+      @room.unlink(save.room_id)
+      @room.leave(save.room_id, {:user, user}, leave_reason)
+
+      clear_target(state)
+
+      save = %{save | room_id: room_id}
+
+      state |> maybe_welcome_back()
+
+      state =
+        state
+        |> Map.put(:save, save)
+        |> Map.put(:target, nil)
+        |> Map.put(:is_targeting, MapSet.new())
+        |> Map.put(:is_afk, false)
+
+      @room.enter(room_id, {:user, user}, enter_reason)
+      @room.link(room_id)
+
+      Quest.track_progress(user, {:room, room_id})
+
+      state
+    end)
   end
 
   @doc """

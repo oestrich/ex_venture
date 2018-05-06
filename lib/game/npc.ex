@@ -17,6 +17,7 @@ defmodule Game.NPC do
   alias Game.NPC.Repo, as: NPCRepo
   alias Game.NPC.Status
   alias Game.Zone
+  alias Metrics.NPCInstrumenter
 
   defmacro __using__(_opts) do
     quote do
@@ -293,6 +294,8 @@ defmodule Game.NPC do
         {:noreply, state}
 
       tick_event ->
+        NPCInstrumenter.tick_event_acted_on(tick_event.action.type)
+
         state = Events.act_on_tick(state, tick_event)
         tick_event |> Events.delay_event()
         {:noreply, state}

@@ -10,6 +10,7 @@ defmodule Metrics.Setup do
     Metrics.CommunicationInstrumenter.setup()
     Metrics.PipelineInstrumenter.setup()
     Metrics.PlayerInstrumenter.setup()
+    Metrics.NPCInstrumenter.setup()
     Metrics.RepoInstrumenter.setup()
     Metrics.ShopInstrumenter.setup()
 

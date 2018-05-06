@@ -22,6 +22,7 @@ defmodule Game.NPC.Events do
   alias Game.Quest
   alias Metrics.CharacterInstrumenter
   alias Metrics.CommunicationInstrumenter
+  alias Metrics.NPCInstrumenter
 
   @doc """
   Instantiate events and start their ticking
@@ -318,8 +319,11 @@ defmodule Game.NPC.Events do
     new_room = @room.look(Map.get(room_exit, String.to_atom("#{direction}_id")))
 
     case can_move?(event.action, starting_room, room_exit, new_room) do
-      true -> move_room(state, room, new_room, direction)
-      false -> state
+      true ->
+        move_room(state, room, new_room, direction)
+
+      false ->
+        state
     end
   end
 
@@ -333,16 +337,16 @@ defmodule Game.NPC.Events do
   end
 
   def move_room(state, old_room, new_room, direction) do
-    @room.unlink(old_room.id)
-    @room.leave(old_room.id, npc(state), {:leave, direction})
-    @room.enter(new_room.id, npc(state), {:enter, Exit.opposite(direction)})
-    @room.link(old_room.id)
+    CharacterInstrumenter.movement(:npc, fn ->
+      @room.unlink(old_room.id)
+      @room.leave(old_room.id, npc(state), {:leave, direction})
+      @room.enter(new_room.id, npc(state), {:enter, Exit.opposite(direction)})
+      @room.link(old_room.id)
 
-    Enum.each(new_room.players, fn player ->
-      GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
+      Enum.each(new_room.players, fn player ->
+        GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
+      end)
     end)
-
-    CharacterInstrumenter.movement(:npc)
 
     state
     |> Map.put(:room_id, new_room.id)
@@ -380,6 +384,10 @@ defmodule Game.NPC.Events do
     broadcast(state.npc, "room/heard", message)
   end
 
+  @doc """
+  Update the NPC's status after an emote
+  """
+  @spec merge_status(State.t(), map()) :: State.t()
   def merge_status(state, status) do
     status =
       case status do
@@ -412,6 +420,7 @@ defmodule Game.NPC.Events do
 
   def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_say(state.npc, message)
+
     room_id |> @room.say(npc(state), message)
     CommunicationInstrumenter.say()
     broadcast(state.npc, "room/heard", message)
@@ -426,8 +435,9 @@ defmodule Game.NPC.Events do
     message = Enum.random(messages)
     message = Message.npc_say(state.npc, message)
 
-    broadcast(state.npc, "room/heard", message)
     room_id |> @room.say(npc(state), message)
+    CommunicationInstrumenter.say()
+    broadcast(state.npc, "room/heard", message)
 
     state
   end
@@ -447,6 +457,7 @@ defmodule Game.NPC.Events do
   end
 
   def broadcast(%{id: id}, action, message) do
+    NPCInstrumenter.event_acted_on(action)
     Web.Endpoint.broadcast("npc:#{id}", action, message)
   end
 
