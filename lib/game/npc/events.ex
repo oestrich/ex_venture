@@ -21,7 +21,6 @@ defmodule Game.NPC.Events do
   alias Game.NPC.Status
   alias Game.Quest
   alias Metrics.CharacterInstrumenter
-  alias Metrics.CommunicationInstrumenter
   alias Metrics.NPCInstrumenter
 
   @doc """
@@ -380,7 +379,6 @@ defmodule Game.NPC.Events do
   def emote_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_emote(state.npc, message)
     room_id |> @room.emote(npc(state), message)
-    CommunicationInstrumenter.emote()
     broadcast(state.npc, "room/heard", message)
   end
 
@@ -422,7 +420,6 @@ defmodule Game.NPC.Events do
     message = Message.npc_say(state.npc, message)
 
     room_id |> @room.say(npc(state), message)
-    CommunicationInstrumenter.say()
     broadcast(state.npc, "room/heard", message)
 
     state
@@ -436,7 +433,6 @@ defmodule Game.NPC.Events do
     message = Message.npc_say(state.npc, message)
 
     room_id |> @room.say(npc(state), message)
-    CommunicationInstrumenter.say()
     broadcast(state.npc, "room/heard", message)
 
     state
