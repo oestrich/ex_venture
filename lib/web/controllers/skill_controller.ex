@@ -3,10 +3,16 @@ defmodule Web.SkillController do
 
   alias Web.Skill
 
+  plug(Web.Plug.FetchPage when action in [:index])
+
   def index(conn, _params) do
-    skills = Skill.all()
+    %{page: page, per: per} = conn.assigns
+
+    %{page: skills, pagination: pagination} = Skill.all(page: page, per: per)
+
     conn
     |> assign(:skills, skills)
+    |> assign(:pagination, pagination)
     |> render(:index)
   end
 

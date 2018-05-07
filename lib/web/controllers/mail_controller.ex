@@ -12,7 +12,11 @@ defmodule Web.MailController do
   def index(conn, _params) do
     %{user: user, page: page, per: per} = conn.assigns
     %{page: mail, pagination: pagination} = Mail.all(user, page: page, per: per)
-    conn |> render("index.html", mail_pieces: mail, pagination: pagination)
+
+    conn
+    |> assign(:mail_pieces, mail)
+    |> assign(:pagination, pagination)
+    |> render("index.html")
   end
 
   def show(conn, _params) do

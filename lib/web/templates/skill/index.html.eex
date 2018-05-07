@@ -12,3 +12,9 @@
     </ul>
   </div>
 </div>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= render(SharedView, "_pagination.html", path: public_skill_path(@conn, :index), pagination: @pagination) %>
+  </div>
+</div>

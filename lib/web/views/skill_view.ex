@@ -3,14 +3,17 @@ defmodule Web.SkillView do
 
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
+  alias Web.SharedView
 
-  def render("index.json", %{skills: skills}) do
+  def render("index.json", %{skills: skills, pagination: pagination}) do
+    pagination_links = SharedView.page_links(pagination, RouteHelpers.public_skill_url(Endpoint, :index))
+
     %{
       collection: render_many(skills, __MODULE__, "show.json"),
       links: [
         %{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :index)},
         %{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
-      ],
+      ] ++ pagination_links,
     }
   end
 
