@@ -60,11 +60,11 @@
               </tr>
               <tr>
                 <th>User Text</th>
-                <td><%= @skill.user_text %></td>
+                <td><code><%= @skill.user_text %></code></td>
               </tr>
               <tr>
                 <th>Usee Text (target)</th>
-                <td><%= @skill.usee_text %></td>
+                <td><code><%= @skill.usee_text %></code></td>
               </tr>
               <tr>
                 <th>Points</th>

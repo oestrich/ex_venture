@@ -40,11 +40,11 @@
       <% end %>
 
       <%= FormView.text_field(f, :user_text) do %>
-        <span class="help-block">Available template variables: <code>[target]</code></span>
+        <span class="help-block"><%= Help.get("skill.user_text") %></span>
       <% end %>
 
       <%= FormView.text_field(f, :usee_text) do %>
-        <span class="help-block">Available template variables: <code>[user]</code></span>
+        <span class="help-block"><%= Help.get("skill.usee_text") %></span>
       <% end %>
 
       <h4>Effects</h4>
