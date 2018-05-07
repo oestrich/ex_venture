@@ -101,10 +101,10 @@ skill.cooldown_time:
   Milliseconds the player must wait before the skill can be used again.
 
 skill.user_text:
-  Text the user of the skill will see. Available template variables: `[target]`
+  Text the user of the skill will see. Available template variables: `[target]`, `[user]`
 
 skill.usee_text:
-  Text the target of the skill will see. Available template variables: `[user]`
+  Text the target of the skill will see. Available template variables: `[target]`, `[user]`
 
 skill.whitelist_effects:
   Effects in this whitelist will be calculated when using the skill. Anything not in the list will be filtered out.

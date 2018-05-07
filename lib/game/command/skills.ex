@@ -191,10 +191,10 @@ defmodule Game.Command.Skills do
           target,
           effects,
           {:user, user},
-          Format.skill_usee(skill, user: {:user, user})
+          Format.skill_usee(skill, user: {:user, user}, target: target)
         )
 
-        socket |> @socket.echo(Format.skill_user(skill, target))
+        socket |> @socket.echo(Format.skill_user(skill, {:user, user}, target))
 
         state =
           state

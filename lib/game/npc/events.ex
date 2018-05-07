@@ -194,12 +194,12 @@ defmodule Game.NPC.Events do
       target,
       effects,
       npc(state),
-      Format.skill_usee(action.text, user: npc(state))
+      Format.skill_usee(action.text, user: npc(state), target: target)
     )
 
     broadcast(npc, "combat/action", %{
       target: who(target),
-      text: Format.skill_usee(action.text, user: npc(state)),
+      text: Format.skill_usee(action.text, user: npc(state), target: target),
       effects: effects
     })
 
