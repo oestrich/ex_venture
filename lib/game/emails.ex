@@ -24,6 +24,13 @@ defmodule Game.Emails do
     |> render("mail.text", mail: mail)
   end
 
+  def password_reset(user) do
+    base_email()
+    |> to(user.email)
+    |> subject("Passowrd reset for #{Config.game_name()}")
+    |> render("reset.html", user: user)
+  end
+
   def base_email() do
     new_email()
     |> from(ExVenture.config(@from_email))

@@ -5,13 +5,17 @@ defmodule Web.User do
 
   import Ecto.Query
 
+  require Logger
+
   alias Data.QuestProgress
   alias Data.Repo
   alias Data.Stats
   alias Data.User
   alias Data.User.OneTimePassword
+  alias ExVenture.Mailer
   alias Game.Account
   alias Game.Config
+  alias Game.Emails
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
   alias Web.Filter
@@ -344,6 +348,29 @@ defmodule Web.User do
 
       _ ->
         {:error, :invalid}
+    end
+  end
+
+  @doc """
+  Start password reset
+  """
+  @spec reset_password(String.t()) :: :ok
+  def reset_password(email) do
+    query = User |> where([u], u.email == ^email)
+    case query |> Repo.one() do
+      nil ->
+        Logger.warn("Password reset attempted for #{email}")
+
+        :ok
+
+      user ->
+        Logger.info("Starting password reset for #{user.email}")
+
+        user
+        |> Emails.password_reset()
+        |> Mailer.deliver_now()
+
+        :ok
     end
   end
 end

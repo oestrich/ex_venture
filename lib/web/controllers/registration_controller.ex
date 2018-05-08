@@ -5,7 +5,10 @@ defmodule Web.RegistrationController do
 
   def new(conn, _params) do
     changeset = User.new()
-    conn |> render("new.html", changeset: changeset)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
   end
 
   def create(conn, %{"user" => params}) do
@@ -16,7 +19,9 @@ defmodule Web.RegistrationController do
         |> redirect(to: public_play_path(conn, :show))
 
       {:error, changeset} ->
-        conn |> render("new.html", changeset: changeset)
+        conn
+        |> assign(:changeset, changeset)
+        |> render("new.html")
     end
   end
 end

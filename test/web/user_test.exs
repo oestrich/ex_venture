@@ -1,8 +1,10 @@
 defmodule Web.UserTest do
   use Data.ModelCase
+  use Bamboo.Test
 
   alias Data.QuestProgress
   alias Game.Account
+  alias Game.Emails
   alias Game.Session
   alias Web.User
 
@@ -142,6 +144,25 @@ defmodule Web.UserTest do
 
       assert is_nil(user.totp_secret)
       assert is_nil(user.totp_verified_at)
+    end
+  end
+
+  describe "resetting password" do
+    setup %{user: user} do
+      {:ok, user} = User.update(user.id, %{"email" => "new@example.com"})
+      %{user: user}
+    end
+
+    test "email does not exist" do
+      :ok = User.reset_password("not-found@example.com")
+
+      assert_no_emails_delivered()
+    end
+
+    test "user found", %{user: user} do
+      :ok = User.reset_password(user.email)
+
+      assert_delivered_email(Emails.password_reset(user))
     end
   end
 end
