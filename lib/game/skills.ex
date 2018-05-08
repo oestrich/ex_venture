@@ -43,7 +43,9 @@ defmodule Game.Skills do
   def all() do
     case Cachex.keys(@key) do
       {:ok, keys} ->
-        skills(keys)
+        keys
+        |> Enum.filter(&is_integer/1)
+        |> skills()
       _ ->
         []
     end
