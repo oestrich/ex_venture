@@ -154,15 +154,51 @@ defmodule Web.UserTest do
     end
 
     test "email does not exist" do
-      :ok = User.reset_password("not-found@example.com")
+      :ok = User.start_password_reset("not-found@example.com")
 
       assert_no_emails_delivered()
     end
 
     test "user found", %{user: user} do
-      :ok = User.reset_password(user.email)
+      :ok = User.start_password_reset(user.email)
+
+      user = Repo.get(Data.User, user.id)
+      assert user.password_reset_token
 
       assert_delivered_email(Emails.password_reset(user))
+    end
+
+    test "reset the token with a valid token", %{user: user} do
+      :ok = User.start_password_reset(user.email)
+      user = Repo.get(Data.User, user.id)
+
+      params = %{password: "new password", password_confirmation: "new password"}
+      {:ok, user} = User.reset_password(user.password_reset_token, params)
+
+      refute user.password_reset_token
+      refute user.password_reset_expires_at
+    end
+
+    test "no token found" do
+      params = %{password: "new password", password_confirmation: "new password"}
+      assert :error = User.reset_password(UUID.uuid4(), params)
+    end
+
+    test "token is not a UUID" do
+      params = %{password: "new password", password_confirmation: "new password"}
+      assert :error = User.reset_password("a token", params)
+    end
+
+    test "token is expired", %{user: user} do
+      :ok = User.start_password_reset(user.email)
+      user = Repo.get(Data.User, user.id)
+
+      user
+      |> Ecto.Changeset.change(%{password_reset_expires_at: Timex.now() |> Timex.shift(hours: -1)})
+      |> Repo.update()
+
+      params = %{password: "new password", password_confirmation: "new password"}
+      assert :error = User.reset_password(user.password_reset_token, params)
     end
   end
 end

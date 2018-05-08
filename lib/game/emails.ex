@@ -27,7 +27,7 @@ defmodule Game.Emails do
   def password_reset(user) do
     base_email()
     |> to(user.email)
-    |> subject("Passowrd reset for #{Config.game_name()}")
+    |> subject("Password reset for #{Config.game_name()}")
     |> render("reset.html", user: user)
   end
 
