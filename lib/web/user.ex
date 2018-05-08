@@ -18,6 +18,7 @@ defmodule Web.User do
   alias Game.Emails
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
+  alias Metrics.PlayerInstrumenter
   alias Web.Filter
   alias Web.Pagination
   alias Web.Race
@@ -356,6 +357,8 @@ defmodule Web.User do
   """
   @spec start_password_reset(String.t()) :: :ok
   def start_password_reset(email) do
+    PlayerInstrumenter.start_password_reset()
+
     query = User |> where([u], u.email == ^email)
     case query |> Repo.one() do
       nil ->
@@ -381,6 +384,8 @@ defmodule Web.User do
   """
   @spec reset_password(String.t(), map()) :: {:ok, User.t()}
   def reset_password(token, params) do
+    PlayerInstrumenter.password_reset()
+
     with {:ok, uuid} <- Ecto.UUID.cast(token),
          {:ok, user} <- find_user_by_reset_token(uuid),
          {:ok, user} <- check_password_reset_expired(user) do
