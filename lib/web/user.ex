@@ -5,15 +5,20 @@ defmodule Web.User do
 
   import Ecto.Query
 
+  require Logger
+
   alias Data.QuestProgress
   alias Data.Repo
   alias Data.Stats
   alias Data.User
   alias Data.User.OneTimePassword
+  alias ExVenture.Mailer
   alias Game.Account
   alias Game.Config
+  alias Game.Emails
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
+  alias Metrics.PlayerInstrumenter
   alias Web.Filter
   alias Web.Pagination
   alias Web.Race
@@ -344,6 +349,70 @@ defmodule Web.User do
 
       _ ->
         {:error, :invalid}
+    end
+  end
+
+  @doc """
+  Start password reset
+  """
+  @spec start_password_reset(String.t()) :: :ok
+  def start_password_reset(email) do
+    PlayerInstrumenter.start_password_reset()
+
+    query = User |> where([u], u.email == ^email)
+    case query |> Repo.one() do
+      nil ->
+        Logger.warn("Password reset attempted for #{email}")
+
+        :ok
+
+      user ->
+        Logger.info("Starting password reset for #{user.email}")
+
+        user
+        |> User.password_reset_changeset()
+        |> Repo.update!()
+        |> Emails.password_reset()
+        |> Mailer.deliver_now()
+
+        :ok
+    end
+  end
+
+  @doc """
+  Reset a password
+  """
+  @spec reset_password(String.t(), map()) :: {:ok, User.t()}
+  def reset_password(token, params) do
+    PlayerInstrumenter.password_reset()
+
+    with {:ok, uuid} <- Ecto.UUID.cast(token),
+         {:ok, user} <- find_user_by_reset_token(uuid),
+         {:ok, user} <- check_password_reset_expired(user) do
+      user
+      |> User.password_changeset(params)
+      |> Repo.update()
+    end
+  end
+
+  defp find_user_by_reset_token(uuid) do
+    query = User |> where([u], u.password_reset_token == ^uuid)
+    case query |> Repo.one() do
+      nil ->
+        :error
+
+      user ->
+        {:ok, user}
+    end
+  end
+
+  defp check_password_reset_expired(user) do
+    case Timex.after?(Timex.now(), user.password_reset_expires_at) do
+      true ->
+        :error
+
+      false ->
+        {:ok, user}
     end
   end
 end

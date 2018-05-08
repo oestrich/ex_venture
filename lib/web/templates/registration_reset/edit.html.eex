@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h3>Password Reset</h3>
+
+    <%= form_for @changeset, public_registration_reset_path(@conn, :update), [method: :post], fn (f) -> %>
+      <input type="hidden" name="token" value="<%= @token %>" />
+
+      <div class="form-group">
+        <%= label f, :password %>
+        <%= password_input f, :password, class: "form-control", autofocus: "autofocus" %>
+        <%= error_tag f, :password %>
+      </div>
+
+      <div class="form-group">
+        <%= label f, :password_confirmation %>
+        <%= password_input f, :password_confirmation, class: "form-control", autofocus: "autofocus" %>
+        <%= error_tag f, :password_confirmation %>
+      </div>
+
+      <div class="actions">
+        <%= submit "Reset", class: "btn btn-primary btn-block btn-flat" %>
+      </div>
+    <% end %>
+  </div>
+</div>

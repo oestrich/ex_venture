@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-6 offset-md-3">
-    <h3>Sign In</h3>
+    <h3>Create an Account</h3>
 
     <%= form_for @changeset, public_registration_path(@conn, :create), [method: :post], fn (f) -> %>
       <%= if @changeset.action && @changeset.errors[:save] do %>

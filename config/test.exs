@@ -27,3 +27,7 @@ config :ex_venture, :game,
   random_damage: 0..0
 
 config :bcrypt_elixir, :log_rounds, 4
+
+config :ex_venture, :mailer, from: "mud@example.com"
+config :ex_venture, ExVenture.Mailer,
+  adapter: Bamboo.TestAdapter

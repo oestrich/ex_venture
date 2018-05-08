@@ -27,6 +27,9 @@ defmodule Data.User do
     field(:totp_secret, :string)
     field(:totp_verified_at, Timex.Ecto.DateTime)
 
+    field(:password_reset_token, Ecto.UUID)
+    field(:password_reset_expires_at, Timex.Ecto.DateTime)
+
     belongs_to(:class, Class)
     belongs_to(:race, Race)
 
@@ -72,8 +75,17 @@ defmodule Data.User do
     |> cast(params, [:password, :password_confirmation])
     |> validate_required([:password])
     |> validate_confirmation(:password)
+    |> put_change(:password_reset_token, nil)
+    |> put_change(:password_reset_expires_at, nil)
     |> hash_password
     |> validate_required([:password_hash])
+  end
+
+  def password_reset_changeset(struct) do
+    struct
+    |> change()
+    |> put_change(:password_reset_token, UUID.uuid4())
+    |> put_change(:password_reset_expires_at, Timex.now() |> Timex.shift(hours: 1))
   end
 
   def totp_changeset(struct) do

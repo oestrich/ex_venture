@@ -25,6 +25,16 @@ defmodule Metrics.PlayerInstrumenter do
       help: "Count of recovered crashed sessions"
     )
 
+    Counter.declare(
+      name: :exventure_player_start_password_reset_total,
+      help: "Count of password resets started"
+    )
+
+    Counter.declare(
+      name: :exventure_player_password_reset_total,
+      help: "Count of password resets"
+    )
+
     Counter.declare(name: :exventure_login_total, help: "Login counter")
     Counter.declare(name: :exventure_login_failure_total, help: "Login failure counter")
     Counter.declare(name: :exventure_new_character_total, help: "New character is created")
@@ -49,6 +59,14 @@ defmodule Metrics.PlayerInstrumenter do
 
   def new_character() do
     Counter.inc(name: :exventure_new_character_total)
+  end
+
+  def start_password_reset() do
+    Counter.inc(name: :exventure_player_start_password_reset_total)
+  end
+
+  def password_reset() do
+    Counter.inc(name: :exventure_player_password_reset_total)
   end
 
   @doc """

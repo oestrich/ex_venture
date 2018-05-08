@@ -56,6 +56,12 @@ defmodule Web.Router do
 
     resources("/races", RaceController, only: [:index, :show])
 
+    get("/register/reset", RegistrationResetController, :new)
+    post("/register/reset", RegistrationResetController, :create)
+
+    get("/register/reset/verify", RegistrationResetController, :edit)
+    post("/register/reset/verify", RegistrationResetController, :update)
+
     resources("/register", RegistrationController, only: [:new, :create])
 
     delete("/sessions", SessionController, :delete)
