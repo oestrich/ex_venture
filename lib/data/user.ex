@@ -70,6 +70,13 @@ defmodule Data.User do
     |> foreign_key_constraint(:class_id)
   end
 
+  def email_changeset(struct, params) do
+    struct
+    |> cast(params, [:email])
+    |> validate_required([:email])
+    |> unique_constraint(:email)
+  end
+
   def password_changeset(struct, params) do
     struct
     |> cast(params, [:password, :password_confirmation])

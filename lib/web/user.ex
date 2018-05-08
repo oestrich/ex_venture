@@ -107,6 +107,12 @@ defmodule Web.User do
   def edit(user), do: user |> User.changeset(%{})
 
   @doc """
+  Get a changeset for an edit page
+  """
+  @spec email_changeset(User.t()) :: map()
+  def email_changeset(user), do: user |> User.email_changeset(%{})
+
+  @doc """
   Create a new user
   """
   @spec create(params :: map) :: {:ok, User.t()} | {:error, changeset :: map}
@@ -414,5 +420,15 @@ defmodule Web.User do
       false ->
         {:ok, user}
     end
+  end
+
+  @doc """
+  Reset a password
+  """
+  @spec change_email(User.t(), map()) :: {:ok, User.t()}
+  def change_email(user, params) do
+    user
+    |> User.email_changeset(params)
+    |> Repo.update()
   end
 end
