@@ -36,6 +36,19 @@ defmodule Game.Skills do
     end
   end
 
+  @doc """
+  Get all skills from the cache
+  """
+  @spec all() :: [Skill.t()]
+  def all() do
+    case Cachex.keys(@key) do
+      {:ok, keys} ->
+        skills(keys)
+      _ ->
+        []
+    end
+  end
+
   @spec skills([integer()]) :: [Skill.t()]
   def skills(ids) do
     ids

@@ -45,9 +45,46 @@ defmodule Game.Command.SkillsTest do
     {:ok, %{state: state, user: user, save: save, slash: slash}}
   end
 
-  test "parsing skills based on the user", %{state: state, slash: slash} do
-    assert %{text: "slash", module: Skills, args: {^slash, "slash"}} = Skills.parse_skill("slash", state.user)
-    assert {:error, :bad_parse, "look"} = Skills.parse_skill("look", state.user)
+  describe "parsing skills" do
+    test "parsing skills based on the user", %{state: state, slash: slash} do
+      assert %{text: "slash", module: Skills, args: {^slash, "slash"}} = Skills.parse_skill("slash", state.user)
+      assert {:error, :bad_parse, "look"} = Skills.parse_skill("look", state.user)
+    end
+
+    test "parses the skill but marks as not high enough level if they have the skill but too low", %{state: state} do
+      kick = create_skill(%{
+        level: 2,
+        name: "Kick",
+        points: 2,
+        command: "kick",
+        description: "Kick",
+        user_text: "Kick at your {target}",
+        usee_text: "You were kicked at",
+        effects: [%{kind: "damage", type: "bludgeoning", amount: 0}],
+      })
+      insert_skill(kick)
+
+      user = state.user
+      user = %{user | save: %{user.save | skill_ids: [kick.id | user.save.skill_ids]}}
+
+      assert %{text: "kick", module: Skills, args: {^kick, :level_too_low}} = Skills.parse_skill("kick", user)
+    end
+
+    test "parses the skill but marks as not usable if skill exists but user does not have", %{state: state} do
+      kick = create_skill(%{
+        level: 1,
+        name: "Kick",
+        points: 2,
+        command: "kick",
+        description: "Kick",
+        user_text: "Kick at your {target}",
+        usee_text: "You were kicked at",
+        effects: [%{kind: "damage", type: "bludgeoning", amount: 0}],
+      })
+      insert_skill(kick)
+
+      assert %{text: "kick", module: Skills, args: {^kick, :not_known}} = Skills.parse_skill("kick", state.user)
+    end
   end
 
   describe "viewing skills" do

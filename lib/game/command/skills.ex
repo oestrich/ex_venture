@@ -61,20 +61,55 @@ defmodule Game.Command.Skills do
   def parse_skill(command, user)
 
   def parse_skill(command, %{save: save}) do
+    with {:ok, skill} <- parse_find_skill(command),
+         {:ok, skill} <- parse_check_skill_known(skill, save),
+         {:ok, skill} <- parse_check_skill_level(skill, save) do
+      %Command{text: command, module: __MODULE__, args: {skill, command}}
+    else
+      {:error, :not_found} ->
+        {:error, :bad_parse, command}
+
+      {:error, :not_known, skill} ->
+        %Command{text: command, module: __MODULE__, args: {skill, :not_known}}
+
+      {:error, :level_too_low, skill} ->
+        %Command{text: command, module: __MODULE__, args: {skill, :level_too_low}}
+    end
+  end
+
+  defp parse_find_skill(command) do
     skill =
-      save.skill_ids
-      |> Skills.skills()
-      |> Enum.filter(&(&1.level <= save.level))
+      Skills.all()
       |> Enum.find(fn skill ->
         Regex.match?(~r(^#{skill.command}), command)
       end)
 
     case skill do
       nil ->
-        {:error, :bad_parse, command}
+        {:error, :not_found}
 
       skill ->
-        %Command{text: command, module: __MODULE__, args: {skill, command}}
+        {:ok, skill}
+    end
+  end
+
+  defp parse_check_skill_known(skill, save) do
+    case skill.id in save.skill_ids do
+      true ->
+        {:ok, skill}
+
+      false ->
+        {:error, :not_known, skill}
+    end
+  end
+
+  defp parse_check_skill_level(skill, save) do
+    case skill.level <= save.level do
+      true ->
+        {:ok, skill}
+
+      false ->
+        {:error, :level_too_low, skill}
     end
   end
 
@@ -108,6 +143,16 @@ defmodule Game.Command.Skills do
   def run({%{command: command}, command}, %{socket: socket, target: target})
       when is_nil(target) do
     socket |> @socket.echo("You don't have a target.")
+    :ok
+  end
+
+  def run({skill, :level_too_low}, state) do
+    state.socket |> @socket.echo("You are too low of a level to use #{Format.skill_name(skill)}.")
+    :ok
+  end
+
+  def run({skill, :not_known}, state) do
+    state.socket |> @socket.echo("You do not know #{Format.skill_name(skill)}.")
     :ok
   end
 
