@@ -13,22 +13,35 @@ defmodule Web.Room do
   alias Data.RoomItem
   alias Data.Repo
   alias Data.Zone
+  alias Game.Config
   alias Game.Door
   alias Game.Items
   alias Game.Room.Repo, as: RoomRepo
+  alias Web.NPC
+  alias Web.Shop
 
   @doc """
   Get a room
 
   Preload rooms in each direction and the zone
   """
-  @spec get(id :: integer) :: [Room.t()]
+  @spec get(integer()) :: [Room.t()]
   def get(id) do
     Room
     |> where([r], r.id == ^id)
     |> preload(zone: [:rooms], room_items: [:item], npc_spawners: [:npc], shops: [:shop_items])
     |> Repo.one()
     |> Exit.load_exits(preload: true)
+  end
+
+  def get(id, tuple: true) do
+    case get(id) do
+      nil ->
+        {:error, :not_found}
+
+      room ->
+        {:ok, room}
+    end
   end
 
   @doc """
@@ -93,6 +106,93 @@ defmodule Web.Room do
       anything ->
         anything
     end
+  end
+
+  @doc """
+  Delete a room and everything associated with it
+  """
+  @spec delete(integer()) :: {:ok, Room.t()}
+  def delete(id) do
+    with {:ok, room} <- get(id, tuple: true),
+         {:ok, room} <- check_graveyard(room),
+         {:ok, room} <- check_starting_room(room) do
+      room
+      |> delete_spawners()
+      |> delete_shops()
+      |> delete_item_spawners()
+      |> delete_room_exits()
+      |> terminate_and_destroy_room()
+    end
+  end
+
+  defp check_graveyard(room) do
+    case room.is_graveyard do
+      true ->
+        {:error, :graveyard, room}
+
+      false ->
+        double_check_graveyard(room)
+    end
+  end
+
+  defp double_check_graveyard(room) do
+    count =
+      Zone
+      |> where([z], z.graveyard_id == ^room.id)
+      |> select([z], count(z.id))
+      |> Repo.one()
+
+    case count == 0 do
+      true ->
+        {:ok, room}
+
+      false ->
+        {:error, :graveyard, room}
+    end
+  end
+
+  defp check_starting_room(room) do
+    starting_save = Config.starting_save()
+    case room.id == starting_save.room_id do
+      true ->
+        {:error, :starting_room, room}
+
+      false ->
+        {:ok, room}
+    end
+  end
+
+  defp delete_spawners(room) do
+    Enum.each(room.npc_spawners, fn npc_spawner ->
+      NPC.delete_spawner(npc_spawner.id)
+    end)
+    room
+  end
+
+  defp delete_shops(room) do
+    Enum.each(room.shops, fn shop ->
+      Shop.delete(shop.id)
+    end)
+    room
+  end
+
+  defp delete_item_spawners(room) do
+    Enum.each(room.room_items, fn room_item ->
+      delete_item(room_item.id)
+    end)
+    room
+  end
+
+  defp delete_room_exits(room) do
+    Enum.each(room.exits, fn room_exit ->
+      delete_exit(room_exit.id)
+    end)
+    room
+  end
+
+  defp terminate_and_destroy_room(room) do
+    Game.Zone.terminate_room(room)
+    Repo.delete(room)
   end
 
   #

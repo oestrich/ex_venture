@@ -11,6 +11,8 @@ defmodule Game.Session.Login do
 
   require Logger
 
+  alias Data.Repo
+  alias Data.Room
   alias Game.Authentication
   alias Game.Command.Config, as: CommandConfig
   alias Game.Config
@@ -73,7 +75,26 @@ defmodule Game.Session.Login do
     state
   end
 
-  def after_sign_in(state = %{user: user}, session) do
+  def after_sign_in(state, session) do
+    with {:ok, _room} <- check_room(state) do
+      finish_login(state, session)
+    else
+      {:error, :room, :missing} ->
+        state.socket |> @socket.echo("The room you were in has been deleted.")
+        state.socket |> @socket.echo("Sending you back to the starting room!")
+
+        starting_save = Game.Config.starting_save()
+
+        %{user: user, save: save} = state
+
+        save = Map.put(save, :room_id, starting_save.room_id)
+        user = %{user | save: save}
+        state = %{state | user: user, save: save}
+        finish_login(state, session)
+    end
+  end
+
+  defp finish_login(state = %{user: user}, session) do
     @room.link(user.save.room_id)
     @room.enter(user.save.room_id, {:user, user}, :login)
     session |> Session.recv("look")
@@ -84,6 +105,16 @@ defmodule Game.Session.Login do
 
     state
     |> Map.put(:state, "active")
+  end
+
+  defp check_room(state) do
+    case Repo.get(Room, state.save.room_id) do
+      nil ->
+        {:error, :room, :missing}
+
+      room ->
+        {:ok, room}
+    end
   end
 
   def sign_in(user_id, state = %{socket: socket}) do

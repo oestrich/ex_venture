@@ -92,6 +92,7 @@ defmodule Game.NPC do
   end
 
   @doc """
+  Stop an NPC Spawner
   """
   @spec terminate(integer) :: :ok
   def terminate(id) do

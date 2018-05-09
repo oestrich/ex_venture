@@ -159,7 +159,7 @@ defmodule Web.Router do
 
     resources("/room_items", RoomItemController, only: [:delete])
 
-    resources "/rooms", RoomController, only: [:show, :edit, :update] do
+    resources "/rooms", RoomController, only: [:show, :edit, :update, :delete] do
       resources("/exits", RoomExitController, only: [:new, :create], as: :exit)
 
       resources(

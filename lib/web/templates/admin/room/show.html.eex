@@ -22,6 +22,7 @@
         <div class="box-header">
           <h3 class="box-title">Room View</h3>
           <div class="box-tools">
+            <%= link("Delete", to: "#", data: [toggle: "modal", target: "#delete-confirm"], class: "btn btn-danger") %>
             <%= link("Teleport", to: user_path(@conn, :teleport, room_id: @room.id), method: "post", class: "btn btn-primary") %>
             <%= link("Edit", to: room_path(@conn, :edit, @room.id), class: "btn btn-primary") %>
           </div>
@@ -326,3 +327,34 @@
     </div>
   </div>
 </section>
+
+<div id="delete-confirm" class="modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Are you sure?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Deleting a room has many consequences. Data related to the room will also be deleted.</p>
+        <p>Such as:</p>
+        <ul>
+          <li>Room Exits</li>
+          <li>NPC Spawners</li>
+          <li>Quest Steps associated with this room</li>
+          <li>Shops and their items</li>
+        </ul>
+        <p>If there are any players in this room their process will crash and they will restart in the world's starting room.</p>
+        <p>You <b>cannot</b> delete room if they are:</p>
+        <ul>
+          <li>A zone graveyard</li>
+          <li>The world's starting room</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <%= link("Yes, Delete", to: room_path(@conn, :delete, @room.id), method: "delete", class: "btn btn-danger") %>
+      </div>
+    </div>
+  </div>
+</div>

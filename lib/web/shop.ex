@@ -80,6 +80,27 @@ defmodule Web.Shop do
     end
   end
 
+  @doc """
+  Delete a shop
+  """
+  @spec delete(integer()) :: {:ok, Shop.t()} | {:error, map()}
+  def delete(shop_id) do
+    shop = shop_id |> get()
+
+    Enum.each(shop.shop_items, fn shop_item ->
+      delete_item(shop_item.id)
+    end)
+
+    case shop |> Repo.delete() do
+      {:ok, shop} ->
+        Game.Shop.terminate(shop.id)
+        {:ok, shop}
+
+      anything ->
+        anything
+    end
+  end
+
   #
   # Shop Items
   #

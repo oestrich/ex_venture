@@ -145,4 +145,38 @@ defmodule Web.RoomTest do
       assert state.room.features |> length() == 0
     end
   end
+
+  describe "deleting a room" do
+    setup %{zone: zone} do
+      params = %{
+        name: "Forest Path",
+        description: "A small forest path",
+        currency: "10",
+        x: 1,
+        y: 1,
+        map_layer: 1,
+      }
+
+      {:ok, room} = Room.create(zone, params)
+
+      %{room: room}
+    end
+
+    test "does not delete a zone graveyard - is_graveyard", %{room: room} do
+      {:ok, room} = Room.update(room.id, %{is_graveyard: true})
+      assert {:error, :graveyard, _room} = Room.delete(room.id)
+    end
+
+    test "does not delete a zone graveyard - is_graveyard: false, but still attached", %{zone: zone, room: room} do
+      {:ok, _zone} = Zone.update(zone.id, %{graveyard_id: room.id})
+
+      assert {:error, :graveyard, _room} = Room.delete(room.id)
+    end
+
+    test "does not delete the starting room", %{room: room} do
+      create_config(:starting_save, %{room_id: room.id} |> Poison.encode!())
+
+      assert {:error, :starting_room, _room} = Room.delete(room.id)
+    end
+  end
 end
