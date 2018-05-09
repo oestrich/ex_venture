@@ -87,7 +87,7 @@ defmodule Web.Shop do
   def delete(shop_id) do
     shop = shop_id |> get()
 
-    Enum.map(shop.shop_items, fn shop_item ->
+    Enum.each(shop.shop_items, fn shop_item ->
       delete_item(shop_item.id)
     end)
 
