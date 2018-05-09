@@ -304,8 +304,7 @@ defmodule Web.NPC do
   @doc """
   Delete a room exit
   """
-  @spec delete_spawner(npc_spawner_id :: integer) ::
-          {:ok, NPCSpawner.t()} | {:error, changeset :: map}
+  @spec delete_spawner(integer()) :: {:ok, NPCSpawner.t()} | {:error, map()}
   def delete_spawner(npc_spawner_id) do
     npc_spawner = npc_spawner_id |> get_spawner()
 

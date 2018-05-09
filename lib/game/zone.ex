@@ -142,6 +142,13 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Terminate a room process
+  """
+  def terminate_room(room) do
+    GenServer.call(pid(room.zone_id), {:terminate, :room, room.id})
+  end
+
+  @doc """
   Crash a zone process with an unmatched cast
 
   There should always remain no matching clause for this cast
@@ -199,6 +206,11 @@ defmodule Game.Zone do
     """
 
     {:reply, map |> String.trim(), state}
+  end
+
+  def handle_call({:terminate, :room, room_id}, _from, state) do
+    Supervisor.terminate_child(state.room_supervisor_pid, room_id)
+    {:reply, :ok, state}
   end
 
   def handle_cast({:room_online, room, room_pid}, state) do

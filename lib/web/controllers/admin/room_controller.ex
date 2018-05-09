@@ -70,6 +70,11 @@ defmodule Web.Admin.RoomController do
 
   def delete(conn, %{"id" => id}) do
     case Room.delete(id) do
+      {:ok, room} ->
+        conn
+        |> put_flash(:info, "#{room.name} has been deleted!")
+        |> redirect(to: zone_path(conn, :show, room.zone_id))
+
       {:error, :graveyard, room} ->
         conn
         |> put_flash(:error, "#{room.name} is a graveyard, could not be deleted")

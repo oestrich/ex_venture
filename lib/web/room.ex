@@ -16,6 +16,8 @@ defmodule Web.Room do
   alias Game.Door
   alias Game.Items
   alias Game.Room.Repo, as: RoomRepo
+  alias Web.NPC
+  alias Web.Shop
 
   @doc """
   Get a room
@@ -112,7 +114,12 @@ defmodule Web.Room do
   def delete(id) do
     with {:ok, room} <- get(id, tuple: true),
          {:ok, room} <- check_graveyard(room) do
-      IO.inspect room.is_graveyard
+      room
+      |> delete_spawners()
+      |> delete_shops()
+      |> delete_item_spawners()
+      |> delete_room_exits()
+      |> terminate_and_destroy_room()
     end
   end
 
@@ -140,6 +147,39 @@ defmodule Web.Room do
       false ->
         {:error, :graveyard, room}
     end
+  end
+
+  defp delete_spawners(room) do
+    Enum.each(room.npc_spawners, fn npc_spawner ->
+      NPC.delete_spawner(npc_spawner.id)
+    end)
+    room
+  end
+
+  defp delete_shops(room) do
+    Enum.each(room.shops, fn shop ->
+      Shop.delete(shop.id)
+    end)
+    room
+  end
+
+  defp delete_item_spawners(room) do
+    Enum.each(room.room_items, fn room_item ->
+      delete_item(room_item.id)
+    end)
+    room
+  end
+
+  defp delete_room_exits(room) do
+    Enum.each(room.exits, fn room_exit ->
+      delete_exit(room_exit.id)
+    end)
+    room
+  end
+
+  defp terminate_and_destroy_room(room) do
+    Game.Zone.terminate_room(room)
+    Repo.delete(room)
   end
 
   #

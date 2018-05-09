@@ -26,7 +26,7 @@ defmodule Game.Room do
   end
 
   def start_link(room_id) do
-    GenServer.start_link(__MODULE__, room_id, name: pid(room_id))
+    GenServer.start_link(__MODULE__, room_id, name: pid(room_id), id: room_id)
   end
 
   def pid(id) do

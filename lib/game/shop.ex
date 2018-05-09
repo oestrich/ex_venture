@@ -81,6 +81,14 @@ defmodule Game.Shop do
   end
 
   @doc """
+  Stop a shop process
+  """
+  @spec terminate(integer()) :: :ok
+  def terminate(id) do
+    GenServer.cast(pid(id), :terminate)
+  end
+
+  @doc """
   For testing purposes, get the server's state
   """
   def _get_state(id) do
@@ -125,5 +133,9 @@ defmodule Game.Shop do
 
   def handle_cast({:update, shop}, state) do
     {:noreply, Map.put(state, :shop, shop)}
+  end
+
+  def handle_cast(:terminate, state) do
+    {:stop, :normal, state}
   end
 end
