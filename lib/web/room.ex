@@ -13,6 +13,7 @@ defmodule Web.Room do
   alias Data.RoomItem
   alias Data.Repo
   alias Data.Zone
+  alias Game.Config
   alias Game.Door
   alias Game.Items
   alias Game.Room.Repo, as: RoomRepo
@@ -113,7 +114,8 @@ defmodule Web.Room do
   @spec delete(integer()) :: {:ok, Room.t()}
   def delete(id) do
     with {:ok, room} <- get(id, tuple: true),
-         {:ok, room} <- check_graveyard(room) do
+         {:ok, room} <- check_graveyard(room),
+         {:ok, room} <- check_starting_room(room) do
       room
       |> delete_spawners()
       |> delete_shops()
@@ -146,6 +148,17 @@ defmodule Web.Room do
 
       false ->
         {:error, :graveyard, room}
+    end
+  end
+
+  defp check_starting_room(room) do
+    starting_save = Config.starting_save()
+    case room.id == starting_save.room_id do
+      true ->
+        {:error, :starting_room, room}
+
+      false ->
+        {:ok, room}
     end
   end
 

@@ -79,6 +79,11 @@ defmodule Web.Admin.RoomController do
         conn
         |> put_flash(:error, "#{room.name} is a graveyard, could not be deleted")
         |> redirect(to: room_path(conn, :show, room.id))
+
+      {:error, :starting_room, room} ->
+        conn
+        |> put_flash(:error, "#{room.name} is the starting room, could not be deleted")
+        |> redirect(to: room_path(conn, :show, room.id))
     end
   end
 end

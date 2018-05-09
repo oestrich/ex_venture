@@ -336,7 +336,7 @@
         <h4 class="modal-title">Are you sure?</h4>
       </div>
       <div class="modal-body">
-        <p>Deleting a room has a large consequence. A lot of other data will be deleted as well.</p>
+        <p>Deleting a room has many consequences. Data related to the room will also be deleted.</p>
         <p>Such as:</p>
         <ul>
           <li>Room Exits</li>
@@ -344,10 +344,11 @@
           <li>Quest Steps associated with this room</li>
           <li>Shops and their items</li>
         </ul>
-        <p>If there are any players in this room they will be returned to the zone graveyard.</p>
+        <p>If there are any players in this room their process will crash and they will restart in the world's starting room.</p>
         <p>You <b>cannot</b> delete room if they are:</p>
         <ul>
           <li>A zone graveyard</li>
+          <li>The world's starting room</li>
         </ul>
       </div>
       <div class="modal-footer">
