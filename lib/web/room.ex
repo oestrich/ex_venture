@@ -22,13 +22,23 @@ defmodule Web.Room do
 
   Preload rooms in each direction and the zone
   """
-  @spec get(id :: integer) :: [Room.t()]
+  @spec get(integer()) :: [Room.t()]
   def get(id) do
     Room
     |> where([r], r.id == ^id)
     |> preload(zone: [:rooms], room_items: [:item], npc_spawners: [:npc], shops: [:shop_items])
     |> Repo.one()
     |> Exit.load_exits(preload: true)
+  end
+
+  def get(id, tuple: true) do
+    case get(id) do
+      nil ->
+        {:error, :not_found}
+
+      room ->
+        {:ok, room}
+    end
   end
 
   @doc """
@@ -92,6 +102,43 @@ defmodule Web.Room do
 
       anything ->
         anything
+    end
+  end
+
+  @doc """
+  Delete a room and everything associated with it
+  """
+  @spec delete(integer()) :: {:ok, Room.t()}
+  def delete(id) do
+    with {:ok, room} <- get(id, tuple: true),
+         {:ok, room} <- check_graveyard(room) do
+      IO.inspect room.is_graveyard
+    end
+  end
+
+  defp check_graveyard(room) do
+    case room.is_graveyard do
+      true ->
+        {:error, :graveyard, room}
+
+      false ->
+        double_check_graveyard(room)
+    end
+  end
+
+  defp double_check_graveyard(room) do
+    count =
+      Zone
+      |> where([z], z.graveyard_id == ^room.id)
+      |> select([z], count(z.id))
+      |> Repo.one()
+
+    case count == 0 do
+      true ->
+        {:ok, room}
+
+      false ->
+        {:error, :graveyard, room}
     end
   end
 

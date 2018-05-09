@@ -67,4 +67,13 @@ defmodule Web.Admin.RoomController do
         |> render("edit.html")
     end
   end
+
+  def delete(conn, %{"id" => id}) do
+    case Room.delete(id) do
+      {:error, :graveyard, room} ->
+        conn
+        |> put_flash(:error, "#{room.name} is a graveyard, could not be deleted")
+        |> redirect(to: room_path(conn, :show, room.id))
+    end
+  end
 end
