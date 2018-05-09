@@ -33,7 +33,7 @@ let channel = socket.channel("telnet:" + guid(), {})
 let channelWrapper = new ChannelWrapper(channel)
 
 channel.onMessage = function (event, payload, ref) {
-  if (payload.sent_at) {
+  if (payload != undefined && payload.sent_at) {
     let sentAt = Date.parse(payload.sent_at)
     let receivedAt = new Date().getTime()
     let totalTimeMs = receivedAt - sentAt
