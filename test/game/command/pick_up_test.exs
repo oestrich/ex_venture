@@ -70,6 +70,7 @@ defmodule Game.Command.PickUpTest do
   end
 
   test "pick up all from a room", %{state: state} do
+    @room.clear_pick_up()
     @room.set_pick_up_currency({:ok, 100})
 
     {:update, state} = PickUp.run({:all}, state)
