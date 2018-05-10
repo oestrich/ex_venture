@@ -40,7 +40,7 @@
             </tbody>
           </table>
 
-          <%= render(SharedView, "_pagination.html", path: user_path(@conn, :index), pagination: @pagination) %>
+          <%= SharedView.pagination(path: user_path(@conn, :index), pagination: @pagination, name: "users") %>
         </div>
       </div>
     </div>

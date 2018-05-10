@@ -54,4 +54,8 @@ defmodule Web.Admin.SharedView do
       title: Help.get(key, markdown: false)
     )
   end
+
+  def pagination(opts) do
+    render("_pagination.html", opts)
+  end
 end

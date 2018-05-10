@@ -52,7 +52,7 @@
           </table>
         </div>
         <div class="box-footer">
-          <%= render(SharedView, "_pagination.html", path: note_path(@conn, :index), pagination: @pagination) %>
+          <%= SharedView.pagination(path: note_path(@conn, :index), pagination: @pagination, name: "notes") %>
         </div>
       </div>
     </div>

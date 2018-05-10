@@ -38,7 +38,7 @@
             </tbody>
           </table>
 
-          <%= render(SharedView, "_pagination.html", path: social_path(@conn, :index, social: @filter), pagination: @pagination) %>
+          <%= SharedView.pagination(path: social_path(@conn, :index, social: @filter), pagination: @pagination, name: "socials") %>
         </div>
       </div>
     </div>

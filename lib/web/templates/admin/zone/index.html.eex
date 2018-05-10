@@ -49,7 +49,7 @@
             </tbody>
           </table>
 
-          <%= render(SharedView, "_pagination.html", path: zone_path(@conn, :index), pagination: @pagination) %>
+          <%= SharedView.pagination(path: zone_path(@conn, :index), pagination: @pagination, name: "zones") %>
         </div>
       </div>
     </div>

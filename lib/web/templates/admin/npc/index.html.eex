@@ -52,7 +52,7 @@
             </tbody>
           </table>
 
-          <%= render(SharedView, "_pagination.html", path: npc_path(@conn, :index), pagination: @pagination) %>
+          <%= SharedView.pagination(path: npc_path(@conn, :index), pagination: @pagination, name: "npcs") %>
         </div>
       </div>
     </div>

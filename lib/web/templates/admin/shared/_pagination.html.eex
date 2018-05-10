@@ -1,55 +1,64 @@
 <%= if !@pagination.empty? do %>
-  <ul class="pagination pagination-sm no-margin pull-right">
-    <%= if @pagination.current == 1 do %>
-      <li class="disabled">
-        <span>&laquo;</span>
-      </li>
-    <% else %>
-      <li>
-        <%= link(to: page_path(@path, 1)) do %>
-          &laquo;
+  <div class="row">
+    <div class="col-md-6">
+      <div class="no-margin" style="line-height: 30px;">
+        Showing <%= @pagination.total_count %> <%= Map.get(assigns, :name, "entries") %>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <ul class="pagination pagination-sm no-margin pull-right">
+        <%= if @pagination.current == 1 do %>
+          <li class="disabled">
+            <span>&laquo;</span>
+          </li>
+        <% else %>
+          <li>
+            <%= link(to: page_path(@path, 1)) do %>
+              &laquo;
+            <% end %>
+          </li>
         <% end %>
-      </li>
-    <% end %>
 
-    <%= if more_previous?(@pagination) do %>
-      <li class="disabled">
-        <span>&hellip;</span>
-      </li>
-    <% end %>
-
-    <%= Enum.map(previous_pagination(@pagination), fn (page) -> %>
-      <li>
-        <%= link(page, to: page_path(@path, page)) %>
-      </li>
-    <% end) %>
-
-    <li class="active">
-      <span><%= @pagination.current %></span>
-    </li>
-
-    <%= Enum.map(next_pagination(@pagination), fn (page) -> %>
-      <li>
-        <%= link(page, to: page_path(@path, page)) %>
-      </li>
-    <% end) %>
-
-    <%= if more_next?(@pagination) do %>
-      <li class="disabled">
-        <span>&hellip;</span>
-      </li>
-    <% end %>
-
-    <%= if @pagination.current == @pagination.total do %>
-      <li class="disabled">
-        <span>&raquo;</span>
-      </li>
-    <% else %>
-      <li>
-        <%= link(to: page_path(@path, @pagination.total)) do %>
-          &raquo;
+        <%= if more_previous?(@pagination) do %>
+          <li class="disabled">
+            <span>&hellip;</span>
+          </li>
         <% end %>
-      </li>
-    <% end %>
-  </ul>
+
+        <%= Enum.map(previous_pagination(@pagination), fn (page) -> %>
+          <li>
+            <%= link(page, to: page_path(@path, page)) %>
+          </li>
+        <% end) %>
+
+        <li class="active">
+          <span><%= @pagination.current %></span>
+        </li>
+
+        <%= Enum.map(next_pagination(@pagination), fn (page) -> %>
+          <li>
+            <%= link(page, to: page_path(@path, page)) %>
+          </li>
+        <% end) %>
+
+        <%= if more_next?(@pagination) do %>
+          <li class="disabled">
+            <span>&hellip;</span>
+          </li>
+        <% end %>
+
+        <%= if @pagination.current == @pagination.total do %>
+          <li class="disabled">
+            <span>&raquo;</span>
+          </li>
+        <% else %>
+          <li>
+            <%= link(to: page_path(@path, @pagination.total)) do %>
+              &raquo;
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
 <% end %>

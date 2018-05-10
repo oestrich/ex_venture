@@ -44,7 +44,7 @@
           </table>
         </div>
         <div class="box-footer">
-          <%= render(SharedView, "_pagination.html", path: typo_path(@conn, :index), pagination: @pagination) %>
+          <%= SharedView.pagination(path: typo_path(@conn, :index), pagination: @pagination, name: "typos") %>
         </div>
       </div>
     </div>

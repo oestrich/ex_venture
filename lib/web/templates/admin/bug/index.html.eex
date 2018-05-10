@@ -47,7 +47,7 @@
           </table>
         </div>
         <div class="box-footer">
-          <%= render(SharedView, "_pagination.html", path: bug_path(@conn, :index), pagination: @pagination) %>
+          <%= SharedView.pagination(path: bug_path(@conn, :index), pagination: @pagination, name: "bugs") %>
         </div>
       </div>
     </div>

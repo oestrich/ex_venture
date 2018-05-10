@@ -39,7 +39,12 @@ defmodule Web.Pagination do
 
     %__MODULE__{
       page: query,
-      pagination: %{current: page, total: total_pages, empty?: total_pages == 0}
+      pagination: %{
+        current: page,
+        total: total_pages,
+        total_count: count,
+        empty?: total_pages == 0
+      }
     }
   end
 
