@@ -251,8 +251,11 @@ defmodule Game.Session.Character do
   @spec maybe_target(State.t()) :: State.t()
   def maybe_target(state = %{target: nil}) do
     case possible_new_target(state) do
-      nil -> state
-      player -> _target(state, player)
+      nil ->
+        state
+
+      player ->
+        _target(state, player)
     end
   end
 
@@ -276,10 +279,11 @@ defmodule Game.Session.Character do
   @doc """
   Get a possible new target from the list
   """
-  @spec possible_new_target(map) :: Character.t()
+  @spec possible_new_target(map()) :: Character.t()
   def possible_new_target(state) do
     state.is_targeting
     |> MapSet.to_list()
+    |> Enum.reject(&(&1 == {:user, state.user.id}))
     |> List.first()
     |> character_info()
   end
@@ -288,7 +292,7 @@ defmodule Game.Session.Character do
   Get a character's information, handles nil
   """
   def character_info(nil), do: nil
-  def character_info(player), do: Character.info(player)
+  def character_info(character), do: Character.info(character)
 
   @doc """
   Apply experience for killing an npc
