@@ -108,6 +108,7 @@ defmodule Web.Admin.RoomView do
   end
 
   def listen(%{listen: nil}), do: ""
+
   def listen(room) do
     text =
       room.listen

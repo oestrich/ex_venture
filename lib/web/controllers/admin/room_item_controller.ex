@@ -35,7 +35,10 @@ defmodule Web.Admin.RoomItemController do
 
       {:error, _changeset} ->
         conn
-        |> put_flash(:error, "There was an issue adding the item to #{room.name}. Please try again.")
+        |> put_flash(
+          :error,
+          "There was an issue adding the item to #{room.name}. Please try again."
+        )
         |> assign(:items, Item.all())
         |> assign(:room, room)
         |> render("add-item.html")

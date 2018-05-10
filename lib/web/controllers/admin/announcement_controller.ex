@@ -67,7 +67,10 @@ defmodule Web.Admin.AnnouncementController do
         announcement = Announcement.get(id)
 
         conn
-        |> put_flash(:error, "There was a problem updating #{announcement.title}. Please try again.")
+        |> put_flash(
+          :error,
+          "There was a problem updating #{announcement.title}. Please try again."
+        )
         |> assign(:announcement, announcement)
         |> assign(:changeset, changeset)
         |> render("edit.html")

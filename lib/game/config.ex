@@ -33,7 +33,7 @@ defmodule Game.Config do
     color_map_dark_green: "#005f00",
     color_map_green: "#00af00",
     color_map_grey: "#9e9e9e",
-    color_map_light_grey: "#d0d0d0",
+    color_map_light_grey: "#d0d0d0"
   }
 
   @doc false

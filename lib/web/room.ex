@@ -153,6 +153,7 @@ defmodule Web.Room do
 
   defp check_starting_room(room) do
     starting_save = Config.starting_save()
+
     case room.id == starting_save.room_id do
       true ->
         {:error, :starting_room, room}
@@ -166,6 +167,7 @@ defmodule Web.Room do
     Enum.each(room.npc_spawners, fn npc_spawner ->
       NPC.delete_spawner(npc_spawner.id)
     end)
+
     room
   end
 
@@ -173,6 +175,7 @@ defmodule Web.Room do
     Enum.each(room.shops, fn shop ->
       Shop.delete(shop.id)
     end)
+
     room
   end
 
@@ -180,6 +183,7 @@ defmodule Web.Room do
     Enum.each(room.room_items, fn room_item ->
       delete_item(room_item.id)
     end)
+
     room
   end
 
@@ -187,6 +191,7 @@ defmodule Web.Room do
     Enum.each(room.exits, fn room_exit ->
       delete_exit(room_exit.id)
     end)
+
     room
   end
 

@@ -6,9 +6,11 @@ defmodule ExVenture do
   """
   @spec config({:system, String.t()} | {:system, String.t(), any()} | any()) :: any()
   def config({:system, name}), do: System.get_env(name)
+
   def config({:system, name, default}) do
     System.get_env(name) || default
   end
+
   def config(value), do: value
 
   @doc """

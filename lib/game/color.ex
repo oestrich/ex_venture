@@ -143,6 +143,7 @@ defmodule Game.Color do
   def format_basic_color("{map:green}"), do: "\e[38;5;34m"
   def format_basic_color("{map:grey}"), do: "\e[38;5;247m"
   def format_basic_color("{map:light-grey}"), do: "\e[38;5;252m"
+
   def format_basic_color(key) do
     key =
       key

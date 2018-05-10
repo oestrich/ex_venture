@@ -11,12 +11,12 @@ defmodule Web.ClassView do
       links: [
         %{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :index)},
         %{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
-      ],
+      ]
     }
   end
 
   def render("show.json", %{class: class, extended: true}) do
-    skills = Enum.map(class.class_skills, &(&1.skill))
+    skills = Enum.map(class.class_skills, & &1.skill)
 
     %{
       key: class.api_id,
@@ -25,7 +25,7 @@ defmodule Web.ClassView do
       skills: render_many(skills, SkillView, "show.json", %{class: true}),
       links: [
         %{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)},
-        %{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)},
+        %{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)}
       ]
     }
   end
@@ -36,7 +36,7 @@ defmodule Web.ClassView do
       name: class.name,
       description: class.description,
       links: [
-        %{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)},
+        %{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)}
       ]
     }
   end

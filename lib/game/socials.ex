@@ -67,6 +67,7 @@ defmodule Game.Socials do
   @spec insert(Social.t()) :: :ok
   def insert(social) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:insert, social})
     end)
@@ -84,6 +85,7 @@ defmodule Game.Socials do
   @spec remove_command(String.t()) :: :ok
   def remove_command(command) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:remove_command, command})
     end)

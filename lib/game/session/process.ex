@@ -239,6 +239,7 @@ defmodule Game.Session.Process do
         state.socket |> Session.Login.start()
         self() |> schedule_save()
         self() |> schedule_inactive_check()
+
       false ->
         state.socket |> @socket.echo("The world is not online yet. Please try again shortly.")
         self() |> Process.send_after({:disconnect, :world_not_alive}, 750)

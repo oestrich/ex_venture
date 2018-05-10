@@ -60,6 +60,7 @@ defmodule Game.DamageTypes do
   @spec insert(DamageType.t()) :: :ok
   def insert(damage_type) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:insert, damage_type})
     end)

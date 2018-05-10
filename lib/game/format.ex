@@ -708,7 +708,7 @@ defmodule Game.Format do
     user_text
     |> template(%{
       user: target_name(user),
-      target: target_name(target),
+      target: target_name(target)
     })
   end
 

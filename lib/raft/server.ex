@@ -12,9 +12,12 @@ defmodule Raft.Server do
 
   def debug(state) do
     members = PG.members(others: true)
-    debug_info = Enum.map(members, fn member ->
-      GenServer.call(member, :state)
-    end)
+
+    debug_info =
+      Enum.map(members, fn member ->
+        GenServer.call(member, :state)
+      end)
+
     [Map.put(state, :node, node()) | debug_info]
   end
 

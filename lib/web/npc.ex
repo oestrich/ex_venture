@@ -452,9 +452,10 @@ defmodule Web.NPC do
   def force_save_events(npc) do
     events = npc.events
     # to force an update, set this to blank so something changed
-    npc = %{npc | events: []} 
+    npc = %{npc | events: []}
 
     changeset = npc |> NPC.changeset(%{events: events})
+
     case changeset |> Repo.update() do
       {:ok, npc} ->
         push_update(npc)
@@ -470,6 +471,7 @@ defmodule Web.NPC do
     with {:ok, event} <- parse_event(event),
          {:ok, event} <- validate_event(event) do
       changeset = npc |> NPC.changeset(%{events: [event | npc.events]})
+
       case changeset |> Repo.update() do
         {:ok, npc} ->
           push_update(npc)
@@ -502,6 +504,7 @@ defmodule Web.NPC do
         end)
 
       changeset = npc |> NPC.changeset(%{events: [event | events]})
+
       case changeset |> Repo.update() do
         {:ok, npc} ->
           push_update(npc)
@@ -539,6 +542,7 @@ defmodule Web.NPC do
       end)
 
     changeset = npc |> NPC.changeset(%{events: events})
+
     case changeset |> Repo.update() do
       {:ok, npc} ->
         push_update(npc)

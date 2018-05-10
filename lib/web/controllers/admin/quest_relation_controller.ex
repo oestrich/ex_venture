@@ -25,7 +25,10 @@ defmodule Web.Admin.QuestRelationController do
 
       {:error, changeset} ->
         conn
-        |> put_flash(:error, "There was a problem adding to the quest chain for #{quest.name}. Please try again.")
+        |> put_flash(
+          :error,
+          "There was a problem adding to the quest chain for #{quest.name}. Please try again."
+        )
         |> assign(:quest, quest)
         |> assign(:side, side)
         |> assign(:changeset, changeset)
@@ -44,7 +47,10 @@ defmodule Web.Admin.QuestRelationController do
 
       {:error, _changeset} ->
         conn
-        |> put_flash(:error, "There was a problem updating the quest chain for #{quest.name}. Please try again.")
+        |> put_flash(
+          :error,
+          "There was a problem updating the quest chain for #{quest.name}. Please try again."
+        )
         |> redirect(to: quest_path(conn, :show, quest.id))
     end
   end

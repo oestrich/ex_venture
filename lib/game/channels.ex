@@ -25,6 +25,7 @@ defmodule Game.Channels do
   @spec insert(Channel.t()) :: :ok
   def insert(channel) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:insert, channel})
     end)

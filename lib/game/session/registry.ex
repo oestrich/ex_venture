@@ -53,6 +53,7 @@ defmodule Game.Session.Registry do
   @spec connected_players() :: [{pid, User.t()}]
   def connected_players() do
     members = :pg2.get_members(@pg2_group)
+
     Enum.flat_map(members, fn member ->
       GenServer.call(member, :connected_players)
     end)

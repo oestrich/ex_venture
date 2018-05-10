@@ -110,6 +110,7 @@ defmodule Game.Session do
     case WorldMaster.is_world_online?() do
       true ->
         GenServer.cast(pid, {:sign_in, user.id})
+
       false ->
         :ok
     end

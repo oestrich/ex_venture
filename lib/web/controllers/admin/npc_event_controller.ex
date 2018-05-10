@@ -22,6 +22,7 @@ defmodule Web.Admin.NPCEventController do
 
   def create(conn, %{"npc_id" => npc_id, "event" => %{"body" => event}}) do
     npc = NPC.get(npc_id)
+
     case NPC.add_event(npc, event) do
       {:ok, _npc} ->
         conn
@@ -46,6 +47,7 @@ defmodule Web.Admin.NPCEventController do
 
   def edit(conn, %{"npc_id" => npc_id, "id" => id}) do
     npc = NPC.get(npc_id)
+
     case Enum.find(npc.events, &(&1.id == id)) do
       nil ->
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
@@ -61,6 +63,7 @@ defmodule Web.Admin.NPCEventController do
 
   def update(conn, %{"npc_id" => npc_id, "id" => id, "event" => %{"body" => body}}) do
     npc = NPC.get(npc_id)
+
     case Enum.find(npc.events, &(&1.id == id)) do
       nil ->
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
@@ -93,6 +96,7 @@ defmodule Web.Admin.NPCEventController do
 
   def delete(conn, %{"npc_id" => npc_id, "id" => id}) do
     npc = NPC.get(npc_id)
+
     case NPC.delete_event(npc, id) do
       {:ok, _npc} ->
         conn
@@ -108,6 +112,7 @@ defmodule Web.Admin.NPCEventController do
 
   def reload(conn, %{"npc_id" => npc_id}) do
     npc = NPC.get(npc_id)
+
     case NPC.force_save_events(npc) do
       {:ok, _npc} ->
         conn

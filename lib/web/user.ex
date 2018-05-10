@@ -380,6 +380,7 @@ defmodule Web.User do
     PlayerInstrumenter.start_password_reset()
 
     query = User |> where([u], u.email == ^email)
+
     case query |> Repo.one() do
       nil ->
         Logger.warn("Password reset attempted for #{email}")
@@ -417,6 +418,7 @@ defmodule Web.User do
 
   defp find_user_by_reset_token(uuid) do
     query = User |> where([u], u.password_reset_token == ^uuid)
+
     case query |> Repo.one() do
       nil ->
         :error

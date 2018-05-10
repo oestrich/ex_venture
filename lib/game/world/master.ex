@@ -93,7 +93,7 @@ defmodule Game.World.Master do
   defp get_member_zones(members) do
     members
     |> Enum.reject(&(&1 == self()))
-    |> Enum.map(fn (controller) ->
+    |> Enum.map(fn controller ->
       {controller, ZoneController.hosted_zones(controller)}
     end)
   end
@@ -104,7 +104,11 @@ defmodule Game.World.Master do
 
   defp restart_zones([], _controllers, _max_zones), do: :ok
 
-  defp restart_zones([zone | zones], [{controller, controller_zones} | controllers_with_zones], max_zones) do
+  defp restart_zones(
+         [zone | zones],
+         [{controller, controller_zones} | controllers_with_zones],
+         max_zones
+       ) do
     case length(controller_zones) >= max_zones do
       true ->
         restart_zones([zone | zones], controllers_with_zones, max_zones)

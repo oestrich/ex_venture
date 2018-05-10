@@ -47,6 +47,7 @@ defmodule Game.Command.Listen do
   @spec parse(String.t()) :: {any()}
   def parse(command)
   def parse("listen"), do: {}
+
   def parse("listen " <> direction) do
     case Exit.exit?(direction) do
       true ->

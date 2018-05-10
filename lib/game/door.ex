@@ -41,9 +41,11 @@ defmodule Game.Door do
 
   def load(exit_id) do
     members = :pg2.get_members(@key)
+
     Enum.each(members, fn member ->
       GenServer.call(member, {:load, exit_id})
     end)
+
     @closed
   end
 
@@ -67,9 +69,11 @@ defmodule Game.Door do
   @spec set(integer(), status()) :: :ok
   def set(exit_id, state) when state in [@open, @closed] do
     members = :pg2.get_members(@key)
+
     Enum.each(members, fn member ->
       GenServer.call(member, {:set, exit_id, state})
     end)
+
     state
   end
 
@@ -103,6 +107,7 @@ defmodule Game.Door do
 
   def remove(%{id: id}) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:remove, id})
     end)

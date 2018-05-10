@@ -88,7 +88,10 @@ defmodule Web.Admin.ShopItemController do
 
       _ ->
         conn
-        |> put_flash(:error, "There was an issue deleting the item from the shop. Please try again.")
+        |> put_flash(
+          :error,
+          "There was an issue deleting the item from the shop. Please try again."
+        )
         |> redirect(to: dashboard_path(conn, :index))
     end
   end

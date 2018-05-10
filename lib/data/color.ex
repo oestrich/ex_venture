@@ -48,7 +48,7 @@ defmodule Data.Color do
       "command",
       "exit",
       "shop",
-      "hint",
+      "hint"
     ]
   end
 end

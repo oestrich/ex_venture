@@ -29,5 +29,4 @@ config :ex_venture, :game,
 config :bcrypt_elixir, :log_rounds, 4
 
 config :ex_venture, :mailer, from: "mud@example.com"
-config :ex_venture, ExVenture.Mailer,
-  adapter: Bamboo.TestAdapter
+config :ex_venture, ExVenture.Mailer, adapter: Bamboo.TestAdapter

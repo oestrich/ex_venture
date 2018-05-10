@@ -30,7 +30,10 @@ defmodule Web.Admin.ItemAspectingController do
         item_aspects = ItemAspect.all()
 
         conn
-        |> put_flash(:error, "There was an issue adding the item aspect to #{item.name}. Please try again.")
+        |> put_flash(
+          :error,
+          "There was an issue adding the item aspect to #{item.name}. Please try again."
+        )
         |> assign(:item, item)
         |> assign(:item_aspects, item_aspects)
         |> assign(:changeset, changeset)
@@ -49,7 +52,10 @@ defmodule Web.Admin.ItemAspectingController do
 
       _ ->
         conn
-        |> put_flash(:info, "There was an issue removing the aspect from the item. Please try again.")
+        |> put_flash(
+          :info,
+          "There was an issue removing the aspect from the item. Please try again."
+        )
         |> redirect(to: item_path(conn, :show, item_aspect.item_id))
     end
   end

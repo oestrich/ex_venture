@@ -23,7 +23,7 @@ defmodule Web.SharedView do
       true ->
         [
           %{rel: "next", href: SharedView.page_path(url, pagination.current + 1)},
-          %{rel: "prev", href: SharedView.page_path(url, pagination.current - 1)},
+          %{rel: "prev", href: SharedView.page_path(url, pagination.current - 1)}
         ]
     end
   end

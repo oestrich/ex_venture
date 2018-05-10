@@ -10,10 +10,19 @@ defmodule Web.PageView do
     %{
       links: [
         %{rel: "self", href: RouteHelpers.public_page_url(Endpoint, :index)},
-        %{rel: "https://exventure.org/rel/classes", href: RouteHelpers.public_class_url(Endpoint, :index)},
-        %{rel: "https://exventure.org/rel/skills", href: RouteHelpers.public_skill_url(Endpoint, :index)},
-        %{rel: "https://exventure.org/rel/races", href: RouteHelpers.public_race_url(Endpoint, :index)},
-      ],
+        %{
+          rel: "https://exventure.org/rel/classes",
+          href: RouteHelpers.public_class_url(Endpoint, :index)
+        },
+        %{
+          rel: "https://exventure.org/rel/skills",
+          href: RouteHelpers.public_skill_url(Endpoint, :index)
+        },
+        %{
+          rel: "https://exventure.org/rel/races",
+          href: RouteHelpers.public_race_url(Endpoint, :index)
+        }
+      ]
     }
   end
 end

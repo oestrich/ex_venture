@@ -65,7 +65,7 @@ defmodule Data.Type do
       |> Enum.into(%{})
       |> Map.keys()
 
-    case Enum.empty?(fields)  do
+    case Enum.empty?(fields) do
       true ->
         changeset
 

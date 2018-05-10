@@ -6,7 +6,11 @@ defmodule Metrics.CharacterInstrumenter do
   use Prometheus.Metric
 
   def setup() do
-    Counter.declare(name: :exventure_character_movement_total, help: "Total count of character movements", labels: [:type])
+    Counter.declare(
+      name: :exventure_character_movement_total,
+      help: "Total count of character movements",
+      labels: [:type]
+    )
 
     Histogram.declare(
       name: :exventure_character_moved_in_microseconds,

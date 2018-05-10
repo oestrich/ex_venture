@@ -60,6 +60,7 @@ defmodule Game.ColorCodes do
   @spec insert(ColorCode.t()) :: :ok
   def insert(color_code) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:insert, color_code})
     end)

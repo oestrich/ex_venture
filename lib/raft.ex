@@ -140,6 +140,10 @@ defmodule Raft do
   end
 
   def start_election(term) do
-    Process.send_after(self(), {:election, :start, term}, @election_initial_delay + :rand.uniform(@election_random_delay))
+    Process.send_after(
+      self(),
+      {:election, :start, term},
+      @election_initial_delay + :rand.uniform(@election_random_delay)
+    )
   end
 end

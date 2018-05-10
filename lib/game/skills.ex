@@ -46,6 +46,7 @@ defmodule Game.Skills do
         keys
         |> Enum.filter(&is_integer/1)
         |> skills()
+
       _ ->
         []
     end
@@ -64,6 +65,7 @@ defmodule Game.Skills do
   @spec insert(Skill.t()) :: :ok
   def insert(skill) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:insert, skill})
     end)

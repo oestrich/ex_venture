@@ -67,6 +67,7 @@ defmodule Game.Channel do
   @spec broadcast(String.t(), Message.t()) :: :ok
   def broadcast(channel, message) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.cast(member, {:broadcast, channel, message})
     end)
@@ -78,6 +79,7 @@ defmodule Game.Channel do
   @spec tell(Character.t(), Character.t(), Message.t()) :: :ok
   def tell(user, from, message) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.cast(member, {:tell, user, from, message})
     end)

@@ -77,8 +77,12 @@ defmodule Web.Admin.NPCItemController do
 
       _ ->
         npc_item = NPC.get_item(id)
+
         conn
-        |> put_flash(:error, "There was an issue deleting the item from the NPC. Please try again.")
+        |> put_flash(
+          :error,
+          "There was an issue deleting the item from the NPC. Please try again."
+        )
         |> redirect(to: npc_path(conn, :show, npc_item.npc_id))
     end
   end

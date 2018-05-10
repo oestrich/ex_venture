@@ -5,6 +5,7 @@ defmodule Web.RaceController do
 
   def index(conn, _params) do
     races = Race.all(alpha: true)
+
     conn
     |> assign(:races, races)
     |> render(:index)

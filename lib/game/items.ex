@@ -53,6 +53,7 @@ defmodule Game.Items do
   @spec insert(Item.t()) :: :ok
   def insert(item) do
     members = :pg2.get_members(@key)
+
     Enum.map(members, fn member ->
       GenServer.call(member, {:insert, item})
     end)

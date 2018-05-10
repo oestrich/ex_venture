@@ -42,7 +42,7 @@ defmodule Raft.PG do
   Get the other group members
   """
   @spec members(Keyword.t()) :: [pid()]
-  def members([others: true]) do
+  def members(others: true) do
     members() |> Enum.reject(&(&1 == self()))
   end
 end
