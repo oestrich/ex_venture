@@ -45,7 +45,7 @@ defmodule Game.Command.Version do
   def run({}, state) do
     version = """
     #{ExVenture.version()}
-    http://exventure.org - https://github.com/oestrich/ex_venture
+    https://exventure.org - https://github.com/oestrich/ex_venture
     """
 
     state.socket |> @socket.echo(version)
