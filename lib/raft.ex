@@ -14,7 +14,7 @@ defmodule Raft do
   require Logger
 
   @election_initial_delay 500
-  @election_random_delay 300
+  @election_random_delay 750
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
