@@ -1,0 +1,28 @@
+<div class="row">
+  <%= render(AccountView, "_sidebar.html", conn: @conn) %>
+
+  <div class="col-md-10">
+    <h3>Send new mail</h3>
+
+    <%= form_for(@changeset, public_mail_path(@conn, :create), [class: "form"], fn f -> %>
+      <div class="form-group has-feedback">
+        <%= label f, :receiver_name %>
+        <%= text_input f, :receiver_name, class: "form-control", autofocus: "autofocus" %>
+      </div>
+
+      <div class="form-group has-feedback">
+        <%= label f, :title %>
+        <%= text_input f, :title, class: "form-control" %>
+      </div>
+
+      <div class="form-group has-feedback">
+        <%= label f, :body %>
+        <%= textarea f, :body, class: "form-control", rows: 10 %>
+      </div>
+
+      <div class="actions">
+        <%= submit("Send!", class: "btn btn-primary") %>
+      </div>
+    <% end) %>
+  </div>
+</div>

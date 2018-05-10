@@ -2,26 +2,35 @@
   <%= render(AccountView, "_sidebar.html", conn: @conn) %>
 
   <div class="col-md-10">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Sender</th>
-          <th>Title</th>
-          <th>Sent At</th>
-          <th>Read?</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= Enum.map(@mail_pieces, fn mail -> %>
-          <tr>
-            <td><%= mail.sender.name %></td>
-            <td><%= link(mail.title, to: public_mail_path(@conn, :show, mail.id)) %></td>
-            <td><%= mail.inserted_at |> TimeView.time() %></td>
-            <td><span class="badge badge-light"><%= mail.is_read %></span></td>
-          </tr>
-        <% end) %>
-      </tbody>
-    </table>
+    <div class="row">
+      <div class="col-md-12">
+        <%= link("Send Mail", to: public_mail_path(@conn, :new), class: "btn btn-primary float-right") %>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-12">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Sender</th>
+              <th>Title</th>
+              <th>Sent At</th>
+              <th>Read?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= Enum.map(@mail_pieces, fn mail -> %>
+              <tr>
+                <td><%= mail.sender.name %></td>
+                <td><%= link(mail.title, to: public_mail_path(@conn, :show, mail.id)) %></td>
+                <td><%= mail.inserted_at |> TimeView.time() %></td>
+                <td><span class="badge badge-light"><%= mail.is_read %></span></td>
+              </tr>
+            <% end) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <%= render(SharedView, "_pagination.html", path: public_mail_path(@conn, :index), pagination: @pagination) %>
   </div>

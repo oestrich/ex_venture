@@ -40,7 +40,7 @@ defmodule Web.Router do
     post("/account/twofactor", AccountTwoFactorController, :validate)
     delete("/account/twofactor", AccountTwoFactorController, :clear)
 
-    resources("/account/mail", MailController, only: [:index, :show])
+    resources("/account/mail", MailController, only: [:index, :show, :new, :create])
 
     get("/announcements/atom", AnnouncementController, :feed)
     resources("/announcements", AnnouncementController, only: [:show])

@@ -95,6 +95,20 @@ defmodule Web.User do
   end
 
   @doc """
+  Get a user by their name
+  """
+  @spec get_by(Keyword.t()) :: {:ok, User.t()} | {:error, :not_found}
+  def get_by(name: name) do
+    case Repo.get_by(User, name: name) do
+      nil ->
+        {:error, :not_found}
+
+      user ->
+        {:ok, user}
+    end
+  end
+
+  @doc """
   Get a changeset for a new page
   """
   @spec new() :: changeset :: map

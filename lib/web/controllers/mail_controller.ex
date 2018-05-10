@@ -25,6 +25,35 @@ defmodule Web.MailController do
     conn |> render("show.html")
   end
 
+  def new(conn, _params) do
+    changeset = Mail.new()
+
+    conn
+    |> assign(:changeset, changeset)
+    |> render("new.html")
+  end
+
+  def create(conn, %{"mail" => params}) do
+    %{user: user} = conn.assigns
+
+    case Mail.send(user, params) do
+      {:ok, _mail} ->
+        conn
+        |> put_flash(:info, "Mail sent!")
+        |> redirect(to: public_mail_path(conn, :index))
+
+      {:error, changeset} ->
+        conn
+        |> assign(:changeset, changeset)
+        |> render("new.html")
+
+      {:error, :receiver, :not_found} ->
+        conn
+        |> put_flash(:error, "Receiver could not be found.")
+        |> redirect(to: public_mail_path(conn, :index))
+    end
+  end
+
   defp load_mail(conn, _opts) do
     case conn.params do
       %{"id" => id} ->
