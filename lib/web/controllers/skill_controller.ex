@@ -3,7 +3,7 @@ defmodule Web.SkillController do
 
   alias Web.Skill
 
-  plug(Web.Plug.FetchPage when action in [:index])
+  plug(Web.Plug.FetchPage, [per: 10] when action in [:index])
 
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns

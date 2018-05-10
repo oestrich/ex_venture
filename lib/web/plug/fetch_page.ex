@@ -7,19 +7,21 @@ defmodule Web.Plug.FetchPage do
 
   @per 20
 
-  def init(default), do: default
+  def init(default) do
+    Keyword.merge([per: @per], default)
+  end
 
-  def call(conn, _opts) do
+  def call(conn, opts) do
     case conn.params do
       %{"page" => page} ->
         conn
         |> assign(:page, String.to_integer(page))
-        |> assign(:per, @per)
+        |> assign(:per, opts[:per])
 
       _ ->
         conn
         |> assign(:page, 1)
-        |> assign(:per, @per)
+        |> assign(:per, opts[:per])
     end
   end
 end
