@@ -30,6 +30,7 @@ defmodule Web.Router do
     get("/css/colors.css", ColorController, :index)
 
     get("/", PageController, :index)
+    get("/version", PageController, :version)
 
     get("/account", AccountController, :show)
     get("/account/password", AccountController, :password)

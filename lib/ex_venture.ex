@@ -37,4 +37,12 @@ defmodule ExVenture do
 
     "ExVenture v#{elem(ex_venture, 2)}"
   end
+
+  @doc """
+  Get the compiled sha version
+  """
+  @spec sha_version() :: String.t()
+  def sha_version() do
+    Application.get_env(:ex_venture, :version)
+  end
 end

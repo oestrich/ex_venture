@@ -13,4 +13,8 @@ defmodule Web.PageController do
   def who(conn, _params) do
     render(conn, "who.html", players: User.connected_players())
   end
+
+  def version(conn, _params) do
+    text(conn, "#{ExVenture.version()} - #{ExVenture.sha_version()}")
+  end
 end

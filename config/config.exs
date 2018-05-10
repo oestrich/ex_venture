@@ -5,7 +5,8 @@ use Mix.Config
 config :ex_venture,
   ecto_repos: [Data.Repo],
   namespace: Web,
-  timezone: "America/New_York"
+  timezone: "America/New_York",
+  version: "development"
 
 config :ex_venture, :game,
   world: true,
