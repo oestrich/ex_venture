@@ -14,6 +14,13 @@ defmodule Game.Quest do
   alias Game.Session
 
   @doc """
+  Check if a quest is complete
+  """
+  def complete?(quest_progress) do
+    quest_progress.status == "complete"
+  end
+
+  @doc """
   Get quests for a user, loads from their quest progress.
   """
   @spec for(User.t()) :: [QuestProgress.t()]
@@ -97,12 +104,7 @@ defmodule Game.Quest do
         Map.get(quest_progress.progress, step.id, 0)
 
       "item/have" ->
-        save
-        |> Item.all_items()
-        |> Enum.filter(fn item ->
-          item.id == step.item_id
-        end)
-        |> length()
+        item_have_progress(step, quest_progress, save)
 
       "npc/kill" ->
         Map.get(quest_progress.progress, step.id, 0)
@@ -111,6 +113,21 @@ defmodule Game.Quest do
         quest_progress.progress
         |> Map.get(step.id, %{explored: false})
         |> Map.get(:explored)
+    end
+  end
+
+  defp item_have_progress(step, quest_progress, save) do
+    case complete?(quest_progress) do
+      true ->
+        step.count
+
+      false ->
+        save
+        |> Item.all_items()
+        |> Enum.filter(fn item ->
+          item.id == step.item_id
+        end)
+        |> length()
     end
   end
 
@@ -297,8 +314,11 @@ defmodule Game.Quest do
   # filter out quests with progress
   defp filter_progress(quest, user) do
     case progress_for(user, quest.id) do
-      nil -> true
-      _ -> false
+      nil ->
+        true
+
+      _ ->
+        false
     end
   end
 
@@ -306,8 +326,11 @@ defmodule Game.Quest do
   defp filter_parent_not_complete(quest, user) do
     Enum.all?(quest.parent_relations, fn parent_relation ->
       case progress_for(user, parent_relation.parent_id) do
-        %{status: "complete"} -> true
-        _ -> false
+        %{status: "complete"} ->
+          true
+
+        _ ->
+          false
       end
     end)
   end
@@ -318,8 +341,11 @@ defmodule Game.Quest do
   @spec track_quest(User.t(), Quest.t()) :: :ok | {:error, :not_started}
   def track_quest(user, quest_id) do
     case progress_for(user, quest_id) do
-      nil -> {:error, :not_started}
-      quest_progress -> _track_quest(user, quest_progress)
+      nil ->
+        {:error, :not_started}
+
+      quest_progress ->
+        _track_quest(user, quest_progress)
     end
   end
 

@@ -97,6 +97,14 @@ defmodule Game.QuestTest do
       assert Quest.current_step_progress(step, progress, save) == 2
     end
 
+    test "item/have - progress complete" do
+      step = %QuestStep{id: 1, type: "item/have", item_id: 1, count: 2}
+      progress = %QuestProgress{status: "complete", progress: %{}}
+      save = %{items: [], wearing: %{chest: item_instance(1)}, wielding: %{}}
+
+      assert Quest.current_step_progress(step, progress, save) == 2
+    end
+
     test "npc/kill - no progress on a step yet" do
       step = %QuestStep{type: "npc/kill"}
       progress = %QuestProgress{progress: %{}}
