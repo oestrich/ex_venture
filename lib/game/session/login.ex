@@ -21,6 +21,7 @@ defmodule Game.Session.Login do
   alias Game.Session
   alias Game.Session.Process
   alias Game.Session.GMCP
+  alias Game.Session.Regen
   alias Metrics.PlayerInstrumenter
   alias Web.Router.Helpers, as: Routes
 
@@ -102,6 +103,7 @@ defmodule Game.Session.Login do
 
     Enum.each(user.save.channels, &Channel.join/1)
     Channel.join_tell({:user, user})
+    state |> Regen.maybe_trigger_regen()
 
     state
     |> Map.put(:state, "active")
@@ -211,6 +213,7 @@ defmodule Game.Session.Login do
 
     state.socket |> @socket.echo("Session recovered... Welcome back.")
     state |> Process.prompt()
+    state |> Regen.maybe_trigger_regen()
 
     state
   end
