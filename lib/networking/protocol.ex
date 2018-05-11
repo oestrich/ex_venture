@@ -17,6 +17,7 @@ defmodule Networking.Protocol do
   @will 251
   @wont 252
   @telnet_do 253
+  @telnet_dont 254
   @sb 250
   @se 240
   @telnet_option_echo 1
@@ -73,6 +74,7 @@ defmodule Networking.Protocol do
   @spec push_gmcp(pid, String.t(), String.t()) :: :ok
   @impl Networking.Socket
   def push_gmcp(socket, module, data) do
+    Logger.debug("Pushing GMCP #{module} - #{data}")
     GenServer.cast(socket, {:gmcp, module, data})
   end
 
@@ -136,7 +138,7 @@ defmodule Networking.Protocol do
         Logger.debug(["GMCP: Sending", module], type: :socket)
         module_char = module |> String.to_charlist()
         data_char = data |> String.to_charlist()
-        message = [@iac, @sb, @gmcp] ++ module_char ++ data_char ++ [@iac, @se]
+        message = [@iac, @sb, @gmcp] ++ module_char ++ [' '] ++ data_char ++ [@iac, @se]
         send_data(state, message)
         {:noreply, state}
 
@@ -210,6 +212,11 @@ defmodule Networking.Protocol do
 
       :gmcp ->
         Logger.info("Will do GCMP", type: :socket)
+        {:noreply, Map.put(state, :gmcp, true)}
+
+      {:gmcp, :will} ->
+        Logger.info("Client is requesting GMCP", type: :socket)
+        send_data(state, [@iac, @telnet_do, @gmcp])
         {:noreply, Map.put(state, :gmcp, true)}
 
       {:gmcp, data} ->
@@ -292,12 +299,29 @@ defmodule Networking.Protocol do
         forward_options(socket, data)
         fun.(:gmcp)
 
+      <<@iac, @will, @gmcp, data::binary>> ->
+        forward_options(socket, data)
+        fun.({:gmcp, :will})
+
       <<@iac, @sb, @gmcp, data::binary>> ->
         {data, forward} = split_iac_sb(data)
         forward_options(socket, forward)
         fun.({:gmcp, data})
 
-      <<@iac, _data::binary>> ->
+      <<@iac, @telnet_dont, @mssp, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:iac)
+
+      <<@iac, @telnet_do, @telnet_option_echo, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:iac)
+
+      <<@iac, @telnet_dont, @telnet_option_echo, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:iac)
+
+      <<@iac, data::binary>> ->
+        Logger.warn("Got weird iac data - #{inspect(data)}")
         fun.(:iac)
 
       _ ->
@@ -312,12 +336,16 @@ defmodule Networking.Protocol do
   - Core.Supports.Set
   """
   def handle_gmcp("Core.Supports.Set " <> supports, state) do
+    Logger.debug("Got a Core.Supports.Set of #{supports}", type: :socket)
+
     case Poison.decode(supports) do
       {:ok, supports} ->
         supports = remove_version_numbers(supports)
+        supports = supports ++ state.gmcp_supports
         {:noreply, Map.put(state, :gmcp_supports, supports)}
 
       _ ->
+        Logger.debug("There was an error decoding Core.Supports.Set", type: :socket)
         {:noreply, state}
     end
   end
