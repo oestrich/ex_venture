@@ -234,7 +234,16 @@ defmodule Game.Room do
   def handle_cast({:update, room}, state) do
     Logger.info("Room updated #{room.id}", type: :room)
     room.zone_id |> Zone.update_room(room)
-    {:noreply, Map.put(state, :room, room)}
+
+    state = Map.put(state, :room, room)
+
+    case Actions.maybe_respawn_items(state) do
+      :ok ->
+        {:noreply, state}
+
+      {:update, state} ->
+        {:noreply, state}
+    end
   end
 
   def handle_cast({:enter, {:user, user}, reason}, state) do
@@ -384,8 +393,11 @@ defmodule Game.Room do
 
   def handle_info({:respawn, item_id}, state) do
     case Actions.respawn_item(state, item_id) do
-      :ok -> {:noreply, state}
-      {:update, state} -> {:noreply, state}
+      :ok ->
+        {:noreply, state}
+
+      {:update, state} ->
+        {:noreply, state}
     end
   end
 

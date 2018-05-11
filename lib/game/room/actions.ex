@@ -10,10 +10,17 @@ defmodule Game.Room.Actions do
   alias Game.Room
   alias Game.Room.Repo
 
+  @doc """
+  Pick up an item from a room
+  """
+  @spec pick_up(Room.t(), Item.t()) :: {Room.t(), {:ok, Item.instance()}} | {Room.t(), :error}
   def pick_up(room, item) do
     case has_item?(room, item) do
-      true -> _pick_up(room, item)
-      false -> {room, :error}
+      true ->
+        _pick_up(room, item)
+
+      false ->
+        {room, :error}
     end
   end
 
@@ -40,8 +47,11 @@ defmodule Game.Room.Actions do
   @spec pick_up_currency(Room.t()) :: {Room.t(), {:ok, integer}}
   def pick_up_currency(room = %{currency: currency}) do
     case Repo.update(room, %{currency: 0}) do
-      {:ok, room} -> {room, {:ok, currency}}
-      _ -> {room, :error}
+      {:ok, room} ->
+        {room, {:ok, currency}}
+
+      _ ->
+        {room, :error}
     end
   end
 
@@ -67,13 +77,15 @@ defmodule Game.Room.Actions do
   Spawns items if necessary
   """
   @spec maybe_respawn_items(State.t()) :: :ok | {:update, State.t()}
-  def maybe_respawn_items(state = %{room: %{room_items: room_items}})
-      when length(room_items) > 0 do
-    state = respawn_items(state)
-    {:update, state}
-  end
+  def maybe_respawn_items(state = %{room: room}) do
+    case length(room.room_items) > 0 do
+      true ->
+        {:update, respawn_items(state)}
 
-  def maybe_respawn_items(_), do: :ok
+      false ->
+        :ok
+    end
+  end
 
   defp respawn_items(state = %{room: room}) do
     room.room_items
@@ -88,8 +100,11 @@ defmodule Game.Room.Actions do
 
   defp respawn(room_item, state = %{respawn: respawn}) do
     case respawn[room_item.item_id] do
-      nil -> start_respawn(room_item, state)
-      _ -> state
+      nil ->
+        start_respawn(room_item, state)
+
+      _ ->
+        state
     end
   end
 
