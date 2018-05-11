@@ -157,14 +157,19 @@ defmodule Game.Session.Login do
   end
 
   defp process_login(user, state = %{socket: socket}) do
-    case already_signed_in?(user) do
-      true ->
+    with :ok <- check_already_signed_in(user),
+         :ok <- check_disabled(user) do
+      user |> login(socket, state |> Map.delete(:login))
+    else
+      {:error, :signed_in} ->
         socket |> @socket.echo("Sorry, this player is already logged in.")
         socket |> @socket.disconnect()
         state
 
-      false ->
-        user |> login(socket, state |> Map.delete(:login))
+      {:error, :disabled} ->
+        socket |> @socket.echo("Sorry, your account has been disabled. Please contact the admins.")
+        socket |> @socket.disconnect()
+        state
     end
   end
 
@@ -184,14 +189,13 @@ defmodule Game.Session.Login do
   end
 
   defp process_recovery(user, state = %{socket: socket}) do
-    case already_signed_in?(user) do
-      true ->
+    with :ok <- check_already_signed_in(user) do
+      user |> _recover_session(state)
+    else
+      {:error, :signed_in} ->
         socket |> @socket.echo("Sorry, this player is already logged in.")
         socket |> @socket.disconnect()
         state
-
-      false ->
-        user |> _recover_session(state)
     end
   end
 
@@ -211,8 +215,27 @@ defmodule Game.Session.Login do
     state
   end
 
-  defp already_signed_in?(user) do
-    Session.Registry.connected_players()
-    |> Enum.any?(&(&1.user.id == user.id))
+  defp check_already_signed_in(user) do
+    online? =
+      Session.Registry.connected_players()
+      |> Enum.any?(&(&1.user.id == user.id))
+
+    case online? do
+      true ->
+        {:error, :signed_in}
+
+      false ->
+        :ok
+    end
+  end
+
+  defp check_disabled(user) do
+    case "disabled" in user.flags do
+      true ->
+        {:error, :disabled}
+
+      false ->
+        :ok
+    end
   end
 end

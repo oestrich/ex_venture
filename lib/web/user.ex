@@ -29,7 +29,14 @@ defmodule Web.User do
   User flags
   """
   @spec flags() :: [String.t()]
-  def flags(), do: ["admin"]
+  def flags(), do: ["admin", "disabled"]
+
+  @doc """
+  Check if a user is disabled
+  """
+  def disabled?(user) do
+    "disabled" in user.flags
+  end
 
   @doc """
   Fetch a user from a web token
@@ -160,8 +167,23 @@ defmodule Web.User do
   def update(id, params) do
     id
     |> get()
-    |> User.changeset(params)
+    |> User.changeset(cast_params(params))
     |> Repo.update()
+  end
+
+  defp cast_params(params) do
+    case Map.has_key?(params, "flags") do
+      true ->
+        flags =
+          params
+          |> Map.get("flags")
+          |> Enum.reject(&(&1 == ""))
+
+        Map.put(params, "flags", flags)
+
+      false ->
+        params
+    end
   end
 
   @doc """

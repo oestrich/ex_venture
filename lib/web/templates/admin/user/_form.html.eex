@@ -12,6 +12,7 @@
       <div class="form-group">
         <%= label f, :flags, class: "col-md-4" %>
         <ul class="col-md-8">
+          <input type="hidden" name="user[flags][]" value=""/>
           <%= Enum.map(User.flags(), fn flag -> %>
             <li class="checkbox">
               <label>

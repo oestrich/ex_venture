@@ -64,4 +64,15 @@ defmodule Game.Session.LoginTest do
 
     Registry.unregister()
   end
+
+  test "user has been disabled", %{socket: socket} do
+    user = create_user(%{name: "user", password: "password", class_id: create_class().id, flags: ["disabled"]})
+    {:ok, password} = User.create_one_time_password(user)
+
+    state = Login.process(password.password, %{socket: socket, login: %{name: "user"}})
+
+    assert Map.has_key?(state, :user) == false
+    assert @socket.get_echos() == [{socket, "Sorry, your account has been disabled. Please contact the admins."}]
+    assert @socket.get_disconnects() == [socket]
+  end
 end
