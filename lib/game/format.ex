@@ -243,6 +243,7 @@ defmodule Game.Format do
     #{map}
 
     #{who_is_here(room)}
+
     #{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
     """
     |> String.trim()
@@ -377,12 +378,12 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", status_line: "[name] is here."}]})
-      "{player}Mordred{/player} is here. {npc}Arthur{/npc} is here."
+      "{npc}Arthur{/npc} is here.\\n{player}Mordred{/player} is here."
   """
   def who_is_here(room) do
-    [players(room), npcs(room)]
+    [npcs(room), players(room)]
     |> Enum.reject(fn line -> line == "" end)
-    |> Enum.join(" ")
+    |> Enum.join("\n")
   end
 
   @doc """
