@@ -374,7 +374,7 @@ defmodule Web.User do
   @spec find_and_validate(String.t(), String.t()) :: {:error, :invalid} | User.t()
   def find_and_validate(name, password) do
     User
-    |> where([u], u.name == ^name)
+    |> where([u], ilike(u.name, ^name))
     |> Repo.one()
     |> _find_and_validate(password)
   end
