@@ -1,1 +1,1 @@
-<%= link("Click here to reset your password", to: public_registration_reset_path(Endpoint, :edit, token: @user.password_reset_token)) %>
+<%= link("Click here to reset your password", to: public_registration_reset_url(Endpoint, :edit, token: @user.password_reset_token)) %>
