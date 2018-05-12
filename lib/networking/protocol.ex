@@ -12,7 +12,7 @@ defmodule Networking.Protocol do
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RoutesHelper
 
-  @mudlet_version 2
+  @mudlet_version 3
 
   @behaviour :ranch_protocol
   @behaviour Networking.Socket

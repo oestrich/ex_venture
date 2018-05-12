@@ -28,7 +28,7 @@ defmodule Web.Router do
     pipe_through([:browser, :public])
 
     get("/css/colors.css", ColorController, :index)
-    get("/clients/mudlet.xml", PageController, :mudlet_package)
+    get("/clients/mudlet/ex_venture.xml", PageController, :mudlet_package)
 
     get("/", PageController, :index)
     get("/version", PageController, :version)

@@ -51,11 +51,6 @@
     <AliasPackage/>
     <ActionPackage/>
     <ScriptPackage>
-        <ScriptGroup isActive="yes" isFolder="yes">
-            <name>ExVenture</name>
-            <packageName>ExVenure</packageName>
-            <script></script>
-            <eventHandlerList/>
             <ScriptGroup isActive="yes" isFolder="yes">
                 <name>CSSman</name>
                 <packageName>CSSman</packageName>
@@ -249,7 +244,6 @@ end</script>
                     <string>gmcp.Room.Info</string>
                   </eventHandlerList>
                 </Script>
-            </ScriptGroup>
         </ScriptGroup>
     </ScriptPackage>
     <KeyPackage/>
