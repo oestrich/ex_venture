@@ -167,6 +167,7 @@ GUI.GaugeFrontCSS = CSSMan.new([[
   border-width: 1px;
   border-radius: 5px;
   margin: 5px;
+  font-family: monospace;
 ]])
 
 GUI.Health = Geyser.Gauge:new({
@@ -208,9 +209,9 @@ GUI.Move.front:echo(&quot;Move Points&quot;)</script>
   local move_points = tonumber(gmcp.Character.Vitals.move_points)
 	local max_move_points = tonumber(gmcp.Character.Vitals.max_move_points)
 
-	GUI.Health:setValue(health_points, max_health_points)
-	GUI.Skill:setValue(skill_points, max_skill_points)
-	GUI.Move:setValue(move_points, max_move_points)
+	GUI.Health:setValue(health_points, max_health_points, string.format(&quot;%d/%d hp&quot;, health_points, max_health_points))
+	GUI.Skill:setValue(skill_points, max_skill_points, string.format(&quot;%d/%d sp&quot;, skill_points, max_skill_points))
+	GUI.Move:setValue(move_points, max_move_points, string.format(&quot;%d/%d mv&quot;, move_points, max_move_points))
 end</script>
                 <eventHandlerList>
                     <string>gmcp.Character.Vitals</string>
