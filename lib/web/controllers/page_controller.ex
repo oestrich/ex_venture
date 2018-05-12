@@ -17,4 +17,8 @@ defmodule Web.PageController do
   def version(conn, _params) do
     text(conn, "#{ExVenture.version()} - #{ExVenture.sha_version()}")
   end
+
+  def mudlet_package(conn, _params) do
+    render(conn, "mudlet-package.xml")
+  end
 end

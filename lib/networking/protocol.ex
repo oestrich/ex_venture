@@ -9,6 +9,10 @@ defmodule Networking.Protocol do
   alias Game.Color
   alias Metrics.PlayerInstrumenter
   alias Networking.MSSP
+  alias Web.Endpoint
+  alias Web.Router.Helpers, as: RoutesHelper
+
+  @mudlet_version 1
 
   @behaviour :ranch_protocol
   @behaviour Networking.Socket
@@ -212,11 +216,15 @@ defmodule Networking.Protocol do
 
       :gmcp ->
         Logger.info("Will do GCMP", type: :socket)
+
+        push_client_gui(state)
+
         {:noreply, Map.put(state, :gmcp, true)}
 
       {:gmcp, :will} ->
         Logger.info("Client is requesting GMCP", type: :socket)
         send_data(state, [@iac, @telnet_do, @gmcp])
+
         {:noreply, Map.put(state, :gmcp, true)}
 
       {:gmcp, data} ->
@@ -400,5 +408,12 @@ defmodule Networking.Protocol do
     |> Enum.map(fn support ->
       support |> String.split(" ") |> List.first()
     end)
+  end
+
+  defp push_client_gui(state) do
+    module_char = "Client.GUI" |> String.to_charlist()
+    data_char = [@mudlet_version, RoutesHelper.public_page_url(Endpoint, :mudlet_package)] |> Enum.join("\n") |> String.to_charlist()
+    message = [@iac, @sb, @gmcp] ++ module_char ++ [' '] ++ data_char ++ [@iac, @se]
+    send_data(state, message)
   end
 end
