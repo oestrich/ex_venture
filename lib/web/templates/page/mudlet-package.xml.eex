@@ -214,9 +214,9 @@ GUI.Move.front:echo(&quot;Move Points&quot;)</script>
 
 GUI.Sidebar = Geyser.HBox:new({
   name = &quot;GUI.Sidebar&quot;,
-  x = 0, y = 0,
+  x = 0, y = &quot;50%&quot;,
   width = &quot;100%&quot;,
-  height = &quot;100%&quot;,
+  height = &quot;50%&quot;,
 }, GUI.Right)
 
 GUI.ChatBox = Geyser.MiniConsole:new({
@@ -225,12 +225,28 @@ GUI.ChatBox = Geyser.MiniConsole:new({
   wrapAt = 100,
   fontSize = 16,
   scrollBar = true,
-  width=&quot;30%&quot;, height=&quot;50%&quot;,
+  width=&quot;25%&quot;, height=&quot;50%&quot;,
 }, GUI.Sidebar)
 GUI.ChatBox:setColor("<%= Config.color_background() %>")
 
 setFgColor("ChatBox", 255, 255, 255)
 setBgColor("ChatBox", 0, 43, 54)</script>
+                    <eventHandlerList/>
+                </Script>
+                <Script isActive="yes" isFolder="no">
+                    <name>Mapper</name>
+                    <packageName></packageName>
+                    <script>local main = Geyser.Container:new({
+  x=0, y=0,
+  width=&quot;100%&quot;, height=&quot;100%&quot;,
+  name=&quot;mapper container&quot;
+})
+
+local mapper = Geyser.Mapper:new({
+  name = &quot;mapper&quot;,
+  x = &quot;75%&quot;, y = 0,
+  width = &quot;25%&quot;, height = &quot;50%&quot;
+}, main)</script>
                     <eventHandlerList/>
                 </Script>
             </ScriptGroup>
@@ -288,6 +304,32 @@ function doSpeedWalk()
   send(&quot;run &quot; .. table.concat(speedWalkDir, &quot;&quot;))
 end
 
+local environment_data = {
+  -- colour = environment name, colour
+  [&quot;blue&quot;]       = {{&quot;ocean&quot;, 4}, {&quot;lake&quot;, 4}, {&quot;river&quot;, 4}},
+  [&quot;brown&quot;]      = {{&quot;mountain&quot;, 1}, {&quot;road&quot;, 1}},
+  [&quot;green&quot;]      = {{&quot;hill&quot;, 2}, {&quot;field&quot;, 2}, {&quot;meadow&quot;, 2}},
+  [&quot;dark_green&quot;] = {{&quot;forest&quot;, 10}, {&quot;jungle&quot;, 10}},
+  [&quot;grey&quot;]       = {{&quot;town&quot;, 8}, {&quot;dungeon&quot;, 8}, {&quot;default&quot;, 8}},
+  [&quot;light_grey&quot;] = {{&quot;inside&quot;, 7}}
+}
+
+-- environment name = id
+envids = {}
+
+for colour, environments in pairs(environment_data) do
+  for _, environment in ipairs(environments) do
+    local name, id = environment[1], environment[2]
+
+    --  257-272 are the default colors the user can adjust in mapper settings tab
+    id = id + 256
+    local r,g,b = unpack(color_table[colour])
+    setCustomEnvColor(id, r, g, b, 255)
+
+    envids[name] = id
+  end
+end
+
 function exventureMapper()
   local room = gmcp.Room.Info
   local zone = gmcp.Room.Info.zone
@@ -296,6 +338,7 @@ function exventureMapper()
   addRoom(room.id)
   setRoomCoordinates(room.id, room.x, -1 * room.y, room.map_layer)
   setRoomArea(room.id, zone.id)
+  setRoomEnv(room.id, envids[room.ecology])
   centerview(room.id)
 
   for i, exit in ipairs(room.exits) do
