@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+    <TriggerPackage>
+        <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+            <name>Login Trigger</name>
+            <script>sendGMCP(&quot;Core.Supports.Set [\&quot;Character.Vitals 1\&quot;]&quot;)</script>
+            <triggerType>0</triggerType>
+            <conditonLineDelta>0</conditonLineDelta>
+            <mStayOpen>0</mStayOpen>
+            <mCommand></mCommand>
+            <packageName>ExVenture</packageName>
+            <mFgColor>#ff0000</mFgColor>
+            <mBgColor>#ffff00</mBgColor>
+            <mSoundFile></mSoundFile>
+            <colorTriggerFgColor>#000000</colorTriggerFgColor>
+            <colorTriggerBgColor>#000000</colorTriggerBgColor>
+            <regexCodeList>
+                <string>ExVenture v</string>
+            </regexCodeList>
+            <regexCodePropertyList>
+                <integer>2</integer>
+            </regexCodePropertyList>
+        </Trigger>
+        <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+            <name>Login link</name>
+            <script>openWebPage(multimatches[3][1])</script>
+            <triggerType>0</triggerType>
+            <conditonLineDelta>2</conditonLineDelta>
+            <mStayOpen>0</mStayOpen>
+            <mCommand></mCommand>
+            <packageName></packageName>
+            <mFgColor>#ff0000</mFgColor>
+            <mBgColor>#ffff00</mBgColor>
+            <mSoundFile></mSoundFile>
+            <colorTriggerFgColor>#000000</colorTriggerFgColor>
+            <colorTriggerBgColor>#000000</colorTriggerBgColor>
+            <regexCodeList>
+                <string>Please sign in via the website and get a one time password</string>
+                <string>1</string>
+                <string>^http.+</string>
+            </regexCodeList>
+            <regexCodePropertyList>
+                <integer>3</integer>
+                <integer>5</integer>
+                <integer>1</integer>
+            </regexCodePropertyList>
+        </Trigger>
+    </TriggerPackage>
+    <TimerPackage/>
+    <AliasPackage/>
+    <ActionPackage/>
+    <ScriptPackage>
+        <ScriptGroup isActive="yes" isFolder="yes">
+            <name>CSSman</name>
+            <packageName>CSSman</packageName>
+            <script></script>
+            <eventHandlerList/>
+            <Script isActive="yes" isFolder="no">
+                <name>CSSMan</name>
+                <packageName></packageName>
+                <script>-- CSSMan by Vadi. Public domain.
+
+CSSMan = {}
+CSSMan.__index = CSSMan
+
+function CSSMan.new(stylesheet)
+  local obj  = { stylesheet = {} }
+  setmetatable(obj,CSSMan)
+  local trim = string.trim
+
+  assert(type(stylesheet) == &quot;string&quot;, &quot;CSSMan.new: no stylesheet provided. A possible error is that you might have used CSSMan.new, not CSSMan:new&quot;)
+
+  for line in stylesheet:gmatch(&quot;[^\r\n]+&quot;) do
+    local attribute, value = line:match(&quot;^(.-):(.-);$&quot;)
+    if attribute and value then
+      attribute, value = trim(attribute), trim(value)
+      obj.stylesheet[attribute] = value
+    end
+  end
+
+  return obj
+end
+
+function CSSMan:set(key, value)
+  self.stylesheet[key] = value
+end
+
+function CSSMan:get(key)
+  return self.stylesheet[key]
+end
+
+function CSSMan:getCSS(key)
+  local lines, concat = {}, table.concat
+  for k,v in pairs(self.stylesheet) do lines[#lines+1] = concat({k,&quot;: &quot;, v, &quot;;&quot;}) end
+  return concat(lines, &quot;\n&quot;)
+end
+
+function CSSMan:gettable()
+  return self.stylesheet
+end
+
+function CSSMan:settable(tbl)
+  assert(type(tbl) == &quot;table&quot;, &quot;CSSMan:settable: table expected, got &quot;..type(tbl))
+
+  self.stylesheet = tbl
+end</script>
+                <eventHandlerList/>
+            </Script>
+        </ScriptGroup>
+        <ScriptGroup isActive="yes" isFolder="yes">
+            <name>GUI</name>
+            <packageName></packageName>
+            <script>GUI = GUI or {}
+</script>
+            <eventHandlerList/>
+            <Script isActive="yes" isFolder="no">
+                <name>Set Borders</name>
+                <packageName></packageName>
+                <script>-- Based off of https://forums.mudlet.org/viewtopic.php?t=4098
+
+local w,h = getMainWindowSize()
+setBorderBottom(h / 20)</script>
+                <eventHandlerList/>
+            </Script>
+            <Script isActive="yes" isFolder="no">
+                <name>Create Background</name>
+                <packageName></packageName>
+                <script>-- Based off of https://forums.mudlet.org/viewtopic.php?t=4098
+
+GUI.BackgroundCSS = CSSMan.new([[
+  background-color: #002b36;
+]])
+
+GUI.Bottom = Geyser.Label:new({
+  name = &quot;GUI.Bottom&quot;,
+	x = &quot;0%&quot;, y = &quot;95%&quot;,
+  width = &quot;100%&quot;,
+  height = &quot;5%&quot;,
+})
+GUI.Bottom:setStyleSheet(GUI.BackgroundCSS:getCSS())</script>
+                <eventHandlerList/>
+            </Script>
+            <Script isActive="yes" isFolder="no">
+                <name>Gauges</name>
+                <packageName></packageName>
+                <script>-- Based off of https://forums.mudlet.org/viewtopic.php?t=4098
+
+GUI.Footer = Geyser.HBox:new({
+  name = &quot;GUI.Footer&quot;,
+  x = 0, y = 0,
+  width = &quot;100%&quot;,
+  height = &quot;100%&quot;,
+}, GUI.Bottom)
+
+GUI.GaugeBackCSS = CSSMan.new([[
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+  border-radius: 5px;
+  margin: 5px;
+]])
+
+GUI.GaugeFrontCSS = CSSMan.new([[
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+  border-radius: 5px;
+  margin: 5px;
+  font-family: monospace;
+]])
+
+GUI.Health = Geyser.Gauge:new({
+  name = &quot;GUI.Health&quot;,
+},GUI.Footer)
+GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;#fdf6e3&quot;)
+GUI.Health.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;#dc322f&quot;)
+GUI.Health.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+GUI.Health.front:echo(&quot;Health Points&quot;)
+
+GUI.Skill = Geyser.Gauge:new({
+  name = &quot;GUI.Skill&quot;,
+},GUI.Footer)
+GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;#fdf6e3&quot;)
+GUI.Skill.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;#859900&quot;)
+GUI.Skill.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+GUI.Skill.front:echo(&quot;Skill Points&quot;)
+
+GUI.Move = Geyser.Gauge:new({
+  name = &quot;GUI.Move&quot;,
+},GUI.Footer)
+GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;#fdf6e3&quot;)
+GUI.Move.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;#268bd2&quot;)
+GUI.Move.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+GUI.Move.front:echo(&quot;Move Points&quot;)</script>
+                <eventHandlerList/>
+            </Script>
+            <Script isActive="yes" isFolder="no">
+                <name>updateVitals</name>
+                <packageName></packageName>
+                <script>function updateVitals()
+  local health_points = tonumber(gmcp.Character.Vitals.health_points)
+	local max_health_points = tonumber(gmcp.Character.Vitals.max_health_points)
+  local skill_points = tonumber(gmcp.Character.Vitals.skill_points)
+	local max_skill_points = tonumber(gmcp.Character.Vitals.max_skill_points)
+  local move_points = tonumber(gmcp.Character.Vitals.move_points)
+	local max_move_points = tonumber(gmcp.Character.Vitals.max_move_points)
+
+	GUI.Health:setValue(health_points, max_health_points, string.format(&quot;%d/%d hp&quot;, health_points, max_health_points))
+	GUI.Skill:setValue(skill_points, max_skill_points, string.format(&quot;%d/%d sp&quot;, skill_points, max_skill_points))
+	GUI.Move:setValue(move_points, max_move_points, string.format(&quot;%d/%d mv&quot;, move_points, max_move_points))
+end</script>
+                <eventHandlerList>
+                    <string>gmcp.Character.Vitals</string>
+                </eventHandlerList>
+            </Script>
+        </ScriptGroup>
+    </ScriptPackage>
+    <KeyPackage/>
+    <HelpPackage>
+        <helpURL></helpURL>
+    </HelpPackage>
+</MudletPackage>
