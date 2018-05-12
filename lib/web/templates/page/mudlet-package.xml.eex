@@ -16,7 +16,7 @@
             <colorTriggerFgColor>#000000</colorTriggerFgColor>
             <colorTriggerBgColor>#000000</colorTriggerBgColor>
             <regexCodeList>
-                <string>ExVenture</string>
+              <string>Your one time password</string>
             </regexCodeList>
             <regexCodePropertyList>
                 <integer>0</integer>
