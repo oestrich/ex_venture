@@ -219,18 +219,18 @@ GUI.Sidebar = Geyser.HBox:new({
   height = &quot;50%&quot;,
 }, GUI.Right)
 
-GUI.ChatBox = Geyser.MiniConsole:new({
-  name=&quot;ChatBox&quot;,
-  x=&quot;70%&quot;, y=&quot;50%&quot;,
-  wrapAt = 100,
-  fontSize = 16,
-  scrollBar = true,
-  width=&quot;25%&quot;, height=&quot;50%&quot;,
-}, GUI.Sidebar)
-GUI.ChatBox:setColor("<%= Config.color_background() %>")
-
-setFgColor("ChatBox", 255, 255, 255)
-setBgColor("ChatBox", 0, 43, 54)</script>
+-- GUI.ChatBox = Geyser.MiniConsole:new({
+--   name=&quot;ChatBox&quot;,
+--   x=&quot;70%&quot;, y=&quot;50%&quot;,
+--   wrapAt = 100,
+--   fontSize = 16,
+--   scrollBar = true,
+--   width=&quot;25%&quot;, height=&quot;50%&quot;,
+-- }, GUI.Sidebar)
+-- GUI.ChatBox:setColor("<%= Config.color_background() %>")
+-- 
+-- setFgColor("ChatBox", 255, 255, 255)
+-- setBgColor("ChatBox", 0, 43, 54)</script>
                     <eventHandlerList/>
                 </Script>
                 <Script isActive="yes" isFolder="no">
@@ -289,7 +289,7 @@ end</script>
                     <script>function channelsBroadcast()
   local broadcast = gmcp.Channels.Broadcast
   local message = string.format("[%s] %s says, \"%s\"", broadcast.channel, broadcast.from.name, broadcast.message)
-  GUI.ChatBox:echo(message .. "\n")
+  --GUI.ChatBox:echo(message .. "\n")
 end</script>
                     <eventHandlerList>
                         <string>gmcp.Channels.Broadcast</string>
