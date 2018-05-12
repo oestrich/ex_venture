@@ -16,6 +16,7 @@ defmodule Game.Command.LookTest do
       npcs: [npc_attributes(%{id: 1, name: "Bandit", description: "bandit description"})],
       players: [user_attributes(%{id: 1, name: "Player"})],
       features: [%{key: "log", short_description: "log", description: "a log"}],
+      zone: %{id: 10, name: "Zone"}
     }
     @room.set_room(Map.merge(@room._room(), room))
 

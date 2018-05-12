@@ -18,7 +18,7 @@ defmodule Game.Session.LoginTest do
     state = Login.process("name", %{socket: socket})
 
     assert state.login.name == "name"
-    assert @socket.get_prompts() == [{socket, "Password: "}]
+    assert @socket.get_prompts() == [{socket, "Your one time password: "}]
   end
 
   test "verifies the user's name and password", %{socket: socket} do

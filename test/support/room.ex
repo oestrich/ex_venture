@@ -12,6 +12,7 @@ defmodule Test.Game.Room do
       description: "An empty hallway",
       exits: [%{north_id: 2, south_id: 1}],
       zone_id: 1,
+      zone: %{id: 1, name: "A zone"},
       features: [],
       players: [],
       npcs: [],

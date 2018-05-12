@@ -92,8 +92,8 @@ let renderRoom = (channel, room) => {
   exits.innerHTML = ""
   _.each(room.exits, (exit) => {
     let html = document.createElement("span")
-    html.innerHTML = `<span class="exit white">${exit}</span>`
-    html.addEventListener("click", sendExit(channel, exit))
+    html.innerHTML = `<span class="exit white">${exit.direction}</span>`
+    html.addEventListener("click", sendExit(channel, exit.direction))
     exits.append(html)
   })
 

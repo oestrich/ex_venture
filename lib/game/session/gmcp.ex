@@ -5,6 +5,7 @@ defmodule Game.Session.GMCP do
 
   use Networking.Socket
 
+  alias Data.Exit
   alias Data.Room
 
   @doc """
@@ -170,13 +171,14 @@ defmodule Game.Session.GMCP do
 
   defp room_info(room, items) do
     room
-    |> Map.take([:name, :description, :ecology, :zone_id, :x, :y])
+    |> Map.take([:id, :name, :description, :ecology, :x, :y, :map_layer])
     |> Map.merge(%{
+      zone: zone_info(room),
       items: render_many(items),
       players: render_many(room, :players),
       npcs: render_many(room, :npcs),
       shops: render_many(room, :shops),
-      exits: Room.exits(room)
+      exits: render_many(room, :exits)
     })
   end
 
@@ -211,8 +213,27 @@ defmodule Game.Session.GMCP do
     }
   end
 
+  @doc """
+  Zone information
+  """
+  def zone_info(room) do
+    %{
+      id: room.zone.id,
+      name: room.zone.name
+    }
+  end
+
   defp render_many(data) when is_list(data) do
     Enum.map(data, &%{id: &1.id, name: &1.name})
+  end
+
+  defp render_many(room, :exits) do
+    room
+    |> Room.exits()
+    |> Enum.map(fn direction ->
+      room_exit = Exit.exit_to(room, direction)
+      %{room_id: Map.get(room_exit, :"#{direction}_id"), direction: direction}
+    end)
   end
 
   defp render_many(struct, key) do

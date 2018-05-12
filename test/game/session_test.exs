@@ -13,6 +13,8 @@ defmodule Game.SessionTest do
   @room Test.Game.Room
   @zone Test.Game.Zone
 
+  @basic_room %Data.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
+
   setup do
     socket = :socket
     @socket.clear_messages()
@@ -131,7 +133,7 @@ defmodule Game.SessionTest do
   test "recv'ing messages - the first", %{state: state} do
     {:noreply, state} = Process.handle_cast({:recv, "name"}, %{state | state: "login"})
 
-    assert @socket.get_prompts() == [{state.socket, "Password: "}]
+    assert @socket.get_prompts() == [{state.socket, "Your one time password: "}]
     assert state.last_recv
   end
 
@@ -152,7 +154,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
+    @room.set_room(%{@basic_room | exits: [%{north_id: 2, south_id: 1}]})
     state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
     {:noreply, state} = Process.handle_cast({:recv, "run 2n"}, state)
 
@@ -166,7 +168,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
+    @room.set_room(%{@basic_room | exits: [%{north_id: 2, south_id: 1}]})
     state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
     command = %Command{module: Command.Run, args: {[:north, :north]}}
     {:noreply, _state} = Process.handle_info({:continue, command}, state)

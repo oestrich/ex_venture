@@ -4,7 +4,7 @@
     <TriggerPackage>
         <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
             <name>Login Trigger</name>
-            <script>sendGMCP(&quot;Core.Supports.Set [\&quot;Character.Vitals 1\&quot;]&quot;)</script>
+            <script>sendGMCP(&quot;Core.Supports.Set [\&quot;Character.Vitals 1\&quot;, \&quot;Room.Info 1\&quot;]&quot;)</script>
             <triggerType>0</triggerType>
             <conditonLineDelta>0</conditonLineDelta>
             <mStayOpen>0</mStayOpen>
@@ -21,6 +21,30 @@
             <regexCodePropertyList>
                 <integer>0</integer>
             </regexCodePropertyList>
+        </Trigger>
+        <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+          <name>Login link</name>
+          <script>openWebPage(multimatches[3][1])</script>
+          <triggerType>0</triggerType>
+          <conditonLineDelta>2</conditonLineDelta>
+          <mStayOpen>0</mStayOpen>
+          <mCommand></mCommand>
+          <packageName></packageName>
+          <mFgColor>#ff0000</mFgColor>
+          <mBgColor>#ffff00</mBgColor>
+          <mSoundFile></mSoundFile>
+          <colorTriggerFgColor>#000000</colorTriggerFgColor>
+          <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+            <string>Please sign in via the website and get a one time password.</string>
+            <string>1</string>
+            <string>^http.+</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+            <integer>3</integer>
+            <integer>5</integer>
+            <integer>1</integer>
+          </regexCodePropertyList>
         </Trigger>
     </TriggerPackage>
     <TimerPackage/>
@@ -148,6 +172,7 @@ GUI.GaugeFrontCSS = CSSMan.new([[
   border-width: 1px;
   border-radius: 5px;
   margin: 5px;
+  font-family: monospace;
 ]])
 
 GUI.Health = Geyser.Gauge:new({
@@ -183,19 +208,46 @@ GUI.Move.front:echo(&quot;Move Points&quot;)</script>
                     <packageName></packageName>
                     <script>function updateVitals()
   local health_points = tonumber(gmcp.Character.Vitals.health_points)
-	local max_health_points = tonumber(gmcp.Character.Vitals.max_health_points)
+  local max_health_points = tonumber(gmcp.Character.Vitals.max_health_points)
   local skill_points = tonumber(gmcp.Character.Vitals.skill_points)
-	local max_skill_points = tonumber(gmcp.Character.Vitals.max_skill_points)
+  local max_skill_points = tonumber(gmcp.Character.Vitals.max_skill_points)
   local move_points = tonumber(gmcp.Character.Vitals.move_points)
-	local max_move_points = tonumber(gmcp.Character.Vitals.max_move_points)
+  local max_move_points = tonumber(gmcp.Character.Vitals.max_move_points)
 
-	GUI.Health:setValue(health_points, max_health_points)
-	GUI.Skill:setValue(skill_points, max_skill_points)
-	GUI.Move:setValue(move_points, max_move_points)
+  GUI.Health:setValue(health_points, max_health_points, string.format(&quot;%d/%d hp&quot;, health_points, max_health_points))
+  GUI.Skill:setValue(skill_points, max_skill_points, string.format(&quot;%d/%d sp&quot;, skill_points, max_skill_points))
+  GUI.Move:setValue(move_points, max_move_points, string.format(&quot;%d/%d mv&quot;, move_points, max_move_points))
 end</script>
                     <eventHandlerList>
                         <string>gmcp.Character.Vitals</string>
                     </eventHandlerList>
+                </Script>
+                <Script isActive="yes" isFolder="no">
+                  <name>exventureMapper</name>
+                  <packageName></packageName>
+                  <script>mudlet = mudlet or {}; mudlet.mapper_script = true
+
+function doSpeedWalk()
+  send(&quot;run &quot; .. table.concat(speedWalkDir, &quot;&quot;))
+end
+
+function exventureMapper()
+  local room = gmcp.Room.Info
+  local zone = gmcp.Room.Info.zone
+
+  setAreaName(zone.id, zone.name)
+  addRoom(room.id)
+  setRoomCoordinates(room.id, room.x, -1 * room.y, room.map_layer)
+  setRoomArea(room.id, zone.id)
+  centerview(room.id)
+
+  for i, exit in ipairs(room.exits) do
+    setExit(room.id, exit.room_id, exit.direction)
+  end
+end</script>
+                  <eventHandlerList>
+                    <string>gmcp.Room.Info</string>
+                  </eventHandlerList>
                 </Script>
             </ScriptGroup>
         </ScriptGroup>

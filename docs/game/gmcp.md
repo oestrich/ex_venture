@@ -74,15 +74,18 @@ When a player uses `look` or moves this will be sent to show the current room's 
 
 ```
 Room.Info {
-  "zone_id": 1,
+  "id": 5,
+  "zone": {"id": 1, "name": "Zone"},
   "y": 3,
   "x": 2,
+  "map_layer": 4,
   "shops": [{"name": "Shoppe", "id": 1},
   "players": [{"name": "player", "id": 1}],
   "npcs": [{"name": "Bandit", "id": 2}],
   "name": "Great Room",
   "items": [{"name": "Leather Armor", "id": 2}],
   "ecology": "default",
+  "exits": [{"room_id": 10, "direction": "east"}],
   "description": "The great room of the bandit hideout."
 }
 ```

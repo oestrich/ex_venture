@@ -15,7 +15,7 @@ defmodule Game.Room.Repo do
   @spec all() :: [Room.t()]
   def all() do
     Room
-    |> preload([:room_items, :shops])
+    |> preload([:room_items, :shops, :zone])
     |> Repo.all()
   end
 
@@ -31,7 +31,7 @@ defmodule Game.Room.Repo do
       room ->
         room
         |> Exit.load_exits()
-        |> Repo.preload([:room_items, :shops])
+        |> Repo.preload([:room_items, :shops, :zone])
     end
   end
 
