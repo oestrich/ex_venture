@@ -4,7 +4,7 @@
     <TriggerPackage>
         <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
             <name>Login Trigger</name>
-            <script>sendGMCP(&quot;Core.Supports.Set [\&quot;Character.Vitals 1\&quot;, \&quot;Room.Info 1\&quot;]&quot;)</script>
+            <script>sendGMCP(&quot;Core.Supports.Set [\&quot;Character.Vitals 1\&quot;, \&quot;Room.Info 1\&quot;, \&quot;Target.You 1\&quot;]&quot;)</script>
             <triggerType>0</triggerType>
             <conditonLineDelta>0</conditonLineDelta>
             <mStayOpen>0</mStayOpen>
@@ -112,7 +112,7 @@ end</script>
                 <name>GUI</name>
                 <packageName></packageName>
                 <script>GUI = GUI or {}
-</script>
+                </script>
                 <eventHandlerList/>
                 <Script isActive="yes" isFolder="no">
                     <name>Set Borders</name>
@@ -198,6 +198,11 @@ GUI.Move.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
 GUI.Move.front:echo(&quot;Move Points&quot;)</script>
                     <eventHandlerList/>
                 </Script>
+            </ScriptGroup>
+            <ScriptGroup isActive="yes" isFolder="yes">
+                <name>GMCP</name>
+                <packageName></packageName>
+                <script></script>
                 <Script isActive="yes" isFolder="no">
                     <name>updateVitals</name>
                     <packageName></packageName>
@@ -215,6 +220,16 @@ GUI.Move.front:echo(&quot;Move Points&quot;)</script>
 end</script>
                     <eventHandlerList>
                         <string>gmcp.Character.Vitals</string>
+                    </eventHandlerList>
+                </Script>
+                <Script isActive="yes" isFolder="no">
+                    <name>targetYou</name>
+                    <packageName></packageName>
+                    <script>function targetYou()
+  alert(1)
+end</script>
+                    <eventHandlerList>
+                        <string>gmcp.Target.You</string>
                     </eventHandlerList>
                 </Script>
                 <Script isActive="yes" isFolder="no">
