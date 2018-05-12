@@ -17,7 +17,7 @@ defmodule Web.SessionController do
       user ->
         conn
         |> put_session(:user_token, user.token)
-        |> redirect(to: public_page_path(conn, :index))
+        |> after_sign_in_redirect()
     end
   end
 
@@ -25,5 +25,17 @@ defmodule Web.SessionController do
     conn
     |> clear_session()
     |> redirect(to: public_page_path(conn, :index))
+  end
+
+  defp after_sign_in_redirect(conn) do
+    case get_session(conn, :last_path) do
+      nil ->
+        conn |> redirect(to: public_page_path(conn, :index))
+
+      path ->
+        conn
+        |> put_session(:last_path, nil)
+        |> redirect(to: path)
+    end
   end
 end

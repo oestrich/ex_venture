@@ -10,8 +10,14 @@ defmodule Web.Plug.PublicEnsureUser do
 
   def call(conn, _opts) do
     case Map.has_key?(conn.assigns, :user) do
-      true -> conn
-      false -> conn |> redirect(to: Routes.public_session_path(conn, :new)) |> halt()
+      true ->
+        conn
+
+      false ->
+        conn
+        |> put_session(:last_path, conn.request_path)
+        |> redirect(to: Routes.public_session_path(conn, :new))
+        |> halt()
     end
   end
 end
