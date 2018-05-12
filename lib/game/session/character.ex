@@ -40,7 +40,8 @@ defmodule Game.Session.Character do
   Callback for after a player sent effects to another character
   """
   def effects_applied(state, effects, target) do
-    state.socket |> @socket.echo(Format.effects(effects, target) |> Enum.join("\n"))
+    message = Enum.join(Format.effects(effects, target), "\n")
+    state.socket |> @socket.echo(message)
     state |> Session.Process.prompt()
     state
   end

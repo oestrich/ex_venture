@@ -78,7 +78,9 @@ defmodule Networking.Protocol do
   @spec push_gmcp(pid, String.t(), String.t()) :: :ok
   @impl Networking.Socket
   def push_gmcp(socket, module, data) do
-    Logger.debug("Pushing GMCP #{module} - #{data}")
+    Logger.debug(fn ->
+      "Pushing GMCP #{module} - #{data}"
+    end)
     GenServer.cast(socket, {:gmcp, module, data})
   end
 
@@ -293,6 +295,7 @@ defmodule Networking.Protocol do
   Multiple IAC dos might come in at the same time, so forward
   them along to us after handling one.
   """
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle_options(data, socket, fun) do
     case data do
       <<@iac, @telnet_do, @mccp, data::binary>> ->
@@ -344,7 +347,9 @@ defmodule Networking.Protocol do
   - Core.Supports.Set
   """
   def handle_gmcp("Core.Supports.Set " <> supports, state) do
-    Logger.debug("Got a Core.Supports.Set of #{supports}", type: :socket)
+    Logger.debug(fn ->
+      "Got a Core.Supports.Set of #{supports}"
+    end, type: :socket)
 
     case Poison.decode(supports) do
       {:ok, supports} ->
