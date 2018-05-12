@@ -137,6 +137,7 @@ defmodule Game.Session.Login do
 
   def process(password, state = %{socket: socket, login: %{name: name}}) do
     socket |> @socket.tcp_option(:echo, true)
+    password = String.trim(password)
 
     case Authentication.find_and_validate(name, password) do
       {:error, :invalid} ->
@@ -151,9 +152,9 @@ defmodule Game.Session.Login do
   end
 
   def process(message, state = %{socket: socket}) do
-    socket |> @socket.echo("Please sign in via the website and get a one time password")
+    socket |> @socket.echo("Please sign in via the website and get a one time password.")
     socket |> @socket.echo(Routes.public_account_url(Web.Endpoint, :password))
-    socket |> @socket.prompt("Password: ")
+    socket |> @socket.prompt("Your one time password: ")
     socket |> @socket.tcp_option(:echo, false)
     Map.merge(state, %{login: %{name: message}})
   end
