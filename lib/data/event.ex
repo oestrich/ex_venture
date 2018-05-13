@@ -183,7 +183,6 @@ defmodule Data.Event do
       %{type: type, actions: actions} ->
         actions
         |> Enum.map(&validate_action(type, &1))
-        |> Enum.reject(&(&1.valid?))
         |> merge_changesets(changeset)
 
       %{type: type, action: action} ->
@@ -194,11 +193,23 @@ defmodule Data.Event do
     end
   end
 
+  defp merge_changeset(action_changeset, field, changeset) do
+    Enum.reduce(action_changeset.errors, changeset, fn {key, val}, changeset ->
+      Type.Changeset.add_error(changeset, field, "#{key}: #{Enum.join(val, ", ")}")
+    end)
+  end
+
   defp merge_changesets(changesets, changeset) do
-    Enum.reduce(changesets, changeset, fn action_changeset, changeset ->
-      Enum.reduce(action_changeset.errors, changeset, fn {key, val}, changeset ->
-        Type.Changeset.add_error(changeset, :action, "#{key}: #{Enum.join(val, ", ")}")
-      end)
+    changesets
+    |> Enum.with_index()
+    |> Enum.reduce(changeset, fn {action_changeset, i}, changeset ->
+      case action_changeset.valid? do
+        true ->
+          changeset
+
+        false ->
+          merge_changeset(action_changeset, :"action_#{i}", changeset)
+      end
     end)
   end
 
@@ -208,9 +219,7 @@ defmodule Data.Event do
         changeset
 
       action_changeset ->
-        Enum.reduce(action_changeset.errors, changeset, fn {key, val}, changeset ->
-          Type.Changeset.add_error(changeset, :action, "#{key}: #{Enum.join(val, ", ")}")
-        end)
+        merge_changeset(action_changeset, :action, changeset)
     end
   end
 
