@@ -15,13 +15,31 @@ defmodule Data.TypeTest do
       expected_changeset = Type.validate_keys(changeset, required: [:type])
       assert expected_changeset.valid?
 
-      expected_changeset = Type.validate_keys(changeset, required: [:message])
+      expected_changeset = Type.validate_keys(changeset, required: [:message], optional: [:type])
       refute expected_changeset.valid?
       assert expected_changeset.errors[:keys] == ["missing keys: message"]
 
       expected_changeset = Type.validate_keys(changeset, required: [:type, :message])
       refute expected_changeset.valid?
       assert expected_changeset.errors[:keys] == ["missing keys: message"]
+    end
+
+    test "one of a set of required keys" do
+      changeset = %Changeset{data: %{action: %{}}, valid?: true}
+      expected_changeset = Type.validate_keys(changeset, required: [], one_of: [:action, :actions])
+      assert expected_changeset.valid?
+
+      changeset = %Changeset{data: %{actions: []}, valid?: true}
+      expected_changeset = Type.validate_keys(changeset, required: [], one_of: [:action, :actions])
+      assert expected_changeset.valid?
+
+      changeset = %Changeset{data: %{action: %{}, actions: []}, valid?: true}
+      expected_changeset = Type.validate_keys(changeset, required: [], one_of: [:action, :actions])
+      refute expected_changeset.valid?
+
+      changeset = %Changeset{data: %{}, valid?: true}
+      expected_changeset = Type.validate_keys(changeset, required: [], one_of: [:action, :actions])
+      refute expected_changeset.valid?
     end
 
     test "optional keys", %{changeset: changeset} do
@@ -35,7 +53,7 @@ defmodule Data.TypeTest do
     test "continues to validate if already invalid", %{changeset: changeset} do
       changeset = %{changeset | valid?: false}
 
-      expected_changeset = Type.validate_keys(changeset, required: [:message])
+      expected_changeset = Type.validate_keys(changeset, required: [:message], optional: [:type])
 
       refute expected_changeset.valid?
       assert expected_changeset.errors[:keys] == ["missing keys: message"]

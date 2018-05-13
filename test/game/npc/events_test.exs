@@ -127,8 +127,7 @@ defmodule Game.NPC.EventsTest do
 
       {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, %{name: "Player"}}, :enter}})
 
-      [{_, message}] = @room.get_says()
-      assert message.message == "Hello"
+      assert_receive {:"$gen_cast", {:act, %{type: "say", message: "Hello"}}}
     end
 
     test "emote something to the room when a player enters it" do
@@ -137,8 +136,7 @@ defmodule Game.NPC.EventsTest do
 
       {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, %{name: "Player"}}, :enter}})
 
-      [{_, message}] = @room.get_emotes()
-      assert message.message == "stares at you"
+      assert_receive {:"$gen_cast", {:act, %{type: "emote", message: "stares at you"}}}
     end
 
     test "do nothing when an NPC enters the room" do
@@ -220,8 +218,7 @@ defmodule Game.NPC.EventsTest do
       message = Message.new(%{name: "name"}, %{message: "Hi"})
       {:update, ^state} = Events.act_on(state, {"room/heard", message})
 
-      [{_, message}] = @room.get_says()
-      assert message.message == "Hello"
+      assert_receive {:"$gen_cast", {:act, %{type: "say", message: "Hello"}}}
     end
 
     test "emote something to the room" do
@@ -231,8 +228,7 @@ defmodule Game.NPC.EventsTest do
       message = Message.new(%{name: "name"}, %{message: "Hi"})
       {:update, ^state} = Events.act_on(state, {"room/heard", message})
 
-      [{_, message}] = @room.get_emotes()
-      assert message.message == "stares at you"
+      assert_receive {:"$gen_cast", {:act, %{type: "emote", message: "stares at you"}}}
     end
 
     test "does not match condition" do
@@ -252,8 +248,7 @@ defmodule Game.NPC.EventsTest do
       message = Message.new(%{name: "name"}, %{message: "Howdy"})
       {:update, ^state} = Events.act_on(state, {"room/heard", message})
 
-      [{_, message}] = @room.get_says()
-      assert message.message == "Hello"
+      assert_receive {:"$gen_cast", {:act, %{type: "say", message: "Hello"}}}
     end
 
     test "does not consider it's own messages" do
@@ -471,12 +466,41 @@ defmodule Game.NPC.EventsTest do
     test "will emote to the room", %{state: state, event: event} do
       assert Events.act_on_tick(state, event)
 
-      [{_, message}] = @room.get_emotes()
-      assert message.message == "fidgets"
+      assert_receive {:"$gen_cast", {:act, %{type: "emote", message: "fidgets"}}}
+    end
+  end
+
+  describe "merging status" do
+    setup do
+      event = %{
+        type: "tick",
+        action: %{
+          type: "emote",
+          message: "fidgets",
+          chance: 50,
+          wait: 10,
+          status: %{
+            key: "running",
+            line: "[name] is running in place",
+          }
+        },
+      }
+
+      npc = %{
+        id: 1,
+        name: "Mayor",
+        events: [event],
+        stats: base_stats(),
+        status_line: "[name] is here",
+        status_listen: nil
+      }
+      state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
+
+      %{state: state, event: event}
     end
 
     test "changes the status", %{state: state, event: event} do
-      state = Events.act_on_tick(state, event)
+      state = Events.merge_status(state, event.action.status)
       assert state.status == %Status{key: "running", line: "[name] is running in place"}
     end
 
@@ -494,7 +518,7 @@ defmodule Game.NPC.EventsTest do
         },
       }
 
-      state = Events.act_on_tick(state, event)
+      state = Events.merge_status(state, event.action.status)
       assert state.status == %Status{key: "start", line: "[name] is here"}
     end
   end
@@ -520,8 +544,7 @@ defmodule Game.NPC.EventsTest do
     test "will say to the room", %{state: state, event: event} do
       Events.act_on_tick(state, event)
 
-      [{_, message}] = @room.get_says()
-      assert message.message == "Can I help you?"
+      assert_receive {:"$gen_cast", {:act, %{type: "say", message: "Can I help you?"}}}
     end
   end
 
