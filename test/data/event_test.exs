@@ -106,6 +106,7 @@ defmodule Data.EventTest do
     end
 
     test "room entered" do
+      assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "emote"}})
       assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say"}})
       assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "say/random"}})
       assert Event.valid_action_for_type?(%{type: "room/entered", action: %{type: "target"}})
@@ -113,6 +114,7 @@ defmodule Data.EventTest do
     end
 
     test "room heard" do
+      assert Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "emote"}})
       assert Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "say"}})
       refute Event.valid_action_for_type?(%{type: "room/heard", action: %{type: "move"}})
     end
@@ -163,6 +165,7 @@ defmodule Data.EventTest do
 
     test "say action" do
       assert Event.validate_action(%{type: "say", message: "hi"}).valid?
+      assert Event.validate_action(%{type: "say", message: "hi", delay: 0.5}).valid?
     end
 
     test "say action, tick" do
@@ -171,8 +174,8 @@ defmodule Data.EventTest do
     end
 
     test "say random" do
-      assert Event.validate_action(%{type: "say/random", messages: ["hi"]}).valid?
-      refute Event.validate_action(%{type: "say/random", messages: []}).valid?
+      assert Event.validate_action(%{type: "say/random", messages: ["hi"], delay: 0.5}).valid?
+      refute Event.validate_action(%{type: "say/random", messages: [], delay: 0.5}).valid?
     end
 
     test "say random, tick" do
@@ -183,6 +186,11 @@ defmodule Data.EventTest do
     test "emote, tick" do
       assert Event.validate_tick_action(%{type: "emote", message: "hi", chance: 50, wait: 10}).valid?
       refute Event.validate_tick_action(%{type: "emote", message: "hi"}).valid?
+    end
+
+    test "emote" do
+      assert Event.validate_action(%{type: "emote", message: "hi", delay: 0.5}).valid?
+      assert Event.validate_action(%{type: "emote", message: "hi"}).valid?
     end
 
     test "emote, tick - changing status" do

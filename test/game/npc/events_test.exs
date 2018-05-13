@@ -15,6 +15,8 @@ defmodule Game.NPC.EventsTest do
 
   setup do
     @room.clear_says()
+    @room.clear_emotes()
+
     start_and_clear_damage_types()
 
     %{key: "slashing", stat_modifier: :strength, boost_ratio: 20}
@@ -129,6 +131,16 @@ defmodule Game.NPC.EventsTest do
       assert message.message == "Hello"
     end
 
+    test "emote something to the room when a player enters it" do
+      npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "emote", message: "stares at you"}}]}
+      state = %State{room_id: 1, npc: npc}
+
+      {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, %{name: "Player"}}, :enter}})
+
+      [{_, message}] = @room.get_emotes()
+      assert message.message == "stares at you"
+    end
+
     test "do nothing when an NPC enters the room" do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
       state = %State{room_id: 1, npc: npc}
@@ -206,10 +218,21 @@ defmodule Game.NPC.EventsTest do
       state = %State{room_id: 1, npc: npc}
 
       message = Message.new(%{name: "name"}, %{message: "Hi"})
-      :ok = Events.act_on(state, {"room/heard", message})
+      {:update, ^state} = Events.act_on(state, {"room/heard", message})
 
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"
+    end
+
+    test "emote something to the room" do
+      npc = %{id: 1, name: "Mayor", events: [%{type: "room/heard", condition: nil, action: %{type: "emote", message: "stares at you"}}]}
+      state = %State{room_id: 1, npc: npc}
+
+      message = Message.new(%{name: "name"}, %{message: "Hi"})
+      {:update, ^state} = Events.act_on(state, {"room/heard", message})
+
+      [{_, message}] = @room.get_emotes()
+      assert message.message == "stares at you"
     end
 
     test "does not match condition" do
@@ -217,7 +240,7 @@ defmodule Game.NPC.EventsTest do
       state = %State{room_id: 1, npc: npc}
 
       message = Message.new(%{name: "name"}, %{message: "Howdy"})
-      :ok = Events.act_on(state, {"room/heard", message})
+      {:update, ^state} = Events.act_on(state, {"room/heard", message})
 
       assert [] = @room.get_says()
     end
@@ -227,7 +250,7 @@ defmodule Game.NPC.EventsTest do
       state = %State{room_id: 1, npc: npc}
 
       message = Message.new(%{name: "name"}, %{message: "Howdy"})
-      :ok = Events.act_on(state, {"room/heard", message})
+      {:update, ^state} = Events.act_on(state, {"room/heard", message})
 
       [{_, message}] = @room.get_says()
       assert message.message == "Hello"
@@ -237,7 +260,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/heard", condition: nil, action: %{type: "say", message: "Hello"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      :ok = Events.act_on(state, {"room/heard", Message.npc_say(npc, "Hello")})
+      {:update, ^state} = Events.act_on(state, {"room/heard", Message.npc_say(npc, "Hello")})
 
       assert [] = @room.get_says()
     end
@@ -432,8 +455,6 @@ defmodule Game.NPC.EventsTest do
         },
       }
 
-      @room.clear_emotes()
-
       npc = %{
         id: 1,
         name: "Mayor",
@@ -489,9 +510,6 @@ defmodule Game.NPC.EventsTest do
           wait: 10,
         },
       }
-
-      @room.clear_says()
-      @room.clear_emotes()
 
       npc = %{id: 1, name: "Mayor", events: [event], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}

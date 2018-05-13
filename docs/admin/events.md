@@ -12,11 +12,12 @@ When a character enters a room, this event will be triggered.
   "action": {
     "type": "say",
     "message": "Welcome!",
+    "delay": 0.25
   }
 }
 ```
 
-The message is a string that the NPC will say to the room.
+The message is a string that the NPC will say to the room. `delay` is optional, the say will be delayed that many seconds before showing.
 
 ### action: target
 
@@ -42,6 +43,7 @@ When a player enters the room they will be targeted by the NPC.
   "action": {
     "type": "say",
     "message": "Welcome!",
+    "delay": 0.25
   }
 }
 ```

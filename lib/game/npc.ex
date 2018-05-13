@@ -226,8 +226,21 @@ defmodule Game.NPC do
 
   def handle_cast({:notify, action}, state) do
     case Events.act_on(state, action) do
-      :ok -> {:noreply, state}
-      {:update, state} -> {:noreply, state}
+      :ok ->
+        {:noreply, state}
+
+      {:update, state} ->
+        {:noreply, state}
+    end
+  end
+
+  def handle_cast({:act, action}, state) do
+    case Events.act(state, action) do
+      :ok ->
+        {:noreply, state}
+
+      {:update, state} ->
+        {:noreply, state}
     end
   end
 

@@ -199,10 +199,10 @@ defmodule Data.Event do
         ["target/effects"]
 
       "room/entered" ->
-        ["say", "say/random", "target"]
+        ["emote", "say", "say/random", "target"]
 
       "room/heard" ->
-        ["say"]
+        ["emote", "say"]
 
       "tick" ->
         ["emote", "move", "say", "say/random"]
@@ -285,7 +285,10 @@ defmodule Data.Event do
   end
 
   def validate_tick_action(action = %{type: "emote"}) do
-    validate_action(action)
+    action
+    |> validate()
+    |> validate_keys(required: [:message, :chance, :wait, :type], optional: [:status])
+    |> validate_values(&validate_emote_action_values/1)
   end
 
   def validate_tick_action(action = %{type: "move"}) do
@@ -305,7 +308,7 @@ defmodule Data.Event do
   def validate_action(action = %{type: "emote"}) do
     action
     |> validate()
-    |> validate_keys(required: [:message, :chance, :wait, :type], optional: [:status])
+    |> validate_keys(required: [:message, :type], optional: [:delay, :status])
     |> validate_values(&validate_emote_action_values/1)
   end
 
@@ -319,14 +322,14 @@ defmodule Data.Event do
   def validate_action(action = %{type: "say"}) do
     action
     |> validate()
-    |> validate_keys(required: [:message, :type])
+    |> validate_keys(required: [:message, :type], optional: [:delay])
     |> validate_values(&validate_say_action_values/1)
   end
 
   def validate_action(action = %{type: "say/random"}) do
     action
     |> validate()
-    |> validate_keys(required: [:messages, :type])
+    |> validate_keys(required: [:messages, :type], optional: [:delay])
     |> validate_values(&validate_say_random_action_values/1)
   end
 
@@ -353,6 +356,9 @@ defmodule Data.Event do
     case key do
       :chance ->
         is_integer(value)
+
+      :delay ->
+        is_float(value)
 
       :message ->
         is_binary(value)
@@ -398,6 +404,9 @@ defmodule Data.Event do
       :chance ->
         is_integer(value)
 
+      :delay ->
+        is_float(value)
+
       :type ->
         value == "say"
 
@@ -413,6 +422,9 @@ defmodule Data.Event do
     case key do
       :messages ->
         is_list(value) && length(value) > 0 && Enum.all?(value, &is_binary/1)
+
+      :delay ->
+        is_float(value)
 
       :chance ->
         is_integer(value)

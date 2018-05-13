@@ -67,6 +67,23 @@ defmodule Game.NPC.Events do
   #
 
   @doc """
+  Perform an action, that was probably time delayed
+  """
+  @spec act(NPC.State.t(), map()) :: :ok | {:update, NPC.State.t()}
+  def act(state, action) do
+    case action.type do
+      "emote" ->
+        {:update, emote_to_room(state, Map.delete(action, :delay))}
+
+      "say" ->
+        {:update, say_to_room(state, Map.delete(action, :delay))}
+
+      _ ->
+        :ok
+    end
+  end
+
+  @doc """
   Act on events the NPC has been notified of
   """
   @spec act_on(NPC.State.t(), {String.t(), any()}) :: :ok | {:update, NPC.State.t()}
@@ -124,11 +141,12 @@ defmodule Game.NPC.Events do
       formatted: message.formatted
     })
 
-    npc.events
-    |> Enum.filter(&(&1.type == "room/heard"))
-    |> Enum.each(&act_on_room_heard(state, &1, message))
+    state =
+      npc.events
+      |> Enum.filter(&(&1.type == "room/heard"))
+      |> Enum.reduce(state, &act_on_room_heard(&2, &1, message))
 
-    :ok
+    {:update, state}
   end
 
   def act_on(state = %{npc: npc}, {"quest/completed", user, quest}) do
@@ -228,16 +246,24 @@ defmodule Game.NPC.Events do
   @spec act_on_room_entered(NPC.State.t(), Character.t(), Event.t()) :: NPC.State.t()
   def act_on_room_entered(state, character, event)
 
-  def act_on_room_entered(state, {:user, _}, %{action: %{type: "say", message: message}}) do
-    state |> say_to_room(message)
-    state
+  def act_on_room_entered(state, {:user, _}, event = %{action: %{type: "emote"}}) do
+    state |> emote_to_room(event)
+  end
+
+  def act_on_room_entered(state, {:user, _}, event = %{action: %{type: "say"}}) do
+    state |> say_to_room(event)
   end
 
   def act_on_room_entered(state, {:user, user}, %{action: %{type: "target"}}) do
     case state do
-      %{combat: false} -> start_combat(state, user)
-      %{target: nil} -> start_combat(state, user)
-      _ -> state
+      %{combat: false} ->
+        start_combat(state, user)
+
+      %{target: nil} ->
+        start_combat(state, user)
+
+      _ ->
+        state
     end
   end
 
@@ -247,8 +273,11 @@ defmodule Game.NPC.Events do
     Character.being_targeted({:user, user}, npc(state))
 
     case state.combat do
-      true -> :ok
-      _ -> notify_delayed({"combat/tick"}, 1500)
+      true ->
+        :ok
+
+      _ ->
+        notify_delayed({"combat/tick"}, 1500)
     end
 
     broadcast(npc, "character/targeted", who({:user, user}))
@@ -256,25 +285,34 @@ defmodule Game.NPC.Events do
   end
 
   def act_on_room_heard(state, event, message)
-  def act_on_room_heard(%{npc: %{id: id}}, _, %{type: :npc, sender: %{id: id}}), do: :ok
+  def act_on_room_heard(state = %{npc: %{id: id}}, _, %{type: :npc, sender: %{id: id}}), do: state
 
   def act_on_room_heard(state, event, message) do
     case event do
-      %{condition: %{regex: condition}, action: %{type: "say", message: event_message}}
-      when condition != nil ->
+      %{condition: %{regex: condition}} when condition != nil ->
         case Regex.match?(~r/#{condition}/i, message.message) do
           true ->
-            state.room_id |> @room.say(npc(state), Message.npc(state.npc, event_message))
+            _act_on_room_heard(state, event)
 
           false ->
-            :ok
+            state
         end
 
-      %{action: %{type: "say", message: event_message}} ->
-        state.room_id |> @room.say(npc(state), Message.npc(state.npc, event_message))
+      _ ->
+        _act_on_room_heard(state, event)
+    end
+  end
+
+  defp _act_on_room_heard(state, event = %{action: action}) do
+    case action.type do
+      "say" ->
+        say_to_room(state, event)
+
+      "emote" ->
+        emote_to_room(state, event)
 
       _ ->
-        :ok
+        state
     end
   end
 
@@ -363,16 +401,28 @@ defmodule Game.NPC.Events do
   Emote the NPC's message to the room
   """
   def emote_to_room(state, %{action: action}) do
-    emote_to_room(state, action.message)
+    emote_to_room(state, action)
+  end
 
-    case action do
-      %{status: status} ->
-        state
-        |> merge_status(status)
-        |> update_character()
+  def emote_to_room(state, action) when is_map(action) do
+    case Map.has_key?(action, :delay) do
+      true ->
+        act_delayed(action)
 
-      _ ->
         state
+
+      false ->
+        emote_to_room(state, action.message)
+
+        case action do
+          %{status: status} ->
+            state
+            |> merge_status(status)
+            |> update_character()
+
+          _ ->
+            state
+        end
     end
   end
 
@@ -412,8 +462,20 @@ defmodule Game.NPC.Events do
   @doc """
   Say the NPC's message to the room
   """
-  def say_to_room(state, %{action: %{message: message}}) do
-    say_to_room(state, message)
+  def say_to_room(state, %{action: action}) do
+    say_to_room(state, action)
+  end
+
+  def say_to_room(state, action) when is_map(action) do
+    case Map.has_key?(action, :delay) do
+      true ->
+        act_delayed(action)
+
+        state
+
+      false ->
+        say_to_room(state, action.message)
+    end
   end
 
   def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
@@ -473,5 +535,10 @@ defmodule Game.NPC.Events do
 
   defp notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})
+  end
+
+  defp act_delayed(action) do
+    delay = round(Float.ceil(action.delay * 1000))
+    :erlang.send_after(delay, self(), {:"$gen_cast", {:act, action}})
   end
 end
