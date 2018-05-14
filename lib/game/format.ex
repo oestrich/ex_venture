@@ -392,13 +392,13 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.players(%{players: [%{name: "Mordred"}, %{name: "Arthur"}]})
-      "{player}Mordred{/player} is here. {player}Arthur{/player} is here."
+      "{player}Mordred{/player} is here.\\n{player}Arthur{/player} is here."
   """
   @spec players(Room.t()) :: String.t()
   def players(%{players: players}) do
     players
     |> Enum.map(fn player -> "#{player_name(player)} is here." end)
-    |> Enum.join(" ")
+    |> Enum.join("\n")
   end
 
   def players(_), do: ""
@@ -418,13 +418,13 @@ defmodule Game.Format do
   Example:
 
       iex> Game.Format.npcs(%{npcs: [%{name: "Mordred", status_line: "[name] is in the room."}, %{name: "Arthur", status_line: "[name] is here."}]})
-      "{npc}Mordred{/npc} is in the room. {npc}Arthur{/npc} is here."
+      "{npc}Mordred{/npc} is in the room.\\n{npc}Arthur{/npc} is here."
   """
   @spec npcs(Room.t()) :: String.t()
   def npcs(%{npcs: npcs}) do
     npcs
     |> Enum.map(&npc_status/1)
-    |> Enum.join(" ")
+    |> Enum.join("\n")
   end
 
   def npcs(_), do: ""
