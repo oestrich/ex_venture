@@ -23,6 +23,27 @@ defmodule Web.FormView do
   end
 
   @doc """
+  Generate a text field, styled properly
+  """
+  def password_field(form, field, opts \\ [], dopts \\ []) do
+    opts = Keyword.merge(opts, dopts)
+    text_opts = Keyword.take(opts, [:value, :rows])
+
+    content_tag(:div, class: form_group_classes(form, field)) do
+      [
+        label(form, field, class: "col-md-4"),
+        content_tag(:div, class: "col-md-8") do
+          [
+            password_input(form, field, Keyword.merge([class: "form-control"], text_opts)),
+            error_tag(form, field),
+            Keyword.get(opts, :do, "")
+          ]
+        end
+      ]
+    end
+  end
+
+  @doc """
   Generate a number field, styled properly
   """
   def number_field(form, field, opts \\ [], dopts \\ []) do

@@ -9,6 +9,10 @@
 
       <%= FormView.text_field(f, :email) %>
 
+      <%= FormView.password_field(f, :password) %>
+
+      <%= FormView.password_field(f, :password_confirmation) %>
+
       <div class="form-group">
         <%= label f, :flags, class: "col-md-4" %>
         <ul class="col-md-8">
