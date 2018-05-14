@@ -290,7 +290,9 @@ defmodule Game.NPC.Events do
   def act_on_room_heard(state, event, message) do
     case event do
       %{condition: %{regex: condition}} when condition != nil ->
-        case Regex.match?(~r/#{condition}/i, message.message) do
+        {:ok, regex} = Regex.compile(condition, "i")
+
+        case Regex.match?(regex, message.message) do
           true ->
             _act_on_room_heard(state, event)
 
