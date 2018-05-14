@@ -73,13 +73,36 @@ defmodule Game.NPC.Events do
   def act(state, action) do
     case action.type do
       "emote" ->
-        {:update, emote_to_room(state, Map.delete(action, :delay))}
+        state =
+          state
+          |> emote_to_room(action.message)
+          |> maybe_merge_status(action)
+          |> update_character()
+
+        {:update, state}
 
       "say" ->
-        {:update, say_to_room(state, Map.delete(action, :delay))}
+        {:update, say_to_room(state, action.message)}
 
       _ ->
         :ok
+    end
+  end
+
+  @doc """
+  Perform an action, and then queue the next one
+  """
+  def act(state, action, actions) do
+    return = act(state, action)
+
+    case actions do
+      [] ->
+        return
+
+      [action | actions] ->
+        act_delayed(action, actions)
+
+        return
     end
   end
 
@@ -318,6 +341,23 @@ defmodule Game.NPC.Events do
     end
   end
 
+  defp _act_on_room_heard(state, %{actions: []}) do
+    state
+  end
+
+  defp _act_on_room_heard(state, %{actions: [action | actions]}) do
+    case action.type do
+      "say" ->
+        say_to_room(state, action, actions)
+
+      "emote" ->
+        emote_to_room(state, action, actions)
+
+      _ ->
+        _act_on_room_heard(state, %{actions: actions})
+    end
+  end
+
   @doc """
   Act on a tick event
   """
@@ -407,31 +447,31 @@ defmodule Game.NPC.Events do
   end
 
   def emote_to_room(state, action) when is_map(action) do
-    case Map.has_key?(action, :delay) do
-      true ->
-        act_delayed(action)
-
-        state
-
-      false ->
-        emote_to_room(state, action.message)
-
-        case action do
-          %{status: status} ->
-            state
-            |> merge_status(status)
-            |> update_character()
-
-          _ ->
-            state
-        end
-    end
+    act_delayed(action)
+    state
   end
 
   def emote_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_emote(state.npc, message)
     room_id |> @room.emote(npc(state), message)
     broadcast(state.npc, "room/heard", message)
+
+    state
+  end
+
+  def emote_to_room(state, action, actions) do
+    act_delayed(action, actions)
+    state
+  end
+
+  def maybe_merge_status(state, action) do
+    case Map.has_key?(action, :status) do
+      true ->
+        state |> merge_status(action.status)
+
+      false ->
+        state
+    end
   end
 
   @doc """
@@ -469,15 +509,8 @@ defmodule Game.NPC.Events do
   end
 
   def say_to_room(state, action) when is_map(action) do
-    case Map.has_key?(action, :delay) do
-      true ->
-        act_delayed(action)
-
-        state
-
-      false ->
-        say_to_room(state, action.message)
-    end
+    act_delayed(action)
+    state
   end
 
   def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
@@ -486,6 +519,11 @@ defmodule Game.NPC.Events do
     room_id |> @room.say(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
+    state
+  end
+
+  def say_to_room(state, action, actions) do
+    act_delayed(action, actions)
     state
   end
 
@@ -540,7 +578,28 @@ defmodule Game.NPC.Events do
   end
 
   defp act_delayed(action) do
-    delay = round(Float.ceil(action.delay * 1000))
+    delay =
+      case Map.get(action, :delay, 0) do
+        0 ->
+          0
+
+        delay ->
+          round(Float.ceil(delay * 1000))
+      end
+
     :erlang.send_after(delay, self(), {:"$gen_cast", {:act, action}})
+  end
+
+  defp act_delayed(action, actions) do
+    delay =
+      case Map.get(action, :delay, 0) do
+        0 ->
+          0
+
+        delay ->
+          round(Float.ceil(delay * 1000))
+      end
+
+    :erlang.send_after(delay, self(), {:"$gen_cast", {:act, action, actions}})
   end
 end

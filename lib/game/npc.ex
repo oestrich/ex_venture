@@ -244,6 +244,16 @@ defmodule Game.NPC do
     end
   end
 
+  def handle_cast({:act, action, actions}, state) do
+    case Events.act(state, action, actions) do
+      :ok ->
+        {:noreply, state}
+
+      {:update, state} ->
+        {:noreply, state}
+    end
+  end
+
   def handle_cast({:update, npc_spawner}, state = %{room_id: room_id}) do
     state =
       state

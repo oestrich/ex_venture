@@ -39,18 +39,58 @@ defmodule Data.Type do
   @spec validate_keys(changeset(), Keyword.t()) :: changeset()
   def validate_keys(changeset, opts) do
     required = Keyword.fetch!(opts, :required)
+    one_of = Keyword.get(opts, :one_of, [])
     optional = Keyword.get(opts, :optional, [])
     keys = keys(changeset.data)
 
-    missing_keys = Enum.reject(required, &Enum.member?(keys, &1))
-    no_extra_keys? = Enum.empty?((keys -- required) -- optional)
+    required_missing_keys = Enum.reject(required, &Enum.member?(keys, &1))
+    required_valid? = Enum.empty?(required_missing_keys)
 
-    case Enum.empty?(missing_keys) && no_extra_keys? do
+    required_one_of_keys_count = one_of |> Enum.map(&Enum.member?(keys, &1)) |> Enum.filter(&(&1)) |> length()
+    one_of_valid? = Enum.empty?(one_of) || required_one_of_keys_count == 1
+
+    extra_keys = ((keys -- required) -- optional) -- one_of
+    no_extra_keys? = Enum.empty?(extra_keys)
+
+    case required_valid? && one_of_valid? && no_extra_keys? do
       true ->
         changeset
 
       false ->
-        add_error(changeset, :keys, "missing keys: #{Enum.join(missing_keys, ", ")}")
+        changeset
+        |> maybe_add_required(required_valid?, required_missing_keys)
+        |> maybe_add_one_off(one_of_valid?, one_of)
+        |> maybe_add_extra_keys(no_extra_keys?, extra_keys)
+    end
+  end
+
+  defp maybe_add_required(changeset, valid?, required_missing_keys) do
+    case valid? do
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :keys, "missing keys: #{Enum.join(required_missing_keys, ", ")}")
+    end
+  end
+
+  defp maybe_add_one_off(changeset, valid?, one_of) do
+    case valid? do
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :keys, "requires exactly one of: #{Enum.join(one_of, ", ")}")
+    end
+  end
+
+  defp maybe_add_extra_keys(changeset, valid?, extra_keys) do
+    case valid? do
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :keys, "there are extra keys, please remove them: #{Enum.join(extra_keys, ", ")}")
     end
   end
 

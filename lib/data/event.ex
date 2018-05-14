@@ -39,6 +39,7 @@ defmodule Data.Event do
       event
       |> load_condition()
       |> load_action()
+      |> load_actions()
       |> ensure(:id, UUID.uuid4())
 
     {:ok, event}
@@ -54,7 +55,6 @@ defmodule Data.Event do
   defp load_action(event) do
     case event do
       %{action: action} when action != nil ->
-        action = for {key, val} <- event.action, into: %{}, do: {String.to_atom(key), val}
         %{event | action: _load_action(action)}
 
       _ ->
@@ -62,7 +62,23 @@ defmodule Data.Event do
     end
   end
 
-  defp _load_action(action = %{type: "target/effects"}) do
+  defp load_actions(event) do
+    case event do
+      %{actions: actions} when actions != nil ->
+        actions = Enum.map(event.actions, &_load_action/1)
+        %{event | actions: actions}
+
+      _ ->
+        event
+    end
+  end
+
+  defp _load_action(action) do
+    action = for {key, val} <- action, into: %{}, do: {String.to_atom(key), val}
+    _load_action_type(action)
+  end
+
+  defp _load_action_type(action = %{type: "target/effects"}) do
     effects =
       action.effects
       |> Enum.map(fn effect ->
@@ -75,7 +91,7 @@ defmodule Data.Event do
     %{action | effects: effects}
   end
 
-  defp _load_action(action = %{type: "emote"}) do
+  defp _load_action_type(action = %{type: "emote"}) do
     case action do
       %{status: status} ->
         status = for {key, val} <- status, into: %{}, do: {String.to_atom(key), val}
@@ -86,7 +102,7 @@ defmodule Data.Event do
     end
   end
 
-  defp _load_action(action), do: action
+  defp _load_action_type(action), do: action
 
   @impl Ecto.Type
   def dump(stats) when is_map(stats), do: {:ok, Map.delete(stats, :__struct__)}
@@ -129,19 +145,27 @@ defmodule Data.Event do
   def validate_event(event) do
     event
     |> validate()
-    |> validate_keys(required: valid_keys(event.type))
+    |> validate_keys(required: required_event_keys(event.type), one_of: one_of_event_keys(event.type))
     |> validate_action_for_type()
     |> validate_event_action()
     |> validate_event_condition()
   end
 
   # alphabetical
-  defp valid_keys("room/heard") do
-    [:action, :condition, :id, :type]
+  defp required_event_keys("room/heard") do
+    [:condition, :id, :type]
   end
 
-  defp valid_keys(_type) do
+  defp required_event_keys(_type) do
     [:action, :id, :type]
+  end
+
+  defp one_of_event_keys("room/heard") do
+    [:action, :actions]
+  end
+
+  defp one_of_event_keys(_type) do
+    []
   end
 
   defp validate_action_for_type(changeset) do
@@ -155,17 +179,47 @@ defmodule Data.Event do
   end
 
   defp validate_event_action(changeset = %{data: event}) do
-    type = Map.get(event, :type)
-    action = Map.get(event, :action)
+    case event do
+      %{type: type, actions: actions} ->
+        actions
+        |> Enum.map(&validate_action(type, &1))
+        |> merge_changesets(changeset)
 
+      %{type: type, action: action} ->
+        _validate_event_action(changeset, type, action)
+
+      _ ->
+        Type.Changeset.add_error(changeset, :action, "missing an action")
+    end
+  end
+
+  defp merge_changeset(action_changeset, field, changeset) do
+    Enum.reduce(action_changeset.errors, changeset, fn {key, val}, changeset ->
+      Type.Changeset.add_error(changeset, field, "#{key}: #{Enum.join(val, ", ")}")
+    end)
+  end
+
+  defp merge_changesets(changesets, changeset) do
+    changesets
+    |> Enum.with_index()
+    |> Enum.reduce(changeset, fn {action_changeset, i}, changeset ->
+      case action_changeset.valid? do
+        true ->
+          changeset
+
+        false ->
+          merge_changeset(action_changeset, :"action_#{i}", changeset)
+      end
+    end)
+  end
+
+  defp _validate_event_action(changeset, type, action) do
     case validate_action(type, action) do
       %{valid?: true} ->
         changeset
 
       action_changeset ->
-        Enum.reduce(action_changeset.errors, changeset, fn {key, val}, changeset ->
-          Type.Changeset.add_error(changeset, :action, "#{key}: #{Enum.join(val, ", ")}")
-        end)
+        merge_changeset(action_changeset, :action, changeset)
     end
   end
 
@@ -189,6 +243,15 @@ defmodule Data.Event do
     event.type
     |> valid_type_actions()
     |> Enum.member?(action.type)
+  end
+
+  def valid_action_for_type?(event = %{actions: actions}) do
+    types = event.type |> valid_type_actions()
+
+    actions
+    |> Enum.all?(fn action ->
+      Enum.member?(types, action.type)
+    end)
   end
 
   def valid_action_for_type?(_), do: false
@@ -498,8 +561,11 @@ defmodule Data.Event do
   @spec validate_events(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_events(changeset) do
     case get_change(changeset, :events) do
-      nil -> changeset
-      events -> _validate_events(changeset, events)
+      nil ->
+        changeset
+
+      events ->
+        _validate_events(changeset, events)
     end
   end
 

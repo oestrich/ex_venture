@@ -129,7 +129,9 @@
                     <% end) %>
                   </td>
                   <td>
-                    <%= render(EventView, "_action.html", action: event.action) %>
+                    <%= if Map.has_key?(event, :action) do %>
+                      <%= render(EventView, "_action.html", action: event.action) %>
+                    <% end %>
                   </td>
                 </tr>
               <% end) %>
