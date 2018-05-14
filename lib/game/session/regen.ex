@@ -13,6 +13,7 @@ defmodule Game.Session.Regen do
   alias Game.Session.State
   alias Game.Stats
 
+  @tick_wait 1000
   @movement_regen 1
 
   @doc """
@@ -51,7 +52,7 @@ defmodule Game.Session.Regen do
         %{state | regen: %{state.regen | is_regenerating: false}}
 
       false ->
-        :erlang.send_after(2000, self(), :regen)
+        :erlang.send_after(@tick_wait, self(), :regen)
         %{state | regen: %{state.regen | is_regenerating: true}}
     end
   end
