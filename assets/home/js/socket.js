@@ -10,12 +10,8 @@ var userToken = body.getAttribute("data-user-token")
 let socket = new Socket("/socket", {params: {token: userToken}})
 socket.connect()
 
-// Now that you are connected, you can join channels with a topic:
-
 class Channels {
   join() {
-    console.log("Connecting...")
-
     this.channels = {}
 
     _.each(Sizzle(".channel"), (channel) => {
@@ -29,32 +25,45 @@ class Channels {
     let channelName = channelEl.dataset.channel;
 
     let channel = socket.channel(`chat:${channelName}`, {});
+    this.channels[channelName] = channel;
 
     channel.on("broadcast", (data) => {
-      var fragment = document.createDocumentFragment();
-      let html = document.createElement("div");
-      html.innerHTML = format(data);
-      fragment.appendChild(html);
-
-      channelEl.appendChild(fragment);
+      this.appendMessage(channelEl, data);
     })
 
     channel.join();
-
-    this.channels[channelName] = channel;
+    this.appendMessage(channelEl, {message: "Connected"});
   }
 
   connectSend() {
-    let send = _.first(Sizzle("#chat-prompt"));
-    send.addEventListener("keypress", e => {
+    let chatPrompt = _.first(Sizzle("#chat-prompt"));
+    chatPrompt.addEventListener("keypress", e => {
       if (e.keyCode == 13) {
-        let activeChannel = _.first(Sizzle(".channel.active"));
-        let channel = this.channels[activeChannel.dataset.channel];
-        channel.push("send", {message: send.value});
-        send.value = "";
+        this.sendMessage();
       }
     })
-    console.log(send);
+
+    let send = _.first(Sizzle("#chat-send"));
+    send.addEventListener("click", e => {
+      this.sendMessage();
+    })
+  }
+
+  sendMessage() {
+    let chatPrompt = _.first(Sizzle("#chat-prompt"));
+    let activeChannel = _.first(Sizzle(".channel.active"));
+    let channel = this.channels[activeChannel.dataset.channel];
+    channel.push("send", {message: chatPrompt.value});
+    chatPrompt.value = "";
+  }
+
+  appendMessage(channelEl, data) {
+    var fragment = document.createDocumentFragment();
+    let html = document.createElement("div");
+    html.innerHTML = format(data);
+    fragment.appendChild(html);
+
+    channelEl.appendChild(fragment);
   }
 }
 
