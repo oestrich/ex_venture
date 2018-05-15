@@ -12,13 +12,14 @@ socket.connect()
 
 class Channels {
   join() {
-    this.channels = {}
+    this.channels = {};
 
     _.each(Sizzle(".channel"), (channel) => {
-      this.connectChannel(channel)
-    })
+      this.connectChannel(channel);
+    });
 
-    this.connectSend()
+    this.connectSend();
+    this.connectTabHandlers();
   }
 
   connectChannel(channelEl) {
@@ -28,6 +29,7 @@ class Channels {
     this.channels[channelName] = channel;
 
     channel.on("broadcast", (data) => {
+      this.alertChannel(channelName);
       this.appendMessage(channelEl, data);
     })
 
@@ -46,7 +48,16 @@ class Channels {
     let send = _.first(Sizzle("#chat-send"));
     send.addEventListener("click", e => {
       this.sendMessage();
-    })
+    });
+  }
+
+  connectTabHandlers() {
+    _.each(Sizzle(".channel-tab"), channelTab => {
+      channelTab.addEventListener("click", (e) => {
+        let bellIcon = _.first(Sizzle(".bell", channelTab));
+        bellIcon.classList.add("hidden");
+      });
+    });
   }
 
   sendMessage() {
@@ -64,6 +75,15 @@ class Channels {
     fragment.appendChild(html);
 
     channelEl.appendChild(fragment);
+  }
+
+  alertChannel(channelName) {
+    let channelTab = _.first(Sizzle(`.channel-tab[data-channel="${channelName}"]`));
+    let activeChannel = _.first(Sizzle(".channel.active"));
+    if (activeChannel.dataset.channel != channelName) {
+      let bellIcon = _.first(Sizzle(".bell", channelTab));
+      bellIcon.classList.remove("hidden");
+    }
   }
 }
 
