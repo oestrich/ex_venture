@@ -13,7 +13,7 @@
     <link rel="alternate" type="application/rss+xml" title="<%= Config.game_name %> » Announcements" href="<%= public_announcement_url(@conn, :feed) %>">
   </head>
 
-  <body>
+  <body id="body" data-user-token="<%= @conn |> user_token() %>">
     <nav class="site-header navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <%= link(Config.game_name(), to: public_page_path(@conn, :index), class: "navbar-brand") %>
@@ -40,6 +40,9 @@
             </li>
 
             <%= if Map.has_key?(@conn.assigns, :user) do %>
+              <li class="nav-item>">
+                <%= link("Chat", to: public_chat_path(@conn, :show), class: "nav-link") %>
+              </li>
               <li class="nav-item <%= tab_selected(@conn, "account") %>">
                 <%= link(to: public_mail_path(@conn, :index), class: "nav-link") do %>
                   Account

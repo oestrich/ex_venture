@@ -8,6 +8,7 @@ defmodule Game.Channel.Server do
   alias Game.Channel
   alias Game.Channels
   alias Metrics.CommunicationInstrumenter
+  alias Web.Endpoint
 
   @doc """
   Get a list of channels the pid is subscribed to
@@ -66,6 +67,13 @@ defmodule Game.Channel.Server do
   def broadcast(%{channels: channels}, channel, message) do
     Logger.info("Channel '#{channel}' message: #{inspect(message.formatted)}", type: :channel)
     CommunicationInstrumenter.channel_broadcast(channel)
+
+    Endpoint.broadcast("chat:#{channel}", "broadcast", %{
+      from: %{
+        name: message.sender.name,
+      },
+      message: message.formatted
+    })
 
     channels
     |> Map.get(channel, [])

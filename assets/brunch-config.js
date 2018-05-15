@@ -4,19 +4,16 @@ exports.config = {
       joinTo: {
         "js/app.js": /(jquery)|(process)|(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
         "js/admin.js": /(process)|(jquery)|(underscore)|(sizzle)|(admin\/js)|(priv\/static\/phoenix*)/,
-        "js/home.js": /(jquery)|(process)|(home\/js)/,
+        "js/home.js": /(process)|(jquery)|(underscore)|(sizzle)|(home\/js)|(priv\/static\/phoenix*)/,
       },
       order: {
         before: [
           /jquery/,
+          /popper/,
           "admin/js/vendor/bootstrap.js",
           "admin/js/vendor/adminlte.js",
-          "home/js/vendor/jquery-3.2.1.js",
-          "home/js/vendor/popper.min.js",
-        ],
-        after: [
-          "admin/js/app.js"
-        ],
+          "home/js/vendor/bootstrap.min.js",
+        ]
       },
     },
     stylesheets: {
@@ -53,7 +50,7 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "home/css", "home/js", "vendor"],
+    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "home/css", "home/js"],
     // Where to compile files to
     public: "../priv/static"
   },
@@ -72,6 +69,7 @@ exports.config = {
   modules: {
     autoRequire: {
       "js/app.js": ["js/app"],
+      "js/home.js": ["home/js/app"],
       "js/admin.js": ["admin/js/socket"]
     }
   },
