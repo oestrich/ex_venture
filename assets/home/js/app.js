@@ -1,3 +1,6 @@
+import Sizzle from "sizzle"
 import {Channels} from "./socket"
 
-new Channels().join()
+if (Sizzle(".chat").length > 0) {
+  new Channels().join()
+}

@@ -64,8 +64,10 @@ class Channels {
     let chatPrompt = _.first(Sizzle("#chat-prompt"));
     let activeChannel = _.first(Sizzle(".channel.active"));
     let channel = this.channels[activeChannel.dataset.channel];
-    channel.push("send", {message: chatPrompt.value});
-    chatPrompt.value = "";
+    if (chatPrompt.value != "") {
+      channel.push("send", {message: chatPrompt.value});
+      chatPrompt.value = "";
+    }
   }
 
   appendMessage(channelEl, data) {
