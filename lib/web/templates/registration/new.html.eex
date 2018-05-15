@@ -30,7 +30,7 @@
         <%= error_tag f, :email %>
       </div>
 
-      <h5>Race</h5>
+      <h5 class="mt-3">Race</h5>
       <%= error_tag f, :race_id %>
       <%= Enum.map(Race.races, fn (race) -> %>
         <div class="form-check">
@@ -41,7 +41,7 @@
         </div>
       <% end) %>
 
-      <h5>Class</h5>
+      <h5 class="mt-3">Class</h5>
       <%= error_tag f, :class_id %>
       <%= Enum.map(Class.classes, fn (class) -> %>
         <div class="form-check">
@@ -52,7 +52,7 @@
         </div>
       <% end) %>
 
-      <div class="form-group has-feedback">
+      <div class="form-group has-feedback mt-3">
         <%= label f, :password %>
         <%= text_input f, :password, type: "password", class: "form-control", placeholder: "Password" %>
         <%= error_tag f, :password_hash %>
