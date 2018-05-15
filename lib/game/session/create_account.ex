@@ -9,6 +9,7 @@ defmodule Game.Session.CreateAccount do
 
   alias Game.Account
   alias Game.Class
+  alias Game.Config
   alias Game.Race
   alias Game.Session.Login
   alias Metrics.PlayerInstrumenter
@@ -21,10 +22,14 @@ defmodule Game.Session.CreateAccount do
   """
   @spec start(pid) :: :ok
   def start(socket) do
-    socket
-    |> @socket.echo(
-      "\n\nWelcome to ExVenture.\nThank you for joining!\nWe need a name and password for you to sign up.\n"
-    )
+    message = """
+    Welcome to #{Config.game_name()}.
+    Thank you for joining!.
+    We need a name and password for you to sign up.
+    #{random_names()}
+    """
+
+    socket |> @socket.echo(String.trim(message))
 
     socket |> @socket.prompt("Name: ")
   end
@@ -146,5 +151,19 @@ defmodule Game.Session.CreateAccount do
       "#{field}: #{ErrorHelpers.translate_error(errors)}"
     end)
     |> Enum.join("\n")
+  end
+
+  defp random_names() do
+    case Config.random_character_names() do
+      [] ->
+        ""
+
+      names ->
+        """
+
+        Here are a few names to help you pick one:
+        #{Enum.join(names, ", ")}
+        """
+    end
   end
 end

@@ -8,13 +8,23 @@ defmodule Web.Admin.ConfigController do
   end
 
   def edit(conn, %{"id" => name}) do
-    config = Config.get(name)
-    changeset = Config.edit(config)
+    case Config.get(name) do
+      nil ->
+        changeset = Config.new(name)
 
-    conn
-    |> assign(:config, config)
-    |> assign(:changeset, changeset)
-    |> render("edit.html")
+        conn
+        |> assign(:name, name)
+        |> assign(:changeset, changeset)
+        |> render("new.html")
+
+      config ->
+        changeset = Config.edit(config)
+
+        conn
+        |> assign(:config, config)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
+    end
   end
 
   def update(conn, %{"id" => name, "config" => %{"value" => value}}) do

@@ -37,6 +37,8 @@ defmodule Game.Account do
       {:ok, user} ->
         user |> maybe_email_welcome()
 
+        Config.claim_character_name(user.name)
+
         user =
           user
           |> Repo.preload([:race])

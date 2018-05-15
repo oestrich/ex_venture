@@ -16,6 +16,12 @@ defmodule Web.Config do
   def get(name), do: find_config(name)
 
   @doc """
+  Get a changeset for an new page
+  """
+  @spec new(String.t()) :: map()
+  def new(name), do: %Config{name: name} |> Config.changeset(%{})
+
+  @doc """
   Get a changeset for an edit page
   """
   @spec edit(Config.t()) :: map()

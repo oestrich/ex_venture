@@ -3,6 +3,7 @@ defmodule Web.Admin.ConfigView do
 
   alias Game.Config
 
+  def name("character_names"), do: "Random Character Names"
   def name("game_name"), do: "Game Name"
   def name("motd"), do: "Message of the Day"
   def name("after_sign_in_message"), do: "After Sign In Message"

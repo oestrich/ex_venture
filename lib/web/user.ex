@@ -147,6 +147,8 @@ defmodule Web.User do
       {:ok, user} ->
         Account.maybe_email_welcome(user)
 
+        Config.claim_character_name(user.name)
+
         {:ok, user}
 
       {:error, changeset} ->

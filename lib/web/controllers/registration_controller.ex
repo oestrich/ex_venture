@@ -1,6 +1,7 @@
 defmodule Web.RegistrationController do
   use Web, :controller
 
+  alias Game.Config
   alias Web.User
 
   def new(conn, _params) do
@@ -8,6 +9,7 @@ defmodule Web.RegistrationController do
 
     conn
     |> assign(:changeset, changeset)
+    |> assign(:names, Config.random_character_names())
     |> render("new.html")
   end
 

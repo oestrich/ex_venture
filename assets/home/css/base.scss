@@ -99,3 +99,13 @@ footer {
     padding: .575rem .75rem;
   }
 }
+
+.starter-name {
+  text-decoration: underline;
+  cursor: pointer;
+  color: $blue;
+
+  &:hover {
+    color: $blue * 1.3;
+  }
+}

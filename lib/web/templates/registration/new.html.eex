@@ -13,6 +13,15 @@
         <%= label f, :name %>
         <%= text_input f, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus" %>
         <%= error_tag f, :name %>
+
+        <%= unless Enum.empty?(@names) do %>
+          <div class="form-text text-muted">Need help chosing a name? Here are a few to pick from: </div>
+          <div class="form-text text-muted">
+            <%= Enum.map(@names, fn name -> %>
+              <span class="starter-name"><%= String.trim(name) %></span>&nbsp;
+            <% end) %>
+          </div>
+        <% end %>
       </div>
 
       <div class="form-group has-feedback">
@@ -61,3 +70,11 @@
     <% end %>
   </div>
 </div>
+
+<script type="application/javascript">
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("starter-name")){
+    document.getElementById("user_name").value = e.target.innerHTML;
+  }
+});
+</script>

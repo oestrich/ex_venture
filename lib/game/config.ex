@@ -4,6 +4,7 @@ defmodule Game.Config do
   """
 
   alias Data.Config
+  alias Data.Repo
   alias Data.Save
 
   @color_config %{
@@ -55,8 +56,11 @@ defmodule Game.Config do
 
   def find_config(name) do
     case Agent.get(__MODULE__, &Map.get(&1, name, nil)) do
-      nil -> reload(name)
-      value -> value
+      nil ->
+        reload(name)
+
+      value ->
+        value
     end
   end
 
@@ -77,8 +81,11 @@ defmodule Game.Config do
 
   def regen_tick_count(default) do
     case find_config("regen_tick_count") do
-      nil -> default
-      regen_tick_count -> regen_tick_count |> Integer.parse() |> elem(0)
+      nil ->
+        default
+
+      regen_tick_count ->
+        regen_tick_count |> Integer.parse() |> elem(0)
     end
   end
 
@@ -89,8 +96,11 @@ defmodule Game.Config do
   """
   def game_name(default \\ "ExVenture") do
     case find_config("game_name") do
-      nil -> default
-      game_name -> game_name
+      nil ->
+        default
+
+      game_name ->
+        game_name
     end
   end
 
@@ -101,8 +111,11 @@ defmodule Game.Config do
   """
   def motd(default) do
     case find_config("motd") do
-      nil -> default
-      motd -> motd
+      nil ->
+        default
+
+      motd ->
+        motd
     end
   end
 
@@ -113,8 +126,11 @@ defmodule Game.Config do
   """
   def after_sign_in_message(default \\ "") do
     case find_config("after_sign_in_message") do
-      nil -> default
-      motd -> motd
+      nil ->
+        default
+
+      motd ->
+        motd
     end
   end
 
@@ -131,6 +147,58 @@ defmodule Game.Config do
       save ->
         {:ok, save} = Save.load(Poison.decode!(save))
         save
+    end
+  end
+
+  @doc """
+  Your pool of random character names to offer to players signing up
+  """
+  @spec character_names() :: [String.t()]
+  def character_names() do
+    case find_config("character_names") do
+      nil ->
+        []
+
+      names ->
+        names
+        |> String.split("\n")
+        |> Enum.map(&String.trim/1)
+    end
+  end
+
+  @doc """
+  Pick a random set of 5 names
+  """
+  @spec random_character_names() :: [String.t()]
+  def random_character_names() do
+    character_names()
+    |> Enum.shuffle()
+    |> Enum.take(5)
+  end
+
+  @doc """
+  Remove a name from the list of character names if it was used
+  """
+  def claim_character_name(name) do
+    case name in character_names() do
+      true ->
+        _claim_character_name(name)
+
+      false ->
+        :ok
+    end
+  end
+
+  defp _claim_character_name(name) do
+    case Repo.get_by(Config, name: "character_names") do
+      nil ->
+        :ok
+
+      config ->
+        names = List.delete(character_names(), name)
+        changeset = config |> Config.changeset(%{value: Enum.join(names, "\n")})
+        Repo.update(changeset)
+        reload("character_names")
     end
   end
 

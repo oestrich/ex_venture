@@ -3,7 +3,7 @@
     <h3 class="box-title"><%= @title %></h3>
   </div>
 
-  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
+  <%= form_for @changeset, @path, [class: "form-horizontal", method: :put], fn (f) -> %>
     <div class="box-body">
       <%= render("_#{@name}_form.html", f: f) %>
     </div>
