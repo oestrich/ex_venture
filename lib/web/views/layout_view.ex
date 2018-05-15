@@ -48,4 +48,8 @@ defmodule Web.LayoutView do
         "#{title} - #{Config.game_name()}"
     end
   end
+
+  def game_config(user) do
+    user.save.config
+  end
 end
