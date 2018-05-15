@@ -1,6 +1,7 @@
 defmodule Web.UserSocket do
   use Phoenix.Socket
 
+  channel("chat:*", Web.ChatChannel)
   channel("telnet:*", Web.TelnetChannel)
 
   transport(:websocket, Phoenix.Transports.WebSocket)

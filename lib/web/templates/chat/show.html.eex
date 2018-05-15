@@ -1,0 +1,36 @@
+<div class="chat">
+  <div class="row">
+    <div class="col-md-12">
+      <ul class="nav nav-tabs">
+        <%= Enum.map(Enum.with_index(Chat.channels(@user)), fn {channel, i} -> %>
+          <li class="channel-tab" data-channel="<%= channel %>">
+            <%= link(to: "#channel-#{channel}", class: "nav-link #{active(i)}", data: [toggle: "tab"]) do %>
+              <%= channel %> <i class="bell hidden fa fa-bell"></i>
+            <% end %>
+          </li>
+        <% end) %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tab-content">
+        <%= Enum.map(Enum.with_index(Chat.channels(@user)), fn {channel, i} -> %>
+          <div id="channel-<%= channel %>" data-channel="<%= channel %>" class="terminal channel chat-pane tab-pane <%= active(i) %> ">
+          </div>
+        <% end) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-11 col-9">
+      <input id="chat-prompt" name="prompt" type="text" class="form-control" autofocus="autofocus" />
+    </div>
+
+    <div class="col-md-1 col-2">
+      <button id="chat-send" class="btn btn-primary">Send</button>
+    </div>
+  </div>
+</div>

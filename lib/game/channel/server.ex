@@ -8,6 +8,7 @@ defmodule Game.Channel.Server do
   alias Game.Channel
   alias Game.Channels
   alias Metrics.CommunicationInstrumenter
+  alias Web.Endpoint
 
   @doc """
   Get a list of channels the pid is subscribed to
@@ -60,12 +61,16 @@ defmodule Game.Channel.Server do
   @doc """
   Broadcast a message to a channel
   """
-  @spec broadcast(Channel.state(), String.t(), Message.t()) :: :ok
-  def broadcast(state, channel, message)
+  @spec broadcast(Channel.state(), String.t(), Message.t(), Keyword.t()) :: :ok
+  def broadcast(state, channel, message, opts)
 
-  def broadcast(%{channels: channels}, channel, message) do
+  def broadcast(%{channels: channels}, channel, message, opts) do
     Logger.info("Channel '#{channel}' message: #{inspect(message.formatted)}", type: :channel)
     CommunicationInstrumenter.channel_broadcast(channel)
+
+    if opts[:web] do
+      Endpoint.broadcast("chat:#{channel}", "broadcast", %{message: message.formatted})
+    end
 
     channels
     |> Map.get(channel, [])
@@ -82,8 +87,11 @@ defmodule Game.Channel.Server do
   @spec tell(Channel.state(), Character.t(), Character.t(), Message.t()) :: :ok
   def tell(%{tells: tells}, {type, who}, from, message) do
     case tells |> Map.get("tells:#{type}:#{who.id}", nil) do
-      nil -> nil
-      pid -> send(pid, {:channel, {:tell, from, message}})
+      nil ->
+        nil
+
+      pid ->
+        send(pid, {:channel, {:tell, from, message}})
     end
   end
 
