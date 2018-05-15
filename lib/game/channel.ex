@@ -66,10 +66,11 @@ defmodule Game.Channel do
   """
   @spec broadcast(String.t(), Message.t()) :: :ok
   def broadcast(channel, message) do
-    members = :pg2.get_members(@key)
-
-    Enum.map(members, fn member ->
-      GenServer.cast(member, {:broadcast, channel, message})
+    @key
+    |> :pg2.get_members()
+    |> Enum.with_index()
+    |> Enum.map(fn {member, i} ->
+      GenServer.cast(member, {:broadcast, channel, message, [web: i == 0]})
     end)
   end
 
@@ -130,8 +131,8 @@ defmodule Game.Channel do
     {:noreply, state}
   end
 
-  def handle_cast({:broadcast, channel, message}, state) do
-    Server.broadcast(state, channel, message)
+  def handle_cast({:broadcast, channel, message, opts}, state) do
+    Server.broadcast(state, channel, message, opts)
     {:noreply, state}
   end
 

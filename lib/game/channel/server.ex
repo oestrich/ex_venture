@@ -61,14 +61,16 @@ defmodule Game.Channel.Server do
   @doc """
   Broadcast a message to a channel
   """
-  @spec broadcast(Channel.state(), String.t(), Message.t()) :: :ok
-  def broadcast(state, channel, message)
+  @spec broadcast(Channel.state(), String.t(), Message.t(), Keyword.t()) :: :ok
+  def broadcast(state, channel, message, opts)
 
-  def broadcast(%{channels: channels}, channel, message) do
+  def broadcast(%{channels: channels}, channel, message, opts) do
     Logger.info("Channel '#{channel}' message: #{inspect(message.formatted)}", type: :channel)
     CommunicationInstrumenter.channel_broadcast(channel)
 
-    Endpoint.broadcast("chat:#{channel}", "broadcast", %{message: message.formatted})
+    if opts[:web] do
+      Endpoint.broadcast("chat:#{channel}", "broadcast", %{message: message.formatted})
+    end
 
     channels
     |> Map.get(channel, [])
