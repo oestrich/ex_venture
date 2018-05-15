@@ -68,12 +68,7 @@ defmodule Game.Channel.Server do
     Logger.info("Channel '#{channel}' message: #{inspect(message.formatted)}", type: :channel)
     CommunicationInstrumenter.channel_broadcast(channel)
 
-    Endpoint.broadcast("chat:#{channel}", "broadcast", %{
-      from: %{
-        name: message.sender.name,
-      },
-      message: message.formatted
-    })
+    Endpoint.broadcast("chat:#{channel}", "broadcast", %{message: message.formatted})
 
     channels
     |> Map.get(channel, [])
@@ -90,8 +85,11 @@ defmodule Game.Channel.Server do
   @spec tell(Channel.state(), Character.t(), Character.t(), Message.t()) :: :ok
   def tell(%{tells: tells}, {type, who}, from, message) do
     case tells |> Map.get("tells:#{type}:#{who.id}", nil) do
-      nil -> nil
-      pid -> send(pid, {:channel, {:tell, from, message}})
+      nil ->
+        nil
+
+      pid ->
+        send(pid, {:channel, {:tell, from, message}})
     end
   end
 
