@@ -103,6 +103,10 @@
 
             <%= color_field(:panel_border, "Panel Border") %>
 
+            <%= color_field(:character_info_background, "Character Info Background") %>
+
+            <%= color_field(:character_info_text, "Character Info Text") %>
+
             <%= color_field(:room_info_background, "Room Info Background") %>
 
             <%= color_field(:room_info_text, "Room Info Text") %>

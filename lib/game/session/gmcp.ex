@@ -13,7 +13,15 @@ defmodule Game.Session.GMCP do
   """
   @spec character(map) :: :ok
   def character(%{socket: socket, user: user}) do
-    socket |> @socket.push_gmcp("Character", %{name: user.name} |> Poison.encode!())
+    data = %{
+      name: user.name,
+      level: user.save.level,
+      class: %{
+        name: user.class.name,
+      }
+    }
+
+    socket |> @socket.push_gmcp("Character", data |> Poison.encode!())
   end
 
   @doc """

@@ -19,8 +19,15 @@ let channelBroadcast = (channel, data) => {
  */
 let character = (channel, data) => {
   console.log(`Signed in as ${data.name}`)
+
+  renderCharacter(data);
+
   let stats = _.first(Sizzle(".stats"));
   stats.style.display = "flex";
+
+  let characterInfo = _.first(Sizzle(".character-info"));
+  characterInfo.style.display = "inherit";
+
   let roomInfo = _.first(Sizzle(".room-info"));
   roomInfo.style.display = "inherit";
 }
@@ -29,6 +36,8 @@ let character = (channel, data) => {
  * Character.Vitals module
  */
 let characterVitals = (channel, data) => {
+  renderStats(data);
+
   let healthWidth = data.health_points / data.max_health_points;
   let skillWidth = data.skill_points / data.max_skill_points;
   let moveWidth = data.move_points / data.max_move_points;
@@ -79,6 +88,38 @@ let sendExit = (channel, exit) => {
   return (e) => {
     channel.send(exit)
   }
+}
+
+/**
+ * Render the character info in the side panel
+ */
+
+let renderCharacter = (character) => {
+  let characterName = _.first(Sizzle(".character-info .character-name"));
+  characterName.innerHTML = character.name;
+
+  let className = _.first(Sizzle(".character-info .class-name"));
+  className.innerHTML = character.class.name;
+
+  let level = _.first(Sizzle(".character-info .level"));
+  level.innerHTML = character.level;
+}
+
+let renderStats = (stats) => {
+  let strength = _.first(Sizzle(".character-info .strength"));
+  strength.innerHTML = stats.strength;
+
+  let dexterity = _.first(Sizzle(".character-info .dexterity"));
+  dexterity.innerHTML = stats.dexterity;
+
+  let constitution = _.first(Sizzle(".character-info .constitution"));
+  constitution.innerHTML = stats.constitution;
+
+  let intelligence = _.first(Sizzle(".character-info .intelligence"));
+  intelligence.innerHTML = stats.intelligence;
+
+  let wisdom = _.first(Sizzle(".character-info .wisdom"));
+  wisdom.innerHTML = stats.wisdom;
 }
 
 /**

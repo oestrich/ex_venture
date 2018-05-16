@@ -10,8 +10,8 @@ body {
 .panel {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 80%;
+  left: 20%;
+  width: 60%;
   height: 88%;
   overflow-y: scroll;
 
@@ -35,6 +35,28 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.character-info {
+  display: none;
+
+  font-size: 1.25em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20%;
+  height: 88%;
+
+  @media only screen and (max-width: 500px) {
+    width: 0%;
+  }
+
+  .container {
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 }
 
 .room-info {
@@ -89,7 +111,7 @@ body {
 }
 
 pre {
-  font-size: 1.1em;
+  font-size: 1em;
   white-space: pre-wrap;
 
   code {

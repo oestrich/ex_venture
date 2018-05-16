@@ -9,20 +9,25 @@ body {
 }
 
 .panel {
+  border-left: 2px solid <%= Config.color_panel_border() %>;
   border-right: 2px solid <%= Config.color_panel_border() %>;
   border-bottom: 2px solid <%= Config.color_panel_border() %>;
+}
+
+.character-info {
+  background-color: <%= Config.color_character_info_background() %>;
+  border-bottom: 2px solid <%= Config.color_character_info_background() %>;
+  color: <%= Config.color_character_info_text() %>;
 }
 
 .room-info {
   background-color: <%= Config.color_room_info_background() %>;
   border-bottom: 2px solid <%= Config.color_room_info_background() %>;
   color: <%= Config.color_room_info_text() %>;
+}
 
-  .exits {
-    .white {
-      color: <%= Config.color_room_info_exit() %>;
-    }
-  }
+.room-info .exits .white {
+  color: <%= Config.color_room_info_exit() %>;
 }
 
 .stat-block {

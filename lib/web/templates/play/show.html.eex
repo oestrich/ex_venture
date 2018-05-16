@@ -1,3 +1,29 @@
+<div class="character-info">
+  <div class="container">
+    <h3 class="character-name"></h3>
+    <div class="basic-info">
+      <span class="class-name"></span> - Level <span class="level"></span>
+    </div>
+    <div class="character-stats">
+      <dl>
+        <dt>Strength:</dt>
+        <dd class="strength"></dd>
+
+        <dt>Dexterity:</dt>
+        <dd class="dexterity"></dd>
+
+        <dt>Constitution:</dt>
+        <dd class="constitution"></dd>
+
+        <dt>Intelligence:</dt>
+        <dd class="intelligence"></dd>
+
+        <dt>Wisdom:</dt>
+        <dd class="wisdom"></dd>
+      </dl>
+    </div>
+  </div>
+</div>
 <div class="panel">
   <div class="container">
     <pre><code id="terminal"></code></pre>
