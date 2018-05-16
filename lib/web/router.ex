@@ -37,7 +37,7 @@ defmodule Web.Router do
     get("/account/password", AccountController, :password)
     put("/account", AccountController, :update)
 
-    get("/account/chat", ChatController, :show)
+    get("/chat", ChatController, :show)
 
     get("/account/twofactor/start", AccountTwoFactorController, :start)
     get("/account/twofactor/qr.png", AccountTwoFactorController, :qr)

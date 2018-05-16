@@ -46,7 +46,7 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@user))) %>
             </li>
 
             <%= if Map.has_key?(@conn.assigns, :user) do %>
-              <li class="nav-item>">
+              <li class="nav-item <%= tab_selected(@conn, "chat") %>">
                 <%= link("Chat", to: public_chat_path(@conn, :show), class: "nav-link") %>
               </li>
               <li class="nav-item <%= tab_selected(@conn, "account") %>">
