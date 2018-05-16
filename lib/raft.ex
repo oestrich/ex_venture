@@ -13,8 +13,8 @@ defmodule Raft do
 
   require Logger
 
-  @election_initial_delay 1500
-  @election_random_delay 750
+  @election_initial_delay 500
+  @election_random_delay 500
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -121,6 +121,11 @@ defmodule Raft do
 
   def handle_info({:election, :start, term}, state) do
     {:ok, state} = Server.start_election(state, term)
+    {:noreply, state}
+  end
+
+  def handle_info({:election, :check_election_status, term}, state) do
+    {:ok, state} = Server.check_election_status(state, term)
     {:noreply, state}
   end
 

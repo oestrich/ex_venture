@@ -4,11 +4,13 @@ defmodule Raft.Server do
   """
 
   alias Raft.PG
+  alias Raft.State
 
   require Logger
 
   @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
   @winner_subscriptions [Game.World.Master]
+  @check_election_timeout 1500
 
   def debug(state) do
     members = PG.members(others: true)
@@ -66,6 +68,8 @@ defmodule Raft.Server do
           PG.broadcast(fn pid ->
             Raft.announce_candidate(pid, term)
           end)
+
+          Process.send_after(self(), {:election, :check_election_status, term}, @check_election_timeout)
 
           {:ok, %{state | highest_seen_term: term}}
         end
@@ -286,5 +290,37 @@ defmodule Raft.Server do
 
     {:ok, state} = set_leader(state, self(), node(), term)
     {:ok, %{state | state: "leader"}}
+  end
+
+  @doc """
+  Check on the current term, and if it's stuck
+  """
+  @spec check_election_status(State.t(), integer()) :: {:ok, State.t()}
+  def check_election_status(state, term) do
+    Logger.debug(fn ->
+      "Checking election status for term #{term}"
+    end, type: :raft)
+
+    case state.term < term do
+      true ->
+        Logger.debug("Restarting the election, it seems frozen", type: :raft)
+
+        _check_election_status(state, term)
+
+      false ->
+        {:ok, state}
+    end
+  end
+
+  defp _check_election_status(state, term) do
+    case state.state do
+      "candidate" ->
+        Raft.start_election(term + 1)
+
+        {:ok, state}
+
+      _ ->
+        {:ok, state}
+    end
   end
 end
