@@ -18,7 +18,7 @@
           <div class="form-text text-muted">Need help chosing a name? Here are a few to pick from: </div>
           <div class="form-text text-muted">
             <%= Enum.map(@names, fn name -> %>
-              <span class="starter-name"><%= String.trim(name) %></span>&nbsp;
+              <span class="starter-name"><%= name %></span>&nbsp;
             <% end) %>
           </div>
         <% end %>

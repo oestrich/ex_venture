@@ -28,10 +28,10 @@ defmodule Game.Session.CreateAccount do
     We need a name and password for you to sign up.
     #{random_names()}
     """
+    message = String.trim(message)
 
-    socket |> @socket.echo(String.trim(message))
-
-    socket |> @socket.prompt("Name: ")
+    @socket.echo(socket, message)
+    @socket.prompt(socket, "Name: ")
   end
 
   def process(
