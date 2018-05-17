@@ -1,3 +1,6 @@
+class.name:
+  Try to limit to 10 characters, it will be cut off in the `who` list otherwise.
+
 color_code.ansi_escape:
   This is the ANSI escape sequence when someone is connected via telnet, see [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)
 
@@ -69,6 +72,9 @@ quest.level:
 
 quest.steps:
   Players must fulfill each of these in order to complete the quest.
+
+race.name:
+  Try to limit to 10 characters, it will be cut off in the `who` list otherwise.
 
 room.ecology:
   Room ecology changes the color of the map "icon" in the map grid.

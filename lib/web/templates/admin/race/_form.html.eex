@@ -5,8 +5,12 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
-      <%= FormView.text_field(f, :name) %>
+      <%= FormView.text_field(f, :name) do %>
+        <span class="help-block"><%= Help.get("race.name") %></span>
+      <% end %>
+
       <%= FormView.textarea_field(f, :description) %>
+
       <%= FormView.textarea_field(f, :starting_stats, value: @changeset |> starting_stats(), rows: 13) %>
     </div>
 

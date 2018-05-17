@@ -5,6 +5,7 @@ defmodule Game.Command.Who do
 
   use Game.Command
 
+  alias Data.User
   alias Game.Command.Info
   alias Game.Format
 
@@ -35,23 +36,19 @@ defmodule Game.Command.Who do
   def run({}, %{socket: socket}) do
     players = Session.Registry.connected_players()
 
-    names =
-      players
-      |> Enum.map(fn %{user: user, metadata: metadata} ->
-        prompt = "[#{user.save.level} #{user.class.name} #{user.race.name}]"
+    {admins, players} = Enum.split_with(players, fn %{user: user} ->
+      User.is_admin?(user)
+    end)
 
-        "#{prompt} #{Format.player_name(user)} #{Format.player_flags(user, none: false)} #{
-          afk(metadata)
-        }"
+    names =
+      (admins ++ players)
+      |> Enum.map(fn %{user: user, metadata: metadata} ->
+        Format.Who.player_line(user, metadata)
       end)
       |> Enum.join("\n")
 
     socket |> @socket.echo("There are #{players |> length} players online:\n#{names}")
-    :ok
   end
 
   def run({name}, state), do: Info.run({name}, state)
-
-  defp afk(%{is_afk: true}), do: "AFK"
-  defp afk(_), do: ""
 end

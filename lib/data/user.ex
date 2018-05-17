@@ -40,6 +40,13 @@ defmodule Data.User do
     timestamps()
   end
 
+  @doc """
+  Check if a user is an admin
+  """
+  def is_admin?(user) do
+    "admin" in user.flags
+  end
+
   def changeset(struct, params) do
     struct
     |> cast(params, [

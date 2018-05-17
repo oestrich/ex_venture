@@ -1,6 +1,7 @@
 defmodule Web.LayoutView do
   use Web, :view
 
+  alias Data.User
   alias Game.Config
   alias Web.Bug
   alias Web.Color
@@ -13,8 +14,11 @@ defmodule Web.LayoutView do
 
   def tab_selected(conn, "dashboard") do
     case conn.path_info do
-      ["admin"] -> "active"
-      _ -> ""
+      ["admin"] ->
+        "active"
+
+      _ ->
+        ""
     end
   end
 
@@ -36,7 +40,7 @@ defmodule Web.LayoutView do
   def user_token(%{assigns: %{user_token: token}}), do: token
   def user_token(_), do: ""
 
-  def is_admin?(%{assigns: %{user: user}}), do: "admin" in user.flags
+  def is_admin?(%{assigns: %{user: user}}), do: User.is_admin?(user)
   def is_admin?(_), do: false
 
   def page_title(conn, assigns) do
