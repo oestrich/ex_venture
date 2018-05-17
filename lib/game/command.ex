@@ -104,6 +104,7 @@ defmodule Game.Command do
     Command.Quest,
     Command.Quit,
     Command.Recall,
+    Command.Scan,
     Command.Shops,
     Command.Tell,
     Command.Train,
