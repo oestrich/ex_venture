@@ -55,8 +55,11 @@ defmodule Game.Door do
   @spec get(integer()) :: String.t()
   def get(exit_id) do
     case Cachex.get(@key, exit_id) do
-      {:ok, state} when state != nil -> state
-      _ -> nil
+      {:ok, state} when state != nil ->
+        state
+
+      _ ->
+        nil
     end
   end
 
@@ -83,8 +86,11 @@ defmodule Game.Door do
   @spec closed?(integer()) :: boolean
   def closed?(exit_id) do
     case get(exit_id) do
-      nil -> nil
-      state -> state == @closed
+      nil ->
+        nil
+
+      state ->
+        state == @closed
     end
   end
 
@@ -94,8 +100,11 @@ defmodule Game.Door do
   @spec open?(integer()) :: boolean
   def open?(exit_id) do
     case get(exit_id) do
-      nil -> nil
-      state -> state == @open
+      nil ->
+        nil
+
+      state ->
+        state == @open
     end
   end
 
