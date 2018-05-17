@@ -7,11 +7,11 @@ import {format} from "./color"
 var body = document.getElementById("body")
 var userToken = body.getAttribute("data-user-token")
 
-let socket = new Socket("/socket", {params: {token: userToken}})
-socket.connect()
-
 class Channels {
   join() {
+    this.socket = new Socket("/socket", {params: {token: userToken}})
+    this.socket.connect()
+
     this.channels = {};
 
     _.each(Sizzle(".channel"), (channel) => {
@@ -25,7 +25,7 @@ class Channels {
   connectChannel(channelEl) {
     let channelName = channelEl.dataset.channel;
 
-    let channel = socket.channel(`chat:${channelName}`, {});
+    let channel = this.socket.channel(`chat:${channelName}`, {});
     this.channels[channelName] = channel;
 
     channel.on("broadcast", (data) => {
