@@ -5,6 +5,7 @@ defmodule Game.Server do
 
   use GenServer
 
+  alias Game.Config
   alias Game.Session
   alias Metrics.PlayerInstrumenter
 
@@ -37,6 +38,9 @@ defmodule Game.Server do
   end
 
   def handle_info(:tick, state) do
+    Config.character_names()
+    |> PlayerInstrumenter.set_random_character_name_count()
+
     case @report_users do
       true ->
         Session.Registry.connected_players()

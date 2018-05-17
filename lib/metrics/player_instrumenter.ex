@@ -14,6 +14,11 @@ defmodule Metrics.PlayerInstrumenter do
       labels: [:role]
     )
 
+    Gauge.declare(
+      name: :exventure_player_random_character_name_pool_count,
+      help: "Number of random character name's left in the pool to pick from"
+    )
+
     Counter.declare(
       name: :exventure_session_total,
       help: "Session process counter",
@@ -77,5 +82,13 @@ defmodule Metrics.PlayerInstrumenter do
     {admins, players} = Enum.split_with(players, &("admin" in &1.flags))
     Gauge.set([name: :exventure_player_count, labels: [:players]], length(players))
     Gauge.set([name: :exventure_player_count, labels: [:admins]], length(admins))
+  end
+
+  @doc """
+  Set the number of random names left in the character name pool
+  """
+  @spec set_random_character_name_count([String.t()]) :: :ok
+  def set_random_character_name_count(names) do
+    Gauge.set([name: :exventure_player_random_character_name_pool_count], length(names))
   end
 end
