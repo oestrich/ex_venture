@@ -21,6 +21,9 @@ defmodule Game.Channel do
 
   @key :channel
 
+  @doc false
+  def pg2_key(), do: @key
+
   @doc """
   Start the GenServer process for managing channels
   """
@@ -66,12 +69,7 @@ defmodule Game.Channel do
   """
   @spec broadcast(String.t(), Message.t()) :: :ok
   def broadcast(channel, message) do
-    @key
-    |> :pg2.get_members()
-    |> Enum.with_index()
-    |> Enum.map(fn {member, i} ->
-      GenServer.cast(member, {:broadcast, channel, message, [web: i == 0]})
-    end)
+    GenServer.cast(__MODULE__, {:broadcast, channel, message})
   end
 
   @doc """
@@ -128,6 +126,11 @@ defmodule Game.Channel do
 
   def handle_cast({:leave, channel, pid}, state) do
     state = Server.leave_channel(state, channel, pid)
+    {:noreply, state}
+  end
+
+  def handle_cast({:broadcast, channel, message}, state) do
+    Server.broadcast(state, channel, message)
     {:noreply, state}
   end
 

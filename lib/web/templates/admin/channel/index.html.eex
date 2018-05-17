@@ -39,6 +39,7 @@
                   <td><%= channel.name %></td>
                   <td><code><%= channel.color %></code></td>
                   <td>
+                    <%= link("View Log", to: channel_path(@conn, :show, channel.id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: channel_path(@conn, :edit, channel.id), class: "btn btn-default btn-xs") %>
                   </td>
                 </tr>

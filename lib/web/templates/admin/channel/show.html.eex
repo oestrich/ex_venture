@@ -1,0 +1,31 @@
+<section class="content-header">
+  <h1>
+    <%= @channel.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Bugs", to: channel_path(@conn, :index)) %></li>
+    <li class="active"><%= @channel.name %></li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header">
+          <h3 class="box-title">Message Log</h3>
+        </div>
+        <div class="box-body">
+          <div class="lead">The last day of messages</div>
+          <pre class="console"><%= message_log(@channel) %></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

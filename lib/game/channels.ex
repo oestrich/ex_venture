@@ -64,9 +64,14 @@ defmodule Game.Channels do
 
   defp _fetch_from_cache(cache, key) do
     case Cachex.get(cache, key) do
-      {:ok, nil} -> nil
-      {:ok, channel} -> channel
-      _ -> nil
+      {:ok, nil} ->
+        nil
+
+      {:ok, channel} ->
+        channel
+
+      _ ->
+        nil
     end
   end
 

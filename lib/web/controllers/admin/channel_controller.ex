@@ -11,6 +11,14 @@ defmodule Web.Admin.ChannelController do
     |> render("index.html")
   end
 
+  def show(conn, %{"id" => id}) do
+    channel = Channel.get(id)
+
+    conn
+    |> assign(:channel, channel)
+    |> render("show.html")
+  end
+
   def new(conn, _params) do
     changeset = Channel.new()
 

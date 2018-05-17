@@ -6,6 +6,7 @@ defmodule Web.Channel do
   import Ecto.Query
 
   alias Data.Channel
+  alias Data.ChannelMessage
   alias Data.Repo
   alias Game.Channels
 
@@ -22,7 +23,26 @@ defmodule Web.Channel do
   Get a channel
   """
   def get(id) do
-    Channel |> Repo.get(id)
+    one_day_ago = Timex.now() |> Timex.shift(days: -1)
+
+    Channel
+    |> where([c], c.id == ^id)
+    |> preload([messages: ^from(m in ChannelMessage, where: m.inserted_at > ^one_day_ago, order_by: [m.inserted_at])])
+    |> Repo.one()
+  end
+
+  def recent_messages(channel) do
+    ten_minutes_ago = Timex.now() |> Timex.shift(minutes: -10)
+
+    ChannelMessage
+    |> where([cm], cm.channel_id == ^channel.id)
+    |> where([cm], cm.inserted_at >= ^ten_minutes_ago)
+    |> order_by([cm], [asc: cm.inserted_at])
+    |> limit(10)
+    |> Repo.all()
+    |> Enum.map(fn message ->
+      %{message: message.formatted}
+    end)
   end
 
   @doc """

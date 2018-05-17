@@ -9,6 +9,7 @@ defmodule Web.ChatChannel do
   alias Game.Channel
   alias Game.Channels
   alias Game.Message
+  alias Web.Channel, as: WebChannel
   alias Web.User
 
   def join("chat:" <> channel, _message, socket) do
@@ -42,7 +43,8 @@ defmodule Web.ChatChannel do
 
       channel ->
         socket = assign(socket, :channel, channel)
-        {:ok, socket}
+
+        {:ok, WebChannel.recent_messages(channel), socket}
     end
   end
 

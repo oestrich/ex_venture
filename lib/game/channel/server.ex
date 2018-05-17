@@ -5,6 +5,8 @@ defmodule Game.Channel.Server do
 
   require Logger
 
+  alias Data.ChannelMessage
+  alias Data.Repo
   alias Game.Channel
   alias Game.Channels
   alias Metrics.CommunicationInstrumenter
@@ -62,16 +64,50 @@ defmodule Game.Channel.Server do
   Broadcast a message to a channel
   """
   @spec broadcast(Channel.state(), String.t(), Message.t(), Keyword.t()) :: :ok
-  def broadcast(state, channel, message, opts)
+  def broadcast(state, channel, message, opts \\ [])
 
-  def broadcast(%{channels: channels}, channel, message, opts) do
+  def broadcast(state, channel, message, []) do
     Logger.info("Channel '#{channel}' message: #{inspect(message.formatted)}", type: :channel)
     CommunicationInstrumenter.channel_broadcast(channel)
 
-    if opts[:web] do
-      Endpoint.broadcast("chat:#{channel}", "broadcast", %{message: message.formatted})
-    end
+    Endpoint.broadcast("chat:#{channel}", "broadcast", %{message: message.formatted})
 
+    record_message(channel, message)
+
+    Channel.pg2_key()
+    |> :pg2.get_members()
+    |> Enum.reject(&(&1 == self()))
+    |> Enum.each(fn member ->
+      GenServer.cast(member, {:broadcast, channel, message, [echo: true]})
+    end)
+
+    local_broadcast(state, channel, message)
+  end
+
+  def broadcast(state, channel, message, [echo: true]) do
+    local_broadcast(state, channel, message)
+  end
+
+  defp record_message(channel, message) do
+    case Channels.get(channel) do
+      nil ->
+        :ok
+
+      channel ->
+        params = %{
+          channel_id: channel.id,
+          user_id: message.sender.id,
+          message: message.message,
+          formatted: message.formatted,
+        }
+
+        %ChannelMessage{}
+        |> ChannelMessage.changeset(params)
+        |> Repo.insert()
+    end
+  end
+
+  defp local_broadcast(%{channels: channels}, channel, message) do
     channels
     |> Map.get(channel, [])
     |> Enum.each(fn pid ->

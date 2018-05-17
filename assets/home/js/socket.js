@@ -33,8 +33,13 @@ class Channels {
       this.appendMessage(channelEl, data);
     })
 
-    channel.join();
-    this.appendMessage(channelEl, {message: "Connected"});
+    channel.join()
+      .receive("ok", data => {
+        this.appendMessage(channelEl, {message: "Connected"});
+        _.each(data, message => {
+          this.appendMessage(channelEl, message);
+        });
+      });
   }
 
   connectSend() {

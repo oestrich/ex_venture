@@ -5,11 +5,14 @@ defmodule Data.Channel do
 
   use Data.Schema
 
+  alias Data.ChannelMessage
   alias Data.Color
 
   schema "channels" do
     field(:name, :string)
     field(:color, :string, default: "red")
+
+    has_many(:messages, ChannelMessage)
 
     timestamps()
   end

@@ -1,7 +1,16 @@
 defmodule Game.ChannelTest do
   use Data.ModelCase
 
+  alias Data.ChannelMessage
   alias Game.Channel
+
+  setup do
+    Game.Channels.clear()
+    channel = create_channel("global")
+    channel |> insert_channel()
+
+    %{channel: channel}
+  end
 
   test "joining a channel" do
     :ok = Channel.join("global")
@@ -19,9 +28,32 @@ defmodule Game.ChannelTest do
   test "sending a message on the channel" do
     :ok = Channel.join("global")
 
-    Channel.broadcast("global", %{formatted: "sending a message"})
+    message = %{
+      sender: %{id: 1, name: "player"},
+      message: "sending a message",
+      formatted: "sending a message",
+    }
+
+    Channel.broadcast("global", message)
 
     assert_receive {:channel, {:broadcast, "global", %{formatted: "sending a message"}}}
+  end
+
+  test "broadcasting a message records it", %{channel: channel} do
+    user = create_user(%{name: "player", password: "password"})
+
+    message = %{
+      channel_id: channel.id,
+      sender: user,
+      message: "sending a message",
+      formatted: "sending a message",
+    }
+
+    Channel.broadcast("global", message)
+
+    Test.ChannelsHelper.ensure_process_caught_up(Channel)
+
+    assert ChannelMessage |> Repo.all() |> length() == 1
   end
 
   test "list out subscribed channels" do
