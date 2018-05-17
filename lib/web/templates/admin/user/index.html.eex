@@ -67,6 +67,11 @@
             </div>
 
             <div class="form-group">
+              <%= label :user, :name %>
+              <%= text_input :user, :name, value: @filter["name"], class: "form-control" %>
+            </div>
+
+            <div class="form-group">
               <%= label :user, :race_id %>
               <%= select :user, :race_id, Race.race_select(), prompt: "Select Race", value: @filter["race_id"], class: "form-control" %>
             </div>

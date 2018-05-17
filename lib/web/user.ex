@@ -73,6 +73,11 @@ defmodule Web.User do
     |> where([u], fragment("?->>'level' <= ?", u.save, ^to_string(level)))
   end
 
+  def filter_on_attribute({"name", name}, query) do
+    query
+    |> where([u], ilike(u.name, ^"%#{name}%"))
+  end
+
   def filter_on_attribute({"class_id", class_id}, query) do
     query
     |> where([u], u.class_id == ^class_id)
