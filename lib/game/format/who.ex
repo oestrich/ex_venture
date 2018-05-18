@@ -12,24 +12,19 @@ defmodule Game.Format.Who do
     [
       player_stats(player),
       Format.player_name(player),
+      Format.player_flags(player, none: false),
       afk(metadata),
     ] |> Enum.join(" ")
   end
 
   defp player_stats(player) do
-    case "admin" in player.flags do
-      true ->
-        "[         {red}Admin{/red}         ]"
-
-      false ->
-        Enum.join([
-          "[",
-          String.pad_leading(Integer.to_string(player.save.level), 3),
-          pad_and_limit(player.class.name),
-          pad_and_limit(player.race.name),
-          "]"
-        ])
-    end
+    Enum.join([
+      "[",
+      String.pad_leading(Integer.to_string(player.save.level), 3),
+      pad_and_limit(player.class.name),
+      pad_and_limit(player.race.name),
+      "]"
+    ])
   end
 
   defp pad_and_limit(name) do
