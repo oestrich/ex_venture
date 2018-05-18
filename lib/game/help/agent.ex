@@ -42,14 +42,18 @@ defmodule Game.Help.Agent do
   Get all help topics in the agent
   """
   def database() do
-    Agent.get(__MODULE__, fn help -> Map.get(help, :database, []) end)
+    Agent.get(__MODULE__, fn help ->
+      Map.get(help, :database, [])
+    end)
   end
 
   @doc """
   Get the built in help files from the agent
   """
   def built_in() do
-    Agent.get(__MODULE__, fn help -> Map.get(help, :built_in, []) end)
+    Agent.get(__MODULE__, fn help ->
+      Map.get(help, :built_in, [])
+    end)
   end
 
   @doc """

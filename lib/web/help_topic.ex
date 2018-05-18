@@ -8,6 +8,7 @@ defmodule Web.HelpTopic do
 
   alias Data.HelpTopic
   alias Data.Repo
+  alias Game.Command
   alias Game.Help.Agent, as: HelpAgent
   alias Web.Pagination
 
@@ -22,7 +23,7 @@ defmodule Web.HelpTopic do
     built_ins = HelpAgent.built_in()
 
     (help_topics ++ built_ins)
-    |> Enum.sort_by(& &1.name)
+    |> Enum.sort_by(&(&1.name))
   end
 
   def all(opts) do
@@ -45,12 +46,29 @@ defmodule Web.HelpTopic do
     |> Enum.sort()
   end
 
+  @doc """
+  Find a command that matches the topic
+  """
+  @spec command(String.t()) :: Command.t()
   def command(topic) do
-    Game.Command.commands()
-    |> Enum.find(fn command ->
-      command |> to_string |> String.split(".") |> List.last() |> String.downcase() ==
-        topic |> String.downcase()
-    end)
+    case Enum.find(Command.commands(), &match_command?(&1, topic)) do
+      nil ->
+        {:error, :not_found}
+
+      topic ->
+        {:ok, topic}
+    end
+  end
+
+  defp match_command?(command, topic) do
+    command_name =
+      command
+      |> to_string()
+      |> String.split(".")
+      |> List.last()
+      |> String.downcase()
+
+    command_name == topic |> String.downcase()
   end
 
   def built_in(id) do

@@ -7,6 +7,8 @@ defmodule Game.Command.Debug do
 
   commands(["debug"], parse: false)
 
+  @required_flags ["admin"]
+
   @impl Game.Command
   def help(:topic), do: "Debug"
   def help(:short), do: "Look up debug information"

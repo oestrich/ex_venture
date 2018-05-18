@@ -23,6 +23,7 @@ defmodule Game.Command.Macro do
       @before_compile Game.Command.Macro
 
       @must_be_alive false
+      @required_flags []
 
       defoverridable Game.Command
     end
@@ -39,6 +40,9 @@ defmodule Game.Command.Macro do
 
       @doc false
       def must_be_alive?(), do: @must_be_alive
+
+      @doc false
+      def required_flags(), do: @required_flags
 
       # Provide a default bad parse
       def parse(command), do: {:error, :bad_parse, command}

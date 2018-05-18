@@ -321,14 +321,14 @@ defmodule Game.CommandTest do
   describe "getting help" do
     test "base help command", %{socket: socket} do
       command = %Command{module: Command.Help}
-      {:paginate, text, _state} = Command.run(command, %{socket: socket})
+      {:paginate, text, _state} = Command.run(command, %{socket: socket, user: %{flags: []}})
 
       assert Regex.match?(~r(The topics you can), text)
     end
 
     test "loading command help", %{socket: socket} do
       command = %Command{module: Command.Help, args: {"say"}}
-      {:paginate, text, _state} = Command.run(command, %{socket: socket})
+      {:paginate, text, _state} = Command.run(command, %{socket: socket, user: %{flags: []}})
 
       assert Regex.match?(~r(say), text)
     end

@@ -31,13 +31,13 @@ defmodule Game.Command.Help do
   def run(command, state)
 
   def run({}, state) do
-    {:paginate, Help.base(), state}
+    {:paginate, Help.base(state.user.flags), state}
   end
 
   def run({topic}, state) do
     help =
       topic
-      |> Help.topic()
+      |> Help.topic(state.user.flags)
       |> Color.delink_commands()
 
     {:paginate, help, state}
