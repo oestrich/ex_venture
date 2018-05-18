@@ -5,6 +5,7 @@ defmodule Game.Help do
 
   require Logger
 
+  alias Game.Command
   alias Game.Format
   alias Game.Help.Agent, as: HelpAgent
   alias Game.Skills
@@ -13,15 +14,11 @@ defmodule Game.Help do
   Basic help information
 
   Which commands can be run.
-
-  Example:
-
-      iex> Regex.match?(~r(^The topics you can look up are:), Game.Help.base())
-      true
   """
-  def base() do
+  def base(user_flags) do
     commands =
-      Game.Command.commands()
+      Command.commands()
+      |> Enum.filter(&allowed?(&1, user_flags))
       |> Enum.map(fn command ->
         key = command.help(:topic)
 
@@ -31,7 +28,7 @@ defmodule Game.Help do
     built_ins =
       HelpAgent.built_in()
       |> Enum.map(fn built_in ->
-        "\t{command send='help #{built_in.name}'}#{built_in.name}{/command}: #{built_in.short}\n"
+        "\t{command send='help #{String.downcase(built_in.name)}'}#{built_in.name}{/command}: #{built_in.short}\n"
       end)
 
     topics =
@@ -45,24 +42,45 @@ defmodule Game.Help do
   @doc """
   Find a help topic whether a command or a database topic
   """
-  @spec topic(String.t()) :: String.t()
-  def topic(topic) do
+  @spec topic(String.t(), [String.t()]) :: String.t()
+  def topic(topic, flags \\ []) do
     Logger.info("Help looked up for #{inspect(topic)}", type: :topic)
     topic = topic |> String.upcase()
 
-    case find_command(topic) do
-      nil -> find_help_topic(topic)
-      body -> body
+    case find_command(topic, flags) do
+      nil ->
+        find_help_topic(topic)
+
+      body ->
+        body
     end
   end
 
-  defp find_command(topic) do
-    Game.Command.commands()
-    |> Enum.find(&match_command?(&1, topic))
-    |> format_command_help()
+  @doc """
+  Check if a command is allowed for the user based on their flags
+  """
+  @spec allowed?(Command.t(), [String.t()]) :: boolean()
+  def allowed?(command, user_flags) do
+    Enum.empty?(command.required_flags -- user_flags)
   end
 
-  defp format_command_help(nil), do: nil
+  defp find_command(topic, flags) do
+    Game.Command.commands()
+    |> Enum.find(&match_command?(&1, topic))
+    |> maybe_format_command_help(flags)
+  end
+
+  defp maybe_format_command_help(nil, _), do: nil
+
+  defp maybe_format_command_help(command, user_flags) do
+    case allowed?(command, user_flags) do
+      true ->
+        format_command_help(command)
+
+      false ->
+        "You are not allowed to use this command"
+    end
+  end
 
   defp format_command_help(command) do
     lines = [
@@ -105,8 +123,11 @@ defmodule Game.Help do
       |> Enum.find(&match_help_topic?(&1, topic))
 
     case help_topic do
-      nil -> find_built_in_topic(topic)
-      help_topic -> format_help_topic(help_topic)
+      nil ->
+        find_built_in_topic(topic)
+
+      help_topic ->
+        format_help_topic(help_topic)
     end
   end
 
@@ -131,8 +152,11 @@ defmodule Game.Help do
       |> Enum.find(&match_built_in_topic?(&1, topic))
 
     case built_in do
-      nil -> find_skill_topic(topic)
-      built_in -> format_built_in_topic(built_in)
+      nil ->
+        find_skill_topic(topic)
+
+      built_in ->
+        format_built_in_topic(built_in)
     end
   end
 
@@ -152,8 +176,11 @@ defmodule Game.Help do
 
   def find_skill_topic(topic) do
     case Skills.skill(String.downcase(topic)) do
-      nil -> "Unknown topic"
-      skill -> format_skill_topic(skill)
+      nil ->
+        "Unknown topic"
+
+      skill ->
+        format_skill_topic(skill)
     end
   end
 

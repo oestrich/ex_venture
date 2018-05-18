@@ -5,6 +5,8 @@ defmodule Game.Command.Crash do
 
   use Game.Command
 
+  @required_flags ["admin"]
+
   @zone Application.get_env(:ex_venture, :game)[:zone]
 
   commands(["crash"], parse: false)
