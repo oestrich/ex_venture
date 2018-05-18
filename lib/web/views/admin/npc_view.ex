@@ -4,7 +4,6 @@ defmodule Web.Admin.NPCView do
 
   alias Data.Stats
   alias Game.Skills
-  alias Web.Admin.EventView
   alias Web.Admin.SharedView
   alias Web.Zone
 

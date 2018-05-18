@@ -68,6 +68,15 @@
               <th>Description</th>
               <td><pre><%= @npc.description %></pre></td>
             </tr>
+            <tr>
+              <th>
+                Events
+                <%= SharedView.help_tooltip("npc.events") %>
+              </th>
+              <td>
+                <%= link("View Details", to: npc_event_path(@conn, :index, @npc.id), class: "btn btn-primary") %>
+              </td>
+            </tr>
           </table>
         </div>
       </div>
@@ -94,48 +103,6 @@
                 <td><%= val %></td>
               </tr>
             <% end) %>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Events</h3>
-          <%= SharedView.help_tooltip("npc.events") %>
-          <div class="box-tools">
-            <%= link("View Details", to: npc_event_path(@conn, :index, @npc.id), class: "btn btn-primary") %>
-          </div>
-        </div>
-        <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Condition</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map(@npc.events, fn event -> %>
-                <tr>
-                  <td><code><%= event.type %></code></td>
-                  <td>
-                    <%= Enum.map(Map.get(event, :condition, %{}), fn {key, val} -> %>
-                      <b><%= key %>:</b> <code><%= val %></code><br />
-                    <% end) %>
-                  </td>
-                  <td>
-                    <%= if Map.has_key?(event, :action) do %>
-                      <%= render(EventView, "_action.html", action: event.action) %>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end) %>
-            </tbody>
           </table>
         </div>
       </div>
