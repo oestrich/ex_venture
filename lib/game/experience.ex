@@ -118,6 +118,20 @@ defmodule Game.Experience do
   end
 
   @doc """
+  Level a save if required
+  """
+  @spec maybe_level_up(Save.t(), Save.t()) :: Save.t()
+  def maybe_level_up(start_save, save) do
+    case leveled_up?(start_save, save) do
+      true ->
+        level_up(save)
+
+      false ->
+        save
+    end
+  end
+
+  @doc """
   Level up after receing experience points
 
       iex> Game.Experience.level_up(%{level: 1, experience_points: 1000, stats: %{}})

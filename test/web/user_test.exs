@@ -201,4 +201,13 @@ defmodule Web.UserTest do
       assert :error = User.reset_password(user.password_reset_token, params)
     end
   end
+
+  describe "activating cheats" do
+    test "adding experience points", %{user: user} do
+      {:ok, user} = User.activate_cheat(user, %{"name" => "experience", "value" => "1000"})
+
+      assert user.save.level == 2
+      assert user.save.experience_points == 1000
+    end
+  end
 end

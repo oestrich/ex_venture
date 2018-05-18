@@ -196,6 +196,8 @@ defmodule Web.Router do
     post("/users/disconnect", UserController, :disconnect)
 
     resources "/users", UserController, only: [:index, :show, :edit, :update] do
+      get("/cheat", UserController, :cheat, as: :cheat)
+      post("/cheat/activate", UserController, :cheating, as: :cheating)
       post("/reset", UserController, :reset, as: :reset)
       get("/watch", UserController, :watch, as: :watch)
     end

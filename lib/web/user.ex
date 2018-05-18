@@ -16,6 +16,7 @@ defmodule Web.User do
   alias Game.Account
   alias Game.Config
   alias Game.Emails
+  alias Game.Experience
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
   alias Metrics.PlayerInstrumenter
@@ -475,5 +476,15 @@ defmodule Web.User do
     user
     |> User.email_changeset(params)
     |> Repo.update()
+  end
+
+  def activate_cheat(user, params) do
+    case Map.get(params, "name") do
+      "experience" ->
+        experience_points = String.to_integer(Map.get(params, "value"))
+        save = Experience.add_experience(user.save, experience_points)
+        save = Experience.maybe_level_up(user.save, save)
+        Account.save(user, save)
+    end
   end
 end

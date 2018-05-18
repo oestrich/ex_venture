@@ -61,6 +61,32 @@ defmodule Web.Admin.UserController do
     |> render("watch.html")
   end
 
+  def cheat(conn, %{"user_id" => id}) do
+    user = User.get(id)
+
+    conn
+    |> assign(:user, user)
+    |> render("cheat.html")
+  end
+
+  def cheating(conn, %{"user_id" => id, "cheat" => params}) do
+    user = User.get(id)
+
+    case User.activate_cheat(user, params) do
+      {:ok, user} ->
+        conn
+        |> assign(:user, user)
+        |> put_flash(:info, "Cheat activated")
+        |> redirect(to: user_path(conn, :show, user.id))
+
+      _ ->
+        conn
+        |> assign(:user, user)
+        |> put_flash(:error, "There was an issue activating the cheat. Please try again.")
+        |> render("cheat.html")
+    end
+  end
+
   def teleport(conn, %{"room_id" => room_id}) do
     %{user: user} = conn.assigns
 
