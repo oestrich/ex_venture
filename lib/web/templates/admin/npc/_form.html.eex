@@ -4,7 +4,7 @@
       <h4>Basics</h4>
       <hr />
 
-      <%= FormView.number_field(f, :level) %>
+      <%= FormView.number_field(f, :level, min: 1) %>
 
       <%= FormView.text_field(f, :name) %>
 
@@ -59,3 +59,7 @@
     </div>
   <% end %>
 </div>
+
+<script type="application/javascript">
+  new NPCLeveler(document.getElementById("npc_level"), document.getElementById("npc_stats"));
+</script>

@@ -70,7 +70,7 @@ exports.config = {
     autoRequire: {
       "js/app.js": ["js/app"],
       "js/home.js": ["home/js/app"],
-      "js/admin.js": ["admin/js/socket"]
+      "js/admin.js": ["admin/js/app"]
     }
   },
 
