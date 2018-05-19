@@ -2,9 +2,9 @@ exports.config = {
   files: {
     javascripts: {
       joinTo: {
-        "js/app.js": /(jquery)|(process)|(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
         "js/admin.js": /(process)|(jquery)|(underscore)|(sizzle)|(admin\/js)|(priv\/static\/phoenix*)/,
         "js/home.js": /(process)|(jquery)|(underscore)|(sizzle)|(home\/js)|(priv\/static\/phoenix*)/,
+        "js/play.js": /(process)|(jquery)|(underscore)|(sizzle)|(play\/js)|(priv\/static\/phoenix*)/,
       },
       order: {
         before: [
@@ -18,9 +18,9 @@ exports.config = {
     },
     stylesheets: {
       joinTo: {
-        "css/app.css": /(app\/css)/,
         "css/admin.css": /(admin\/css)/,
         "css/home.css": /(home\/css)/,
+        "css/play.css": /(play\/css)/,
       },
       order: {
         before: [
@@ -36,7 +36,7 @@ exports.config = {
       },
     },
     templates: {
-      joinTo: "js/app.js"
+      joinTo: "js/play.js"
     }
   },
 
@@ -50,7 +50,15 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "home/css", "home/js"],
+    watched: [
+      "static",
+      "admin/css",
+      "admin/js",
+      "home/css",
+      "home/js",
+      "play/css",
+      "play/js",
+    ],
     // Where to compile files to
     public: "../priv/static"
   },
@@ -68,7 +76,7 @@ exports.config = {
 
   modules: {
     autoRequire: {
-      "js/app.js": ["js/app"],
+      "js/play.js": ["play/js/app"],
       "js/home.js": ["home/js/app"],
       "js/admin.js": ["admin/js/app"]
     }

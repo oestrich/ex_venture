@@ -1,1 +1,1 @@
-../../app/js/color.js
+../../play/js/color.js
