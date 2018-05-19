@@ -33,7 +33,7 @@ defmodule Game.AuthenticationTest do
     {:ok, password} = User.create_one_time_password(user)
 
     user = Authentication.find_and_validate("user", password.password)
-    assert user.save.stats.move_points == 10
-    assert user.save.stats.max_move_points == 10
+    assert user.save.stats.move_points == 20
+    assert user.save.stats.max_move_points == 20
   end
 end

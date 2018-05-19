@@ -6,6 +6,7 @@ defmodule Game.Config do
   alias Data.Config
   alias Data.Repo
   alias Data.Save
+  alias Data.Stats
 
   @color_config %{
     color_background: "#002b36",
@@ -37,6 +38,20 @@ defmodule Game.Config do
     color_map_green: "#00af00",
     color_map_grey: "#9e9e9e",
     color_map_light_grey: "#d0d0d0"
+  }
+
+  @basic_stats %{
+    health_points: 50,
+    max_health_points: 50,
+    skill_points: 50,
+    max_skill_points: 50,
+    move_points: 20,
+    max_move_points: 20,
+    strength: 10,
+    dexterity: 10,
+    constitution: 10,
+    intelligence: 10,
+    wisdom: 10,
   }
 
   @doc false
@@ -81,6 +96,10 @@ defmodule Game.Config do
     ExVenture.config(port)
   end
 
+  @doc """
+  Number of "ticks" before regeneration occurs
+  """
+  @spec regen_tick_count(Integer.t()) :: Integer.t()
   def regen_tick_count(default) do
     case find_config("regen_tick_count") do
       nil ->
@@ -96,6 +115,7 @@ defmodule Game.Config do
 
   Used in web page titles
   """
+  @spec game_name(String.t()) :: String.t()
   def game_name(default \\ "ExVenture") do
     case find_config("game_name") do
       nil ->
@@ -111,6 +131,7 @@ defmodule Game.Config do
 
   Used during sign in
   """
+  @spec motd(String.t()) :: String.t()
   def motd(default) do
     case find_config("motd") do
       nil ->
@@ -126,6 +147,7 @@ defmodule Game.Config do
 
   Used during sign in
   """
+  @spec after_sign_in_message(String.t()) :: String.t()
   def after_sign_in_message(default \\ "") do
     case find_config("after_sign_in_message") do
       nil ->
@@ -141,6 +163,7 @@ defmodule Game.Config do
 
   Which room, etc the player will start out with
   """
+  @spec starting_save() :: map()
   def starting_save() do
     case find_config("starting_save") do
       nil ->
@@ -181,6 +204,7 @@ defmodule Game.Config do
   @doc """
   Remove a name from the list of character names if it was used
   """
+  @spec claim_character_name(String.t()) :: :ok
   def claim_character_name(name) do
     case name in character_names() do
       true ->
@@ -201,6 +225,21 @@ defmodule Game.Config do
         changeset = config |> Config.changeset(%{value: Enum.join(names, "\n")})
         Repo.update(changeset)
         reload("character_names")
+    end
+  end
+
+  @doc """
+  Load the game's basic stats
+  """
+  @spec basic_stats() :: map()
+  def basic_stats() do
+    case find_config("basic_stats") do
+      nil ->
+        @basic_stats
+
+      stats ->
+        {:ok, stats} = Stats.load(Poison.decode!(stats))
+        stats
     end
   end
 

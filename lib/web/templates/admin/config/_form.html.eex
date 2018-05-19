@@ -5,7 +5,7 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal", method: :put], fn (f) -> %>
     <div class="box-body">
-      <%= render("_#{@name}_form.html", f: f) %>
+      <%= render("_#{@name}_form.html", f: f, changeset: @changeset) %>
     </div>
 
     <div class="box-footer">

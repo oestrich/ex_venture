@@ -3,6 +3,7 @@ defmodule Web.Admin.NPCView do
   use Game.Currency
 
   alias Data.Stats
+  alias Game.Config
   alias Game.Skills
   alias Web.Admin.SharedView
   alias Web.Zone
@@ -11,22 +12,31 @@ defmodule Web.Admin.NPCView do
 
   def stats(changeset) do
     case get_field(changeset, :stats) do
-      nil -> %{} |> Stats.default() |> Poison.encode!(pretty: true)
-      stats -> stats |> Stats.default() |> Poison.encode!(pretty: true)
+      nil ->
+        Config.basic_stats() |> Poison.encode!(pretty: true)
+
+      stats ->
+        stats |> Stats.default() |> Poison.encode!(pretty: true)
     end
   end
 
   def tags(changeset) do
     case get_field(changeset, :tags) do
-      nil -> ""
-      tags -> tags |> Enum.join(", ")
+      nil ->
+        ""
+
+      tags ->
+        tags |> Enum.join(", ")
     end
   end
 
   def script(changeset) do
     case get_field(changeset, :script) do
-      nil -> ""
-      script -> script |> Poison.encode!(pretty: true)
+      nil ->
+        ""
+
+      script ->
+        script |> Poison.encode!(pretty: true)
     end
   end
 

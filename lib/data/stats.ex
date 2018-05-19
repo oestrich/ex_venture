@@ -63,12 +63,12 @@ defmodule Data.Stats do
   def default(stats) do
     stats
     |> migrate()
-    |> ensure(:health_points, 10)
-    |> ensure(:max_health_points, 10)
-    |> ensure(:skill_points, 10)
-    |> ensure(:max_skill_points, 10)
-    |> ensure(:move_points, 10)
-    |> ensure(:max_move_points, 10)
+    |> ensure(:health_points, 50)
+    |> ensure(:max_health_points, 50)
+    |> ensure(:skill_points, 50)
+    |> ensure(:max_skill_points, 50)
+    |> ensure(:move_points, 20)
+    |> ensure(:max_move_points, 20)
     |> ensure(:strength, 10)
     |> ensure(:dexterity, 10)
     |> ensure(:constitution, 10)

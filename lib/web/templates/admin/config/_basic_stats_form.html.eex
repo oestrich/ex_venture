@@ -1,0 +1,1 @@
+<%= FormView.textarea_field(@f, :value, value: basic_stats_value(@changeset), rows: 15) %>

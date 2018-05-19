@@ -27,12 +27,12 @@ defmodule Data.StatsTest do
   describe "defaults" do
     test "default move_points" do
       stats = Stats.default(%{})
-      assert stats.move_points == 10
+      assert stats.move_points == 20
     end
 
     test "default max_move_points" do
       stats = Stats.default(%{})
-      assert stats.max_move_points == 10
+      assert stats.max_move_points == 20
     end
   end
 end
