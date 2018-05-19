@@ -2,18 +2,33 @@ exports.config = {
   files: {
     javascripts: {
       joinTo: {
-        "js/admin.js": /(process)|(jquery)|(underscore)|(sizzle)|(admin\/js)|(priv\/static\/phoenix*)/,
-        "js/home.js": /(process)|(jquery)|(underscore)|(sizzle)|(home\/js)|(priv\/static\/phoenix*)/,
-        "js/play.js": /(process)|(jquery)|(underscore)|(sizzle)|(play\/js)|(priv\/static\/phoenix*)/,
+        "js/vendor.js": [
+          /(process)/,
+          /jquery/,
+          "vendor/js/popper.min.js",
+          /(underscore)/,
+          /(sizzle)/,
+          /(priv\/static\/phoenix*)/,
+        ],
+        "js/admin.js": [
+          /(process)/,
+          /jquery/,
+          /(underscore)/,
+          /(sizzle)/,
+          /(admin\/js)/,
+          /(priv\/static\/phoenix*)/,
+        ],
+        "js/home.js": /(home\/js)/,
+        "js/play.js": /(play\/js)/,
       },
       order: {
         before: [
-          /jquery/,
-          /popper/,
+          "vendor/js/jquery.js",
+          "vendor/js/popper.min.js",
           "admin/js/vendor/bootstrap.js",
           "admin/js/vendor/adminlte.js",
           "home/js/vendor/bootstrap.min.js",
-        ]
+        ],
       },
     },
     stylesheets: {
@@ -52,6 +67,7 @@ exports.config = {
     // Dependencies and current project directories to watch
     watched: [
       "static",
+      "vendor/js",
       "admin/css",
       "admin/js",
       "home/css",
