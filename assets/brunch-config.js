@@ -5,26 +5,19 @@ exports.config = {
         "js/vendor.js": [
           /(process)/,
           /jquery/,
-          "vendor/js/popper.min.js",
+          /popper/,
           /(underscore)/,
           /(sizzle)/,
           /(priv\/static\/phoenix*)/,
         ],
-        "js/admin.js": [
-          /(process)/,
-          /jquery/,
-          /(underscore)/,
-          /(sizzle)/,
-          /(admin\/js)/,
-          /(priv\/static\/phoenix*)/,
-        ],
+        "js/admin.js": /(admin\/js)/,
         "js/home.js": /(home\/js)/,
         "js/play.js": /(play\/js)/,
       },
       order: {
         before: [
-          "vendor/js/jquery.js",
-          "vendor/js/popper.min.js",
+          /jquery/,
+          /popper/,
           "admin/js/vendor/bootstrap.js",
           "admin/js/vendor/adminlte.js",
           "home/js/vendor/bootstrap.min.js",
@@ -67,7 +60,6 @@ exports.config = {
     // Dependencies and current project directories to watch
     watched: [
       "static",
-      "vendor/js",
       "admin/css",
       "admin/js",
       "home/css",
@@ -102,6 +94,8 @@ exports.config = {
     enabled: true,
     globals: {
       $: "jquery",
+      "jQuery": "jquery",
+      "Popper": "popper.js",
     }
   }
 };
