@@ -34,6 +34,9 @@ npc.item_drop_rate:
 npc.items:
   NPCs have a chance of dropping anything in this list when they are killed.
 
+npc.level:
+  Changing this number will change the stats, leveling it or deleveling it. This uses the basic stats and will overwrite whatever you manually change.
+
 npc.quest_giver:
   A quest giver will show up in the quest form as a potential giver.
 

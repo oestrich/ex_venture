@@ -4,7 +4,9 @@
       <h4>Basics</h4>
       <hr />
 
-      <%= FormView.number_field(f, :level, min: 1) %>
+      <%= FormView.number_field(f, :level, min: 1) do %>
+        <span class="help-block"><%= Help.get("npc.level") %></span>
+      <% end %>
 
       <%= FormView.text_field(f, :name) %>
 
@@ -61,5 +63,6 @@
 </div>
 
 <script type="application/javascript">
-  new NPCLeveler(document.getElementById("npc_level"), document.getElementById("npc_stats"));
+  var basicStats = <%= raw(Poison.encode!(Config.basic_stats())) %>;
+  new NPCLeveler(basicStats, document.getElementById("npc_level"), document.getElementById("npc_stats"));
 </script>

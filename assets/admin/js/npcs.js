@@ -1,9 +1,8 @@
 export class NPCLeveler {
-  constructor(levelElement, statsElement) {
+  constructor(basicStats, levelElement, statsElement) {
+    this.basicStats = basicStats;
     this.levelElement = levelElement;
     this.statsElement = statsElement;
-
-    this.baseStats = JSON.parse(statsElement.value);
 
     this.addEventListeners();
   }
@@ -13,7 +12,7 @@ export class NPCLeveler {
       let level = parseInt(event.target.value, 10);
       let newStats = {};
 
-      $.each(this.baseStats, (key, value) => {
+      $.each(this.basicStats, (key, value) => {
         switch (key) {
           case "health_points":
           case "max_health_points":
