@@ -136,6 +136,10 @@ defmodule Web.Router do
 
       resources("/items", NPCItemController, only: [:new, :create], as: :item)
 
+      get "/script", NPCScriptController, :show, as: :script
+      get "/script/edit", NPCScriptController, :edit, as: :script
+      put "/script", NPCScriptController, :update, as: :script
+
       resources("/skills", NPCSkillController, only: [:new, :create, :delete], as: :skill)
 
       resources("/spawners", NPCSpawnerController, only: [:new, :create], as: :spawner)

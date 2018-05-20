@@ -2,9 +2,17 @@ exports.config = {
   files: {
     javascripts: {
       joinTo: {
-        "js/app.js": /(jquery)|(process)|(underscore)|(sizzle)|(app\/js)|(priv\/static\/phoenix*)/,
-        "js/admin.js": /(process)|(jquery)|(underscore)|(sizzle)|(admin\/js)|(priv\/static\/phoenix*)/,
-        "js/home.js": /(process)|(jquery)|(underscore)|(sizzle)|(home\/js)|(priv\/static\/phoenix*)/,
+        "js/vendor.js": [
+          /(process)/,
+          /jquery/,
+          /popper/,
+          /(underscore)/,
+          /(sizzle)/,
+          /(priv\/static\/phoenix*)/,
+        ],
+        "js/admin.js": /(admin\/js)/,
+        "js/home.js": /(home\/js)/,
+        "js/play.js": /(play\/js)/,
       },
       order: {
         before: [
@@ -13,14 +21,14 @@ exports.config = {
           "admin/js/vendor/bootstrap.js",
           "admin/js/vendor/adminlte.js",
           "home/js/vendor/bootstrap.min.js",
-        ]
+        ],
       },
     },
     stylesheets: {
       joinTo: {
-        "css/app.css": /(app\/css)/,
         "css/admin.css": /(admin\/css)/,
         "css/home.css": /(home\/css)/,
+        "css/play.css": /(play\/css)/,
       },
       order: {
         before: [
@@ -36,7 +44,7 @@ exports.config = {
       },
     },
     templates: {
-      joinTo: "js/app.js"
+      joinTo: "js/play.js"
     }
   },
 
@@ -50,7 +58,15 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "admin/css", "admin/js", "app/css", "app/js", "home/css", "home/js"],
+    watched: [
+      "static",
+      "admin/css",
+      "admin/js",
+      "home/css",
+      "home/js",
+      "play/css",
+      "play/js",
+    ],
     // Where to compile files to
     public: "../priv/static"
   },
@@ -68,7 +84,7 @@ exports.config = {
 
   modules: {
     autoRequire: {
-      "js/app.js": ["js/app"],
+      "js/play.js": ["play/js/app"],
       "js/home.js": ["home/js/app"],
       "js/admin.js": ["admin/js/app"]
     }
@@ -78,6 +94,8 @@ exports.config = {
     enabled: true,
     globals: {
       $: "jquery",
+      "jQuery": "jquery",
+      "Popper": "popper.js",
     }
   }
 };

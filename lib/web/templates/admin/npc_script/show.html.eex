@@ -1,0 +1,36 @@
+<section class="content-header">
+  <h1>
+    <%= @npc.name %>'s Script
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("NPCs", to: npc_path(@conn, :index)) %></li>
+    <li><%= link(@npc.name, to: npc_path(@conn, :show, @npc.id)) %></li>
+    <li class="active">Script</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header">
+          <h3 class="box-title"></h3>
+          <div class="box-tools">
+            <%= link("Edit", to: npc_script_path(@conn, :edit, @npc.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <%= if @npc.script do %>
+            <pre><%= @npc.script |> Poison.encode!(pretty: true) %></pre>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

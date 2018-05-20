@@ -101,6 +101,7 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@user))) %>
       </div>
     </footer>
 
+    <script src="<%= static_path(@conn, "/js/vendor.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/home.js") %>"></script>
   </body>
 </html>

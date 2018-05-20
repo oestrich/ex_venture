@@ -1,0 +1,15 @@
+<div class="box box-primary">
+  <%= form_for @changeset, @path, [method: "PUT"], fn (f) -> %>
+    <div class="box-body">
+      <span class="lead">Enter in valid JSON</span>
+
+      <div class="form-group">
+        <%= textarea(f, :script, value: @changeset |> script(), class: "form-control", rows: 15) %>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
+    </div>
+  <% end %>
+</div>

@@ -31,10 +31,6 @@
         <span class="help-block"><%= Help.get("npc.description") %></span>
       <% end %>
 
-      <%= FormView.textarea_field(f, :script, value: @changeset |> script(), rows: 15) do %>
-        <span class="help-block">Enter in valid JSON</span>
-      <% end %>
-
       <h4>Stats</h4>
       <hr />
 

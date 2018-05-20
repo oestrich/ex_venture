@@ -30,16 +30,6 @@ defmodule Web.Admin.NPCView do
     end
   end
 
-  def script(changeset) do
-    case get_field(changeset, :script) do
-      nil ->
-        ""
-
-      script ->
-        script |> Poison.encode!(pretty: true)
-    end
-  end
-
   def custom_name?(%{name: name}) do
     name != "" && !is_nil(name)
   end
