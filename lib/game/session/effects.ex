@@ -119,8 +119,7 @@ defmodule Game.Session.Effects do
   def apply_continuous_effect(state, {from, effect}) do
     %{socket: socket, user: user, save: save} = state
 
-    effects = [effect] |> Effect.adjust_effects(save.stats)
-    stats = effects |> Effect.apply(save.stats)
+    {stats, effects} = Character.Effects.apply_continuous_effect(save.stats, state, effect)
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)

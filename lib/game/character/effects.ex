@@ -39,6 +39,21 @@ defmodule Game.Character.Effects do
   end
 
   @doc """
+  Apply a continuous effect to a character's stats
+  """
+  @spec apply_continuous_effect(Stats.t(), State.t(), Effect.t()) :: {Stats.t(), [Effect.t()]}
+  def apply_continuous_effect(stats, state, effect) do
+    effects =
+      [effect]
+      |> Effect.add_current_continuous_effects(state)
+      |> Effect.adjust_effects(stats)
+
+    stats = Effect.apply(effects, stats)
+
+    {stats, effects}
+  end
+
+  @doc """
   Clear a continuous effect after its duration is over
   """
   @spec clear_continuous_effect(State.t(), String.t()) :: State.t()

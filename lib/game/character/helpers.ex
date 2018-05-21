@@ -25,8 +25,11 @@ defmodule Game.Character.Helpers do
     maybe_send_continuous_effect(effect)
 
     case effect.count do
-      0 -> %{state | continuous_effects: continuous_effects}
-      _ -> %{state | continuous_effects: [{from, effect} | continuous_effects]}
+      0 ->
+        %{state | continuous_effects: continuous_effects}
+
+      _ ->
+        %{state | continuous_effects: [{from, effect} | continuous_effects]}
     end
   end
 

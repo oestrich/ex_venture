@@ -180,8 +180,8 @@ defmodule Game.NPC.Actions do
   """
   @spec apply_continuous_effect(State.t(), {Character.t(), Effect.t()}) :: State.t()
   def apply_continuous_effect(state = %{npc: npc}, {from, effect}) do
-    effects = [effect] |> Effect.adjust_effects(npc.stats)
-    stats = effects |> Effect.apply(npc.stats)
+    {stats, _effects} = Effects.apply_continuous_effect(npc.stats, state, effect)
+
     state = stats |> maybe_died(state, from)
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}

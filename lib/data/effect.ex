@@ -384,6 +384,23 @@ defmodule Data.Effect do
   def continuous?(_), do: false
 
   @doc """
+  Check if an effect is continuous and should apply to every effect coming in
+
+    iex> Data.Effect.applies_to_every_effect?(%{kind: "stats/boost"})
+    true
+
+    iex> Data.Effect.applies_to_every_effect?(%{kind: "damage/over-time"})
+    false
+
+    iex> Data.Effect.continuous?(%{kind: "damage"})
+    false
+  """
+  @spec applies_to_every_effect?(Effect.t()) :: boolean()
+  def applies_to_every_effect?(effect)
+  def applies_to_every_effect?(%{kind: "stats/boost"}), do: true
+  def applies_to_every_effect?(_), do: false
+
+  @doc """
   Instantiate an effect by giving it an ID to track, for future callbacks
   """
   @spec instantiate(Effect.t()) :: boolean()

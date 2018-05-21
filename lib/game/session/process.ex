@@ -288,7 +288,10 @@ defmodule Game.Session.Process do
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
-    Logger.debug(fn -> "Processing effect (#{effect_id})" end, type: :player)
+    Logger.debug(fn ->
+      "Processing effect (#{effect_id})"
+    end, type: :player)
+
     state = Effects.handle_continuous_effect(state, effect_id)
     {:noreply, state}
   end

@@ -279,7 +279,11 @@ defmodule Game.Effect do
   """
   @spec add_current_continuous_effects([Effect.t()], map()) :: [Effect.t()]
   def add_current_continuous_effects(effects, state) do
-    continuous_effects = Enum.map(state.continuous_effects, &(elem(&1, 1)))
+    continuous_effects =
+      state.continuous_effects
+      |> Enum.map(&(elem(&1, 1)))
+      |> Enum.filter(&Effect.applies_to_every_effect?/1)
+
     effects ++ continuous_effects
   end
 
