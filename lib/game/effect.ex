@@ -79,8 +79,7 @@ defmodule Game.Effect do
         stats |> Map.put(effect.field, stats[effect.field] + effect.amount)
 
       "subtract" ->
-        value = max(stats[effect.field] - effect.amount, 0)
-        stats |> Map.put(effect.field, value)
+        stats |> Map.put(effect.field, stats[effect.field] - effect.amount)
 
       "multiply" ->
         stats |> Map.put(effect.field, stats[effect.field] * effect.amount)
@@ -100,7 +99,7 @@ defmodule Game.Effect do
         stat = Map.get(stats, damage_type.stat_modifier)
         random_swing = Enum.random(@random_damage)
         modifier = 1 + stat / damage_type.boost_ratio + random_swing / 100
-        modified_amount = round(Float.ceil(effect.amount * modifier))
+        modified_amount = max(round(Float.ceil(effect.amount * modifier)), 0)
         effect |> Map.put(:amount, modified_amount)
 
       _ ->

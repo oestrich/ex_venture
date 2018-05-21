@@ -53,6 +53,22 @@ defmodule Game.EffectTest do
     assert calculated_effects == [%{kind: "damage", amount: 8, type: "slashing"}, %{kind: "damage", amount: 15, type: "bludgeoning"}]
   end
 
+  describe "calculating damage" do
+    test "simple damage" do
+      slashing_effect = %{kind: "damage", type: "slashing", amount: 10}
+
+      calculated_effect = Effect.calculate_damage(slashing_effect, %{strength: -10})
+      assert calculated_effect == %{kind: "damage", amount: 5, type: "slashing"}
+    end
+
+    test "stat is reduced enough to hit minimum damage" do
+      slashing_effect = %{kind: "damage", type: "slashing", amount: 10}
+
+      calculated_effect = Effect.calculate_damage(slashing_effect, %{strength: -30})
+      assert calculated_effect == %{kind: "damage", amount: 0, type: "slashing"}
+    end
+  end
+
   describe "calculating stats" do
     test "normal stats" do
       stats = %{strength: 10}
@@ -148,12 +164,6 @@ defmodule Game.EffectTest do
       effect = %{field: :strength, mode: "subtract", amount: 1}
 
       assert Effect.process_stats(effect, stats) == %{strength: 9}
-    end
-
-    test "subtraction - sticks to >= 0", %{stats: stats} do
-      effect = %{field: :strength, mode: "subtract", amount: 15}
-
-      assert Effect.process_stats(effect, stats) == %{strength: 0}
     end
 
     test "multiplication", %{stats: stats} do
