@@ -8,7 +8,7 @@ defmodule Web.ColorController do
 
     conn
     |> put_resp_header("content-type", "text/css")
-    |> put_resp_header("cache-control", "max-age=86400 public")
+    |> put_resp_header("cache-control", "public, max-age=86400")
     |> assign(:is_client, is_client)
     |> render("index.css", color_codes: ColorCode.all())
   end

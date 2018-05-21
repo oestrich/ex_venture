@@ -12,7 +12,7 @@ defmodule Web.Endpoint do
     Plug.Static,
     at: "/",
     from: :ex_venture,
-    gzip: false,
+    gzip: true,
     only: ~w(css fonts images js favicon.ico robots.txt)
   )
 
