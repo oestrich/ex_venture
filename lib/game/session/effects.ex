@@ -40,8 +40,11 @@ defmodule Game.Session.Effects do
     user |> maybe_died(state, from)
 
     Enum.each(continuous_effects, fn {_from, effect} ->
-      Logger.debug(fn -> "Delaying effect (#{effect.id})" end, type: :player)
-      :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
+      Logger.debug(fn ->
+        "Maybe delaying effect (#{effect.id})"
+      end, type: :player)
+
+      effect |> Effect.maybe_tick_effect(self())
     end)
 
     case is_alive?(state.save) do
@@ -110,10 +113,25 @@ defmodule Game.Session.Effects do
   """
   @spec handle_continuous_effect(State.t(), String.t()) :: State.t()
   def handle_continuous_effect(state, effect_id) do
-    case Enum.find(state.continuous_effects, fn {_from, effect} -> effect.id == effect_id end) do
-      nil -> state
-      effect -> apply_continuous_effect(state, effect)
+    case Effect.find_effect(state, effect_id) do
+      {:ok, effect} ->
+        apply_continuous_effect(state, effect)
+
+      {:error, :not_found} ->
+        state
     end
+  end
+
+  @doc """
+  Clear a continuous effect after its duration is over
+  """
+  @spec clear_continuous_effect(State.t(), String.t()) :: State.t()
+  def clear_continuous_effect(state, effect_id) do
+    continuous_effects = Enum.reject(state.continuous_effects, fn {_from, effect} ->
+      effect.id == effect_id
+    end)
+
+    %{state | continuous_effects: continuous_effects}
   end
 
   @doc """

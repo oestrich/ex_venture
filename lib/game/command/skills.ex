@@ -226,11 +226,12 @@ defmodule Game.Command.Skills do
 
         player_effects = save |> Item.effects_on_player()
 
-        effects =
-          (player_effects ++ skill.effects)
-          |> Skill.filter_effects(skill)
+        effects = Skill.filter_effects(player_effects ++ skill.effects, skill)
 
-        effects = stats |> Effect.calculate(effects)
+        effects =
+          stats
+          |> Effect.calculate_stats_from_continuous_effects(state)
+          |> Effect.calculate(effects)
 
         Character.apply_effects(
           target,

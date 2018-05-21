@@ -9,4 +9,16 @@ defmodule Data.EffectTest do
     effect = Effect.instantiate(effect)
     assert effect.id
   end
+
+  describe "continious stats" do
+    test "load them" do
+      {:ok, stat_boost} = Effect.load(%{"kind" => "stats/boost", "field" => "dexterity", "amount" => 10, "duration" => 1000})
+      assert stat_boost == %{kind: "stats/boost", field: :dexterity, amount: 10, duration: 1000}
+    end
+
+    test "validate them" do
+      stat_boost = %{kind: "stats/boost", field: :dexterity, amount: 10, duration: 1000}
+      assert Effect.valid?(stat_boost)
+    end
+  end
 end

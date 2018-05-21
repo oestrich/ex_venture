@@ -144,8 +144,13 @@ defmodule Game.NPC.Actions do
   """
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
   def apply_effects(state = %{npc: npc}, effects, from) do
-    effects = effects |> Effect.adjust_effects(npc.stats)
     continuous_effects = effects |> Effect.continuous_effects(from)
+
+    effects =
+      effects
+      |> Effect.add_current_continuous_effects(state)
+      |> Effect.adjust_effects(npc.stats)
+
     stats = effects |> Effect.apply(npc.stats)
     from |> Character.effects_applied(effects, {:npc, npc})
     state = stats |> maybe_died(state, from)
@@ -154,7 +159,7 @@ defmodule Game.NPC.Actions do
     state = %{state | npc: npc}
 
     Enum.each(continuous_effects, fn {_, effect} ->
-      :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
+      effect |> Effect.maybe_tick_effect(self())
     end)
 
     case is_alive?(npc) do
@@ -167,16 +172,20 @@ defmodule Game.NPC.Actions do
   end
 
   @doc """
-  Apply a continuous effect to an NPC
+  Find and apply a continuous effect to an NPC
   """
   def handle_continuous_effect(state, effect_id) do
-    case Enum.find(state.continuous_effects, fn {_from, effect} -> effect.id == effect_id end) do
-      nil -> state
-      effect -> apply_continuous_effect(state, effect)
+    case Effect.find_effect(state, effect_id) do
+      {:ok, effect} ->
+        apply_continuous_effect(state, effect)
+
+      {:error, :not_found} ->
+        state
     end
   end
 
   @doc """
+  Apply a continuous effect to an NPC
   """
   @spec apply_continuous_effect(State.t(), {Character.t(), Effect.t()}) :: State.t()
   def apply_continuous_effect(state = %{npc: npc}, {from, effect}) do
@@ -193,5 +202,17 @@ defmodule Game.NPC.Actions do
       false ->
         state
     end
+  end
+
+  @doc """
+  Clear a continuous effect after its duration is over
+  """
+  @spec clear_continuous_effect(State.t(), String.t()) :: State.t()
+  def clear_continuous_effect(state, effect_id) do
+    continuous_effects = Enum.reject(state.continuous_effects, fn {_from, effect} ->
+      effect.id == effect_id
+    end)
+
+    %{state | continuous_effects: continuous_effects}
   end
 end

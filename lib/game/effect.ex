@@ -17,6 +17,7 @@ defmodule Game.Effect do
   @spec calculate(Stats.t(), [Effect.t()]) :: [map()]
   def calculate(stats, effects) do
     {stats, effects} = stats |> calculate_stats(effects)
+    {stats_boost, effects} = effects |> Enum.split_with(&(&1.kind == "stats/boost"))
 
     {damage_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage"))
     damage = damage_effects |> Enum.map(&calculate_damage(&1, stats))
@@ -32,7 +33,7 @@ defmodule Game.Effect do
     {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
     damage = damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
 
-    damage ++ damage_over_time ++ recover
+    stats_boost ++ damage ++ damage_over_time ++ recover
   end
 
   @doc """
@@ -46,8 +47,19 @@ defmodule Game.Effect do
   @spec calculate_stats(Stats.t(), [Effect.t()]) :: Stats.t()
   def calculate_stats(stats, effects) do
     {stat_effects, effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
-    stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
+    stats = Enum.reduce(stat_effects, stats, &process_stats/2)
     {stats, effects}
+  end
+
+  @doc """
+  Calculate a character's stats based on the current continuous effects on them
+  """
+  @spec calculate_stats_from_continuous_effects(Stats.t(), map()) :: [Effect.t()]
+  def calculate_stats_from_continuous_effects(stats, state) do
+    state.continuous_effects
+    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.filter(&(&1.kind == "stats/boost"))
+    |> Enum.reduce(stats, &process_stats/2)
   end
 
   @doc """
@@ -239,5 +251,51 @@ defmodule Game.Effect do
     |> Enum.map(fn effect ->
       {from, effect}
     end)
+  end
+
+  @doc """
+  Start the continuous effect tick cycle if required
+
+  Effect must have an "every" field, such as damage over time
+  """
+  @spec maybe_tick_effect(Effect.t(), pid()) :: :ok
+  def maybe_tick_effect(effect, pid) do
+    cond do
+      Map.has_key?(effect, :every) ->
+        :erlang.send_after(effect.every, pid, {:continuous_effect, effect.id})
+
+      Map.has_key?(effect, :duration) ->
+        :erlang.send_after(effect.duration, pid, {:continuous_effect, :clear, effect.id})
+
+      true ->
+        :ok
+    end
+  end
+
+  @doc """
+  Add the current character's continuous effects from state
+  """
+  @spec add_current_continuous_effects([Effect.t()], map()) :: [Effect.t()]
+  def add_current_continuous_effects(effects, state) do
+    continuous_effects = Enum.map(state.continuous_effects, &(elem(&1, 1)))
+    effects ++ continuous_effects
+  end
+
+  @doc """
+  """
+  @spec find_effect(map(), String.t()) :: {:ok, Effect.t()} | {:error, :not_found}
+  def find_effect(state, effect_id) do
+    effect =
+      Enum.find(state.continuous_effects, fn {_from, effect} ->
+        effect.id == effect_id
+      end)
+
+    case effect do
+      nil ->
+        {:error, :not_found}
+
+      effect ->
+        {:ok, effect}
+    end
   end
 end

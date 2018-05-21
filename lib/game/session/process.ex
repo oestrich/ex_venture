@@ -292,6 +292,15 @@ defmodule Game.Session.Process do
     {:noreply, state}
   end
 
+  def handle_info({:continuous_effect, :clear, effect_id}, state) do
+    Logger.debug(fn ->
+      "Clearing effect (#{effect_id})"
+    end, type: :player)
+
+    state = Effects.clear_continuous_effect(state, effect_id)
+    {:noreply, state}
+  end
+
   def handle_info({:skill, :ready, skill}, state) do
     state.socket |> @socket.echo("#{Format.skill_name(skill)} is ready.")
     {:noreply, state}
