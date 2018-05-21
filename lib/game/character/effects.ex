@@ -18,11 +18,8 @@ defmodule Game.Character.Effects do
   def apply_effects(character, stats, state, effects, from) do
     continuous_effects = effects |> Effect.continuous_effects(from)
 
-    effects =
-      effects
-      |> Effect.add_current_continuous_effects(state)
-      |> Effect.adjust_effects(stats)
-
+    stats = stats |> Effect.calculate_stats_from_continuous_effects(state)
+    effects = effects |> Effect.adjust_effects(stats)
     stats = effects |> Effect.apply(stats)
 
     from |> Character.effects_applied(effects, character)
@@ -43,13 +40,9 @@ defmodule Game.Character.Effects do
   """
   @spec apply_continuous_effect(Stats.t(), State.t(), Effect.t()) :: {Stats.t(), [Effect.t()]}
   def apply_continuous_effect(stats, state, effect) do
-    effects =
-      [effect]
-      |> Effect.add_current_continuous_effects(state)
-      |> Effect.adjust_effects(stats)
-
+    stats = stats |> Effect.calculate_stats_from_continuous_effects(state)
+    effects = [effect] |> Effect.adjust_effects(stats)
     stats = Effect.apply(effects, stats)
-
     {stats, effects}
   end
 

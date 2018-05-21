@@ -42,7 +42,7 @@ defmodule Game.Effect do
   Calculate stats and return any effects that were not processed
 
     iex> stats = %{strength: 10}
-    iex> effects = [%{kind: "stats", field: :strength, amount: 10}, %{kind: "damage"}]
+    iex> effects = [%{kind: "stats", mode: "add", field: :strength, amount: 10}, %{kind: "damage"}]
     iex> Game.Effect.calculate_stats(stats, effects)
     {%{strength: 20}, [%{kind: "damage"}]}
   """
@@ -67,14 +67,27 @@ defmodule Game.Effect do
   @doc """
   Process stats effects
 
-      iex> Game.Effect.process_stats(%{field: :strength, amount: 10}, %{strength: 10})
+      iex> Game.Effect.process_stats(%{field: :strength, mode: "add", amount: 10}, %{strength: 10})
       %{strength: 20}
   """
   @spec process_stats(Effect.t(), Stats.t()) :: Stats.t()
   def process_stats(effect, stats)
 
-  def process_stats(%{field: field, amount: amount}, stats) do
-    stats |> Map.put(field, stats[field] + amount)
+  def process_stats(effect, stats) do
+    case effect.mode do
+      "add" ->
+        stats |> Map.put(effect.field, stats[effect.field] + effect.amount)
+
+      "subtract" ->
+        value = max(stats[effect.field] - effect.amount, 0)
+        stats |> Map.put(effect.field, value)
+
+      "multiply" ->
+        stats |> Map.put(effect.field, stats[effect.field] * effect.amount)
+
+      "division" ->
+        stats |> Map.put(effect.field, round(stats[effect.field] / effect.amount))
+    end
   end
 
   @doc """
@@ -272,19 +285,6 @@ defmodule Game.Effect do
       true ->
         :ok
     end
-  end
-
-  @doc """
-  Add the current character's continuous effects from state
-  """
-  @spec add_current_continuous_effects([Effect.t()], map()) :: [Effect.t()]
-  def add_current_continuous_effects(effects, state) do
-    continuous_effects =
-      state.continuous_effects
-      |> Enum.map(&(elem(&1, 1)))
-      |> Enum.filter(&Effect.applies_to_every_effect?/1)
-
-    effects ++ continuous_effects
   end
 
   @doc """

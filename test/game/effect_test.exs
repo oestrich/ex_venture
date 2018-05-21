@@ -37,7 +37,7 @@ defmodule Game.EffectTest do
   end
 
   test "filters out stats effects first and processes those" do
-    stat_effect = %{kind: "stats", field: :strength, amount: 10}
+    stat_effect = %{kind: "stats", field: :strength, amount: 10, mode: "add"}
     damage_effect = %{kind: "damage", type: "slashing", amount: 10}
 
     calculated_effects = Effect.calculate(%{strength: 10}, [damage_effect, stat_effect])
@@ -56,7 +56,7 @@ defmodule Game.EffectTest do
   describe "calculating stats" do
     test "normal stats" do
       stats = %{strength: 10}
-      effects = [%{kind: "stats", field: :strength, amount: 10}, %{kind: "damage"}]
+      effects = [%{kind: "stats", field: :strength, amount: 10, mode: "add"}, %{kind: "damage"}]
 
       {stats, effects} = Effect.calculate_stats(stats, effects)
 
@@ -71,7 +71,7 @@ defmodule Game.EffectTest do
 
       state = %{
         continuous_effects: [
-          {{:user, %{id: 10}}, %{kind: "stats/boost", field: :strength, amount: 10, duration: 1000}},
+          {{:user, %{id: 10}}, %{kind: "stats/boost", field: :strength, mode: "add", amount: 10, duration: 1000}},
         ]
       }
 
@@ -130,6 +130,42 @@ defmodule Game.EffectTest do
       effect = %{kind: "recover", type: "move", amount: 10}
       stats = Effect.apply_effect(effect, %{move_points: 25, max_move_points: 30})
       assert stats == %{move_points: 30, max_move_points: 30}
+    end
+  end
+
+  describe "processing stats" do
+    setup do
+      %{stats: %{strength: 10}}
+    end
+
+    test "addition", %{stats: stats} do
+      effect = %{field: :strength, mode: "add", amount: 10}
+
+      assert Effect.process_stats(effect, stats) == %{strength: 20}
+    end
+
+    test "subtraction", %{stats: stats} do
+      effect = %{field: :strength, mode: "subtract", amount: 1}
+
+      assert Effect.process_stats(effect, stats) == %{strength: 9}
+    end
+
+    test "subtraction - sticks to >= 0", %{stats: stats} do
+      effect = %{field: :strength, mode: "subtract", amount: 15}
+
+      assert Effect.process_stats(effect, stats) == %{strength: 0}
+    end
+
+    test "multiplication", %{stats: stats} do
+      effect = %{field: :strength, mode: "multiply", amount: 3}
+
+      assert Effect.process_stats(effect, stats) == %{strength: 30}
+    end
+
+    test "division", %{stats: stats} do
+      effect = %{field: :strength, mode: "division", amount: 3}
+
+      assert Effect.process_stats(effect, stats) == %{strength: 3}
     end
   end
 end

@@ -112,7 +112,7 @@ defmodule Data.ItemTest do
       changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage", amount: 10, type: "slashing"}]})
       refute changeset.errors[:effects]
 
-      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "stats", field: :strength, amount: 10}]})
+      changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "stats", mode: "add", field: :strength, amount: 10}]})
       refute changeset.errors[:effects]
 
       changeset = %Item{} |> Item.changeset(%{type: "weapon", effects: [%{kind: "damage/type", types: ["slashing"]}]})
@@ -123,7 +123,7 @@ defmodule Data.ItemTest do
     end
 
     test "must be a stats type for armor" do
-      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "stats", field: :strength, amount: 10}]})
+      changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "stats", mode: "add", field: :strength, amount: 10}]})
       refute changeset.errors[:effects]
 
       changeset = %Item{} |> Item.changeset(%{type: "armor", effects: [%{kind: "damage", amount: 10, type: "slashing"}]})
