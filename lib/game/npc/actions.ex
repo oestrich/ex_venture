@@ -14,6 +14,7 @@ defmodule Game.NPC.Actions do
   alias Data.Item
   alias Data.NPC
   alias Game.Character
+  alias Game.Character.Effects
   alias Game.Effect
   alias Game.Items
   alias Game.NPC.Events
@@ -144,23 +145,13 @@ defmodule Game.NPC.Actions do
   """
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
   def apply_effects(state = %{npc: npc}, effects, from) do
-    continuous_effects = effects |> Effect.continuous_effects(from)
+    {stats, _effects, continuous_effects} =
+      Effects.apply_effects({:npc, npc}, npc.stats, state, effects, from)
 
-    effects =
-      effects
-      |> Effect.add_current_continuous_effects(state)
-      |> Effect.adjust_effects(npc.stats)
-
-    stats = effects |> Effect.apply(npc.stats)
-    from |> Character.effects_applied(effects, {:npc, npc})
-    state = stats |> maybe_died(state, from)
-
-    npc = %{npc | stats: stats}
+    npc = Map.put(npc, :stats, stats)
     state = %{state | npc: npc}
 
-    Enum.each(continuous_effects, fn {_, effect} ->
-      effect |> Effect.maybe_tick_effect(self())
-    end)
+    state = stats |> maybe_died(state, from)
 
     case is_alive?(npc) do
       true ->
@@ -202,17 +193,5 @@ defmodule Game.NPC.Actions do
       false ->
         state
     end
-  end
-
-  @doc """
-  Clear a continuous effect after its duration is over
-  """
-  @spec clear_continuous_effect(State.t(), String.t()) :: State.t()
-  def clear_continuous_effect(state, effect_id) do
-    continuous_effects = Enum.reject(state.continuous_effects, fn {_from, effect} ->
-      effect.id == effect_id
-    end)
-
-    %{state | continuous_effects: continuous_effects}
   end
 end

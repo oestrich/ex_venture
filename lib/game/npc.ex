@@ -11,6 +11,7 @@ defmodule Game.NPC do
   alias Data.NPCSpawner
   alias Data.Stats
   alias Game.Channel
+  alias Game.Character.Effects
   alias Game.NPC.Actions
   alias Game.NPC.Conversation
   alias Game.NPC.Events
@@ -340,7 +341,7 @@ defmodule Game.NPC do
   end
 
   def handle_info({:continuous_effect, :clear, effect_id}, state) do
-    state = Actions.clear_continuous_effect(state, effect_id)
+    state = Effects.clear_continuous_effect(state, effect_id)
     {:noreply, state}
   end
 

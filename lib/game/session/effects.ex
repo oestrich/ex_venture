@@ -26,9 +26,8 @@ defmodule Game.Session.Effects do
   def apply(effects, from, description, state) do
     %{user: user, save: save} = state
 
-    effects = effects |> Effect.adjust_effects(save.stats)
-    continuous_effects = effects |> Effect.continuous_effects(from)
-    stats = effects |> Effect.apply(save.stats)
+    {stats, effects, continuous_effects} =
+      Character.Effects.apply_effects({:user, user}, save.stats, state, effects, from)
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
@@ -36,16 +35,7 @@ defmodule Game.Session.Effects do
     state = %{state | user: user, save: save}
 
     user |> echo_effects(from, description, effects)
-    from |> Character.effects_applied(effects, {:user, user})
     user |> maybe_died(state, from)
-
-    Enum.each(continuous_effects, fn {_from, effect} ->
-      Logger.debug(fn ->
-        "Maybe delaying effect (#{effect.id})"
-      end, type: :player)
-
-      effect |> Effect.maybe_tick_effect(self())
-    end)
 
     case is_alive?(state.save) do
       true ->
@@ -120,18 +110,6 @@ defmodule Game.Session.Effects do
       {:error, :not_found} ->
         state
     end
-  end
-
-  @doc """
-  Clear a continuous effect after its duration is over
-  """
-  @spec clear_continuous_effect(State.t(), String.t()) :: State.t()
-  def clear_continuous_effect(state, effect_id) do
-    continuous_effects = Enum.reject(state.continuous_effects, fn {_from, effect} ->
-      effect.id == effect_id
-    end)
-
-    %{state | continuous_effects: continuous_effects}
   end
 
   @doc """

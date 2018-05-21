@@ -12,6 +12,7 @@ defmodule Game.Session.Process do
   require Logger
 
   alias Game.Account
+  alias Game.Character
   alias Game.Command.Move
   alias Game.Command.Pager
   alias Game.Format
@@ -297,7 +298,7 @@ defmodule Game.Session.Process do
       "Clearing effect (#{effect_id})"
     end, type: :player)
 
-    state = Effects.clear_continuous_effect(state, effect_id)
+    state = Character.Effects.clear_continuous_effect(state, effect_id)
     {:noreply, state}
   end
 

@@ -9,6 +9,8 @@ defmodule Game.Effect do
 
   @random_damage Application.get_env(:ex_venture, :game)[:random_damage]
 
+  @type continuous_effect :: {Character.t(), Effec.t()}
+
   @doc """
   Calculate effects based on the user
 
