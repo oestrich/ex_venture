@@ -109,6 +109,9 @@ room_feature.short_description:
 skill.cooldown_time:
   Milliseconds the player must wait before the skill can be used again.
 
+skill.require_target:
+  If required, the target defaults to the character. For things like `cure wounds` which should heal the using character unless a target is provided.
+
 skill.user_text:
   Text the user of the skill will see. Available template variables: `[target]`, `[user]`
 

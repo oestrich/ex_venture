@@ -24,6 +24,7 @@ defmodule Data.Skill do
     field(:effects, {:array, Effect})
     field(:tags, {:array, :string}, default: [])
     field(:is_global, :boolean, default: false)
+    field(:require_target, :boolean, default: false)
 
     has_many(:class_skills, ClassSkill)
     has_many(:classes, through: [:class_skills, :class])
@@ -45,7 +46,8 @@ defmodule Data.Skill do
       :whitelist_effects,
       :effects,
       :tags,
-      :is_global
+      :is_global,
+      :require_target
     ])
     |> validate_required([
       :name,
@@ -59,7 +61,8 @@ defmodule Data.Skill do
       :whitelist_effects,
       :effects,
       :tags,
-      :is_global
+      :is_global,
+      :require_target
     ])
     |> validate_effects()
     |> validate_whitelist()

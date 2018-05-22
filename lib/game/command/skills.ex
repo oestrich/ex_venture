@@ -156,7 +156,7 @@ defmodule Game.Command.Skills do
     :ok
   end
 
-  def run({skill, command}, state = %{socket: socket, save: %{room_id: room_id}, target: target}) do
+  def run({skill, command}, state = %{save: %{room_id: room_id}, target: target}) do
     new_target =
       command
       |> String.replace(skill.command, "")
@@ -164,61 +164,68 @@ defmodule Game.Command.Skills do
 
     room = @room.look(room_id)
 
-    case find_target(room, target, new_target) do
-      nil ->
-        socket |> @socket.echo("Your target could not be found.")
-        :ok
+    with {:ok, target} <- maybe_replace_target_with_self(state, skill, target),
+         {:ok, target} <- find_target(room, target, new_target),
+         {:ok, skill} <- check_skill_level(state, skill),
+         {:ok, skill} <- check_cooldown(state, skill) do
+      use_skill(skill, target, state)
+    else
+      {:error, :not_found} ->
+        state.socket |> @socket.echo("Your target could not be found.")
 
-      target ->
-        skill
-        |> check_skill_level(state)
-        |> check_cooldown(state)
-        |> use_skill(target, state)
+      {:error, :skill, :level_too_low} ->
+        state.socket |> @socket.echo("You are not high enough level to use this skill.")
+
+      {:error, :skill_not_ready, remaining_seconds} ->
+        state.socket |> @socket.echo("#{Format.skill_name(skill)} is not ready yet.")
+        Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
+        :ok
     end
   end
 
-  defp check_skill_level(skill, state = %{save: save}) do
-    case skill.level > save.level do
+  defp maybe_replace_target_with_self(state, skill, target) do
+    case skill.require_target do
       true ->
-        state.socket |> @socket.echo("You are not high enough level to use this skill.")
-        :ok
+        {:ok, {:user, state.user.id}}
 
       false ->
-        skill
+        {:ok, target}
     end
   end
 
-  defp check_cooldown(:ok, _state), do: :ok
+  defp check_skill_level(%{save: save}, skill) do
+    case skill.level > save.level do
+      true ->
+        {:error, :skill, :level_too_low}
 
-  defp check_cooldown(skill, state = %{skills: skills}) do
+      false ->
+        {:ok, skill}
+    end
+  end
+
+  defp check_cooldown(%{skills: skills}, skill) do
     case Map.get(skills, skill.id) do
       nil ->
-        skill
+        {:ok, skill}
 
       last_used_at ->
         difference = Timex.diff(Timex.now(), last_used_at, :milliseconds)
 
         case difference > skill.cooldown_time do
           true ->
-            skill
+            {:ok, skill}
 
           false ->
             remaining_seconds = round((skill.cooldown_time - difference) / 1000)
-
-            state.socket |> @socket.echo("#{Format.skill_name(skill)} is not ready yet.")
-            Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
-
-            :ok
+            {:error, :skill_not_ready, remaining_seconds}
         end
     end
   end
 
-  defp use_skill(:ok, _target, _state), do: :ok
-
   defp use_skill(skill, target, state) do
     %{socket: socket, user: user, save: save = %{stats: stats}} = state
 
-    {target, state} = maybe_change_target(target, state)
+    {state, target} = maybe_change_target(state, skill, target)
 
     case stats |> Skill.pay(skill) do
       {:ok, stats} ->
@@ -261,20 +268,30 @@ defmodule Game.Command.Skills do
     %{state | save: save}
   end
 
-  def maybe_change_target(target, state) do
+  defp maybe_change_target(state, skill, target) do
+    case skill.require_target do
+      true ->
+        {state, target}
+
+      false ->
+        _maybe_change_target(state, target)
+    end
+  end
+
+  defp _maybe_change_target(state, target) do
     case Character.who(target) == state.target do
       true ->
-        {target, state}
+        {state, target}
 
       false ->
         case target do
           {:npc, npc} ->
             {:update, state} = Target.target_npc(npc, state.socket, state)
-            {target, state}
+            {state, target}
 
           {:user, user} ->
             {:update, state} = Target.target_user(user, state.socket, state)
-            {target, state}
+            {state, target}
         end
     end
   end
@@ -283,38 +300,50 @@ defmodule Game.Command.Skills do
   Find a target from state target
 
       iex> Game.Command.Skills.find_target(%{npcs: []}, {:npc, 1})
-      nil
+      {:error, :not_found}
 
       iex> Game.Command.Skills.find_target(%{npcs: [%{id: 1, name: "Bandit"}]}, {:npc, 1})
-      {:npc, %{id: 1, name: "Bandit"}}
+      {:ok, {:npc, %{id: 1, name: "Bandit"}}}
 
       iex> Game.Command.Skills.find_target(%{players: []}, {:user, 1})
-      nil
+      {:error, :not_found}
 
       iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}]}, {:user, 1})
-      {:user, %{id: 1, name: "Bandit"}}
+      {:ok, {:user, %{id: 1, name: "Bandit"}}}
 
       iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}], npcs: []}, {:user, 2}, "bandit")
-      {:user, %{id: 1, name: "Bandit"}}
+      {:ok, {:user, %{id: 1, name: "Bandit"}}}
   """
-  @spec find_target(Room.t(), Character.t()) :: Character.t()
+  @spec find_target(Room.t(), Character.t(), String.t()) :: Character.t()
   def find_target(room, target, new_target \\ "")
 
   def find_target(%{players: players, npcs: npcs}, _, new_target) when new_target != "" do
-    Target.find_target(new_target, players, npcs)
+    case Target.find_target(new_target, players, npcs) do
+      nil ->
+        {:error, :not_found}
+
+      target ->
+        {:ok, target}
+    end
   end
 
   def find_target(%{npcs: npcs}, {:npc, id}, _new_target) do
     case Enum.find(npcs, &(&1.id == id)) do
-      nil -> nil
-      npc -> {:npc, npc}
+      nil ->
+        {:error, :not_found}
+
+      npc ->
+        {:ok, {:npc, npc}}
     end
   end
 
   def find_target(%{players: users}, {:user, id}, _new_target) do
     case Enum.find(users, &(&1.id == id)) do
-      nil -> nil
-      user -> {:user, user}
+      nil ->
+        {:error, :not_found}
+
+      user ->
+        {:ok, {:user, user}}
     end
   end
 
