@@ -144,8 +144,11 @@ defmodule Game.Command.Target do
     case find_target_in_list(users, name) do
       nil ->
         case find_target_in_list(npcs, name) do
-          nil -> nil
-          npc -> {:npc, npc}
+          nil ->
+            nil
+
+          npc ->
+            {:npc, npc}
         end
 
       user ->

@@ -212,14 +212,14 @@ defmodule Game.NPC.Events do
     room = @room.look(room_id)
 
     case find_target(room, target) do
-      nil ->
-        {:update, %{state | target: nil, combat: false}}
-
-      target ->
+      {:ok, target} ->
         npc.events
         |> Enum.filter(&(&1.type == "combat/tick"))
         |> Combat.weighted_event()
         |> perform_combat_action(target, npc, state)
+
+      {:error, :not_found} ->
+        {:update, %{state | target: nil, combat: false}}
     end
   end
 

@@ -75,6 +75,10 @@
                 <td><span class="label label-default"><%= @skill.is_global %></span></td>
               </tr>
               <tr>
+                <th>Require target?</th>
+                <td><span class="label label-default"><%= @skill.require_target %></span></td>
+              </tr>
+              <tr>
                 <th>
                   White Listed Effect Types
                   <%= SharedView.help_tooltip("skill.whitelist_effects") %>
