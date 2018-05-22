@@ -14,6 +14,7 @@ defmodule Game.NPC.Actions do
   alias Data.Item
   alias Data.NPC
   alias Game.Character
+  alias Game.Character.Effects
   alias Game.Effect
   alias Game.Items
   alias Game.NPC.Events
@@ -144,18 +145,13 @@ defmodule Game.NPC.Actions do
   """
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
   def apply_effects(state = %{npc: npc}, effects, from) do
-    effects = effects |> Effect.adjust_effects(npc.stats)
-    continuous_effects = effects |> Effect.continuous_effects(from)
-    stats = effects |> Effect.apply(npc.stats)
-    from |> Character.effects_applied(effects, {:npc, npc})
-    state = stats |> maybe_died(state, from)
+    {stats, _effects, continuous_effects} =
+      Effects.apply_effects({:npc, npc}, npc.stats, state, effects, from)
 
-    npc = %{npc | stats: stats}
+    npc = Map.put(npc, :stats, stats)
     state = %{state | npc: npc}
 
-    Enum.each(continuous_effects, fn {_, effect} ->
-      :erlang.send_after(effect.every, self(), {:continuous_effect, effect.id})
-    end)
+    state = stats |> maybe_died(state, from)
 
     case is_alive?(npc) do
       true ->
@@ -167,21 +163,25 @@ defmodule Game.NPC.Actions do
   end
 
   @doc """
-  Apply a continuous effect to an NPC
+  Find and apply a continuous effect to an NPC
   """
   def handle_continuous_effect(state, effect_id) do
-    case Enum.find(state.continuous_effects, fn {_from, effect} -> effect.id == effect_id end) do
-      nil -> state
-      effect -> apply_continuous_effect(state, effect)
+    case Effect.find_effect(state, effect_id) do
+      {:ok, effect} ->
+        apply_continuous_effect(state, effect)
+
+      {:error, :not_found} ->
+        state
     end
   end
 
   @doc """
+  Apply a continuous effect to an NPC
   """
   @spec apply_continuous_effect(State.t(), {Character.t(), Effect.t()}) :: State.t()
   def apply_continuous_effect(state = %{npc: npc}, {from, effect}) do
-    effects = [effect] |> Effect.adjust_effects(npc.stats)
-    stats = effects |> Effect.apply(npc.stats)
+    {stats, _effects} = Effects.apply_continuous_effect(npc.stats, state, effect)
+
     state = stats |> maybe_died(state, from)
     npc = %{npc | stats: stats}
     state = %{state | npc: npc}

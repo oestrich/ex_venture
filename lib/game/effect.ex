@@ -9,6 +9,8 @@ defmodule Game.Effect do
 
   @random_damage Application.get_env(:ex_venture, :game)[:random_damage]
 
+  @type continuous_effect :: {Character.t(), Effec.t()}
+
   @doc """
   Calculate effects based on the user
 
@@ -17,6 +19,7 @@ defmodule Game.Effect do
   @spec calculate(Stats.t(), [Effect.t()]) :: [map()]
   def calculate(stats, effects) do
     {stats, effects} = stats |> calculate_stats(effects)
+    {stats_boost, effects} = effects |> Enum.split_with(&(&1.kind == "stats/boost"))
 
     {damage_effects, effects} = effects |> Enum.split_with(&(&1.kind == "damage"))
     damage = damage_effects |> Enum.map(&calculate_damage(&1, stats))
@@ -32,35 +35,58 @@ defmodule Game.Effect do
     {damage_type_effects, _effects} = effects |> Enum.split_with(&(&1.kind == "damage/type"))
     damage = damage_type_effects |> Enum.reduce(damage, &calculate_damage_type/2)
 
-    damage ++ damage_over_time ++ recover
+    stats_boost ++ damage ++ damage_over_time ++ recover
   end
 
   @doc """
   Calculate stats and return any effects that were not processed
 
     iex> stats = %{strength: 10}
-    iex> effects = [%{kind: "stats", field: :strength, amount: 10}, %{kind: "damage"}]
+    iex> effects = [%{kind: "stats", mode: "add", field: :strength, amount: 10}, %{kind: "damage"}]
     iex> Game.Effect.calculate_stats(stats, effects)
     {%{strength: 20}, [%{kind: "damage"}]}
   """
   @spec calculate_stats(Stats.t(), [Effect.t()]) :: Stats.t()
   def calculate_stats(stats, effects) do
     {stat_effects, effects} = effects |> Enum.split_with(&(&1.kind == "stats"))
-    stats = stat_effects |> Enum.reduce(stats, &process_stats/2)
+    stats = Enum.reduce(stat_effects, stats, &process_stats/2)
     {stats, effects}
+  end
+
+  @doc """
+  Calculate a character's stats based on the current continuous effects on them
+  """
+  @spec calculate_stats_from_continuous_effects(Stats.t(), map()) :: [Effect.t()]
+  def calculate_stats_from_continuous_effects(stats, state) do
+    state.continuous_effects
+    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.filter(&(&1.kind == "stats/boost"))
+    |> Enum.reduce(stats, &process_stats/2)
   end
 
   @doc """
   Process stats effects
 
-      iex> Game.Effect.process_stats(%{field: :strength, amount: 10}, %{strength: 10})
+      iex> Game.Effect.process_stats(%{field: :strength, mode: "add", amount: 10}, %{strength: 10})
       %{strength: 20}
   """
   @spec process_stats(Effect.t(), Stats.t()) :: Stats.t()
   def process_stats(effect, stats)
 
-  def process_stats(%{field: field, amount: amount}, stats) do
-    stats |> Map.put(field, stats[field] + amount)
+  def process_stats(effect, stats) do
+    case effect.mode do
+      "add" ->
+        stats |> Map.put(effect.field, stats[effect.field] + effect.amount)
+
+      "subtract" ->
+        stats |> Map.put(effect.field, stats[effect.field] - effect.amount)
+
+      "multiply" ->
+        stats |> Map.put(effect.field, stats[effect.field] * effect.amount)
+
+      "division" ->
+        stats |> Map.put(effect.field, round(stats[effect.field] / effect.amount))
+    end
   end
 
   @doc """
@@ -73,7 +99,7 @@ defmodule Game.Effect do
         stat = Map.get(stats, damage_type.stat_modifier)
         random_swing = Enum.random(@random_damage)
         modifier = 1 + stat / damage_type.boost_ratio + random_swing / 100
-        modified_amount = round(Float.ceil(effect.amount * modifier))
+        modified_amount = max(round(Float.ceil(effect.amount * modifier)), 0)
         effect |> Map.put(:amount, modified_amount)
 
       _ ->
@@ -239,5 +265,42 @@ defmodule Game.Effect do
     |> Enum.map(fn effect ->
       {from, effect}
     end)
+  end
+
+  @doc """
+  Start the continuous effect tick cycle if required
+
+  Effect must have an "every" field, such as damage over time
+  """
+  @spec maybe_tick_effect(Effect.t(), pid()) :: :ok
+  def maybe_tick_effect(effect, pid) do
+    cond do
+      Map.has_key?(effect, :every) ->
+        :erlang.send_after(effect.every, pid, {:continuous_effect, effect.id})
+
+      Map.has_key?(effect, :duration) ->
+        :erlang.send_after(effect.duration, pid, {:continuous_effect, :clear, effect.id})
+
+      true ->
+        :ok
+    end
+  end
+
+  @doc """
+  """
+  @spec find_effect(map(), String.t()) :: {:ok, Effect.t()} | {:error, :not_found}
+  def find_effect(state, effect_id) do
+    effect =
+      Enum.find(state.continuous_effects, fn {_from, effect} ->
+        effect.id == effect_id
+      end)
+
+    case effect do
+      nil ->
+        {:error, :not_found}
+
+      effect ->
+        {:ok, effect}
+    end
   end
 end

@@ -229,7 +229,11 @@ defmodule Game.NPC.Events do
 
   defp perform_combat_action(event, target, npc, state) do
     action = event.action
-    effects = npc.stats |> Effect.calculate(action.effects)
+
+    effects =
+      npc.stats
+      |> Effect.calculate_stats_from_continuous_effects(state)
+      |> Effect.calculate(action.effects)
 
     Character.apply_effects(
       target,

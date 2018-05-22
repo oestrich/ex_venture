@@ -62,3 +62,16 @@ The amount of damage a usee will be healed for. This is boosted by wisdom.
 ```
 
 This effect boosts the user's stats before any other effects are calulated.
+
+## stats/boost
+
+```
+{
+  'kind': 'stats/boost',
+  'field': 'dexterity',
+  'amount': 10,
+  'duration': 1500
+}
+```
+
+This effect boosts the target's stats for the `duration` amount in milliseconds.

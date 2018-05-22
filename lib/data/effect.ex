@@ -17,6 +17,8 @@ defmodule Data.Effect do
   alias Data.Effect
   alias Data.Stats
 
+  @modes ["add", "multiply", "subtract", "divide"]
+
   @type t :: map
 
   @type damage :: %{
@@ -49,7 +51,15 @@ defmodule Data.Effect do
 
   @type stats :: %{
           field: atom,
+          mode: String.t(),
           amount: integer
+        }
+
+  @type stats_boost :: %{
+          field: atom(),
+          amount: integer(),
+          mode: String.t(),
+          duration: integer()
         }
 
   @behaviour Ecto.Type
@@ -63,7 +73,8 @@ defmodule Data.Effect do
       "damage/over-time",
       "damage/type",
       "recover",
-      "stats"
+      "stats",
+      "stats/boost"
     ]
   end
 
@@ -89,7 +100,7 @@ defmodule Data.Effect do
       {:ok, %{kind: "damage/over-time", type: "slashing", amount: 10, every: 3}}
 
       iex> Data.Effect.load(%{"kind" => "stats", "field" => "dexterity"})
-      {:ok, %{kind: "stats", field: :dexterity}}
+      {:ok, %{kind: "stats", field: :dexterity, mode: "add"}}
   """
   @impl Ecto.Type
   def load(effect) do
@@ -103,6 +114,12 @@ defmodule Data.Effect do
   end
 
   defp cast_vals("stats", effect) do
+    effect
+    |> Map.put(:field, String.to_atom(effect.field))
+    |> ensure(:mode, "add")
+  end
+
+  defp cast_vals("stats/boost", effect) do
     effect |> Map.put(:field, String.to_atom(effect.field))
   end
 
@@ -137,6 +154,10 @@ defmodule Data.Effect do
     %{kind: "stats", field: :dexterity, amount: 0}
   end
 
+  def starting_effect("stats/boost") do
+    %{kind: "stats/boost", field: :dexterity, amount: 0, duration: 1000, mode: "add"}
+  end
+
   @doc """
   Validate an effect based on type
 
@@ -158,7 +179,7 @@ defmodule Data.Effect do
       iex> Data.Effect.valid?(%{kind: "recover", type: "skill", amount: :invalid})
       false
 
-      iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: 10})
+      iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: 10, mode: "add"})
       true
       iex> Data.Effect.valid?(%{kind: "stats", field: :strength, amount: :invalid})
       false
@@ -183,7 +204,11 @@ defmodule Data.Effect do
   end
 
   def valid?(effect = %{kind: "stats"}) do
-    keys(effect) == [:amount, :field, :kind] && valid_stats?(effect)
+    keys(effect) == [:amount, :field, :kind, :mode] && valid_stats?(effect)
+  end
+
+  def valid?(effect = %{kind: "stats/boost"}) do
+    keys(effect) == [:amount, :duration, :field, :kind, :mode] && valid_stats_boost?(effect)
   end
 
   def valid?(_), do: false
@@ -281,13 +306,16 @@ defmodule Data.Effect do
   @doc """
   Validate if the stats type is right
 
-      iex> Data.Effect.valid_stats?(%{field: :strength, amount: 10})
+      iex> Data.Effect.valid_stats?(%{field: :strength, amount: 10, mode: "add"})
       true
 
-      iex> Data.Effect.valid_stats?(%{field: :strength, amount: nil})
+      iex> Data.Effect.valid_stats?(%{field: :strength, amount: nil, mode: "add"})
       false
 
-      iex> Data.Effect.valid_stats?(%{field: :head, amount: 10})
+      iex> Data.Effect.valid_stats?(%{field: :strength, amount: 10, mode: "remove"})
+      false
+
+      iex> Data.Effect.valid_stats?(%{field: :head, amount: 10, mode: "add"})
       false
 
       iex> Data.Effect.valid_stats?(%{field: :strength})
@@ -296,11 +324,38 @@ defmodule Data.Effect do
   @spec valid_stats?(Effect.t()) :: boolean
   def valid_stats?(effect)
 
-  def valid_stats?(%{field: field, amount: amount}) do
-    field in [:strength, :dexterity] && is_integer(amount)
+  def valid_stats?(%{field: field, amount: amount, mode: mode}) do
+    field in Stats.fields() && mode in @modes && is_integer(amount)
   end
 
   def valid_stats?(_), do: false
+
+  @doc """
+  Validate if the stats type is right
+
+      iex> Data.Effect.valid_stats_boost?(%{field: :strength, amount: 10, duration: 10, mode: "add"})
+      true
+
+      iex> Data.Effect.valid_stats_boost?(%{field: :strength, amount: nil, duration: 10, mode: "add"})
+      false
+
+      iex> Data.Effect.valid_stats_boost?(%{field: :strength, amount: 10, duration: nil, mode: "add"})
+      false
+
+      iex> Data.Effect.valid_stats_boost?(%{field: :head, amount: 10, duration: 10})
+      false
+
+      iex> Data.Effect.valid_stats_boost?(%{field: :strength})
+      false
+  """
+  @spec valid_stats_boost?(Effect.t()) :: boolean
+  def valid_stats_boost?(effect)
+
+  def valid_stats_boost?(%{field: field, amount: amount, duration: duration, mode: mode}) do
+    field in Stats.fields() && mode in @modes && is_integer(amount) && is_integer(duration)
+  end
+
+  def valid_stats_boost?(_), do: false
 
   def validate_effects(changeset) do
     case changeset do
@@ -325,13 +380,34 @@ defmodule Data.Effect do
     iex> Data.Effect.continuous?(%{kind: "damage/over-time"})
     true
 
+    iex> Data.Effect.continuous?(%{kind: "stats/boost"})
+    true
+
     iex> Data.Effect.continuous?(%{kind: "damage"})
     false
   """
   @spec continuous?(Effect.t()) :: boolean()
   def continuous?(effect)
   def continuous?(%{kind: "damage/over-time"}), do: true
+  def continuous?(%{kind: "stats/boost"}), do: true
   def continuous?(_), do: false
+
+  @doc """
+  Check if an effect is continuous and should apply to every effect coming in
+
+    iex> Data.Effect.applies_to_every_effect?(%{kind: "stats/boost"})
+    true
+
+    iex> Data.Effect.applies_to_every_effect?(%{kind: "damage/over-time"})
+    false
+
+    iex> Data.Effect.continuous?(%{kind: "damage"})
+    false
+  """
+  @spec applies_to_every_effect?(Effect.t()) :: boolean()
+  def applies_to_every_effect?(effect)
+  def applies_to_every_effect?(%{kind: "stats/boost"}), do: true
+  def applies_to_every_effect?(_), do: false
 
   @doc """
   Instantiate an effect by giving it an ID to track, for future callbacks

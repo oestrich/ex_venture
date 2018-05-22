@@ -8,7 +8,7 @@ defmodule Game.Command.InfoTest do
 
   describe "viewing your information" do
     setup do
-      armor = %{id: 1, effects: [%{kind: "stats", field: :strength, amount: 10}]}
+      armor = %{id: 1, effects: [%{kind: "stats", mode: "add", field: :strength, amount: 10}]}
       start_and_clear_items()
       insert_item(armor)
 
