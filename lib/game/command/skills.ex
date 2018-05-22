@@ -165,7 +165,7 @@ defmodule Game.Command.Skills do
     room = @room.look(room_id)
 
     with {:ok, target} <- maybe_replace_target_with_self(state, skill, target),
-         {:ok, target} <- find_target(room, target, new_target),
+         {:ok, target} <- find_target(state, room, target, new_target),
          {:ok, skill} <- check_skill_level(state, skill),
          {:ok, skill} <- check_cooldown(state, skill) do
       use_skill(skill, target, state)
@@ -311,23 +311,25 @@ defmodule Game.Command.Skills do
       iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}]}, {:user, 1})
       {:ok, {:user, %{id: 1, name: "Bandit"}}}
 
-      iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}], npcs: []}, {:user, 2}, "bandit")
+      iex> Game.Command.Skills.find_target(%{}, %{players: [%{id: 1, name: "Bandit"}], npcs: []}, {:user, 2}, "bandit")
       {:ok, {:user, %{id: 1, name: "Bandit"}}}
   """
   @spec find_target(Room.t(), Character.t(), String.t()) :: Character.t()
-  def find_target(room, target, new_target \\ "")
+  def find_target(state, room, target, new_target \\ "")
 
-  def find_target(%{players: players, npcs: npcs}, _, new_target) when new_target != "" do
-    case Target.find_target(new_target, players, npcs) do
+  def find_target(state, room, character, new_target) when new_target != "" do
+    case Target.find_target(state, new_target, room.players, room.npcs) do
       nil ->
-        {:error, :not_found}
+        find_target(room, character)
 
       target ->
         {:ok, target}
     end
   end
 
-  def find_target(%{npcs: npcs}, {:npc, id}, _new_target) do
+  def find_target(_state, room, character, _), do: find_target(room, character)
+
+  def find_target(%{npcs: npcs}, {:npc, id}) do
     case Enum.find(npcs, &(&1.id == id)) do
       nil ->
         {:error, :not_found}
@@ -337,7 +339,7 @@ defmodule Game.Command.Skills do
     end
   end
 
-  def find_target(%{players: users}, {:user, id}, _new_target) do
+  def find_target(%{players: users}, {:user, id}) do
     case Enum.find(users, &(&1.id == id)) do
       nil ->
         {:error, :not_found}

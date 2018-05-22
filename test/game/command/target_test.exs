@@ -36,6 +36,16 @@ defmodule Game.Command.TargetTest do
     assert [{^socket, "Target.Character", _}] = @socket.get_push_gmcps()
   end
 
+  test "targeting yourself", %{socket: socket, user: user} do
+    {:update, state} = Game.Command.Target.run({"self"}, %{socket: socket, user: user, save: %{room_id: 1}})
+
+    assert state.target == {:user, user.id}
+
+    [{^socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(now targeting), look)
+    assert [{^socket, "Target.Character", _}] = @socket.get_push_gmcps()
+  end
+
   test "cannot target another player if health is < 1", %{socket: socket, user: user} do
     room = @room._room()
     |> Map.put(:npcs, [])

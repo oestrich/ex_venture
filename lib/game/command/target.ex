@@ -51,7 +51,7 @@ defmodule Game.Command.Target do
   """
   @spec target_character(pid, String.t(), Room.t(), map) :: :ok | {:update, map}
   def target_character(socket, target, room, state) do
-    case find_target(target, room.players, room.npcs) do
+    case find_target(state, target, room.players, room.npcs) do
       nil ->
         socket |> @socket.echo(~s(Could not find target "#{target}".))
         :ok
@@ -131,28 +131,41 @@ defmodule Game.Command.Target do
   @doc """
   Find a user/npc by name
 
-      iex> Game.Command.Target.find_target("player", [%{name: "Player"}], [%{name: "Bandit"}])
+      iex> Game.Command.Target.find_target(%{}, "player", [%{name: "Player"}], [%{name: "Bandit"}])
       {:user, %{name: "Player"}}
 
-      iex> Game.Command.Target.find_target("bandit", [%{name: "Player"}], [%{name: "Bandit"}])
+      iex> Game.Command.Target.find_target(%{}, "bandit", [%{name: "Player"}], [%{name: "Bandit"}])
       {:npc, %{name: "Bandit"}}
 
-      iex> Game.Command.Target.find_target("Bandit", [%{name: "Bandit"}], [%{name: "Bandit"}])
+      iex> Game.Command.Target.find_target(%{}, "Bandit", [%{name: "Bandit"}], [%{name: "Bandit"}])
       {:user, %{name: "Bandit"}}
+
+      iex> Game.Command.Target.find_target(%{user: %{name: "Player"}}, "self", [%{name: "Bandit"}], [%{name: "Bandit"}])
+      {:user, %{name: "Player"}}
   """
-  def find_target(name, users, npcs) do
+  def find_target(state, name, users, npcs) do
+    case name do
+      "self" ->
+        {:user, state.user}
+
+      _ ->
+        _find_target(name, users, npcs)
+    end
+  end
+
+  defp _find_target(name, users, npcs) do
     case find_target_in_list(users, name) do
-      nil ->
-        case find_target_in_list(npcs, name) do
-          nil ->
-            nil
-
-          npc ->
-            {:npc, npc}
-        end
-
-      user ->
+      {:ok, user} ->
         {:user, user}
+
+      {:error, :not_found} ->
+        case find_target_in_list(npcs, name) do
+          {:ok, npc} ->
+            {:npc, npc}
+
+          {:error, :not_found} ->
+            nil
+        end
     end
   end
 
@@ -160,10 +173,16 @@ defmodule Game.Command.Target do
   Find a user/npc by name
 
       iex> Game.Command.Target.find_target_in_list([%{name: "Bandit"}], "bandit")
-      %{name: "Bandit"}
+      {:ok, %{name: "Bandit"}}
   """
   @spec find_target_in_list([map], String.t()) :: String.t()
   def find_target_in_list(list, name) do
-    Enum.find(list, &Utility.matches?(&1.name, name))
+    case Enum.find(list, &Utility.matches?(&1.name, name)) do
+      nil ->
+        {:error, :not_found}
+
+      target ->
+        {:ok, target}
+    end
   end
 end
