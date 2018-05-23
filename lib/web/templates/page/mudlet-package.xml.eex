@@ -212,41 +212,22 @@ GUI.Move.front:echo(&quot;Move Points&quot;)</script>
                     <packageName></packageName>
                     <script>-- Based off of https://forums.mudlet.org/viewtopic.php?t=4098
 
-GUI.Sidebar = Geyser.HBox:new({
+GUI.Sidebar = Geyser.Container:new({
   name = &quot;GUI.Sidebar&quot;,
   x = 0, y = &quot;50%&quot;,
   width = &quot;100%&quot;,
   height = &quot;50%&quot;,
-}, GUI.Right)
-
--- GUI.ChatBox = Geyser.MiniConsole:new({
---   name=&quot;ChatBox&quot;,
---   x=&quot;70%&quot;, y=&quot;50%&quot;,
---   wrapAt = 100,
---   fontSize = 16,
---   scrollBar = true,
---   width=&quot;25%&quot;, height=&quot;50%&quot;,
--- }, GUI.Sidebar)
--- GUI.ChatBox:setColor("<%= Config.color_background() %>")
--- 
--- setFgColor("ChatBox", 255, 255, 255)
--- setBgColor("ChatBox", 0, 43, 54)</script>
+}, GUI.Right)</script>
                     <eventHandlerList/>
                 </Script>
                 <Script isActive="yes" isFolder="no">
                     <name>Mapper</name>
                     <packageName></packageName>
-                    <script>local main = Geyser.Container:new({
-  x=0, y=0,
-  width=&quot;100%&quot;, height=&quot;100%&quot;,
-  name=&quot;mapper container&quot;
-})
-
-local mapper = Geyser.Mapper:new({
-  name = &quot;mapper&quot;,
-  x = &quot;75%&quot;, y = 0,
-  width = &quot;25%&quot;, height = &quot;50%&quot;
-}, main)</script>
+                    <script>GUI.Mapper = Geyser.Mapper:new({
+  name = &quot;GUI.Mapper&quot;,
+  x = 0, y = 0,
+  width = &quot;100%&quot;, height = &quot;50%&quot;
+}, GUI.Right)</script>
                     <eventHandlerList/>
                 </Script>
             </ScriptGroup>
