@@ -265,18 +265,6 @@ end</script>
                     </eventHandlerList>
                 </Script>
                 <Script isActive="yes" isFolder="no">
-                    <name>channelsBroadcast</name>
-                    <packageName></packageName>
-                    <script>function channelsBroadcast()
-  local broadcast = gmcp.Channels.Broadcast
-  local message = string.format("[%s] %s says, \"%s\"", broadcast.channel, broadcast.from.name, broadcast.message)
-  --GUI.ChatBox:echo(message .. "\n")
-end</script>
-                    <eventHandlerList>
-                        <string>gmcp.Channels.Broadcast</string>
-                    </eventHandlerList>
-                </Script>
-                <Script isActive="yes" isFolder="no">
                   <name>exventureMapper</name>
                   <packageName></packageName>
                   <script>mudlet = mudlet or {}; mudlet.mapper_script = true
