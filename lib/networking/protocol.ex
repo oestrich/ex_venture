@@ -9,6 +9,7 @@ defmodule Networking.Protocol do
   alias Game.Color
   alias Metrics.PlayerInstrumenter
   alias Networking.MSSP
+  alias Networking.MXP
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RoutesHelper
 
@@ -27,8 +28,9 @@ defmodule Networking.Protocol do
   @telnet_option_echo 1
   @ga 249
 
-  @mccp 86
   @mssp 70
+  @mccp 86
+  @mxp 91
   @gmcp 201
 
   @impl :ranch_protocol
@@ -124,6 +126,7 @@ defmodule Networking.Protocol do
       transport: transport,
       gmcp: false,
       gmcp_supports: [],
+      mxp: false,
       user_id: nil,
       config: %{}
     })
@@ -166,13 +169,23 @@ defmodule Networking.Protocol do
   end
 
   def handle_cast({:echo, message}, state) do
-    send_data(state, "\n#{message |> Color.format(state.config)}\n")
+    message =
+      message
+      |> MXP.handle_mxp(mxp: state.mxp)
+      |> Color.format(state.config)
+
+    send_data(state, "\n#{message}\n")
     send_data(state, [@iac, @ga])
     {:noreply, state}
   end
 
   def handle_cast({:echo, message, :prompt}, state) do
-    send_data(state, "\n#{message |> Color.format(state.config)}")
+    message =
+      message
+      |> MXP.handle_mxp(mxp: state.mxp)
+      |> Color.format(state.config)
+
+    send_data(state, "\n#{message}")
     send_data(state, [@iac, @ga])
     {:noreply, state}
   end
@@ -184,6 +197,7 @@ defmodule Networking.Protocol do
     send_data(state, [@iac, @will, @mccp])
     send_data(state, [@iac, @will, @mssp])
     send_data(state, [@iac, @will, @gmcp])
+    send_data(state, [@iac, @will, @mxp])
 
     {:noreply, Map.merge(state, %{session: pid})}
   end
@@ -216,11 +230,14 @@ defmodule Networking.Protocol do
       :iac ->
         {:noreply, state}
 
+      :mxp ->
+        Logger.info("Will do MXP", type: :socket)
+        send_data(state, [@iac, @sb, @mxp, @iac, @se])
+        {:noreply, Map.put(state, :mxp, true)}
+
       :gmcp ->
         Logger.info("Will do GCMP", type: :socket)
-
         push_client_gui(state)
-
         {:noreply, Map.put(state, :gmcp, true)}
 
       {:gmcp, :will} ->
@@ -237,7 +254,7 @@ defmodule Networking.Protocol do
       _ ->
         case state do
           %{session: pid} ->
-            pid |> Game.Session.recv(data |> String.trim())
+            pid |> Game.Session.recv(data |> String.trim() |> MXP.strip_mxp())
 
           _ ->
             send_data(state, data)
@@ -313,6 +330,14 @@ defmodule Networking.Protocol do
       <<@iac, @will, @gmcp, data::binary>> ->
         forward_options(socket, data)
         fun.({:gmcp, :will})
+
+      <<@iac, @telnet_do, @mxp, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:mxp)
+
+      <<@iac, @telnet_dont, @mxp, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:iac)
 
       <<@iac, @sb, @gmcp, data::binary>> ->
         {data, forward} = split_iac_sb(data)
