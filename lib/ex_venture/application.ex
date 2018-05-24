@@ -4,6 +4,7 @@ defmodule ExVenture.Application do
   @moduledoc false
 
   @server Application.get_env(:ex_venture, :networking)[:server]
+  @report_errors Application.get_env(:ex_venture, :errors)[:report]
 
   use Application
 
@@ -26,6 +27,11 @@ defmodule ExVenture.Application do
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]
+
+    if @report_errors do
+      :ok = :error_logger.add_report_handler(Sentry.Logger)
+    end
+
     Supervisor.start_link(children, opts)
   end
 

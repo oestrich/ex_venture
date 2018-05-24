@@ -18,6 +18,8 @@ config :ex_venture, :game,
 
 config :ex_venture, :cluster, size: 1
 
+config :ex_venture, :errors, report: false
+
 # Configures the endpoint
 config :ex_venture, Web.Endpoint,
   url: [host: "localhost"],
@@ -26,8 +28,6 @@ config :ex_venture, Web.Endpoint,
   pubsub: [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :ex_venture, Data.Repo, loggers: [Metrics.RepoInstrumenter, Ecto.LogEntry]
-
-import_config "#{Mix.env()}.exs"
 
 config :distillery, no_warn_missing: [:elixir_make]
 
@@ -49,3 +49,5 @@ config :prometheus, Metrics.PipelineInstrumenter,
   ],
   registry: :default,
   duration_unit: :microseconds
+
+import_config "#{Mix.env()}.exs"
