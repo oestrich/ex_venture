@@ -2,6 +2,7 @@ defmodule Web.PageView do
   use Web, :view
 
   alias Game.Config
+  alias Web.Color
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
   alias Web.TimeView

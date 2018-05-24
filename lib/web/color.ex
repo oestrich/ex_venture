@@ -156,4 +156,15 @@ defmodule Web.Color do
 
     :ok
   end
+
+  @doc """
+  Convert a hex color string to rgb values
+  """
+  def hex_to_rgb(<<"#", red::binary-size(2), green::binary-size(2), blue::binary-size(2)>>) do
+    <<red>> = Base.decode16!(String.upcase(red))
+    <<green>> = Base.decode16!(String.upcase(green))
+    <<blue>> = Base.decode16!(String.upcase(blue))
+
+    %{red: red, green: green, blue: blue}
+  end
 end
