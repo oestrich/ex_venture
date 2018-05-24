@@ -229,11 +229,18 @@ local w, h = getMainWindowSize()
 setBorderRight(w / 4)
 setBorderBottom(h / 20)
 
+local r = <%= Color.hex_to_rgb(Config.color_background())[:red] %>
+local g = <%= Color.hex_to_rgb(Config.color_background())[:green] %>
+local b = <%= Color.hex_to_rgb(Config.color_background())[:blue] %>
+
 GUI.windowColors = {
-  r = <%= Color.hex_to_rgb(Config.color_background())[:red] %>,
-  g = <%= Color.hex_to_rgb(Config.color_background())[:green] %>,
-  b = <%= Color.hex_to_rgb(Config.color_background())[:blue] %>,
-}</script>
+  r = r,
+  g = g,
+  b = b,
+}
+
+setFontSize(16)
+--setBackgroundColor("main", r, g, b)</script>
                     <eventHandlerList/>
                 </Script>
                 <Script isActive="yes" isFolder="no">
