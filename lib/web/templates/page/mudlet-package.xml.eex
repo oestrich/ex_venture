@@ -153,50 +153,6 @@ end</script>
                     <regex>^debugc(?: (.*))?$</regex>
                 </Alias>
             </AliasGroup>
-            <AliasGroup isActive="yes" isFolder="yes">
-                <name>Tabbed Chat</name>
-                <script></script>
-                <command></command>
-                <packageName></packageName>
-                <regex></regex>
-                <Alias isActive="yes" isFolder="no">
-                    <name>Toggle blinking (temporary change)</name>
-                    <script>if demonnic.chat.config.blink then
-  demonnic.chat.config.blink = false
-  demonnic.chat.tabsToBlink = {}
-  demonnic:echo(&quot;Blinking temporarily turned &lt;red&gt;off&lt;grey&gt;. It will reset if you edit your tabbed chat configuration, or close and reopen mudlet. To make it permanent, change demonnic.chat.config.blink to false in \&quot;Demonnic-&gt;Tabbed Chat-&gt;Configuration options\&quot; under scripts\n&quot;)
-else
-  demonnic.chat.config.blink = true
-  demonnic.chat:blink()
-  demonnic:echo(&quot;Blinking temporarily turned &lt;red&gt;on&lt;grey&gt;. It will reset if you edit your tabbed chat configuration, or close and reopen mudlet. To make it permanent, change demonnic.chat.config.blink to true in \&quot;Demonnic-&gt;Tabbed Chat-&gt;Configuration options\&quot; under scripts\n&quot;)
-end</script>
-                    <command></command>
-                    <packageName></packageName>
-                    <regex>^dblink$</regex>
-                </Alias>
-                <Alias isActive="yes" isFolder="no">
-                    <name>fixChat</name>
-                    <script>local currentsetting = demonnic.chat.config.location
-local newsetting = &quot;&quot;
-if currentsetting == &quot;topright&quot; then
-  newsetting = &quot;bottomleft&quot;
-elseif currentsetting == &quot;topleft&quot; then
-  newsetting = &quot;bottomright&quot;
-elseif currentsetting == &quot;bottomleft&quot; then
-  newsetting = &quot;topright&quot;
-elseif currentsetting == &quot;bottomright&quot; then
-  newsetting = &quot;topleft&quot;
-end
-
-demonnic.chat.config.location = newsetting
-demonnic.chat:create()
-demonnic.chat.config.location = currentsetting
-demonnic.chat:create()</script>
-                    <command></command>
-                    <packageName></packageName>
-                    <regex>^fixchat$</regex>
-                </Alias>
-            </AliasGroup>
         </AliasGroup>
     </AliasPackage>
     <ActionPackage/>
@@ -485,145 +441,28 @@ demonnic.chat.config = demonnic.chat.config or {}</script>
             <name>Configuration Options</name>
             <packageName></packageName>
             <script>--[[
-This is where all of the configuration options can be set.
-Anything I've put in this script object can be changed, but please do pay attention to what you're doing.
-If you change one of the values to something it shouldn't be, you could break it.
-]]
+Tabbed chat configuration. Based on YATCO.
 
---This is where you tell it to use tabbed chat.
-demonnic.chat.use = true
-
---[[
-This is where you put what container to put the tabbed chat stuff into. Make it
-equal to the actual container object you want it in, or false for none. Defaults to false
-Which is to say if you want to put the tabbed chat stuff into a container made using
-uiRight = Geyser.Container:new()
-
-you would put
-
-demonnic.chat.useContainer = uiRight
-
-and if you don't want it in a container you would put
-
-demonnic.chat.useContainer = false
+https://github.com/demonnic/YATCO
 ]]
 
 demonnic.chat.useContainer = GUI.Sidebar
 
---[[
-The timestamp option is set here.
-Set to false if you do not want any timestamps displayed for chat.
-If you do want it displayed, set to the string for the format you wish.
-see http://wiki.mudlet.org/w/Manual:Lua_Functions#getTime for information
-how to format the string
-]]
 demonnic.chat.config.timestamp = &quot;HH:mm:ss&quot;
 
---[[ Should we use our own colors for the timestamp?
-Set to true if you want to specify foreground and background colors
-for the timestamp.
-Set to false if you want the timestamps background and foreground
-colors to match that of the mud output.
-]]
-demonnic.chat.config.timestampCustomColor = false
---[[
-and what foreground color? You can either use one of the 'named' colors
-(see http://wiki.mudlet.org/images/c/c3/ShowColors.png for available colors)
-demonnic.chat.config.timestampFG = &quot;slate_grey&quot;
-
-Or you can use a table of R,G,B values.
-demonnic.chat.config.timestampFG = {
-255,
-0,
-0,
-}
-then the foreground for the timestamp would be 255 read, 100 green, and 0 blue
-]]
-demonnic.chat.config.timestampFG = &quot;red&quot;
-
---and background? Same rules as for the foreground above
-demonnic.chat.config.timestampBG = &quot;blue&quot;
-
---[[
-This is where you say what corner of the screen you want the tabbed chat on
-Valid settings are &quot;topright&quot;, &quot;topleft&quot;, &quot;bottomright&quot;, &quot;bottomleft&quot;
-]]--
-demonnic.chat.config.location = &quot;topright&quot;
-
---[[
-This is a table of channels you would like.
-AKA the place you tell the script what tabs you want.
-Each entry must be a string. The defaults should be a pretty effective guide.
-]]
-
 demonnic.chat.config.channels = {
-&quot;All&quot;,
-&quot;Channels&quot;,
-&quot;Tells&quot;,
-&quot;Local&quot;,
+  &quot;All&quot;,
+  &quot;Channels&quot;,
+  &quot;Tells&quot;,
+  &quot;Local&quot;,
 }
-
-
---Set this to the name of the channel you want to have everything sent to.
---Per the default, this would be the &quot;All&quot; channel. If you have a different name for it:
---
---demonnic.chat.config.Alltab = &quot;Bucket&quot;
---
---And if you don't want it turned on at all:
---
---demonnic.chat.config.Alltab = false
 
 demonnic.chat.config.Alltab = &quot;All&quot;
-
---Set this to the name of the channel you want to display your map. Set to &quot;&quot; if you
---don't want to display the map in your YATCO tabs
-demonnic.chat.config.Maptab = &quot;&quot;
-
-
----------------------------------------------------------------------------------
---                                                                             --
---The infamous blinking stuff!!!                                               --
---                                                                             --
----------------------------------------------------------------------------------
-
---[[
-Do you want tabs to blink when you get new messages, until you click on the tab?
-True if yes, false if no.
-]]
-demonnic.chat.config.blink = true
-
---How long (in seconds) between blinks? For example, 1 would mean a 1 second pause in between blinks.
-demonnic.chat.config.blinkTime = 3
-
---Blink if the bucket tab (&quot;All&quot; by default, but configured above) is in focus?
-demonnic.chat.config.blinkFromAll = false
-
-
-
-
---Font size for the chat messages
 
 demonnic.chat.config.fontSize = 12
 
 --[[
-Should we preserve the formatting of the text.
-Or should we set the background of it to match the window color?
-Set this to false if you want the background for all chat to match the background of the window.
-Useful if you change the background from black, and don't like the way the pasted chat makes blocks in it
-]]
-
-demonnic.chat.config.preserveBackground = true
-
---[[
-Gag the chat lines in the main window?
-defaults to false, set to true if you want to gag.
-]]
-
-demonnic.chat.config.gag = false
-
---[[
-Number of lines of chat visible at once.
-Will determine how tall the window for the chats is.
+Dynamic text wrapping for the miniconsole
 ]]
 
 local fontWidth, fontHeight = calcFontSize(demonnic.chat.config.fontSize)
@@ -631,63 +470,30 @@ local sidebarWidth = GUI.Sidebar.get_width()
 local sidebarHeight = GUI.Sidebar.get_height()
 
 demonnic.chat.config.lines = math.floor(sidebarHeight / fontHeight)
-
---[[
-Number of characters to wrap the chatlines at.
-This will also determine how wide the chat windows are.
-]]
-
 demonnic.chat.config.width = math.floor(sidebarWidth / fontWidth)
 
 --[[
-Set the color for the active tab. R,G,B format.
-The default here is a brightish green
+Colors
 ]]
 
 demonnic.chat.config.activeColors = {
-r = 0,
-g = 180,
-b = 0,
+  r = 180,
+  g = 180,
+  b = 180,
 }
-
---[[
-Set the color for the inactive tab. R,G,B format.
-The default here is a drab grey
-]]
 
 demonnic.chat.config.inactiveColors = {
-r = 60,
-g = 60,
-b = 60,
+  r = 60,
+  g = 60,
+  b = 60,
 }
-
---[[
-Set the color for the chat window itself. R,G,B format.
-Defaulted to the black of my twisted hardened soul. Or something.
-]]
 
 demonnic.chat.config.windowColors = GUI.windowColors
 
---[[
-Set the color for the text on the active tab. Uses color names.
-Set the default to purple. So the tab you're looking at, by default will be purple on bright green.
-Did I mention I'm a bit colorblind?
-]]
-
-demonnic.chat.config.activeTabText = &quot;purple&quot;
-
---[[
-Set the color for the text on the inactive tabs. Uses color names.
-Defaulted this to white. So the tabs you're not looking at will be white text on boring grey background.
-]]
+demonnic.chat.config.activeTabText = &quot;black&quot;
 
 demonnic.chat.config.inactiveTabText = &quot;white&quot;
 
---[[
-have to make sure a currentTab is set...
-so we'll use the one for the bucket, or the first one in the channels table
-Or, you know... what it's currently set to, if it's already set.
-]]
 demonnic.chat.currentTab = demonnic.chat.currentTab or demonnic.chat.config.Alltab or demonnic.chat.config.channels[1]
 </script>
             <eventHandlerList/>
@@ -705,9 +511,6 @@ demonnic.chat.currentTab = demonnic.chat.currentTab or demonnic.chat.config.Allt
 --I mean it. I'll point. AND laugh. loudly.
 demonnic = demonnic or {}
 demonnic.config = demonnic.config or {}
-demonnic.balances = demonnic.balances or {}
-demonnic.balances.balance = demonnic.balances.balance or 1
-demonnic.balances.equilibrium = demonnic.balances.equilibrium or 1
 demonnic.debug = demonnic.debug or {}
 demonnic.debug.active = demonnic.debug.active or nil
 demonnic.debug.categories = demonnic.debug.categories or { }
@@ -717,72 +520,6 @@ function demonnic:echo(msg)
 cecho(string.format(&quot;\n&lt;blue&gt;(&lt;green&gt;Demonnic&lt;blue&gt;):&lt;white&gt; %s&quot;, msg))
 end</script>
               <eventHandlerList/>
-              <Script isActive="yes" isFolder="no">
-                  <name>Debugging</name>
-                  <packageName></packageName>
-                  <script>--Adds debugging functionality
-
-function demonnic:Debug(category,debugData)
- if category then
-    if table.contains(demonnic.debug.categories, category) then
-       if type(debugData) == &quot;table&quot; then
-          demonnic:echo(&quot;&lt;red&gt;DEBUG &quot; .. category .. &quot;:&lt;white&gt;&quot;)
-          display(debugData)
-       elseif type(debugData) == &quot;string&quot; or type(debugData) == &quot;number&quot; then
-          demonnic:echo(&quot;&lt;red&gt;DEBUG &quot; .. category .. &quot;:&lt;white&gt; &quot; .. debugData .. &quot;\n&quot; )
-       else
-          demonnic:echo(&quot;&lt;red&gt;DEBUG &quot; .. category .. &quot;:&lt;white&gt; &quot; .. tostring(debugData) .. &quot;\n&quot; )
-       end
-    end
- else
-    if type(debugData) == &quot;table&quot; then
-       demonnic:echo(&quot;&lt;red&gt;DEBUG:&lt;white&gt;&quot;)
-       display(debugData)
-    elseif type(debugData) == &quot;string&quot; or type(debugData) == &quot;number&quot; then
-       demonnic:echo(&quot;&lt;red&gt;DEBUG:&lt;white&gt; &quot; .. debugData)
-    else
-       demonnic:echo(&quot;&lt;red&gt;DEBUG:&lt;white&gt; &quot; .. tostring(debugData))
-    end
- end
-end
-
-function demonnic:printDebug(category, debugData)
- if not demonnic.debug.active then return end
- demonnic:Debug(category, debugData)
-end
-
-function demonnic:toggleDebug()
- if demonnic.debug.active then demonnic.debug.active = nil
- else demonnic.debug.active = true
- end
- demonnic:echo(&quot;Debugging is currently &quot; .. (( demonnic.debug.active and &quot;&lt;green&gt;ON&lt;white&gt;&quot;) or &quot;&lt;red&gt;OFF&lt;white&gt;&quot;))
-end
-
-function demonnic:watchCategory( category )
- if table.contains(demonnic.debug.categories, category) then
-    for i,v in ipairs(demonnic.debug.categories) do
-       if v == category then
-          table.remove(demonnic.debug.categories, i)
-       end
-    end
-    demonnic:echo(&quot;No longer watching the '&lt;red&gt;&quot;..category..&quot;&lt;white&gt;' category.&quot;)
- else
-    table.insert(demonnic.debug.categories, category)
-    demonnic:echo(&quot;Now watching the '&lt;red&gt;&quot;..category..&quot;&lt;white&gt;' category.&quot;)
- end
- demonnic:echo(&quot;Debugging is currently &quot; .. (( demonnic.debug.active and &quot;&lt;green&gt;ON&lt;white&gt;&quot;) or &quot;&lt;red&gt;OFF&lt;white&gt;&quot;))
-end
-
-function demonnic:listCategories()
- if #demonnic.debug.categories &gt; 0 then
-    demonnic:echo(&quot;You are currently watching the following categories:\n&quot; .. table.concat(demonnic.debug.categories,&quot;, &quot;) )
- else
-    demonnic:echo(&quot;You are not watching any debugs.&quot;)
- end
-end
-</script>
-                  <eventHandlerList/>
-              </Script>
               <Script isActive="yes" isFolder="no">
                   <name>Geyser Additions</name>
                   <packageName></packageName>
@@ -804,11 +541,7 @@ demonnic = demonnic or {}
 demonnic.chat = demonnic.chat or {}
 demonnic.chat.tabsToBlink = demonnic.chat.tabsToBlink or {}
 demonnic.chat.tabs = demonnic.chat.tabs or {}
-demonnic.chat.windows = demonnic.chat.windows or {}
-if not demonnic.chat.config then
-cecho(&quot;&lt;red:white&gt;YOU DO NOT HAVE THE YATCO CONFIG PACKAGE IN PLACE. THINGS WILL NOT WORK AS EXPECTED\n\n&quot;)
-demonnic.chat.error = &quot;NO CONFIG&quot;
-end</script>
+demonnic.chat.windows = demonnic.chat.windows or {}</script>
               <eventHandlerList/>
               <Script isActive="yes" isFolder="no">
                   <name>Code</name>
@@ -819,199 +552,103 @@ Or if it's modified to take actual functions. Anonymouse function clickcallback 
 ]]
 
 function demonnicChatSwitch(chat)
-local r = demonnic.chat.config.inactiveColors.r
-local g = demonnic.chat.config.inactiveColors.g
-local b = demonnic.chat.config.inactiveColors.b
-local newr = demonnic.chat.config.activeColors.r
-local newg = demonnic.chat.config.activeColors.g
-local newb = demonnic.chat.config.activeColors.b
-local oldchat = demonnic.chat.currentTab
-if demonnic.chat.currentTab ~= chat then
-  demonnic.chat.windows[oldchat]:hide()
-  demonnic.chat.tabs[oldchat]:setColor(r,g,b)
-  demonnic.chat.tabs[oldchat]:echo(oldchat, demonnic.chat.config.inactiveTabText, &quot;c&quot;)
-  if demonnic.chat.config.blink and demonnic.chat.tabsToBlink[chat] then
-    demonnic.chat.tabsToBlink[chat] = nil
+  local r = demonnic.chat.config.inactiveColors.r
+  local g = demonnic.chat.config.inactiveColors.g
+  local b = demonnic.chat.config.inactiveColors.b
+  local newr = demonnic.chat.config.activeColors.r
+  local newg = demonnic.chat.config.activeColors.g
+  local newb = demonnic.chat.config.activeColors.b
+  local oldchat = demonnic.chat.currentTab
+
+  if demonnic.chat.currentTab ~= chat then
+    demonnic.chat.windows[oldchat]:hide()
+    demonnic.chat.tabs[oldchat]:setColor(r,g,b)
+    demonnic.chat.tabs[oldchat]:echo(oldchat, demonnic.chat.config.inactiveTabText, &quot;c&quot;)
   end
-  if demonnic.chat.config.blink and chat == demonnic.chat.config.Alltab then
-    demonnic.chat.tabsToBlink = {}
-  end
-end
-demonnic.chat.tabs[chat]:setColor(newr,newg,newb)
-demonnic.chat.tabs[chat]:echo(chat, demonnic.chat.config.activeTabText, &quot;c&quot;)
-demonnic.chat.windows[chat]:show()
-demonnic.chat.currentTab = chat
+
+  demonnic.chat.tabs[chat]:setColor(newr,newg,newb)
+  demonnic.chat.tabs[chat]:echo(chat, demonnic.chat.config.activeTabText, &quot;c&quot;)
+  demonnic.chat.windows[chat]:show()
+  demonnic.chat.currentTab = chat
 end
 
 function demonnic.chat:resetUI()
-demonnic.chat.container = demonnic.chat.useContainer or Geyser.Container:new(demonnic.chat[demonnic.chat.config.location]())
-demonnic.chat.tabBox = Geyser.HBox:new({
-  x=0,
-  y=0,
-  width = &quot;100%&quot;,
-  height = &quot;10%&quot;,
-  name = &quot;DemonChatTabs&quot;,
-},demonnic.chat.container)
-
+  demonnic.chat.container = demonnic.chat.useContainer
+  demonnic.chat.tabBox = Geyser.HBox:new({
+    x = 0, y = 0,
+    width = &quot;100%&quot;,
+    height = &quot;10%&quot;,
+    name = &quot;DemonChatTabs&quot;,
+  }, demonnic.chat.container)
 end
 
 function demonnic.chat:create()
---reset the UI
-demonnic.chat:resetUI()
---Set some variables locally to increase readability
-local r = demonnic.chat.config.inactiveColors.r
-local g = demonnic.chat.config.inactiveColors.g
-local b = demonnic.chat.config.inactiveColors.b
-local winr = demonnic.chat.config.windowColors.r
-local wing = demonnic.chat.config.windowColors.g
-local winb = demonnic.chat.config.windowColors.b
+  --reset the UI
+  demonnic.chat:resetUI()
 
---iterate the table of channels and create some windows and tabs
-for i,tab in ipairs(demonnic.chat.config.channels) do
-  demonnic.chat.tabs[tab] = Geyser.Label:new({
-    name=string.format(&quot;tab%s&quot;, tab),
-  }, demonnic.chat.tabBox)
-  demonnic.chat.tabs[tab]:echo(tab, demonnic.chat.config.inactiveTabText, &quot;c&quot;)
-  demonnic.chat.tabs[tab]:setColor(r,g,b)
-  demonnic.chat.tabs[tab]:setClickCallback(&quot;demonnicChatSwitch&quot;, tab)
-  demonnic.chat.windows[tab] = Geyser.MiniConsole:new({
---      fontSize = demonnic.chat.config.fontSize,
-    x = 0,
-    y = &quot;10%&quot;,
-    height = &quot;90%&quot;,
-    width = &quot;100%&quot;,
-    name = string.format(&quot;win%s&quot;, tab),
-  }, demonnic.chat.container)
-  demonnic.chat.windows[tab]:setFontSize(demonnic.chat.config.fontSize)
-  demonnic.chat.windows[tab]:setColor(winr, wing, winb)
-  demonnic.chat.windows[tab]:setWrap(demonnic.chat.config.width)
-  demonnic.chat.windows[tab]:hide()
-end
-if demonnic.chat.config.Maptab and demonnic.chat.config.Maptab ~= &quot;&quot; then
-  demonnic.chat.mapWindow = Geyser.Mapper:new({
-    x = 0,
-    y = 0,
-    height = &quot;100%&quot;,
-    width = &quot;100%&quot;,
-  }, demonnic.chat.windows[demonnic.chat.config.Maptab])
-  demonnic.chat.windows[demonnic.chat.config.Maptab]:hide()
-end
-local showme = demonnic.chat.config.Alltab or demonnic.chat.config.channels[1]
-demonnicChatSwitch(showme)
---start the blink timers, if enabled
-if demonnic.chat.config.blink and not demonnic.chat.blinkTimerOn then
-  demonnic.chat:blink()
-end
+  --Set some variables locally to increase readability
+  local r = demonnic.chat.config.inactiveColors.r
+  local g = demonnic.chat.config.inactiveColors.g
+  local b = demonnic.chat.config.inactiveColors.b
+  local winr = demonnic.chat.config.windowColors.r
+  local wing = demonnic.chat.config.windowColors.g
+  local winb = demonnic.chat.config.windowColors.b
+
+  --iterate the table of channels and create some windows and tabs
+  for i,tab in ipairs(demonnic.chat.config.channels) do
+    demonnic.chat.tabs[tab] = Geyser.Label:new({
+      name = string.format(&quot;tab%s&quot;, tab),
+    }, demonnic.chat.tabBox)
+    demonnic.chat.tabs[tab]:setFontSize(demonnic.chat.config.fontSize)
+    demonnic.chat.tabs[tab]:echo(tab, demonnic.chat.config.inactiveTabText, &quot;c&quot;)
+    demonnic.chat.tabs[tab]:setColor(r,g,b)
+    demonnic.chat.tabs[tab]:setClickCallback(&quot;demonnicChatSwitch&quot;, tab)
+    demonnic.chat.windows[tab] = Geyser.MiniConsole:new({
+      x = 0,
+      y = &quot;10%&quot;,
+      height = &quot;90%&quot;,
+      width = &quot;100%&quot;,
+      name = string.format(&quot;win%s&quot;, tab),
+    }, demonnic.chat.container)
+    demonnic.chat.windows[tab]:setFontSize(demonnic.chat.config.fontSize)
+    demonnic.chat.windows[tab]:setColor(winr, wing, winb)
+    demonnic.chat.windows[tab]:setWrap(demonnic.chat.config.width)
+    demonnic.chat.windows[tab]:hide()
+  end
+
+  local showme = demonnic.chat.config.Alltab or demonnic.chat.config.channels[1]
+  demonnicChatSwitch(showme)
 end
 
 function demonnic.chat:append(chat)
-local r = demonnic.chat.config.windowColors.r
-local g = demonnic.chat.config.windowColors.g
-local b = demonnic.chat.config.windowColors.b
-selectCurrentLine()
-local ofr,ofg,ofb = getFgColor()
-local obr,obg,obb = getBgColor()
-if demonnic.chat.config.preserveBackground then
+  local r = demonnic.chat.config.windowColors.r
+  local g = demonnic.chat.config.windowColors.g
+  local b = demonnic.chat.config.windowColors.b
+  selectCurrentLine()
+  local ofr, ofg, ofb = getFgColor()
+  local obr, obg, obb = getBgColor()
   setBgColor(r, g, b)
-end
-copy()
-if demonnic.chat.config.timestamp then
-  local timestamp = getTime(true, demonnic.chat.config.timestamp)
-  local tsfg = {}
-  local tsbg = {}
-  local colorLeader = &quot;&quot;
-  if demonnic.chat.config.timestampCustomColor then
-    if type(demonnic.chat.config.timestampFG) == &quot;string&quot; then
-      tsfg = color_table[demonnic.chat.config.timestampFG]
-    else
-      tsfg = demonnic.chat.config.timestampFG
-    end
-    if type(demonnic.chat.config.timestampBG) == &quot;string&quot; then
-      tsbg = color_table[demonnic.chat.config.timestampBG]
-    else
-      tsbg = demonnic.chat.config.timestampBG
-    end
-    colorLeader = string.format(&quot;&lt;%s,%s,%s:%s,%s,%s&gt;&quot;,tsfg[1],tsfg[2],tsfg[3],tsbg[1],tsbg[2],tsbg[3])
-  else
-    colorLeader = string.format(&quot;&lt;%s,%s,%s:%s,%s,%s&gt;&quot;,ofr,ofg,ofb,obr,obg,obb)
-  end
-  local fullstamp = string.format(&quot;%s%s&quot;,colorLeader,timestamp)
+  copy()
+
+  if demonnic.chat.config.timestamp then
+    local timestamp = getTime(true, demonnic.chat.config.timestamp)
+    local tsfg = {}
+    local tsbg = {}
+    local colorLeader = string.format(&quot;&lt;%s,%s,%s:%s,%s,%s&gt;&quot;,ofr,ofg,ofb,obr,obg,obb)
+    local fullstamp = string.format(&quot;%s%s&quot;,colorLeader,timestamp)
     demonnic.chat.windows[chat]:decho(fullstamp)
     demonnic.chat.windows[chat]:echo(&quot; &quot;)
     if demonnic.chat.config.Alltab then
       demonnic.chat.windows[demonnic.chat.config.Alltab]:decho(fullstamp)
       demonnic.chat.windows[demonnic.chat.config.Alltab]:echo(&quot; &quot;)
     end
-end
-demonnic.chat.windows[chat]:append()
-if demonnic.chat.config.gag then
-  deleteLine()
-  tempLineTrigger(1,1, [[if isPrompt() then deleteLine() end]])
-end
-if demonnic.chat.config.Alltab then appendBuffer(string.format(&quot;win%s&quot;, demonnic.chat.config.Alltab)) end
-if demonnic.chat.config.blink and chat ~= demonnic.chat.currentTab then
-  if (demonnic.chat.config.Alltab == demonnic.chat.currentTab) and not demonnic.chat.config.blinkOnAll then
-    return
-  else
-    demonnic.chat.tabsToBlink[chat] = true
   end
-end
-end
 
+  demonnic.chat.windows[chat]:append()
 
-
-function demonnic.chat:blink()
-if demonnic.chat.blinkID then killTimer(demonnic.chat.blinkID) end
-if not demonnic.chat.config.blink then
-  demonnic.chat.blinkTimerOn = false
-  return
-end
-if not demonnic.chat.container.hidden then
-  for tab,_ in pairs(demonnic.chat.tabsToBlink) do
-    demonnic.chat.tabs[tab]:flash()
+  if demonnic.chat.config.Alltab then
+    appendBuffer(string.format(&quot;win%s&quot;, demonnic.chat.config.Alltab))
   end
-end
-demonnic.chat.blinkID = tempTimer(demonnic.chat.config.blinkTime, function () demonnic.chat:blink() end)
-end
-
-function demonnic.chat:topright()
-return {
-  fontSize = demonnic.chat.config.fontSize,
-  x=string.format(&quot;-%sc&quot;,demonnic.chat.config.width + 2),
-  y=0,
-  width=&quot;-15px&quot;,
-  height=string.format(&quot;%ic&quot;, demonnic.chat.config.lines + 2),
-}
-end
-
-function demonnic.chat:topleft()
-return {
-  fontSize = demonnic.chat.config.fontSize,
-  x=0,
-  y=0,
-  width=string.format(&quot;%sc&quot;,demonnic.chat.config.width),
-  height=string.format(&quot;%ic&quot;, demonnic.chat.config.lines + 2),
-}
-end
-
-function demonnic.chat:bottomright()
-return {
-  fontSize = demonnic.chat.config.fontSize,
-  x=string.format(&quot;-%sc&quot;,demonnic.chat.config.width + 2),
-  y=string.format(&quot;-%sc&quot;,demonnic.chat.config.lines + 2),
-  width=&quot;-15px&quot;,
-  height=string.format(&quot;%ic&quot;, demonnic.chat.config.lines + 2),
-}
-end
-
-function demonnic.chat:bottomleft()
-return {
-  fontSize = demonnic.chat.config.fontSize,
-  x=0,
-  y=string.format(&quot;-%sc&quot;,demonnic.chat.config.lines + 2),
-  width=string.format(&quot;%sc&quot;,demonnic.chat.config.width),
-  height=string.format(&quot;%ic&quot;, demonnic.chat.config.lines + 2),
-}
 end</script>
                   <eventHandlerList/>
               </Script>
@@ -1019,9 +656,7 @@ end</script>
                   <name>demonnicOnStart</name>
                   <packageName></packageName>
                   <script>function demonnicOnStart()
-  if demonnic.chat.use then
-    demonnic.chat:create()
-  end
+  demonnic.chat:create()
 end</script>
                   <eventHandlerList>
                       <string>sysLoadEvent</string>
@@ -1032,67 +667,35 @@ end</script>
                   <packageName></packageName>
                   <script>
 function demonnic.chat:cecho(chat, message)
-local alltab = demonnic.chat.config.Alltab
-local blink = demonnic.chat.config.blink
-cecho(string.format(&quot;win%s&quot;,chat), message)
-if alltab and chat ~= alltab then
-  cecho(string.format(&quot;win%s&quot;, alltab), message)
-end
-if blink and chat ~= demonnic.chat.currentTab then
-  if (alltab == demonnic.chat.currentTab) and not demonnic.chat.config.blinkOnAll then
-    return
-  else
-    demonnic.chat.tabsToBlink[chat] = true
+  local alltab = demonnic.chat.config.Alltab
+  cecho(string.format(&quot;win%s&quot;,chat), message)
+  if alltab and chat ~= alltab then
+    cecho(string.format(&quot;win%s&quot;, alltab), message)
   end
-end
 end
 
 function demonnic.chat:decho(chat, message)
-local alltab = demonnic.chat.config.Alltab
-local blink = demonnic.chat.config.blink
-decho(string.format(&quot;win%s&quot;,chat), message)
-if alltab and chat ~= alltab then
-  decho(string.format(&quot;win%s&quot;, alltab), message)
-end
-if blink and chat ~= demonnic.chat.currentTab then
-  if (alltab == demonnic.chat.currentTab) and not demonnic.chat.config.blinkOnAll then
-    return
-  else
-    demonnic.chat.tabsToBlink[chat] = true
+  local alltab = demonnic.chat.config.Alltab
+  decho(string.format(&quot;win%s&quot;,chat), message)
+  if alltab and chat ~= alltab then
+    decho(string.format(&quot;win%s&quot;, alltab), message)
   end
-end
 end
 
 function demonnic.chat:hecho(chat, message)
-local alltab = demonnic.chat.config.Alltab
-local blink = demonnic.chat.config.blink
-hecho(string.format(&quot;win%s&quot;,chat), message)
-if alltab and chat ~= alltab then
-  hecho(string.format(&quot;win%s&quot;, alltab), message)
-end
-if blink and chat ~= demonnic.chat.currentTab then
-  if (alltab == demonnic.chat.currentTab) and not demonnic.chat.config.blinkOnAll then
-    return
-  else
-    demonnic.chat.tabsToBlink[chat] = true
+  local alltab = demonnic.chat.config.Alltab
+  hecho(string.format(&quot;win%s&quot;,chat), message)
+  if alltab and chat ~= alltab then
+    hecho(string.format(&quot;win%s&quot;, alltab), message)
   end
-end
 end
 
 function demonnic.chat:echo(chat, message)
-local alltab = demonnic.chat.config.Alltab
-local blink = demonnic.chat.config.blink
-echo(string.format(&quot;win%s&quot;,chat), message)
-if alltab and chat ~= alltab then
-  echo(string.format(&quot;win%s&quot;, alltab), message)
-end
-if blink and chat ~= demonnic.chat.currentTab then
-  if (alltab == demonnic.chat.currentTab) and not demonnic.chat.config.blinkOnAll then
-    return
-  else
-    demonnic.chat.tabsToBlink[chat] = true
+  local alltab = demonnic.chat.config.Alltab
+  echo(string.format(&quot;win%s&quot;,chat), message)
+  if alltab and chat ~= alltab then
+    echo(string.format(&quot;win%s&quot;, alltab), message)
   end
-end
 end</script>
                   <eventHandlerList/>
               </Script>
