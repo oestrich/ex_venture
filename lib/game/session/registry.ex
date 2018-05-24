@@ -8,7 +8,7 @@ defmodule Game.Session.Registry do
   alias Data.User
   alias Game.Character
 
-  @pg2_group :session
+  @key :session
 
   defmodule Metadata do
     @moduledoc """
@@ -28,7 +28,11 @@ defmodule Game.Session.Registry do
   """
   @spec register(User.t()) :: :ok
   def register(user) do
-    GenServer.cast(__MODULE__, {:register, self(), user, %Metadata{is_afk: false}})
+    members = :pg2.get_members(@key)
+
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:register, self(), user, %Metadata{is_afk: false}})
+    end)
   end
 
   @doc """
@@ -36,7 +40,11 @@ defmodule Game.Session.Registry do
   """
   @spec update(User.t(), State.t()) :: :ok
   def update(user, state) do
-    GenServer.cast(__MODULE__, {:update, self(), user, %Metadata{is_afk: state.is_afk}})
+    members = :pg2.get_members(@key)
+
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:update, self(), user, %Metadata{is_afk: state.is_afk}})
+    end)
   end
 
   @doc """
@@ -44,7 +52,11 @@ defmodule Game.Session.Registry do
   """
   @spec unregister() :: :ok
   def unregister() do
-    GenServer.cast(__MODULE__, {:unregister, self()})
+    members = :pg2.get_members(@key)
+
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:unregister, self()})
+    end)
   end
 
   @doc """
@@ -52,11 +64,7 @@ defmodule Game.Session.Registry do
   """
   @spec connected_players() :: [{pid, User.t()}]
   def connected_players() do
-    members = :pg2.get_members(@pg2_group)
-
-    Enum.flat_map(members, fn member ->
-      GenServer.call(member, :connected_players)
-    end)
+    GenServer.call(__MODULE__, :connected_players)
   end
 
   @doc """
@@ -92,8 +100,8 @@ defmodule Game.Session.Registry do
   #
 
   def init(_) do
-    :ok = :pg2.create(@pg2_group)
-    :ok = :pg2.join(@pg2_group, self())
+    :ok = :pg2.create(@key)
+    :ok = :pg2.join(@key, self())
 
     Process.flag(:trap_exit, true)
     {:ok, %{connected_players: []}}
