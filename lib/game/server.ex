@@ -9,7 +9,7 @@ defmodule Game.Server do
   alias Game.Session
   alias Metrics.PlayerInstrumenter
 
-  @tick_interval 2000
+  @tick_interval 10000
   @report_users Application.get_env(:ex_venture, :game)[:report_users]
 
   @doc """
