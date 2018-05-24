@@ -349,6 +349,8 @@ defmodule Game.Command.Skills do
     end
   end
 
+  def find_target(_, _), do: {:error, :not_found}
+
   defp set_timeout(state, skill) do
     Process.send_after(self(), {:skill, :ready, skill}, skill.cooldown_time)
     skills = Map.put(state.skills, skill.id, Timex.now())
