@@ -427,6 +427,7 @@ function exventureMapper()
   setRoomCoordinates(room.id, room.x, -1 * room.y, room.map_layer)
   setRoomArea(room.id, zone.id)
   setRoomEnv(room.id, envids[room.ecology])
+  setRoomName(room.id, room.name)
   centerview(room.id)
 
   for i, exit in ipairs(room.exits) do
