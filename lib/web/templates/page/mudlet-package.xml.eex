@@ -431,7 +431,10 @@ function exventureMapper()
   centerview(room.id)
 
   for i, exit in ipairs(room.exits) do
-    setExit(room.id, exit.room_id, exit.direction)
+    if not setExit(room.id, exit.room_id, exit.direction) then
+      -- if the room linking to hasn&apos;t been made yet, create a stub instead
+      setExitStub(room.id, exit.direction, true)
+    end
   end
 end</script>
                   <eventHandlerList>
