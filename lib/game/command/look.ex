@@ -49,8 +49,10 @@ defmodule Game.Command.Look do
 
     items = room_items(room)
     state |> GMCP.room(room, items)
-    socket |> @socket.echo(Format.room(room, items, room_map))
     state |> GMCP.map(mini_map)
+
+    room = remove_yourself(room, state)
+    socket |> @socket.echo(Format.room(room, items, room_map))
 
     :ok
   end
@@ -84,6 +86,11 @@ defmodule Game.Command.Look do
     |> could_not_find(name, state)
 
     :ok
+  end
+
+  defp remove_yourself(room, state) do
+    players = Enum.reject(room.players, &(&1.id == state.user.id))
+    %{room | players: players}
   end
 
   defp room_items(%{items: nil}), do: []

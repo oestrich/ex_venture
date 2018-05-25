@@ -26,7 +26,7 @@ defmodule Game.Command.LookTest do
   end
 
   test "view room information", %{socket: socket} do
-    Game.Command.Look.run({}, %{socket: socket, save: %{room_id: 1}})
+    Game.Command.Look.run({}, %{socket: socket, user: %{id: 10}, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Hallway), look)
