@@ -157,15 +157,21 @@ end</script>
     </AliasPackage>
     <ActionPackage/>
     <ScriptPackage>
-            <ScriptGroup isActive="yes" isFolder="yes">
-                <name>CSSman</name>
-                <packageName>CSSman</packageName>
-                <script></script>
-                <eventHandlerList/>
-                <Script isActive="yes" isFolder="no">
-                    <name>CSSMan</name>
-                    <packageName></packageName>
-                    <script>-- CSSMan by Vadi. Public domain.
+      <Script isActive="yes" isFolder="no">
+        <name>Bootstrap</name>
+        <packageName></packageName>
+        <script>setServerEncoding("UTF-8")</script>
+        <eventHandlerList/>
+      </Script>
+      <ScriptGroup isActive="yes" isFolder="yes">
+        <name>CSSman</name>
+        <packageName>CSSman</packageName>
+        <script></script>
+        <eventHandlerList/>
+        <Script isActive="yes" isFolder="no">
+          <name>CSSMan</name>
+          <packageName></packageName>
+          <script>-- CSSMan by Vadi. Public domain.
 
 CSSMan = {}
 CSSMan.__index = CSSMan
