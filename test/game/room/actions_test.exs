@@ -51,6 +51,12 @@ defmodule Game.Room.ActionsTest do
 
       assert room.currency == 0
     end
+
+    test "no currency in the room", %{room: room} do
+      room = %{room | currency: 0}
+
+      assert {_room, {:error, :no_currency}} = Room.Actions.pick_up_currency(room)
+    end
   end
 
   describe "respawning items" do

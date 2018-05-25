@@ -44,14 +44,20 @@ defmodule Game.Room.Actions do
   @doc """
   Pick up all of the currency in the room
   """
-  @spec pick_up_currency(Room.t()) :: {Room.t(), {:ok, integer}}
+  @spec pick_up_currency(Room.t()) :: {Room.t(), {:ok, integer}} | {Room.t(), {:error, :no_currency}}
   def pick_up_currency(room = %{currency: currency}) do
-    case Repo.update(room, %{currency: 0}) do
-      {:ok, room} ->
-        {room, {:ok, currency}}
+    case currency == 0 do
+      true ->
+        {room, {:error, :no_currency}}
 
-      _ ->
-        {room, :error}
+      false ->
+        case Repo.update(room, %{currency: 0}) do
+          {:ok, room} ->
+            {room, {:ok, currency}}
+
+          _ ->
+            {room, :error}
+        end
     end
   end
 

@@ -69,6 +69,15 @@ defmodule Game.Command.PickUpTest do
     assert Regex.match?(~r(You picked up), look)
   end
 
+  test "pick up gold from a room, but no gold", %{state: state} do
+    @room.set_pick_up_currency({:error, :no_currency})
+
+    :ok = PickUp.run({"gold"}, state)
+
+    [{_socket, look}] = @socket.get_echos()
+    assert Regex.match?(~r(There was no gold), look)
+  end
+
   test "pick up all from a room", %{state: state} do
     @room.clear_pick_up()
     @room.set_pick_up_currency({:ok, 100})

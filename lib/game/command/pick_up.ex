@@ -79,6 +79,9 @@ defmodule Game.Command.PickUp do
         state.socket |> @socket.echo("You picked up #{currency} #{@currency}")
         {:update, state}
 
+      {:error, :no_currency} ->
+        state.socket |> @socket.echo(~s(There was no #{@currency} to be found.))
+
       {:error, :could_not_pickup} ->
         state.socket |> @socket.echo(~s("#{@currency}" could not be found))
     end
@@ -188,6 +191,9 @@ defmodule Game.Command.PickUp do
 
         save = %{save | currency: save.currency + currency}
         {:ok, currency, Map.put(state, :save, save)}
+
+      {:error, :no_currency} ->
+        {:error, :no_currency}
 
       _ ->
         {:error, :could_not_pickup}
