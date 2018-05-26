@@ -48,7 +48,7 @@ defmodule Game.Command.ChannelsTest do
 
       :ok = Channels.run({"global", "hello"}, state)
 
-      assert_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}
+      assert_receive {:channel, {:broadcast, "global", %Message{message: "Hello."}}}
     end
   end
 
@@ -57,7 +57,7 @@ defmodule Game.Command.ChannelsTest do
 
     :ok = Channels.run({"newbie", "hello"}, %{socket: socket, user: user})
 
-    refute_receive {:channel, {:broadcast, "global", %Message{message: "hello"}}}, 50
+    refute_receive {:channel, {:broadcast, "global", %Message{message: "Hello."}}}, 50
   end
 
   test "join a channel", %{socket: socket} do

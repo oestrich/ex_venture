@@ -19,7 +19,7 @@ defmodule Game.Command.SayTest do
       :ok = Say.run({"hi"}, state)
 
       [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/"hi"/, echo)
+      assert Regex.match?(~r/"Hi."/, echo)
     end
   end
 
@@ -40,7 +40,7 @@ defmodule Game.Command.SayTest do
       :ok = Say.run({">player hi"}, state)
 
       [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/"hi"/, echo)
+      assert Regex.match?(~r/"Hi."/, echo)
     end
 
     test "to an npc", %{state: state} do
@@ -50,7 +50,7 @@ defmodule Game.Command.SayTest do
       :ok = Say.run({">guard hi"}, state)
 
       [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/"hi"/, echo)
+      assert Regex.match?(~r/"Hi."/, echo)
     end
 
     test "target not found", %{state: state} do

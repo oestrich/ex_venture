@@ -26,7 +26,7 @@ defmodule Game.Command.TellTest do
 
       {:update, %{reply_to: {:user, _}}} = Tell.run({"tell", "player hello"}, state)
 
-      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "hello"}}}
+      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "Hello."}}}
     end
 
     test "send a tell - player not found", %{state: state} do
@@ -52,7 +52,7 @@ defmodule Game.Command.TellTest do
 
       {:update, %{reply_to: {:npc, _}}} = Tell.run({"tell", "guard howdy"}, state)
 
-      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "howdy"}}}
+      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "Howdy."}}}
     end
 
     test "send a reply - npc not in the room", %{state: state} do
@@ -73,7 +73,7 @@ defmodule Game.Command.TellTest do
 
       :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:user, state.user}})
 
-      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "howdy"}}}
+      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "Howdy."}}}
     end
 
     test "send a reply - player not online", %{state: state} do
@@ -106,7 +106,7 @@ defmodule Game.Command.TellTest do
 
       :ok = Tell.run({"reply", "howdy"}, state)
 
-      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "howdy"}}}
+      assert_receive {:channel, {:tell, {:user, _}, %Message{message: "Howdy."}}}
     end
 
     test "send a reply - npc not in the room", %{state: state} do
