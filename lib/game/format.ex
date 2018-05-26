@@ -18,7 +18,6 @@ defmodule Game.Format do
   alias Game.Format.Table
   alias Game.Format.Template
   alias Game.Quest
-  alias Game.Utility
 
   @doc """
   Template a string
@@ -136,24 +135,20 @@ defmodule Game.Format do
   """
   @spec say_to(Character.t(), Character.t(), map()) :: String.t()
   def say_to(:you, sayee, parsed_message) do
-    message = Utility.strip_name(elem(sayee, 1), parsed_message.message)
-
     ~s(You say[ adverb_phrase] to [sayee], {say}"[message]"{/say})
     |> template(%{
       sayee: name(sayee),
-      message: message,
+      message: parsed_message.message,
       adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil)
     })
   end
 
   def say_to(sayer, sayee, parsed_message) do
-    message = Utility.strip_name(elem(sayee, 1), parsed_message.message)
-
     ~s([sayer] says[ adverb_phrase] to [sayee], {say}"[message]"{/say})
     |> template(%{
       sayer: name(sayer),
       sayee: name(sayee),
-      message: message,
+      message: parsed_message.message,
       adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil)
     })
   end

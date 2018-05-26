@@ -374,7 +374,7 @@ defmodule Game.SessionTest do
       {:noreply, state} = Process.handle_info({:channel, {:tell, {:user, from}, message}}, state)
 
       [{_socket, tell} | _] = @socket.get_echos()
-      assert Regex.match?(~r/howdy/, tell)
+      assert Regex.match?(~r/Howdy/, tell)
       assert state.reply_to == {:user, from}
     end
 
@@ -493,7 +493,7 @@ defmodule Game.SessionTest do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/heard", message}}, state)
 
       [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(hi), echo)
+      assert Regex.match?(~r(Hi.), echo)
     end
 
     test "room overheard - echos if user is not in the list of characters", %{state: state} do

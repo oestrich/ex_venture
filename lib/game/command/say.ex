@@ -8,6 +8,7 @@ defmodule Game.Command.Say do
   import Game.Room.Helpers, only: [find_character: 3]
 
   alias Game.Hint
+  alias Game.Utility
 
   defmodule ParsedMessage do
     @moduledoc """
@@ -132,6 +133,7 @@ defmodule Game.Command.Say do
   end
 
   def say(state = %{user: user, save: save}, parsed_message) do
+    parsed_message = Message.format(parsed_message)
     state.socket |> @socket.echo(Format.say(:you, parsed_message))
     save.room_id |> @room.say({:user, user}, Message.new(user, parsed_message))
   end
@@ -144,6 +146,13 @@ defmodule Game.Command.Say do
         state.socket |> @socket.echo("No character could be found matching your text.")
 
       character ->
+        message = Utility.strip_name(elem(character, 1), parsed_message.message)
+
+        parsed_message =
+          parsed_message
+          |> Map.put(:message, message)
+          |> Message.format()
+
         state.socket |> @socket.echo(Format.say_to(:you, character, parsed_message))
         room.id |> @room.say({:user, user}, Message.say_to(user, character, parsed_message))
     end
