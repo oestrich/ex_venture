@@ -38,11 +38,11 @@ defmodule Game.Server do
   end
 
   def handle_info(:tick, state) do
-    Config.character_names()
-    |> PlayerInstrumenter.set_random_character_name_count()
-
     case @report_users do
       true ->
+        Config.character_names()
+        |> PlayerInstrumenter.set_random_character_name_count()
+
         Session.Registry.connected_players()
         |> Enum.map(& &1.user)
         |> PlayerInstrumenter.set_player_count()

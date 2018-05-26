@@ -27,6 +27,7 @@ defmodule Game.SessionTest do
       socket: socket,
       user: user,
       save: user.save,
+      regen: %{is_regenerating: false},
     }
 
     {:ok, %{state: state}}
@@ -248,7 +249,7 @@ defmodule Game.SessionTest do
     @room.clear_update_characters()
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
-    stats = %{health_points: 25, strength: 10}
+    stats = %{base_stats() | health_points: 25, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %{state | user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new}
@@ -264,7 +265,7 @@ defmodule Game.SessionTest do
     @room.clear_update_characters()
 
     effect = %{kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
-    stats = %{health_points: 25, strength: 10}
+    stats = %{base_stats() | health_points: 25, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     from = {:npc, %{id: 1, name: "Bandit"}}
     state = %{state | user: user, save: %{room_id: 1, stats: stats}, is_targeting: MapSet.new()}
@@ -286,7 +287,7 @@ defmodule Game.SessionTest do
     Session.Registry.register(%{id: 2})
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
-    stats = %{health_points: 5, strength: 10}
+    stats = %{base_stats() | health_points: 5, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
 
     state = %{state | user: user, save: %{room_id: 1, stats: stats}}
@@ -306,7 +307,7 @@ defmodule Game.SessionTest do
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, 2))
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
-    stats = %{health_points: 5, strength: 10}
+    stats = %{base_stats() | health_points: 5, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     save = %{room_id: 1, stats: stats}
 
@@ -328,7 +329,7 @@ defmodule Game.SessionTest do
     @zone.set_graveyard({:error, :no_graveyard})
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
-    stats = %{health_points: 5, strength: 10}
+    stats = %{base_stats() | health_points: 5, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
     save = %{room_id: 1, stats: stats}
 
@@ -426,7 +427,7 @@ defmodule Game.SessionTest do
     end
 
     test "sets health_points to 1 if < 0", %{state: state} do
-      save = %{stats: %{health_points: -1}, room_id: 2}
+      save = %{stats: %{base_stats() | health_points: -1}, room_id: 2}
       state = %{state | save: save}
 
       {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
@@ -436,7 +437,7 @@ defmodule Game.SessionTest do
     end
 
     test "leaves old room, enters new room", %{state: state} do
-      save = %{stats: %{health_points: -1}, room_id: 1}
+      save = %{stats: %{base_stats() | health_points: -1}, room_id: 1}
       state = %{state | save: save}
 
       {:noreply, _state} = Process.handle_info({:resurrect, 2}, state)
