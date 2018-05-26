@@ -246,7 +246,7 @@ GUI.windowColors = {
 }
 
 setFontSize(16)
---setBackgroundColor("main", r, g, b)</script>
+if mudletOlderThan(3,9) then setBackgroundColor("main", r, g, b)</script>
                     <eventHandlerList/>
                 </Script>
                 <Script isActive="yes" isFolder="no">
