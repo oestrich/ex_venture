@@ -67,11 +67,11 @@ defmodule Networking.Protocol do
   @spec tcp_option(pid, atom, boolean) :: :ok
   @impl Networking.Socket
   def tcp_option(socket, :echo, true) do
-    GenServer.cast(socket, {:command, [@iac, @wont, @telnet_option_echo], {:echo, true}})
+    GenServer.cast(socket, {:command, <<@iac, @wont, @telnet_option_echo>>, {:echo, true}})
   end
 
   def tcp_option(socket, :echo, false) do
-    GenServer.cast(socket, {:command, [@iac, @will, @telnet_option_echo], {:echo, false}})
+    GenServer.cast(socket, {:command, <<@iac, @will, @telnet_option_echo>>, {:echo, false}})
   end
 
   @doc """
@@ -145,10 +145,8 @@ defmodule Networking.Protocol do
     case module in state.gmcp_supports do
       true ->
         Logger.debug(["GMCP: Sending", module], type: :socket)
-        module_char = module |> String.to_charlist()
-        data_char = data |> String.to_charlist()
-        message = [@iac, @sb, @gmcp] ++ module_char ++ [' '] ++ data_char ++ [@iac, @se]
-        send_data(state, message)
+        send_data(state, <<@iac, @sb, @gmcp>> <> module <> " " <> data <> <<@iac, @se>>)
+
         {:noreply, state}
 
       false ->
@@ -175,7 +173,7 @@ defmodule Networking.Protocol do
       |> Color.format(state.config)
 
     send_data(state, "\n#{message}\n")
-    send_data(state, [@iac, @ga])
+    send_data(state, <<@iac, @ga>>)
     {:noreply, state}
   end
 
@@ -186,7 +184,7 @@ defmodule Networking.Protocol do
       |> Color.format(state.config)
 
     send_data(state, "\n#{message}")
-    send_data(state, [@iac, @ga])
+    send_data(state, <<@iac, @ga>>)
     {:noreply, state}
   end
 
@@ -194,10 +192,10 @@ defmodule Networking.Protocol do
     {:ok, pid} = Game.Session.start(self())
     Process.link(pid)
 
-    send_data(state, [@iac, @will, @mccp])
-    send_data(state, [@iac, @will, @mssp])
-    send_data(state, [@iac, @will, @gmcp])
-    send_data(state, [@iac, @will, @mxp])
+    send_data(state, <<@iac, @will, @mccp>>)
+    send_data(state, <<@iac, @will, @mssp>>)
+    send_data(state, <<@iac, @will, @gmcp>>)
+    send_data(state, <<@iac, @will, @mxp>>)
 
     {:noreply, Map.merge(state, %{session: pid})}
   end
@@ -215,14 +213,14 @@ defmodule Networking.Protocol do
         Logger.info("Starting MCCP", type: :socket)
         zlib_context = :zlib.open()
         :zlib.deflateInit(zlib_context, 9)
-        send_data(state, [@iac, @sb, @mccp, @iac, @se])
+        send_data(state, <<@iac, @sb, @mccp, @iac, @se>>)
 
         {:noreply, Map.put(state, :zlib_context, zlib_context)}
 
       :mssp ->
         Logger.info("Sending MSSP", type: :socket)
 
-        mssp = [@iac, @sb] ++ MSSP.name() ++ MSSP.players() ++ MSSP.uptime() ++ [@iac, @se]
+        mssp = <<@iac, @sb>> <> MSSP.name() <> MSSP.players() <> MSSP.uptime() <> <<@iac, @se>>
         send_data(state, mssp)
 
         {:noreply, state}
@@ -232,7 +230,7 @@ defmodule Networking.Protocol do
 
       :mxp ->
         Logger.info("Will do MXP", type: :socket)
-        send_data(state, [@iac, @sb, @mxp, @iac, @se])
+        send_data(state, <<@iac, @sb, @mxp, @iac, @se>>)
         {:noreply, Map.put(state, :mxp, true)}
 
       :gmcp ->
@@ -242,7 +240,7 @@ defmodule Networking.Protocol do
 
       {:gmcp, :will} ->
         Logger.info("Client is requesting GMCP", type: :socket)
-        send_data(state, [@iac, @telnet_do, @gmcp])
+        send_data(state, <<@iac, @telnet_do, @gmcp>>)
 
         {:noreply, Map.put(state, :gmcp, true)}
 
@@ -441,9 +439,8 @@ defmodule Networking.Protocol do
   end
 
   defp push_client_gui(state) do
-    module_char = "Client.GUI" |> String.to_charlist()
-    data_char = [@mudlet_version, RoutesHelper.public_page_url(Endpoint, :mudlet_package)] |> Enum.join("\n") |> String.to_charlist()
-    message = [@iac, @sb, @gmcp] ++ module_char ++ [' '] ++ data_char ++ [@iac, @se]
+    data = "#{@mudlet_version}\n#{RoutesHelper.public_page_url(Endpoint, :mudlet_package)}"
+    message = <<@iac, @sb, @gmcp>> <> "Client.GUI " <> data <> <<@iac, @se>>
     send_data(state, message)
   end
 end
