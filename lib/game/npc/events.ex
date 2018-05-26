@@ -23,6 +23,8 @@ defmodule Game.NPC.Events do
   alias Metrics.CharacterInstrumenter
   alias Metrics.NPCInstrumenter
 
+  @npc_reaction_time_ms Application.get_env(:ex_venture, :npc)[:reaction_time_ms]
+
   @doc """
   Instantiate events and start their ticking
   """
@@ -427,7 +429,7 @@ defmodule Game.NPC.Events do
       @room.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
-        GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
+        NPC.delay_notify({"room/entered", {{:user, player}, :enter}}, milliseconds: @npc_reaction_time_ms)
       end)
     end)
 

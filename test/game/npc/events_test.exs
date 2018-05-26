@@ -365,7 +365,7 @@ defmodule Game.NPC.EventsTest do
 
       assert state.room_id == 2
 
-      assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:user, %{id: 10}}, :enter}}}}
+      assert_receive {:notify, {"room/entered", {{:user, %{id: 10}}, :enter}}}
     end
 
     test "will not move if the door is closed", %{state: state, event: event} do

@@ -85,6 +85,14 @@ defmodule Game.NPC do
   end
 
   @doc """
+  Send a delayed notification, to the same process
+  """
+  @spec delay_notify(tuple(), Keyword.t()) :: :ok
+  def delay_notify(action, [milliseconds: ms]) do
+    Process.send_after(self(), {:notify, action}, ms)
+  end
+
+  @doc """
   Update a npc's data
   """
   @spec update(integer, NPCSpawner.t()) :: :ok
@@ -309,6 +317,10 @@ defmodule Game.NPC do
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc}) do
     room_id |> @room.leave({:npc, npc})
     {:stop, :normal, state}
+  end
+
+  def handle_info({:notify, action}, state) do
+    handle_cast({:notify, action}, state)
   end
 
   def handle_info({:load, npc_spawner_id}, state), do: load(npc_spawner_id, state)
