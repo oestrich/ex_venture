@@ -86,7 +86,8 @@ exports.config = {
     autoRequire: {
       "js/play.js": ["play/js/app"],
       "js/home.js": ["home/js/app"],
-      "js/admin.js": ["admin/js/app"]
+      "js/admin.js": ["admin/js/app"],
+      "js/vendor.js": ["phoenix_html"],
     }
   },
 
