@@ -14,6 +14,7 @@ defmodule Game.Session.Character do
   alias Game.Session
   alias Game.Session.Effects
   alias Game.Session.GMCP
+  alias Game.Session.Regen
 
   @doc """
   Callback for being targeted
@@ -32,6 +33,7 @@ defmodule Game.Session.Character do
   """
   def apply_effects(state, effects, from, description) do
     state = Effects.apply(effects, from, description, state)
+    state = Regen.maybe_trigger_regen(state)
     state |> Session.Process.prompt()
     state
   end

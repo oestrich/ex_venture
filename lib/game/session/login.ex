@@ -103,9 +103,9 @@ defmodule Game.Session.Login do
 
     Enum.each(user.save.channels, &Channel.join/1)
     Channel.join_tell({:user, user})
-    state |> Regen.maybe_trigger_regen()
 
     state
+    |> Regen.maybe_trigger_regen()
     |> Map.put(:state, "active")
   end
 

@@ -292,7 +292,11 @@ defmodule Game.Session.Process do
       "Processing effect (#{effect_id})"
     end, type: :player)
 
-    state = Effects.handle_continuous_effect(state, effect_id)
+    state =
+      state
+      |> Effects.handle_continuous_effect(effect_id)
+      |> Regen.maybe_trigger_regen()
+
     {:noreply, state}
   end
 
@@ -323,6 +327,7 @@ defmodule Game.Session.Process do
           state
           |> Map.put(:save, save)
           |> Map.put(:user, user)
+          |> Regen.maybe_trigger_regen()
 
         {:update, state} = Move.move_to(state, graveyard_id, :death, :respawn)
         state |> prompt()
