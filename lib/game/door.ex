@@ -59,7 +59,7 @@ defmodule Game.Door do
         state
 
       _ ->
-        nil
+        load(exit_id)
     end
   end
 

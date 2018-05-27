@@ -36,6 +36,15 @@ defmodule Game.DoorTest do
     assert Door.get(exit_id) == "closed"
 
     Door.remove(%{id: exit_id})
-    assert is_nil(Door.get(exit_id))
+
+    assert {:ok, nil} = Cachex.get(:doors, exit_id)
+  end
+
+  test "clear a door - no cache state for a door loads it", %{exit_id: exit_id} do
+    "closed" = Door.load(exit_id)
+    assert Door.get(exit_id) == "closed"
+
+    Door.remove(%{id: exit_id})
+    assert Door.get(exit_id) == "closed"
   end
 end

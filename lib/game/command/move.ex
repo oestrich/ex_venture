@@ -208,18 +208,13 @@ defmodule Game.Command.Move do
   """
   def maybe_move_to(state, room_id, room_exit, direction)
 
-  def maybe_move_to(
-        state = %{socket: socket},
-        room_id,
-        room_exit = %{id: exit_id, has_door: true},
-        direction
-      ) do
-    case Door.get(exit_id) do
+  def maybe_move_to(state = %{socket: socket}, room_id, room_exit = %{has_door: true}, direction) do
+    case Door.get(room_exit.id) do
       "open" ->
         maybe_move_to(state, room_id, %{}, direction)
 
       "closed" ->
-        Door.set(exit_id, "open")
+        Door.set(room_exit.id, "open")
         socket |> @socket.echo("You opened the door.")
         maybe_move_to(state, room_id, room_exit, direction)
     end
