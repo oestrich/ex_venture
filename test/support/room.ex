@@ -2,7 +2,13 @@ defmodule Test.Game.Room do
   alias Data.Room
 
   def start_link() do
-    Agent.start_link(fn () -> %{room: _room(), rooms: %{}} end, name: __MODULE__)
+    Agent.start_link(fn () ->
+      %{
+        offline: false,
+        room: _room(),
+        rooms: %{},
+      }
+    end, name: __MODULE__)
   end
 
   def _room() do
@@ -46,6 +52,14 @@ defmodule Test.Game.Room do
     Agent.update(__MODULE__, fn (state) -> Map.put(state, :crash, []) end)
   end
 
+  def set_room(:offline) do
+    start_link()
+
+    Agent.update(__MODULE__, fn (state) ->
+      Map.put(state, :offline, true)
+    end)
+  end
+
   def set_room(room, opts \\ []) do
     start_link()
 
@@ -61,6 +75,7 @@ defmodule Test.Game.Room do
         end
 
       state
+      |> Map.put(:offline, false)
       |> Map.put(:room, room)
       |> Map.put(:rooms, rooms)
     end)
@@ -69,7 +84,13 @@ defmodule Test.Game.Room do
   def look(id) do
     start_link()
     Agent.get(__MODULE__, fn (state) ->
-      {:ok, Map.get(state.rooms, id, state.room)}
+      case state.offline do
+        true ->
+          {:error, :room_offline}
+
+        false ->
+          {:ok, Map.get(state.rooms, id, state.room)}
+      end
     end)
   end
 

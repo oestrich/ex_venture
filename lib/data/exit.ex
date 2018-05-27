@@ -7,6 +7,8 @@ defmodule Data.Exit do
 
   alias Data.Room
 
+  @directions ["north", "east", "south", "west", "up", "down", "in", "out"]
+
   schema "exits" do
     field(:has_door, :boolean, default: false)
 
@@ -21,6 +23,12 @@ defmodule Data.Exit do
 
     timestamps()
   end
+
+  @doc """
+  Get a list of directions
+  """
+  @spec directions() :: [String.t()]
+  def directions(), do: @directions
 
   def changeset(struct, params) do
     struct
