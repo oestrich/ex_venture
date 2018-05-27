@@ -487,4 +487,12 @@ defmodule Web.User do
         Account.save(user, save)
     end
   end
+
+  @doc """
+  Authorize a connection
+  """
+  @spec authorize_connection(User.t(), String.t()) :: :ok
+  def authorize_connection(user, id) do
+    SessionRegistry.authorize_connection(user, id)
+  end
 end

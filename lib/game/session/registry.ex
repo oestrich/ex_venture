@@ -24,6 +24,26 @@ defmodule Game.Session.Registry do
   end
 
   @doc """
+  Register a pending connection
+  """
+  @spec register_connection(String.t()) :: :ok
+  def register_connection(id) do
+    members = :pg2.get_members(@key)
+
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:register_connection, self(), id})
+    end)
+  end
+
+  @doc """
+  Load all connected players
+  """
+  @spec authorize_connection(User.t(), String.t()) :: :ok
+  def authorize_connection(user, id) do
+    GenServer.cast(__MODULE__, {:authorize, user, id})
+  end
+
+  @doc """
   Register the session PID for the user
   """
   @spec register(User.t()) :: :ok
@@ -104,11 +124,36 @@ defmodule Game.Session.Registry do
     :ok = :pg2.join(@key, self())
 
     Process.flag(:trap_exit, true)
-    {:ok, %{connected_players: []}}
+    {:ok, %{connected_players: [], connections: []}}
   end
 
   def handle_call(:connected_players, _from, state) do
     {:reply, state.connected_players, state}
+  end
+
+  def handle_cast({:register_connection, pid, id}, state) do
+    %{connections: connections} = state
+    Process.link(pid)
+    connections = [%{id: id, pid: pid} | connections]
+    {:noreply, %{state | connections: connections}}
+  end
+
+  def handle_cast({:authorize, user, id}, state) do
+    connection =
+      state.connections
+      |> Enum.find(fn connection ->
+        connection.id == id
+      end)
+
+    case connection do
+      nil ->
+        {:noreply, state}
+
+      connection ->
+        send(connection.pid, {:authorize, user})
+
+        {:noreply, state}
+    end
   end
 
   def handle_cast({:register, pid, user, metadata}, state) do
@@ -128,13 +173,18 @@ defmodule Game.Session.Registry do
     {:noreply, %{state | connected_players: connected_players}}
   end
 
-  def handle_cast({:unregister, pid}, state = %{connected_players: connected_players}) do
+  def handle_cast({:unregister, pid}, state) do
     connected_players =
-      connected_players
+      state.connected_players
+      |> Enum.reject(&(&1.pid == pid))
+
+    connections =
+      state.connections
       |> Enum.reject(&(&1.pid == pid))
 
     state =
       state
+      |> Map.put(:connections, connections)
       |> Map.put(:connected_players, connected_players)
 
     {:noreply, state}

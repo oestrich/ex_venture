@@ -52,6 +52,9 @@ defmodule Game.Session.Login do
     Session.Registry.register(user)
     Session.Registry.player_online(user)
 
+    self() |> Process.schedule_save()
+    self() |> Process.schedule_inactive_check()
+
     PlayerInstrumenter.login(user)
 
     state =
@@ -130,48 +133,36 @@ defmodule Game.Session.Login do
     end
   end
 
-  def process("create", state = %{socket: socket}) do
-    socket |> Session.CreateAccount.start()
+  def process("create", state) do
+    state.socket |> Session.CreateAccount.start()
     state |> Map.put(:state, "create")
   end
 
-  def process(password, state = %{socket: socket, login: %{name: name}}) do
-    socket |> @socket.tcp_option(:echo, true)
-    password = String.trim(password)
-
-    case Authentication.find_and_validate(name, password) do
-      {:error, :invalid} ->
-        PlayerInstrumenter.login_fail()
-        socket |> @socket.echo("Invalid password")
-        socket |> @socket.disconnect()
-        state
-
-      user ->
-        user |> process_login(state)
-    end
+  # catch all after the process has started
+  def process(_, state = %{login: %{name: _name}}) do
+    state
   end
 
-  def process(message, state = %{socket: socket}) do
-    socket |> @socket.echo("Please sign in via the website and get a one time password.")
-    socket |> @socket.echo(Routes.public_account_url(Web.Endpoint, :password))
-    socket |> @socket.prompt("Your one time password: ")
-    socket |> @socket.tcp_option(:echo, false)
+  def process(message, state) do
+    state.socket |> @socket.echo("Please sign in via the website to authorize this connection.")
+    state.socket |> @socket.echo(Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id))
+
     Map.merge(state, %{login: %{name: message}})
   end
 
-  defp process_login(user, state = %{socket: socket}) do
+  defp process_login(user, state) do
     with :ok <- check_already_signed_in(user),
          :ok <- check_disabled(user) do
-      user |> login(socket, state |> Map.delete(:login))
+      user |> login(state.socket, state |> Map.delete(:login))
     else
       {:error, :signed_in} ->
-        socket |> @socket.echo("Sorry, this player is already logged in.")
-        socket |> @socket.disconnect()
+        state.socket |> @socket.echo("Sorry, this player is already logged in.")
+        state.socket |> @socket.disconnect()
         state
 
       {:error, :disabled} ->
-        socket |> @socket.echo("Sorry, your account has been disabled. Please contact the admins.")
-        socket |> @socket.disconnect()
+        state.socket |> @socket.echo("Sorry, your account has been disabled. Please contact the admins.")
+        state.socket |> @socket.disconnect()
         state
     end
   end

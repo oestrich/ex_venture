@@ -45,9 +45,11 @@ defmodule Game.Session.Process do
   end
 
   def init([socket]) do
-    send(self(), :start)
     Logger.info("New session started #{inspect(self())}", type: :session)
-    {:ok, clean_state(socket)}
+    state = clean_state(socket)
+    Session.Registry.register_connection(state.id)
+    send(self(), :start)
+    {:ok, state}
   end
 
   def init([socket, user_id]) do
@@ -59,6 +61,7 @@ defmodule Game.Session.Process do
 
   defp clean_state(socket) do
     %State{
+      id: UUID.uuid4(),
       socket: socket,
       state: "login",
       session_started_at: Timex.now(),
@@ -238,14 +241,17 @@ defmodule Game.Session.Process do
     case WorldMaster.is_world_online?() do
       true ->
         state.socket |> Session.Login.start()
-        self() |> schedule_save()
-        self() |> schedule_inactive_check()
 
       false ->
         state.socket |> @socket.echo("The world is not online yet. Please try again shortly.")
         self() |> Process.send_after({:disconnect, :world_not_alive}, 750)
     end
 
+    {:noreply, state}
+  end
+
+  def handle_info({:authorize, user}, state) do
+    state = Session.Login.sign_in(user.id, state)
     {:noreply, state}
   end
 
@@ -349,12 +355,12 @@ defmodule Game.Session.Process do
   end
 
   # Schedule an inactive check
-  defp schedule_inactive_check(pid) do
+  def schedule_inactive_check(pid) do
     :erlang.send_after(@timeout_check, pid, :inactive_check)
   end
 
   # Schedule a save
-  defp schedule_save(pid) do
+  def schedule_save(pid) do
     :erlang.send_after(@save_period, pid, :save)
   end
 

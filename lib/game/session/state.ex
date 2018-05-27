@@ -10,6 +10,7 @@ defmodule Game.Session.State do
   @doc """
   Session state storage
 
+  - `:id` - a UUID for this connection
   - `:socket` - Socket process pid
   - `:state` - State of the session, `login`, `create`, `active`
   - `:mode` - Mode that the session is in, `commands`, `editor`
@@ -28,6 +29,7 @@ defmodule Game.Session.State do
   """
   @enforce_keys [:socket, :state, :mode]
   defstruct [
+    :id,
     :socket,
     :state,
     :session_started_at,

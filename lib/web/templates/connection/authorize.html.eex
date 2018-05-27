@@ -1,0 +1,14 @@
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h3>Authorize your telnet connection?</h3>
+
+    <%= form_tag public_connection_url(@conn, :connect), [method: :post] do %>
+      <input type="hidden" name="id" value="<%= @telnet_id %>" />
+
+      <div class="actions">
+        <%= submit "Authorize", class: "btn btn-primary" %>
+        <%= link("Cancel", to: public_page_path(@conn, :index), class: "btn btn-secondary") %>
+      </div>
+    <% end %>
+  </div>
+</div>

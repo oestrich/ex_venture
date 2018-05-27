@@ -134,7 +134,7 @@ defmodule Game.SessionTest do
   test "recv'ing messages - the first", %{state: state} do
     {:noreply, state} = Process.handle_cast({:recv, "name"}, %{state | state: "login"})
 
-    assert @socket.get_prompts() == [{state.socket, "Your one time password: "}]
+    assert @socket.get_prompts() == []
     assert state.last_recv
   end
 
