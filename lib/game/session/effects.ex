@@ -71,7 +71,7 @@ defmodule Game.Session.Effects do
   def maybe_transport_to_graveyard(user)
 
   def maybe_transport_to_graveyard(%{save: %{room_id: room_id}}) do
-    room = room_id |> @room.look()
+    {:ok, room} = room_id |> @room.look()
 
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->

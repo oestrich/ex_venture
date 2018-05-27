@@ -128,6 +128,7 @@ defmodule Networking.Protocol do
       gmcp_supports: [],
       mxp: false,
       user_id: nil,
+      restart_count: 0,
       config: %{}
     })
   end
@@ -278,13 +279,53 @@ defmodule Networking.Protocol do
   def handle_info({:EXIT, pid, _reason}, state) do
     case state.session do
       ^pid ->
-        {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
-        Process.link(pid)
-
-        {:noreply, %{state | session: pid}}
+        restart_session(state)
 
       _ ->
         {:stop, :error, state}
+    end
+  end
+
+  def handle_info(:restart_session, state) do
+    {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
+    Process.link(pid)
+
+    state =
+      state
+      |> Map.put(:session, pid)
+      |> Map.put(:restart_count, state.restart_count + 1)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:mark_session_alive, count}, state) do
+    case state.restart_count == count do
+      true ->
+        {:noreply, Map.put(state, :restart_count, 0)}
+
+      false ->
+        {:noreply, state}
+    end
+  end
+
+  defp restart_session(state) do
+    case state.restart_count do
+      count when count > 5 ->
+        Logger.info(fn ->
+          "Session cannot recover. Giving up"
+        end, type: :session)
+
+        ErrorReport.send_error("Session cannot be recovered. Game is offline.")
+        echo(self(), "{red}ERROR{/red}: The game appears to be offline. Please try connecting later.")
+        disconnect(self())
+
+        {:noreply, state}
+
+      count ->
+        delay = round(:math.pow(2, count) * 100)
+        :erlang.send_after(delay, self(), :restart_session)
+        :erlang.send_after(delay + 1_00, self(), {:mark_session_alive, count})
+        {:noreply, state}
     end
   end
 

@@ -89,7 +89,7 @@ defmodule Game.Command.PickUp do
 
   def run({:all}, state) do
     %{save: save} = state
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
 
     with {:ok, state} <- pick_up_all_items(state, room),
          {:ok, currency, state} <- pick_up_currency(state) do
@@ -102,7 +102,7 @@ defmodule Game.Command.PickUp do
   end
 
   def run({item_name}, state = %{save: save}) do
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
 
     with {:ok, instance} <- find_item(room, item_name),
          {:ok, item, state} <- pick_up(instance, room, state) do

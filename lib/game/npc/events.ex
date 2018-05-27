@@ -211,7 +211,7 @@ defmodule Game.NPC.Events do
   def act_on_combat_tick(state = %{target: nil}), do: {:update, %{state | combat: false}}
 
   def act_on_combat_tick(state = %{room_id: room_id, npc: npc, target: target}) do
-    room = @room.look(room_id)
+    {:ok, room} = @room.look(room_id)
 
     case find_target(room, target) do
       {:ok, target} ->
@@ -392,8 +392,8 @@ defmodule Game.NPC.Events do
   def maybe_move_room(state = %{target: target}, _event) when target != nil, do: state
 
   def maybe_move_room(state = %{room_id: room_id, npc_spawner: npc_spawner}, event) do
-    starting_room = @room.look(npc_spawner.room_id)
-    room = @room.look(room_id)
+    {:ok, starting_room} = @room.look(npc_spawner.room_id)
+    {:ok, room} = @room.look(room_id)
 
     direction =
       room
@@ -401,7 +401,7 @@ defmodule Game.NPC.Events do
       |> Enum.random()
 
     room_exit = room |> Exit.exit_to(direction)
-    new_room = @room.look(Map.get(room_exit, String.to_atom("#{direction}_id")))
+    {:ok, new_room} = @room.look(Map.get(room_exit, String.to_atom("#{direction}_id")))
 
     case can_move?(event.action, starting_room, room_exit, new_room) do
       true ->

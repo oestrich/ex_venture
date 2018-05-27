@@ -41,7 +41,7 @@ defmodule Game.NPC.Actions do
     npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
     npc_spawner.room_id |> @room.link()
 
-    room = @room.look(npc_spawner.room_id)
+    {:ok, room} = @room.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
       GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})

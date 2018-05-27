@@ -86,7 +86,6 @@ defmodule Web.TelnetChannel do
           {:noreply, state}
 
         channel_pid ->
-          Logger.info(fn -> "Restarting the session" end, type: :monitor)
           Server.restart_session(channel_pid)
 
           {:noreply, drop_session(state, pid)}
@@ -130,7 +129,15 @@ defmodule Web.TelnetChannel do
 
     def init(socket) do
       GenServer.cast(self(), :start_session)
-      {:ok, %{socket: socket, user_id: nil, config: %{}}}
+
+      state = %{
+        socket: socket,
+        user_id: nil,
+        config: %{},
+        restart_count: 0,
+      }
+
+      {:ok, state}
     end
 
     def handle_cast({:command, _, command}, state) do
@@ -197,11 +204,13 @@ defmodule Web.TelnetChannel do
 
     def handle_cast({:recv, message}, state) do
       case state do
-        %{session: pid} -> pid |> Game.Session.recv(message |> String.trim())
-        _ -> nil
-      end
+        %{session: pid} ->
+          pid |> Game.Session.recv(message |> String.trim())
+          {:noreply, state}
 
-      {:noreply, state}
+        _ ->
+          {:noreply, state}
+      end
     end
 
     def handle_cast({:user_id, user_id}, state) do
@@ -215,13 +224,52 @@ defmodule Web.TelnetChannel do
     end
 
     def handle_cast(:restart_session, state) do
-      Logger.info(fn -> "Restarting a session" end, type: :session)
+      case state.restart_count do
+        count when count > 5 ->
+          Logger.info(fn ->
+            "Session cannot recover. Giving up"
+          end, type: :session)
+
+          send(state.socket.channel_pid, {:echo, "{red}ERROR{/red}: The game appears to be offline. Please try connecting later."})
+
+          ErrorReport.send_error("Session cannot be recovered. Game is offline.")
+
+          {:stop, :normal, state}
+
+        count ->
+          delay = round(:math.pow(2, count) * 100)
+          :erlang.send_after(delay, self(), :restart_session)
+          :erlang.send_after(delay + 1_00, self(), {:mark_session_alive, count})
+          {:noreply, state}
+      end
+    end
+
+    def handle_info(:restart_session, state) do
+      Logger.info(fn ->
+        "Restarting a session"
+      end, type: :session)
+
       {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
 
       Monitor.demonitor(self())
       Monitor.monitor(self(), pid)
 
-      {:noreply, %{state | session: pid}}
+      state =
+        state
+        |> Map.put(:session, pid)
+        |> Map.put(:restart_count, state.restart_count + 1)
+
+      {:noreply, state}
+    end
+
+    def handle_info({:mark_session_alive, count}, state) do
+      case state.restart_count == count do
+        true ->
+          {:noreply, Map.put(state, :restart_count, 0)}
+
+        false ->
+          {:noreply, state}
+      end
     end
   end
 

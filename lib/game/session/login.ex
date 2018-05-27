@@ -214,7 +214,7 @@ defmodule Game.Session.Login do
 
     state = after_sign_in(state, self())
 
-    state.socket |> @socket.echo("Session recovered... Welcome back.")
+    state.socket |> @socket.echo("Session recovering...")
     state |> Process.prompt()
     state |> Regen.maybe_trigger_regen()
 

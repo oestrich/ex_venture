@@ -56,7 +56,13 @@ defmodule Game.Room do
   """
   @spec look(integer()) :: Room.t()
   def look(id) do
-    GenServer.call(pid(id), :look)
+    case :global.whereis_name({__MODULE__, id}) do
+      :undefined ->
+        {:error, :room_offline}
+
+      pid ->
+        GenServer.call(pid, :look)
+    end
   end
 
   @doc """
@@ -205,7 +211,8 @@ defmodule Game.Room do
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
-    {:reply, Map.merge(room, %{players: players, npcs: npcs}), state}
+    room = Map.merge(room, %{players: players, npcs: npcs})
+    {:reply, {:ok, room}, state}
   end
 
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do

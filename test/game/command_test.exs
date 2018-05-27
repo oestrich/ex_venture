@@ -61,8 +61,8 @@ defmodule Game.CommandTest do
 
     test "looking", %{user: user} do
       assert %Command{module: Command.Look, args: {}} = Command.parse("look", user)
-      assert %Command{module: Command.Look, args: {"item"}} = Command.parse("look at item", user)
-      assert %Command{module: Command.Look, args: {"item"}} = Command.parse("look item", user)
+      assert %Command{module: Command.Look, args: {:other, "item"}} = Command.parse("look at item", user)
+      assert %Command{module: Command.Look, args: {:other, "item"}} = Command.parse("look item", user)
     end
 
     test "open", %{user: user} do

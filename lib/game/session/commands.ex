@@ -3,6 +3,8 @@ defmodule Game.Session.Commands do
   Module to hold functions related to command processing
   """
 
+  use Networking.Socket
+
   alias Game.Color
   alias Game.Command
   alias Game.Command.Pager
@@ -74,6 +76,10 @@ defmodule Game.Session.Commands do
 
       {:skip, :prompt, state} ->
         {:noreply, Map.put(state, :mode, "commands")}
+
+      {:error, :room_offline} ->
+        state.socket |> @socket.echo("{red}ERROR{/red}: The game is experience issues, the room is not online.")
+        {:stop, :normal, :state}
 
       _ ->
         state |> Session.Process.prompt()

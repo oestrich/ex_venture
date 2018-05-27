@@ -12,7 +12,7 @@ defmodule Game.Command.Look do
   alias Game.Session.GMCP
   alias Game.Utility
 
-  commands(["look at", {"look", ["l"]}])
+  commands(["look at", {"look", ["l"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Look"
@@ -33,50 +33,84 @@ defmodule Game.Command.Look do
 
   @impl Game.Command
   @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Look.parse("look")
+      {}
+
+      iex> Game.Command.Look.parse("look east")
+      {:direction, "east"}
+
+      iex> Game.Command.Look.parse("look feature")
+      {:other, "feature"}
+
+      iex> Game.Command.Look.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  @spec parse(String.t()) :: {any()}
+  def parse(command)
+  def parse("look"), do: {}
+  def parse("l"), do: {}
+  def parse("look at " <> string), do: parse_direction_or_feature(string)
+  def parse("look " <> string), do: parse_direction_or_feature(string)
+  def parse("l " <> string), do: parse_direction_or_feature(string)
+
+  defp parse_direction_or_feature(string) do
+    case string in Exit.directions() do
+      true ->
+        {:direction, string}
+
+      false ->
+        {:other, string}
+    end
+  end
+
+  @impl Game.Command
+  @doc """
   Look around the current room
   """
   def run(command, state)
 
-  def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    room = @room.look(room_id)
-    mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
+  def run({}, state = %{save: save}) do
+    with {:ok, room} <- @room.look(save.room_id) do
+      mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
 
-    room_map =
-      mini_map
-      |> String.split("\n")
-      |> Enum.slice(2..-1)
-      |> Enum.join("\n")
+      room_map =
+        mini_map
+        |> String.split("\n")
+        |> Enum.slice(2..-1)
+        |> Enum.join("\n")
 
-    items = room_items(room)
-    state |> GMCP.room(room, items)
-    state |> GMCP.map(mini_map)
+      items = room_items(room)
+      state |> GMCP.room(room, items)
+      state |> GMCP.map(mini_map)
 
-    room = remove_yourself(room, state)
-    socket |> @socket.echo(Format.room(room, items, room_map))
-
-    :ok
+      room = remove_yourself(room, state)
+      state.socket |> @socket.echo(Format.room(room, items, room_map))
+    else
+      {:error, :room_offline} ->
+        {:error, :room_offline}
+    end
   end
 
-  def run({direction}, %{socket: socket, save: %{room_id: room_id}})
-      when direction in ["north", "east", "south", "west"] do
-    room = @room.look(room_id)
-
+  def run({:direction, direction}, state = %{save: save}) do
     id_key = String.to_atom("#{direction}_id")
 
-    case room |> Exit.exit_to(direction) do
-      %{^id_key => room_id} ->
-        room = @room.look(room_id)
-        socket |> @socket.echo(Format.peak_room(room, direction))
+    with {:ok, room} <- @room.look(save.room_id),
+         %{^id_key => room_id} <- Exit.exit_to(room, direction),
+         {:ok, room} <- @room.look(room_id) do
+      state.socket |> @socket.echo(Format.peak_room(room, direction))
+    else
+      {:error, :room_offline} ->
+        {:error, :room_offline}
 
       _ ->
-        nil
+        state.socket |> @socket.echo("Nothing can be seen #{direction}")
     end
-
-    :ok
   end
 
-  def run({name}, state = %{save: %{room_id: room_id}}) do
-    room = @room.look(room_id)
+  def run({:other, name}, state = %{save: %{room_id: room_id}}) do
+    {:ok, room} = @room.look(room_id)
 
     room
     |> maybe_look_item(name, state)
@@ -84,8 +118,6 @@ defmodule Game.Command.Look do
     |> maybe_look_player(name, state)
     |> maybe_look_feature(name, state)
     |> could_not_find(name, state)
-
-    :ok
   end
 
   defp remove_yourself(room, state) do
@@ -108,7 +140,6 @@ defmodule Game.Command.Look do
 
       {:ok, {_instance, item}} ->
         socket |> @socket.echo(Format.item(item))
-        :ok
     end
   end
 
@@ -123,7 +154,6 @@ defmodule Game.Command.Look do
 
       npc ->
         socket |> @socket.echo(Format.npc_full(npc))
-        :ok
     end
   end
 
@@ -138,7 +168,6 @@ defmodule Game.Command.Look do
 
       player ->
         socket |> @socket.echo(Format.player_full(player))
-        :ok
     end
   end
 
@@ -153,7 +182,6 @@ defmodule Game.Command.Look do
 
       feature ->
         socket |> @socket.echo(feature.description)
-        :ok
     end
   end
 
@@ -161,6 +189,5 @@ defmodule Game.Command.Look do
 
   defp could_not_find(_, name, %{socket: socket}) do
     socket |> @socket.echo("Could not find \"#{name}\"")
-    :ok
   end
 end
