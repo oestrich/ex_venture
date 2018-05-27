@@ -43,8 +43,7 @@ defmodule Game.Command.LookTest do
 
     {:error, :room_offline} = Look.run({}, %{socket: socket, user: %{id: 10}, save: %{room_id: 1}})
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(offline), look)
+    assert @socket.get_echos() == []
   end
 
   test "looking at an item", %{socket: socket} do
