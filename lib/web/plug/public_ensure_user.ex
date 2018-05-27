@@ -14,8 +14,10 @@ defmodule Web.Plug.PublicEnsureUser do
         conn
 
       false ->
+        uri = %URI{path: conn.request_path, query: conn.query_string}
+
         conn
-        |> put_session(:last_path, conn.request_path)
+        |> put_session(:last_path, URI.to_string(uri))
         |> redirect(to: Routes.public_session_path(conn, :new))
         |> halt()
     end
