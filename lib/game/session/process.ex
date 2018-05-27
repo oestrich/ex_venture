@@ -264,6 +264,7 @@ defmodule Game.Session.Process do
     state = Session.Login.recover_session(user_id, state)
     self() |> schedule_save()
     self() |> schedule_inactive_check()
+    self() |> schedule_heartbeat()
 
     {:noreply, state}
   end
@@ -291,6 +292,12 @@ defmodule Game.Session.Process do
 
   def handle_info(:inactive_check, state) do
     {:noreply, check_for_inactive(state)}
+  end
+
+  def handle_info(:heartbeat, state) do
+    state |> GMCP.heartbeat()
+    self() |> schedule_heartbeat()
+    {:noreply, state}
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
@@ -362,6 +369,11 @@ defmodule Game.Session.Process do
   # Schedule a save
   def schedule_save(pid) do
     :erlang.send_after(@save_period, pid, :save)
+  end
+
+  # Schedule a heartbeat
+  def schedule_heartbeat(pid) do
+    :erlang.send_after(@timeout_check, pid, :heartbeat)
   end
 
   # Check if the session is inactive, disconnect if it is

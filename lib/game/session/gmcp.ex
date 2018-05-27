@@ -177,6 +177,14 @@ defmodule Game.Session.GMCP do
     socket |> @socket.push_gmcp("Config.Update", Poison.encode!(config))
   end
 
+  @doc """
+  Push Core.Heartbeat
+  """
+  @spec heartbeat(map) :: :ok
+  def heartbeat(%{socket: socket}) do
+    socket |> @socket.push_gmcp("Core.Heartbeat", Poison.encode!(%{}))
+  end
+
   defp room_info(room, items) do
     room
     |> Map.take([:id, :name, :description, :ecology, :x, :y, :map_layer])

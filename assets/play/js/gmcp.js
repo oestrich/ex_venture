@@ -2,7 +2,7 @@ import Sizzle from "sizzle"
 import _ from "underscore"
 
 import {format, defaultColorCSS} from "./color"
-
+import Logger from "./logger"
 import Notifacations from "./notifications"
 
 let notifications = new Notifacations();
@@ -63,6 +63,13 @@ let characterVitals = (channel, data) => {
  */
 let configUpdate = (channel, data) => {
   window.gameConfig = data;
+}
+
+/**
+ * Core.Heartbeat module
+ */
+let coreHeartbeat = (channel, data) => {
+  Logger.log("Heartbeat");
 }
 
 /**
@@ -223,6 +230,7 @@ let gmcp = {
   "Character": character,
   "Character.Vitals": characterVitals,
   "Config.Update": configUpdate,
+  "Core.Heartbeat": coreHeartbeat,
   "Mail.New": mailNew,
   "Room.Heard": roomHeard,
   "Room.Info": roomInfo,

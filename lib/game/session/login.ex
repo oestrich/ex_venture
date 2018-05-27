@@ -54,6 +54,7 @@ defmodule Game.Session.Login do
 
     self() |> Process.schedule_save()
     self() |> Process.schedule_inactive_check()
+    self() |> Process.schedule_heartbeat()
 
     PlayerInstrumenter.login(user)
 
