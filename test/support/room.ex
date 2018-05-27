@@ -69,7 +69,7 @@ defmodule Test.Game.Room do
   def look(id) do
     start_link()
     Agent.get(__MODULE__, fn (state) ->
-      Map.get(state.rooms, id, state.room)
+      {:ok, Map.get(state.rooms, id, state.room)}
     end)
   end
 

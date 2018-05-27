@@ -43,7 +43,7 @@ defmodule Game.Command.Scan do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
     rooms = scan_rooms(room)
     state.socket |> @socket.echo(Format.Scan.room(room, rooms))
   end
@@ -64,7 +64,8 @@ defmodule Game.Command.Scan do
         {direction, :closed}
 
       _ ->
-        {direction, @room.look(room_id)}
+        {:ok, room} = @room.look(room_id)
+        {direction, room}
     end
   end
 

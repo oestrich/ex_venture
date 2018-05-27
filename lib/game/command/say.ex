@@ -139,7 +139,7 @@ defmodule Game.Command.Say do
   end
 
   def say_directed(state = %{user: user, save: save}, parsed_message) do
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
 
     case find_character(room, parsed_message.message, message: true) do
       {:error, :not_found} ->

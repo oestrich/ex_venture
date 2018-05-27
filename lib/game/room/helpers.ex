@@ -64,8 +64,7 @@ defmodule Game.Room.Helpers do
 
     case room |> Exit.exit_to(direction) do
       %{^id_key => room_id} ->
-        room = @room.look(room_id)
-        {:ok, room}
+        @room.look(room_id)
 
       _ ->
         {:error, :not_found}

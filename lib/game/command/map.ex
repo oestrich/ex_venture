@@ -70,7 +70,7 @@ defmodule Game.Command.Map do
   def run(command, state)
 
   def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    room = @room.look(room_id)
+    {:ok, room} = @room.look(room_id)
     map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer})
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     state |> GMCP.map(mini_map)

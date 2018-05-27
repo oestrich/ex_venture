@@ -38,7 +38,7 @@ defmodule Game.Command.Look do
   def run(command, state)
 
   def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    room = @room.look(room_id)
+    {:ok, room} = @room.look(room_id)
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
 
     room_map =
@@ -59,13 +59,13 @@ defmodule Game.Command.Look do
 
   def run({direction}, %{socket: socket, save: %{room_id: room_id}})
       when direction in ["north", "east", "south", "west"] do
-    room = @room.look(room_id)
+    {:ok, room} = @room.look(room_id)
 
     id_key = String.to_atom("#{direction}_id")
 
     case room |> Exit.exit_to(direction) do
       %{^id_key => room_id} ->
-        room = @room.look(room_id)
+        {:ok, room} = @room.look(room_id)
         socket |> @socket.echo(Format.peak_room(room, direction))
 
       _ ->
@@ -76,7 +76,7 @@ defmodule Game.Command.Look do
   end
 
   def run({name}, state = %{save: %{room_id: room_id}}) do
-    room = @room.look(room_id)
+    {:ok, room} = @room.look(room_id)
 
     room
     |> maybe_look_item(name, state)

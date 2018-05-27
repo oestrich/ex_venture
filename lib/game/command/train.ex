@@ -69,7 +69,7 @@ defmodule Game.Command.Train do
   def run(command, state)
 
   def run({:list}, state = %{save: save}) do
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
 
     case one_trainer(room.npcs) do
       {:ok, trainer} ->
@@ -98,7 +98,7 @@ defmodule Game.Command.Train do
   end
 
   def run({:list, name}, state = %{save: save}) do
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
 
     case find_trainer(room.npcs, name) do
       {:ok, trainer} ->
@@ -114,7 +114,7 @@ defmodule Game.Command.Train do
   end
 
   def run({:train, skill_name}, state = %{save: save}) do
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
 
     case one_trainer(room.npcs) do
       {:ok, trainer} ->
@@ -133,7 +133,7 @@ defmodule Game.Command.Train do
   end
 
   def run({:train, skill_name, :from, npc_name}, state = %{save: save}) do
-    room = @room.look(save.room_id)
+    {:ok, room} = @room.look(save.room_id)
 
     case find_trainer(room.npcs, npc_name) do
       {:ok, trainer} ->

@@ -36,12 +36,12 @@ defmodule Game.Command.Target do
   def run(command, state)
 
   def run({target}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    room = @room.look(room_id)
+    {:ok, room} = @room.look(room_id)
     socket |> target_character(target, room, state)
   end
 
   def run({}, %{socket: socket, save: %{room_id: room_id}, target: target}) do
-    room = @room.look(room_id)
+    {:ok, room} = @room.look(room_id)
     socket |> display_target(target, room)
     :ok
   end
