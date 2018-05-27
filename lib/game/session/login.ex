@@ -63,11 +63,16 @@ defmodule Game.Session.Login do
       |> Map.put(:save, user.save)
       |> Map.put(:state, "after_sign_in")
 
-    socket |> @socket.echo("Welcome, #{user.name}!")
     socket |> @socket.set_user_id(user.id)
     state |> CommandConfig.push_config(user.save.config)
 
-    socket |> @socket.echo(Config.after_sign_in_message())
+    message = """
+    Welcome, #{user.name}!
+
+    #{Config.after_sign_in_message()}
+    """
+
+    socket |> @socket.echo(message)
 
     case Mail.unread_mail_for(user) do
       [] -> :ok
@@ -144,8 +149,13 @@ defmodule Game.Session.Login do
   end
 
   def process(message, state) do
-    state.socket |> @socket.echo("Please sign in via the website to authorize this connection.")
-    state.socket |> @socket.echo(Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id))
+    echo = """
+    Please sign in via the website to authorize this connection.
+
+    #{Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id)}
+    """
+
+    state.socket |> @socket.echo(echo)
 
     Map.merge(state, %{login: %{name: message}})
   end

@@ -36,7 +36,7 @@
           <colorTriggerFgColor>#000000</colorTriggerFgColor>
           <colorTriggerBgColor>#000000</colorTriggerBgColor>
           <regexCodeList>
-            <string>Please sign in via the website and get a one time password.</string>
+            <string>Please sign in via the website to authorize this connection.</string>
             <string>1</string>
             <string>^http.+</string>
           </regexCodeList>
