@@ -16,7 +16,7 @@
             <colorTriggerFgColor>#000000</colorTriggerFgColor>
             <colorTriggerBgColor>#000000</colorTriggerBgColor>
             <regexCodeList>
-              <string>Your one time password</string>
+              <string>Please sign in via the website to authorize this connection.</string>
             </regexCodeList>
             <regexCodePropertyList>
                 <integer>0</integer>
