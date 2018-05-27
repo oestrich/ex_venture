@@ -15,18 +15,6 @@ defmodule Web.AccountController do
     |> render("show.html")
   end
 
-  def password(conn, _params) do
-    %{user: user} = conn.assigns
-
-    case User.create_one_time_password(user) do
-      {:ok, password} ->
-        conn |> render("password.html", password: password)
-
-      {:error, _} ->
-        conn |> redirect(to: public_page_path(conn, :index))
-    end
-  end
-
   def update(conn, %{"current_password" => current_password, "user" => params}) do
     case User.change_password(conn.assigns.user, current_password, params) do
       {:ok, _user} ->

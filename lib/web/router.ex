@@ -41,7 +41,6 @@ defmodule Web.Router do
     get("/version", PageController, :version)
 
     get("/account", AccountController, :show)
-    get("/account/password", AccountController, :password)
     put("/account", AccountController, :update)
 
     get("/account/twofactor/start", AccountTwoFactorController, :start)

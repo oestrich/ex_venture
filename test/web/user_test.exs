@@ -90,23 +90,6 @@ defmodule Web.UserTest do
     end
   end
 
-  describe "generate a one time password" do
-    test "create a new password", %{user: user} do
-      {:ok, password} = User.create_one_time_password(user)
-
-      assert password.password
-      assert is_nil(password.used_at)
-    end
-
-    test "creating a new password expires old ones", %{user: user} do
-      {:ok, old_password} = User.create_one_time_password(user)
-      {:ok, _password} = User.create_one_time_password(user)
-
-      old_password = Repo.get(Data.User.OneTimePassword, old_password.id)
-      assert old_password.used_at
-    end
-  end
-
   describe "check totp token" do
     setup %{user: user} do
       user = User.create_totp_secret(user)
