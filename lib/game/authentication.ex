@@ -8,56 +8,7 @@ defmodule Game.Authentication do
   alias Data.Skill
   alias Data.Stats
   alias Data.User
-  alias Data.User.OneTimePassword
   alias Game.Account
-
-  @doc """
-  Attempt to find a user and validate their password
-  """
-  @spec find_and_validate(String.t(), String.t()) :: {:error, :invalid} | User.t()
-  def find_and_validate(name, password) do
-    User
-    |> where([u], fragment("lower(?)", u.name) == ^String.downcase(name))
-    |> preloads()
-    |> Repo.one()
-    |> _find_and_validate(password)
-  end
-
-  defp _find_and_validate(nil, _password) do
-    Comeonin.Bcrypt.dummy_checkpw()
-    {:error, :invalid}
-  end
-
-  defp _find_and_validate(user, password) do
-    case Ecto.UUID.cast(password) do
-      {:ok, _} -> _verify_one_time_password(user, password)
-      _ -> {:error, :invalid}
-    end
-  end
-
-  defp _verify_one_time_password(user, password) do
-    max_age = Timex.now() |> Timex.shift(minutes: -10)
-
-    one_time_password =
-      OneTimePassword
-      |> where([o], o.user_id == ^user.id and o.password == ^password)
-      |> where([o], o.inserted_at > ^max_age and is_nil(o.used_at))
-      |> Repo.one()
-
-    case one_time_password do
-      nil ->
-        {:error, :invalid}
-
-      _ ->
-        one_time_password
-        |> OneTimePassword.used_changeset()
-        |> Repo.update()
-
-        user
-        |> set_defaults()
-        |> Account.migrate()
-    end
-  end
 
   @doc """
   Find a user by an id and preload properly

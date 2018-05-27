@@ -1,7 +1,12 @@
 defmodule Web.Router do
   use Web, :router
-  use Plug.ErrorHandler
-  use Sentry.Plug
+
+  @report_errors Application.get_env(:ex_venture, :errors)[:report]
+
+  if @report_errors do
+    use Plug.ErrorHandler
+    use Sentry.Plug
+  end
 
   pipeline :browser do
     plug(:accepts, ["html", "json"])
@@ -36,10 +41,7 @@ defmodule Web.Router do
     get("/version", PageController, :version)
 
     get("/account", AccountController, :show)
-    get("/account/password", AccountController, :password)
     put("/account", AccountController, :update)
-
-    get("/chat", ChatController, :show)
 
     get("/account/twofactor/start", AccountTwoFactorController, :start)
     get("/account/twofactor/qr.png", AccountTwoFactorController, :qr)
@@ -51,7 +53,12 @@ defmodule Web.Router do
     get("/announcements/atom", AnnouncementController, :feed)
     resources("/announcements", AnnouncementController, only: [:show])
 
+    get("/chat", ChatController, :show)
+
     resources("/classes", ClassController, only: [:index, :show])
+
+    get("/connection/authorize", ConnectionController, :authorize)
+    post("/connection/authorize", ConnectionController, :connect)
 
     get("/help/commands", HelpController, :commands)
     get("/help/commands/:command", HelpController, :command)

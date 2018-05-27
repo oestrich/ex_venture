@@ -356,27 +356,6 @@ defmodule Web.User do
   end
 
   @doc """
-  Create a one time password for use when signing in via telnet
-  """
-  @spec create_one_time_password(User.t()) :: {:ok, OneTimePassword.t()}
-  def create_one_time_password(user) do
-    disable_old_passwords(user)
-
-    user
-    |> Ecto.build_assoc(:one_time_passwords)
-    |> OneTimePassword.changeset()
-    |> Repo.insert()
-  end
-
-  def disable_old_passwords(user) do
-    query =
-      OneTimePassword
-      |> where([o], o.user_id == ^user.id and is_nil(o.used_at))
-
-    Repo.update_all(query, set: [used_at: Timex.now()])
-  end
-
-  @doc """
   Attempt to find a user and validate their password
   """
   @spec find_and_validate(String.t(), String.t()) :: {:error, :invalid} | User.t()
@@ -486,5 +465,13 @@ defmodule Web.User do
         save = Experience.maybe_level_up(user.save, save)
         Account.save(user, save)
     end
+  end
+
+  @doc """
+  Authorize a connection
+  """
+  @spec authorize_connection(User.t(), String.t()) :: :ok
+  def authorize_connection(user, id) do
+    SessionRegistry.authorize_connection(user, id)
   end
 end
