@@ -44,6 +44,18 @@ defmodule Game.Session.Registry do
   end
 
   @doc """
+  Connection authorized, remove the id from the state
+  """
+  @spec remove_connection(String.t()) :: :ok
+  def remove_connection(id) do
+    members = :pg2.get_members(@key)
+
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:remove_connection, id})
+    end)
+  end
+
+  @doc """
   Register the session PID for the user
   """
   @spec register(User.t()) :: :ok
@@ -150,10 +162,17 @@ defmodule Game.Session.Registry do
         {:noreply, state}
 
       connection ->
+        remove_connection(id)
+
         send(connection.pid, {:authorize, user})
 
         {:noreply, state}
     end
+  end
+
+  def handle_cast({:remove_connection, id}, state) do
+    connections = Enum.reject(state.connections, &(&1.id == id))
+    {:noreply, %{state | connections: connections}}
   end
 
   def handle_cast({:register, pid, user, metadata}, state) do
