@@ -2,6 +2,8 @@
   <div class="col-md-6 offset-md-3">
     <h3>Authorize your telnet connection?</h3>
 
+    <p>This will authorize the telnet connection and sign it in as you.</p>
+
     <%= form_tag public_connection_url(@conn, :connect), [method: :post] do %>
       <input type="hidden" name="id" value="<%= @telnet_id %>" />
 
