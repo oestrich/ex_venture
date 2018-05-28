@@ -249,7 +249,7 @@ defmodule Game.Command.Skills do
         )
 
         socket |> @socket.echo(Format.skill_user(skill, {:user, user}, target))
-        state |> GMCP.skill_inactive(skill)
+        state |> GMCP.skill_state(skill, active: false)
 
         state =
           state

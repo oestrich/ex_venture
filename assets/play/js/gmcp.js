@@ -33,17 +33,10 @@ let character = (channel, data) => {
 }
 
 /**
- * Character.Skills.Active module
+ * Character.Skill module
  */
-let characterSkillsActive = (channel, data) => {
-  Logger.log("Active", data);
-}
-
-/**
- * Character.Skills.Inactive module
- */
-let characterSkillsInactive = (channel, data) => {
-  Logger.log("Inactive", data);
+let characterSkill = (channel, data) => {
+  Logger.log("Skill", data);
 }
 
 /**
@@ -242,8 +235,7 @@ let gmcp = {
   "Channels.Broadcast": channelBroadcast,
   "Channels.Tell": tell,
   "Character": character,
-  "Character.Skills.Active": characterSkillsActive,
-  "Character.Skills.Inactive": characterSkillsInactive,
+  "Character.Skill": characterSkill,
   "Character.Vitals": characterVitals,
   "Config.Update": configUpdate,
   "Core.Heartbeat": coreHeartbeat,

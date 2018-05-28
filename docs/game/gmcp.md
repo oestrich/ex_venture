@@ -28,20 +28,11 @@ On sign in the general character information will be sent.
 Character {"name": "Player"}
 ```
 
-## Character.Skills.Active
+## Character.Skill
 
-When a skill becomes active again after a cool down this will be sent.
-
+Fired when a skill's active state changes.
 ```
-Character.Skills.Active {"name": "Magic Missile", "command": "magic missile"}
-```
-
-## Character.Skills.Inactive
-
-When a skill becomes inactive after using it, this will be sent.
-
-```
-Character.Skills.Inactive {"name": "Magic Missile", "command": "magic missile"}
+Character.Skill {"name": "Magic Missile", "command": "magic missile", "active": true}
 ```
 
 ## Character.Vitals

@@ -324,7 +324,7 @@ defmodule Game.Session.Process do
 
   def handle_info({:skill, :ready, skill}, state) do
     state.socket |> @socket.echo("#{Format.skill_name(skill)} is ready.")
-    state |> GMCP.skill_active(skill)
+    state |> GMCP.skill_state(skill, active: true)
     skills = Map.delete(state.skills, skill.id)
     state = Map.put(state, :skills, skills)
     {:noreply, state}
