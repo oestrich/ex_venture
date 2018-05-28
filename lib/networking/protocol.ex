@@ -39,6 +39,10 @@ defmodule Networking.Protocol do
     {:ok, pid}
   end
 
+  def error_disconnect_message() do
+    "{red}ERROR{/red}: {white}The game appears to be offline. Please try connecting later.{/white}"
+  end
+
   @doc """
   Echo a line to the client
 
@@ -316,7 +320,7 @@ defmodule Networking.Protocol do
         end, type: :session)
 
         ErrorReport.send_error("Session cannot be recovered. Game is offline.")
-        echo(self(), "{red}ERROR{/red}: The game appears to be offline. Please try connecting later.")
+        echo(self(), error_disconnect_message())
         disconnect(self())
 
         {:noreply, state}

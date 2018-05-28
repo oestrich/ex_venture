@@ -8,6 +8,7 @@ defmodule Web.TelnetChannel do
   use Phoenix.Channel
 
   alias Metrics.PlayerInstrumenter
+  alias Networking.Protocol
   alias Web.User
 
   defmodule Monitor do
@@ -230,7 +231,7 @@ defmodule Web.TelnetChannel do
             "Session cannot recover. Giving up"
           end, type: :session)
 
-          send(state.socket.channel_pid, {:echo, "{red}ERROR{/red}: The game appears to be offline. Please try connecting later."})
+          send(state.socket.channel_pid, {:echo, Protocol.error_disconnect_message()})
 
           ErrorReport.send_error("Session cannot be recovered. Game is offline.")
 
