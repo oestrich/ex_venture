@@ -227,6 +227,21 @@ end</script>
                 </script>
                 <eventHandlerList/>
                 <Script isActive="yes" isFolder="no">
+                    <name>Configuration</name>
+                    <packageName></packageName>
+                    <script>local width, height = getMainWindowSize()
+GUI.Config = GUI.Config or {}
+
+if width > 3000 then
+  GUI.Config.fontSize = 20
+  GUI.Config.screenSize = "large"
+else
+  GUI.Config.fontSize = 16
+  GUI.Config.screenSize = "medium"
+end</script>
+                    <eventHandlerList/>
+                </Script>
+                <Script isActive="yes" isFolder="no">
                     <name>Set Borders</name>
                     <packageName></packageName>
                     <script>-- Based off of https://forums.mudlet.org/viewtopic.php?t=4098
@@ -245,7 +260,7 @@ GUI.windowColors = {
   b = b,
 }
 
-setFontSize(16)
+setFontSize(GUI.Config.fontSize)
 if mudletOlderThan(3,9) then setBackgroundColor("main", r, g, b) end</script>
                     <eventHandlerList/>
                 </Script>
@@ -258,6 +273,7 @@ GUI.BackgroundCSS = CSSMan.new([[
   background-color: <%= Config.color_background() %>;
 ]])
 
+
 GUI.Right = Geyser.Label:new({
   name = &quot;GUI.Right&quot;,
   x = &quot;-25%&quot;, y = 0,
@@ -265,6 +281,7 @@ GUI.Right = Geyser.Label:new({
   height = &quot;95%&quot;,
 })
 GUI.Right:setStyleSheet(GUI.BackgroundCSS:getCSS())
+
 
 GUI.Bottom = Geyser.Label:new({
   name = &quot;GUI.Bottom&quot;,
@@ -279,13 +296,6 @@ GUI.Bottom:setStyleSheet(GUI.BackgroundCSS:getCSS())</script>
                     <name>Gauges</name>
                     <packageName></packageName>
                     <script>-- Based off of https://forums.mudlet.org/viewtopic.php?t=4098
-
-GUI.Footer = Geyser.HBox:new({
-  name = &quot;GUI.Footer&quot;,
-  x = 0, y = 0,
-  width = &quot;100%&quot;,
-  height = &quot;100%&quot;,
-}, GUI.Bottom)
 
 GUI.GaugeBackCSS = CSSMan.new([[
   border-style: solid;
@@ -306,28 +316,40 @@ GUI.GaugeFrontCSS = CSSMan.new([[
 
 GUI.Health = Geyser.Gauge:new({
   name = &quot;GUI.Health&quot;,
-},GUI.Footer)
+  x = 0, y = 0,
+  width = &quot;33.33%&quot;,
+  height = &quot;100%&quot;,
+}, GUI.Bottom)
 GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_health_bar_background() %>&quot;)
 GUI.Health.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
 GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_health_bar() %>&quot;)
+GUI.Health.front:setFontSize(16)
 GUI.Health.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
 GUI.Health.front:echo(&quot;Health Points&quot;)
 
 GUI.Skill = Geyser.Gauge:new({
   name = &quot;GUI.Skill&quot;,
-},GUI.Footer)
+  x = &quot;33.33%&quot;, y = 0,
+  width = &quot;33.33%&quot;,
+  height = &quot;100%&quot;,
+}, GUI.Bottom)
 GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_skill_bar_background() %>&quot;)
 GUI.Skill.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
 GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_skill_bar() %>&quot;)
+GUI.Skill.front:setFontSize(16)
 GUI.Skill.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
 GUI.Skill.front:echo(&quot;Skill Points&quot;)
 
 GUI.Move = Geyser.Gauge:new({
   name = &quot;GUI.Move&quot;,
-},GUI.Footer)
+  x = &quot;66.66%&quot;, y = 0,
+  width = &quot;33.33%&quot;,
+  height = &quot;100%&quot;,
+}, GUI.Bottom)
 GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_move_bar_background() %>&quot;)
 GUI.Move.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
 GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_move_bar() %>&quot;)
+GUI.Move.front:setFontSize(16)
 GUI.Move.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
 GUI.Move.front:echo(&quot;Move Points&quot;)</script>
                     <eventHandlerList/>
@@ -476,13 +498,11 @@ demonnic.chat.config.channels = {
 
 demonnic.chat.config.Alltab = &quot;All&quot;
 
-demonnic.chat.config.fontSize = 12
-
 --[[
 Dynamic text wrapping for the miniconsole
 ]]
 
-local fontWidth, fontHeight = calcFontSize(demonnic.chat.config.fontSize)
+local fontWidth, fontHeight = calcFontSize(GUI.Config.fontSize)
 local sidebarWidth = GUI.Sidebar.get_width()
 local sidebarHeight = GUI.Sidebar.get_height()
 
@@ -518,11 +538,6 @@ demonnic.chat.currentTab = demonnic.chat.currentTab or demonnic.chat.config.Allt
       </ScriptGroup><ScriptGroup isActive="yes" isFolder="yes">
           <name>YATCO</name>
           <packageName></packageName>
-          <script></script>
-          <eventHandlerList/>
-          <ScriptGroup isActive="yes" isFolder="yes">
-              <name>Shared</name>
-              <packageName></packageName>
               <script>--Bootstrapping variables/etc. Don't touch this unless you really know what you're doing
 
 --I mean it. I'll point. AND laugh. loudly.
@@ -532,11 +547,14 @@ demonnic.debug = demonnic.debug or {}
 demonnic.debug.active = demonnic.debug.active or nil
 demonnic.debug.categories = demonnic.debug.categories or { }
 
+demonnic.chat = demonnic.chat or {}
+demonnic.chat.tabs = demonnic.chat.tabs or {}
+demonnic.chat.windows = demonnic.chat.windows or {}
 
 function demonnic:echo(msg)
 cecho(string.format(&quot;\n&lt;blue&gt;(&lt;green&gt;Demonnic&lt;blue&gt;):&lt;white&gt; %s&quot;, msg))
 end</script>
-              <eventHandlerList/>
+          <eventHandlerList/>
               <Script isActive="yes" isFolder="no">
                   <name>Geyser Additions</name>
                   <packageName></packageName>
@@ -549,17 +567,6 @@ appendBuffer(self.name)
 end</script>
                   <eventHandlerList/>
               </Script>
-          </ScriptGroup>
-          <ScriptGroup isActive="yes" isFolder="yes">
-              <name>Tabbed Chat</name>
-              <packageName></packageName>
-              <script>--Do not remove the following lines. Or change them.
-demonnic = demonnic or {}
-demonnic.chat = demonnic.chat or {}
-demonnic.chat.tabsToBlink = demonnic.chat.tabsToBlink or {}
-demonnic.chat.tabs = demonnic.chat.tabs or {}
-demonnic.chat.windows = demonnic.chat.windows or {}</script>
-              <eventHandlerList/>
               <Script isActive="yes" isFolder="no">
                   <name>Code</name>
                   <packageName></packageName>
@@ -591,10 +598,16 @@ end
 
 function demonnic.chat:resetUI()
   demonnic.chat.container = demonnic.chat.useContainer
+
+  local tabHeight = &quot;10%&quot;
+  if GUI.Config.screenSize == &quot;large&quot; then
+    tabHeight = &quot;5%&quot;
+  end
+
   demonnic.chat.tabBox = Geyser.HBox:new({
     x = 0, y = 0,
     width = &quot;100%&quot;,
-    height = &quot;10%&quot;,
+    height = tabHeight,
     name = &quot;DemonChatTabs&quot;,
   }, demonnic.chat.container)
 end
@@ -611,23 +624,29 @@ function demonnic.chat:create()
   local wing = demonnic.chat.config.windowColors.g
   local winb = demonnic.chat.config.windowColors.b
 
+  local tabHeight = &quot;10%&quot;
+  if GUI.Config.screenSize == &quot;large&quot; then
+    tabHeight = &quot;5%&quot;
+  end
+
   --iterate the table of channels and create some windows and tabs
   for i,tab in ipairs(demonnic.chat.config.channels) do
     demonnic.chat.tabs[tab] = Geyser.Label:new({
       name = string.format(&quot;tab%s&quot;, tab),
     }, demonnic.chat.tabBox)
-    demonnic.chat.tabs[tab]:setFontSize(demonnic.chat.config.fontSize)
+    demonnic.chat.tabs[tab]:setFontSize(GUI.Config.fontSize)
     demonnic.chat.tabs[tab]:echo(tab, demonnic.chat.config.inactiveTabText, &quot;c&quot;)
     demonnic.chat.tabs[tab]:setColor(r,g,b)
     demonnic.chat.tabs[tab]:setClickCallback(&quot;demonnicChatSwitch&quot;, tab)
+
     demonnic.chat.windows[tab] = Geyser.MiniConsole:new({
       x = 0,
-      y = &quot;10%&quot;,
+      y = tabHeight,
       height = &quot;90%&quot;,
       width = &quot;100%&quot;,
       name = string.format(&quot;win%s&quot;, tab),
     }, demonnic.chat.container)
-    demonnic.chat.windows[tab]:setFontSize(demonnic.chat.config.fontSize)
+    demonnic.chat.windows[tab]:setFontSize(GUI.Config.fontSize)
     demonnic.chat.windows[tab]:setColor(winr, wing, winb)
     demonnic.chat.windows[tab]:setWrap(demonnic.chat.config.width)
     demonnic.chat.windows[tab]:hide()
@@ -729,7 +748,6 @@ end</script>
                   </eventHandlerList>
               </Script>
           </ScriptGroup>
-      </ScriptGroup>
     </ScriptPackage>
     <KeyPackage/>
 </MudletPackage>
