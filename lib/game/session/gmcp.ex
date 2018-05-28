@@ -185,6 +185,24 @@ defmodule Game.Session.GMCP do
     socket |> @socket.push_gmcp("Core.Heartbeat", Poison.encode!(%{}))
   end
 
+  @doc """
+  Let the player know the skill is active again
+  """
+  @spec skill_active(State.t(), Skill.t()) :: :ok
+  def skill_active(%{socket: socket}, skill) do
+    data = %{name: skill.name, command: skill.command}
+    socket |> @socket.push_gmcp("Character.Skills.Active", Poison.encode!(data))
+  end
+
+  @doc """
+  Let the player know the skill is inactive
+  """
+  @spec skill_inactive(State.t(), Skill.t()) :: :ok
+  def skill_inactive(%{socket: socket}, skill) do
+    data = %{name: skill.name, command: skill.command}
+    socket |> @socket.push_gmcp("Character.Skills.Inactive", Poison.encode!(data))
+  end
+
   defp room_info(room, items) do
     room
     |> Map.take([:id, :name, :description, :ecology, :x, :y, :map_layer])

@@ -28,6 +28,22 @@ On sign in the general character information will be sent.
 Character {"name": "Player"}
 ```
 
+## Character.Skills.Active
+
+When a skill becomes active again after a cool down this will be sent.
+
+```
+Character.Skills.Active {"name": "Magic Missile", "command": "magic missile"}
+```
+
+## Character.Skills.Inactive
+
+When a skill becomes inactive after using it, this will be sent.
+
+```
+Character.Skills.Inactive {"name": "Magic Missile", "command": "magic missile"}
+```
+
 ## Character.Vitals
 
 Any time a player's vitals change (stats) this will be broadcast. Every tick will also push this out.

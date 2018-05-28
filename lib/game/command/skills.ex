@@ -12,6 +12,7 @@ defmodule Game.Command.Skills do
   alias Game.Experience
   alias Game.Hint
   alias Game.Item
+  alias Game.Session.GMCP
   alias Game.Skill
   alias Game.Skills
 
@@ -248,6 +249,7 @@ defmodule Game.Command.Skills do
         )
 
         socket |> @socket.echo(Format.skill_user(skill, {:user, user}, target))
+        state |> GMCP.skill_inactive(skill)
 
         state =
           state
