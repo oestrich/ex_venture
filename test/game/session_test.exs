@@ -27,6 +27,7 @@ defmodule Game.SessionTest do
       socket: socket,
       user: user,
       save: user.save,
+      skills: %{},
       regen: %{is_regenerating: false},
     }
 

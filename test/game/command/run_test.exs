@@ -10,7 +10,16 @@ defmodule Game.Command.RunTest do
 
   setup do
     user = %{id: 10, save: %{room_id: 1, stats: %{move_points: 10}}}
-    state = %Session.State{state: "active", mode: "command", socket: :socket, user: user, save: user.save}
+
+    state = %Session.State{
+      state: "active",
+      mode: "command",
+      socket: :socket,
+      user: user,
+      save: user.save,
+      skills: %{}
+    }
+
     {:ok, %{socket: :socket, state: state}}
   end
 

@@ -99,8 +99,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:east) do
-      room_exit = %{east_id: id} -> maybe_move_to(state, id, room_exit, :east)
-      _ -> {:error, :no_exit}
+      room_exit = %{east_id: id} ->
+        maybe_move_to(state, id, room_exit, :east)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -108,8 +111,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:north) do
-      room_exit = %{north_id: id} -> maybe_move_to(state, id, room_exit, :north)
-      _ -> {:error, :no_exit}
+      room_exit = %{north_id: id} ->
+        maybe_move_to(state, id, room_exit, :north)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -117,8 +123,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:south) do
-      room_exit = %{south_id: id} -> maybe_move_to(state, id, room_exit, :south)
-      _ -> {:error, :no_exit}
+      room_exit = %{south_id: id} ->
+        maybe_move_to(state, id, room_exit, :south)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -126,8 +135,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:west) do
-      room_exit = %{west_id: id} -> maybe_move_to(state, id, room_exit, :west)
-      _ -> {:error, :no_exit}
+      room_exit = %{west_id: id} ->
+        maybe_move_to(state, id, room_exit, :west)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -135,8 +147,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:up) do
-      room_exit = %{up_id: id} -> maybe_move_to(state, id, room_exit, :up)
-      _ -> {:error, :no_exit}
+      room_exit = %{up_id: id} ->
+        maybe_move_to(state, id, room_exit, :up)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -144,8 +159,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:down) do
-      room_exit = %{down_id: id} -> maybe_move_to(state, id, room_exit, :down)
-      _ -> {:error, :no_exit}
+      room_exit = %{down_id: id} ->
+        maybe_move_to(state, id, room_exit, :down)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -153,8 +171,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:in) do
-      room_exit = %{in_id: id} -> maybe_move_to(state, id, room_exit, :in)
-      _ -> {:error, :no_exit}
+      room_exit = %{in_id: id} ->
+        maybe_move_to(state, id, room_exit, :in)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -162,8 +183,11 @@ defmodule Game.Command.Move do
     {:ok, room} = @room.look(room_id)
 
     case room |> Exit.exit_to(:out) do
-      room_exit = %{out_id: id} -> maybe_move_to(state, id, room_exit, :out)
-      _ -> {:error, :no_exit}
+      room_exit = %{out_id: id} ->
+        maybe_move_to(state, id, room_exit, :out)
+
+      _ ->
+        {:error, :no_exit}
     end
   end
 
@@ -221,17 +245,40 @@ defmodule Game.Command.Move do
   end
 
   def maybe_move_to(state = %{save: %{stats: stats}}, room_id, _, direction) do
+    with {:ok, state} <- check_cooldowns(state),
+         {:ok, stats} <- pay_for_movement(stats) do
+      save = %{state.save | stats: stats}
+
+      state
+      |> Map.put(:save, save)
+      |> move_to(room_id, {:leave, direction}, {:enter, Exit.opposite(direction)})
+    else
+      {:error, :cooldowns_active} ->
+        state.socket |> @socket.echo("You cannot move while a skill is cooling down.")
+
+      {:error, :no_movement} ->
+        state.socket |> @socket.echo("You have no movement points to move in that direction.")
+        {:error, :no_movement}
+    end
+  end
+
+  defp check_cooldowns(state) do
+    case Enum.empty?(Map.keys(state.skills)) do
+      true ->
+        {:ok, state}
+
+      false ->
+        {:error, :cooldowns_active}
+    end
+  end
+
+  defp pay_for_movement(stats) do
     case stats.move_points > 0 do
       true ->
         stats = %{stats | move_points: stats.move_points - 1}
-        save = %{state.save | stats: stats}
-
-        state
-        |> Map.put(:save, save)
-        |> move_to(room_id, {:leave, direction}, {:enter, Exit.opposite(direction)})
+        {:ok, stats}
 
       false ->
-        state.socket |> @socket.echo("You have no movement points to move in that direction.")
         {:error, :no_movement}
     end
   end

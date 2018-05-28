@@ -5,6 +5,7 @@ defmodule Game.Command.MoveTest do
   @room Test.Game.Room
 
   alias Game.Command
+  alias Game.Command.Move
   alias Game.Door
   alias Game.Session.Registry
   alias Game.Session.State
@@ -22,6 +23,7 @@ defmodule Game.Command.MoveTest do
       mode: "command",
       socket: socket,
       user: user,
+      skills: %{}
     }
 
     %{socket: socket, user: user, state: state}
@@ -585,6 +587,22 @@ defmodule Game.Command.MoveTest do
 
       [{^socket, error}] = @socket.get_echos()
       assert Regex.match?(~r(door was already closed), error)
+    end
+  end
+
+  describe "cannot leave with a cooldown active" do
+    test "you're stuck", %{state: state} do
+      @room.set_room(%{@basic_room | exits: [%{out_id: 2, in_id: 1}]})
+
+      state = Map.merge(state, %{
+        skills: %{10 => Timex.now() |> Timex.shift(seconds: 3)},
+        save: %{room_id: 1, stats: %{move_points: 10}}
+      })
+
+      :ok = Move.run({:out}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(cannot move)i, echo)
     end
   end
 end
