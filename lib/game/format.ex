@@ -634,7 +634,7 @@ defmodule Game.Format do
   Format player flags
 
       iex> Game.Format.player_flags(%{flags: ["admin"]})
-      "{red}admin{/red}"
+      "{red}(Admin){/red}"
 
       iex> Game.Format.player_flags(%{flags: []})
       "none"
@@ -645,7 +645,9 @@ defmodule Game.Format do
 
   def player_flags(%{flags: flags}, _opts) do
     flags
-    |> Enum.map(&"{red}#{&1}{/red}")
+    |> Enum.map(fn flag ->
+      "{red}(#{String.capitalize(flag)}){/red}"
+    end)
     |> Enum.join(" ")
   end
 
