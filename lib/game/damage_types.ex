@@ -24,7 +24,18 @@ defmodule Game.DamageTypes do
         {:ok, damage_type}
 
       _ ->
+        maybe_create_default_damage_type(key)
+    end
+  end
+
+  defp maybe_create_default_damage_type(key) do
+    case Repo.get_by(DamageType, key: key) do
+      nil ->
         create_default_damage_type(key)
+
+      damage_type ->
+        Cachex.set(@key, damage_type.key, damage_type)
+        {:ok, damage_type}
     end
   end
 
