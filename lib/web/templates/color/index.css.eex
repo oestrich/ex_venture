@@ -61,6 +61,46 @@ body {
 }
 <% end %>
 
+<%= if @is_home do %>
+/**
+ * Home page colors
+ */
+
+.site-header {
+  background-color: <%= Config.color_home_header() %>;
+}
+
+a {
+  color: <%= Config.color_home_link() %>;
+}
+
+a:hover {
+  color: <%= Config.color_home_link_hover() %>;
+}
+
+.btn-primary {
+  background-color: <%= Config.color_home_primary() %>;
+  border-color: <%= Config.color_home_primary() %>;
+}
+
+.btn-primary:hover {
+  background-color: <%= Config.color_home_primary_hover() %>;
+  border-color: <%= Config.color_home_primary_hover() %>;
+}
+
+.btn-secondary {
+  background-color: <%= Config.color_home_secondary() %>;
+  border-color: <%= Config.color_home_secondary() %>;
+  color: <%= Config.color_home_secondary_text() %> !important;
+}
+
+.btn-secondary:hover {
+  background-color: <%= Config.color_home_secondary_hover() %>;
+  border-color: <%= Config.color_home_secondary_hover() %>;
+  color: <%= Config.color_home_secondary_text() %> !important;
+}
+<% end %>
+
 /**
  * Base Colors
  */

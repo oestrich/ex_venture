@@ -23,6 +23,7 @@ defmodule Web.RegistrationController do
       {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
+        |> assign(:names, Config.random_character_names())
         |> render("new.html")
     end
   end

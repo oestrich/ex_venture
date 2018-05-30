@@ -9,6 +9,16 @@ defmodule Game.Config do
   alias Data.Stats
 
   @color_config %{
+    color_home_header: "#268bd2",
+    color_home_link: "#268bd2",
+    color_home_link_hover: "#31b5ff",
+    color_home_primary: "#268bd2",
+    color_home_primary_hover: "#2a99e7",
+    color_home_primary_text: "#fff",
+    color_home_secondary: "#fdf6e3",
+    color_home_secondary_hover: "#fcf1d5",
+    color_home_secondary_text: "#657b83",
+
     color_background: "#002b36",
     color_text_color: "#93a1a1",
     color_panel_border: "#073642",

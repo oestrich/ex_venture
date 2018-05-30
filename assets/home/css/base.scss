@@ -2,62 +2,13 @@
 @import "home/css/chat";
 
 /**
- * Header
- */
-
-.site-header {
-  background-color: $blue;
-
-  a {
-    color: $base3;
-
-    &:hover {
-      color: $base3 * 1.3;
-    }
-  }
-}
-
-/**
  * Bootstrap overrides
  */
-
-a {
-  color: $blue;
-
-  &:hover {
-    color: $blue * 1.3;
-  }
-}
 
 .alert-danger {
   background-color: lighten($red, 40%);
   border-color: lighten($red, 10%);
   color: $red;
-}
-
-.btn-primary {
-  background-color: $blue;
-  border-color: $blue;
-
-  &:hover {
-    background-color: $blue * 1.1;
-    border-color: $blue * 1.1;
-  }
-}
-
-.btn-secondary {
-  color: $base00 !important;
-  background-color: $base3;
-  border-color: $base3;
-
-  &:hover {
-    background-color: darken($base3, 3%);
-    border-color: darken($base3, 3%);
-  }
-}
-
-h1, h2, h3, h4, h5 {
-  color: $base02;
 }
 
 code {
@@ -82,8 +33,6 @@ footer {
 
 .announcement pre,
 .terminal {
-  background-color: #002833;
-  color: #839496;
   padding: 10px;
   font-size: 1em;
   font-family: "Lucida Console", Monaco, monospace;
