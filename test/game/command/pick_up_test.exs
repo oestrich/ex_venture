@@ -78,17 +78,32 @@ defmodule Game.Command.PickUpTest do
     assert Regex.match?(~r(There was no gold), look)
   end
 
-  test "pick up all from a room", %{state: state} do
-    @room.clear_pick_up()
-    @room.set_pick_up_currency({:ok, 100})
+  describe "pick up all" do
+    test "gets everything", %{state: state} do
+      @room.clear_pick_up()
+      @room.set_pick_up_currency({:ok, 100})
 
-    {:update, state} = PickUp.run({:all}, state)
+      {:update, state} = PickUp.run({:all}, state)
 
-    assert state.save.items |> length() == 1
-    assert state.save.currency == 101
+      assert state.save.items |> length() == 1
+      assert state.save.currency == 101
 
-    [{_socket1, item}, {_socket2, currency}] = @socket.get_echos()
-    assert Regex.match?(~r(You picked up), item)
-    assert Regex.match?(~r(You picked up), currency)
+      [{_socket1, item}, {_socket2, currency}] = @socket.get_echos()
+      assert Regex.match?(~r(You picked up), item)
+      assert Regex.match?(~r(You picked up), currency)
+    end
+
+    test "does not echo currency if not available", %{state: state} do
+      @room.clear_pick_up()
+      @room.set_pick_up_currency({:error, :no_currency})
+
+      {:update, state} = PickUp.run({:all}, state)
+
+      assert state.save.items |> length() == 1
+      assert state.save.currency == 1
+
+      [{_socket1, item}] = @socket.get_echos()
+      assert Regex.match?(~r(You picked up), item)
+    end
   end
 end
