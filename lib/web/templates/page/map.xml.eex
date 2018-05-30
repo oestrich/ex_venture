@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<map>
+  <areas>
+    <%= Enum.map(@zones, fn zone -> %>
+    <area id="<%= zone.id %>" name="<%= zone.name %>" />
+    <% end) %>
+  </areas>
+  <rooms>
+<%= Enum.map(@zones, fn zone -> %>
+  <%= Enum.map(Room.for_map(zone), fn room -> %>
+    <room id="<%= room.id %>" area="<%= zone.id %>" title="<%= room.name %>" environment="<%= Room.ecology_id(room) + 1 %>">
+      <coord x="<%= room.x %>" y="<%= room.y * -1 %>" z="<%= room.map_layer %>" />
+    <%= Enum.map(Room.room_exits(room), fn {direction, target_id} -> %>
+      <exit direction="<%= direction %>" target="<%= target_id %>" />
+    <% end) %>
+    </room>
+  <% end) %>
+<% end )%>
+  </rooms>
+  <environments>
+  <%= Enum.map(Room.ecologies(), fn {ecology, id} -> %>
+    <environment id="<%= id + 1 %>" name="<%= ecology %>" color="<%= Room.ecology_color_id(ecology) %>" />
+  <% end) %>
+  </environments>
+</map>

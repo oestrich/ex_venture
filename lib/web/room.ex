@@ -21,6 +21,68 @@ defmodule Web.Room do
   alias Web.Shop
 
   @doc """
+  Get all rooms for the map
+  """
+  @spec for_map(Zone.t()) :: [Room.t()]
+  def for_map(zone) do
+    Room
+    |> where([r], r.zone_id == ^zone.id)
+    |> Repo.all()
+    |> Enum.map(&Exit.load_exits/1)
+  end
+
+  @doc """
+  Get exits for a room, by direction and id
+  """
+  @spec room_exits(Room.t()) :: [{String.t(), integer()}]
+  def room_exits(room) do
+    room.exits
+    |> Enum.map(fn room_exit ->
+      Exit.find_direction_and_opposite_id(room_exit, room)
+    end)
+  end
+
+  @doc """
+  Get a list of ecologies with their IDs
+  """
+  @spec ecologies() :: [{String.t(), integer()}]
+  def ecologies() do
+    Enum.with_index(Room.ecologies)
+  end
+
+  @doc """
+  Find the room's ecology id
+  """
+  @spec ecology_id(Room.t()) :: integer()
+  def ecology_id(room) do
+    Enum.find_index(Room.ecologies(), &(&1 == room.ecology))
+  end
+
+  @doc """
+  Get a color id for an ecology
+  """
+  @spec ecology_color_id(String.t()) :: integer()
+  def ecology_color_id(ecology) do
+    ecologies = %{
+      1 => ["mountain", "road"],
+      2 => ["hill", "field", "meadow"],
+      4 => ["ocean", "lake", "river"],
+      7 => ["inside"],
+      8 => ["town", "dungeon", "default"],
+      10 => ["forest", "jungle"],
+    }
+
+    id =
+      ecologies
+      |> Enum.find(fn {_, ecologies} ->
+        ecology in ecologies
+      end)
+      |> elem(0)
+
+    id + 256
+  end
+
+  @doc """
   Get a room
 
   Preload rooms in each direction and the zone

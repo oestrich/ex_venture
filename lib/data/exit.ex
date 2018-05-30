@@ -260,4 +260,18 @@ defmodule Data.Exit do
       Map.get(room_exit, opposite_id(direction)) == room.id
     end)
   end
+
+  @doc """
+  Find the exit's direction and the matching ID
+  """
+  @spec find_direction_and_opposite_id(Exit.t(), Room.t()) :: {String.t(), integer()}
+  def find_direction_and_opposite_id(room_exit, room) do
+    direction =
+      @directions
+      |> Enum.find(fn direction ->
+        Map.get(room_exit, opposite_id(direction)) == room.id
+      end)
+
+    {direction, Map.get(room_exit, :"#{direction}_id")}
+  end
 end

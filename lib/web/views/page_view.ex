@@ -4,6 +4,7 @@ defmodule Web.PageView do
   alias Game.Config
   alias Web.Color
   alias Web.Endpoint
+  alias Web.Room
   alias Web.Router.Helpers, as: RouteHelpers
   alias Web.TimeView
 

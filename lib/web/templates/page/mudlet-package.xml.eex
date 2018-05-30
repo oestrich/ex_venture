@@ -377,6 +377,61 @@ GUI.Sidebar = Geyser.Container:new({
 }, GUI.Right)</script>
                     <eventHandlerList/>
                 </Script>
+                <Script isActive="yes" isFolder="no">
+                  <name>Mapper</name>
+                  <packageName></packageName>
+                  <script>mudlet = mudlet or {}; mudlet.mapper_script = true
+
+function doSpeedWalk()
+  send(&quot;run &quot; .. table.concat(speedWalkDir, &quot;&quot;))
+end
+
+function loadEnvironmentColors()
+  -- environment name = id
+  envids = {}
+
+  local environment_data = {
+    -- colour = environment name, colour
+    [&quot;blue&quot;]       = {{&quot;ocean&quot;, 4}, {&quot;lake&quot;, 4}, {&quot;river&quot;, 4}},
+    [&quot;brown&quot;]      = {{&quot;mountain&quot;, 1}, {&quot;road&quot;, 1}},
+    [&quot;green&quot;]      = {{&quot;hill&quot;, 2}, {&quot;field&quot;, 2}, {&quot;meadow&quot;, 2}},
+    [&quot;dark_green&quot;] = {{&quot;forest&quot;, 10}, {&quot;jungle&quot;, 10}},
+    [&quot;grey&quot;]       = {{&quot;town&quot;, 8}, {&quot;dungeon&quot;, 8}, {&quot;default&quot;, 8}},
+    [&quot;light_grey&quot;] = {{&quot;inside&quot;, 7}}
+  }
+
+  for colour, environments in pairs(environment_data) do
+    for _, environment in ipairs(environments) do
+      local name, id = environment[1], environment[2]
+
+      --  257-272 are the default colors the user can adjust in mapper settings tab
+      id = id + 256
+      local r,g,b = unpack(color_table[colour])
+      setCustomEnvColor(id, r, g, b, 255)
+
+      envids[name] = id
+    end
+  end
+end
+
+function downloadedExVentureMap(_, filename)
+  if filename ~= exVentureMapDownload then return end
+  loadEnvironmentColors()
+  loadMap(filename)
+end
+
+function loadExVentureMap()
+  exVentureMapDownload = getMudletHomeDir().."/map.xml"
+  local url = "<%= public_page_url(@conn, :map) %>"
+  downloadFile(exVentureMapDownload, url)
+end
+
+if table.size(getAreaTable()) == 1 then
+  registerAnonymousEventHandler("sysDownloadDone", "downloadedExVentureMap")
+  loadExVentureMap()
+end</script>
+                  <eventHandlerList/>
+                </Script>
             </ScriptGroup>
             <ScriptGroup isActive="yes" isFolder="yes">
                 <name>GMCP</name>
@@ -414,39 +469,9 @@ end</script>
                 <Script isActive="yes" isFolder="no">
                   <name>exventureMapper</name>
                   <packageName></packageName>
-                  <script>mudlet = mudlet or {}; mudlet.mapper_script = true
+                  <script>function exventureMapper()
+  loadEnvironmentColors()
 
-function doSpeedWalk()
-  send(&quot;run &quot; .. table.concat(speedWalkDir, &quot;&quot;))
-end
-
-local environment_data = {
-  -- colour = environment name, colour
-  [&quot;blue&quot;]       = {{&quot;ocean&quot;, 4}, {&quot;lake&quot;, 4}, {&quot;river&quot;, 4}},
-  [&quot;brown&quot;]      = {{&quot;mountain&quot;, 1}, {&quot;road&quot;, 1}},
-  [&quot;green&quot;]      = {{&quot;hill&quot;, 2}, {&quot;field&quot;, 2}, {&quot;meadow&quot;, 2}},
-  [&quot;dark_green&quot;] = {{&quot;forest&quot;, 10}, {&quot;jungle&quot;, 10}},
-  [&quot;grey&quot;]       = {{&quot;town&quot;, 8}, {&quot;dungeon&quot;, 8}, {&quot;default&quot;, 8}},
-  [&quot;light_grey&quot;] = {{&quot;inside&quot;, 7}}
-}
-
--- environment name = id
-envids = {}
-
-for colour, environments in pairs(environment_data) do
-  for _, environment in ipairs(environments) do
-    local name, id = environment[1], environment[2]
-
-    --  257-272 are the default colors the user can adjust in mapper settings tab
-    id = id + 256
-    local r,g,b = unpack(color_table[colour])
-    setCustomEnvColor(id, r, g, b, 255)
-
-    envids[name] = id
-  end
-end
-
-function exventureMapper()
   local room = gmcp.Room.Info
   local zone = gmcp.Room.Info.zone
 

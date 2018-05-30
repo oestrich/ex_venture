@@ -36,6 +36,7 @@ defmodule Web.Router do
 
     get("/css/colors.css", ColorController, :index)
     get("/clients/mudlet/ex_venture.xml", PageController, :mudlet_package)
+    get("/clients/map.xml", PageController, :map)
 
     get("/", PageController, :index)
     get("/version", PageController, :version)
