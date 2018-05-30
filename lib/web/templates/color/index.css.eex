@@ -189,6 +189,7 @@ a:hover {
  * Home page, admin
  */
 .announcement pre,
+.terminal,
 .console {
   background-color: <%= Config.color_background() %>;
   color: <%= Config.color_text_color() %>;
