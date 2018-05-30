@@ -27,4 +27,11 @@ defmodule Web.PageView do
       ]
     }
   end
+
+  def xml_escape(string) do
+    string
+    |> String.replace("&", "&amp;")
+    |> String.replace("<", "&lt;")
+    |> String.replace(">", "&gt;")
+  end
 end
