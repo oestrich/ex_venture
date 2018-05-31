@@ -25,7 +25,7 @@
 
         <%= form_for @changeset, skill_effect_path(@conn, :update, @skill.id), fn (f) -> %>
           <div class="box-body">
-            <div class="form-group">
+            <div class="form-group row">
               <%= label f, :whitelist_effects, class: "col-md-4" %>
               <div class="col-md-8">
                 <%= multiple_select f, :whitelist_effects, Effect.types(), multiple: true, class: "form-control", size: 5 %>
@@ -33,6 +33,8 @@
                 <span class="help-block"><%= Help.get("skill.whitelist_effects") %></span>
               </div>
             </div>
+
+            <hr />
 
             <%= React.react_component("Components.Effects", effects: @skill.effects) %>
           </div>

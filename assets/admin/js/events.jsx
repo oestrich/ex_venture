@@ -44,7 +44,7 @@ class DamageEffect extends React.Component {
     let amount = this.state.amount;
 
     return (
-      <div className="form-group">
+      <div className="form-group row">
         <label className="col-md-4">Kind: damage</label>
         <div className="col-md-8">
           <div className="row">
@@ -89,11 +89,14 @@ class DamageTypeEffect extends React.Component {
 
   handleKeyPress(event) {
     if (event.key == 'Enter') {
+      event.preventDefault();
       this.addType(event);
     }
   }
 
   addType(event) {
+    event.preventDefault();
+
     let newType = this.state.newType;
 
     if (newType != "") {
@@ -123,21 +126,21 @@ class DamageTypeEffect extends React.Component {
     let removeType = this.removeType;
 
     return (
-      <div className="form-group">
+      <div className="form-group row">
         <label className="col-md-4">Kind: damage/type</label>
         <div className="col-md-8">
-          <ul className="row">
+          <ul>
             {types.map(function(type, index) {
               return (
                 <li key={index}>
                   {type}
-                  <i onClick={() => removeType(type)} className="fa fa-times"></i>
+                  <i onClick={() => removeType(type)} style={{paddingLeft: "15px"}} className="fa fa-times"></i>
                 </li>
               );
             })}
           </ul>
           <input type="text" value={this.state.newType} className="form-control" onKeyPress={this.handleKeyPress} onChange={this.handleNewType} />
-          <button onClick={this.addType} className="btn btn-primary">Add</button>
+          <a href="#" onClick={this.addType} className="btn btn-primary" style={{marginTop: "10px"}}>Add</a>
         </div>
       </div>
     );
@@ -178,6 +181,43 @@ class Effect extends React.Component {
   }
 }
 
+class AddEffect extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.addDamage = this.addDamage.bind(this);
+    this.addDamageType = this.addDamageType.bind(this);
+  }
+
+  addDamage(event) {
+    event.preventDefault();
+
+    this.props.addEffect({
+      kind: "damage",
+      type: "slashing",
+      amount: 10,
+    });
+  }
+
+  addDamageType(event) {
+    event.preventDefault();
+
+    this.props.addEffect({
+      kind: "damage/type",
+      types: ["slashing"],
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <a href="#" className="btn btn-default" onClick={this.addDamage}>Add 'damage'</a>
+        <a href="#" className="btn btn-default" onClick={this.addDamageType}>Add 'damage/type'</a>
+      </div>
+    );
+  }
+}
+
 export default class Effects extends React.Component {
   constructor(props) {
     super(props);
@@ -186,8 +226,8 @@ export default class Effects extends React.Component {
       effects: props.effects,
     }
 
-    this.onSave = this.onSave.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
+    this.addEffect = this.addEffect.bind(this);
   }
 
   handleUpdate(effect, index) {
@@ -198,26 +238,30 @@ export default class Effects extends React.Component {
     });
   }
 
-  onSave(event) {
-    event.preventDefault();
-    console.log(JSON.stringify(this.state.effects));
+  addEffect(effect) {
+    this.setState({effects: [...this.state.effects, effect]});
   }
 
   render() {
     let effects = this.state.effects;
     let handleUpdate = this.handleUpdate;
 
+    let effectsJSON = JSON.stringify(effects);
+
     return (
       <div>
+        <input type="hidden" name="skill[effects]" value={effectsJSON} />
+
         {effects.map(function (effect, index) {
           return (
             <div key={index}>
-              <Effect effect={effect} index={index} handleUpdate={handleUpdate}/>
+              <Effect effect={effect} index={index} handleUpdate={handleUpdate} />
               <hr />
             </div>
           );
         })}
-        <button onClick={this.onSave} className="btn btn-primary">Save</button>
+
+        <AddEffect addEffect={this.addEffect} />
       </div>
     );
   }
