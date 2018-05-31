@@ -1,42 +1,36 @@
 import React from 'react';
 
-class DamageEffect extends React.Component {
+class BaseEffect extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleUpdateField = this.handleUpdateField.bind(this);
+  }
+
+  handleUpdateField(field) {
+    return (event) => {
+      let value = event.target.value;
+      this.setState({[field]: value});
+
+      let effect = Object.assign(this.state, {[field]: value});
+      this.props.handleUpdate(effect);
+    }
+  }
+}
+
+class DamageEffect extends BaseEffect {
   constructor(props) {
     super(props);
 
     let effect = props.effect;
 
     this.state = {
+      kind: "damage",
       type: effect.type,
       amount: effect.amount,
     };
 
-    this.handleTypeChange = this.handleTypeChange.bind(this);
-    this.handleAmountChange = this.handleAmountChange.bind(this);
-  }
-
-  handleTypeChange(event) {
-    let value = event.target.value;
-
-    this.setState({type: value});
-
-    this.props.handleUpdate({
-      kind: "damage",
-      type: value,
-      amount: this.state.amount,
-    });
-  }
-
-  handleAmountChange(event) {
-    let value = event.target.value;
-
-    this.setState({amount: value});
-
-    this.props.handleUpdate({
-      kind: "damage",
-      type: this.state.type,
-      amount: value,
-    });
+    this.handleUpdateField = this.handleUpdateField.bind(this);
   }
 
   render() {
@@ -50,12 +44,12 @@ class DamageEffect extends React.Component {
           <div className="row">
             <div className="col-md-4">
               <label>Damage Type</label>
-              <input type="text" value={type} className="form-control" onChange={this.handleTypeChange} />
+              <input type="text" value={type} className="form-control" onChange={this.handleUpdateField("type")} />
             </div>
 
             <div className="col-md-4">
               <label>Amount</label>
-              <input type="number" value={amount} className="form-control" onChange={this.handleAmountChange} />
+              <input type="number" value={amount} className="form-control" onChange={this.handleUpdateField("amount")} />
             </div>
           </div>
         </div>
@@ -147,6 +141,95 @@ class DamageTypeEffect extends React.Component {
   }
 }
 
+class DamageOverTimeEffect extends BaseEffect {
+  constructor(props) {
+    super(props);
+
+    let effect = props.effect;
+
+    this.state = {
+      kind: "damage/over-time",
+      type: effect.type,
+      amount: effect.amount,
+      every: effect.amount,
+      count: effect.amount,
+    };
+  }
+
+  render() {
+    let type = this.state.type;
+    let amount = this.state.amount;
+    let every = this.state.every;
+    let count = this.state.count;
+
+    return (
+      <div className="form-group row">
+        <label className="col-md-4">Kind: damage/over-time</label>
+        <div className="col-md-8">
+          <div className="row">
+            <div className="col-md-4">
+              <label>Damage Type</label>
+              <input type="text" value={type} className="form-control" onChange={this.handleUpdateField("type")} />
+            </div>
+            <div className="col-md-4">
+              <label>Amount</label>
+              <input type="text" value={amount} className="form-control" onChange={this.handleUpdateField("amount")} />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-4">
+              <label>Every X ms</label>
+              <input type="text" value={every} className="form-control" onChange={this.handleUpdateField("every")} />
+            </div>
+            <div className="col-md-4">
+              <label>Count</label>
+              <input type="text" value={count} className="form-control" onChange={this.handleUpdateField("count")} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+class RecoverEffect extends BaseEffect {
+  constructor(props) {
+    super(props);
+
+    let effect = props.effect;
+
+    this.state = {
+      kind: "recover",
+      type: effect.type,
+      amount: effect.amount,
+    };
+  }
+
+  render() {
+    let type = this.state.type;
+    let amount = this.state.amount;
+
+    return (
+      <div className="form-group row">
+        <label className="col-md-4">Kind: damage</label>
+        <div className="col-md-8">
+          <div className="row">
+            <div className="col-md-4">
+              <label>Stat to Recover</label>
+              <input type="text" value={type} className="form-control" onChange={this.handleUpdateField("type")} />
+            </div>
+
+            <div className="col-md-4">
+              <label>Amount</label>
+              <input type="number" value={amount} className="form-control" onChange={this.handleUpdateField("amount")} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
 class Effect extends React.Component {
   constructor(props) {
     super(props);
@@ -173,6 +256,16 @@ class Effect extends React.Component {
           <DamageTypeEffect effect={effect} handleUpdate={handleUpdate} />
         );
 
+      case "damage/over-time":
+        return (
+          <DamageOverTimeEffect effect={effect} handleUpdate={handleUpdate} />
+        );
+
+      case "recover":
+        return (
+          <RecoverEffect effect={effect} handleUpdate={handleUpdate} />
+        );
+
       default:
         return (
           <div>Missing an effect: <b>{effect.kind}</b></div>
@@ -187,6 +280,8 @@ class AddEffect extends React.Component {
 
     this.addDamage = this.addDamage.bind(this);
     this.addDamageType = this.addDamageType.bind(this);
+    this.addDamageOverTime = this.addDamageOverTime.bind(this);
+    this.addRecover = this.addRecover.bind(this);
   }
 
   addDamage(event) {
@@ -208,11 +303,35 @@ class AddEffect extends React.Component {
     });
   }
 
+  addDamageOverTime(event) {
+    event.preventDefault();
+
+    this.props.addEffect({
+      kind: "damage/over-time",
+      type: "slashing",
+      amount: 10,
+      every: 1000,
+      count: 3,
+    });
+  }
+
+  addRecover(event) {
+    event.preventDefault();
+
+    this.props.addEffect({
+      kind: "recover",
+      type: "health",
+      amount: 10,
+    });
+  }
+
   render() {
     return (
       <div>
         <a href="#" className="btn btn-default" onClick={this.addDamage}>Add 'damage'</a>
         <a href="#" className="btn btn-default" onClick={this.addDamageType}>Add 'damage/type'</a>
+        <a href="#" className="btn btn-default" onClick={this.addDamageOverTime}>Add 'damage/over-time'</a>
+        <a href="#" className="btn btn-default" onClick={this.addRecover}>Add 'recover'</a>
       </div>
     );
   }
