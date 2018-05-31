@@ -43,6 +43,8 @@ defmodule Web do
 
       alias Web.FormView
       alias Web.Views.Help
+
+      alias ReactPhoenix.ClientSide, as: React
     end
   end
 

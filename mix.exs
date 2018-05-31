@@ -73,6 +73,7 @@ defmodule ExVenture.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:qrcode, git: "https://gitlab.com/oestrich/qrcode.git"},
       {:ranch, "~> 1.4"},
+      {:react_phoenix, "~> 0.5.2"},
       {:sentry, "~> 6.2.1"},
       {:timex, "~> 3.1"},
       {:timex_ecto, "~> 3.1"},

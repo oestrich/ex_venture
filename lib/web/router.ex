@@ -201,6 +201,9 @@ defmodule Web.Router do
     end
 
     resources("/skills", SkillController, only: [:index, :show, :new, :create, :edit, :update])
+    get("/skills/:id/effects", SkillEffectController, :show)
+    get("/skills/:id/effects/edit", SkillEffectController, :edit)
+    get("/skills/:id/effects", SkillEffectController, :update)
 
     resources("/socials", SocialController, only: [:index, :show, :new, :create, :edit, :update])
 
