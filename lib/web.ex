@@ -20,8 +20,11 @@ defmodule Web do
   def controller do
     quote do
       use Phoenix.Controller, namespace: Web
+
       import Plug.Conn
       import Web.Router.Helpers
+
+      alias Web.Router.Helper, as: Routes
     end
   end
 
@@ -42,6 +45,7 @@ defmodule Web do
       import Web.Gettext
 
       alias Web.FormView
+      alias Web.Router.Helper, as: Routes
       alias Web.Views.Help
     end
   end
@@ -49,6 +53,7 @@ defmodule Web do
   def router do
     quote do
       use Phoenix.Router
+
       import Plug.Conn
       import Phoenix.Controller
     end
