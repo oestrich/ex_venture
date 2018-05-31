@@ -50,11 +50,6 @@
         <%= render(SharedView, "_stats.html", stats_id: "item_stats", type_id: "item_type") %>
       <% end %>
 
-      <%= FormView.textarea_field(f, :effects, value: @changeset |> json_field(:effects), rows: 15) do %>
-        <span class="help-block">Enter in valid JSON</span>
-        <%= render(SharedView, "_effects.html", id: "item_effects") %>
-      <% end %>
-
       <div class="form-group">
         <%= label f, :whitelist_effects, class: "col-md-4" %>
         <div class="col-md-8">
@@ -63,6 +58,11 @@
           <span class="help-block"><%= Help.get("item.whitelist_effects") %></span>
         </div>
       </div>
+
+      <h4>Effects</h4>
+      <hr />
+
+      <%= React.react_component("Components.Effects", name: "item[effects]", effects: @changeset |> effects()) %>
     </div>
 
     <div class="box-footer">

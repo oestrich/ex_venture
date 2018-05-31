@@ -343,7 +343,7 @@ class StatsBoostEffect extends BaseEffect {
   }
 
   render() {
-    let type = this.state.type;
+    let field = this.state.field;
     let amount = this.state.amount;
     let duration = this.state.duration;
     let mode = this.state.mode;
@@ -355,7 +355,7 @@ class StatsBoostEffect extends BaseEffect {
           <div className="row">
             <div className="col-md-4">
               <label>Stat to Alter</label>
-              <input type="text" value={type} className="form-control" onChange={this.handleUpdateField("type")} />
+              <input type="text" value={field} className="form-control" onChange={this.handleUpdateField("field")} />
             </div>
 
             <div className="col-md-4">
@@ -527,6 +527,9 @@ class AddEffect extends React.Component {
           <a href="#" className="btn btn-default" onClick={this.addStats}>Add 'stats'</a>
           <a href="#" className="btn btn-default" onClick={this.addStatsBoost}>Add 'stats/boost'</a>
         </div>
+        <div>
+          <a href="https://exventure.org/admin/effects/" target="_blank" className="btn btn-default">Documentation</a>
+        </div>
       </div>
     );
   }
@@ -564,7 +567,7 @@ export default class Effects extends React.Component {
 
     return (
       <div>
-        <input type="hidden" name="skill[effects]" value={effectsJSON} />
+        <input type="hidden" name={this.props.name} value={effectsJSON} />
 
         {effects.map(function (effect, index) {
           return (

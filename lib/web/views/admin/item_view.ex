@@ -19,6 +19,16 @@ defmodule Web.Admin.ItemView do
     end
   end
 
+  def effects(changeset) do
+    case get_field(changeset, :effects) do
+      nil ->
+        []
+
+      effects ->
+       effects
+    end
+  end
+
   def types(), do: Item.types()
 
   def item_aspects() do

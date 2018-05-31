@@ -56,6 +56,20 @@
       <%= FormView.text_field(f, :usee_text) do %>
         <span class="help-block"><%= Help.get("skill.usee_text") %></span>
       <% end %>
+
+      <h4>Effects</h4>
+      <hr />
+
+      <div class="form-group row">
+        <%= label f, :whitelist_effects, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= multiple_select f, :whitelist_effects, Effect.types(), multiple: true, class: "form-control", size: 5 %>
+          <%= error_tag f, :whitelist_effects %>
+          <span class="help-block"><%= Help.get("skill.whitelist_effects") %></span>
+        </div>
+      </div>
+
+      <%= React.react_component("Components.Effects", name: "skill[effects]", effects: @changeset |> effects()) %>
     </div>
 
     <div class="box-footer">

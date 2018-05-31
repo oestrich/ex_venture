@@ -23,10 +23,10 @@
         <%= render(SharedView, "_stats.html", stats_id: "item_aspect_stats", type_id: "item_aspect_type") %>
       <% end %>
 
-      <%= FormView.textarea_field(f, :stats, value: @changeset |> json_field(:effects), rows: 15) do %>
-        <span class="help-block">Enter in valid JSON</span>
-        <%= render(SharedView, "_effects.html", id: "item_aspect_effects") %>
-      <% end %>
+      <h4>Effects</h4>
+      <hr />
+
+      <%= React.react_component("Components.Effects", name: "item_aspect[effects]", effects: @changeset |> effects()) %>
     </div>
 
     <div class="box-footer">

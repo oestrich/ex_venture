@@ -16,7 +16,7 @@
 
 <section class="content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
       <div class="box box-primary">
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
@@ -91,12 +91,19 @@
                   </ul>
                 </td>
               </tr>
-              <tr>
-                <th>Effects</th>
-                <td><%= link("Show Details", to: skill_effect_path(@conn, :show, @skill.id), class: "btn btn-primary") %></td>
-              </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="box box-secondary">
+        <div class="box-header">
+          <h3 class="box-title">Effects</h3>
+        </div>
+        <div class="box-body">
+          <pre><%= Poison.encode!(@skill.effects, pretty: true) %></pre>
         </div>
       </div>
     </div>
