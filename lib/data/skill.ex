@@ -21,7 +21,7 @@ defmodule Data.Skill do
     field(:command, :string)
     field(:cooldown_time, :integer, default: 3000)
     field(:whitelist_effects, {:array, :string}, default: [])
-    field(:effects, {:array, Effect})
+    field(:effects, {:array, Effect}, default: [])
     field(:tags, {:array, :string}, default: [])
     field(:is_global, :boolean, default: false)
     field(:require_target, :boolean, default: false)
