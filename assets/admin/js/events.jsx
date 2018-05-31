@@ -211,7 +211,7 @@ class RecoverEffect extends BaseEffect {
 
     return (
       <div className="form-group row">
-        <label className="col-md-4">Kind: damage</label>
+        <label className="col-md-4">Kind: recover</label>
         <div className="col-md-8">
           <div className="row">
             <div className="col-md-4">
@@ -222,6 +222,115 @@ class RecoverEffect extends BaseEffect {
             <div className="col-md-4">
               <label>Amount</label>
               <input type="number" value={amount} className="form-control" onChange={this.handleUpdateField("amount")} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+class StatsEffect extends BaseEffect {
+  constructor(props) {
+    super(props);
+
+    let effect = props.effect;
+
+    this.state = {
+      kind: "recover",
+      field: effect.field,
+      amount: effect.amount,
+      mode: effect.mode,
+    };
+  }
+
+  render() {
+    let field = this.state.field;
+    let amount = this.state.amount;
+    let mode = this.state.mode;
+
+    return (
+      <div className="form-group row">
+        <label className="col-md-4">Kind: stats</label>
+        <div className="col-md-8">
+          <div className="row">
+            <div className="col-md-4">
+              <label>Stat to increase</label>
+              <input type="text" value={field} className="form-control" onChange={this.handleUpdateField("field")} />
+            </div>
+
+            <div className="col-md-4">
+              <label>Amount</label>
+              <input type="number" value={amount} className="form-control" onChange={this.handleUpdateField("amount")} />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-4">
+              <label>Mode</label>
+              <select onChange={this.handleUpdateField("mode")} value={mode} className="form-control">
+                <option value="add">Add</option>
+                <option value="subtract">Subtract</option>
+                <option value="multiply">Multiply</option>
+                <option value="divide">Divide</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+class StatsBoostEffect extends BaseEffect {
+  constructor(props) {
+    super(props);
+
+    let effect = props.effect;
+
+    this.state = {
+      kind: "stats/boost",
+      field: effect.field,
+      amount: effect.amount,
+      duration: effect.duration,
+      mode: effect.mode,
+    };
+  }
+
+  render() {
+    let type = this.state.type;
+    let amount = this.state.amount;
+    let duration = this.state.duration;
+    let mode = this.state.mode;
+
+    return (
+      <div className="form-group row">
+        <label className="col-md-4">Kind: stats/boost</label>
+        <div className="col-md-8">
+          <div className="row">
+            <div className="col-md-4">
+              <label>Stat to Alter</label>
+              <input type="text" value={type} className="form-control" onChange={this.handleUpdateField("type")} />
+            </div>
+
+            <div className="col-md-4">
+              <label>Amount</label>
+              <input type="number" value={amount} className="form-control" onChange={this.handleUpdateField("amount")} />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-4">
+              <label>Duration</label>
+              <input type="text" value={duration} className="form-control" onChange={this.handleUpdateField("duration")} />
+            </div>
+
+            <div className="col-md-4">
+              <label>Mode</label>
+              <select onChange={this.handleUpdateField("mode")} className="form-control">
+                <option value="add">Add</option>
+                <option value="subtract">Subtract</option>
+                <option value="multiply">Multiply</option>
+                <option value="divide">Divide</option>
+              </select>
             </div>
           </div>
         </div>
@@ -266,6 +375,16 @@ class Effect extends React.Component {
           <RecoverEffect effect={effect} handleUpdate={handleUpdate} />
         );
 
+      case "stats":
+        return (
+          <StatsEffect effect={effect} handleUpdate={handleUpdate} />
+        );
+
+      case "stats/boost":
+        return (
+          <StatsBoostEffect effect={effect} handleUpdate={handleUpdate} />
+        );
+
       default:
         return (
           <div>Missing an effect: <b>{effect.kind}</b></div>
@@ -282,6 +401,8 @@ class AddEffect extends React.Component {
     this.addDamageType = this.addDamageType.bind(this);
     this.addDamageOverTime = this.addDamageOverTime.bind(this);
     this.addRecover = this.addRecover.bind(this);
+    this.addStats = this.addStats.bind(this);
+    this.addStatsBoost = this.addStatsBoost.bind(this);
   }
 
   addDamage(event) {
@@ -325,6 +446,28 @@ class AddEffect extends React.Component {
     });
   }
 
+  addStats(event) {
+    event.preventDefault();
+
+    this.props.addEffect({
+      kind: "stats",
+      field: "strength",
+      amount: 10,
+    });
+  }
+
+  addStatsBoost(event) {
+    event.preventDefault();
+
+    this.props.addEffect({
+      kind: "stats/boost",
+      field: "strength",
+      amount: 10,
+      duration: 1000,
+      mode: "add",
+    });
+  }
+
   render() {
     return (
       <div>
@@ -332,6 +475,8 @@ class AddEffect extends React.Component {
         <a href="#" className="btn btn-default" onClick={this.addDamageType}>Add 'damage/type'</a>
         <a href="#" className="btn btn-default" onClick={this.addDamageOverTime}>Add 'damage/over-time'</a>
         <a href="#" className="btn btn-default" onClick={this.addRecover}>Add 'recover'</a>
+        <a href="#" className="btn btn-default" onClick={this.addStats}>Add 'stats'</a>
+        <a href="#" className="btn btn-default" onClick={this.addStatsBoost}>Add 'stats/boost'</a>
       </div>
     );
   }
