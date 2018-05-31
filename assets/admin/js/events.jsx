@@ -545,6 +545,7 @@ export default class Effects extends React.Component {
 
     this.handleUpdate = this.handleUpdate.bind(this);
     this.addEffect = this.addEffect.bind(this);
+    this.removeEffect = this.removeEffect.bind(this);
   }
 
   handleUpdate(effect, index) {
@@ -559,20 +560,33 @@ export default class Effects extends React.Component {
     this.setState({effects: [...this.state.effects, effect]});
   }
 
+  removeEffect(index) {
+    let effects = this.state.effects;
+    effects.splice(index, 1);
+    this.setState({effects: effects});
+  }
+
   render() {
     let effects = this.state.effects;
     let handleUpdate = this.handleUpdate;
 
     let effectsJSON = JSON.stringify(effects);
+    let removeEffect = this.removeEffect;
 
     return (
       <div>
         <input type="hidden" name={this.props.name} value={effectsJSON} />
 
         {effects.map(function (effect, index) {
+          let onClick = (event) => {
+            event.preventDefault();
+            removeEffect(index);
+          }
+
           return (
             <div key={index}>
               <Effect effect={effect} index={index} handleUpdate={handleUpdate} />
+              <a href="#" onClick={onClick}>Remove</a>
               <hr />
             </div>
           );
