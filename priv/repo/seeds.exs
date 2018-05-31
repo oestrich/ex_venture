@@ -339,7 +339,7 @@ defmodule Seeds do
       description: "An elven chest piece.",
       type: "armor",
       stats: %{slot: :chest, armor: 10},
-      effects: [%{kind: "stats", field: :dexterity, amount: 5}, %{kind: "stats", field: :strength, amount: 5}],
+      effects: [%{kind: "stats", field: :dexterity, amount: 5, mode: "add"}, %{kind: "stats", field: :strength, amount: 5, mode: "add"}],
       keywords: ["elven"],
     })
     entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
