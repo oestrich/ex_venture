@@ -5,11 +5,17 @@ class BaseEffect extends React.Component {
     super(props);
 
     this.handleUpdateField = this.handleUpdateField.bind(this);
+    this.castField = this.castField.bind(this);
+  }
+
+  castField(field, value) {
+    return value;
   }
 
   handleUpdateField(field) {
     return (event) => {
       let value = event.target.value;
+      value = this.castField(field, value);
       this.setState({[field]: value});
 
       let effect = Object.assign(this.state, {[field]: value});
@@ -29,8 +35,16 @@ class DamageEffect extends BaseEffect {
       type: effect.type,
       amount: effect.amount,
     };
+  }
 
-    this.handleUpdateField = this.handleUpdateField.bind(this);
+  castField(field, value) {
+    switch (field) {
+      case "amount":
+        return parseInt(value);
+
+      default:
+        return value;
+    }
   }
 
   render() {
@@ -156,6 +170,18 @@ class DamageOverTimeEffect extends BaseEffect {
     };
   }
 
+  castField(field, value) {
+    switch (field) {
+      case "amount":
+      case "every":
+      case "count":
+        return parseInt(value);
+
+      default:
+        return value;
+    }
+  }
+
   render() {
     let type = this.state.type;
     let amount = this.state.amount;
@@ -205,6 +231,16 @@ class RecoverEffect extends BaseEffect {
     };
   }
 
+  castField(field, value) {
+    switch (field) {
+      case "amount":
+        return parseInt(value);
+
+      default:
+        return value;
+    }
+  }
+
   render() {
     let type = this.state.type;
     let amount = this.state.amount;
@@ -237,11 +273,21 @@ class StatsEffect extends BaseEffect {
     let effect = props.effect;
 
     this.state = {
-      kind: "recover",
+      kind: "stats",
       field: effect.field,
       amount: effect.amount,
       mode: effect.mode,
     };
+  }
+
+  castField(field, value) {
+    switch (field) {
+      case "amount":
+        return parseInt(value);
+
+      default:
+        return value;
+    }
   }
 
   render() {
@@ -471,12 +517,16 @@ class AddEffect extends React.Component {
   render() {
     return (
       <div>
-        <a href="#" className="btn btn-default" onClick={this.addDamage}>Add 'damage'</a>
-        <a href="#" className="btn btn-default" onClick={this.addDamageType}>Add 'damage/type'</a>
-        <a href="#" className="btn btn-default" onClick={this.addDamageOverTime}>Add 'damage/over-time'</a>
-        <a href="#" className="btn btn-default" onClick={this.addRecover}>Add 'recover'</a>
-        <a href="#" className="btn btn-default" onClick={this.addStats}>Add 'stats'</a>
-        <a href="#" className="btn btn-default" onClick={this.addStatsBoost}>Add 'stats/boost'</a>
+        <div>
+          <a href="#" className="btn btn-default" onClick={this.addDamage}>Add 'damage'</a>
+          <a href="#" className="btn btn-default" onClick={this.addDamageType}>Add 'damage/type'</a>
+          <a href="#" className="btn btn-default" onClick={this.addDamageOverTime}>Add 'damage/over-time'</a>
+        </div>
+        <div>
+          <a href="#" className="btn btn-default" onClick={this.addRecover}>Add 'recover'</a>
+          <a href="#" className="btn btn-default" onClick={this.addStats}>Add 'stats'</a>
+          <a href="#" className="btn btn-default" onClick={this.addStatsBoost}>Add 'stats/boost'</a>
+        </div>
       </div>
     );
   }
