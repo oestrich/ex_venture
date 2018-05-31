@@ -15,7 +15,6 @@
     "popper.js": "^1.14.3",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
-    "react-phoenix": "file:../deps/react_phoenix",
     "sizzle": "^2.3.3",
     "underscore": "^1.9.0"
   },
