@@ -3,7 +3,6 @@ defmodule Web.Admin.SharedView do
 
   import Web.JSONHelper
 
-  alias Data.Effect
   alias Data.Item
 
   def page_path(path, page) do
