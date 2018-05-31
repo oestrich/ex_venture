@@ -1,0 +1,49 @@
+<section class="content-header">
+  <h1>
+    <%= @skill.name %> Effects
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Skills", to: skill_path(@conn, :index)) %></li>
+    <li><%= link(@skill.name, to: skill_path(@conn, :show, @skill.id)) %></li>
+    <li class="active">Edit Effects</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="box box-primary">
+        <div class="box-header">
+          <h3 class="box-title">Effects</h3>
+        </div>
+
+        <%= form_for @changeset, skill_effect_path(@conn, :update, @skill.id), fn (f) -> %>
+          <div class="box-body">
+            <div class="form-group row">
+              <%= label f, :whitelist_effects, class: "col-md-4" %>
+              <div class="col-md-8">
+                <%= multiple_select f, :whitelist_effects, Effect.types(), multiple: true, class: "form-control", size: 5 %>
+                <%= error_tag f, :whitelist_effects %>
+                <span class="help-block"><%= Help.get("skill.whitelist_effects") %></span>
+              </div>
+            </div>
+
+            <hr />
+
+            <%= React.react_component("Components.Effects", effects: @skill.effects) %>
+          </div>
+
+          <div class="box-footer">
+            <%= submit "Save", class: "btn btn-primary pull-right" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

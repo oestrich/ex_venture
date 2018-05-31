@@ -93,7 +93,7 @@
               </tr>
               <tr>
                 <th>Effects</th>
-                <td><pre><%= @skill |> json_field(:effects) %></pre></td>
+                <td><%= link("Show Details", to: skill_effect_path(@conn, :show, @skill.id), class: "btn btn-primary") %></td>
               </tr>
             </tbody>
           </table>

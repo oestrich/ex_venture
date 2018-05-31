@@ -10,7 +10,13 @@ exports.config = {
           /(sizzle)/,
           /(priv\/static\/phoenix*)/,
         ],
-        "js/admin.js": /(admin\/js)/,
+        "js/admin.js": [
+          /react/,
+          /object-assign/,
+          /fbjs/,
+          /prop-types/,
+          /(admin\/js)/,
+        ],
         "js/home.js": /(home\/js)/,
         "js/play.js": /(play\/js)/,
       },
@@ -77,6 +83,7 @@ exports.config = {
       mode: 'native'
     },
     babel: {
+      presets: ['env', 'react'],
       // Do not use ES6 compiler in vendor code
       ignore: [/vendor/]
     }

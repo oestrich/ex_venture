@@ -47,6 +47,7 @@ defmodule Web do
       alias Web.FormView
       alias Web.Router.Helper, as: Routes
       alias Web.Views.Help
+      alias Web.ReactView, as: React
     end
   end
 
