@@ -5,7 +5,7 @@ defmodule Data.SkillTest do
 
   describe "validates item effects" do
     test "required" do
-      changeset = %Skill{} |> Skill.changeset(%{})
+      changeset = %Skill{} |> Skill.changeset(%{effects: nil})
       assert changeset.errors[:effects]
     end
 
