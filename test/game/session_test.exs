@@ -371,7 +371,7 @@ defmodule Game.SessionTest do
     end
 
     test "receiving a tell", %{state: state, from: from} do
-      message = Message.tell(from, "howdy")
+      message = Message.tell(from, "Howdy")
 
       {:noreply, state} = Process.handle_info({:channel, {:tell, {:user, from}, message}}, state)
 

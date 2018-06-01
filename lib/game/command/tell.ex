@@ -60,9 +60,14 @@ defmodule Game.Command.Tell do
 
   def run({"reply", message}, state = %{socket: socket, reply_to: reply_to}) do
     case reply_to do
-      nil -> socket |> @socket.echo("There is no one to reply to.")
-      {:user, user} -> message |> reply_to_player(user, state)
-      {:npc, npc} -> message |> reply_to_npc(npc, state)
+      nil ->
+        socket |> @socket.echo("There is no one to reply to.")
+
+      {:user, user} ->
+        message |> reply_to_player(user, state)
+
+      {:npc, npc} ->
+        message |> reply_to_npc(npc, state)
     end
 
     :ok
@@ -83,6 +88,7 @@ defmodule Game.Command.Tell do
         state
 
       %{user: user} ->
+        message = Message.format(message)
         socket |> @socket.echo(Format.send_tell({:user, user}, message))
         Channel.tell({:user, user}, {:user, from}, Message.tell(from, message))
         {:update, %{state | reply_to: {:user, user}}}
@@ -107,6 +113,7 @@ defmodule Game.Command.Tell do
 
       _ ->
         message = Utility.strip_name(npc, message)
+        message = Message.format(message)
         socket |> @socket.echo(Format.send_tell({:npc, npc}, message))
         Channel.tell({:npc, npc}, {:user, from}, Message.tell(from, message))
         {:update, %{state | reply_to: {:npc, npc}}}
@@ -132,6 +139,7 @@ defmodule Game.Command.Tell do
         socket |> @socket.echo(~s["#{reply_to.name}" is not online])
 
       _ ->
+        message = Message.format(message)
         socket |> @socket.echo(Format.send_tell({:user, reply_to}, message))
         Channel.tell({:user, reply_to}, {:user, from}, Message.tell(from, message))
     end
@@ -146,6 +154,7 @@ defmodule Game.Command.Tell do
         socket |> @socket.echo("Could not find #{Format.npc_name(reply_to)}")
 
       _ ->
+        message = Message.format(message)
         socket |> @socket.echo(Format.send_tell({:npc, reply_to}, message))
         Channel.tell({:npc, reply_to}, {:user, from}, Message.tell(from, message))
     end

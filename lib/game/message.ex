@@ -60,8 +60,6 @@ defmodule Game.Message do
   end
 
   def tell(user, message) do
-    message = format(message)
-
     %__MODULE__{
       type: :user,
       sender: user,
