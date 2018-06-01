@@ -196,8 +196,9 @@ export default class Script extends React.Component {
       lines: props.lines,
     }
 
-    this.handleUpdate = this.handleUpdate.bind(this);
     this.addLine = this.addLine.bind(this);
+    this.handleUpdate = this.handleUpdate.bind(this);
+    this.removeLine = this.removeLine.bind(this);
   }
 
   handleUpdate(line, index) {
@@ -226,11 +227,18 @@ export default class Script extends React.Component {
     });
   }
 
+  removeLine(index) {
+    let lines = this.state.lines;
+    lines.splice(index, 1);
+    this.setState({lines: lines});
+  }
+
   render() {
     let lines = this.state.lines;
     let handleUpdate = this.handleUpdate;
 
     let scriptJSON = JSON.stringify(this.state.lines);
+    let removeLine = this.removeLine;
 
     return (
       <div className="form-group">
@@ -239,9 +247,15 @@ export default class Script extends React.Component {
         <label className="col-md-4">Script</label>
         <div className="col-md-8">
           {lines.map((line, index) => {
+            let onClick = (event) => {
+              event.preventDefault();
+              removeLine(index);
+            }
+
             return (
               <div key={index}>
                 <Line line={line} index={index} handleUpdate={handleUpdate} />
+                <a href="#" onClick={onClick}>Remove</a>
                 <hr />
               </div>
             );
