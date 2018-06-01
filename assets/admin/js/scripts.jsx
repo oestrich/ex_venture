@@ -188,7 +188,7 @@ class Line extends React.Component {
   }
 }
 
-export default class Script extends React.Component {
+class Editor extends React.Component {
   constructor(props) {
     super(props);
 
@@ -267,3 +267,99 @@ export default class Script extends React.Component {
     );
   }
 }
+
+class Tester extends React.Component {
+  constructor(props) {
+    super(props);
+
+    let startLine = props.script.find(line => {
+      return line.key == "start";
+    });
+
+    this.state = {
+      lines: [{
+        name: this.props.giver_name,
+        message: startLine.message,
+      }],
+      currentLine: startLine,
+      message: "",
+    }
+
+    this.handleMessage = this.handleMessage.bind(this);
+    this.handleEnter = this.handleEnter.bind(this);
+    this.nextLine = this.nextLine.bind(this);
+  }
+
+  handleMessage(event) {
+    this.setState({message: event.target.value});
+  }
+
+  handleEnter(event) {
+    if (event.key == "Enter") {
+      event.preventDefault();
+      let line = this.nextLine(this.state.message);
+
+      this.setState({
+        lines: [
+          ...this.state.lines,
+          {name: "Player", message: this.state.message},
+          {name: this.props.giver_name, message: line.message},
+        ],
+        currentLine: line,
+        message: "",
+      });
+    }
+  }
+
+  nextLine(message) {
+    let line = this.state.currentLine;
+
+    let listener = line.listeners.find(listener => {
+      let regex = new RegExp(listener.phrase);
+      return message.match(regex);
+    });
+
+    if (listener) {
+      return this.props.script.find(line => {
+        return line.key == listener.key;
+      });
+    } else {
+      return this.props.script.find(line => {
+        return line.key == "start";
+      });
+    }
+  }
+
+  render() {
+    let lines = this.state.lines;
+    let line = this.state.currentLine;
+    let message = this.state.message;
+
+    return (
+      <div>
+        {lines.map((line, index) => {
+          return (
+            <p key={index}>
+              <b>{line.name}</b> says, "{line.message}"
+            </p>
+          );
+        })}
+        <div className="row">
+          <div className="col-md-8">
+            <input type="text" value={message} className="form-control" onChange={this.handleMessage} onKeyPress={this.handleEnter} />
+          </div>
+          <div className="col-md-4">
+            <a href="#" className="btn btn-primary">Send</a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+let Script = {
+  Editor: Editor,
+  Tester: Tester,
+};
+
+export default Script;

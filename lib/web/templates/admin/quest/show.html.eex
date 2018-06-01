@@ -88,7 +88,7 @@
           <h3 class="box-title">Script</h3>
         </div>
         <div class="box-body">
-          <pre><%= @quest.script |> Poison.encode!(pretty: true) %></pre>
+          <%= React.react_component("Components.Script.Tester", giver_name: @quest.giver.name, script: @quest.script) %>
         </div>
       </div>
     </div>

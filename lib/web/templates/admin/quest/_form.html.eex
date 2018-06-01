@@ -36,7 +36,7 @@
         <span class="help-block"><%= Help.get("quest.completed_message") %></span>
       <% end %>
 
-      <%= React.react_component("Components.Script", name: "quest[script]", lines: @changeset |> script()) %>
+      <%= React.react_component("Components.Script.Editor", name: "quest[script]", lines: @changeset |> script()) %>
     </div>
 
     <div class="box-footer">
