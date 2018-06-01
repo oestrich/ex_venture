@@ -2,9 +2,11 @@ import "./socket"
 import "./npcs"
 
 import Effects from "./events"
+import Script from "./scripts"
 
 window.Components = {
-  Effects
+  Effects,
+  Script
 }
 
 import React from "react"

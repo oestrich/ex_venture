@@ -50,8 +50,11 @@ defmodule Game.NPC.Conversation do
   @spec recv(State.t(), User.t(), String.t()) :: State.t()
   def recv(state, user, message) do
     case Map.get(state.conversations, user.id, nil) do
-      nil -> greet(state, user)
-      metadata -> continue_conversation(state, metadata, user, message)
+      nil ->
+        greet(state, user)
+
+      metadata ->
+        continue_conversation(state, metadata, user, message)
     end
   end
 
@@ -134,7 +137,7 @@ defmodule Game.NPC.Conversation do
   @spec find_listener(Line.t(), String.t()) :: map()
   def find_listener(line, message) do
     Enum.find(line.listeners, fn listener ->
-      Regex.match?(~r/#{listener.phrase}/, message)
+      Regex.match?(~r/#{listener.phrase}/i, message)
     end)
   end
 

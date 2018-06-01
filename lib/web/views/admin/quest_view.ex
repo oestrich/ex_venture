@@ -9,8 +9,11 @@ defmodule Web.Admin.QuestView do
 
   def script(changeset) do
     case get_field(changeset, :script) do
-      nil -> [] |> Poison.encode!(pretty: true)
-      script -> script |> Poison.encode!(pretty: true)
+      nil ->
+        []
+
+      script ->
+        script
     end
   end
 end

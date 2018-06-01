@@ -586,7 +586,7 @@ export default class Effects extends React.Component {
       <div>
         <input type="hidden" name={this.props.name} value={effectsJSON} />
 
-        {effects.map(function (effect, index) {
+        {effects.map((effect, index) => {
           let onClick = (event) => {
             event.preventDefault();
             removeEffect(index);
