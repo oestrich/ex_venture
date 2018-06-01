@@ -137,18 +137,27 @@ class DamageTypeEffect extends React.Component {
       <div className="form-group row">
         <label className="col-md-4">Kind: damage/type</label>
         <div className="col-md-8">
-          <ul>
-            {types.map(function(type, index) {
-              return (
-                <li key={index}>
-                  {type}
-                  <i onClick={() => removeType(type)} style={{paddingLeft: "15px"}} className="fa fa-times"></i>
-                </li>
-              );
-            })}
-          </ul>
-          <input type="text" value={this.state.newType} className="form-control" onKeyPress={this.handleKeyPress} onChange={this.handleNewType} />
-          <a href="#" onClick={this.addType} className="btn btn-primary" style={{marginTop: "10px"}}>Add</a>
+          <div className="row">
+            <ul>
+              {types.map(function(type, index) {
+                return (
+                  <li key={index}>
+                    {type}
+                    <i onClick={() => removeType(type)} style={{paddingLeft: "15px"}} className="fa fa-times"></i>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div className="row">
+            <div className="col-md-4">
+              <input type="text" value={this.state.newType} className="form-control" onKeyPress={this.handleKeyPress} onChange={this.handleNewType} />
+            </div>
+            <div className="col-md-4">
+              <a href="#" onClick={this.addType} className="btn btn-primary">Add</a>
+            </div>
+          </div>
         </div>
       </div>
     );
