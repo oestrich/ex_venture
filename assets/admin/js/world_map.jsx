@@ -118,13 +118,7 @@ class MapCell extends React.Component {
   }
 
   render() {
-    let color;
-    if (this.state.hover) {
-      color = this.props.selectedColor;
-    } else {
-      color = COLORS[this.props.color];
-    }
-
+    let color = this.state.hover ? this.props.selectedColor : this.props.color;
     let symbol = this.state.hover ? this.props.selectedSymbol : this.props.symbol;
 
     let handleClick = this.props.handleClick;
@@ -132,7 +126,7 @@ class MapCell extends React.Component {
 
     return (
       <span
-        style={{color: color}}
+        className={color}
         onClick={handleClick}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
@@ -222,7 +216,7 @@ class OverworldMap {
 
     let map = xs.map(x => {
       return ys.map(y => {
-        return {x: x, y: y, s: ".", c: 2};
+        return {x: x, y: y, s: ".", c: "green"};
       });
     });
 
@@ -231,7 +225,7 @@ class OverworldMap {
 
   updateCell(x, y, attrs) {
     this.overworld[y][x].s = attrs.s;
-    this.overworld[y][x].c = COLORS.indexOf(attrs.c);
+    this.overworld[y][x].c = attrs.c;
   }
 
   rows(fun) {
