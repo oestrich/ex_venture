@@ -156,8 +156,8 @@ class MapRow extends React.Component {
     return (
       <div>
         {row.map((cell, index) => {
-          let symbol = cell[0];
-          let color = cell[1];
+          let symbol = cell.symbol;
+          let color = cell.color;
 
           let cellHandleClick = (event) => {
             handleClick(index);
@@ -194,7 +194,7 @@ export default class WorldMap extends React.Component {
 
     let map = xs.map(x => {
       return ys.map(y => {
-        return [".", "green"];
+        return {symbol: ".", color: "green"};
       });
     });
 
@@ -222,11 +222,14 @@ export default class WorldMap extends React.Component {
 
   handleClick(x, y) {
     let map = this.state.map;
-    let symbol = this.state.selectedSymbol;
-    let color = this.state.selectedColor;
 
     let row = map[y];
-    row.splice(x, 1, [symbol, color]);
+    let cell = row[x];
+
+    cell.symbol = this.state.selectedSymbol;
+    cell.color = this.state.selectedColor;
+
+    row.splice(x, 1, cell);
     map[y] = row;
 
     this.setState({
