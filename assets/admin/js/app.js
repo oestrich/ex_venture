@@ -3,10 +3,12 @@ import "./npcs"
 
 import Effects from "./events"
 import Script from "./scripts"
+import WorldMap from "./world_map"
 
 window.Components = {
   Effects,
-  Script
+  Script,
+  WorldMap,
 }
 
 import React from "react"

@@ -11,6 +11,16 @@ defmodule Web.Zone do
   alias Game.World
   alias Web.Pagination
 
+  defdelegate types(), to: Zone
+
+  def rooms?(zone) do
+    zone.type == "rooms"
+  end
+
+  def overworld?(zone) do
+    zone.type == "overworld"
+  end
+
   @doc """
   Get all zones
   """

@@ -8,7 +8,10 @@ defmodule Data.Zone do
   alias Data.NPCSpawner
   alias Data.Room
 
+  @types ["rooms", "overworld"]
+
   schema "zones" do
+    field(:type, :string, default: "rooms")
     field(:name, :string)
     field(:description, :string)
     field(:starting_level, :integer, default: 1)
@@ -23,9 +26,12 @@ defmodule Data.Zone do
     timestamps()
   end
 
+  def types(), do: @types
+
   def changeset(struct, params) do
     struct
     |> cast(params, [
+      :type,
       :name,
       :description,
       :graveyard_id,
@@ -33,6 +39,7 @@ defmodule Data.Zone do
       :ending_level,
       :map_layer_names
     ])
-    |> validate_required([:name, :description, :map_layer_names])
+    |> validate_required([:type, :name, :description, :map_layer_names])
+    |> validate_inclusion(:type, @types)
   end
 end

@@ -28,6 +28,13 @@
           <table class="table">
             <tr>
               <th>
+                Zone Type
+                <%= SharedView.help_tooltip("zone.type") %>
+              </th>
+              <td><%= @zone.type %></td>
+            </tr>
+            <tr>
+              <th>
                 Name
                 <%= SharedView.help_tooltip("zone.name") %>
               </th>
@@ -64,79 +71,96 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Map</h3>
-        </div>
-        <div class="box-body">
-          <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
-              <%= Enum.map(layers(@zone), fn (layer) -> %>
-                <li class="<%= layer_class(@zone, layer) %>">
-                  <%= link(layer_name(@zone, layer), to: "#layer-#{layer}", data: [toggle: "tab"]) %>
-                </li>
-              <% end)%>
-            </ul>
-            <div class="tab-content" style="overflow: scroll">
-              <%= Enum.map(layers(@zone), fn (layer) -> %>
-                <div class="tab-pane <%= layer_class(@zone, layer) %>" id="layer-<%= layer %>">
-                  <table class="table">
-                    <%= Enum.map(map(@zone, layer: layer), fn (row) -> %>
-                      <tr>
-                        <%= Enum.map(row, fn ({{x, y}, nil}) -> %>
-                          <td><%= link("New Room", to: zone_room_path(@conn, :new, @zone.id, x: x, y: y, map_layer: layer), class: "btn btn-default") %></td>
-                        <% ({_, room}) -> %>
-                          <td><%= link(room.name, to: room_path(@conn, :show, room.id), class: "btn #{room_color(room)}") %></td>
-                        <% end) %>
-                      </tr>
-                    <% end) %>
-                  </table>
-                </div>
-              <% end) %>
+  <%= if Zone.rooms?(@zone) do %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Map</h3>
+          </div>
+          <div class="box-body">
+            <div class="nav-tabs-custom">
+              <ul class="nav nav-tabs">
+                <%= Enum.map(layers(@zone), fn (layer) -> %>
+                  <li class="<%= layer_class(@zone, layer) %>">
+                    <%= link(layer_name(@zone, layer), to: "#layer-#{layer}", data: [toggle: "tab"]) %>
+                  </li>
+                <% end)%>
+              </ul>
+              <div class="tab-content" style="overflow: scroll">
+                <%= Enum.map(layers(@zone), fn (layer) -> %>
+                  <div class="tab-pane <%= layer_class(@zone, layer) %>" id="layer-<%= layer %>">
+                    <table class="table">
+                      <%= Enum.map(map(@zone, layer: layer), fn (row) -> %>
+                        <tr>
+                          <%= Enum.map(row, fn ({{x, y}, nil}) -> %>
+                            <td><%= link("New Room", to: zone_room_path(@conn, :new, @zone.id, x: x, y: y, map_layer: layer), class: "btn btn-default") %></td>
+                          <% ({_, room}) -> %>
+                            <td><%= link(room.name, to: room_path(@conn, :show, room.id), class: "btn #{room_color(room)}") %></td>
+                          <% end) %>
+                        </tr>
+                      <% end) %>
+                    </table>
+                  </div>
+                <% end) %>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Rooms</h3>
-          <div class="box-tools">
-            <%= link("Add Room", to: zone_room_path(@conn, :new, @zone.id), class: "btn btn-primary") %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Rooms</h3>
+            <div class="box-tools">
+              <%= link("Add Room", to: zone_room_path(@conn, :new, @zone.id), class: "btn btn-primary") %>
+            </div>
           </div>
-        </div>
-        <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Ecology</th>
-                <td>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @zone.rooms, fn (room) -> %>
+          <div class="box-body">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= room.id %></td>
-                  <td><%= link(room.name, to: room_path(@conn, :show, room.id)) %></td>
-                  <td><%= room.ecology %></td>
-                  <td>
-                    <%= link("View", to: room_path(@conn, :show, room.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: room_path(@conn, :edit, room.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Ecology</th>
+                  <td>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @zone.rooms, fn (room) -> %>
+                  <tr>
+                    <td><%= room.id %></td>
+                    <td><%= link(room.name, to: room_path(@conn, :show, room.id)) %></td>
+                    <td><%= room.ecology %></td>
+                    <td>
+                      <%= link("View", to: room_path(@conn, :show, room.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: room_path(@conn, :edit, room.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
+
+  <%= if Zone.overworld?(@zone) do %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Map</h3>
+          </div>
+          <div class="box-body">
+            <%= React.react_component("Components.WorldMap", []) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </section>

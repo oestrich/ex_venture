@@ -135,3 +135,6 @@ zone.name:
 
 zone.graveyard:
   The graveyard is where the player will be teleported after dying in this zone.
+
+zone.type:
+  Rooms: players move from room to room seeing each description separately. Overland: players move around a large map.
