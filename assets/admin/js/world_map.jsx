@@ -1,10 +1,12 @@
 import React from 'react';
 
+const COLORS = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
+
 class Colors extends React.Component {
   constructor(props) {
     super(props);
 
-    this.colors = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
+    this.colors = COLORS;
     this.changeColor = this.changeColor.bind(this);
   }
 
@@ -114,7 +116,13 @@ class MapCell extends React.Component {
   }
 
   render() {
-    let color = this.state.hover ? this.props.selectedColor : this.props.color;
+    let color;
+    if (this.state.hover) {
+      color = this.props.selectedColor;
+    } else {
+      color = COLORS[this.props.color];
+    }
+
     let symbol = this.state.hover ? this.props.selectedSymbol : this.props.symbol;
 
     let handleClick = this.props.handleClick;
@@ -156,9 +164,6 @@ class MapRow extends React.Component {
     return (
       <div>
         {row.map((cell, index) => {
-          let symbol = cell.symbol;
-          let color = cell.color;
-
           let cellHandleClick = (event) => {
             handleClick(index);
           }
@@ -170,8 +175,8 @@ class MapRow extends React.Component {
           return (
             <MapCell
               key={index}
-              symbol={symbol}
-              color={color}
+              symbol={cell.s}
+              color={cell.c}
               onMouseDown={this.props.onMouseDown}
               onMouseUp={this.props.onMouseUp}
               onMouseEnter={cellOnMouseEnter}
@@ -189,12 +194,12 @@ export default class WorldMap extends React.Component {
   constructor(props) {
     super(props);
 
-    let xs = [...Array(15).keys()];
-    let ys = [...Array(70).keys()];
+    let xs = [...Array(50).keys()];
+    let ys = [...Array(100).keys()];
 
     let map = xs.map(x => {
       return ys.map(y => {
-        return {symbol: ".", color: "green"};
+        return {s: ".", c: 2};
       });
     });
 
@@ -226,8 +231,8 @@ export default class WorldMap extends React.Component {
     let row = map[y];
     let cell = row[x];
 
-    cell.symbol = this.state.selectedSymbol;
-    cell.color = this.state.selectedColor;
+    cell.s = this.state.selectedSymbol;
+    cell.c = COLORS.indexOf(this.state.selectedColor);
 
     row.splice(x, 1, cell);
     map[y] = row;
