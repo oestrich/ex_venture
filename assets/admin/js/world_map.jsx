@@ -228,18 +228,10 @@ export default class WorldMap extends React.Component {
   handleClick(x, y) {
     let map = this.state.map;
 
-    let row = map[y];
-    let cell = row[x];
+    map[y][x].s = this.state.selectedSymbol;
+    map[y][x].c = COLORS.indexOf(this.state.selectedColor);
 
-    cell.s = this.state.selectedSymbol;
-    cell.c = COLORS.indexOf(this.state.selectedColor);
-
-    row.splice(x, 1, cell);
-    map[y] = row;
-
-    this.setState({
-      map: map,
-    });
+    this.setState({map});
   }
 
   onMouseDown(event) {
