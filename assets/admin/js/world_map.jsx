@@ -90,12 +90,23 @@ class MapCell extends React.Component {
       hover: false,
     }
 
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseEnter = this.onMouseEnter.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
   }
 
+  onMouseDown(event) {
+    this.props.onMouseDown(event);
+  }
+
+  onMouseUp(event) {
+    this.props.onMouseUp(event);
+  }
+
   onMouseEnter(event) {
     this.setState({hover: true});
+    this.props.onMouseEnter(event);
   }
 
   onMouseLeave(event) {
@@ -107,9 +118,16 @@ class MapCell extends React.Component {
     let symbol = this.state.hover ? this.props.selectedSymbol : this.props.symbol;
 
     let handleClick = this.props.handleClick;
+    let handleDrag = this.handleDrag;
 
     return (
-      <span style={{color: color, display: "inline-block"}} onClick={handleClick} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+      <span
+        style={{color: color}}
+        onClick={handleClick}
+        onMouseDown={this.onMouseDown}
+        onMouseUp={this.onMouseUp}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave} >
         {symbol}
       </span>
     );
@@ -117,12 +135,23 @@ class MapCell extends React.Component {
 }
 
 class MapRow extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+  }
+
+  onMouseEnter(index) {
+    this.props.onMouseEnter(index);
+  }
+
   render() {
     let row = this.props.row;
     let selectedSymbol = this.props.selectedSymbol;
     let selectedColor = this.props.selectedColor;
 
     let handleClick = this.props.handleClick;
+    let onMouseEnter = this.onMouseEnter;
 
     return (
       <div>
@@ -134,8 +163,21 @@ class MapRow extends React.Component {
             handleClick(index);
           }
 
+          let cellOnMouseEnter = (event) => {
+            onMouseEnter(index);
+          }
+
           return (
-            <MapCell key={index} symbol={symbol} color={color} handleClick={cellHandleClick} selectedSymbol={selectedSymbol} selectedColor={selectedColor} />
+            <MapCell
+              key={index}
+              symbol={symbol}
+              color={color}
+              onMouseDown={this.props.onMouseDown}
+              onMouseUp={this.props.onMouseUp}
+              onMouseEnter={cellOnMouseEnter}
+              handleClick={cellHandleClick}
+              selectedSymbol={selectedSymbol}
+              selectedColor={selectedColor} />
           );
         })}
       </div>
@@ -147,39 +189,27 @@ export default class WorldMap extends React.Component {
   constructor(props) {
     super(props);
 
+    let xs = [...Array(15).keys()];
+    let ys = [...Array(70).keys()];
+
+    let map = xs.map(x => {
+      return ys.map(y => {
+        return [".", "green"];
+      });
+    });
+
     this.state = {
+      drag: false,
+      map: map,
       selectedSymbol: "%",
       selectedColor: "white",
-      map: [
-        [
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-        ],
-        [
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-        ],
-        [
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-        ],
-        [
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-        ],
-        [
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-        ],
-        [
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-          [".", "green"], [".", "green"], [".", "green"], [".", "green"], [".", "green"],
-        ],
-      ]
     };
 
     this.handleColorChange = this.handleColorChange.bind(this);
     this.handleSymbolChange = this.handleSymbolChange.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
   }
 
   handleColorChange(color) {
@@ -191,8 +221,6 @@ export default class WorldMap extends React.Component {
   }
 
   handleClick(x, y) {
-    console.log(`Changing ${x}, ${y}`);
-
     let map = this.state.map;
     let symbol = this.state.selectedSymbol;
     let color = this.state.selectedColor;
@@ -204,6 +232,20 @@ export default class WorldMap extends React.Component {
     this.setState({
       map: map,
     });
+  }
+
+  onMouseDown(event) {
+    this.setState({drag: true});
+  }
+
+  onMouseEnter(x, y) {
+    if (this.state.drag) {
+      this.handleClick(x, y);
+    }
+  }
+
+  onMouseUp(event) {
+    this.setState({drag: false});
   }
 
   render() {
@@ -222,8 +264,20 @@ export default class WorldMap extends React.Component {
               this.handleClick(x, index);
             };
 
+            let rowOnMouseEnter = (x) => {
+              this.onMouseEnter(x, index);
+            };
+
             return (
-              <MapRow key={index} row={row} handleClick={rowHandleClick} selectedSymbol={selectedSymbol} selectedColor={selectedColor} />
+              <MapRow
+                key={index}
+                row={row}
+                onMouseDown={this.onMouseDown}
+                onMouseEnter={rowOnMouseEnter}
+                onMouseUp={this.onMouseUp}
+                handleClick={rowHandleClick}
+                selectedSymbol={selectedSymbol}
+                selectedColor={selectedColor} />
             );
           })}
         </div>

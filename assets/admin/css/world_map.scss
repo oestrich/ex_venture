@@ -1,6 +1,17 @@
 .world-map {
-  font-family: Menlo, Consolas, "Courier New"; 
+  font-family: Menlo, Consolas, "Courier New";
   cursor: default;
   font-size: 2em;
+  line-height: 1em;
   margin: 10px;
+
+  overflow: auto;
+  white-space: nowrap;
+  word-wrap: normal;
+
+  user-select: none;
+
+  span {
+    display: inline-block;
+  }
 }
