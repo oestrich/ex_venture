@@ -7,6 +7,7 @@ defmodule Data.Zone do
 
   alias Data.NPCSpawner
   alias Data.Room
+  alias Data.Zone.MapCell
 
   @types ["rooms", "overworld"]
 
@@ -17,7 +18,7 @@ defmodule Data.Zone do
     field(:starting_level, :integer, default: 1)
     field(:ending_level, :integer, default: 1)
     field(:map_layer_names, :map, default: %{})
-    field(:overworld_map, {:array, :map})
+    field(:overworld_map, {:array, MapCell})
 
     has_many(:rooms, Room)
     has_many(:npc_spawners, NPCSpawner)
