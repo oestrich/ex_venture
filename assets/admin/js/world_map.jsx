@@ -21,7 +21,8 @@ class Colors extends React.Component {
   changeColor(color) {
     let handleColorChange = this.props.handleColorChange;
 
-    return () => {
+    return (event) => {
+      event.preventDefault();
       handleColorChange(color);
     };
   }
@@ -63,7 +64,8 @@ class Symbols extends React.Component {
   changeSymbol(symbol) {
     let handleSymbolChange = this.props.handleSymbolChange;
 
-    return () => {
+    return (event) => {
+      event.preventDefault();
       handleSymbolChange(symbol);
     };
   }
@@ -190,18 +192,63 @@ class MapRow extends React.Component {
   }
 }
 
-export default class WorldMap extends React.Component {
-  constructor(props) {
-    super(props);
+/**
+ * Map helper functions
+ */
+class OverworldMap {
+  constructor(map) {
+    if (map == null) {
+      this.overworld = this.generate();
+    } else {
+      let groupedMap = map.reduce((acc, val) => {
+        if (acc[val.x] == undefined) {
+          acc[val.x] = [];
+        }
 
+        acc[val.x].push(val);
+
+        return acc;
+      }, []);
+
+      this.overworld = groupedMap.map((row) => {
+        return row.sort((a, b) => { return a.y - b.y; });
+      });
+    }
+  }
+
+  generate() {
     let xs = [...Array(50).keys()];
     let ys = [...Array(100).keys()];
 
     let map = xs.map(x => {
       return ys.map(y => {
-        return {s: ".", c: 2};
+        return {x: x, y: y, s: ".", c: 2};
       });
     });
+
+    return map;
+  }
+
+  updateCell(x, y, attrs) {
+    this.overworld[y][x].s = attrs.s;
+    this.overworld[y][x].c = COLORS.indexOf(attrs.c);
+  }
+
+  rows(fun) {
+    return this.overworld.map(fun);
+  }
+
+  toJSON() {
+    let flattenedMap = this.overworld.reduce((acc, val) => acc.concat(val), []);
+    return JSON.stringify(flattenedMap);
+  }
+}
+
+export default class WorldMap extends React.Component {
+  constructor(props) {
+    super(props);
+
+    let map = new OverworldMap(this.props.map);
 
     this.state = {
       drag: false,
@@ -228,8 +275,7 @@ export default class WorldMap extends React.Component {
   handleClick(x, y) {
     let map = this.state.map;
 
-    map[y][x].s = this.state.selectedSymbol;
-    map[y][x].c = COLORS.indexOf(this.state.selectedColor);
+    map.updateCell(x, y, {s: this.state.selectedSymbol, c: this.state.selectedColor});
 
     this.setState({map});
   }
@@ -255,11 +301,14 @@ export default class WorldMap extends React.Component {
 
     return (
       <div>
+        <input type="hidden" name="zone[overworld_map]" value={map.toJSON()} />
+        <input type="submit" className="btn btn-primary pull-right" value="Save" />
+
         <Colors handleColorChange={this.handleColorChange} selectedColor={selectedColor} />
         <Symbols handleSymbolChange={this.handleSymbolChange} selectedSymbol={selectedSymbol} />
 
         <div className="world-map terminal">
-          {map.map((row, index) => {
+          {map.rows((row, index) => {
             let rowHandleClick = (x) => {
               this.handleClick(x, index);
             };

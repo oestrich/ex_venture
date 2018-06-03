@@ -17,6 +17,7 @@ defmodule Data.Zone do
     field(:starting_level, :integer, default: 1)
     field(:ending_level, :integer, default: 1)
     field(:map_layer_names, :map, default: %{})
+    field(:overworld_map, {:array, :map})
 
     has_many(:rooms, Room)
     has_many(:npc_spawners, NPCSpawner)
@@ -41,5 +42,12 @@ defmodule Data.Zone do
     ])
     |> validate_required([:type, :name, :description, :map_layer_names])
     |> validate_inclusion(:type, @types)
+  end
+
+  def map_changeset(struct, params) do
+    struct
+    |> cast(params, [:overworld_map])
+    |> validate_required([:overworld_map])
+    |> validate_inclusion(:type, ["overworld"], message: "must be an overworld to add a map")
   end
 end

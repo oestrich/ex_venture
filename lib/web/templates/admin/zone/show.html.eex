@@ -157,7 +157,9 @@
             <h3 class="box-title">Map</h3>
           </div>
           <div class="box-body">
-            <%= React.react_component("Components.WorldMap", []) %>
+            <%= form_tag zone_overworld_path(@conn, :update, @zone.id), method: "PUT" do %>
+              <%= React.react_component("Components.WorldMap", map: @zone.overworld_map) %>
+            <% end %>
           </div>
         </div>
       </div>
