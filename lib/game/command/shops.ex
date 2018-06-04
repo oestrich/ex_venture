@@ -112,7 +112,7 @@ defmodule Game.Command.Shops do
   def run(command, state)
 
   def run({}, %{socket: socket, save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case length(room.shops) do
       0 ->
@@ -131,7 +131,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:list, shop_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -143,7 +143,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:list}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case one_shop(room.shops) do
       {:error, :not_found} ->
@@ -160,7 +160,7 @@ defmodule Game.Command.Shops do
   def run({:show, item_name, :from, shop_name}, state) do
     %{socket: socket, save: %{room_id: room_id}} = state
 
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -172,7 +172,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:show, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case one_shop(room.shops) do
       {:error, :not_found} ->
@@ -189,7 +189,7 @@ defmodule Game.Command.Shops do
   def run({:buy, item_name, :from, shop_name}, state) do
     %{socket: socket, save: %{room_id: room_id}} = state
 
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -201,7 +201,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:buy, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case one_shop(room.shops) do
       {:error, :not_found} ->
@@ -218,7 +218,7 @@ defmodule Game.Command.Shops do
   def run({:sell, item_name, :to, shop_name}, state) do
     %{socket: socket, save: %{room_id: room_id}} = state
 
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case find_shop(room.shops, shop_name) do
       {:error, :not_found} ->
@@ -230,7 +230,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:sell, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case one_shop(room.shops) do
       {:error, :not_found} ->

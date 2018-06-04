@@ -5,6 +5,7 @@ defmodule Game.NPC.Actions do
 
   @rand Application.get_env(:ex_venture, :game)[:rand]
 
+  use Game.Environment
   use Game.Room
 
   import Game.Character.Helpers, only: [update_effect_count: 2, is_alive?: 1]
@@ -41,7 +42,7 @@ defmodule Game.NPC.Actions do
     npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
     npc_spawner.room_id |> @room.link()
 
-    {:ok, room} = @room.look(npc_spawner.room_id)
+    {:ok, room} = @environment.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
       GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})

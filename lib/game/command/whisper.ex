@@ -49,7 +49,7 @@ defmodule Game.Command.Whisper do
   def run(command, state)
 
   def run({:whisper, who_and_message}, state = %{user: user, save: save}) do
-    {:ok, room} = @room.look(save.room_id)
+    {:ok, room} = @environment.look(save.room_id)
 
     case find_character(room, who_and_message, message: true) do
       {:error, :not_found} ->

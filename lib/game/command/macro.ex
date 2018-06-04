@@ -6,6 +6,7 @@ defmodule Game.Command.Macro do
   defmacro __using__(_opts) do
     quote do
       use Networking.Socket
+      use Game.Environment
       use Game.Room
 
       import Game.Command.Macro, only: [commands: 1, commands: 2]

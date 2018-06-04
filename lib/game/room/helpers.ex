@@ -3,10 +3,11 @@ defmodule Game.Room.Helpers do
   Helpers for interacting with a room
   """
 
+  use Game.Environment
+  use Game.Room
+
   alias Data.Exit
   alias Game.Utility
-
-  use Game.Room
 
   @doc """
   Find a character in a room by name.
@@ -64,7 +65,7 @@ defmodule Game.Room.Helpers do
 
     case room |> Exit.exit_to(direction) do
       %{^id_key => room_id} ->
-        @room.look(room_id)
+        @environment.look(room_id)
 
       _ ->
         {:error, :not_found}

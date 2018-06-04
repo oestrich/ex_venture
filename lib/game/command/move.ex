@@ -96,7 +96,7 @@ defmodule Game.Command.Move do
   def run(command, state)
 
   def run({:east}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:east) do
       room_exit = %{east_id: id} ->
@@ -108,7 +108,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:north}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:north) do
       room_exit = %{north_id: id} ->
@@ -120,7 +120,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:south}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:south) do
       room_exit = %{south_id: id} ->
@@ -132,7 +132,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:west}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:west) do
       room_exit = %{west_id: id} ->
@@ -144,7 +144,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:up}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:up) do
       room_exit = %{up_id: id} ->
@@ -156,7 +156,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:down}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:down) do
       room_exit = %{down_id: id} ->
@@ -168,7 +168,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:in}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:in) do
       room_exit = %{in_id: id} ->
@@ -180,7 +180,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:out}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(:out) do
       room_exit = %{out_id: id} ->
@@ -192,7 +192,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:open, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       %{id: exit_id, has_door: true} ->
@@ -209,7 +209,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:close, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       %{id: exit_id, has_door: true} ->
@@ -370,7 +370,7 @@ defmodule Game.Command.Move do
   Push out an update for the mini map after opening/closing doors
   """
   def update_mini_map(state, room_id) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     state |> GMCP.map(mini_map)
     :ok

@@ -50,22 +50,6 @@ defmodule Game.Room do
   end
 
   @doc """
-  Look around the room
-
-  Fetches current room
-  """
-  @spec look(integer()) :: Room.t()
-  def look(id) do
-    case :global.whereis_name({__MODULE__, id}) do
-      :undefined ->
-        {:error, :room_offline}
-
-      pid ->
-        GenServer.call(pid, :look)
-    end
-  end
-
-  @doc """
   Enter a room
 
   Valid enter reasons: `:enter`, `:respawn`

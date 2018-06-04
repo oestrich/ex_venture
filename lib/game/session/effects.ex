@@ -3,6 +3,7 @@ defmodule Game.Session.Effects do
   Handle effects on a user
   """
 
+  use Game.Environment
   use Game.Room
   use Game.Zone
   use Networking.Socket
@@ -71,7 +72,7 @@ defmodule Game.Session.Effects do
   def maybe_transport_to_graveyard(user)
 
   def maybe_transport_to_graveyard(%{save: %{room_id: room_id}}) do
-    {:ok, room} = room_id |> @room.look()
+    {:ok, room} = room_id |> @environment.look()
 
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->

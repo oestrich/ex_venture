@@ -72,7 +72,7 @@ defmodule Game.Command.Look do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    with {:ok, room} <- @room.look(save.room_id) do
+    with {:ok, room} <- @environment.look(save.room_id) do
       mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
 
       room_map =
@@ -96,9 +96,9 @@ defmodule Game.Command.Look do
   def run({:direction, direction}, state = %{save: save}) do
     id_key = String.to_atom("#{direction}_id")
 
-    with {:ok, room} <- @room.look(save.room_id),
+    with {:ok, room} <- @environment.look(save.room_id),
          %{^id_key => room_id} <- Exit.exit_to(room, direction),
-         {:ok, room} <- @room.look(room_id) do
+         {:ok, room} <- @environment.look(room_id) do
       state.socket |> @socket.echo(Format.peak_room(room, direction))
     else
       {:error, :room_offline} ->
@@ -110,7 +110,7 @@ defmodule Game.Command.Look do
   end
 
   def run({:other, name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     room
     |> maybe_look_item(name, state)

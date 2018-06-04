@@ -59,7 +59,6 @@ defmodule Game.Command do
   end
 
   use Networking.Socket
-  use Game.Room
 
   require Logger
 

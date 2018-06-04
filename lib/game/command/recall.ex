@@ -67,7 +67,7 @@ defmodule Game.Command.Recall do
   defp maybe_recall(:ok), do: :ok
 
   defp maybe_recall(state = %{save: save}) do
-    {:ok, room} = save.room_id |> @room.look()
+    {:ok, room} = save.room_id |> @environment.look()
 
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->
