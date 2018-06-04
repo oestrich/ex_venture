@@ -2,6 +2,17 @@ import React from 'react';
 
 const COLORS = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
 
+const debounceEvent = (callback, time) => {
+  let interval;
+  return (...args) => {
+    clearTimeout(interval);
+    interval = setTimeout(() => {
+      interval = null;
+      callback(...args);
+    }, time);
+  };
+};
+
 class Colors extends React.Component {
   constructor(props) {
     super(props);
@@ -96,8 +107,8 @@ class MapCell extends React.Component {
 
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
-    this.onMouseEnter = this.onMouseEnter.bind(this);
-    this.onMouseLeave = this.onMouseLeave.bind(this);
+    this.onMouseEnter = debounceEvent(this.onMouseEnter.bind(this), 10);
+    this.onMouseLeave = debounceEvent(this.onMouseLeave.bind(this), 10);
   }
 
   onMouseDown(event) {
