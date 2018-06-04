@@ -7,7 +7,7 @@ defmodule Game.Session.Process do
 
   use GenServer, restart: :temporary
   use Networking.Socket
-  use Game.Room
+  use Game.Environment
 
   require Logger
 
@@ -96,8 +96,8 @@ defmodule Game.Session.Process do
     Session.Registry.unregister()
     Session.Registry.player_offline(state.user)
 
-    @room.leave(save.room_id, {:user, user}, :signout)
-    @room.unlink(save.room_id)
+    @environment.leave(save.room_id, {:user, user}, :signout)
+    @environment.unlink(save.room_id)
 
     user |> Account.save_session(save, session_started_at, Timex.now(), stats)
 

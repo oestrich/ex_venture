@@ -57,7 +57,7 @@ defmodule Game.Command.Crash do
   def run({:room}, %{user: user, save: save, socket: socket}) do
     case "admin" in user.flags do
       true ->
-        save.room_id |> @room.crash()
+        save.room_id |> @environment.crash()
         socket |> @socket.echo("Sent a message to crash the room.")
 
       false ->

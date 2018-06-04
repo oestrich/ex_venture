@@ -4,7 +4,6 @@ defmodule Game.Session.Effects do
   """
 
   use Game.Environment
-  use Game.Room
   use Game.Zone
   use Networking.Socket
 
@@ -58,7 +57,7 @@ defmodule Game.Session.Effects do
     user |> maybe_transport_to_graveyard()
 
     state.save.room_id
-    |> @room.notify({:user, user}, {"character/died", {:user, user}, :character, from})
+    |> @environment.notify({:user, user}, {"character/died", {:user, user}, :character, from})
 
     :ok
   end

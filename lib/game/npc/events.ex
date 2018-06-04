@@ -4,7 +4,6 @@ defmodule Game.NPC.Events do
   """
 
   use Game.Environment
-  use Game.Room
 
   import Game.Command.Skills, only: [find_target: 2]
 
@@ -424,10 +423,10 @@ defmodule Game.NPC.Events do
 
   def move_room(state, old_room, new_room, direction) do
     CharacterInstrumenter.movement(:npc, fn ->
-      @room.unlink(old_room.id)
-      @room.leave(old_room.id, npc(state), {:leave, direction})
-      @room.enter(new_room.id, npc(state), {:enter, Exit.opposite(direction)})
-      @room.link(old_room.id)
+      @environment.unlink(old_room.id)
+      @environment.leave(old_room.id, npc(state), {:leave, direction})
+      @environment.enter(new_room.id, npc(state), {:enter, Exit.opposite(direction)})
+      @environment.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
         NPC.delay_notify({"room/entered", {{:user, player}, :enter}}, milliseconds: @npc_reaction_time_ms)
@@ -460,7 +459,7 @@ defmodule Game.NPC.Events do
 
   def emote_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_emote(state.npc, message)
-    room_id |> @room.emote(npc(state), message)
+    room_id |> @environment.emote(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
     state
@@ -523,7 +522,7 @@ defmodule Game.NPC.Events do
   def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_say(state.npc, message)
 
-    room_id |> @room.say(npc(state), message)
+    room_id |> @environment.say(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
     state
@@ -541,7 +540,7 @@ defmodule Game.NPC.Events do
     message = Enum.random(messages)
     message = Message.npc_say(state.npc, message)
 
-    room_id |> @room.say(npc(state), message)
+    room_id |> @environment.say(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
     state
@@ -576,7 +575,7 @@ defmodule Game.NPC.Events do
   defp npc(%{npc: npc}), do: {:npc, npc}
 
   defp update_character(state) do
-    state.room_id |> @room.update_character(npc(state))
+    state.room_id |> @environment.update_character(npc(state))
     state
   end
 

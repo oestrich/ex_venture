@@ -7,7 +7,7 @@ defmodule Game.Session.Login do
   """
 
   use Networking.Socket
-  use Game.Room
+  use Game.Environment
 
   require Logger
 
@@ -105,8 +105,8 @@ defmodule Game.Session.Login do
   end
 
   defp finish_login(state = %{user: user}, session) do
-    @room.link(user.save.room_id)
-    @room.enter(user.save.room_id, {:user, user}, :login)
+    @environment.link(user.save.room_id)
+    @environment.enter(user.save.room_id, {:user, user}, :login)
     session |> Session.recv("look")
     state |> GMCP.character()
 

@@ -4,7 +4,6 @@ defmodule Game.Room.Helpers do
   """
 
   use Game.Environment
-  use Game.Room
 
   alias Data.Exit
   alias Game.Utility

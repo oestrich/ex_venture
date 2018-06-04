@@ -165,7 +165,7 @@ defmodule Game.Command.PickUp do
   Pick up an item from a room
   """
   def pick_up(item, room, state = %{save: save}) do
-    case @room.pick_up(room.id, item) do
+    case @environment.pick_up(room.id, item) do
       {:ok, instance} ->
         item = Items.item(instance)
 
@@ -185,7 +185,7 @@ defmodule Game.Command.PickUp do
   defp pick_up_currency(state) do
     %{save: save} = state
 
-    case @room.pick_up_currency(save.room_id) do
+    case @environment.pick_up_currency(save.room_id) do
       {:ok, currency} ->
         Logger.info(
           "Session (#{inspect(self())}) picking up #{currency} currency from room (#{save.room_id})",

@@ -66,7 +66,7 @@ defmodule Game.Command.Drop do
   defp _drop_currency(amount, state = %{socket: socket, save: %{currency: currency}}) do
     save = %{state.save | currency: currency - amount}
     socket |> @socket.echo("You dropped #{amount} #{currency()}")
-    @room.drop_currency(save.room_id, {:user, state.user}, amount)
+    @environment.drop_currency(save.room_id, {:user, state.user}, amount)
 
     {:update, Map.put(state, :save, save)}
   end
@@ -86,7 +86,7 @@ defmodule Game.Command.Drop do
   defp _drop_item(item, state = %{socket: socket, user: user, save: save}) do
     {instance, items} = Item.remove(save.items, item)
     save = %{save | items: items}
-    @room.drop(save.room_id, {:user, user}, instance)
+    @environment.drop(save.room_id, {:user, user}, instance)
 
     socket |> @socket.echo("You dropped #{Format.item_name(item)}")
 

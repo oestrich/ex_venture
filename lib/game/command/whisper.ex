@@ -61,7 +61,7 @@ defmodule Game.Command.Whisper do
         Character.notify(character, {"room/whisper", Message.whisper(user, message)})
 
         room.id
-        |> @room.notify(
+        |> @environment.notify(
           {:user, user},
           {"room/overheard", [{:user, user}, character],
            Format.whisper_overheard({:user, user}, character)}

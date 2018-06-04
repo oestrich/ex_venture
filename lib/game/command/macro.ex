@@ -7,7 +7,6 @@ defmodule Game.Command.Macro do
     quote do
       use Networking.Socket
       use Game.Environment
-      use Game.Room
 
       import Game.Command.Macro, only: [commands: 1, commands: 2]
 

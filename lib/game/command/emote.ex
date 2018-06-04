@@ -52,7 +52,7 @@ defmodule Game.Command.Emote do
 
   def run({emote}, %{socket: socket, user: user, save: %{room_id: room_id}}) do
     socket |> @socket.echo(Format.emote({:user, user}, emote))
-    room_id |> @room.emote({:user, user}, Message.emote(user, emote))
+    room_id |> @environment.emote({:user, user}, Message.emote(user, emote))
     :ok
   end
 end
