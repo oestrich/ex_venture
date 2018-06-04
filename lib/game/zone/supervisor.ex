@@ -15,13 +15,22 @@ defmodule Game.Zone.Supervisor do
   end
 
   def init(zone) do
-    children = [
+    supervise(children(zone), strategy: :one_for_all)
+  end
+
+  defp children(zone = %{type: "rooms"}) do
+    [
       worker(Zone, [zone], id: zone.id, restart: :permanent),
       supervisor(Room.Supervisor, [zone], id: "rooms:#{zone.id}", restart: :permanent),
       supervisor(NPC.Supervisor, [zone], id: "npcs:#{zone.id}", restart: :permanent),
       supervisor(Shop.Supervisor, [zone], id: "shops:#{zone.id}", restart: :permanent)
     ]
+  end
 
-    supervise(children, strategy: :one_for_all)
+  defp children(zone = %{type: "overworld"}) do
+    [
+      worker(Zone, [zone], id: zone.id, restart: :permanent),
+      supervisor(Zone.SectorSupervisor, [zone], id: "sectors:#{zone.id}", restart: :permanent),
+    ]
   end
 end

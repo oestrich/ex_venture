@@ -442,4 +442,12 @@ defmodule TestHelpers do
       tags: ["gods", "magic"],
     }, params)
   end
+
+  def basic_overworld_map() do
+    Enum.flat_map(0..99, fn x ->
+      Enum.map(0..49, fn y ->
+        %{x: x, y: y, s: ".", c: "green"}
+      end)
+    end)
+  end
 end
