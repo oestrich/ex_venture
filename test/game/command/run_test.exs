@@ -24,7 +24,7 @@ defmodule Game.Command.RunTest do
   end
 
   test "run in a set of directions", %{state: state} do
-    room = %Data.Room{
+    room = %Game.Environment.State{
       id: 1,
       name: "",
       description: "",
@@ -42,7 +42,7 @@ defmodule Game.Command.RunTest do
   end
 
   test "continue running in the processed set of directions", %{state: state} do
-    room = %Data.Room{
+    room = %Game.Environment.State{
       id: 1,
       name: "",
       description: "",
@@ -60,7 +60,7 @@ defmodule Game.Command.RunTest do
   end
 
   test "end of the run", %{state: state} do
-    room = %Data.Room{
+    room = %Game.Environment.State{
       id: 1,
       name: "",
       description: "",
@@ -77,7 +77,7 @@ defmodule Game.Command.RunTest do
   end
 
   test "failure to move in a direction stops the run", %{state: state} do
-    @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
+    @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
 
     :ok = Command.Run.run({[:east, :north]}, state)
 
@@ -86,7 +86,7 @@ defmodule Game.Command.RunTest do
 
   test "out of movement stops the run", %{state: state} do
     state = %{state | save: %{state.save | stats: %{state.save.stats | move_points: 0}}}
-    @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
+    @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
 
     :ok = Command.Run.run({[:north, :east]}, state)
 

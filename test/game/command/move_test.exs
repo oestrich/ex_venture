@@ -10,7 +10,14 @@ defmodule Game.Command.MoveTest do
   alias Game.Session.Registry
   alias Game.Session.State
 
-  @basic_room %Data.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
+  @basic_room %Game.Environment.State{
+    id: 1,
+    name: "",
+    description: "",
+    players: [],
+    shops: [],
+    zone: %{id: 1, name: ""}
+  }
 
   setup do
     @socket.clear_messages
@@ -39,7 +46,7 @@ defmodule Game.Command.MoveTest do
     end
 
     test "north - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:north}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
@@ -94,13 +101,13 @@ defmodule Game.Command.MoveTest do
     end
 
     test "east - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:east}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "east - not enough movement", %{state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{west_id: 1, east_id: 2}], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{west_id: 1, east_id: 2}], players: [], shops: []})
       command = %Command{module: Command.Move, args: {:east}}
       {:error, :no_movement} = Command.run(command, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 0}}}))
 
@@ -149,13 +156,13 @@ defmodule Game.Command.MoveTest do
     end
 
     test "south - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:south}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "south - not enough movement", %{state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{north_id: 1, south_id: 2}], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{north_id: 1, south_id: 2}], players: [], shops: []})
       command = %Command{module: Command.Move, args: {:south}}
       {:error, :no_movement} = Command.run(command, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 0}}}))
 
@@ -204,13 +211,13 @@ defmodule Game.Command.MoveTest do
     end
 
     test "west - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:west}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "west - not enough movement", %{state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{west_id: 2, east_id: 1}], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{west_id: 2, east_id: 1}], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:west}}
       {:error, :no_movement} = Command.run(command, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 0}}}))
@@ -260,13 +267,13 @@ defmodule Game.Command.MoveTest do
     end
 
     test "up - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:up}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "up - not enough movement", %{state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{up_id: 2, down_id: 1}], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{up_id: 2, down_id: 1}], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:up}}
       {:error, :no_movement} = Command.run(command, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 0}}}))
@@ -316,13 +323,13 @@ defmodule Game.Command.MoveTest do
     end
 
     test "down - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:down}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "down - not enough movement", %{state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{down_id: 2, up_id: 1}], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{down_id: 2, up_id: 1}], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:down}}
       {:error, :no_movement} = Command.run(command, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 0}}}))
@@ -372,13 +379,13 @@ defmodule Game.Command.MoveTest do
     end
 
     test "in - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:in}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "in - not enough movement", %{state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{in_id: 2, out_id: 1}], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{in_id: 2, out_id: 1}], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:in}}
       {:error, :no_movement} = Command.run(command, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 0}}}))
@@ -428,13 +435,13 @@ defmodule Game.Command.MoveTest do
     end
 
     test "out - not found", %{state: state} do
-      @room.set_room(%Data.Room{exits: []})
+      @room.set_room(%Game.Environment.State{exits: []})
       command = %Command{module: Command.Move, args: {:out}}
       {:error, :no_exit} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
     end
 
     test "out - not enough movement", %{state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [%{out_id: 2, in_id: 1}], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{out_id: 2, in_id: 1}], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:out}}
       {:error, :no_movement} = Command.run(command, Map.merge(state, %{save: %{room_id: 1, stats: %{move_points: 0}}}))
@@ -491,7 +498,7 @@ defmodule Game.Command.MoveTest do
   describe "open a door" do
     setup do
       room_exit = %{id: 10, south_id: 1, north_id: 2, has_door: true}
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
       Door.load(room_exit)
       Door.set(room_exit, "closed")
       %{room_exit: room_exit}
@@ -509,7 +516,7 @@ defmodule Game.Command.MoveTest do
 
     test "a door does not exist in the direction", %{socket: socket, state: state} do
       room_exit = %{id: 10, north_id: 2, south_id: 1, has_door: false}
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:open, :north}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
@@ -519,7 +526,7 @@ defmodule Game.Command.MoveTest do
     end
 
     test "an exit does not exist in the direction", %{socket: socket, state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:open, :north}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
@@ -542,7 +549,7 @@ defmodule Game.Command.MoveTest do
   describe "close a door" do
     setup do
       room_exit = %{id: 10, south_id: 1, north_id: 2, has_door: true}
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
       Door.load(room_exit)
       Door.set(room_exit, "open")
       %{room_exit: room_exit}
@@ -560,7 +567,7 @@ defmodule Game.Command.MoveTest do
 
     test "a door does not exist in the direction", %{socket: socket, state: state} do
       room_exit = %{id: 10, north_id: 2, south_id: 1, has_door: false}
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:close, :north}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
@@ -570,7 +577,7 @@ defmodule Game.Command.MoveTest do
     end
 
     test "an exit does not exist in the direction", %{socket: socket, state: state} do
-      @room.set_room(%Data.Room{id: 1, name: "", description: "", exits: [], players: [], shops: []})
+      @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:close, :north}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))

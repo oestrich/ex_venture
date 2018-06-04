@@ -8,6 +8,7 @@ defmodule Game.Room do
   require Logger
 
   alias Data.Room
+  alias Game.Environment
   alias Game.Items
   alias Game.Message
   alias Game.NPC
@@ -195,8 +196,27 @@ defmodule Game.Room do
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
-    room = Map.merge(room, %{players: players, npcs: npcs})
-    {:reply, {:ok, room}, state}
+    environment = %Environment.State{
+      id: room.id,
+      zone_id: room.zone_id,
+      zone: room.zone,
+      name: room.name,
+      description: room.description,
+      currency: room.currency,
+      items: room.items,
+      features: room.features,
+      listen: room.listen,
+      x: room.x,
+      y: room.y,
+      map_layer: room.map_layer,
+      ecology: room.ecology,
+      shops: room.shops,
+      exits: room.exits,
+      players: players,
+      npcs: npcs,
+    }
+
+    {:reply, {:ok, environment}, state}
   end
 
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do

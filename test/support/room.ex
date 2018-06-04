@@ -1,5 +1,5 @@
 defmodule Test.Game.Room do
-  alias Data.Room
+  alias Game.Environment
 
   def start_link() do
     Agent.start_link(fn () ->
@@ -12,21 +12,21 @@ defmodule Test.Game.Room do
   end
 
   def _room() do
-    %Room{
+    %Environment.State{
       id: 1,
       name: "Hallway",
       description: "An empty hallway",
-      exits: [%{north_id: 2, south_id: 1}],
       zone_id: 1,
       zone: %{id: 1, name: "A zone"},
       features: [],
-      players: [],
-      npcs: [],
       items: [],
       shops: [],
       x: 0,
       y: 0,
       map_layer: 0,
+      exits: [%{north_id: 2, south_id: 1}],
+      players: [],
+      npcs: [],
     }
   end
 

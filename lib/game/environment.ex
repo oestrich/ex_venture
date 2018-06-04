@@ -18,7 +18,7 @@ defmodule Game.Environment do
   """
   @spec look(integer() | String.t()) :: state()
   def look(id) do
-    case :global.whereis_name({__MODULE__, id}) do
+    case :global.whereis_name({Game.Room, id}) do
       :undefined ->
         {:error, :room_offline}
 
