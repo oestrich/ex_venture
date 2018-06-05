@@ -43,8 +43,11 @@ defmodule Web.Admin.RoomView do
 
   def get_exit(room, direction) do
     case room |> Exit.exit_to(direction) do
-      nil -> nil
-      room_exit -> Map.get(room_exit, direction)
+      nil ->
+        nil
+
+      room_exit ->
+        room_exit.finish
     end
   end
 

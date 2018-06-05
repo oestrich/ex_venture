@@ -5,17 +5,20 @@ defmodule Data.RoomTest do
 
   test "determine exits" do
     exits = [
-      %{north_id: 10, south_id: 1},
-      %{east_id: 11, west_id: 1},
-      %{north_id: 1, south_id: 12},
-      %{east_id: 1, west_id: 13},
-      %{up_id: 1, down_id: 13},
-      %{down_id: 1, up_id: 13},
+      %{direction: "north", start_id: 1, finish_id: 10},
+      %{direction: "east",start_id: 1,  finish_id: 11},
+      %{direction: "south", start_id: 1, finish_id: 12},
+      %{direction: "west", start_id: 1, finish_id: 13},
+      %{direction: "up", start_id: 1, finish_id: 14},
+      %{direction: "down", start_id: 1, finish_id: 15},
     ]
     room = %Room{id: 1, exits: exits}
     assert Room.exits(room) == ["north", "east", "south", "west", "up", "down"]
 
-    exits = [%{north_id: 10, south_id: 1}, %{north_id: 1, south_id: 12}]
+    exits = [
+      %{direction: "north", start_id: 1, finish_id: 10},
+      %{direction: "south", start_id: 1, finish_id: 12},
+    ]
     room = %Room{id: 1, exits: exits}
     assert Room.exits(room) == ["north", "south"]
   end

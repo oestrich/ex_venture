@@ -261,7 +261,7 @@ defmodule Game.Session.GMCP do
     |> Room.exits()
     |> Enum.map(fn direction ->
       room_exit = Exit.exit_to(room, direction)
-      %{room_id: Map.get(room_exit, :"#{direction}_id"), direction: direction}
+      %{room_id: room_exit.finish_id, direction: direction}
     end)
   end
 

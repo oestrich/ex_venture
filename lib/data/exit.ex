@@ -10,16 +10,11 @@ defmodule Data.Exit do
   @directions ["north", "east", "south", "west", "up", "down", "in", "out"]
 
   schema "exits" do
+    field(:direction, :string)
     field(:has_door, :boolean, default: false)
 
-    belongs_to(:north, Room)
-    belongs_to(:east, Room)
-    belongs_to(:south, Room)
-    belongs_to(:west, Room)
-    belongs_to(:up, Room)
-    belongs_to(:down, Room)
-    belongs_to(:in, Room)
-    belongs_to(:out, Room)
+    belongs_to(:start, Room)
+    belongs_to(:finish, Room)
 
     timestamps()
   end
@@ -32,54 +27,12 @@ defmodule Data.Exit do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [
-      :has_door,
-      :north_id,
-      :east_id,
-      :south_id,
-      :west_id,
-      :up_id,
-      :down_id,
-      :in_id,
-      :out_id
-    ])
-    |> validate_required([:has_door])
-    |> validate_direction()
-    |> foreign_key_constraint(:north_id)
-    |> foreign_key_constraint(:south_id)
-    |> foreign_key_constraint(:west_id)
-    |> foreign_key_constraint(:east_id)
-    |> foreign_key_constraint(:up_id)
-    |> foreign_key_constraint(:down_id)
-    |> foreign_key_constraint(:in_id)
-    |> foreign_key_constraint(:out_id)
-    |> unique_constraint(:north_id)
-    |> unique_constraint(:south_id)
-    |> unique_constraint(:west_id)
-    |> unique_constraint(:east_id)
-    |> unique_constraint(:down_id)
-    |> unique_constraint(:up_id)
-    |> unique_constraint(:in_id)
-    |> unique_constraint(:out_id)
-  end
-
-  defp validate_direction(changeset) do
-    case changeset.changes |> Map.keys() |> Enum.sort() |> List.delete(:has_door) do
-      [:north_id, :south_id] ->
-        changeset
-
-      [:east_id, :west_id] ->
-        changeset
-
-      [:down_id, :up_id] ->
-        changeset
-
-      [:in_id, :out_id] ->
-        changeset
-
-      _ ->
-        add_error(changeset, :exits, "are invalid")
-    end
+    |> cast(params, [:direction, :has_door, :start_id, :finish_id])
+    |> validate_required([:direction, :has_door])
+    |> validate_inclusion(:direction, @directions)
+    |> foreign_key_constraint(:start_id)
+    |> foreign_key_constraint(:finish_id)
+    |> unique_constraint(:direction, name: :exits_direction_start_id_finish_id_index)
   end
 
   @doc """
@@ -89,21 +42,14 @@ defmodule Data.Exit do
   """
   @spec load_exits(Room.t()) :: Room.t()
   def load_exits(room, opts \\ []) do
-    query =
-      __MODULE__
-      |> where([e], e.north_id == ^room.id)
-      |> or_where([e], e.south_id == ^room.id)
-      |> or_where([e], e.east_id == ^room.id)
-      |> or_where([e], e.west_id == ^room.id)
-      |> or_where([e], e.up_id == ^room.id)
-      |> or_where([e], e.down_id == ^room.id)
-      |> or_where([e], e.in_id == ^room.id)
-      |> or_where([e], e.out_id == ^room.id)
-
+    query = where(__MODULE__, [e], e.start_id == ^room.id)
     query =
       case Keyword.get(opts, :preload) do
-        true -> query |> preload([:north, :south, :east, :west, :up, :down, :in, :out])
-        _ -> query
+        true ->
+          query |> preload([:start, :finish])
+
+        _ ->
+          query
       end
 
     %{room | exits: query |> Repo.all()}
@@ -256,22 +202,6 @@ defmodule Data.Exit do
   """
   @spec exit_to(Room.t(), String.t() | atom) :: Exit.t() | nil
   def exit_to(room, direction) do
-    Enum.find(room.exits, fn room_exit ->
-      Map.get(room_exit, opposite_id(direction)) == room.id
-    end)
-  end
-
-  @doc """
-  Find the exit's direction and the matching ID
-  """
-  @spec find_direction_and_opposite_id(Exit.t(), Room.t()) :: {String.t(), integer()}
-  def find_direction_and_opposite_id(room_exit, room) do
-    direction =
-      @directions
-      |> Enum.find(fn direction ->
-        Map.get(room_exit, opposite_id(direction)) == room.id
-      end)
-
-    {direction, Map.get(room_exit, :"#{direction}_id")}
+    Enum.find(room.exits, &(&1.direction == to_string(direction)))
   end
 end

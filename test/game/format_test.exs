@@ -76,7 +76,7 @@ defmodule Game.FormatTest do
         currency: 100,
         players: [%{name: "Player"}],
         npcs: [%{name: "Bandit", status_line: "[name] is here."}],
-        exits: [%{south_id: 1}, %{west_id: 1}],
+        exits: [%{direction: "north"}, %{direction: "east"}],
         shops: [%{name: "Hole in the Wall"}],
         features: [%{key: "log", short_description: "A log"}],
       }

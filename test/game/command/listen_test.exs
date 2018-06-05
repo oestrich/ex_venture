@@ -63,7 +63,7 @@ defmodule Game.Command.ListenTest do
 
   describe "listening in a direction" do
     setup do
-      room = %{id: 1, exits: [%{north_id: 2, south_id: 1}]}
+      room = %{id: 1, exits: [%{direction: "north", start_id: 1, finish_id: 2}]}
       @room.set_room(Map.merge(@room._room(), room), multiple: true)
 
       room = %{
