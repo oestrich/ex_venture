@@ -1,4 +1,4 @@
-defmodule :"Elixir.Data.Repo.Migrations.One-way-exits" do
+defmodule Data.Repo.Migrations.OneWayExits do
   use Ecto.Migration
 
   def up do

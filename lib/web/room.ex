@@ -247,7 +247,7 @@ defmodule Web.Room do
     |> where([e], e.finish_id == ^room.id)
     |> select([e], e.id)
     |> Repo.all()
-    |> Enum.map(&delete_exit/1)
+    |> Enum.each(&delete_exit/1)
 
     room
   end

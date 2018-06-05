@@ -82,6 +82,16 @@ defmodule Helpers do
   end
 
   def create_exit(attributes) do
+    reverse_attributes = %{
+      start_id: attributes.finish_id,
+      finish_id: attributes.start_id,
+      direction: to_string(Exit.opposite(attributes.direction)),
+    }
+
+    %Exit{}
+    |> Exit.changeset(reverse_attributes)
+    |> Repo.insert!
+
     %Exit{}
     |> Exit.changeset(attributes)
     |> Repo.insert!()
@@ -178,7 +188,7 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{west_id: hallway.id, east_id: entrance.id})
+    create_exit(%{direction: "west", start_id: entrance.id, finish_id: hallway.id})
 
     hallway_turn = create_room(bandit_hideout, %{
       name: "Hallway",
@@ -188,7 +198,7 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{west_id: hallway_turn.id, east_id: hallway.id})
+    create_exit(%{direction: "west", start_id: hallway.id, finish_id: hallway_turn.id})
 
     hallway_south = create_room(bandit_hideout, %{
       name: "Hallway",
@@ -198,7 +208,7 @@ defmodule Seeds do
       y: 2,
       map_layer: 1,
     })
-    create_exit(%{north_id: hallway_turn.id, south_id: hallway_south.id})
+    create_exit(%{direction: "south", start_id: hallway_turn.id, finish_id: hallway_south.id})
 
     great_room = create_room(bandit_hideout, %{
       name: "Great Room",
@@ -208,7 +218,7 @@ defmodule Seeds do
       y: 3,
       map_layer: 1,
     })
-    create_exit(%{north_id: hallway_south.id, south_id: great_room.id})
+    create_exit(%{direction: "south", start_id: hallway_south.id, finish_id: great_room.id})
 
     dorm = create_room(bandit_hideout, %{
       name: "Bedroom",
@@ -218,7 +228,7 @@ defmodule Seeds do
       y: 3,
       map_layer: 1,
     })
-    create_exit(%{west_id: dorm.id, east_id: great_room.id})
+    create_exit(%{direction: "west", start_id: great_room.id, finish_id: dorm.id})
 
     kitchen = create_room(bandit_hideout, %{
       name: "Kitchen",
@@ -228,7 +238,7 @@ defmodule Seeds do
       y: 3,
       map_layer: 1,
     })
-    create_exit(%{west_id: great_room.id, east_id: kitchen.id})
+    create_exit(%{direction: "east", start_id: great_room.id, finish_id: kitchen.id})
 
     shack = create_room(village, %{
       name: "Shack",
@@ -238,7 +248,7 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{west_id: entrance.id, east_id: shack.id})
+    create_exit(%{direction: "east", start_id: entrance.id, finish_id: shack.id})
 
     forest_path = create_room(village, %{
       name: "Forest Path",
@@ -248,7 +258,7 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{west_id: shack.id, east_id: forest_path.id})
+    create_exit(%{direction: "east", start_id: shack.id, finish_id: forest_path.id})
 
     stats = %{
       health_points: 25,
