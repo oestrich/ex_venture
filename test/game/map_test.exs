@@ -8,15 +8,15 @@ defmodule Game.MapTest do
   setup do
     start_and_clear_doors()
 
-    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{id: 10, has_door: true, north_id: 1, south_id: 5}]}
-    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{id: 11, has_door: true, east_id: 2, west_id: 5}]}
-    south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{north_id: 5, south_id: 3}]}
-    west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{east_id: 5, west_id: 4}]}
+    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{id: 10, has_door: true, direction: "south", start_id: 1, finish_id: 5}]}
+    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{id: 11, has_door: true, direction: "west", start_id: 2, finish_id: 5}]}
+    south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{direction: "north", start_id: 3, finish_id: 5}]}
+    west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{direction: "east", start_id: 4, finish_id: 5}]}
     center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [
-      %{id: 10, has_door: true, north_id: 1, south_id: 5},
-      %{eid: 11, has_door: true, ast_id: 2, west_id: 5},
-      %{north_id: 5, south_id: 3},
-      %{east_id: 5, west_id: 4},
+      %{id: 10, has_door: true, direction: "north", start_id: 5, finish_id: 1},
+      %{id: 11, has_door: true, direction: "east", start_id: 5, finish_id: 2},
+      %{direction: "south", start_id: 5, finish_id: 3},
+      %{direction: "west", start_id: 5, finish_id: 4},
     ]}
     up = %{id: 6, x: 2, y: 2, map_layer: 2, exits: []}
 

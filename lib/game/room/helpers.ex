@@ -60,10 +60,8 @@ defmodule Game.Room.Helpers do
   """
   @spec get_exit(Room.t(), String.t() | atom()) :: {:ok, Room.t()} | {:error, :not_found}
   def get_exit(room, direction) do
-    id_key = String.to_atom("#{direction}_id")
-
     case room |> Exit.exit_to(direction) do
-      %{^id_key => room_id} ->
+      %{finish_id: room_id} ->
         @room.look(room_id)
 
       _ ->

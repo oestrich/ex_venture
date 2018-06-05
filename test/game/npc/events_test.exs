@@ -293,13 +293,13 @@ defmodule Game.NPC.EventsTest do
       @room._room()
       |> Map.put(:id, 1)
       |> Map.put(:y, 1)
-      |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
+      |> Map.put(:exits, [%{direction: "north", start_id: 1, finish_id: 2, has_door: false}])
       |> @room.set_room(multiple: true)
 
       @room._room()
       |> Map.put(:id, 2)
       |> Map.put(:y, 0)
-      |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
+      |> Map.put(:exits, [%{direction: "south", start_id: 2, finish_id: 1, has_door: false}])
       |> @room.set_room(multiple: true)
 
       @room.clear_enters()
@@ -324,7 +324,7 @@ defmodule Game.NPC.EventsTest do
       @room._room()
       |> Map.put(:id, 2)
       |> Map.put(:y, 7)
-      |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
+      |> Map.put(:exits, [%{direction: "south", start_id: 2, finish_id: 1, has_door: false}])
       |> @room.set_room(multiple: true)
 
       state = Events.act_on_tick(state, event)
@@ -358,7 +358,7 @@ defmodule Game.NPC.EventsTest do
       |> Map.put(:id, 2)
       |> Map.put(:y, 0)
       |> Map.put(:players, [%{id: 10}])
-      |> Map.put(:exits, [%{north_id: 2, south_id: 1, has_door: false}])
+      |> Map.put(:exits, [%{direction: "south", start_id: 2, finish_id: 1, has_door: false}])
       |> @room.set_room(multiple: true)
 
       state = Events.act_on_tick(state, event)
@@ -369,7 +369,7 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "will not move if the door is closed", %{state: state, event: event} do
-      room_exit = %{id: 10, north_id: 2, south_id: 1, has_door: true}
+      room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: true}
 
       @room._room()
       |> Map.put(:id, 1)

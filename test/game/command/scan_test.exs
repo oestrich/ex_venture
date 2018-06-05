@@ -33,8 +33,8 @@ defmodule Game.Command.ScanTest do
 
   describe "look at the rooms around you" do
     setup do
-      north_exit = %{id: 4, north_id: 2, south_id: 1}
-      in_exit = %{id: 5, in_id: 3, out_id: 1}
+      north_exit = %{id: 4, direction: "north", start_id: 1, finish_id: 2}
+      in_exit = %{id: 5, direction: "in", start_id: 1, finish_id: 3}
 
       room =
         Map.merge(@basic_room, %{

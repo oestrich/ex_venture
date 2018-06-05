@@ -78,39 +78,39 @@ defmodule Game.CommandTest do
     end
 
     test "north", %{user: user} do
-      assert %Command{module: Command.Move, args: {:north}} = Command.parse("move north", user)
-      assert %Command{module: Command.Move, args: {:north}} = Command.parse("north", user)
-      assert %Command{module: Command.Move, args: {:north}} = Command.parse("n", user)
+      assert %Command{module: Command.Move, args: {:move, :north}} = Command.parse("move north", user)
+      assert %Command{module: Command.Move, args: {:move, :north}} = Command.parse("north", user)
+      assert %Command{module: Command.Move, args: {:move, :north}} = Command.parse("n", user)
     end
 
     test "east", %{user: user} do
-      assert %Command{module: Command.Move, args: {:east}} = Command.parse("move east", user)
-      assert %Command{module: Command.Move, args: {:east}} = Command.parse("east", user)
-      assert %Command{module: Command.Move, args: {:east}} = Command.parse("e", user)
+      assert %Command{module: Command.Move, args: {:move, :east}} = Command.parse("move east", user)
+      assert %Command{module: Command.Move, args: {:move, :east}} = Command.parse("east", user)
+      assert %Command{module: Command.Move, args: {:move, :east}} = Command.parse("e", user)
     end
 
     test "south", %{user: user} do
-      assert %Command{module: Command.Move, args: {:south}} = Command.parse("move south", user)
-      assert %Command{module: Command.Move, args: {:south}} = Command.parse("south", user)
-      assert %Command{module: Command.Move, args: {:south}} = Command.parse("s", user)
+      assert %Command{module: Command.Move, args: {:move, :south}} = Command.parse("move south", user)
+      assert %Command{module: Command.Move, args: {:move, :south}} = Command.parse("south", user)
+      assert %Command{module: Command.Move, args: {:move, :south}} = Command.parse("s", user)
     end
 
     test "west", %{user: user} do
-      assert %Command{module: Command.Move, args: {:west}} = Command.parse("move west", user)
-      assert %Command{module: Command.Move, args: {:west}} = Command.parse("west", user)
-      assert %Command{module: Command.Move, args: {:west}} = Command.parse("w", user)
+      assert %Command{module: Command.Move, args: {:move, :west}} = Command.parse("move west", user)
+      assert %Command{module: Command.Move, args: {:move, :west}} = Command.parse("west", user)
+      assert %Command{module: Command.Move, args: {:move, :west}} = Command.parse("w", user)
     end
 
     test "up", %{user: user} do
-      assert %Command{module: Command.Move, args: {:up}} = Command.parse("move up", user)
-      assert %Command{module: Command.Move, args: {:up}} = Command.parse("up", user)
-      assert %Command{module: Command.Move, args: {:up}} = Command.parse("u", user)
+      assert %Command{module: Command.Move, args: {:move, :up}} = Command.parse("move up", user)
+      assert %Command{module: Command.Move, args: {:move, :up}} = Command.parse("up", user)
+      assert %Command{module: Command.Move, args: {:move, :up}} = Command.parse("u", user)
     end
 
     test "down", %{user: user} do
-      assert %Command{module: Command.Move, args: {:down}} = Command.parse("move down", user)
-      assert %Command{module: Command.Move, args: {:down}} = Command.parse("down", user)
-      assert %Command{module: Command.Move, args: {:down}} = Command.parse("d", user)
+      assert %Command{module: Command.Move, args: {:move, :down}} = Command.parse("move down", user)
+      assert %Command{module: Command.Move, args: {:move, :down}} = Command.parse("down", user)
+      assert %Command{module: Command.Move, args: {:move, :down}} = Command.parse("d", user)
     end
 
     test "inventory", %{user: user} do
