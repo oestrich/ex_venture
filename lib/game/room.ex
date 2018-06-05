@@ -65,6 +65,7 @@ defmodule Game.Room do
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
     environment = %Environment.State{
+      type: :room,
       id: room.id,
       zone_id: room.zone_id,
       zone: room.zone,

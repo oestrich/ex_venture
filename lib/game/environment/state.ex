@@ -5,6 +5,8 @@ defmodule Game.Environment.State do
   The room's name, description, who else is in the room with the player, etc
   """
 
+  @types [:room, :overworld]
+
   defstruct [
     :id,
     :zone_id,
@@ -20,8 +22,11 @@ defmodule Game.Environment.State do
     :ecology,
     :shops,
     :exits,
+    type: :room,
     players: [],
     npcs: [],
     features: [],
   ]
+
+  def types(), do: @types
 end
