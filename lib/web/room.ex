@@ -32,17 +32,6 @@ defmodule Web.Room do
   end
 
   @doc """
-  Get exits for a room, by direction and id
-  """
-  @spec room_exits(Room.t()) :: [{String.t(), integer()}]
-  def room_exits(room) do
-    room.exits
-    |> Enum.map(fn room_exit ->
-      Exit.find_direction_and_opposite_id(room_exit, room)
-    end)
-  end
-
-  @doc """
   Get a list of ecologies with their IDs
   """
   @spec ecologies() :: [{String.t(), integer()}]
@@ -254,6 +243,12 @@ defmodule Web.Room do
       delete_exit(room_exit.id)
     end)
 
+    Exit
+    |> where([e], e.finish_id == ^room.id)
+    |> select([e], e.id)
+    |> Repo.all()
+    |> Enum.each(&delete_exit/1)
+
     room
   end
 
@@ -355,15 +350,27 @@ defmodule Web.Room do
   def create_exit(params) do
     changeset = %Exit{} |> Exit.changeset(params)
 
-    case changeset |> Repo.insert() do
-      {:ok, room_exit} ->
-        room_exit |> update_directions()
-        room_exit |> Door.maybe_load()
-        {:ok, room_exit}
+    reverse_params = %{
+      start_id: params["finish_id"],
+      finish_id: params["start_id"],
+      direction: to_string(Exit.opposite(params["direction"])),
+    }
 
-      anything ->
-        anything
+    reverse_changeset = %Exit{} |> Exit.changeset(reverse_params)
+
+    with {:ok, room_exit} <- Repo.insert(changeset),
+         {:ok, reverse_exit} <- Repo.insert(reverse_changeset) do
+      room_exit |> update_exit() |> Door.maybe_load()
+      reverse_exit |> update_exit() |> Door.maybe_load()
+
+      {:ok, room_exit}
     end
+  end
+
+  defp update_exit(room_exit) do
+    room = RoomRepo.get(room_exit.start_id)
+    Game.Room.update(room.id, room)
+    room_exit
   end
 
   @doc """
@@ -372,30 +379,18 @@ defmodule Web.Room do
   @spec delete_exit(exit_id :: integer) :: {:ok, Exit.t()} | {:error, changeset :: map}
   def delete_exit(exit_id) do
     room_exit = Exit |> Repo.get(exit_id)
+    reverse_exit = Exit |> Repo.get_by([
+      direction: to_string(Exit.opposite(room_exit.direction)),
+      finish_id: room_exit.start_id,
+    ])
 
-    case room_exit |> Repo.delete() do
-      {:ok, room_exit} ->
-        room_exit |> update_directions()
-        room_exit |> Door.remove()
-        {:ok, room_exit}
+    with {:ok, room_exit} <- Repo.delete(room_exit),
+         {:ok, reverse_exit} <- Repo.delete(reverse_exit) do
+      room_exit |> update_exit() |> Door.remove()
+      reverse_exit |> update_exit() |> Door.remove()
 
-      anything ->
-        anything
+      {:ok, room_exit}
     end
-  end
-
-  defp update_directions(room_exit) do
-    [:north_id, :south_id, :east_id, :west_id, :up_id, :down_id, :in_id, :out_id]
-    |> Enum.each(fn direction ->
-      case Map.get(room_exit, direction) do
-        nil ->
-          nil
-
-        id ->
-          room = RoomRepo.get(id)
-          Game.Room.update(room.id, room)
-      end
-    end)
   end
 
   #

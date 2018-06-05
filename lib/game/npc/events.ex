@@ -401,7 +401,7 @@ defmodule Game.NPC.Events do
       |> Enum.random()
 
     room_exit = room |> Exit.exit_to(direction)
-    {:ok, new_room} = @environment.look(Map.get(room_exit, String.to_atom("#{direction}_id")))
+    {:ok, new_room} = @environment.look(room_exit.finish_id)
 
     case can_move?(event.action, starting_room, room_exit, new_room) do
       true ->

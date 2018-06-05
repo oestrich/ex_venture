@@ -88,7 +88,7 @@ defmodule Web.RoomTest do
     {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
 
-    {:ok, _room_exit} = Room.create_exit(%{north_id: room1.id, south_id: room2.id})
+    {:ok, _room_exit} = Room.create_exit(%{"start_id" => room1.id, "finish_id" => room2.id, "direction" => "south"})
 
     state = Game.Room._get_state(room1.id)
     assert state.room.exits |> length() == 1
@@ -101,7 +101,7 @@ defmodule Web.RoomTest do
     {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
     {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
 
-    {:ok, room_exit} = Room.create_exit(%{north_id: room1.id, south_id: room2.id})
+    {:ok, room_exit} = Room.create_exit(%{"start_id" => room1.id, "finish_id" => room2.id, "direction" => "south"})
     {:ok, _room_exit} = Room.delete_exit(room_exit.id)
 
     state = Game.Room._get_state(room1.id)

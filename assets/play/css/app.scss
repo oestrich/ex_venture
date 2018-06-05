@@ -15,7 +15,8 @@ body {
   height: 88%;
   overflow-y: scroll;
 
-  @media only screen and (max-width: 500px) {
+  @media only screen and (max-device-width: 667px) {
+    left: 0;
     width: 100%;
   }
 }
@@ -47,8 +48,8 @@ body {
   width: 20%;
   height: 88%;
 
-  @media only screen and (max-width: 500px) {
-    width: 0%;
+  @media only screen and (max-device-width: 667px) {
+    display: none !important;
   }
 
   .container {
@@ -69,8 +70,8 @@ body {
   width: 20%;
   height: 88%;
 
-  @media only screen and (max-width: 500px) {
-    width: 0%;
+  @media only screen and (max-device-width: 667px) {
+    display: none !important;
   }
 
   .container {
@@ -179,7 +180,7 @@ input {
 
 @media only screen and (max-width: 500px) {
   input {
-    width: 90%;
+    width: 100%;
   }
 
   pre {

@@ -2,6 +2,7 @@
 
 [![Trello](https://img.shields.io/badge/issues-trello-blue.svg)](https://trello.com/b/PFGmFWmu/exventure)
 [![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/GPEa6dB)
+[![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/midmud)
 
 A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
 

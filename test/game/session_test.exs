@@ -156,7 +156,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    @room.set_room(%{@basic_room | exits: [%{north_id: 2, south_id: 1}]})
+    @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
     state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
     {:noreply, state} = Process.handle_cast({:recv, "run 2n"}, state)
 
@@ -170,7 +170,7 @@ defmodule Game.SessionTest do
     user = create_user(%{name: "user", password: "password"})
     |> Repo.preload([class: [:skills]])
 
-    @room.set_room(%{@basic_room | exits: [%{north_id: 2, south_id: 1}]})
+    @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
     state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
     command = %Command{module: Command.Run, args: {[:north, :north]}}
     {:noreply, _state} = Process.handle_info({:continue, command}, state)

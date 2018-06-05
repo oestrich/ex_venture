@@ -57,14 +57,13 @@ defmodule Game.Command.Scan do
 
   defp scan_room(room, direction) do
     room_exit = Exit.exit_to(room, direction)
-    room_id = Map.get(room_exit, :"#{direction}_id")
 
     case Door.closed?(room_exit.id) do
       true ->
         {direction, :closed}
 
       _ ->
-        {:ok, room} = @environment.look(room_id)
+        {:ok, room} = @environment.look(room_exit.finish_id)
         {direction, room}
     end
   end

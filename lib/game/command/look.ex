@@ -94,10 +94,8 @@ defmodule Game.Command.Look do
   end
 
   def run({:direction, direction}, state = %{save: save}) do
-    id_key = String.to_atom("#{direction}_id")
-
     with {:ok, room} <- @environment.look(save.room_id),
-         %{^id_key => room_id} <- Exit.exit_to(room, direction),
+         %{finish_id: room_id} <- Exit.exit_to(room, direction),
          {:ok, room} <- @environment.look(room_id) do
       state.socket |> @socket.echo(Format.peak_room(room, direction))
     else

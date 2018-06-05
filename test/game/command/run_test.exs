@@ -11,6 +11,17 @@ defmodule Game.Command.RunTest do
   setup do
     user = %{id: 10, save: %{room_id: 1, stats: %{move_points: 10}}}
 
+    room = %Game.Environment.State{
+      id: 1,
+      name: "",
+      description: "",
+      exits: [%{direction: "north", start_id: 1, finish_id: 2}],
+      players: [],
+      shops: [],
+      zone: %{id: 10, name: "Zone"}
+    }
+    @room.set_room(room)
+
     state = %Session.State{
       state: "active",
       mode: "command",
@@ -24,17 +35,6 @@ defmodule Game.Command.RunTest do
   end
 
   test "run in a set of directions", %{state: state} do
-    room = %Game.Environment.State{
-      id: 1,
-      name: "",
-      description: "",
-      exits: [%{north_id: 2, south_id: 1}],
-      players: [],
-      shops: [],
-      zone: %{id: 10, name: "Zone"}
-    }
-    @room.set_room(room)
-
     {:update, state, continue_command} = Command.Run.run({"nen"}, state)
 
     assert state.save.room_id == 2
@@ -42,17 +42,6 @@ defmodule Game.Command.RunTest do
   end
 
   test "continue running in the processed set of directions", %{state: state} do
-    room = %Game.Environment.State{
-      id: 1,
-      name: "",
-      description: "",
-      exits: [%{north_id: 2, south_id: 1}],
-      players: [],
-      shops: [],
-      zone: %{id: 10, name: "Zone"}
-    }
-    @room.set_room(room)
-
     {:update, state, continue_command} = Command.Run.run({[:north, :east]}, state)
 
     assert state.save.room_id == 2
@@ -60,25 +49,12 @@ defmodule Game.Command.RunTest do
   end
 
   test "end of the run", %{state: state} do
-    room = %Game.Environment.State{
-      id: 1,
-      name: "",
-      description: "",
-      exits: [%{north_id: 2, south_id: 1}],
-      players: [],
-      shops: [],
-      zone: %{id: 10, name: "Zone"}
-    }
-    @room.set_room(room)
-
     {:update, state} = Command.Run.run({[:north]}, state)
 
     assert state.save.room_id == 2
   end
 
   test "failure to move in a direction stops the run", %{state: state} do
-    @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
-
     :ok = Command.Run.run({[:east, :north]}, state)
 
     assert @socket.get_echos() == [{:socket, "Could not move east, no exit found."}]
@@ -86,7 +62,6 @@ defmodule Game.Command.RunTest do
 
   test "out of movement stops the run", %{state: state} do
     state = %{state | save: %{state.save | stats: %{state.save.stats | move_points: 0}}}
-    @room.set_room(%Game.Environment.State{id: 1, name: "", description: "", exits: [%{north_id: 2, south_id: 1}], players: [], shops: []})
 
     :ok = Command.Run.run({[:north, :east]}, state)
 

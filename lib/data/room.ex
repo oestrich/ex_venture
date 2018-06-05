@@ -100,9 +100,7 @@ defmodule Data.Room do
   end
 
   def exits(room) do
-    Enum.filter(Exit.directions(), fn direction ->
-      Exit.exit_to(room, direction)
-    end)
+    Enum.map(room.exits, &(&1.direction))
   end
 
   defp ensure_items(changeset) do

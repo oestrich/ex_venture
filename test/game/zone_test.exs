@@ -6,11 +6,11 @@ defmodule Game.ZoneTest do
   alias Game.Zone
 
   setup do
-    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{north_id: 1, south_id: 5}]}
-    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{east_id: 2, west_id: 5}]}
-    south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{north_id: 5, south_id: 3}]}
-    west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{east_id: 5, west_id: 4}]}
-    center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [%{north_id: 1, south_id: 5}, %{east_id: 2, west_id: 5}, %{north_id: 5, south_id: 3}, %{east_id: 5, west_id: 4}]}
+    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{direction: "south"}]}
+    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{direction: "west"}]}
+    south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{direction: "north"}]}
+    west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{direction: "east"}]}
+    center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [%{direction: "north"}, %{direction: "east"}, %{direction: "south"}, %{direction: "west"}]}
 
     zone = %{rooms: [north, east, south, west, center], name: "Bandit Hideout"}
 

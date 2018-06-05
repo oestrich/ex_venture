@@ -57,7 +57,7 @@ defmodule Game.Command.Run do
   Move in the first direction of the list
   """
   def move([direction | directions], state) do
-    case Move.run({direction}, state) do
+    case Move.run({:move, direction}, state) do
       {:error, :no_exit} ->
         state.socket |> @socket.echo("Could not move #{direction}, no exit found.")
         :ok

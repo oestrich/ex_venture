@@ -60,31 +60,31 @@ defmodule Game.Command.Move do
   @spec parse(command :: String.t()) :: {atom}
   def parse(commnd)
   def parse("move " <> direction), do: parse(direction)
-  def parse("north"), do: {:north}
-  def parse("n"), do: {:north}
-  def parse("east"), do: {:east}
-  def parse("e"), do: {:east}
-  def parse("south"), do: {:south}
-  def parse("s"), do: {:south}
-  def parse("west"), do: {:west}
-  def parse("w"), do: {:west}
-  def parse("up"), do: {:up}
-  def parse("u"), do: {:up}
-  def parse("down"), do: {:down}
-  def parse("d"), do: {:down}
-  def parse("in"), do: {:in}
-  def parse("out"), do: {:out}
+  def parse("north"), do: {:move, :north}
+  def parse("n"), do: {:move, :north}
+  def parse("east"), do: {:move, :east}
+  def parse("e"), do: {:move, :east}
+  def parse("south"), do: {:move, :south}
+  def parse("s"), do: {:move, :south}
+  def parse("west"), do: {:move, :west}
+  def parse("w"), do: {:move, :west}
+  def parse("up"), do: {:move, :up}
+  def parse("u"), do: {:move, :up}
+  def parse("down"), do: {:move, :down}
+  def parse("d"), do: {:move, :down}
+  def parse("in"), do: {:move, :in}
+  def parse("out"), do: {:move, :out}
 
   def parse("open " <> direction) do
     case parse(direction) do
-      {direction} -> {:open, direction}
+      {:move, direction} -> {:open, direction}
       _ -> {:error, :bad_parse, "open #{direction}"}
     end
   end
 
   def parse("close " <> direction) do
     case parse(direction) do
-      {direction} -> {:close, direction}
+      {:move, direction} -> {:close, direction}
       _ -> {:error, :bad_parse, "close #{direction}"}
     end
   end
@@ -95,96 +95,12 @@ defmodule Game.Command.Move do
   """
   def run(command, state)
 
-  def run({:east}, state = %{save: %{room_id: room_id}}) do
+  def run({:move, direction}, state = %{save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
 
-    case room |> Exit.exit_to(:east) do
-      room_exit = %{east_id: id} ->
-        maybe_move_to(state, id, room_exit, :east)
-
-      _ ->
-        {:error, :no_exit}
-    end
-  end
-
-  def run({:north}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
-
-    case room |> Exit.exit_to(:north) do
-      room_exit = %{north_id: id} ->
-        maybe_move_to(state, id, room_exit, :north)
-
-      _ ->
-        {:error, :no_exit}
-    end
-  end
-
-  def run({:south}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
-
-    case room |> Exit.exit_to(:south) do
-      room_exit = %{south_id: id} ->
-        maybe_move_to(state, id, room_exit, :south)
-
-      _ ->
-        {:error, :no_exit}
-    end
-  end
-
-  def run({:west}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
-
-    case room |> Exit.exit_to(:west) do
-      room_exit = %{west_id: id} ->
-        maybe_move_to(state, id, room_exit, :west)
-
-      _ ->
-        {:error, :no_exit}
-    end
-  end
-
-  def run({:up}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
-
-    case room |> Exit.exit_to(:up) do
-      room_exit = %{up_id: id} ->
-        maybe_move_to(state, id, room_exit, :up)
-
-      _ ->
-        {:error, :no_exit}
-    end
-  end
-
-  def run({:down}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
-
-    case room |> Exit.exit_to(:down) do
-      room_exit = %{down_id: id} ->
-        maybe_move_to(state, id, room_exit, :down)
-
-      _ ->
-        {:error, :no_exit}
-    end
-  end
-
-  def run({:in}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
-
-    case room |> Exit.exit_to(:in) do
-      room_exit = %{in_id: id} ->
-        maybe_move_to(state, id, room_exit, :in)
-
-      _ ->
-        {:error, :no_exit}
-    end
-  end
-
-  def run({:out}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
-
-    case room |> Exit.exit_to(:out) do
-      room_exit = %{out_id: id} ->
-        maybe_move_to(state, id, room_exit, :out)
+    case room |> Exit.exit_to(direction) do
+      room_exit = %{finish_id: id} ->
+        maybe_move_to(state, id, room_exit, direction)
 
       _ ->
         {:error, :no_exit}

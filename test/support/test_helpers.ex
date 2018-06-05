@@ -110,6 +110,16 @@ defmodule TestHelpers do
   end
 
   def create_exit(attributes) do
+    reverse_attributes = %{
+      start_id: attributes.finish_id,
+      finish_id: attributes.start_id,
+      direction: to_string(Exit.opposite(attributes.direction)),
+    }
+
+    %Exit{}
+    |> Exit.changeset(reverse_attributes)
+    |> Repo.insert!
+
     %Exit{}
     |> Exit.changeset(attributes)
     |> Repo.insert!

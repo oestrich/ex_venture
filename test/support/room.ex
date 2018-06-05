@@ -25,7 +25,7 @@ defmodule Test.Game.Room do
       x: 0,
       y: 0,
       map_layer: 0,
-      exits: [%{north_id: 2, south_id: 1}],
+      exits: [%{direction: "north", start_id: 1, finish_id: 2}],
       players: [],
       npcs: [],
     }

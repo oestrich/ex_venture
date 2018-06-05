@@ -10,8 +10,8 @@
   <%= Enum.map(Room.for_map(zone), fn room -> %>
     <room id="<%= room.id %>" area="<%= zone.id %>" title="<%= xml_escape(room.name) %>" environment="<%= Room.ecology_id(room) + 1 %>">
       <coord x="<%= room.x %>" y="<%= room.y * -1 %>" z="<%= room.map_layer %>" />
-    <%= Enum.map(Room.room_exits(room), fn {direction, target_id} -> %>
-      <exit direction="<%= direction %>" target="<%= target_id %>" />
+    <%= Enum.map(room.exits, fn room_exit -> %>
+      <exit direction="<%= room_exit.direction %>" target="<%= room_exit.finish_id %>" />
     <% end) %>
     </room>
   <% end) %>
