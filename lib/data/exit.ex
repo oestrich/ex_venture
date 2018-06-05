@@ -65,76 +65,7 @@ defmodule Data.Exit do
       false
   """
   @spec exit?(String.t()) :: boolean()
-  def exit?("north"), do: true
-  def exit?("south"), do: true
-  def exit?("east"), do: true
-  def exit?("west"), do: true
-  def exit?("in"), do: true
-  def exit?("out"), do: true
-  def exit?("up"), do: true
-  def exit?("down"), do: true
-  def exit?(_), do: false
-
-  @doc """
-  From a direction find the opposite direction's id
-
-      iex> Data.Exit.opposite_id("north")
-      :south_id
-      iex> Data.Exit.opposite_id(:north)
-      :south_id
-
-      iex> Data.Exit.opposite_id("east")
-      :west_id
-      iex> Data.Exit.opposite_id(:east)
-      :west_id
-
-      iex> Data.Exit.opposite_id("south")
-      :north_id
-      iex> Data.Exit.opposite_id(:south)
-      :north_id
-
-      iex> Data.Exit.opposite_id("west")
-      :east_id
-      iex> Data.Exit.opposite_id(:west)
-      :east_id
-
-      iex> Data.Exit.opposite_id("up")
-      :down_id
-      iex> Data.Exit.opposite_id(:up)
-      :down_id
-
-      iex> Data.Exit.opposite_id("down")
-      :up_id
-      iex> Data.Exit.opposite_id(:down)
-      :up_id
-
-      iex> Data.Exit.opposite_id("in")
-      :out_id
-      iex> Data.Exit.opposite_id(:in)
-      :out_id
-
-      iex> Data.Exit.opposite_id("out")
-      :in_id
-      iex> Data.Exit.opposite_id(:out)
-      :in_id
-  """
-  @spec opposite_id(String.t() | atom) :: atom
-  def opposite_id("north"), do: :south_id
-  def opposite_id("east"), do: :west_id
-  def opposite_id("south"), do: :north_id
-  def opposite_id("west"), do: :east_id
-  def opposite_id("up"), do: :down_id
-  def opposite_id("down"), do: :up_id
-  def opposite_id("in"), do: :out_id
-  def opposite_id("out"), do: :in_id
-  def opposite_id(:north), do: :south_id
-  def opposite_id(:east), do: :west_id
-  def opposite_id(:south), do: :north_id
-  def opposite_id(:west), do: :east_id
-  def opposite_id(:up), do: :down_id
-  def opposite_id(:down), do: :up_id
-  def opposite_id(:in), do: :out_id
-  def opposite_id(:out), do: :in_id
+  def exit?(direction), do: direction in @directions
 
   @doc """
   From a direction find the opposite direction's id
