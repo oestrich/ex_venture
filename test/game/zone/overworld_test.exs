@@ -3,6 +3,18 @@ defmodule Game.Zone.OverworldTest do
 
   alias Game.Zone.Overworld
 
+  describe "splitting up an overworld id" do
+    test "pulls out zone id and x,y" do
+      assert Overworld.split_id("3:1,2") == {3, %{x: 1, y: 2}}
+    end
+  end
+
+  describe "overworld id to zone id and sector" do
+    test "pulls out zone id and sector" do
+      assert Overworld.sector_from_overworld_id("3:1,2") == {3, "0-0"}
+    end
+  end
+
   describe "calculating sectors" do
     setup do
       %{overworld: basic_overworld_map()}

@@ -13,7 +13,7 @@ defmodule Game.Zone.SectorSupervisor do
   end
 
   def init(zone) do
-    children = 
+    children =
       zone.overworld_map
       |> Overworld.break_into_sectors()
       |> Enum.map(fn sector ->

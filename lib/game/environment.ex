@@ -4,6 +4,8 @@ defmodule Game.Environment do
   """
 
   alias Game.Room
+  alias Game.Zone.Overworld
+  alias Game.Zone.Sector
 
   @type state :: Data.Room.t()
 
@@ -17,6 +19,17 @@ defmodule Game.Environment do
   Look around your environment
   """
   @spec look(integer() | String.t()) :: state()
+  def look("overworld:" <> overworld_id) do
+    {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+    case :global.whereis_name({Sector, zone_id, sector}) do
+      :undefined ->
+        {:error, :room_offline}
+
+      pid ->
+        GenServer.call(pid, :look)
+    end
+  end
+
   def look(id) do
     case :global.whereis_name({Room, id}) do
       :undefined ->

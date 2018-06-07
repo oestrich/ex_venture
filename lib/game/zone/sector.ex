@@ -21,4 +21,8 @@ defmodule Game.Zone.Sector do
 
     {:ok, state}
   end
+
+  def handle_call(:look, _from, state) do
+    {:reply, state.sector, state}
+  end
 end
