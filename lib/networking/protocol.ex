@@ -27,6 +27,7 @@ defmodule Networking.Protocol do
   @se 240
   @telnet_option_echo 1
   @ga 249
+  @ayt 246
 
   @mssp 70
   @mccp 86
@@ -230,6 +231,9 @@ defmodule Networking.Protocol do
 
         {:noreply, state}
 
+      :ayt ->
+        {:noreply, state}
+
       :iac ->
         {:noreply, state}
 
@@ -398,6 +402,10 @@ defmodule Networking.Protocol do
       <<@iac, @telnet_dont, @telnet_option_echo, data::binary>> ->
         forward_options(socket, data)
         fun.(:iac)
+
+      <<@iac, @ayt, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:ayt)
 
       <<@iac, data::binary>> ->
         Logger.warn("Got weird iac data - #{inspect(data)}")
