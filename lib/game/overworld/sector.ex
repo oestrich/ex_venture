@@ -1,4 +1,4 @@
-defmodule Game.Zone.Sector do
+defmodule Game.Overworld.Sector do
   @moduledoc """
   Sector process
   """
@@ -8,14 +8,14 @@ defmodule Game.Zone.Sector do
   @key :zones
 
   alias Game.Environment
-  alias Game.Zone.Overworld
+  alias Game.Overworld
 
   def start_link(zone_id, sector) do
     GenServer.start_link(__MODULE__, [zone_id, sector], name: pid(zone_id, sector))
   end
 
   defp pid(zone_id, sector) do
-    {:global, {Game.Zone.Sector, zone_id, sector}}
+    {:global, {Game.Overworld.Sector, zone_id, sector}}
   end
 
   def init([zone_id, sector]) do

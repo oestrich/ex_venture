@@ -4,8 +4,8 @@ defmodule Game.Environment do
   """
 
   alias Game.Room
-  alias Game.Zone.Overworld
-  alias Game.Zone.Sector
+  alias Game.Overworld
+  alias Game.Overworld.Sector
 
   @type state :: Data.Room.t()
 

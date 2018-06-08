@@ -1,4 +1,4 @@
-defmodule Game.Zone.Overworld do
+defmodule Game.Overworld do
   @moduledoc """
   Overworld helpers
   """

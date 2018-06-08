@@ -1,12 +1,12 @@
-defmodule Game.Zone.SectorSupervisor do
+defmodule Game.Overworld.SectorSupervisor do
   @moduledoc """
   Supervisor for zone overworld sectors
   """
 
   use Supervisor
 
-  alias Game.Zone.Overworld
-  alias Game.Zone.Sector
+  alias Game.Overworld
+  alias Game.Overworld.Sector
 
   def start_link(zone) do
     Supervisor.start_link(__MODULE__, zone, id: zone.id)

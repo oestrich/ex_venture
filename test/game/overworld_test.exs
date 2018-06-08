@@ -1,7 +1,7 @@
-defmodule Game.Zone.OverworldTest do
+defmodule Game.OverworldTest do
   use Data.ModelCase
 
-  alias Game.Zone.Overworld
+  alias Game.Overworld
 
   describe "splitting up an overworld id" do
     test "pulls out zone id and x,y" do
