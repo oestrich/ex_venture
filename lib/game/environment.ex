@@ -26,7 +26,7 @@ defmodule Game.Environment do
         {:error, :room_offline}
 
       pid ->
-        GenServer.call(pid, :look)
+        GenServer.call(pid, {:look, overworld_id})
     end
   end
 

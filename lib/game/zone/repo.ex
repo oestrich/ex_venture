@@ -13,4 +13,8 @@ defmodule Game.Zone.Repo do
   def all() do
     Zone |> Repo.all()
   end
+
+  def get(id) do
+    Repo.get(Zone, id)
+  end
 end

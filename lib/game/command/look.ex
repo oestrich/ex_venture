@@ -73,20 +73,7 @@ defmodule Game.Command.Look do
 
   def run({}, state = %{save: save}) do
     with {:ok, room} <- @environment.look(save.room_id) do
-      mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
-
-      room_map =
-        mini_map
-        |> String.split("\n")
-        |> Enum.slice(2..-1)
-        |> Enum.join("\n")
-
-      items = room_items(room)
-      state |> GMCP.room(room, items)
-      state |> GMCP.map(mini_map)
-
-      room = remove_yourself(room, state)
-      state.socket |> @socket.echo(Format.room(room, items, room_map))
+      state |> look_room(room)
     else
       {:error, :room_offline} ->
         {:error, :room_offline}
@@ -116,6 +103,23 @@ defmodule Game.Command.Look do
     |> maybe_look_player(name, state)
     |> maybe_look_feature(name, state)
     |> could_not_find(name, state)
+  end
+
+  defp look_room(state, room) do
+    mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
+
+    room_map =
+      mini_map
+      |> String.split("\n")
+      |> Enum.slice(2..-1)
+      |> Enum.join("\n")
+
+    items = room_items(room)
+    state |> GMCP.room(room, items)
+    state |> GMCP.map(mini_map)
+
+    room = remove_yourself(room, state)
+    state.socket |> @socket.echo(Format.room(room, items, room_map))
   end
 
   defp remove_yourself(room, state) do

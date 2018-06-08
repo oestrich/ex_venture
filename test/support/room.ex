@@ -12,8 +12,7 @@ defmodule Test.Game.Room do
   end
 
   def _room() do
-    %Environment.State{
-      type: :room,
+    %Environment.State.Room{
       id: 1,
       name: "Hallway",
       description: "An empty hallway",

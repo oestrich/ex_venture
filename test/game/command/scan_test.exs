@@ -9,7 +9,7 @@ defmodule Game.Command.ScanTest do
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
-  @basic_room %Game.Environment.State{
+  @basic_room %Game.Environment.State.Room{
     name: "Room",
     players: [],
     npcs: []
