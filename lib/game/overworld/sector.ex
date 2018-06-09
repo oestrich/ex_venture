@@ -88,6 +88,10 @@ defmodule Game.Overworld.Sector do
   end
 
   defmodule Implementation do
+    @moduledoc """
+    Implementation for the sector process
+    """
+
     @key :zones
 
     def look(state, overworld_id) do
@@ -143,7 +147,7 @@ defmodule Game.Overworld.Sector do
 
       temp_state = filter_character(state, cell, character)
       temp_state.players |> inform_players(cell, event)
-      temp_state.npcs |> inform_npcs(cell,event)
+      temp_state.npcs |> inform_npcs(cell, event)
 
       state
     end
