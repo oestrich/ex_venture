@@ -144,4 +144,22 @@ defmodule Game.Overworld.SectorTest do
       assert_receive {:"$gen_cast", {:notify, {"room/heard", "hi"}}}
     end
   end
+
+  describe "update character" do
+    test "stores the new information", %{state: state, user: user, overworld_id: overworld_id} do
+      user = %{user | name: "Player2"}
+
+      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, {:user, user}}, state)
+
+      assert [{_cell, %{name: "Player2"}}] = state.players
+    end
+
+    test "stores the new information - npc", %{state: state, npc: npc, overworld_id: overworld_id} do
+      npc = %{npc | name: "Bandito"}
+
+      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, {:npc, npc}}, state)
+
+      assert [{_cell, %{name: "Bandito"}}] = state.npcs
+    end
+  end
 end

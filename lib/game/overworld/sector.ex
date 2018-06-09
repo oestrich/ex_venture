@@ -100,8 +100,8 @@ defmodule Game.Overworld.Sector do
     {:noreply, state}
   end
 
-  def handle_cast({:update_character, _overworld_id, _character}, state) do
-    {:noreply, state}
+  def handle_cast({:update_character, overworld_id, character}, state) do
+    {:noreply, Implementation.update_character(state, overworld_id, character)}
   end
 
   defmodule Implementation do
@@ -139,6 +139,20 @@ defmodule Game.Overworld.Sector do
       temp_state.npcs |> inform_npcs(cell,event)
 
       state
+    end
+
+    def update_character(state, overworld_id, character) do
+      {_zone, cell} = Overworld.split_id(overworld_id)
+
+      state = filter_character(state, cell, character)
+
+      case character do
+        {:user, user} ->
+          Map.put(state, :players, [{cell, user} | state.players])
+
+        {:npc, npc} ->
+          Map.put(state, :npcs, [{cell, npc} | state.npcs])
+      end
     end
 
     defp filter_character(state, cell, character) do
