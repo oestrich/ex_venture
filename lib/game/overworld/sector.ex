@@ -1,6 +1,8 @@
 defmodule Game.Overworld.Sector do
   @moduledoc """
   Sector process
+
+  For information on the callbacks, see `Game.Environment`
   """
 
   use GenServer
@@ -8,20 +10,28 @@ defmodule Game.Overworld.Sector do
   @key :zones
 
   alias Game.Environment
+  alias Game.NPC
   alias Game.Overworld
+  alias Game.Session
+  alias Game.Overworld.Sector.Implementation
 
   def start_link(zone_id, sector) do
     GenServer.start_link(__MODULE__, [zone_id, sector], name: pid(zone_id, sector))
   end
 
-  defp pid(zone_id, sector) do
+  @doc """
+  Tuple for the sector, treated as a pid
+  """
+  def pid(zone_id, sector) do
     {:global, {Game.Overworld.Sector, zone_id, sector}}
   end
 
   def init([zone_id, sector]) do
     state = %{
       zone_id: zone_id,
-      sector: sector
+      sector: sector,
+      players: [],
+      npcs: [],
     }
 
     {:ok, state}
@@ -45,5 +55,119 @@ defmodule Game.Overworld.Sector do
     }
 
     {:reply, {:ok, environment}, state}
+  end
+
+  # leaving error for now
+  def handle_call({:pick_up, _overworld_id, _item}, state) do
+    {:reply, :error, state}
+  end
+
+  # leaving error for now
+  def handle_call({:pick_up_currency, _overworld_id}, state) do
+    {:reply, :error, state}
+  end
+
+  def handle_cast({:enter, overworld_id, character, reason}, state) do
+    {:noreply, Implementation.character_enter(state, overworld_id, character, reason)}
+  end
+
+  def handle_cast({:leave, overworld_id, character, reason}, state) do
+    {:noreply, Implementation.character_leave(state, overworld_id, character, reason)}
+  end
+
+  def handle_cast({:notify, _overworld_id, _character, _event}, state) do
+    {:noreply, state}
+  end
+
+  def handle_cast({:say, _overworld_id, _sender, _message}, state) do
+    {:noreply, state}
+  end
+
+  def handle_cast({:emote, _overworld_id, _sender, _message}, state) do
+    {:noreply, state}
+  end
+
+  # skipping for now
+  def handle_cast({:drop, _overworld_id, _who, _item}, state) do
+    {:noreply, state}
+  end
+
+  # skipping for now
+  def handle_cast({:drop_currency, _overworld_id, _who, _currency}, state) do
+    {:noreply, state}
+  end
+
+  def handle_cast({:update_character, _overworld_id, _character}, state) do
+    {:noreply, state}
+  end
+
+  defmodule Implementation do
+    def character_enter(state, overworld_id, character, reason) do
+      {_zone, cell} = Overworld.split_id(overworld_id)
+
+      state.players |> inform_players(cell, {"room/entered", {character, reason}})
+      state.npcs |> inform_npcs(cell, {"room/entered", {character, reason}})
+
+      case character do
+        {:user, user} ->
+          Map.put(state, :players, [{cell, user} | state.players])
+
+        {:npc, npc} ->
+          Map.put(state, :npcs, [{cell, npc} | state.npcs])
+      end
+    end
+
+    def character_leave(state, overworld_id, character, reason) do
+      {_zone, cell} = Overworld.split_id(overworld_id)
+
+      state = filter_character(state, cell, character)
+
+      state.players |> inform_players(cell, {"room/leave", {character, reason}})
+      state.npcs |> inform_npcs(cell, {"room/leave", {character, reason}})
+
+      state
+    end
+
+    defp filter_character(state, cell, character) do
+      case character do
+        {:user, user} ->
+          players =
+            state.players
+            |> Enum.reject(fn {existing_cell, existing_player} ->
+              existing_cell == cell && existing_player.id == user.id
+            end)
+
+          Map.put(state, :players, players)
+
+        {:npc, npc} ->
+          npcs =
+            state.npcs
+            |> Enum.reject(fn {existing_cell, existing_npc} ->
+              existing_cell == cell && existing_npc.id == npc.id
+            end)
+
+          Map.put(state, :npcs, npcs)
+      end
+    end
+
+    defp inform_players(players, cell, action) do
+      players
+      |> Enum.filter(fn {player_cell, _npc} ->
+        cell == player_cell
+      end)
+      |> Enum.each(fn {_cell, user} ->
+        Session.notify(user, action)
+      end)
+    end
+
+    defp inform_npcs(npcs, cell, action) do
+      npcs
+      |> Enum.filter(fn {npc_cell, _npc} ->
+        cell == npc_cell
+      end)
+      |> Enum.each(fn {_cell, npc} ->
+        NPC.notify(npc.id, action)
+      end)
+    end
   end
 end
