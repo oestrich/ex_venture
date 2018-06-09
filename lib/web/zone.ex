@@ -6,6 +6,7 @@ defmodule Web.Zone do
   import Ecto.Query
 
   alias Data.Zone
+  alias Data.Zone.MapCell
   alias Data.Room
   alias Data.Repo
   alias Game.World
@@ -133,11 +134,26 @@ defmodule Web.Zone do
   defp parse_map(params = %{"overworld_map" => overworld_map}) do
     case Poison.decode(overworld_map) do
       {:ok, overworld_map} ->
+        overworld_map = cast_map(overworld_map)
         Map.put(params, "overworld_map", overworld_map)
 
       _ ->
         params
     end
+  end
+
+  defp cast_map(overworld_map) do
+    overworld_map
+    |> Enum.map(fn cell ->
+      case MapCell.load(cell) do
+        {:ok, cell} ->
+          cell
+
+        _ ->
+          nil
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
   end
 
   @doc """

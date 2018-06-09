@@ -109,7 +109,13 @@ defmodule Game.Overworld do
       true ->
         "X"
       false ->
-        "{#{overworld_cell.c}}#{overworld_cell.s}{/#{overworld_cell.c}}"
+        case overworld_cell.c do
+          nil ->
+            overworld_cell.s
+
+          color ->
+            "{#{color}}#{overworld_cell.s}{/#{color}}"
+        end
     end
   end
 end

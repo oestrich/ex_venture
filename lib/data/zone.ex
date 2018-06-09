@@ -43,6 +43,7 @@ defmodule Data.Zone do
     ])
     |> validate_required([:type, :name, :description, :map_layer_names])
     |> validate_inclusion(:type, @types)
+    |> maybe_default_overworld()
   end
 
   def map_changeset(struct, params) do
@@ -50,5 +51,33 @@ defmodule Data.Zone do
     |> cast(params, [:overworld_map])
     |> validate_required([:overworld_map])
     |> validate_inclusion(:type, ["overworld"], message: "must be an overworld to add a map")
+  end
+
+  defp maybe_default_overworld(changeset) do
+    case get_field(changeset, :type) do
+      "rooms" ->
+        changeset
+
+      "overworld" ->
+        default_overworld(changeset)
+    end
+  end
+
+  defp default_overworld(changeset) do
+    case get_field(changeset, :overworld_map) do
+      nil ->
+        put_change(changeset, :overworld_map, default_map())
+
+      _ ->
+        changeset
+    end
+  end
+
+  def default_map() do
+    Enum.flat_map(0..99, fn x ->
+      Enum.map(0..49, fn y ->
+        %{x: x, y: y, s: " ", c: nil}
+      end)
+    end)
   end
 end

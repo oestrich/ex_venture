@@ -132,6 +132,8 @@ class MapCell extends React.Component {
     let color = this.state.hover ? this.props.selectedColor : this.props.color;
     let symbol = this.state.hover ? this.props.selectedSymbol : this.props.symbol;
 
+    symbol = symbol == " " ? "\xa0" : symbol;
+
     let handleClick = this.props.handleClick;
     let handleDrag = this.handleDrag;
 
@@ -202,36 +204,19 @@ class MapRow extends React.Component {
  */
 class OverworldMap {
   constructor(map) {
-    if (map == null) {
-      this.overworld = this.generate();
-    } else {
-      let groupedMap = map.reduce((acc, val) => {
-        if (acc[val.y] == undefined) {
-          acc[val.y] = [];
-        }
+    let groupedMap = map.reduce((acc, val) => {
+      if (acc[val.y] == undefined) {
+        acc[val.y] = [];
+      }
 
-        acc[val.y].push(val);
+      acc[val.y].push(val);
 
-        return acc;
-      }, []);
+      return acc;
+    }, []);
 
-      this.overworld = groupedMap.map((row) => {
-        return row.sort((a, b) => { return a.x - b.x; });
-      });
-    }
-  }
-
-  generate() {
-    let xs = [...Array(100).keys()];
-    let ys = [...Array(50).keys()];
-
-    let map = ys.map(y => {
-      return xs.map(x => {
-        return {x: x, y: y, s: ".", c: "green"};
-      });
+    this.overworld = groupedMap.map((row) => {
+      return row.sort((a, b) => { return a.x - b.x; });
     });
-
-    return map;
   }
 
   updateCell(x, y, attrs) {
