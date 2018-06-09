@@ -8,6 +8,7 @@ defmodule Game.Command.PickUp do
 
   require Logger
 
+  alias Game.Environment.State.Overworld
   alias Game.Items
 
   @must_be_alive true
@@ -101,6 +102,9 @@ defmodule Game.Command.PickUp do
 
       {:error, :could_not_pickup} ->
         {:update, state}
+
+      {:error, :overworld} ->
+        state.socket |> @socket.echo("There was nothing to pick up")
     end
   end
 
@@ -127,6 +131,8 @@ defmodule Game.Command.PickUp do
     socket |> @socket.echo(message)
   end
 
+  defp pick_up_all_items(_state, _room = %Overworld{}), do: {:error, :overworld}
+
   defp pick_up_all_items(state, room) do
     state =
       Enum.reduce(room.items, state, fn item, state ->
@@ -143,6 +149,8 @@ defmodule Game.Command.PickUp do
 
     {:ok, state}
   end
+
+  defp find_item(_room = %Overworld{}, _item_name), do: {:error, :not_found}
 
   defp find_item(room, item_name) do
     instance =

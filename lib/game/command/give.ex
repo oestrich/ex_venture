@@ -54,8 +54,11 @@ defmodule Game.Command.Give do
   @spec _parse_give_command(String.t()) :: :ok
   def _parse_give_command(string) do
     case Regex.run(~r/(?<item>.+) to (?<character>.+)/i, string, capture: :all) do
-      nil -> {:error, :bad_parse, "give " <> string}
-      [_string, item_name, character_name] -> {String.trim(item_name), :to, character_name}
+      nil ->
+        {:error, :bad_parse, "give " <> string}
+
+      [_string, item_name, character_name] ->
+        {String.trim(item_name), :to, character_name}
     end
   end
 

@@ -7,6 +7,8 @@ defmodule Game.Command.Shops do
   use Game.Currency
   use Game.Shop
 
+  alias Game.Environment
+  alias Game.Environment.State.Overworld
   alias Game.Items
   alias Game.Utility
 
@@ -114,12 +116,18 @@ defmodule Game.Command.Shops do
   def run({}, %{socket: socket, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
 
-    case length(room.shops) do
-      0 ->
-        socket |> @socket.echo("There are no shops here.")
+    case Environment.room_type(room_id) do
+      :room ->
+        case Enum.empty?(room.shops) do
+          true ->
+            socket |> @socket.echo("There are no shops here.")
 
-      _ ->
-        socket |> @socket.echo(Format.shops(room, label: false))
+          false ->
+            socket |> @socket.echo(Format.shops(room, label: false))
+        end
+
+      :overworld ->
+        socket |> @socket.echo("There are no shops here.")
     end
   end
 
@@ -133,7 +141,7 @@ defmodule Game.Command.Shops do
   def run({:list, shop_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
 
-    case find_shop(room.shops, shop_name) do
+    case find_shop(room, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
 
@@ -145,7 +153,7 @@ defmodule Game.Command.Shops do
   def run({:list}, state = %{socket: socket, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
 
-    case one_shop(room.shops) do
+    case one_shop(room) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
 
@@ -162,7 +170,7 @@ defmodule Game.Command.Shops do
 
     {:ok, room} = @environment.look(room_id)
 
-    case find_shop(room.shops, shop_name) do
+    case find_shop(room, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
 
@@ -174,7 +182,7 @@ defmodule Game.Command.Shops do
   def run({:show, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
 
-    case one_shop(room.shops) do
+    case one_shop(room) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
 
@@ -191,7 +199,7 @@ defmodule Game.Command.Shops do
 
     {:ok, room} = @environment.look(room_id)
 
-    case find_shop(room.shops, shop_name) do
+    case find_shop(room, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
 
@@ -203,7 +211,7 @@ defmodule Game.Command.Shops do
   def run({:buy, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
 
-    case one_shop(room.shops) do
+    case one_shop(room) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
 
@@ -220,7 +228,7 @@ defmodule Game.Command.Shops do
 
     {:ok, room} = @environment.look(room_id)
 
-    case find_shop(room.shops, shop_name) do
+    case find_shop(room, shop_name) do
       {:error, :not_found} ->
         socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
 
@@ -232,7 +240,7 @@ defmodule Game.Command.Shops do
   def run({:sell, item_name}, state = %{socket: socket, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
 
-    case one_shop(room.shops) do
+    case one_shop(room) do
       {:error, :not_found} ->
         socket |> @socket.echo("The shop could not be found.")
 
@@ -244,8 +252,10 @@ defmodule Game.Command.Shops do
     end
   end
 
-  defp find_shop(shops, shop_name) do
-    case shop = Enum.find(shops, fn shop -> Utility.matches?(shop, shop_name) end) do
+  defp find_shop(_room = %Overworld{}, _shop_name), do: {:error, :not_found}
+
+  defp find_shop(room, shop_name) do
+    case Enum.find(room.shops, fn shop -> Utility.matches?(shop, shop_name) end) do
       nil ->
         {:error, :not_found}
 
@@ -269,8 +279,10 @@ defmodule Game.Command.Shops do
     socket |> @socket.echo(Format.list_shop(shop, items))
   end
 
-  defp one_shop(shops) do
-    case shops do
+  defp one_shop(_room = %Overworld{}), do: {:error, :not_found}
+
+  defp one_shop(room) do
+    case room.shops do
       [shop] ->
         {:ok, @shop.list(shop.id)}
 

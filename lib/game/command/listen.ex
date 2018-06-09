@@ -6,6 +6,7 @@ defmodule Game.Command.Listen do
   use Game.Command
 
   alias Data.Exit
+  alias Game.Environment.State.Overworld
   alias Game.Room.Helpers, as: RoomHelpers
 
   commands(["listen"], parse: false)
@@ -89,6 +90,12 @@ defmodule Game.Command.Listen do
   end
 
   defp room_has_noises?(room) do
-    !is_nil(room.listen) || Enum.any?(room.features, &(!is_nil(&1.listen)))
+    case room do
+      %Overworld{} ->
+        false
+
+      _ ->
+        !is_nil(room.listen) || Enum.any?(room.features, &(!is_nil(&1.listen)))
+    end
   end
 end

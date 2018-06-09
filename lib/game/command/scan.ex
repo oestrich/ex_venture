@@ -5,6 +5,7 @@ defmodule Game.Command.Scan do
 
   use Game.Command
 
+  alias Game.Environment.State.Overworld
   alias Data.Exit
   alias Data.Room
   alias Game.Door
@@ -47,6 +48,8 @@ defmodule Game.Command.Scan do
     rooms = scan_rooms(room)
     state.socket |> @socket.echo(Format.Scan.room(room, rooms))
   end
+
+  defp scan_rooms(_room = %Overworld{}), do: []
 
   defp scan_rooms(room) do
     room

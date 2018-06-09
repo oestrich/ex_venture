@@ -16,6 +16,19 @@ defmodule Game.Environment do
   end
 
   @doc """
+  Get the type of room based on its id
+  """
+  def room_type(room_id) do
+    case room_id do
+      "overworld:" <> _id ->
+        :overworld
+
+      _ ->
+        :room
+    end
+  end
+
+  @doc """
   Look around your environment
   """
   @spec look(integer() | String.t()) :: state()
@@ -227,6 +240,11 @@ defmodule Game.Environment do
 
   There should always remain no matching clause for this cast
   """
+  def crash("overworld:" <> overworld_id) do
+    {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+    GenServer.cast(Sector.pid(zone_id, sector), :crash)
+  end
+
   def crash(id) do
     GenServer.cast(Room.pid(id), :crash)
   end

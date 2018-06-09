@@ -6,6 +6,7 @@ defmodule Game.Command.Drop do
   use Game.Command
   use Game.Currency
 
+  alias Game.Environment
   alias Game.Item
   alias Game.Items
 
@@ -34,9 +35,12 @@ defmodule Game.Command.Drop do
   def run(command, state)
 
   def run({item_name}, state) do
-    case Regex.match?(~r{#{@currency}}, item_name) do
-      true -> drop_currency(item_name, state)
-      false -> drop_item(item_name, state)
+    case Environment.room_type(state.save.room_id) do
+      :room ->
+        drop(state, item_name)
+
+      :overworld ->
+        state.socket |> @socket.echo("You cannot drop items in the overworld.")
     end
   end
 
@@ -45,6 +49,16 @@ defmodule Game.Command.Drop do
       "Please provide an item to drop. See {command}help drop{/command} for more information."
 
     socket |> @socket.echo(message)
+  end
+
+  defp drop(state, item_name) do
+    case Regex.match?(~r{#{@currency}}, item_name) do
+      true ->
+        drop_currency(item_name, state)
+
+      false ->
+        drop_item(item_name, state)
+    end
   end
 
   defp drop_currency(amount_to_drop, state = %{socket: socket, save: %{currency: currency}}) do

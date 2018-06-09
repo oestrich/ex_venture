@@ -6,6 +6,7 @@ defmodule Game.Command.Look do
   use Game.Command
   use Game.Zone
 
+  alias Game.Environment
   alias Game.Environment.State.Overworld
   alias Game.Environment.State.Room
   alias Data.Exit
@@ -83,11 +84,15 @@ defmodule Game.Command.Look do
   end
 
   def run({:direction, direction}, state = %{save: save}) do
-    with {:ok, room} <- @environment.look(save.room_id),
+    with :room <- Environment.room_type(save.room_id),
+         {:ok, room} <- @environment.look(save.room_id),
          %{finish_id: room_id} <- Exit.exit_to(room, direction),
          {:ok, room} <- @environment.look(room_id) do
       state.socket |> @socket.echo(Format.peak_room(room, direction))
     else
+      :overworld ->
+        :ok
+
       {:error, :room_offline} ->
         {:error, :room_offline}
 
@@ -147,6 +152,8 @@ defmodule Game.Command.Look do
   defp room_items(%{items: nil}), do: []
   defp room_items(%{items: items}), do: Enum.map(items, &Items.item/1)
 
+  defp maybe_look_item(room = %Overworld{}, _item_name, _state), do: room
+
   defp maybe_look_item(room, item_name, %{socket: socket}) do
     item =
       room.items
@@ -191,6 +198,8 @@ defmodule Game.Command.Look do
   end
 
   defp maybe_look_feature(:ok, _name, _state), do: :ok
+
+  defp maybe_look_feature(room = %Overworld{}, _item_name, _state), do: room
 
   defp maybe_look_feature(room, key, %{socket: socket}) do
     feature = room.features |> Enum.find(&Utility.matches?(&1.key, key))
