@@ -14,6 +14,7 @@ defmodule Game.Overworld.Sector do
   alias Game.Overworld
   alias Game.Session
   alias Game.Overworld.Sector.Implementation
+  alias Metrics.CommunicationInstrumenter
 
   def start_link(zone_id, sector) do
     GenServer.start_link(__MODULE__, [zone_id, sector], name: pid(zone_id, sector))
@@ -75,16 +76,18 @@ defmodule Game.Overworld.Sector do
     {:noreply, Implementation.character_leave(state, overworld_id, character, reason)}
   end
 
-  def handle_cast({:notify, _overworld_id, _character, _event}, state) do
-    {:noreply, state}
+  def handle_cast({:notify, overworld_id, character, event}, state) do
+    {:noreply, Implementation.notify(state, overworld_id, character, event)}
   end
 
-  def handle_cast({:say, _overworld_id, _sender, _message}, state) do
-    {:noreply, state}
+  def handle_cast({:say, overworld_id, sender, message}, state) do
+    CommunicationInstrumenter.say()
+    handle_cast({:notify, overworld_id, sender, {"room/heard", message}}, state)
   end
 
-  def handle_cast({:emote, _overworld_id, _sender, _message}, state) do
-    {:noreply, state}
+  def handle_cast({:emote, overworld_id, sender, message}, state) do
+    CommunicationInstrumenter.emote()
+    handle_cast({:notify, overworld_id, sender, {"room/heard", message}}, state)
   end
 
   # skipping for now
@@ -124,6 +127,16 @@ defmodule Game.Overworld.Sector do
 
       state.players |> inform_players(cell, {"room/leave", {character, reason}})
       state.npcs |> inform_npcs(cell, {"room/leave", {character, reason}})
+
+      state
+    end
+
+    def notify(state, overworld_id, character, event) do
+      {_zone, cell} = Overworld.split_id(overworld_id)
+
+      temp_state = filter_character(state, cell, character)
+      temp_state.players |> inform_players(cell, event)
+      temp_state.npcs |> inform_npcs(cell,event)
 
       state
     end
