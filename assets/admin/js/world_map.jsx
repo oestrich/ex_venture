@@ -206,27 +206,27 @@ class OverworldMap {
       this.overworld = this.generate();
     } else {
       let groupedMap = map.reduce((acc, val) => {
-        if (acc[val.x] == undefined) {
-          acc[val.x] = [];
+        if (acc[val.y] == undefined) {
+          acc[val.y] = [];
         }
 
-        acc[val.x].push(val);
+        acc[val.y].push(val);
 
         return acc;
       }, []);
 
       this.overworld = groupedMap.map((row) => {
-        return row.sort((a, b) => { return a.y - b.y; });
+        return row.sort((a, b) => { return a.x - b.x; });
       });
     }
   }
 
   generate() {
-    let xs = [...Array(50).keys()];
-    let ys = [...Array(100).keys()];
+    let xs = [...Array(100).keys()];
+    let ys = [...Array(50).keys()];
 
-    let map = xs.map(x => {
-      return ys.map(y => {
+    let map = ys.map(y => {
+      return xs.map(x => {
         return {x: x, y: y, s: ".", c: "green"};
       });
     });
