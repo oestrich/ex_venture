@@ -6,6 +6,8 @@ defmodule Game.Command.Look do
   use Game.Command
   use Game.Zone
 
+  alias Game.Environment.State.Overworld
+  alias Game.Environment.State.Room
   alias Data.Exit
   alias Game.Item
   alias Game.Items
@@ -105,7 +107,7 @@ defmodule Game.Command.Look do
     |> could_not_find(name, state)
   end
 
-  defp look_room(state, room) do
+  defp look_room(state, room = %Room{}) do
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
 
     room_map =
@@ -120,6 +122,21 @@ defmodule Game.Command.Look do
 
     room = remove_yourself(room, state)
     state.socket |> @socket.echo(Format.room(room, items, room_map))
+  end
+
+  defp look_room(state, room = %Overworld{}) do
+    mini_map = room.zone_id |> @zone.map({room.x, room.y})
+
+    room_map =
+      mini_map
+      |> String.split("\n")
+      |> Enum.slice(2..-1)
+      |> Enum.join("\n")
+
+    state |> GMCP.map(mini_map)
+
+    room = remove_yourself(room, state)
+    state.socket |> @socket.echo(Format.overworld_room(room, room_map))
   end
 
   defp remove_yourself(room, state) do

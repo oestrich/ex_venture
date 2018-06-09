@@ -12,11 +12,16 @@ defmodule Game.Overworld do
   """
   @spec split_id(String.t()) :: {integer(), cell()}
   def split_id(overworld_id) do
-    [zone_id, cell] = String.split(overworld_id, ":")
-    [x, y] = String.split(cell, ",")
-    cell = %{x: String.to_integer(x), y: String.to_integer(y)}
+    try do
+      [zone_id, cell] = String.split(overworld_id, ":")
+      [x, y] = String.split(cell, ",")
+      cell = %{x: String.to_integer(x), y: String.to_integer(y)}
 
-    {String.to_integer(zone_id), cell}
+      {String.to_integer(zone_id), cell}
+    rescue
+      MatchError ->
+        :error
+    end
   end
 
   @doc """

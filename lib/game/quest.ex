@@ -230,6 +230,11 @@ defmodule Game.Quest do
     :ok
   end
 
+  # overworld room's don't track progress yet
+  def track_progress(_user, {:room, "overworld:" <> _id}) do
+    :ok
+  end
+
   def track_progress(user, {:room, room_id}) do
     QuestProgress
     |> where([qp], qp.status == "active")

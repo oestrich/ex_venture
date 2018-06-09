@@ -248,6 +248,10 @@ defmodule Game.QuestTest do
       assert :ok = Quest.track_progress(user, {:room, room.id})
     end
 
+    test "moving in the overworld", %{user: user} do
+      assert :ok = Quest.track_progress(user, {:room, "overworld:1:1,1,"})
+    end
+
     test "updates any quest progresses that match the user and the room", %{user: user, room: room} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})

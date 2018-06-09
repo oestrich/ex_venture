@@ -86,7 +86,7 @@ defmodule Game.Session.Login do
   end
 
   def after_sign_in(state, session) do
-    with {:ok, _room} <- check_room(state) do
+    with :ok <- check_room(state) do
       finish_login(state, session)
     else
       {:error, :room, :missing} ->
@@ -119,12 +119,18 @@ defmodule Game.Session.Login do
   end
 
   defp check_room(state) do
-    case Repo.get(Room, state.save.room_id) do
-      nil ->
-        {:error, :room, :missing}
+    case state.save.room_id do
+      "overworld:" <> _overworld_id ->
+        :ok
 
-      room ->
-        {:ok, room}
+      room_id ->
+        case Repo.get(Room, room_id) do
+          nil ->
+            {:error, :room, :missing}
+
+          _room ->
+            :ok
+        end
     end
   end
 

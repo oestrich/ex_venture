@@ -12,6 +12,7 @@ defmodule Game.Zone do
   alias Game.Door
   alias Game.Map, as: GameMap
   alias Game.NPC
+  alias Game.Overworld
   alias Game.Room
   alias Game.Shop
   alias Game.Zone.Repo
@@ -204,13 +205,28 @@ defmodule Game.Zone do
   end
 
   def handle_call({:map, player_at, opts}, _from, state = %{zone: zone}) do
-    map = """
-    #{zone.name}
+    case zone.type do
+      "rooms" ->
+        map = """
+        #{zone.name}
 
-    #{GameMap.display_map(state, player_at, opts)}
-    """
+        #{GameMap.display_map(state, player_at, opts)}
+        """
 
-    {:reply, map |> String.trim(), state}
+        {:reply, map |> String.trim(), state}
+
+      "overworld" ->
+        {x, y} = player_at
+        cell = %{x: x, y: y}
+
+        map = """
+        #{zone.name}
+
+        #{Overworld.map(zone, cell)}
+        """
+
+        {:reply, map |> String.trim(), state}
+    end
   end
 
   def handle_call({:terminate, :room, room_id}, _from, state) do
