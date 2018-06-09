@@ -46,4 +46,24 @@ defmodule Game.Overworld do
     y = div(cell.y, @sector_boundary)
     "#{x}-#{y}"
   end
+
+  def exits(zone, cell) do
+    start_id = Enum.join(["overworld", to_string(zone.id), "#{cell.x},#{cell.y}"], ":")
+
+    north = %{direction: "north", start_id: start_id, x: cell.x, y: cell.y - 1}
+    south = %{direction: "south", start_id: start_id, x: cell.x, y: cell.y + 1}
+    east = %{direction: "east", start_id: start_id, x: cell.x + 1, y: cell.y}
+    west = %{direction: "west", start_id: start_id, x: cell.x - 1, y: cell.y}
+
+    [north, south, east, west]
+    |> Enum.filter(fn direction ->
+      Enum.any?(zone.overworld_map, fn cell ->
+        cell.x == direction.x && cell.y == direction.y
+      end)
+    end)
+    |> Enum.map(fn direction ->
+      finish_id = Enum.join(["overworld", to_string(zone.id), "#{direction.x},#{direction.y}"], ":")
+      %{direction: direction.direction, start_id: direction.start_id, finish_id: finish_id}
+    end)
+  end
 end

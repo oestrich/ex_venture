@@ -19,6 +19,18 @@ defmodule Game.Overworld.SectorTest do
     %{state: state, user: user, npc: npc, overworld_id: "1:1,1"}
   end
 
+  describe "looking" do
+    test "looks at the current overworld", %{state: state, overworld_id: overworld_id} do
+      Cachex.set(:zones, 1, %{id: 1, name: "Zone", overworld_map: []})
+
+      {:reply, {:ok, environment}, _state} = Sector.handle_call({:look, overworld_id}, nil, state)
+
+      assert environment.x == 1
+      assert environment.y == 1
+      assert environment.zone == "Zone"
+    end
+  end
+
   describe "entering an overworld id" do
     test "player entering", %{state: state, user: user, overworld_id: overworld_id} do
       {:noreply, state} = Sector.handle_cast({:enter, overworld_id, {:user, user}, :enter}, state)

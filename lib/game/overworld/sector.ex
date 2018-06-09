@@ -7,8 +7,6 @@ defmodule Game.Overworld.Sector do
 
   use GenServer
 
-  @key :zones
-
   alias Game.Environment
   alias Game.NPC
   alias Game.Overworld
@@ -39,32 +37,17 @@ defmodule Game.Overworld.Sector do
   end
 
   def handle_call({:look, overworld_id}, _from, state) do
-    {_zone_id, cell} = Overworld.split_id(overworld_id)
-
-    {:ok, zone} = Cachex.get(@key, state.zone_id)
-
-    environment = %Environment.State.Overworld{
-      id: "overworld:" <> overworld_id,
-      zone_id: state.zone_id,
-      zone: zone.name,
-      x: cell.x,
-      y: cell.y,
-      ecology: "default", # eventually from the editor
-      exits: [], # determine based on the coordinate, then based on metadata for warp exits
-      players: [],
-      npcs: [],
-    }
-
-    {:reply, {:ok, environment}, state}
+    {reply, state} = Implementation.look(state, overworld_id)
+    {:reply, reply, state}
   end
 
   # leaving error for now
-  def handle_call({:pick_up, _overworld_id, _item}, state) do
+  def handle_call({:pick_up, _overworld_id, _item}, _from, state) do
     {:reply, :error, state}
   end
 
   # leaving error for now
-  def handle_call({:pick_up_currency, _overworld_id}, state) do
+  def handle_call({:pick_up_currency, _overworld_id}, _from, state) do
     {:reply, :error, state}
   end
 
@@ -105,6 +88,30 @@ defmodule Game.Overworld.Sector do
   end
 
   defmodule Implementation do
+    @key :zones
+
+    def look(state, overworld_id) do
+      {_zone_id, cell} = Overworld.split_id(overworld_id)
+
+      {:ok, zone} = Cachex.get(@key, state.zone_id)
+
+      characters = filter_characters_to_cell(state, cell)
+
+      environment = %Environment.State.Overworld{
+        id: "overworld:" <> overworld_id,
+        zone_id: state.zone_id,
+        zone: zone.name,
+        x: cell.x,
+        y: cell.y,
+        ecology: "default", # eventually from the editor
+        exits: Overworld.exits(zone, cell),
+        players: characters.players,
+        npcs: characters.npcs,
+      }
+
+      {{:ok, environment}, state}
+    end
+
     def character_enter(state, overworld_id, character, reason) do
       {_zone, cell} = Overworld.split_id(overworld_id)
 
@@ -153,6 +160,24 @@ defmodule Game.Overworld.Sector do
         {:npc, npc} ->
           Map.put(state, :npcs, [{cell, npc} | state.npcs])
       end
+    end
+
+    defp filter_characters_to_cell(state, cell) do
+      players =
+        state.players
+        |> Enum.filter(fn {player_cell, _player} ->
+          cell == player_cell
+        end)
+        |> Enum.map(&elem(&1, 1))
+
+      npcs =
+        state.npcs
+        |> Enum.filter(fn {npc_cell, _npc} ->
+          cell == npc_cell
+        end)
+        |> Enum.map(&elem(&1, 1))
+
+      %{players: players, npcs: npcs}
     end
 
     defp filter_character(state, cell, character) do
