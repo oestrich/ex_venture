@@ -1,7 +1,5 @@
 import React from 'react';
 
-const COLORS = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
-
 const debounceEvent = (callback, time) => {
   let interval;
   return (...args) => {
@@ -17,7 +15,6 @@ class Colors extends React.Component {
   constructor(props) {
     super(props);
 
-    this.colors = COLORS;
     this.changeColor = this.changeColor.bind(this);
   }
 
@@ -39,7 +36,7 @@ class Colors extends React.Component {
   }
 
   render() {
-    let colors = this.colors;
+    let colors = this.props.colors;
     let changeColor = this.changeColor;
 
     return (
@@ -139,7 +136,7 @@ class MapCell extends React.Component {
 
     return (
       <span
-        className={color}
+        className={`color-code-${color}`}
         onClick={handleClick}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
@@ -294,7 +291,7 @@ export default class WorldMap extends React.Component {
         <input type="hidden" name="zone[overworld_map]" value={map.toJSON()} />
         <input type="submit" className="btn btn-primary pull-right" value="Save" />
 
-        <Colors handleColorChange={this.handleColorChange} selectedColor={selectedColor} />
+        <Colors colors={this.props.colors} handleColorChange={this.handleColorChange} selectedColor={selectedColor} />
         <Symbols handleSymbolChange={this.handleSymbolChange} selectedSymbol={selectedSymbol} />
 
         <div className="world-map terminal">

@@ -105,41 +105,49 @@ a:hover {
  * Base Colors
  */
 
+.color-code-black,
 .black {
   color: <%= Config.color_black() %>;
   font-weight: bold;
 }
 
+.color-code-red,
 .red {
   color: <%= Config.color_red() %>;
   font-weight: bold;
 }
 
+.color-code-green,
 .green {
   color: <%= Config.color_green() %>;
   font-weight: bold;
 }
 
+.color-code-yellow,
 .yellow {
   color: <%= Config.color_yellow() %>;
   font-weight: bold;
 }
 
+.color-code-blue,
 .blue {
   color: <%= Config.color_blue() %>;
   font-weight: bold;
 }
 
+.color-code-magenta,
 .magenta {
   color: <%= Config.color_magenta() %>;
   font-weight: bold;
 }
 
+.color-code-cyan,
 .cyan {
   color: <%= Config.color_cyan() %>;
   font-weight: bold;
 }
 
+.color-code-white,
 .white {
   color: <%= Config.color_white() %>;
   font-weight: bold;
@@ -182,6 +190,7 @@ a:hover {
 <%= Enum.map(@color_codes, fn color_code -> %>
 .color-code-<%= color_code.key %> {
   color: <%= color_code.hex_code %>;
+  font-weight: bold;
 }
 <% end) %>
 

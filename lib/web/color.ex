@@ -63,6 +63,18 @@ defmodule Web.Color do
     end)
   end
 
+  @doc """
+  Get all color keys available for use in the game
+  """
+  def color_keys() do
+    basic_keys = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
+    custom_keys = Enum.map(ColorCode.all(), &(&1.key))
+    basic_keys ++ custom_keys
+  end
+
+  @doc """
+  Format a string for HTML colors, wrapping in span tags
+  """
   def format(string) do
     string
     |> String.replace("{black}", "<span class='black'>")

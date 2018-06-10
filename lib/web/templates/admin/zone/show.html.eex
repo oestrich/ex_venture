@@ -158,7 +158,7 @@
           </div>
           <div class="box-body">
             <%= form_tag zone_overworld_path(@conn, :update, @zone.id), method: "PUT" do %>
-              <%= React.react_component("Components.WorldMap", map: @zone.overworld_map) %>
+              <%= React.react_component("Components.WorldMap", map: @zone.overworld_map, colors: Color.color_keys()) %>
             <% end %>
           </div>
         </div>
