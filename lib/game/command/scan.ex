@@ -5,6 +5,7 @@ defmodule Game.Command.Scan do
 
   use Game.Command
 
+  alias Game.Environment.State.Overworld
   alias Data.Exit
   alias Data.Room
   alias Game.Door
@@ -43,10 +44,12 @@ defmodule Game.Command.Scan do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    {:ok, room} = @room.look(save.room_id)
+    {:ok, room} = @environment.look(save.room_id)
     rooms = scan_rooms(room)
     state.socket |> @socket.echo(Format.Scan.room(room, rooms))
   end
+
+  defp scan_rooms(_room = %Overworld{}), do: []
 
   defp scan_rooms(room) do
     room
@@ -63,7 +66,7 @@ defmodule Game.Command.Scan do
         {direction, :closed}
 
       _ ->
-        {:ok, room} = @room.look(room_exit.finish_id)
+        {:ok, room} = @environment.look(room_exit.finish_id)
         {direction, room}
     end
   end

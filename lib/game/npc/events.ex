@@ -3,7 +3,7 @@ defmodule Game.NPC.Events do
   Handle events that NPCs have defined
   """
 
-  use Game.Room
+  use Game.Environment
 
   import Game.Command.Skills, only: [find_target: 2]
 
@@ -211,7 +211,7 @@ defmodule Game.NPC.Events do
   def act_on_combat_tick(state = %{target: nil}), do: {:update, %{state | combat: false}}
 
   def act_on_combat_tick(state = %{room_id: room_id, npc: npc, target: target}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case find_target(room, target) do
       {:ok, target} ->
@@ -392,8 +392,8 @@ defmodule Game.NPC.Events do
   def maybe_move_room(state = %{target: target}, _event) when target != nil, do: state
 
   def maybe_move_room(state = %{room_id: room_id, npc_spawner: npc_spawner}, event) do
-    {:ok, starting_room} = @room.look(npc_spawner.room_id)
-    {:ok, room} = @room.look(room_id)
+    {:ok, starting_room} = @environment.look(npc_spawner.room_id)
+    {:ok, room} = @environment.look(room_id)
 
     direction =
       room
@@ -401,7 +401,7 @@ defmodule Game.NPC.Events do
       |> Enum.random()
 
     room_exit = room |> Exit.exit_to(direction)
-    {:ok, new_room} = @room.look(room_exit.finish_id)
+    {:ok, new_room} = @environment.look(room_exit.finish_id)
 
     case can_move?(event.action, starting_room, room_exit, new_room) do
       true ->
@@ -423,10 +423,10 @@ defmodule Game.NPC.Events do
 
   def move_room(state, old_room, new_room, direction) do
     CharacterInstrumenter.movement(:npc, fn ->
-      @room.unlink(old_room.id)
-      @room.leave(old_room.id, npc(state), {:leave, direction})
-      @room.enter(new_room.id, npc(state), {:enter, Exit.opposite(direction)})
-      @room.link(old_room.id)
+      @environment.unlink(old_room.id)
+      @environment.leave(old_room.id, npc(state), {:leave, direction})
+      @environment.enter(new_room.id, npc(state), {:enter, Exit.opposite(direction)})
+      @environment.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
         NPC.delay_notify({"room/entered", {{:user, player}, :enter}}, milliseconds: @npc_reaction_time_ms)
@@ -459,7 +459,7 @@ defmodule Game.NPC.Events do
 
   def emote_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_emote(state.npc, message)
-    room_id |> @room.emote(npc(state), message)
+    room_id |> @environment.emote(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
     state
@@ -522,7 +522,7 @@ defmodule Game.NPC.Events do
   def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
     message = Message.npc_say(state.npc, message)
 
-    room_id |> @room.say(npc(state), message)
+    room_id |> @environment.say(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
     state
@@ -540,7 +540,7 @@ defmodule Game.NPC.Events do
     message = Enum.random(messages)
     message = Message.npc_say(state.npc, message)
 
-    room_id |> @room.say(npc(state), message)
+    room_id |> @environment.say(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
     state
@@ -575,7 +575,7 @@ defmodule Game.NPC.Events do
   defp npc(%{npc: npc}), do: {:npc, npc}
 
   defp update_character(state) do
-    state.room_id |> @room.update_character(npc(state))
+    state.room_id |> @environment.update_character(npc(state))
     state
   end
 

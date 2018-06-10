@@ -5,7 +5,7 @@ defmodule Game.NPC.Actions do
 
   @rand Application.get_env(:ex_venture, :game)[:rand]
 
-  use Game.Room
+  use Game.Environment
 
   import Game.Character.Helpers, only: [update_effect_count: 2, is_alive?: 1]
 
@@ -38,10 +38,10 @@ defmodule Game.NPC.Actions do
     npc = %{npc | stats: %{npc.stats | health_points: npc.stats.max_health_points}}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
 
-    npc_spawner.room_id |> @room.enter({:npc, npc}, :respawn)
-    npc_spawner.room_id |> @room.link()
+    npc_spawner.room_id |> @environment.enter({:npc, npc}, :respawn)
+    npc_spawner.room_id |> @environment.link()
 
-    {:ok, room} = @room.look(npc_spawner.room_id)
+    {:ok, room} = @environment.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
       GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
@@ -70,9 +70,9 @@ defmodule Game.NPC.Actions do
   def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner}, who) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    room_id |> @room.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
-    room_id |> @room.leave({:npc, npc}, :death)
-    room_id |> @room.unlink()
+    room_id |> @environment.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
+    room_id |> @environment.leave({:npc, npc}, :death)
+    room_id |> @environment.unlink()
 
     Events.broadcast(npc, "character/died")
 
@@ -97,7 +97,7 @@ defmodule Game.NPC.Actions do
 
     case currency do
       currency when currency > 0 ->
-        room_id |> @room.drop_currency({:npc, npc}, currency)
+        room_id |> @environment.drop_currency({:npc, npc}, currency)
 
       _ ->
         nil
@@ -124,7 +124,7 @@ defmodule Game.NPC.Actions do
     |> Enum.filter(&drop_item?/1)
     |> Enum.map(fn npc_item ->
       item = Items.item(npc_item.item_id)
-      room_id |> @room.drop({:npc, npc}, Item.instantiate(item))
+      room_id |> @environment.drop({:npc, npc}, Item.instantiate(item))
     end)
   end
 

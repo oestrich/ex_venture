@@ -54,8 +54,11 @@ defmodule Game.Command.Give do
   @spec _parse_give_command(String.t()) :: :ok
   def _parse_give_command(string) do
     case Regex.run(~r/(?<item>.+) to (?<character>.+)/i, string, capture: :all) do
-      nil -> {:error, :bad_parse, "give " <> string}
-      [_string, item_name, character_name] -> {String.trim(item_name), :to, character_name}
+      nil ->
+        {:error, :bad_parse, "give " <> string}
+
+      [_string, item_name, character_name] ->
+        {String.trim(item_name), :to, character_name}
     end
   end
 
@@ -66,7 +69,7 @@ defmodule Game.Command.Give do
   def run(command, state)
 
   def run({item_name, :to, character_name}, state = %{save: save}) do
-    {:ok, room} = @room.look(save.room_id)
+    {:ok, room} = @environment.look(save.room_id)
 
     case find_item_or_currency(state.save, item_name) do
       {:error, :not_found} ->

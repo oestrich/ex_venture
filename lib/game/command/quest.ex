@@ -126,7 +126,7 @@ defmodule Game.Command.Quest do
 
   # find quests that are completed and see if npc in the room
   def run({:complete, :any}, state = %{socket: socket, user: user, save: save}) do
-    {:ok, room} = @room.look(save.room_id)
+    {:ok, room} = @environment.look(save.room_id)
     npc_ids = Enum.map(room.npcs, & &1.original_id)
 
     user
@@ -185,7 +185,7 @@ defmodule Game.Command.Quest do
   def check_npc_is_in_room(:ok, _state), do: :ok
 
   def check_npc_is_in_room(progress, %{socket: socket, save: save}) do
-    {:ok, room} = @room.look(save.room_id)
+    {:ok, room} = @environment.look(save.room_id)
 
     npc =
       room

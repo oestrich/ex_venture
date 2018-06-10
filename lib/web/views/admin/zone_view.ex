@@ -3,6 +3,7 @@ defmodule Web.Admin.ZoneView do
 
   alias Game.Map, as: GameMap
   alias Web.Admin.SharedView
+  alias Web.Color
   alias Web.Zone
 
   defdelegate map(zone, opts), to: GameMap

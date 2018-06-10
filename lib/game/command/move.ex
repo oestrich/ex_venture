@@ -96,7 +96,7 @@ defmodule Game.Command.Move do
   def run(command, state)
 
   def run({:move, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       room_exit = %{finish_id: id} ->
@@ -108,7 +108,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:open, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       %{id: exit_id, has_door: true} ->
@@ -125,7 +125,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:close, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       %{id: exit_id, has_door: true} ->
@@ -212,8 +212,8 @@ defmodule Game.Command.Move do
     %{save: save, user: user} = state
 
     CharacterInstrumenter.movement(:player, fn ->
-      @room.unlink(save.room_id)
-      @room.leave(save.room_id, {:user, user}, leave_reason)
+      @environment.unlink(save.room_id)
+      @environment.leave(save.room_id, {:user, user}, leave_reason)
 
       clear_target(state)
 
@@ -228,8 +228,8 @@ defmodule Game.Command.Move do
         |> Map.put(:is_targeting, MapSet.new())
         |> Map.put(:is_afk, false)
 
-      @room.enter(room_id, {:user, user}, enter_reason)
-      @room.link(room_id)
+      @environment.enter(room_id, {:user, user}, enter_reason)
+      @environment.link(room_id)
 
       Quest.track_progress(user, {:room, room_id})
 
@@ -286,7 +286,7 @@ defmodule Game.Command.Move do
   Push out an update for the mini map after opening/closing doors
   """
   def update_mini_map(state, room_id) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     state |> GMCP.map(mini_map)
     :ok

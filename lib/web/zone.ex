@@ -6,10 +6,21 @@ defmodule Web.Zone do
   import Ecto.Query
 
   alias Data.Zone
+  alias Data.Zone.MapCell
   alias Data.Room
   alias Data.Repo
   alias Game.World
   alias Web.Pagination
+
+  defdelegate types(), to: Zone
+
+  def rooms?(zone) do
+    zone.type == "rooms"
+  end
+
+  def overworld?(zone) do
+    zone.type == "overworld"
+  end
 
   @doc """
   Get all zones
@@ -92,6 +103,57 @@ defmodule Web.Zone do
       anything ->
         anything
     end
+  end
+
+  @doc """
+  Update an zone
+  """
+  @spec update_map(integer(), map()) :: {:ok, Zone.t()} | {:error, map()}
+  def update_map(id, params) do
+    zone = id |> get()
+    changeset = zone |> Zone.map_changeset(cast_map_params(params))
+
+    case changeset |> Repo.update() do
+      {:ok, zone} ->
+        Game.Zone.update(zone.id, zone)
+        {:ok, zone}
+
+      anything ->
+        anything
+    end
+  end
+
+  @doc """
+  Cast params into what `Data.Item` expects
+  """
+  @spec cast_map_params(map()) :: map()
+  def cast_map_params(params) do
+    params |> parse_map()
+  end
+
+  defp parse_map(params = %{"overworld_map" => overworld_map}) do
+    case Poison.decode(overworld_map) do
+      {:ok, overworld_map} ->
+        overworld_map = cast_map(overworld_map)
+        Map.put(params, "overworld_map", overworld_map)
+
+      _ ->
+        params
+    end
+  end
+
+  defp cast_map(overworld_map) do
+    overworld_map
+    |> Enum.map(fn cell ->
+      case MapCell.load(cell) do
+        {:ok, cell} ->
+          cell
+
+        _ ->
+          nil
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
   end
 
   @doc """

@@ -4,7 +4,6 @@ defmodule Game.Shop do
   """
 
   use GenServer
-  use Game.Room
 
   import Ecto.Query
 

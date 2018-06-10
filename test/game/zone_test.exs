@@ -1,4 +1,5 @@
 defmodule Game.ZoneTest do
+  use Data.ModelCase
   use GenServerCase
   import Test.DoorHelper
 
@@ -12,16 +13,26 @@ defmodule Game.ZoneTest do
     west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{direction: "east"}]}
     center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [%{direction: "north"}, %{direction: "east"}, %{direction: "south"}, %{direction: "west"}]}
 
-    zone = %{rooms: [north, east, south, west, center], name: "Bandit Hideout"}
+    zone = %{type: "rooms", rooms: [north, east, south, west, center], name: "Bandit Hideout"}
 
     start_and_clear_doors()
 
     %{zone: zone, north: north}
   end
 
-  test "displays a map", %{zone: zone} do
-    {:reply, map, _} = Zone.handle_call({:map, {2, 2, 1}, []}, self(), %{zone: zone, rooms: zone.rooms})
-    refute is_nil(map)
+  describe "mapping" do
+    test "displays a map - rooms", %{zone: zone} do
+      {:reply, map, _} = Zone.handle_call({:map, {2, 2, 1}, []}, self(), %{zone: zone, rooms: zone.rooms})
+      refute is_nil(map)
+    end
+
+    test "displays a map - overworld" do
+      zone = %Data.Zone{name: "Deep Forest", type: "overworld", overworld_map: basic_overworld_map()}
+
+      {:reply, map, _} = Zone.handle_call({:map, {2, 2}, []}, self(), %{zone: zone})
+
+      refute is_nil(map)
+    end
   end
 
   test "updates the local room" do

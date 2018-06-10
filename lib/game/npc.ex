@@ -4,7 +4,7 @@ defmodule Game.NPC do
   """
 
   use GenServer
-  use Game.Room
+  use Game.Environment
 
   require Logger
 
@@ -222,8 +222,8 @@ defmodule Game.NPC do
   def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
     state = state |> Events.start_tick_events(npc)
     Channel.join_tell({:npc, npc})
-    @room.enter(room_id, {:npc, npc}, :respawn)
-    @room.link(room_id)
+    @environment.enter(room_id, {:npc, npc}, :respawn)
+    @environment.link(room_id)
     {:noreply, state}
   end
 
@@ -270,7 +270,7 @@ defmodule Game.NPC do
       |> Map.put(:npc, customize_npc(npc_spawner, npc_spawner.npc))
       |> Events.start_tick_events(npc_spawner.npc)
 
-    @room.update_character(room_id, {:npc, state.npc})
+    @environment.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
     {:noreply, state}
   end
@@ -315,7 +315,7 @@ defmodule Game.NPC do
   end
 
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc}) do
-    room_id |> @room.leave({:npc, npc})
+    room_id |> @environment.leave({:npc, npc}, :leave)
     {:stop, :normal, state}
   end
 

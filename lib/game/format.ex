@@ -274,6 +274,21 @@ defmodule Game.Format do
   end
 
   @doc """
+  Output for an overworld look
+  """
+  @spec overworld_room(Overworld.t(), String.t()) :: String.t()
+  def overworld_room(room, map) do
+    """
+    #{map}
+
+    #{who_is_here(room)}
+
+    #{maybe_exits(room)}
+    """
+    |> String.trim()
+  end
+
+  @doc """
   Create an 'underline'
 
   Example:

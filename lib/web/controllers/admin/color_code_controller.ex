@@ -16,7 +16,7 @@ defmodule Web.Admin.ColorCodeController do
       {:ok, color_code} ->
         conn
         |> put_flash(:info, "#{color_code.key} created!")
-        |> redirect(to: color_code_path(conn, :index))
+        |> redirect(to: color_path(conn, :index))
 
       {:error, changeset} ->
         conn
@@ -41,7 +41,7 @@ defmodule Web.Admin.ColorCodeController do
       {:ok, color_code} ->
         conn
         |> put_flash(:info, "#{color_code.key} updated!")
-        |> redirect(to: color_code_path(conn, :index))
+        |> redirect(to: color_path(conn, :index))
 
       {:error, changeset} ->
         color_code = ColorCode.get(id)

@@ -11,7 +11,7 @@ defmodule Game.Command.RunTest do
   setup do
     user = %{id: 10, save: %{room_id: 1, stats: %{move_points: 10}}}
 
-    room = %Data.Room{
+    room = %Game.Environment.State.Room{
       id: 1,
       name: "",
       description: "",

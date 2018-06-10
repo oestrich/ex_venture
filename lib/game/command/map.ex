@@ -4,9 +4,9 @@ defmodule Game.Command.Map do
   """
 
   use Game.Command
-  use Game.Room
   use Game.Zone
 
+  alias Game.Environment
   alias Game.Session.GMCP
 
   commands(["map"], parse: false)
@@ -69,12 +69,33 @@ defmodule Game.Command.Map do
   """
   def run(command, state)
 
-  def run({}, state = %{socket: socket, save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+  def run({}, state) do
+    case Environment.room_type(state.save.room_id) do
+      :room ->
+        room_map(state)
+
+      :overworld ->
+        overworld_map(state)
+    end
+  end
+
+  defp room_map(state = %{save: %{room_id: room_id}}) do
+    {:ok, room} = @environment.look(room_id)
+
     map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer})
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     state |> GMCP.map(mini_map)
-    socket |> @socket.echo(map)
-    :ok
+
+    state.socket |> @socket.echo(map)
+  end
+
+  defp overworld_map(state = %{save: %{room_id: room_id}}) do
+    {:ok, room} = @environment.look(room_id)
+
+    map = room.zone_id |> @zone.map({room.x, room.y})
+    mini_map = room.zone_id |> @zone.map({room.x, room.y}, mini: true)
+    state |> GMCP.map(mini_map)
+
+    state.socket |> @socket.echo(map)
   end
 end

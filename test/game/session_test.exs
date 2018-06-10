@@ -13,7 +13,7 @@ defmodule Game.SessionTest do
   @room Test.Game.Room
   @zone Test.Game.Zone
 
-  @basic_room %Data.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
+  @basic_room %Game.Environment.State.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
 
   setup do
     socket = :socket

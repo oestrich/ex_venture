@@ -5,6 +5,15 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
+      <div class="form-group">
+        <%= label f, :type, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :type, Zone.types(), class: "form-control" %>
+          <%= error_tag f, :type %>
+          <span class="help-block"><%= Help.get("zone.type") %></span>
+        </div>
+      </div>
+
       <%= FormView.text_field(f, :name) do %>
         <span class="help-block"><%= Help.get("zone.name") %></span>
       <% end %>

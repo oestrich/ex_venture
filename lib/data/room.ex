@@ -36,9 +36,6 @@ defmodule Data.Room do
     field(:features, {:array, Feature}, default: [])
     field(:listen, :string)
 
-    field(:players, {:array, :map}, default: [], virtual: true)
-    field(:npcs, {:array, :map}, default: [], virtual: true)
-
     field(:x, :integer)
     field(:y, :integer)
     field(:map_layer, :integer)

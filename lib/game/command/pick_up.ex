@@ -8,6 +8,7 @@ defmodule Game.Command.PickUp do
 
   require Logger
 
+  alias Game.Environment.State.Overworld
   alias Game.Items
 
   @must_be_alive true
@@ -89,7 +90,7 @@ defmodule Game.Command.PickUp do
 
   def run({:all}, state) do
     %{save: save} = state
-    {:ok, room} = @room.look(save.room_id)
+    {:ok, room} = @environment.look(save.room_id)
 
     with {:ok, state} <- pick_up_all_items(state, room),
          {:ok, currency, state} <- pick_up_currency(state) do
@@ -101,11 +102,14 @@ defmodule Game.Command.PickUp do
 
       {:error, :could_not_pickup} ->
         {:update, state}
+
+      {:error, :overworld} ->
+        state.socket |> @socket.echo("There was nothing to pick up")
     end
   end
 
   def run({item_name}, state = %{save: save}) do
-    {:ok, room} = @room.look(save.room_id)
+    {:ok, room} = @environment.look(save.room_id)
 
     with {:ok, instance} <- find_item(room, item_name),
          {:ok, item, state} <- pick_up(instance, room, state) do
@@ -127,6 +131,8 @@ defmodule Game.Command.PickUp do
     socket |> @socket.echo(message)
   end
 
+  defp pick_up_all_items(_state, _room = %Overworld{}), do: {:error, :overworld}
+
   defp pick_up_all_items(state, room) do
     state =
       Enum.reduce(room.items, state, fn item, state ->
@@ -143,6 +149,8 @@ defmodule Game.Command.PickUp do
 
     {:ok, state}
   end
+
+  defp find_item(_room = %Overworld{}, _item_name), do: {:error, :not_found}
 
   defp find_item(room, item_name) do
     instance =
@@ -165,7 +173,7 @@ defmodule Game.Command.PickUp do
   Pick up an item from a room
   """
   def pick_up(item, room, state = %{save: save}) do
-    case @room.pick_up(room.id, item) do
+    case @environment.pick_up(room.id, item) do
       {:ok, instance} ->
         item = Items.item(instance)
 
@@ -185,7 +193,7 @@ defmodule Game.Command.PickUp do
   defp pick_up_currency(state) do
     %{save: save} = state
 
-    case @room.pick_up_currency(save.room_id) do
+    case @environment.pick_up_currency(save.room_id) do
       {:ok, currency} ->
         Logger.info(
           "Session (#{inspect(self())}) picking up #{currency} currency from room (#{save.room_id})",

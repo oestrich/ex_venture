@@ -419,12 +419,32 @@ defmodule Data.Save do
       iex> Data.Save.valid_room_id?(%{room_id: 1})
       true
 
+      iex> Data.Save.valid_room_id?(%{room_id: "overworld:1:1,1"})
+      true
+
+      iex> Data.Save.valid_room_id?(%{room_id: "overworld:111"})
+      false
+
       iex> Data.Save.valid_room_id?(%{room_id: :anything})
       false
   """
   @spec valid_room_id?(Save.t()) :: boolean()
   def valid_room_id?(save)
-  def valid_room_id?(%{room_id: room_id}), do: is_integer(room_id)
+  def valid_room_id?(%{room_id: room_id}) do
+    case room_id do
+      "overworld:" <> overworld_id ->
+        case Game.Overworld.split_id(overworld_id) do
+          :error ->
+            false
+
+          _ ->
+            true
+        end
+
+      room_id ->
+        is_integer(room_id)
+    end
+  end
 
   @doc """
   Validate wearing is correct

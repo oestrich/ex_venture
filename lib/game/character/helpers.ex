@@ -3,7 +3,7 @@ defmodule Game.Character.Helpers do
   Character helper module, common character functions
   """
 
-  use Game.Room
+  use Game.Environment
 
   alias Data.Effect
 
@@ -12,7 +12,7 @@ defmodule Game.Character.Helpers do
   """
   @spec update_character(integer, User.t()) :: :ok
   def update_character(room_id, user) do
-    room_id |> @room.update_character({:user, user})
+    room_id |> @environment.update_character({:user, user})
   end
 
   @doc """

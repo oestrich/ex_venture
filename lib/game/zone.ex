@@ -12,9 +12,12 @@ defmodule Game.Zone do
   alias Game.Door
   alias Game.Map, as: GameMap
   alias Game.NPC
+  alias Game.Overworld
   alias Game.Room
   alias Game.Shop
   alias Game.Zone.Repo
+
+  @key :zones
 
   defmacro __using__(_opts) do
     quote do
@@ -171,9 +174,12 @@ defmodule Game.Zone do
   def init(zone) do
     Process.flag(:trap_exit, true)
 
+    send(self(), :load_zone)
+
     {:ok,
      %{
-       zone: zone,
+       zone_id: zone.id,
+       zone: nil,
        rooms: [],
        room_pids: [],
        room_supervisor_pid: nil,
@@ -199,13 +205,28 @@ defmodule Game.Zone do
   end
 
   def handle_call({:map, player_at, opts}, _from, state = %{zone: zone}) do
-    map = """
-    #{zone.name}
+    case zone.type do
+      "rooms" ->
+        map = """
+        #{zone.name}
 
-    #{GameMap.display_map(state, player_at, opts)}
-    """
+        #{GameMap.display_map(state, player_at, opts)}
+        """
 
-    {:reply, map |> String.trim(), state}
+        {:reply, map |> String.trim(), state}
+
+      "overworld" ->
+        {x, y} = player_at
+        cell = %{x: x, y: y}
+
+        map = """
+        #{zone.name}
+
+        #{Overworld.map(zone, cell)}
+        """
+
+        {:reply, map |> String.trim(), state}
+    end
   end
 
   def handle_call({:terminate, :room, room_id}, _from, state) do
@@ -277,6 +298,13 @@ defmodule Game.Zone do
       |> Map.put(:room_pids, [{room_pid, new_room.id} | room_pids])
 
     {:noreply, state}
+  end
+
+  def handle_info(:load_zone, state) do
+    zone = Repo.get(state.zone_id)
+    Cachex.set(@key, zone.id, zone)
+
+    {:noreply, %{state | zone: zone}}
   end
 
   # Clean out the crashed process from stored knowledge, whether npc or room

@@ -6,6 +6,9 @@ defmodule Game.Command.Look do
   use Game.Command
   use Game.Zone
 
+  alias Game.Environment
+  alias Game.Environment.State.Overworld
+  alias Game.Environment.State.Room
   alias Data.Exit
   alias Game.Item
   alias Game.Items
@@ -72,21 +75,8 @@ defmodule Game.Command.Look do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    with {:ok, room} <- @room.look(save.room_id) do
-      mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
-
-      room_map =
-        mini_map
-        |> String.split("\n")
-        |> Enum.slice(2..-1)
-        |> Enum.join("\n")
-
-      items = room_items(room)
-      state |> GMCP.room(room, items)
-      state |> GMCP.map(mini_map)
-
-      room = remove_yourself(room, state)
-      state.socket |> @socket.echo(Format.room(room, items, room_map))
+    with {:ok, room} <- @environment.look(save.room_id) do
+      state |> look_room(room)
     else
       {:error, :room_offline} ->
         {:error, :room_offline}
@@ -94,11 +84,15 @@ defmodule Game.Command.Look do
   end
 
   def run({:direction, direction}, state = %{save: save}) do
-    with {:ok, room} <- @room.look(save.room_id),
+    with :room <- Environment.room_type(save.room_id),
+         {:ok, room} <- @environment.look(save.room_id),
          %{finish_id: room_id} <- Exit.exit_to(room, direction),
-         {:ok, room} <- @room.look(room_id) do
+         {:ok, room} <- @environment.look(room_id) do
       state.socket |> @socket.echo(Format.peak_room(room, direction))
     else
+      :overworld ->
+        :ok
+
       {:error, :room_offline} ->
         {:error, :room_offline}
 
@@ -108,7 +102,7 @@ defmodule Game.Command.Look do
   end
 
   def run({:other, name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @room.look(room_id)
+    {:ok, room} = @environment.look(room_id)
 
     room
     |> maybe_look_item(name, state)
@@ -118,6 +112,38 @@ defmodule Game.Command.Look do
     |> could_not_find(name, state)
   end
 
+  defp look_room(state, room = %Room{}) do
+    mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
+
+    room_map =
+      mini_map
+      |> String.split("\n")
+      |> Enum.slice(2..-1)
+      |> Enum.join("\n")
+
+    items = room_items(room)
+    state |> GMCP.room(room, items)
+    state |> GMCP.map(mini_map)
+
+    room = remove_yourself(room, state)
+    state.socket |> @socket.echo(Format.room(room, items, room_map))
+  end
+
+  defp look_room(state, room = %Overworld{}) do
+    mini_map = room.zone_id |> @zone.map({room.x, room.y})
+
+    room_map =
+      mini_map
+      |> String.split("\n")
+      |> Enum.slice(2..-1)
+      |> Enum.join("\n")
+
+    state |> GMCP.map(mini_map)
+
+    room = remove_yourself(room, state)
+    state.socket |> @socket.echo(Format.overworld_room(room, room_map))
+  end
+
   defp remove_yourself(room, state) do
     players = Enum.reject(room.players, &(&1.id == state.user.id))
     %{room | players: players}
@@ -125,6 +151,8 @@ defmodule Game.Command.Look do
 
   defp room_items(%{items: nil}), do: []
   defp room_items(%{items: items}), do: Enum.map(items, &Items.item/1)
+
+  defp maybe_look_item(room = %Overworld{}, _item_name, _state), do: room
 
   defp maybe_look_item(room, item_name, %{socket: socket}) do
     item =
@@ -170,6 +198,8 @@ defmodule Game.Command.Look do
   end
 
   defp maybe_look_feature(:ok, _name, _state), do: :ok
+
+  defp maybe_look_feature(room = %Overworld{}, _item_name, _state), do: room
 
   defp maybe_look_feature(room, key, %{socket: socket}) do
     feature = room.features |> Enum.find(&Utility.matches?(&1.key, key))

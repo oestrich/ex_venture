@@ -8,8 +8,8 @@ defmodule Game.Room do
   require Logger
 
   alias Data.Room
+  alias Game.Environment
   alias Game.Items
-  alias Game.Message
   alias Game.NPC
   alias Game.Room.Actions
   alias Game.Room.Repo
@@ -18,12 +18,6 @@ defmodule Game.Room do
   alias Metrics.CommunicationInstrumenter
 
   @type t :: map
-
-  defmacro __using__(_opts) do
-    quote do
-      @room Application.get_env(:ex_venture, :game)[:room]
-    end
-  end
 
   def start_link(room_id) do
     GenServer.start_link(__MODULE__, room_id, name: pid(room_id), id: room_id)
@@ -50,152 +44,11 @@ defmodule Game.Room do
   end
 
   @doc """
-  Look around the room
-
-  Fetches current room
-  """
-  @spec look(integer()) :: Room.t()
-  def look(id) do
-    case :global.whereis_name({__MODULE__, id}) do
-      :undefined ->
-        {:error, :room_offline}
-
-      pid ->
-        GenServer.call(pid, :look)
-    end
-  end
-
-  @doc """
-  Enter a room
-
-  Valid enter reasons: `:enter`, `:respawn`
-  """
-  @spec enter(integer(), Character.t(), atom()) :: :ok
-  def enter(id, character, reason)
-
-  def enter(id, character, reason) do
-    GenServer.cast(pid(id), {:enter, character, reason})
-  end
-
-  @doc """
-  Leave a room
-
-  Valid leave reasons: `:leave`, `:death`
-  """
-  @spec leave(integer(), Character.t(), atom()) :: :ok
-  def leave(id, character, reason \\ :leave)
-
-  def leave(id, character, reason) do
-    GenServer.cast(pid(id), {:leave, character, reason})
-  end
-
-  @doc """
-  Notify characters in a room of an event
-  """
-  @spec notify(integer(), Character.t(), tuple()) :: :ok
-  def notify(id, character, event)
-
-  def notify(id, character, event) do
-    GenServer.cast(pid(id), {:notify, character, event})
-  end
-
-  @doc """
-  Say to the players in the room
-  """
-  @spec say(integer(), pid(), Message.t()) :: :ok
-  def say(id, sender, message) do
-    GenServer.cast(pid(id), {:say, sender, message})
-  end
-
-  @doc """
-  Emote to the players in the room
-  """
-  @spec emote(integer(), pid(), Message.t()) :: :ok
-  def emote(id, sender, message) do
-    GenServer.cast(pid(id), {:emote, sender, message})
-  end
-
-  @doc """
-  Update the character after a stats change
-  """
-  @spec update_character(integer(), tuple()) :: :ok
-  def update_character(id, character) do
-    GenServer.cast(pid(id), {:update_character, character})
-  end
-
-  @doc """
-  Pick up the item
-  """
-  @spec pick_up(integer(), Item.t()) :: :ok
-  def pick_up(id, item) do
-    GenServer.call(pid(id), {:pick_up, item})
-  end
-
-  @doc """
-  Pick up currency
-  """
-  @spec pick_up_currency(integer()) :: :ok
-  def pick_up_currency(id) do
-    GenServer.call(pid(id), :pick_up_currency)
-  end
-
-  @doc """
-  Drop an item into a room
-  """
-  @spec drop(integer(), Character.t(), Item.t()) :: :ok
-  def drop(id, who, item) do
-    GenServer.cast(pid(id), {:drop, who, item})
-  end
-
-  @doc """
-  Drop currency into a room
-  """
-  @spec drop_currency(integer(), Character.t(), integer()) :: :ok
-  def drop_currency(id, who, currency) do
-    GenServer.cast(pid(id), {:drop_currency, who, currency})
-  end
-
-  @doc """
   Update a room's data
   """
   @spec update(integer(), Room.t()) :: :ok
   def update(id, room) do
     GenServer.cast(pid(id), {:update, room})
-  end
-
-  @doc """
-  Crash a room process with an unmatched cast
-
-  There should always remain no matching clause for this cast
-  """
-  def crash(id) do
-    GenServer.cast(pid(id), :crash)
-  end
-
-  @doc """
-  Link the current process against the room's pid, finds by id
-  """
-  def link(id) do
-    case :global.whereis_name({Game.Room, id}) do
-      :undefined ->
-        :ok
-
-      pid ->
-        Process.link(pid)
-    end
-  end
-
-  @doc """
-  Unlink the current process against the room's pid, finds by id
-  """
-  def unlink(id) do
-    case :global.whereis_name({Game.Room, id}) do
-      :undefined ->
-        :ok
-
-      pid ->
-        Process.unlink(pid)
-    end
   end
 
   @doc """
@@ -211,8 +64,27 @@ defmodule Game.Room do
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
-    room = Map.merge(room, %{players: players, npcs: npcs})
-    {:reply, {:ok, room}, state}
+    environment = %Environment.State.Room{
+      id: room.id,
+      zone_id: room.zone_id,
+      zone: room.zone,
+      name: room.name,
+      description: room.description,
+      currency: room.currency,
+      items: room.items,
+      features: room.features,
+      listen: room.listen,
+      x: room.x,
+      y: room.y,
+      map_layer: room.map_layer,
+      ecology: room.ecology,
+      shops: room.shops,
+      exits: room.exits,
+      players: players,
+      npcs: npcs,
+    }
+
+    {:reply, {:ok, environment}, state}
   end
 
   def handle_call({:pick_up, item}, _from, state = %{room: room}) do

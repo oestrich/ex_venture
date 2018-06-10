@@ -3,8 +3,6 @@ defmodule Game.Session.Regen do
   Handle a game tick for a player
   """
 
-  use Game.Room
-
   import Game.Session, only: [echo: 2]
   import Game.Character.Helpers, only: [update_character: 2]
 

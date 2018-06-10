@@ -110,7 +110,7 @@ defmodule Game.Command.Socials do
         state |> social_not_found(social)
 
       social ->
-        {:ok, room} = @room.look(save.room_id)
+        {:ok, room} = @environment.look(save.room_id)
 
         case find_character(room, character_name) do
           {:error, :not_found} ->
