@@ -71,7 +71,7 @@ defmodule Game.Overworld do
     end)
     |> Enum.map(fn direction ->
       finish_id = Enum.join(["overworld", to_string(zone.id), "#{direction.x},#{direction.y}"], ":")
-      %{direction: direction.direction, start_id: direction.start_id, finish_id: finish_id}
+      %{id: direction.start_id, direction: direction.direction, start_id: direction.start_id, finish_id: finish_id}
     end)
   end
 

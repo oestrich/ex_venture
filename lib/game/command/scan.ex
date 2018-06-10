@@ -5,9 +5,6 @@ defmodule Game.Command.Scan do
 
   use Game.Command
 
-  alias Game.Environment.State.Overworld
-  alias Data.Exit
-  alias Data.Room
   alias Game.Door
   alias Game.Format
 
@@ -49,25 +46,20 @@ defmodule Game.Command.Scan do
     state.socket |> @socket.echo(Format.Scan.room(room, rooms))
   end
 
-  defp scan_rooms(_room = %Overworld{}), do: []
-
   defp scan_rooms(room) do
-    room
-    |> Room.exits()
+    room.exits
     |> Enum.map(&scan_room(room, &1))
     |> Enum.reject(&room_empty?/1)
   end
 
-  defp scan_room(room, direction) do
-    room_exit = Exit.exit_to(room, direction)
-
+  defp scan_room(room, room_exit) do
     case Door.closed?(room_exit.id) do
       true ->
-        {direction, :closed}
+        {room_exit.direction, :closed}
 
       _ ->
         {:ok, room} = @environment.look(room_exit.finish_id)
-        {direction, room}
+        {room_exit.direction, room}
     end
   end
 
