@@ -75,6 +75,21 @@ defmodule Game.OverworldTest do
         %{id: "overworld:1:1,1", direction: "west", start_id: "overworld:1:1,1", finish_id: "overworld:1:0,1"},
       ]
     end
+
+    test "default empty spaces are not an exit" do
+      map = [
+        %{x: 5, y: 5, s: ".", c: "green"},
+        %{x: 5, y: 4, s: " ", c: nil},
+        %{x: 5, y: 6, s: ".", c: "green"},
+        %{x: 4, y: 5, s: " ", c: nil},
+        %{x: 6, y: 5, s: " ", c: nil},
+      ]
+      zone = %Zone{id: 1, overworld_map: map}
+
+      assert Overworld.exits(zone, %{x: 5, y: 5}) == [
+        %{id: "overworld:1:5,5", direction: "south", start_id: "overworld:1:5,5", finish_id: "overworld:1:5,6"}
+      ]
+    end
   end
 
   describe "loading the map" do

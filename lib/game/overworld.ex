@@ -66,13 +66,17 @@ defmodule Game.Overworld do
     [north, south, east, west]
     |> Enum.filter(fn direction ->
       Enum.any?(zone.overworld_map, fn cell ->
-        cell.x == direction.x && cell.y == direction.y
+        cell.x == direction.x && cell.y == direction.y && !cell_empty?(cell)
       end)
     end)
     |> Enum.map(fn direction ->
       finish_id = Enum.join(["overworld", to_string(zone.id), "#{direction.x},#{direction.y}"], ":")
       %{id: direction.start_id, direction: direction.direction, start_id: direction.start_id, finish_id: finish_id}
     end)
+  end
+
+  defp cell_empty?(cell) do
+    is_nil(cell.c) && cell.s == " "
   end
 
   @doc """
