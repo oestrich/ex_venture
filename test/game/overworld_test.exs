@@ -41,38 +41,38 @@ defmodule Game.OverworldTest do
 
     test "top left", %{zone: zone} do
       assert Overworld.exits(zone, %{x: 0, y: 0}) == [
-        %{direction: "south", start_id: "overworld:1:0,0", finish_id: "overworld:1:0,1"},
-        %{direction: "east", start_id: "overworld:1:0,0", finish_id: "overworld:1:1,0"},
+        %{id: "overworld:1:0,0", direction: "south", start_id: "overworld:1:0,0", finish_id: "overworld:1:0,1"},
+        %{id: "overworld:1:0,0", direction: "east", start_id: "overworld:1:0,0", finish_id: "overworld:1:1,0"},
       ]
     end
 
     test "top right", %{zone: zone} do
       assert Overworld.exits(zone, %{x: 99, y: 0}) == [
-        %{direction: "south", start_id: "overworld:1:99,0", finish_id: "overworld:1:99,1"},
-        %{direction: "west", start_id: "overworld:1:99,0", finish_id: "overworld:1:98,0"},
+        %{id: "overworld:1:99,0", direction: "south", start_id: "overworld:1:99,0", finish_id: "overworld:1:99,1"},
+        %{id: "overworld:1:99,0", direction: "west", start_id: "overworld:1:99,0", finish_id: "overworld:1:98,0"},
       ]
     end
 
     test "bottom left", %{zone: zone} do
       assert Overworld.exits(zone, %{x: 0, y: 49}) == [
-        %{direction: "north", start_id: "overworld:1:0,49", finish_id: "overworld:1:0,48"},
-        %{direction: "east", start_id: "overworld:1:0,49", finish_id: "overworld:1:1,49"},
+        %{id: "overworld:1:0,49", direction: "north", start_id: "overworld:1:0,49", finish_id: "overworld:1:0,48"},
+        %{id: "overworld:1:0,49", direction: "east", start_id: "overworld:1:0,49", finish_id: "overworld:1:1,49"},
       ]
     end
 
     test "bottom right", %{zone: zone} do
       assert Overworld.exits(zone, %{x: 99, y: 49}) == [
-        %{direction: "north", start_id: "overworld:1:99,49", finish_id: "overworld:1:99,48"},
-        %{direction: "west", start_id: "overworld:1:99,49", finish_id: "overworld:1:98,49"},
+        %{id: "overworld:1:99,49", direction: "north", start_id: "overworld:1:99,49", finish_id: "overworld:1:99,48"},
+        %{id: "overworld:1:99,49", direction: "west", start_id: "overworld:1:99,49", finish_id: "overworld:1:98,49"},
       ]
     end
 
     test "center", %{zone: zone} do
       assert Overworld.exits(zone, %{x: 1, y: 1}) == [
-        %{direction: "north", start_id: "overworld:1:1,1", finish_id: "overworld:1:1,0"},
-        %{direction: "south", start_id: "overworld:1:1,1", finish_id: "overworld:1:1,2"},
-        %{direction: "east", start_id: "overworld:1:1,1", finish_id: "overworld:1:2,1"},
-        %{direction: "west", start_id: "overworld:1:1,1", finish_id: "overworld:1:0,1"},
+        %{id: "overworld:1:1,1", direction: "north", start_id: "overworld:1:1,1", finish_id: "overworld:1:1,0"},
+        %{id: "overworld:1:1,1", direction: "south", start_id: "overworld:1:1,1", finish_id: "overworld:1:1,2"},
+        %{id: "overworld:1:1,1", direction: "east", start_id: "overworld:1:1,1", finish_id: "overworld:1:2,1"},
+        %{id: "overworld:1:1,1", direction: "west", start_id: "overworld:1:1,1", finish_id: "overworld:1:0,1"},
       ]
     end
   end
