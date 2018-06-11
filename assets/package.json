@@ -16,7 +16,8 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "sizzle": "^2.3.3",
-    "underscore": "^1.9.0"
+    "underscore": "^1.9.0",
+    "why-did-you-update": "^0.1.1"
   },
   "devDependencies": {
     "babel-brunch": "6.1.1",

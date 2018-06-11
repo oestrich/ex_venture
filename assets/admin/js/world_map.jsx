@@ -1,5 +1,10 @@
 import React from 'react';
 
+if (process.env.NODE_ENV !== 'production') {
+  const {whyDidYouUpdate} = require('why-did-you-update');
+  whyDidYouUpdate(React);
+}
+
 const debounceEvent = (callback, time) => {
   let interval;
   return (...args) => {
@@ -11,7 +16,7 @@ const debounceEvent = (callback, time) => {
   };
 };
 
-class Colors extends React.Component {
+class Colors extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -51,7 +56,7 @@ class Colors extends React.Component {
   }
 }
 
-class Symbols extends React.Component {
+class Symbols extends React.PureComponent {
   constructor(props) {
     super(props);
     this.symbols = [
@@ -102,10 +107,23 @@ class MapCell extends React.Component {
       hover: false,
     }
 
+    this.handleClick = this.handleClick.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
-    this.onMouseEnter = debounceEvent(this.onMouseEnter.bind(this), 10);
-    this.onMouseLeave = debounceEvent(this.onMouseLeave.bind(this), 10);
+    this.onMouseEnter = debounceEvent(this.onMouseEnter.bind(this), 5);
+    this.onMouseLeave = debounceEvent(this.onMouseLeave.bind(this), 5);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.hover != nextState.hover) {
+      return true;
+    }
+
+    return this.props.color != nextProps.color && this.props.symbol != nextProps.symbol;
+  }
+
+  handleClick(event) {
+    this.props.handleClick(this.props.x, this.props.y);
   }
 
   onMouseDown(event) {
@@ -118,11 +136,13 @@ class MapCell extends React.Component {
 
   onMouseEnter(event) {
     this.setState({hover: true});
-    this.props.onMouseEnter(event);
+    this.props.onMouseEnter(this.props.x, this.props.y);
   }
 
   onMouseLeave(event) {
-    this.setState({hover: false});
+    if (!this.props.drag) {
+      this.setState({hover: false});
+    }
   }
 
   render() {
@@ -131,7 +151,7 @@ class MapCell extends React.Component {
 
     symbol = symbol == " " ? "\xa0" : symbol;
 
-    let handleClick = this.props.handleClick;
+    let handleClick = this.handleClick;
     let handleDrag = this.handleDrag;
 
     return (
@@ -144,54 +164,6 @@ class MapCell extends React.Component {
         onMouseLeave={this.onMouseLeave} >
         {symbol}
       </span>
-    );
-  }
-}
-
-class MapRow extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.onMouseEnter = this.onMouseEnter.bind(this);
-  }
-
-  onMouseEnter(index) {
-    this.props.onMouseEnter(index);
-  }
-
-  render() {
-    let row = this.props.row;
-    let selectedSymbol = this.props.selectedSymbol;
-    let selectedColor = this.props.selectedColor;
-
-    let handleClick = this.props.handleClick;
-    let onMouseEnter = this.onMouseEnter;
-
-    return (
-      <div>
-        {row.map((cell, index) => {
-          let cellHandleClick = (event) => {
-            handleClick(index);
-          }
-
-          let cellOnMouseEnter = (event) => {
-            onMouseEnter(index);
-          }
-
-          return (
-            <MapCell
-              key={index}
-              symbol={cell.s}
-              color={cell.c}
-              onMouseDown={this.props.onMouseDown}
-              onMouseUp={this.props.onMouseUp}
-              onMouseEnter={cellOnMouseEnter}
-              handleClick={cellHandleClick}
-              selectedSymbol={selectedSymbol}
-              selectedColor={selectedColor} />
-          );
-        })}
-      </div>
     );
   }
 }
@@ -235,7 +207,8 @@ export default class WorldMap extends React.Component {
   constructor(props) {
     super(props);
 
-    let map = new OverworldMap(this.props.map);
+    let json = JSON.parse(document.getElementById("map-data").dataset.map);
+    let map = new OverworldMap(json);
 
     this.state = {
       drag: false,
@@ -244,6 +217,7 @@ export default class WorldMap extends React.Component {
       selectedColor: "white",
     };
 
+    this.handleClick = this.handleClick.bind(this);
     this.handleColorChange = this.handleColorChange.bind(this);
     this.handleSymbolChange = this.handleSymbolChange.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
@@ -260,11 +234,7 @@ export default class WorldMap extends React.Component {
   }
 
   handleClick(x, y) {
-    let map = this.state.map;
-
-    map.updateCell(x, y, {s: this.state.selectedSymbol, c: this.state.selectedColor});
-
-    this.setState({map});
+    this.state.map.updateCell(x, y, {s: this.state.selectedSymbol, c: this.state.selectedColor});
   }
 
   onMouseDown(event) {
@@ -282,6 +252,7 @@ export default class WorldMap extends React.Component {
   }
 
   render() {
+    let drag = this.state.drag;
     let map = this.state.map;
     let selectedSymbol = this.state.selectedSymbol;
     let selectedColor = this.state.selectedColor;
@@ -295,25 +266,27 @@ export default class WorldMap extends React.Component {
         <Symbols handleSymbolChange={this.handleSymbolChange} selectedSymbol={selectedSymbol} />
 
         <div className="world-map terminal">
-          {map.rows((row, index) => {
-            let rowHandleClick = (x) => {
-              this.handleClick(x, index);
-            };
-
-            let rowOnMouseEnter = (x) => {
-              this.onMouseEnter(x, index);
-            };
-
+          {map.rows((row, y) => {
             return (
-              <MapRow
-                key={index}
-                row={row}
-                onMouseDown={this.onMouseDown}
-                onMouseEnter={rowOnMouseEnter}
-                onMouseUp={this.onMouseUp}
-                handleClick={rowHandleClick}
-                selectedSymbol={selectedSymbol}
-                selectedColor={selectedColor} />
+              <div key={y}>
+                {row.map((cell, x) => {
+                  return (
+                    <MapCell
+                      key={x}
+                      x={x}
+                      y={y}
+                      drag={drag}
+                      symbol={cell.s}
+                      color={cell.c}
+                      onMouseDown={this.onMouseDown}
+                      onMouseUp={this.onMouseUp}
+                      onMouseEnter={this.onMouseEnter}
+                      handleClick={this.handleClick}
+                      selectedSymbol={selectedSymbol}
+                      selectedColor={selectedColor} />
+                  );
+                })}
+              </div>
             );
           })}
         </div>
