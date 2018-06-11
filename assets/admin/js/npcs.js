@@ -18,16 +18,16 @@ export class NPCLeveler {
           case "max_health_points":
           case "skill_points":
           case "max_skill_points":
-            newStats[key] = value + 5;
+            newStats[key] = value + Math.round(5.5 * level);
             break;
 
           case "move_points":
           case "max_move_points":
-            newStats[key] = value + 2;
+            newStats[key] = value + Math.round(2.2 * level);
             break;
 
           default:
-            newStats[key] = value + 1;
+            newStats[key] = value + Math.round(1.1 * level);
         }
       });
 
