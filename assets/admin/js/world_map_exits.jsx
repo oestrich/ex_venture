@@ -1,6 +1,7 @@
 import React from 'react';
 import OverworldMap from "./overworld";
 import debounceEvent from "./debounce";
+import _ from "lodash";
 
 class ExitSelector extends React.PureComponent {
   constructor(props) {
@@ -29,31 +30,35 @@ class ExitSelector extends React.PureComponent {
     let exitOnChange = this.exitOnChange;
 
     return (
-      <div>
-        <label>Exits</label>
-        <select value={selectedRoomId} onChange={exitOnChange}>
-          <option value={-1}>Select a room</option>
-          {exits.map(zone => {
-            return (
-              <optgroup key={zone.name} label={zone.name}>
-                {zone.rooms.map(room => {
-                  return (
-                    <option key={room.id} value={room.id}>{room.name}</option>
-                  );
-                })}
-              </optgroup>
-            );
-          })}
-        </select>
-
-        <label>Direction</label>
-        <select value={selectedDirection} onChange={directionOnChange}>
-          {directions.map(direction => {
-            return (
-              <option key={direction} value={direction}>{direction}</option>
-            );
-          })}
-        </select>
+      <div className="row">
+        <div className="col-md-6">
+          <label>Exits</label>
+          <select className="form-control" value={selectedRoomId} onChange={exitOnChange}>
+            <option value={-1}>Select a room</option>
+            <option value={-2}>Delete Exit</option>
+            {exits.map(zone => {
+              return (
+                <optgroup key={zone.name} label={zone.name}>
+                  {zone.rooms.map(room => {
+                    return (
+                      <option key={room.id} value={room.id}>{room.name}</option>
+                    );
+                  })}
+                </optgroup>
+              );
+            })}
+          </select>
+        </div>
+        <div className="col-md-6">
+          <label>Direction</label>
+          <select className="form-control" value={selectedDirection} onChange={directionOnChange}>
+            {directions.map(direction => {
+              return (
+                <option key={direction} value={direction}>{direction}</option>
+              );
+            })}
+          </select>
+        </div>
       </div>
     );
   }
@@ -65,7 +70,6 @@ class MapCell extends React.Component {
 
     this.state = {
       hover: false,
-      exitClasses: [],
     };
 
     this.onMouseClick = this.onMouseClick.bind(this);
@@ -78,7 +82,7 @@ class MapCell extends React.Component {
       return true;
     }
 
-    if (this.state.exitClasses != nextState.exitClasses) {
+    if (this.state.exits != nextState.exits) {
       return true;
     }
 
@@ -99,14 +103,15 @@ class MapCell extends React.Component {
   }
 
   onMouseClick(event) {
-    console.log(this.props);
     if (this.props.roomId == -1) { return; }
-    let exitClasses = this.state.exitClasses;
-    exitClasses.push(this.props.direction);
-    this.setState({exitClasses});
 
     let startId = {x: this.props.x, y: this.props.y};
-    this.props.addExit(this.props.direction, startId, this.props.roomId);
+
+    if (this.props.roomId == -2) {
+      this.props.deleteExit(this.props.direction, startId);
+    } else {
+      this.props.addExit(this.props.direction, startId, this.props.roomId);
+    }
   }
 
   render() {
@@ -115,15 +120,17 @@ class MapCell extends React.Component {
 
     symbol = symbol == " " ? "\xa0" : symbol;
 
+    let tooltip = this.props.exits.length > 0 ? "hover-tooltip" : "";
     let direction = this.props.direction;
-    let hoverClass = this.state.hover ? `hover hover-${direction}` : "";
-    let exitClasses = this.state.exitClasses.join(" ");
+    let hoverClass = this.state.hover ? `hover hover-${direction} ${tooltip}` : "";
+    let exitClasses = _.map(this.props.exits, exit => { return exit.direction; }).join(" ");
 
     return (
       <span
         onMouseDown={this.onMouseClick}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
+        data-exits={exitClasses}
         className={`color-code-${color} ${hoverClass} ${exitClasses}`}>
         {symbol}
       </span>
@@ -135,15 +142,18 @@ export default class WorldMapExits extends React.Component {
   constructor(props) {
     super(props);
 
-    let map = new OverworldMap(this.props.map);
+    let json = JSON.parse(document.getElementById("map-data").dataset.map);
+    let map = new OverworldMap(json);
 
     this.state = {
       map: map,
       selectedRoomId: -1,
       selectedDirection: "north",
+      exits: [],
     };
 
     this.addExit = this.addExit.bind(this);
+    this.deleteExit = this.deleteExit.bind(this);
     this.directionChange = this.directionChange.bind(this);
     this.roomIdChange = this.roomIdChange.bind(this);
   }
@@ -157,15 +167,26 @@ export default class WorldMapExits extends React.Component {
   }
 
   addExit(direction, startId, finishId) {
-    console.log(direction, startId, finishId);
+    let exits = this.state.exits;
+    exits.push({direction: direction, start_id: startId, finish_id: finishId});
+    this.setState({exits});
+  }
+
+  deleteExit(direction, startId) {
+    let exits = _.reject(this.state.exits, exit => {
+      return exit.direction == direction && exit.start_id.x == startId.x && exit.start_id.y == startId.y;
+    });
+    this.setState({exits});
   }
 
   render() {
     let map = this.state.map;
     let roomId = this.state.selectedRoomId;
     let direction = this.state.selectedDirection;
+    let exits = this.state.exits;
 
     let addExit = this.addExit;
+    let deleteExit = this.deleteExit;
 
     return (
       <div>
@@ -182,11 +203,17 @@ export default class WorldMapExits extends React.Component {
             return (
               <div key={y}>
                 {row.map((cell, x) => {
+                  let cellExits = _.filter(exits, exit => {
+                    return exit.start_id.x == x && exit.start_id.y == y;
+                  });
+
                   return (
                     <MapCell
                       key={x}
                       x={x} y={y}
+                      exits={cellExits}
                       addExit={addExit}
+                      deleteExit={deleteExit}
                       symbol={cell.s}
                       color={cell.c}
                       direction={direction}
