@@ -220,7 +220,8 @@ defmodule Web.Router do
       resources("/rooms", RoomController, only: [:new, :create])
     end
 
-    put "/zones/:id/overworld", ZoneOverworldController, :update
+    get("/zones/:id/overworld/exits", ZoneOverworldController, :exits)
+    put("/zones/:id/overworld", ZoneOverworldController, :update)
   end
 
   if Mix.env() == :dev do

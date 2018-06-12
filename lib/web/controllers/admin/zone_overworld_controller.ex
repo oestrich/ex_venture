@@ -3,6 +3,22 @@ defmodule Web.Admin.ZoneOverworldController do
 
   alias Web.Zone
 
+  def exits(conn, %{"id" => id}) do
+    zone = Zone.get(id)
+
+    case Zone.overworld?(zone) do
+      true ->
+        conn
+        |> assign(:zone, zone)
+        |> render("exits.html")
+
+      false ->
+        conn
+        |> put_flash(:error, "This zone does not have an overworld")
+        |> redirect(to: zone_path(conn, :show, zone.id))
+    end
+  end
+
   def update(conn, %{"id" => id, "zone" => params}) do
     case Zone.update_map(id, params) do
       {:ok, zone} ->

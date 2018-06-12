@@ -1,20 +1,11 @@
 import React from 'react';
+import OverworldMap from "./overworld";
+import debounceEvent from "./debounce";
 
 if (process.env.NODE_ENV !== 'production') {
   const {whyDidYouUpdate} = require('why-did-you-update');
   whyDidYouUpdate(React);
 }
-
-const debounceEvent = (callback, time) => {
-  let interval;
-  return (...args) => {
-    clearTimeout(interval);
-    interval = setTimeout(() => {
-      interval = null;
-      callback(...args);
-    }, time);
-  };
-};
 
 class Colors extends React.PureComponent {
   constructor(props) {
@@ -165,41 +156,6 @@ class MapCell extends React.Component {
         {symbol}
       </span>
     );
-  }
-}
-
-/**
- * Map helper functions
- */
-class OverworldMap {
-  constructor(map) {
-    let groupedMap = map.reduce((acc, val) => {
-      if (acc[val.y] == undefined) {
-        acc[val.y] = [];
-      }
-
-      acc[val.y].push(val);
-
-      return acc;
-    }, []);
-
-    this.overworld = groupedMap.map((row) => {
-      return row.sort((a, b) => { return a.x - b.x; });
-    });
-  }
-
-  updateCell(x, y, attrs) {
-    this.overworld[y][x].s = attrs.s;
-    this.overworld[y][x].c = attrs.c;
-  }
-
-  rows(fun) {
-    return this.overworld.map(fun);
-  }
-
-  toJSON() {
-    let flattenedMap = this.overworld.reduce((acc, val) => acc.concat(val), []);
-    return JSON.stringify(flattenedMap);
   }
 }
 
