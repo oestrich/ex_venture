@@ -47,7 +47,7 @@ defmodule Web.Admin.RoomView do
         nil
 
       room_exit ->
-        room_exit.finish
+        room_exit.finish_room
     end
   end
 

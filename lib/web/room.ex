@@ -244,7 +244,7 @@ defmodule Web.Room do
     end)
 
     Exit
-    |> where([e], e.finish_id == ^room.id)
+    |> where([e], e.finish_room_id == ^room.id)
     |> select([e], e.id)
     |> Repo.all()
     |> Enum.each(&delete_exit/1)
@@ -351,8 +351,8 @@ defmodule Web.Room do
     changeset = %Exit{} |> Exit.changeset(params)
 
     reverse_params = %{
-      start_id: params["finish_id"],
-      finish_id: params["start_id"],
+      start_room_id: params["finish_room_id"],
+      finish_room_id: params["start_room_id"],
       direction: to_string(Exit.opposite(params["direction"])),
     }
 
@@ -368,7 +368,7 @@ defmodule Web.Room do
   end
 
   defp update_exit(room_exit) do
-    room = RoomRepo.get(room_exit.start_id)
+    room = RoomRepo.get(room_exit.start_room_id)
     Game.Room.update(room.id, room)
     room_exit
   end
@@ -381,7 +381,7 @@ defmodule Web.Room do
     room_exit = Exit |> Repo.get(exit_id)
     reverse_exit = Exit |> Repo.get_by([
       direction: to_string(Exit.opposite(room_exit.direction)),
-      finish_id: room_exit.start_id,
+      finish_room_id: room_exit.start_room_id,
     ])
 
     with {:ok, room_exit} <- Repo.delete(room_exit),

@@ -29,17 +29,17 @@
             <%= hidden_input(f, :direction, value: @direction) %>
 
             <div class="form-group">
-              <%= label f, :start_id, class: "col-md-4" %>
-              <%= hidden_input f, :start_id, value: @room.id %>
+              <%= label f, :start_room_id, class: "col-md-4" %>
+              <%= hidden_input f, :start_room_id, value: @room.id %>
               <div class="col-md-8">
-                <%= select f, :start_id, disabled_room_option(@room), disabled: true, class: "form-control" %>
+                <%= select f, :start_room_id, disabled_room_option(@room), disabled: true, class: "form-control" %>
               </div>
             </div>
 
             <div class="form-group">
-              <%= label f, :finish_id, class: "col-md-4" %>
+              <%= label f, :finish_room_id, class: "col-md-4" %>
               <div class="col-md-8">
-                <%= select f, :finish_id, Zone.room_exits(@room.zone), class: "form-control new-exit" %>
+                <%= select f, :finish_room_id, Zone.room_exits(@room.zone), class: "form-control new-exit" %>
               </div>
             </div>
 
