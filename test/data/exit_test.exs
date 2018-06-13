@@ -33,4 +33,30 @@ defmodule Data.ExitTest do
 
     assert %{direction: "south"} = Exit.exit_to(room, :south)
   end
+
+  describe "validate start/finish fields" do
+    test "can only have one of the start fields" do
+      changeset = Exit.changeset(%Exit{}, %{start_room_id: 1})
+      refute changeset.errors[:start_room_id]
+
+      changeset = Exit.changeset(%Exit{}, %{start_overworld_id: "overworld:1:1,1"})
+      refute changeset.errors[:start_overworld_id]
+
+      changeset = Exit.changeset(%Exit{}, %{start_room_id: 1, start_overworld_id: "overworld:1:1,1"})
+      assert changeset.errors[:start_room_id]
+      assert changeset.errors[:start_overworld_id]
+    end
+
+    test "can only have one of the finish fields" do
+      changeset = Exit.changeset(%Exit{}, %{finish_room_id: 1})
+      refute changeset.errors[:finish_room_id]
+
+      changeset = Exit.changeset(%Exit{}, %{finish_overworld_id: "overworld:1:1,1"})
+      refute changeset.errors[:finish_overworld_id]
+
+      changeset = Exit.changeset(%Exit{}, %{finish_room_id: 1, finish_overworld_id: "overworld:1:1,1"})
+      assert changeset.errors[:finish_room_id]
+      assert changeset.errors[:finish_overworld_id]
+    end
+  end
 end

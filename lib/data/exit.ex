@@ -37,12 +37,34 @@ defmodule Data.Exit do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:direction, :has_door, :start_room_id, :finish_room_id])
+    |> cast(params, [:direction, :has_door, :start_room_id, :finish_room_id, :start_overworld_id, :finish_overworld_id])
+    |> cast(params, [:start_zone_id])
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
+    |> validate_one_of([:start_room_id, :start_overworld_id])
+    |> validate_one_of([:finish_room_id, :finish_overworld_id])
     |> foreign_key_constraint(:start_room_id)
     |> foreign_key_constraint(:finish_room_id)
     |> unique_constraint(:direction, name: :exits_direction_start_id_finish_id_index)
+  end
+
+  defp validate_one_of(changeset, keys) do
+    keys =
+      Enum.map(keys, fn key ->
+        {key, get_field(changeset, key)}
+      end)
+
+    keys_with_values = Enum.filter(keys, fn {_key, value} -> !is_nil(value) end)
+
+    case length(keys_with_values) == 1 do
+      true ->
+        changeset
+
+      false ->
+        Enum.reduce(keys, changeset, fn {key, _value}, changeset ->
+          add_error(changeset, key, "cannot be combined with other values")
+        end)
+    end
   end
 
   @doc """
@@ -68,6 +90,22 @@ defmodule Data.Exit do
       |> Enum.map(&setup_exit/1)
 
     %{room | exits: exits}
+  end
+
+  @doc """
+  Load all exits for a zone
+
+  Adds them to the zone as `exits`
+  """
+  @spec load_zone_exits(Zone.t()) :: Zone.t()
+  def load_zone_exits(zone) do
+    exits =
+      __MODULE__
+      |> where([e], e.start_zone_id == ^zone.id)
+      |> Repo.all()
+      |> Enum.map(&setup_exit/1)
+
+    %{zone | exits: exits}
   end
 
   @doc """

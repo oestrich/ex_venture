@@ -5,6 +5,7 @@ defmodule Data.Zone do
 
   use Data.Schema
 
+  alias Data.Exit
   alias Data.NPCSpawner
   alias Data.Room
   alias Data.Zone.MapCell
@@ -19,6 +20,8 @@ defmodule Data.Zone do
     field(:ending_level, :integer, default: 1)
     field(:map_layer_names, :map, default: %{})
     field(:overworld_map, {:array, MapCell})
+
+    field(:exits, {:array, Exit}, virtual: true)
 
     has_many(:rooms, Room)
     has_many(:npc_spawners, NPCSpawner)

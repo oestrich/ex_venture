@@ -5,10 +5,12 @@ defmodule Web.Zone do
 
   import Ecto.Query
 
+  alias Data.Exit
   alias Data.Zone
   alias Data.Zone.MapCell
   alias Data.Room
   alias Data.Repo
+  alias Game.Door
   alias Game.World
   alias Web.Pagination
 
@@ -191,5 +193,59 @@ defmodule Web.Zone do
       rooms = Enum.map(zone.rooms, &{"#{&1.id} - #{&1.name}", &1.id})
       {zone.name, rooms}
     end)
+  end
+
+  def modify_overworld_exits(zone, exits_to_add, exits_to_delete) do
+    with {:ok, zone} <- check_overworld(zone),
+         :ok <- add_exits(zone, exits_to_add),
+         :ok <- delete_exits(exits_to_delete),
+         {:ok, zone} <- load_exits(zone) do
+      {:ok, zone}
+    end
+  end
+
+  defp check_overworld(zone) do
+    case zone.type do
+      "overworld" ->
+        {:ok, zone}
+
+      _ ->
+        {:error, :not_overworld}
+    end
+  end
+
+  defp add_exits(zone, exits_to_add) do
+    Enum.map(exits_to_add, &add_exit(zone, &1))
+    :ok
+  end
+
+  defp add_exit(zone, room_exit) do
+    room_exit = Map.put(room_exit, "start_zone_id", zone.id)
+    case Web.Exit.create_exit(room_exit) do
+      {:ok, room_exit, reverse_exit} ->
+        room_exit |> Web.Exit.reload_process() |> Door.maybe_load()
+        reverse_exit |> Web.Exit.reload_process() |> Door.maybe_load()
+
+        :ok
+    end
+  end
+
+  defp delete_exits(exits_to_delete) do
+    Enum.map(exits_to_delete, &delete_exit/1)
+
+    :ok
+  end
+
+  def delete_exit(room_exit_id) do
+    case Web.Exit.delete_exit(room_exit_id) do
+      {:ok, _room_exit, reverse_exit} ->
+        reverse_exit |> Web.Exit.reload_process() |> Door.remove()
+
+        :ok
+    end
+  end
+
+  defp load_exits(zone) do
+    {:ok, zone |> Exit.load_zone_exits()}
   end
 end
