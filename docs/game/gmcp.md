@@ -1,6 +1,8 @@
-# GMCP Events
+# GMCP Modules
 
-## Channels.Broadcast
+## Channels
+
+### Channels.Broadcast
 
 A channel you are in had a message broadcast to it.
 
@@ -12,7 +14,7 @@ Channels.Broadcast {
 }
 ```
 
-## Channels.Tell
+### Channels.Tell
 
 A new tell message was sent to your character.
 
@@ -22,20 +24,22 @@ Channel.Tell {"from": {"id": 1, "name": "Player"}, "message": "Hi"}
 
 ## Character
 
+### Character.Info
+
 On sign in the general character information will be sent.
 
 ```
 Character {"name": "Player"}
 ```
 
-## Character.Skill
+### Character.Skill
 
 Fired when a skill's active state changes.
 ```
 Character.Skill {"name": "Magic Missile", "command": "magic missile", "active": true}
 ```
 
-## Character.Vitals
+### Character.Vitals
 
 Any time a player's vitals change (stats) this will be broadcast. Every tick will also push this out.
 
@@ -53,7 +57,9 @@ Character.Vitals {
 }
 ```
 
-## Config.Update
+## Config
+
+### Config.Update
 
 This will contain the full config that the player has, anytime it is updated.
 
@@ -63,7 +69,9 @@ Config.Update {
 }
 ```
 
-## Mail.New
+## Mail
+
+### Mail.New
 
 You have received a new peice of mail.
 
@@ -75,7 +83,9 @@ Mail.New {
 }
 ```
 
-## Room.Info
+## Room
+
+### Room.Info
 
 When a player uses `look` or moves this will be sent to show the current room's information.
 
@@ -97,23 +107,7 @@ Room.Info {
 }
 ```
 
-## Room.Characters.Enter
-
-Sent when a character enters the player's room.
-
-```
-Room.Characters.Enter {"type": "player", "name": "Player", "id": 3}
-```
-
-## Room.Characters.Leave
-
-Sent when a character leaves the player's room.
-
-```
-Room.Characters.Leave {"type": "player", "name": "Player", "id": 3}
-```
-
-## Room.Heard
+### Room.Heard
 
 Sent whenever someone `say`s to the room the player is in.
 
@@ -124,7 +118,7 @@ Room.Heard {
 }
 ```
 
-## Room.Whisper
+### Room.Whisper
 
 Sent when the player is whispered to.
 
@@ -135,19 +129,39 @@ Room.Whisper {
 }
 ```
 
-## Target.Character
+## Room.Characters
+
+### Room.Characters.Enter
+
+Sent when a character enters the player's room.
+
+```
+Room.Characters.Enter {"type": "player", "name": "Player", "id": 3}
+```
+
+### Room.Characters.Leave
+
+Sent when a character leaves the player's room.
+
+```
+Room.Characters.Leave {"type": "player", "name": "Player", "id": 3}
+```
+
+## Target
+
+### Target.Character
 
 ```
 Target.Character {"type": "player", "name": "Player", "id": 3}
 ```
 
-## Target.Clear
+### Target.Clear
 
 ```
 Target.Clear {}
 ```
 
-## Target.You
+### Target.You
 
 Another Charcater (PC or NPC) has targeted your character.
 
@@ -155,7 +169,9 @@ Another Charcater (PC or NPC) has targeted your character.
 Target.You {"type": "player", "name": "Player", "id": 3}
 ```
 
-## Zone.Map
+## Zone
+
+### Zone.Map
 
 ```
 Zone.Map {"map": "..."}

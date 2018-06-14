@@ -4,7 +4,7 @@
     <TriggerPackage>
         <Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
             <name>Login Trigger</name>
-            <script>sendGMCP(&quot;Core.Supports.Set [\&quot;Character.Vitals 1\&quot;, \&quot;Room.Info 1\&quot;, \&quot;Target.You 1\&quot;, \&quot;Channels.Broadcast 1\&quot;, \&quot;Core.Heartbeat 1\&quot;]&quot;)</script>
+            <script>sendGMCP(&quot;Core.Supports.Set [\&quot;Character 1\&quot;, \&quot;Room 1\&quot;, \&quot;Target 1\&quot;, \&quot;Channels 1\&quot;]&quot;)</script>
             <triggerType>0</triggerType>
             <conditonLineDelta>0</conditonLineDelta>
             <mStayOpen>0</mStayOpen>

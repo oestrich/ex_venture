@@ -21,7 +21,7 @@ defmodule Game.Session.GMCP do
       }
     }
 
-    socket |> @socket.push_gmcp("Character", data |> Poison.encode!())
+    socket |> @socket.push_gmcp("Character.Info", data |> Poison.encode!())
   end
 
   @doc """
