@@ -29,7 +29,13 @@ Channel.Tell {"from": {"id": 1, "name": "Player"}, "message": "Hi"}
 On sign in the general character information will be sent.
 
 ```
-Character {"name": "Player"}
+Character.Info {
+  "name": "Player",
+  "level": 5,
+  "class": {
+    "name": "Cleric"
+  }
+}
 ```
 
 ### Character.Skill
