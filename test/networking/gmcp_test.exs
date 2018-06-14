@@ -16,5 +16,9 @@ defmodule Networking.GMCPTest do
       assert GMCP.message_allowed?(%{gmcp_supports: ["Character"]}, "Character.Info")
       assert GMCP.message_allowed?(%{gmcp_supports: ["Character"]}, "Character.Vitals")
     end
+
+    test "with submodules" do
+      assert GMCP.message_allowed?(%{gmcp_supports: ["External.Discord"]}, "External.Discord.Status")
+    end
   end
 end

@@ -15,7 +15,7 @@ defmodule Networking.GMCP do
   @spec message_allowed?(Procotol.state(), message()) :: boolean()
   def message_allowed?(state, message) do
     [_message | module] = Enum.reverse(String.split(message, "."))
-    module = Enum.join(module, ".")
+    module = Enum.join(Enum.reverse(module), ".")
     module in state.gmcp_supports || module == "Core"
   end
 end
