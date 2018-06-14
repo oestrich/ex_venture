@@ -177,6 +177,11 @@ defmodule Game.Session.Process do
     end
   end
 
+  def handle_cast({:recv_gmcp, module, data}, state) do
+    GMCP.handle_gmcp(state, module, data)
+    {:noreply, state}
+  end
+
   def handle_cast({:teleport, room_id}, state) do
     {:update, state} = Move.move_to(state, room_id, :teleport, :teleport)
     state |> prompt()

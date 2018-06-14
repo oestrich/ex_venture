@@ -7,6 +7,28 @@ defmodule Game.Session.GMCP do
 
   alias Data.Exit
   alias Data.Room
+  alias Game.Config
+
+  @doc """
+  Handle a GMCP request from the client
+  """
+  def handle_gmcp(state, module, data)
+
+  def handle_gmcp(state, "External.Discord.Hello", _data) do
+    case Config.discord_invite_url() do
+      nil ->
+        state.socket |> @socket.push_gmcp("External.Discord.Info", "{}")
+      url ->
+        data = %{inviteurl: url}
+        state.socket |> @socket.push_gmcp("External.Discord.Info", data |> Poison.encode!())
+    end
+  end
+
+  def handle_gmcp(state, "External.Discord.Get", _data) do
+    discord_status(state)
+  end
+
+  def handle_gmcp(state, _module, _data), do: state
 
   @doc """
   Push Character data (save stats)
@@ -196,6 +218,19 @@ defmodule Game.Session.GMCP do
       active: opts[:active]
     }
     socket |> @socket.push_gmcp("Character.Skill", Poison.encode!(data))
+  end
+
+  @doc """
+  Send discord status
+  """
+  @spec discord_status(State.t()) :: :ok
+  def discord_status(state) do
+    data = %{
+      game: Config.game_name(),
+      starttime: state.session_started_at |> Timex.to_unix(),
+    }
+
+    state.socket |> @socket.push_gmcp("External.Discord.Status", data |> Poison.encode!())
   end
 
   defp room_info(room, items) do

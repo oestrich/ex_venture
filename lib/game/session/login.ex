@@ -109,6 +109,7 @@ defmodule Game.Session.Login do
     @environment.enter(user.save.room_id, {:user, user}, :login)
     session |> Session.recv("look")
     state |> GMCP.character()
+    state |> GMCP.discord_status()
 
     Enum.each(user.save.channels, &Channel.join/1)
     Channel.join_tell({:user, user})

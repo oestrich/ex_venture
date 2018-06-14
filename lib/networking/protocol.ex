@@ -442,6 +442,18 @@ defmodule Networking.Protocol do
     end
   end
 
+  def handle_gmcp("External.Discord.Hello" <> _extra, state) do
+    state.session |> Game.Session.recv_gmcp("External.Discord.Hello")
+
+    {:noreply, state}
+  end
+
+  def handle_gmcp("External.Discord.Get" <> _extra, state) do
+    state.session |> Game.Session.recv_gmcp("External.Discord.Get")
+
+    {:noreply, state}
+  end
+
   def handle_gmcp(_, state), do: {:noreply, state}
 
   defp split_iac_sb(<<@iac, @se, data::binary>>), do: {[], data}
