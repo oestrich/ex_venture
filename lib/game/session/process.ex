@@ -31,6 +31,7 @@ defmodule Game.Session.Process do
 
   @save_period 15_000
   @force_disconnect_period 5_000
+  @heartbeat_timeout 60_000
 
   @timeout_check 5000
   @timeout_seconds Application.get_env(:ex_venture, :game)[:timeout_seconds]
@@ -381,7 +382,7 @@ defmodule Game.Session.Process do
 
   # Schedule a heartbeat
   def schedule_heartbeat(pid) do
-    :erlang.send_after(@timeout_check, pid, :heartbeat)
+    :erlang.send_after(@heartbeat_timeout, pid, :heartbeat)
   end
 
   # Check if the session is inactive, disconnect if it is
