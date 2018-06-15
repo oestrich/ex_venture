@@ -24,23 +24,39 @@ defmodule Web.ZoneTest do
     assert state.zone.name == "Forest"
   end
 
-  test "creating and deleting exits" do
-    {:ok, room_zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
-    {:ok, room} = Room.create(room_zone, room_attributes(%{name: "Forest Path"}))
+  describe "overworld exits" do
+    setup do
+      {:ok, room_zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
+      {:ok, room} = Room.create(room_zone, room_attributes(%{name: "Forest Path"}))
 
-    {:ok, overworld_zone} = Zone.create(zone_attributes(%{name: "The Forest", type: "overworld"}))
+      {:ok, overworld_zone} = Zone.create(zone_attributes(%{name: "The Forest", type: "overworld"}))
 
-    add_exits = [
-      %{"direction" => "north", "start_overworld_id" => "overworld:#{overworld_zone.id}:1,1", "finish_room_id" => room.id},
-    ]
+      %{room: room, overworld_zone: overworld_zone}
+    end
 
-    {:ok, zone} = Zone.modify_overworld_exits(overworld_zone, add_exits, [])
+    test "creating an overworld exit", %{overworld_zone: overworld_zone, room: room} do
+      new_exit = %{
+        "direction" => "north",
+        "start_overworld_id" => "overworld:#{overworld_zone.id}:1,1",
+        "finish_room_id" => room.id
+      }
 
-    assert length(zone.exits) == 1
+      {:ok, zone, _room_exit} = Zone.add_overworld_exit(overworld_zone, new_exit)
 
-    room_exit = List.first(zone.exits)
-    {:ok, zone} = Zone.modify_overworld_exits(overworld_zone, [], [room_exit.id])
+      assert length(zone.exits) == 1
+    end
 
-    assert length(zone.exits) == 0
+    test "deleting an overworld exit", %{overworld_zone: overworld_zone, room: room} do
+      new_exit = %{
+        "direction" => "north",
+        "start_overworld_id" => "overworld:#{overworld_zone.id}:1,1",
+        "finish_room_id" => room.id
+      }
+      {:ok, overworld_zone, room_exit} = Zone.add_overworld_exit(overworld_zone, new_exit)
+
+      {:ok, overworld_zone} = Zone.delete_overworld_exit(overworld_zone, room_exit.id)
+
+      assert length(overworld_zone.exits) == 0
+    end
   end
 end

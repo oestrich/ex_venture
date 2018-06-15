@@ -195,10 +195,23 @@ defmodule Web.Zone do
     end)
   end
 
-  def modify_overworld_exits(zone, exits_to_add, exits_to_delete) do
+  @doc """
+  Add an exit to the overworld
+  """
+  def add_overworld_exit(zone, params) do
     with {:ok, zone} <- check_overworld(zone),
-         :ok <- add_exits(zone, exits_to_add),
-         :ok <- delete_exits(exits_to_delete),
+         {:ok, room_exit} <- add_exit(zone, params),
+         {:ok, zone} <- load_exits(zone) do
+      {:ok, zone, room_exit}
+    end
+  end
+
+  @doc """
+  Delete an exit from the overworld
+  """
+  def delete_overworld_exit(zone, exit_id) do
+    with {:ok, zone} <- check_overworld(zone),
+         :ok <- delete_exit(exit_id),
          {:ok, zone} <- load_exits(zone) do
       {:ok, zone}
     end
@@ -214,11 +227,6 @@ defmodule Web.Zone do
     end
   end
 
-  defp add_exits(zone, exits_to_add) do
-    Enum.map(exits_to_add, &add_exit(zone, &1))
-    :ok
-  end
-
   defp add_exit(zone, room_exit) do
     room_exit = Map.put(room_exit, "start_zone_id", zone.id)
     case Web.Exit.create_exit(room_exit) do
@@ -226,17 +234,11 @@ defmodule Web.Zone do
         room_exit |> Web.Exit.reload_process() |> Door.maybe_load()
         reverse_exit |> Web.Exit.reload_process() |> Door.maybe_load()
 
-        :ok
+        {:ok, room_exit}
     end
   end
 
-  defp delete_exits(exits_to_delete) do
-    Enum.map(exits_to_delete, &delete_exit/1)
-
-    :ok
-  end
-
-  def delete_exit(room_exit_id) do
+  defp delete_exit(room_exit_id) do
     case Web.Exit.delete_exit(room_exit_id) do
       {:ok, _room_exit, reverse_exit} ->
         reverse_exit |> Web.Exit.reload_process() |> Door.remove()
