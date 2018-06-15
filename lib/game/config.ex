@@ -253,6 +253,10 @@ defmodule Game.Config do
     end
   end
 
+  def discord_invite_url() do
+    find_config("discord_invite_url")
+  end
+
   Enum.each(@color_config, fn {config, default} ->
     def unquote(config)() do
       case find_config(to_string(unquote(config))) do

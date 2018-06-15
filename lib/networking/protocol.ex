@@ -8,12 +8,15 @@ defmodule Networking.Protocol do
 
   alias Game.Color
   alias Metrics.PlayerInstrumenter
+  alias Networking.GMCP
   alias Networking.MSSP
   alias Networking.MXP
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RoutesHelper
 
-  @mudlet_version 14
+  @type state :: map()
+
+  @mudlet_version 15
 
   @behaviour :ranch_protocol
   @behaviour Networking.Socket
@@ -148,7 +151,7 @@ defmodule Networking.Protocol do
   end
 
   def handle_cast({:gmcp, module, data}, state = %{gmcp: true}) do
-    case module in state.gmcp_supports do
+    case GMCP.message_allowed?(state, module) do
       true ->
         Logger.debug(["GMCP: Sending", module], type: :socket)
         send_data(state, <<@iac, @sb, @gmcp>> <> module <> " " <> data <> <<@iac, @se>>)
@@ -437,6 +440,18 @@ defmodule Networking.Protocol do
         Logger.debug("There was an error decoding Core.Supports.Set", type: :socket)
         {:noreply, state}
     end
+  end
+
+  def handle_gmcp("External.Discord.Hello" <> _extra, state) do
+    state.session |> Game.Session.recv_gmcp("External.Discord.Hello")
+
+    {:noreply, state}
+  end
+
+  def handle_gmcp("External.Discord.Get" <> _extra, state) do
+    state.session |> Game.Session.recv_gmcp("External.Discord.Get")
+
+    {:noreply, state}
   end
 
   def handle_gmcp(_, state), do: {:noreply, state}

@@ -57,6 +57,14 @@ defmodule Game.Session do
   end
 
   @doc """
+  Receive a GMCP request from the client
+  """
+  @spec recv_gmcp(pid(), String.t(), map()) :: :ok
+  def recv_gmcp(pid, module, data \\ %{}) do
+    GenServer.cast(pid, {:recv_gmcp, module, data})
+  end
+
+  @doc """
   Echo to the socket
   """
   @spec echo(pid, String.t()) :: :ok

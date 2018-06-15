@@ -9,7 +9,6 @@ defmodule Game.NPC.Events do
 
   alias Data.Event
   alias Data.Exit
-  alias Data.Room
   alias Game.Channel
   alias Game.Character
   alias Game.Door
@@ -395,17 +394,12 @@ defmodule Game.NPC.Events do
     {:ok, starting_room} = @environment.look(npc_spawner.room_id)
     {:ok, room} = @environment.look(room_id)
 
-    direction =
-      room
-      |> Room.exits()
-      |> Enum.random()
-
-    room_exit = room |> Exit.exit_to(direction)
+    room_exit = Enum.random(room.exits)
     {:ok, new_room} = @environment.look(room_exit.finish_id)
 
     case can_move?(event.action, starting_room, room_exit, new_room) do
       true ->
-        move_room(state, room, new_room, direction)
+        move_room(state, room, new_room, room_exit.direction)
 
       false ->
         state

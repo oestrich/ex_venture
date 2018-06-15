@@ -17,7 +17,7 @@ let channelBroadcast = (channel, data) => {
 /**
  * Character module
  */
-let character = (channel, data) => {
+let characterInfo = (channel, data) => {
   console.log(`Signed in as ${data.name}`)
 
   renderCharacter(data);
@@ -234,7 +234,7 @@ let zoneMap = (channel, data) => {
 let gmcp = {
   "Channels.Broadcast": channelBroadcast,
   "Channels.Tell": tell,
-  "Character": character,
+  "Character.Info": characterInfo,
   "Character.Skill": characterSkill,
   "Character.Vitals": characterVitals,
   "Config.Update": configUpdate,

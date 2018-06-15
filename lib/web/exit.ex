@@ -24,7 +24,10 @@ defmodule Web.Exit do
   end
 
   defp reverse_params(params) do
-    reverse_params = %{direction: to_string(Exit.opposite(params["direction"]))}
+    reverse_params = %{
+      direction: to_string(Exit.opposite(params["direction"])),
+      has_door: Map.get(params, "has_door", false),
+    }
 
     reverse_params
     |> add_start(params)
