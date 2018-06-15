@@ -122,7 +122,7 @@ External.Discord.Status {
 
 ### Mail.New
 
-You have received a new peice of mail.
+You have received a new piece of mail.
 
 ```
 Mail.New {
