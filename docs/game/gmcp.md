@@ -75,6 +75,49 @@ Config.Update {
 }
 ```
 
+## External.Discord
+
+This follows the Mudlet External.Discord package spec.
+
+### External.Discord.Get (Client Sent)
+
+Sent from the client when they wish to receive current discord status.
+
+```
+External.Discord.Get {}
+```
+
+### External.Discord.Hello (Client Sent)
+
+Sent as a welcome from the client to see if Discord integration is available.
+
+Mudlet may send extra information that is ignored for now.
+
+```
+External.Discord.Hello {}
+```
+
+### External.Discord.Info
+
+A response to `External.Discord.Hello`. Will contain the discord server invite url if present.
+
+```
+External.Discord.Info {
+  inviteurl: "discord.gg"
+}
+```
+
+### External.Discord.Status
+
+Current in game status. Can be prompted by `External.Discord.Get`.
+
+```
+External.Discord.Status {
+  game: "ExVenture MUD",
+  starttime: 1529031599
+}
+```
+
 ## Mail
 
 ### Mail.New
