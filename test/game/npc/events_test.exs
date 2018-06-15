@@ -380,7 +380,7 @@ defmodule Game.NPC.EventsTest do
       @room._room()
       |> Map.put(:id, 2)
       |> Map.put(:y, 0)
-      |> Map.put(:exits, [room_exit])
+      |> Map.put(:exits, [])
       |> @room.set_room(multiple: true)
 
       Door.load(room_exit)

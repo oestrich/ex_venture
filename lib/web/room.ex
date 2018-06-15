@@ -353,6 +353,7 @@ defmodule Web.Room do
     reverse_params = %{
       start_id: params["finish_id"],
       finish_id: params["start_id"],
+      has_door: params["has_door"],
       direction: to_string(Exit.opposite(params["direction"])),
     }
 
