@@ -35,7 +35,7 @@ defmodule Game.OverworldTest do
 
   describe "overworld exits" do
     setup do
-      zone = %Zone{id: 1, overworld_map: basic_overworld_map()}
+      zone = %Zone{id: 1, overworld_map: basic_overworld_map(), exits: []}
       %{zone: zone}
     end
 
@@ -84,10 +84,20 @@ defmodule Game.OverworldTest do
         %{x: 4, y: 5, s: " ", c: nil},
         %{x: 6, y: 5, s: " ", c: nil},
       ]
-      zone = %Zone{id: 1, overworld_map: map}
+      zone = %Zone{id: 1, overworld_map: map, exits: []}
 
       assert Overworld.exits(zone, %{x: 5, y: 5}) == [
         %{id: "overworld:1:5,5", direction: "south", start_id: "overworld:1:5,5", finish_id: "overworld:1:5,6"}
+      ]
+    end
+
+    test "when a saved exit is there", %{zone: zone} do
+      room_exit = %{id: 1, direction: "east", start_id: "overworld:1:0,0", finish_id: 1}
+      zone = %{zone | exits: [room_exit]}
+
+      assert Overworld.exits(zone, %{x: 0, y: 0}) == [
+        %{id: "overworld:1:0,0", direction: "south", start_id: "overworld:1:0,0", finish_id: "overworld:1:0,1"},
+        room_exit,
       ]
     end
   end

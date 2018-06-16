@@ -6,6 +6,7 @@ defmodule Data.Exit do
   use Data.Schema
 
   alias Data.Room
+  alias Data.Zone
 
   @directions ["north", "east", "south", "west", "up", "down", "in", "out"]
 
@@ -13,8 +14,17 @@ defmodule Data.Exit do
     field(:direction, :string)
     field(:has_door, :boolean, default: false)
 
-    belongs_to(:start, Room)
-    belongs_to(:finish, Room)
+    field(:start_id, :string, virtual: true)
+    field(:finish_id, :string, virtual: true)
+
+    field(:start_overworld_id, :string)
+    field(:finish_overworld_id, :string)
+
+    belongs_to(:start_room, Room)
+    belongs_to(:start_zone, Zone)
+
+    belongs_to(:finish_room, Room)
+    belongs_to(:finish_zone, Zone)
 
     timestamps()
   end
@@ -27,12 +37,37 @@ defmodule Data.Exit do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:direction, :has_door, :start_id, :finish_id])
+    |> cast(params, [:direction, :has_door, :start_room_id, :finish_room_id, :start_overworld_id, :finish_overworld_id])
+    |> cast(params, [:start_zone_id, :finish_zone_id])
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
-    |> foreign_key_constraint(:start_id)
-    |> foreign_key_constraint(:finish_id)
-    |> unique_constraint(:direction, name: :exits_direction_start_id_finish_id_index)
+    |> validate_one_of([:start_room_id, :start_overworld_id])
+    |> validate_one_of([:finish_room_id, :finish_overworld_id])
+    |> foreign_key_constraint(:start_room_id)
+    |> foreign_key_constraint(:finish_room_id)
+    |> unique_constraint(:start_room_id, name: :exits_direction_start_room_id_index)
+    |> unique_constraint(:start_overworld_id, name: :exits_direction_start_overworld_id_index)
+    |> unique_constraint(:finish_room_id, name: :exits_direction_finish_room_id_index)
+    |> unique_constraint(:finish_overworld_id, name: :exits_direction_finish_overworld_id_index)
+  end
+
+  defp validate_one_of(changeset, keys) do
+    keys =
+      Enum.map(keys, fn key ->
+        {key, get_field(changeset, key)}
+      end)
+
+    keys_with_values = Enum.filter(keys, fn {_key, value} -> !is_nil(value) end)
+
+    case length(keys_with_values) == 1 do
+      true ->
+        changeset
+
+      false ->
+        Enum.reduce(keys, changeset, fn {key, _value}, changeset ->
+          add_error(changeset, key, "cannot be combined with other values")
+        end)
+    end
   end
 
   @doc """
@@ -42,17 +77,73 @@ defmodule Data.Exit do
   """
   @spec load_exits(Room.t()) :: Room.t()
   def load_exits(room, opts \\ []) do
-    query = where(__MODULE__, [e], e.start_id == ^room.id)
+    query = where(__MODULE__, [e], e.start_room_id == ^room.id)
     query =
       case Keyword.get(opts, :preload) do
         true ->
-          query |> preload([:start, :finish])
+          query |> preload([:start_room, :finish_room, :start_zone, :finish_zone])
 
         _ ->
           query
       end
 
-    %{room | exits: query |> Repo.all()}
+    exits =
+      query
+      |> Repo.all()
+      |> Enum.map(&setup_exit/1)
+
+    %{room | exits: exits}
+  end
+
+  @doc """
+  Load all exits for a zone
+
+  Adds them to the zone as `exits`
+  """
+  @spec load_zone_exits(Zone.t()) :: Zone.t()
+  def load_zone_exits(zone) do
+    exits =
+      __MODULE__
+      |> where([e], e.start_zone_id == ^zone.id)
+      |> Repo.all()
+      |> Enum.map(&setup_exit/1)
+
+    %{zone | exits: exits}
+  end
+
+  @doc """
+  Sets up exits for the overworld
+
+      iex> room_exit = Data.Exit.setup_exit(%{start_room_id: 1, finish_room_id: 1})
+      iex> %{start_id: 1, finish_id: 1} == Map.take(room_exit, [:start_id, :finish_id])
+      true
+
+      iex> room_exit = Data.Exit.setup_exit(%{start_overworld_id: "overworld", finish_room_id: 1})
+      iex> %{start_id: "overworld", finish_id: 1} == Map.take(room_exit, [:start_id, :finish_id])
+      true
+
+      iex> room_exit = Data.Exit.setup_exit(%{start_room_id: 1, finish_overworld_id: "overworld"})
+      iex> %{start_id: 1, finish_id: "overworld"} == Map.take(room_exit, [:start_id, :finish_id])
+      true
+
+      iex> room_exit = Data.Exit.setup_exit(%{start_overworld_id: "overworld", finish_overworld_id: "overworld"})
+      iex> %{start_id: "overworld", finish_id: "overworld"} == Map.take(room_exit, [:start_id, :finish_id])
+      true
+  """
+  def setup_exit(room_exit) do
+    room_exit
+    |> fallthrough(:start_id, :start_room_id, :start_overworld_id)
+    |> fallthrough(:finish_id, :finish_room_id, :finish_overworld_id)
+  end
+
+  defp fallthrough(struct, field, base_field, fallthrough_field) do
+    case Map.get(struct, base_field) do
+      nil ->
+        Map.put(struct, field, Map.get(struct, fallthrough_field))
+
+      value ->
+        Map.put(struct, field, value)
+    end
   end
 
   @doc """

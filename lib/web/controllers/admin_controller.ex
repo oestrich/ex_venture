@@ -10,8 +10,11 @@ defmodule Web.AdminController do
 
       defp ensure_user!(conn, _opts) do
         case Map.has_key?(conn.assigns, :user) do
-          true -> conn
-          false -> conn |> redirect(to: session_path(conn, :new)) |> halt()
+          true ->
+            conn
+
+          false ->
+            conn |> redirect(to: session_path(conn, :new)) |> halt()
         end
       end
 

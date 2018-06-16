@@ -244,7 +244,7 @@ defmodule Web.Room do
     end)
 
     Exit
-    |> where([e], e.finish_id == ^room.id)
+    |> where([e], e.finish_room_id == ^room.id)
     |> select([e], e.id)
     |> Repo.all()
     |> Enum.each(&delete_exit/1)
@@ -348,28 +348,20 @@ defmodule Web.Room do
   """
   @spec create_exit(params :: map) :: {:ok, Exit.t()} | {:error, changeset :: map}
   def create_exit(params) do
-    changeset = %Exit{} |> Exit.changeset(params)
+    case Web.Exit.create_exit(params) do
+      {:ok, room_exit, reverse_exit} ->
+        room_exit |> Web.Exit.reload_process() |> Door.maybe_load()
+        reverse_exit |> Web.Exit.reload_process() |> Door.maybe_load()
 
-    reverse_params = %{
-      start_id: params["finish_id"],
-      finish_id: params["start_id"],
-      has_door: Map.get(params, "has_door", false),
-      direction: to_string(Exit.opposite(params["direction"])),
-    }
-
-    reverse_changeset = %Exit{} |> Exit.changeset(reverse_params)
-
-    with {:ok, room_exit} <- Repo.insert(changeset),
-         {:ok, reverse_exit} <- Repo.insert(reverse_changeset) do
-      room_exit |> update_exit() |> Door.maybe_load()
-      reverse_exit |> update_exit() |> Door.maybe_load()
-
-      {:ok, room_exit}
+        {:ok, room_exit}
     end
   end
 
-  defp update_exit(room_exit) do
-    room = RoomRepo.get(room_exit.start_id)
+  @doc """
+  Reload the room from the exit
+  """
+  def update_exit(room_exit) do
+    room = RoomRepo.get(room_exit.start_room_id)
     Game.Room.update(room.id, room)
     room_exit
   end
@@ -379,18 +371,12 @@ defmodule Web.Room do
   """
   @spec delete_exit(exit_id :: integer) :: {:ok, Exit.t()} | {:error, changeset :: map}
   def delete_exit(exit_id) do
-    room_exit = Exit |> Repo.get(exit_id)
-    reverse_exit = Exit |> Repo.get_by([
-      direction: to_string(Exit.opposite(room_exit.direction)),
-      finish_id: room_exit.start_id,
-    ])
+    case Web.Exit.delete_exit(exit_id) do
+      {:ok, room_exit, reverse_exit} ->
+        room_exit |> Web.Exit.reload_process() |> Door.remove()
+        reverse_exit |> Web.Exit.reload_process() |> Door.remove()
 
-    with {:ok, room_exit} <- Repo.delete(room_exit),
-         {:ok, reverse_exit} <- Repo.delete(reverse_exit) do
-      room_exit |> update_exit() |> Door.remove()
-      reverse_exit |> update_exit() |> Door.remove()
-
-      {:ok, room_exit}
+        {:ok, room_exit}
     end
   end
 

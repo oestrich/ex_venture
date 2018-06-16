@@ -1,6 +1,10 @@
 defmodule Web.ErrorView do
   use Web, :view
 
+  def render("error.json", _assigns) do
+    %{error: "There was an issue"}
+  end
+
   def render("404.html", _assigns) do
     "Page not found"
   end

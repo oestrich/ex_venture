@@ -155,6 +155,9 @@
         <div class="box">
           <div class="box-header">
             <h3 class="box-title">Map</h3>
+            <div class="box-tools">
+              <%= link("Add Exits", to: zone_overworld_path(@conn, :exits, @zone.id), class: "btn btn-default") %>
+            </div>
           </div>
           <div class="box-body">
             <div id="map-data" data-map="<%= Poison.encode!(@zone.overworld_map) %>" />

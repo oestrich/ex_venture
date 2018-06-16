@@ -111,8 +111,8 @@ defmodule TestHelpers do
 
   def create_exit(attributes) do
     reverse_attributes = %{
-      start_id: attributes.finish_id,
-      finish_id: attributes.start_id,
+      start_room_id: attributes.finish_room_id,
+      finish_room_id: attributes.start_room_id,
       direction: to_string(Exit.opposite(attributes.direction)),
     }
 

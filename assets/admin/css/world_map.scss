@@ -14,4 +14,116 @@
   span {
     display: inline-block;
   }
+
+  &.exits {
+    span {
+      position: relative;
+      border: 3px solid transparent;
+    }
+
+    .north {
+      border-top: 3px solid yellow;
+    }
+
+    .south {
+      border-bottom: 3px solid yellow;
+    }
+
+    .east {
+      border-right: 3px solid yellow;
+    }
+
+    .west {
+      border-left: 3px solid yellow;
+    }
+
+    .in {
+      &:after {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        font-size: 16px;
+        content: "<";
+        color: yellow;
+      }
+    }
+
+    .out {
+      &:after {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        font-size: 16px;
+        content: ">";
+        color: yellow;
+      }
+    }
+
+    .up { 
+      &:after {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        font-size: 16px;
+        content: "^";
+        color: yellow;
+      }
+    }
+
+    .down {
+      &:after {
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        font-size: 16px;
+        content: "v";
+        color: yellow;
+      }
+    }
+  }
+
+  .hover {
+    border: 3px solid red !important;
+  }
+
+  .hover-tooltip:hover:after {
+    background: #657b83;
+    color: white;
+    border-radius: 5px;
+    bottom: 26px;
+    content: attr(data-exits);
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    white-space: nowrap;
+  }
+
+  .hover-north {
+    border-top: 3px solid yellow !important;
+    border-bottom: 3px solid red !important;
+    border-right: 3px solid red !important;
+    border-left: 3px solid red !important;
+  }
+
+  .hover-south {
+    border-top: 3px solid red !important;
+    border-bottom: 3px solid yellow !important;
+    border-right: 3px solid red !important;
+    border-left: 3px solid red !important;
+  }
+
+  .hover-east {
+    border-top: 3px solid red !important;
+    border-bottom: 3px solid red !important;
+    border-right: 3px solid yellow !important;
+    border-left: 3px solid red !important;
+  }
+
+  .hover-west {
+    border-top: 3px solid red !important;
+    border-bottom: 3px solid red !important;
+    border-right: 3px solid red !important;
+    border-left: 3px solid yellow !important;
+  }
 }

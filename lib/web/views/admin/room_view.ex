@@ -14,16 +14,13 @@ defmodule Web.Admin.RoomView do
     rooms |> Enum.map(&{&1.name, &1.id})
   end
 
-  def has_exit?(room, direction) do
-    get_exit(room, direction) != nil
+  def display_direction(direction) do
+    direction
+    |> to_string()
+    |> String.capitalize()
   end
 
   def display_exit(room, direction) do
-    capital_direction =
-      direction
-      |> to_string()
-      |> String.capitalize()
-
     room_name = get_exit(room, direction).name
 
     door =
@@ -32,7 +29,7 @@ defmodule Web.Admin.RoomView do
         false -> ""
       end
 
-    "#{capital_direction} (#{room_name}#{door})"
+    "#{display_direction(direction)} (#{room_name}#{door})"
   end
 
   def exit_has_door?(room, direction) do
@@ -47,7 +44,7 @@ defmodule Web.Admin.RoomView do
         nil
 
       room_exit ->
-        room_exit.finish
+        room_exit.finish_room
     end
   end
 

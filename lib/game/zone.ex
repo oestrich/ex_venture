@@ -258,6 +258,8 @@ defmodule Game.Zone do
   end
 
   def handle_cast({:update, zone}, state) do
+    Cachex.set(@key, zone.id, zone)
+
     {:noreply, Map.put(state, :zone, zone)}
   end
 
@@ -302,6 +304,7 @@ defmodule Game.Zone do
 
   def handle_info(:load_zone, state) do
     zone = Repo.get(state.zone_id)
+
     Cachex.set(@key, zone.id, zone)
 
     {:noreply, %{state | zone: zone}}
