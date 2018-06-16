@@ -9,6 +9,7 @@ defmodule Game.Zone do
 
   use GenServer
 
+  alias Data.Exit
   alias Game.Door
   alias Game.Map, as: GameMap
   alias Game.NPC
@@ -301,7 +302,11 @@ defmodule Game.Zone do
   end
 
   def handle_info(:load_zone, state) do
-    zone = Repo.get(state.zone_id)
+    zone =
+      state.zone_id
+      |> Repo.get()
+      |> Exit.load_zone_exits()
+
     Cachex.set(@key, zone.id, zone)
 
     {:noreply, %{state | zone: zone}}

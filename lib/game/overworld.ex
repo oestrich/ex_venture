@@ -56,7 +56,7 @@ defmodule Game.Overworld do
   Determine exits for a cell in the overworld
   """
   def exits(zone, cell) do
-    start_id = Enum.join(["overworld", to_string(zone.id), "#{cell.x},#{cell.y}"], ":")
+    start_id = "overworld:#{zone.id}:#{cell.x},#{cell.y}"
 
     north = %{direction: "north", start_id: start_id, x: cell.x, y: cell.y - 1}
     south = %{direction: "south", start_id: start_id, x: cell.x, y: cell.y + 1}
@@ -64,14 +64,24 @@ defmodule Game.Overworld do
     west = %{direction: "west", start_id: start_id, x: cell.x - 1, y: cell.y}
 
     [north, south, east, west]
-    |> Enum.filter(fn direction ->
-      Enum.any?(zone.overworld_map, fn cell ->
-        cell.x == direction.x && cell.y == direction.y && !cell_empty?(cell)
-      end)
-    end)
+    |> Enum.filter(&(in_overworld?(&1, zone)))
     |> Enum.map(fn direction ->
-      finish_id = Enum.join(["overworld", to_string(zone.id), "#{direction.x},#{direction.y}"], ":")
-      %{id: direction.start_id, direction: direction.direction, start_id: direction.start_id, finish_id: finish_id}
+      real_exit = Enum.find(zone.exits, &(&1.start_id == start_id && &1.direction == direction.direction))
+
+      case real_exit do
+        nil ->
+          finish_id = "overworld:#{zone.id}:#{direction.x},#{direction.y}"
+          %{id: direction.start_id, direction: direction.direction, start_id: direction.start_id, finish_id: finish_id}
+
+        real_exit ->
+          real_exit
+      end
+    end)
+  end
+
+  defp in_overworld?(direction, zone) do
+    Enum.any?(zone.overworld_map, fn cell ->
+      cell.x == direction.x && cell.y == direction.y && !cell_empty?(cell)
     end)
   end
 

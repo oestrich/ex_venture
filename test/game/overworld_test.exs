@@ -90,6 +90,16 @@ defmodule Game.OverworldTest do
         %{id: "overworld:1:5,5", direction: "south", start_id: "overworld:1:5,5", finish_id: "overworld:1:5,6"}
       ]
     end
+
+    test "when a saved exit is there", %{zone: zone} do
+      room_exit = %{id: 1, direction: "east", start_id: "overworld:1:0,0", finish_id: 1}
+      zone = %{zone | exits: [room_exit]}
+
+      assert Overworld.exits(zone, %{x: 0, y: 0}) == [
+        %{id: "overworld:1:0,0", direction: "south", start_id: "overworld:1:0,0", finish_id: "overworld:1:0,1"},
+        room_exit,
+      ]
+    end
   end
 
   describe "loading the map" do
