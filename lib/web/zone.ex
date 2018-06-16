@@ -53,11 +53,20 @@ defmodule Web.Zone do
   """
   @spec get(id :: integer) :: [Zone.t()]
   def get(id) do
-    Zone
-    |> where([z], z.id == ^id)
-    |> preload([:graveyard])
-    |> preload(rooms: ^from(r in Room, order_by: r.id))
-    |> Repo.one()
+    zone =
+      Zone
+      |> where([z], z.id == ^id)
+      |> preload([:graveyard])
+      |> preload(rooms: ^from(r in Room, order_by: r.id))
+      |> Repo.one()
+
+    case zone do
+      nil ->
+        nil
+
+      zone ->
+        Exit.load_zone_exits(zone)
+    end
   end
 
   @doc """
@@ -228,7 +237,11 @@ defmodule Web.Zone do
   end
 
   defp add_exit(zone, room_exit) do
-    room_exit = Map.put(room_exit, "start_zone_id", zone.id)
+    room_exit =
+      room_exit
+      |> Map.put("start_zone_id", zone.id)
+      |> maybe_fix_params(zone)
+
     case Web.Exit.create_exit(room_exit) do
       {:ok, room_exit, reverse_exit} ->
         room_exit |> Web.Exit.reload_process() |> Door.maybe_load()
@@ -237,6 +250,14 @@ defmodule Web.Zone do
         {:ok, room_exit}
     end
   end
+
+  defp maybe_fix_params(room_exit = %{"start_overworld" => cell}, zone) do
+    room_exit
+    |> Map.delete("start_overworld")
+    |> Map.put("start_overworld_id", "overworld:#{zone.id}:#{cell["x"]},#{cell["y"]}")
+  end
+
+  defp maybe_fix_params(room_exit, _zone), do: room_exit
 
   defp delete_exit(room_exit_id) do
     case Web.Exit.delete_exit(room_exit_id) do

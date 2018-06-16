@@ -25,7 +25,12 @@
         <div class="box-body">
           <div id="map-data" data-map="<%= Poison.encode!(@zone.overworld_map) %>" />
           <%= form_tag zone_overworld_path(@conn, :update, @zone.id), method: "PUT" do %>
-            <%= React.react_component("Components.WorldMapExits", directions: Exit.directions(), exits: room_exits(@zone)) %>
+            <%= React.react_component("Components.WorldMapExits", [
+                  exit_path: "/admin/zones/#{@zone.id}/overworld/exits",
+                  directions: Exit.directions(),
+                  exits: render("exits.json", exits: @zone.exits),
+                  room_exits: room_exits(@zone),
+                ]) %>
           <% end %>
         </div>
       </div>

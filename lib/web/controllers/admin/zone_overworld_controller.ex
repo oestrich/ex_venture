@@ -34,4 +34,24 @@ defmodule Web.Admin.ZoneOverworldController do
         |> redirect(to: zone_path(conn, :show, zone.id))
     end
   end
+
+  def create_exit(conn, %{"id" => id, "exit" => params}) do
+    zone = Zone.get(id)
+
+    case Zone.add_overworld_exit(zone, params) do
+      {:ok, _zone, room_exit} ->
+        conn
+        |> put_status(201)
+        |> render("exit.json", room_exit: room_exit)
+    end
+  end
+
+  def delete_exit(conn, %{"id" => id, "exit_id" => exit_id}) do
+    zone = Zone.get(id)
+
+    case Zone.delete_overworld_exit(zone, exit_id) do
+      {:ok, _zone} ->
+        conn |> send_resp(204, "")
+    end
+  end
 end

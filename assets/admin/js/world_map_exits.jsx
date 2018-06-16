@@ -149,13 +149,26 @@ export default class WorldMapExits extends React.Component {
       map: map,
       selectedRoomId: -1,
       selectedDirection: "north",
-      exits: [],
+      exits: this.parseExits(props.exits),
     };
 
     this.addExit = this.addExit.bind(this);
     this.deleteExit = this.deleteExit.bind(this);
     this.directionChange = this.directionChange.bind(this);
     this.roomIdChange = this.roomIdChange.bind(this);
+  }
+
+  parseExits(exits) {
+    return exits.map(exit => {
+      return this.parseExit(exit);
+    });
+  }
+
+  parseExit(exit) {
+    let segments = exit.start_overworld_id.split(":");
+    let coords = segments[2].split(",");
+    exit.start_id = {x: coords[0], y: coords[1]};
+    return exit;
   }
 
   roomIdChange(roomId) {
@@ -166,17 +179,55 @@ export default class WorldMapExits extends React.Component {
     this.setState({selectedDirection: direction});
   }
 
-  addExit(direction, startId, finishId) {
+  addExit(direction, startCell, finishId) {
     let exits = this.state.exits;
-    exits.push({direction: direction, start_id: startId, finish_id: finishId});
-    this.setState({exits});
+    let exit = {direction: direction, start_overworld: startCell, finish_room_id: finishId}
+
+    let state = this.state;
+    let setState = this.setState.bind(this);
+
+    let csrfToken = document.querySelector("meta[name='csrf-token']");
+
+    fetch(this.props.exit_path, {
+      method: "POST",
+      body: JSON.stringify({exit: exit}),
+      headers: {
+        'x-csrf-token': csrfToken.content,
+        'content-type': 'application/json',
+        'accept': 'application/json',
+      },
+      credentials: 'same-origin',
+    }).then(function(response) {
+      return response.json();
+    }).then(response => {
+      exits.push(this.parseExit(response));
+      this.setState({exits});
+    });
   }
 
   deleteExit(direction, startId) {
-    let exits = _.reject(this.state.exits, exit => {
+    let exit = _.find(this.state.exits, exit => {
       return exit.direction == direction && exit.start_id.x == startId.x && exit.start_id.y == startId.y;
     });
-    this.setState({exits});
+
+    if (exit) {
+      let csrfToken = document.querySelector("meta[name='csrf-token']");
+
+      fetch(`${this.props.exit_path}/${exit.id}`, {
+        method: "delete",
+        headers: {
+          'x-csrf-token': csrfToken.content,
+          'accept': 'application/json',
+        },
+        credentials: 'same-origin',
+      }).then(response => {
+        let exitId = exit.id;
+        let exits = _.reject(this.state.exits, exit => {
+          return exit.id == exitId;
+        });
+        this.setState({exits});
+      });
+    }
   }
 
   render() {
@@ -192,7 +243,7 @@ export default class WorldMapExits extends React.Component {
       <div>
         <ExitSelector
           directions={this.props.directions}
-          exits={this.props.exits}
+          exits={this.props.room_exits}
           roomId={roomId}
           roomIdChange={this.roomIdChange}
           direction={direction}
@@ -210,6 +261,7 @@ export default class WorldMapExits extends React.Component {
                   return (
                     <MapCell
                       key={x}
+                      id={cell.id}
                       x={x} y={y}
                       exits={cellExits}
                       addExit={addExit}

@@ -46,6 +46,18 @@ defmodule Web.ZoneTest do
       assert length(zone.exits) == 1
     end
 
+    test "creating an overworld exit by cell location", %{overworld_zone: overworld_zone, room: room} do
+      new_exit = %{
+        "direction" => "north",
+        "start_overworld" => %{"x" => 1, "y" => "1"},
+        "finish_room_id" => room.id
+      }
+
+      {:ok, zone, _room_exit} = Zone.add_overworld_exit(overworld_zone, new_exit)
+
+      assert length(zone.exits) == 1
+    end
+
     test "deleting an overworld exit", %{overworld_zone: overworld_zone, room: room} do
       new_exit = %{
         "direction" => "north",
