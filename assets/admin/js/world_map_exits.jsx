@@ -180,7 +180,6 @@ export default class WorldMapExits extends React.Component {
   }
 
   addExit(direction, startCell, finishId) {
-    let exits = this.state.exits;
     let exit = {direction: direction, start_overworld: startCell, finish_room_id: finishId}
 
     let state = this.state;
@@ -200,8 +199,9 @@ export default class WorldMapExits extends React.Component {
     }).then(function(response) {
       return response.json();
     }).then(response => {
+      let exits = state.exits;
       exits.push(this.parseExit(response));
-      this.setState({exits});
+      setState({exits});
     });
   }
 
