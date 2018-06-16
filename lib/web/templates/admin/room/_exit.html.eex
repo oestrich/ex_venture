@@ -1,0 +1,20 @@
+<%= case @room |> Exit.exit_to(@direction) do %>
+  <% %{id: id, finish_room_id: room_id} when room_id != nil -> %>
+    <%= link(to: room_path(@conn, :show, room_id)) do %>
+      <%= display_exit(@room, @direction) %>
+    <% end %>
+    <%= link(to: exit_path(@conn, :delete, id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
+      <i class="fa fa-times"></i>
+    <% end %>
+
+  <% %{id: id, finish_zone: zone, finish_overworld_id: overworld_id} when overworld_id != nil -> %>
+    <%= link(to: zone_path(@conn, :show, zone.id)) do %>
+      <%= display_direction(@direction) %> (<%= zone.name %>)
+    <% end %>
+    <%= link(to: exit_path(@conn, :delete, id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
+      <i class="fa fa-times"></i>
+    <% end %>
+
+  <% _ -> %>
+    <%= link("Add Exit (#{display_direction(@direction)})", to: room_exit_path(@conn, :new, @room.id, direction: @direction)) %>
+<% end %>

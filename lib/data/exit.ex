@@ -38,7 +38,7 @@ defmodule Data.Exit do
   def changeset(struct, params) do
     struct
     |> cast(params, [:direction, :has_door, :start_room_id, :finish_room_id, :start_overworld_id, :finish_overworld_id])
-    |> cast(params, [:start_zone_id])
+    |> cast(params, [:start_zone_id, :finish_zone_id])
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
     |> validate_one_of([:start_room_id, :start_overworld_id])
@@ -78,7 +78,7 @@ defmodule Data.Exit do
     query =
       case Keyword.get(opts, :preload) do
         true ->
-          query |> preload([:start_room, :finish_room])
+          query |> preload([:start_room, :finish_room, :start_zone, :finish_zone])
 
         _ ->
           query
