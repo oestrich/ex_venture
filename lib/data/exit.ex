@@ -45,7 +45,10 @@ defmodule Data.Exit do
     |> validate_one_of([:finish_room_id, :finish_overworld_id])
     |> foreign_key_constraint(:start_room_id)
     |> foreign_key_constraint(:finish_room_id)
-    |> unique_constraint(:direction, name: :exits_direction_start_id_finish_id_index)
+    |> unique_constraint(:start_room_id, name: :exits_direction_start_room_id_index)
+    |> unique_constraint(:start_overworld_id, name: :exits_direction_start_overworld_id_index)
+    |> unique_constraint(:finish_room_id, name: :exits_direction_finish_room_id_index)
+    |> unique_constraint(:finish_overworld_id, name: :exits_direction_finish_overworld_id_index)
   end
 
   defp validate_one_of(changeset, keys) do
