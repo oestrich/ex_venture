@@ -199,9 +199,11 @@ export default class WorldMapExits extends React.Component {
     }).then(function(response) {
       return response.json();
     }).then(response => {
-      let exits = state.exits;
-      exits.push(this.parseExit(response));
-      setState({exits});
+      if (response.ok) {
+        let exits = state.exits;
+        exits.push(this.parseExit(response));
+        setState({exits});
+      }
     });
   }
 

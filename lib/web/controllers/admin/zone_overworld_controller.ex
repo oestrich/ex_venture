@@ -1,6 +1,7 @@
 defmodule Web.Admin.ZoneOverworldController do
   use Web.AdminController
 
+  alias Web.ErrorView
   alias Web.Zone
 
   def exits(conn, %{"id" => id}) do
@@ -43,6 +44,11 @@ defmodule Web.Admin.ZoneOverworldController do
         conn
         |> put_status(201)
         |> render("exit.json", room_exit: room_exit)
+
+      :error ->
+        conn
+        |> put_status(400)
+        |> render(ErrorView, "error.json")
     end
   end
 

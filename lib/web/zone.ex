@@ -213,6 +213,9 @@ defmodule Web.Zone do
          {:ok, room_exit} <- add_exit(zone, params),
          {:ok, zone} <- load_exits(zone) do
       {:ok, zone, room_exit}
+    else
+      {:error, _changeset} ->
+        :error
     end
   end
 
@@ -249,6 +252,9 @@ defmodule Web.Zone do
         reverse_exit |> Web.Exit.reload_process() |> Door.maybe_load()
 
         {:ok, room_exit}
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 
