@@ -110,7 +110,7 @@ class MapCell extends React.Component {
       return true;
     }
 
-    return this.props.color != nextProps.color && this.props.symbol != nextProps.symbol;
+    return this.props.color != nextProps.color || this.props.symbol != nextProps.symbol;
   }
 
   handleClick(event) {
@@ -190,6 +190,11 @@ export default class WorldMap extends React.Component {
   }
 
   handleClick(x, y) {
+    this.updateCell(x, y);
+    this.forceUpdate();
+  }
+
+  updateCell(x, y) {
     this.state.map.updateCell(x, y, {s: this.state.selectedSymbol, c: this.state.selectedColor});
   }
 
@@ -197,14 +202,14 @@ export default class WorldMap extends React.Component {
     this.setState({drag: true});
   }
 
-  onMouseEnter(x, y) {
-    if (this.state.drag) {
-      this.handleClick(x, y);
-    }
-  }
-
   onMouseUp(event) {
     this.setState({drag: false});
+  }
+
+  onMouseEnter(x, y) {
+    if (this.state.drag) {
+      this.updateCell(x, y);
+    }
   }
 
   render() {
