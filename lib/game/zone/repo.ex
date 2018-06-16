@@ -3,6 +3,7 @@ defmodule Game.Zone.Repo do
   Repo helper for the Zone modules
   """
 
+  alias Data.Exit
   alias Data.Repo
   alias Data.Zone
 
@@ -15,6 +16,8 @@ defmodule Game.Zone.Repo do
   end
 
   def get(id) do
-    Repo.get(Zone, id)
+    Zone
+    |> Repo.get(id)
+    |> Exit.load_zone_exits()
   end
 end

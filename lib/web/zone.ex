@@ -12,6 +12,7 @@ defmodule Web.Zone do
   alias Data.Repo
   alias Game.Door
   alias Game.World
+  alias Game.Zone.Repo, as: ZoneRepo
   alias Web.Pagination
 
   defdelegate types(), to: Zone
@@ -261,7 +262,8 @@ defmodule Web.Zone do
 
   defp delete_exit(room_exit_id) do
     case Web.Exit.delete_exit(room_exit_id) do
-      {:ok, _room_exit, reverse_exit} ->
+      {:ok, room_exit, reverse_exit} ->
+        room_exit |> Web.Exit.reload_process() |> Door.remove()
         reverse_exit |> Web.Exit.reload_process() |> Door.remove()
 
         :ok
@@ -270,5 +272,11 @@ defmodule Web.Zone do
 
   defp load_exits(zone) do
     {:ok, zone |> Exit.load_zone_exits()}
+  end
+
+  def update_exit(room_exit) do
+    zone = ZoneRepo.get(room_exit.start_zone_id)
+    Game.Zone.update(zone.id, zone)
+    room_exit
   end
 end

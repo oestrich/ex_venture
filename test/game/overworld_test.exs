@@ -35,7 +35,7 @@ defmodule Game.OverworldTest do
 
   describe "overworld exits" do
     setup do
-      zone = %Zone{id: 1, overworld_map: basic_overworld_map()}
+      zone = %Zone{id: 1, overworld_map: basic_overworld_map(), exits: []}
       %{zone: zone}
     end
 
@@ -84,7 +84,7 @@ defmodule Game.OverworldTest do
         %{x: 4, y: 5, s: " ", c: nil},
         %{x: 6, y: 5, s: " ", c: nil},
       ]
-      zone = %Zone{id: 1, overworld_map: map}
+      zone = %Zone{id: 1, overworld_map: map, exits: []}
 
       assert Overworld.exits(zone, %{x: 5, y: 5}) == [
         %{id: "overworld:1:5,5", direction: "south", start_id: "overworld:1:5,5", finish_id: "overworld:1:5,6"}

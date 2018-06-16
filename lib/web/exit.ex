@@ -103,7 +103,7 @@ defmodule Web.Exit do
         Web.Room.update_exit(room_exit)
 
       %{start_overworld_id: start_overworld_id} when start_overworld_id != nil ->
-        room_exit
+        Web.Zone.update_exit(room_exit)
     end
   end
 end
