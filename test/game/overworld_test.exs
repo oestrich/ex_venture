@@ -110,11 +110,11 @@ defmodule Game.OverworldTest do
 
     test "generate a zoomed in map around the cell", %{zone: zone} do
       expected_map =
-        1..9
+        1..19
         |> Enum.map(fn y ->
-          1..19
+          1..39
           |> Enum.map(fn x ->
-            case x == 10 && y == 5 do
+            case x == 20 && y == 10 do
               true -> "X"
               false -> "{green}.{/green}"
             end
@@ -123,7 +123,7 @@ defmodule Game.OverworldTest do
         end)
         |> Enum.join("\n")
 
-      assert Overworld.map(zone, %{x: 10, y: 10}) == expected_map
+      assert Overworld.map(zone, %{x: 30, y: 30}) == expected_map
     end
   end
 end

@@ -279,7 +279,7 @@ defmodule Game.Format do
   @spec overworld_room(Overworld.t(), String.t()) :: String.t()
   def overworld_room(room, map) do
     """
-    #{map}
+    {bold}#{map}{/bold}
 
     #{who_is_here(room)}
 

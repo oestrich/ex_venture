@@ -132,16 +132,10 @@ defmodule Game.Command.Look do
   defp look_room(state, room = %Overworld{}) do
     mini_map = room.zone_id |> @zone.map({room.x, room.y})
 
-    room_map =
-      mini_map
-      |> String.split("\n")
-      |> Enum.slice(2..-1)
-      |> Enum.join("\n")
-
     state |> GMCP.map(mini_map)
 
     room = remove_yourself(room, state)
-    state.socket |> @socket.echo(Format.overworld_room(room, room_map))
+    state.socket |> @socket.echo(Format.overworld_room(room, mini_map))
   end
 
   defp remove_yourself(room, state) do

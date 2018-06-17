@@ -63,6 +63,7 @@ function formatColor(payload) {
   string = string.replace(/{map:green}/g, "<span class='map-green'>")
   string = string.replace(/{map:grey}/g, "<span class='map-grey'>")
   string = string.replace(/{map:light-grey}/g, "<span class='map-light-grey'>")
+  string = string.replace(/{bold}/g, "<span class='bold'>")
 
   // assume all other tags are custom colors
   string = string.replace(/{([\w:-]+)}/g, (_match, color) => {

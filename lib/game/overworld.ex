@@ -6,6 +6,8 @@ defmodule Game.Overworld do
   @type cell :: %{x: integer(), y: integer()}
 
   @sector_boundary 10
+  @view_distance_x 20
+  @view_distance_y 10
 
   @doc """
   Break up an overworld id
@@ -97,7 +99,7 @@ defmodule Game.Overworld do
   def map(zone, cell) do
     zone.overworld_map
     |> Enum.filter(fn overworld_cell ->
-      close?(overworld_cell.x, cell.x, 10) && close?(overworld_cell.y, cell.y, 5)
+      close?(overworld_cell.x, cell.x, @view_distance_x) && close?(overworld_cell.y, cell.y, @view_distance_y)
     end)
     |> Enum.group_by(&(&1.y))
     |> Enum.into([])
