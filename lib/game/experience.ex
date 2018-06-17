@@ -15,24 +15,24 @@ defmodule Game.Experience do
   """
   @spec apply(map(), level: integer(), experience_points: integer()) :: {:update, map()}
   def apply(state, level: level, experience_points: exp) do
-    %{socket: socket, save: save} = state
-
-    exp = calculate_experience(save, level, exp)
+    exp = calculate_experience(state.save, level, exp)
     save = add_experience(state.save, exp)
 
-    socket |> @socket.echo("You received #{exp} experience points")
+    case leveled_up?(state.save, save) do
+      true ->
+        save = level_up(save)
 
-    save =
-      case leveled_up?(state.save, save) do
-        true ->
-          socket |> @socket.echo("You leveled up!")
-          level_up(save)
+        {:ok, :level_up, exp, update_state_save(state, save)}
 
-        false ->
-          save
-      end
+      false ->
+        {:ok, exp, update_state_save(state, save)}
+    end
+  end
 
-    Map.put(state, :save, save)
+  defp update_state_save(state, save) do
+    state
+    |> Map.put(:user, %{state.user | save: save})
+    |> Map.put(:save, save)
   end
 
   @doc """

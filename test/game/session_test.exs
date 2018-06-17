@@ -561,11 +561,11 @@ defmodule Game.SessionTest do
   describe "character dying" do
     setup %{state: state} do
       target = {:user, %{id: 10, name: "Player"}}
-      user = %{id: 10, class: class_attributes(%{})}
+      user = %{id: 10, name: "Player", class: class_attributes(%{}), save: base_save()}
 
       state = Map.merge(state, %{
         user: user,
-        save: base_save(),
+        save: user.save,
         target: {:user, 10},
         is_targeting: MapSet.new(),
       })

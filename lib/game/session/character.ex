@@ -302,8 +302,27 @@ defmodule Game.Session.Character do
   """
   def apply_experience(state, {:user, _user}), do: state
 
-  def apply_experience(state, {:npc, npc}) do
-    Experience.apply(state, level: npc.level, experience_points: npc.experience_points)
+  def apply_experience(state, {:quest, quest}), do: gain_experience(state, quest.level, quest.experience)
+
+  def apply_experience(state, {:npc, npc}), do: gain_experience(state, npc.level, npc.experience_points)
+
+  defp gain_experience(state, level, experience_points) do
+    state =
+      case Experience.apply(state, level: level, experience_points: experience_points) do
+        {:ok, experience, state} ->
+          state.socket |> @socket.echo("You received #{experience} experience points")
+
+          state
+
+        {:ok, :level_up, experience, state} ->
+          state.socket |> @socket.echo("You received #{experience} experience points")
+          state.socket |> @socket.echo("You leveled up!")
+
+          state
+      end
+
+    state |> GMCP.character()
+    state
   end
 
   @doc """

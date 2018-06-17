@@ -11,6 +11,8 @@ defmodule Game.Command.QuestTest do
   setup do
     @socket.clear_messages
     user = create_user(%{name: "user", password: "password"})
+    user = %{user | class: %{name: "Fighter"}}
+
     %{state: %{socket: :socket, user: user, save: %{items: []}}}
   end
 

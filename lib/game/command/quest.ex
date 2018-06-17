@@ -7,7 +7,7 @@ defmodule Game.Command.Quest do
   use Game.Currency
   use Game.NPC
 
-  alias Game.Experience
+  alias Game.Session.Character
   alias Game.Quest
 
   commands([{"quest", ["quests"]}], parse: false)
@@ -246,7 +246,7 @@ defmodule Game.Command.Quest do
         user = %{user | save: save}
         state = %{state | user: user, save: save}
 
-        state = Experience.apply(state, level: quest.level, experience_points: quest.experience)
+        state = Character.apply_experience(state, {:quest, quest})
 
         npc.id |> @npc.notify({"quest/completed", user, quest})
 

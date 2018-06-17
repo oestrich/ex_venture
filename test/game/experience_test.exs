@@ -9,24 +9,23 @@ defmodule Game.ExperienceTest do
   @socket Test.Networking.Socket
 
   setup do
-    @socket.clear_messages
-    %{socket: :socket, save: base_save()}
+    @socket.clear_messages()
+    save = base_save()
+    %{socket: :socket, user: %{save: save}, save: save}
   end
 
   test "receive experience and level up", state do
-    state = Experience.apply(state, level: 2, experience_points: 1000)
+    {:ok, :level_up, experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
     assert state.save.level == 2
     assert state.save.experience_points == 1200
 
-    [{:socket, exp_echo}, {:socket, lvl_echo}] = @socket.get_echos()
-    assert Regex.match?(~r(1200 experience points), exp_echo)
-    assert Regex.match?(~r(You leveled), lvl_echo)
+    assert experience == 1200
   end
 
   test "on level up, boost stats by your level", state do
     state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, wisdom: 5}}}
 
-    state = Experience.apply(state, level: 2, experience_points: 1000)
+    {:ok, :level_up, _experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
 
     assert state.save.level_stats == %{}
     assert state.save.stats == %{
@@ -48,12 +47,10 @@ defmodule Game.ExperienceTest do
   end
 
   test "receive experience and no level up", state do
-    state = Experience.apply(state, level: 1, experience_points: 901)
+    {:ok, _experience, state} = Experience.apply(state, level: 1, experience_points: 901)
+
     assert state.save.level == 1
     assert state.save.experience_points == 901
-
-    [{:socket, echo}] = @socket.get_echos()
-    assert Regex.match?(~r(901 experience points), echo)
   end
 
   describe "tracking effect usage" do
