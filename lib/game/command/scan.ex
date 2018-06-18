@@ -53,7 +53,7 @@ defmodule Game.Command.Scan do
   end
 
   defp scan_room(room, room_exit) do
-    case Door.closed?(room_exit.id) do
+    case Door.closed?(room_exit.door_id) do
       true ->
         {room_exit.direction, :closed}
 

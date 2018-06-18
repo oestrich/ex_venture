@@ -140,8 +140,8 @@ defmodule Game.Map do
       nil ->
         "+---+"
 
-      %{id: exit_id, has_door: true} ->
-        case Door.get(exit_id) do
+      %{door_id: door_id, has_door: true} ->
+        case Door.get(door_id) do
           "open" -> "+ / +"
           "closed" -> "+ = +"
         end
@@ -156,8 +156,8 @@ defmodule Game.Map do
       nil ->
         "|"
 
-      %{id: exit_id, has_door: true} ->
-        case Door.get(exit_id) do
+      %{door_id: door_id, has_door: true} ->
+        case Door.get(door_id) do
           "open" -> "/"
           "closed" -> "="
         end

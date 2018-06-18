@@ -369,7 +369,7 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "will not move if the door is closed", %{state: state, event: event} do
-      room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: true}
+      room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: true, door_id: 10}
 
       @room._room()
       |> Map.put(:id, 1)

@@ -13,6 +13,7 @@ defmodule Data.Exit do
   schema "exits" do
     field(:direction, :string)
     field(:has_door, :boolean, default: false)
+    field(:door_id, Ecto.UUID)
 
     field(:start_id, :string, virtual: true)
     field(:finish_id, :string, virtual: true)
@@ -37,7 +38,7 @@ defmodule Data.Exit do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:direction, :has_door, :start_room_id, :finish_room_id, :start_overworld_id, :finish_overworld_id])
+    |> cast(params, [:direction, :has_door, :door_id, :start_room_id, :finish_room_id, :start_overworld_id, :finish_overworld_id])
     |> cast(params, [:start_zone_id, :finish_zone_id])
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)

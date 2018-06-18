@@ -38,7 +38,7 @@ defmodule Game.Command.MoveTest do
 
   describe "moving in a direction" do
     setup do
-      %{room_exit: %{id: 1, direction: "north", start_id: 1, finish_id: 2, has_door: false}}
+      %{room_exit: %{id: 1, direction: "north", start_id: 1, finish_id: 2, has_door: false, door_id: nil}}
     end
 
     test "north", %{state: state, room_exit: room_exit} do
@@ -66,7 +66,8 @@ defmodule Game.Command.MoveTest do
     end
 
     test "north - door is closed", %{state: state, room_exit: room_exit} do
-      @room.set_room(%{@basic_room | exits: [%{room_exit | has_door: true}]})
+      room_exit = %{room_exit | has_door: true, door_id: "uuid"}
+      @room.set_room(%{@basic_room | exits: [room_exit]})
       Door.load(room_exit)
       Door.set(room_exit, "closed")
 
@@ -81,7 +82,8 @@ defmodule Game.Command.MoveTest do
     end
 
     test "north - door is open", %{state: state, room_exit: room_exit} do
-      @room.set_room(%{@basic_room | exits: [%{room_exit | has_door: true}]})
+      room_exit = %{room_exit | has_door: true, door_id: "uuid"}
+      @room.set_room(%{@basic_room | exits: [room_exit]})
       Door.load(room_exit)
       Door.set(room_exit, "open")
 
@@ -109,7 +111,7 @@ defmodule Game.Command.MoveTest do
 
   describe "open a door" do
     setup do
-      room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: true}
+      room_exit = %{id: 10, has_door: true, door_id: 10, direction: "north", start_id: 1, finish_id: 2}
       @room.set_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
       Door.load(room_exit)
       Door.set(room_exit, "closed")
@@ -160,7 +162,7 @@ defmodule Game.Command.MoveTest do
 
   describe "close a door" do
     setup do
-      room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: true}
+      room_exit = %{id: 10, has_door: true, door_id: 10, direction: "north", start_id: 1, finish_id: 2}
       @room.set_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
       Door.load(room_exit)
       Door.set(room_exit, "open")

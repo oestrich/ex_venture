@@ -14,6 +14,7 @@ defmodule Web.Exit do
   """
   @spec create_exit(params :: map) :: {:ok, Exit.t()} | {:error, changeset :: map}
   def create_exit(params) do
+    params = maybe_add_door_id(params)
     changeset = %Exit{} |> Exit.changeset(params)
     reverse_changeset = %Exit{} |> Exit.changeset(reverse_params(params))
 
@@ -23,10 +24,24 @@ defmodule Web.Exit do
     end
   end
 
+  defp maybe_add_door_id(params) do
+    case Map.get(params, "has_door", false) do
+      true ->
+        Map.put(params, "door_id", UUID.uuid4())
+
+      "true" ->
+        Map.put(params, "door_id", UUID.uuid4())
+
+      _ ->
+        params
+    end
+  end
+
   defp reverse_params(params) do
     reverse_params = %{
       direction: to_string(Exit.opposite(params["direction"])),
       has_door: Map.get(params, "has_door", false),
+      door_id: Map.get(params, "door_id", nil),
     }
 
     reverse_params

@@ -412,7 +412,7 @@ defmodule Game.NPC.Events do
   end
 
   def no_door_or_open?(room_exit) do
-    !(room_exit.has_door && Door.closed?(room_exit.id))
+    !(room_exit.has_door && Door.closed?(room_exit.door_id))
   end
 
   def move_room(state, old_room, new_room, direction) do

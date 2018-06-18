@@ -13,8 +13,8 @@ defmodule Game.MapTest do
     south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{direction: "north", start_id: 3, finish_id: 5}]}
     west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{direction: "east", start_id: 4, finish_id: 5}]}
     center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [
-      %{id: 10, has_door: true, direction: "north", start_id: 5, finish_id: 1},
-      %{id: 11, has_door: true, direction: "east", start_id: 5, finish_id: 2},
+      %{id: 10, door_id: 10, has_door: true, direction: "north", start_id: 5, finish_id: 1},
+      %{id: 11, door_id: 11, has_door: true, direction: "east", start_id: 5, finish_id: 2},
       %{direction: "south", start_id: 5, finish_id: 3},
       %{direction: "west", start_id: 5, finish_id: 4},
     ]}

@@ -111,8 +111,8 @@ defmodule Game.Command.Move do
     {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
-      %{id: exit_id, has_door: true} ->
-        state |> maybe_open_door(exit_id) |> update_mini_map(room_id)
+      %{door_id: door_id, has_door: true} ->
+        state |> maybe_open_door(door_id) |> update_mini_map(room_id)
 
       %{id: _exit_id} ->
         state.socket |> @socket.echo("There is no door #{direction}.")
@@ -128,8 +128,8 @@ defmodule Game.Command.Move do
     {:ok, room} = @environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
-      %{id: exit_id, has_door: true} ->
-        state |> maybe_close_door(exit_id) |> update_mini_map(room_id)
+      %{door_id: door_id, has_door: true} ->
+        state |> maybe_close_door(door_id) |> update_mini_map(room_id)
 
       %{id: _exit_id} ->
         state.socket |> @socket.echo("There is no door #{direction}.")
@@ -149,12 +149,12 @@ defmodule Game.Command.Move do
   def maybe_move_to(state, room_id, room_exit, direction)
 
   def maybe_move_to(state = %{socket: socket}, room_id, room_exit = %{has_door: true}, direction) do
-    case Door.get(room_exit.id) do
+    case Door.get(room_exit.door_id) do
       "open" ->
         maybe_move_to(state, room_id, %{}, direction)
 
       "closed" ->
-        Door.set(room_exit.id, "open")
+        Door.set(room_exit.door_id, "open")
         socket |> @socket.echo("You opened the door.")
         maybe_move_to(state, room_id, room_exit, direction)
     end
@@ -240,10 +240,10 @@ defmodule Game.Command.Move do
   @doc """
   Open a door, if the door was closed
   """
-  def maybe_open_door(state, exit_id) do
-    case Door.get(exit_id) do
+  def maybe_open_door(state, door_id) do
+    case Door.get(door_id) do
       "closed" ->
-        Door.set(exit_id, "open")
+        Door.set(door_id, "open")
         state.socket |> @socket.echo("You opened the door.")
 
       _ ->
@@ -256,10 +256,10 @@ defmodule Game.Command.Move do
   @doc """
   Open a door, if the door was closed
   """
-  def maybe_close_door(state, exit_id) do
-    case Door.get(exit_id) do
+  def maybe_close_door(state, door_id) do
+    case Door.get(door_id) do
       "open" ->
-        Door.set(exit_id, "closed")
+        Door.set(door_id, "closed")
         state.socket |> @socket.echo("You closed the door.")
 
       _ ->

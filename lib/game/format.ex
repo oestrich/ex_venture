@@ -372,8 +372,8 @@ defmodule Game.Format do
     |> Room.exits()
     |> Enum.map(fn direction ->
       case Exit.exit_to(room, direction) do
-        %{id: exit_id, has_door: true} ->
-          "{exit}#{direction}{/exit} (#{Door.get(exit_id)})"
+        %{door_id: door_id, has_door: true} ->
+          "{exit}#{direction}{/exit} (#{Door.get(door_id)})"
 
         _ ->
           "{exit}#{direction}{/exit}"
