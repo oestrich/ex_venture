@@ -6,8 +6,8 @@ defmodule Game.Overworld do
   @type cell :: %{x: integer(), y: integer()}
 
   @sector_boundary 10
-  @view_distance_x 20
-  @view_distance_y 10
+  @view_distance_x 7
+  @view_distance_y 7
 
   @doc """
   Break up an overworld id
