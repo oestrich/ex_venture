@@ -494,7 +494,13 @@ defmodule Networking.Protocol do
   end
 
   def broadcast(%{user_id: user_id}, data) when is_integer(user_id) do
-    Web.Endpoint.broadcast("user:#{user_id}", "echo", %{data: data})
+    case data do
+      <<@iac, _data :: binary()>> ->
+        :ok
+
+      _ ->
+        Web.Endpoint.broadcast("user:#{user_id}", "echo", %{data: data})
+    end
   end
 
   def broadcast(_, _), do: :ok
