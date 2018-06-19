@@ -115,8 +115,8 @@ defmodule Game.OverworldTest do
           1..39
           |> Enum.map(fn x ->
             case x == 20 && y == 10 do
-              true -> "X"
-              false -> "{green}.{/green}"
+              true -> "X "
+              false -> "{green}. {/green}"
             end
           end)
           |> Enum.join()

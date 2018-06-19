@@ -123,14 +123,14 @@ defmodule Game.Overworld do
   defp format_cell(overworld_cell, cell) do
     case overworld_cell.x == cell.x && overworld_cell.y == cell.y do
       true ->
-        "X"
+        "X "
       false ->
         case overworld_cell.c do
           nil ->
-            overworld_cell.s
+            overworld_cell.s <> " "
 
           color ->
-            "{#{color}}#{overworld_cell.s}{/#{color}}"
+            "{#{color}}#{overworld_cell.s} {/#{color}}"
         end
     end
   end
