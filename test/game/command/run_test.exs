@@ -60,15 +60,6 @@ defmodule Game.Command.RunTest do
     assert @socket.get_echos() == [{:socket, "Could not move east, no exit found."}]
   end
 
-  test "out of movement stops the run", %{state: state} do
-    state = %{state | save: %{state.save | stats: %{state.save.stats | move_points: 0}}}
-
-    :ok = Command.Run.run({[:north, :east]}, state)
-
-    [{:socket, error}] = @socket.get_echos()
-    assert Regex.match?(~r(no movement), error)
-  end
-
   describe "parsing run directions" do
     test "expand directions" do
       assert Command.Run.parse_run("2en3s1u2d") == [:east, :east, :north, :south, :south, :south, :up, :down, :down]

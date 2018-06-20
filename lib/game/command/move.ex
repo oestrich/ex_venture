@@ -160,21 +160,12 @@ defmodule Game.Command.Move do
     end
   end
 
-  def maybe_move_to(state = %{save: %{stats: stats}}, room_id, _, direction) do
-    with {:ok, state} <- check_cooldowns(state),
-         {:ok, stats} <- pay_for_movement(stats) do
-      save = %{state.save | stats: stats}
-
-      state
-      |> Map.put(:save, save)
-      |> move_to(room_id, {:leave, direction}, {:enter, Exit.opposite(direction)})
+  def maybe_move_to(state, room_id, _, direction) do
+    with {:ok, state} <- check_cooldowns(state) do
+      state |> move_to(room_id, {:leave, direction}, {:enter, Exit.opposite(direction)})
     else
       {:error, :cooldowns_active} ->
         state.socket |> @socket.echo("You cannot move while a skill is cooling down.")
-
-      {:error, :no_movement} ->
-        state.socket |> @socket.echo("You have no movement points to move in that direction.")
-        {:error, :no_movement}
     end
   end
 
@@ -185,17 +176,6 @@ defmodule Game.Command.Move do
 
       false ->
         {:error, :cooldowns_active}
-    end
-  end
-
-  defp pay_for_movement(stats) do
-    case stats.move_points > 0 do
-      true ->
-        stats = %{stats | move_points: stats.move_points - 1}
-        {:ok, stats}
-
-      false ->
-        {:error, :no_movement}
     end
   end
 
