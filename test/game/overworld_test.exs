@@ -2,6 +2,7 @@ defmodule Game.OverworldTest do
   use Data.ModelCase
 
   alias Data.Zone
+  alias Game.Color
   alias Game.Overworld
 
   describe "splitting up an overworld id" do
@@ -109,21 +110,24 @@ defmodule Game.OverworldTest do
     end
 
     test "generate a zoomed in map around the cell", %{zone: zone} do
-      expected_map =
-        1..13
-        |> Enum.map(fn y ->
-          1..13
-          |> Enum.map(fn x ->
-            case x == 7 && y == 7 do
-              true -> "X "
-              false -> "{green}. {/green}"
-            end
-          end)
-          |> Enum.join()
-        end)
-        |> Enum.join("\n")
+      expected_map = """
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      . . . . . . . . . . . . .
+      """
 
-      assert Overworld.map(zone, %{x: 30, y: 30}) == expected_map
+      actual_map = Overworld.map(zone, %{x: 30, y: 30})
+      assert Color.strip_color(actual_map) == expected_map
     end
   end
 end

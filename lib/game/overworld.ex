@@ -6,8 +6,7 @@ defmodule Game.Overworld do
   @type cell :: %{x: integer(), y: integer()}
 
   @sector_boundary 10
-  @view_distance_x 7
-  @view_distance_y 7
+  @view_distance 10
 
   @doc """
   Break up an overworld id
@@ -99,25 +98,48 @@ defmodule Game.Overworld do
   def map(zone, cell) do
     zone.overworld_map
     |> Enum.filter(fn overworld_cell ->
-      close?(overworld_cell.x, cell.x, @view_distance_x) && close?(overworld_cell.y, cell.y, @view_distance_y)
+      close?(overworld_cell, cell, @view_distance)
     end)
     |> Enum.group_by(&(&1.y))
     |> Enum.into([])
     |> Enum.sort(fn {y_a, _}, {y_b, _} ->
       y_a <= y_b
     end)
-    |> Enum.map(fn {_y, cells} ->
+    |> Enum.reduce(%{}, fn {_y, cells}, map ->
       cells
       |> Enum.sort(&(&1.x <= &2.x))
-      |> Enum.map(&format_cell(&1, cell))
+      |> Enum.reduce(map, fn overworld_cell, map ->
+        row = Map.get(map, overworld_cell.y, %{})
+        row = Map.put(row, overworld_cell.x, format_cell(overworld_cell, cell))
+        Map.put(map, overworld_cell.y, row)
+      end)
+    end)
+    |> format_map(cell)
+  end
+
+  defp format_map(map, cell) do
+    min_x = cell.x - @view_distance + 1
+    max_x = cell.x + @view_distance - 1
+
+    min_y = cell.y - @view_distance + 1
+    max_y = cell.y + @view_distance - 1
+
+    min_y..max_y
+    |> Enum.map(fn y ->
+      min_x..max_x
+      |> Enum.map(fn x ->
+         map
+         |> Map.get(y, %{})
+         |> Map.get(x, "  ")
+      end)
       |> Enum.join()
     end)
     |> Enum.join("\n")
   end
 
-  defp close?(a, b, diff) do
-    result = a - b
-    result > (-1 * diff) && result < diff
+  defp close?(cell_a, cell_b, expected) do
+    actual = round(:math.sqrt(:math.pow((cell_b.x - cell_a.x), 2) + :math.pow((cell_b.y - cell_a.y), 2)))
+    actual < expected
   end
 
   defp format_cell(overworld_cell, cell) do
