@@ -6,6 +6,8 @@
 
 A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
 
+![ExVenture Logo](https://exventure.org/images/exventure.png)
+
 ## Docs
 
 [Elixir Docs](https://exventure.org/elixir/readme.html). [General usage docs](https://exventure.org/).
