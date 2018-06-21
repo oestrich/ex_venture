@@ -4,9 +4,9 @@
 [![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/GPEa6dB)
 [![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/midmud)
 
-A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
+<img src="https://exventure.org/images/exventure.png" alt="ExVenture Logo" width="200" />
 
-![ExVenture Logo](https://exventure.org/images/exventure.png)
+A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
 
 ## Docs
 
