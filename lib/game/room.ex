@@ -59,8 +59,21 @@ defmodule Game.Room do
   end
 
   def init(room_id) do
-    send(self(), {:load_room, room_id})
-    {:ok, %{room: nil, players: [], npcs: [], respawn: %{}}}
+    state = %{room: nil, players: [], npcs: [], respawn: %{}}
+    {:ok, state, {:continue, {:load_room, room_id}}}
+  end
+
+  def handle_continue({:load_room, room_id}, state) do
+    case Repo.get(room_id) do
+      nil ->
+        Logger.error("No room could be found for ID #{room_id}", type: :room)
+        {:stop, :normal, state}
+
+      room ->
+        room.zone_id |> Zone.room_online(room)
+        Logger.info("Room online #{room.id}", type: :room)
+        {:noreply, %{state | room: room}}
+    end
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
@@ -254,19 +267,6 @@ defmodule Game.Room do
 
       _ ->
         {:noreply, state}
-    end
-  end
-
-  def handle_info({:load_room, room_id}, state) do
-    case Repo.get(room_id) do
-      nil ->
-        Logger.error("No room could be found for ID #{room_id}", type: :room)
-        {:stop, :normal, state}
-
-      room ->
-        room.zone_id |> Zone.room_online(room)
-        Logger.info("Room online #{room.id}", type: :room)
-        {:noreply, %{state | room: room}}
     end
   end
 

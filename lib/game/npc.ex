@@ -160,8 +160,6 @@ defmodule Game.NPC do
   #
 
   def init(npc_spawner_id) do
-    send(self(), {:load, npc_spawner_id})
-
     state = %State{
       npc_spawner: nil,
       npc: nil,
@@ -171,7 +169,7 @@ defmodule Game.NPC do
       tick_events: []
     }
 
-    {:ok, state}
+    {:ok, state, {:continue, {:load, npc_spawner_id}}}
   end
 
   @doc """
@@ -199,6 +197,8 @@ defmodule Game.NPC do
 
     {:noreply, state}
   end
+
+  def handle_continue({:load, npc_spawner_id}, state), do: load(npc_spawner_id, state)
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
@@ -322,8 +322,6 @@ defmodule Game.NPC do
   def handle_info({:notify, action}, state) do
     handle_cast({:notify, action}, state)
   end
-
-  def handle_info({:load, npc_spawner_id}, state), do: load(npc_spawner_id, state)
 
   def handle_info({:tick, event_id}, state) do
     case state.tick_events |> Enum.find(&(&1.id == event_id)) do
