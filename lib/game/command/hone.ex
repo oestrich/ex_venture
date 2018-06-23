@@ -91,11 +91,13 @@ defmodule Game.Command.Hone do
     [
       :strength,
       :agility,
-      :vitality,
       :intelligence,
       :awareness,
+      :vitality,
+      :willpower,
       :health,
-      :skill
+      :skill,
+      :endurance
     ]
   end
 
@@ -161,6 +163,10 @@ defmodule Game.Command.Hone do
       Your max skill points are currently at #{save.stats.max_skill_points}, honing will add {yellow}#{
       @hone_points_boost
     }{/yellow}
+    {command send='hone skill'}Endurance{/command} Points
+      Your max endurance points are currently at #{save.stats.max_endurance_points}, honing will add {yellow}#{
+      @hone_points_boost
+    }{/yellow}
 
     Honing costs #{@hone_cost} xp. You have #{spendable_experience} xp left to spend.
     """
@@ -203,6 +209,10 @@ defmodule Game.Command.Hone do
     Map.get(save.stats, :max_skill_points)
   end
 
+  def stat_at(save, :endurance) do
+    Map.get(save.stats, :max_endurance_points)
+  end
+
   def stat_at(save, stat) do
     Map.get(save.stats, stat)
   end
@@ -213,6 +223,10 @@ defmodule Game.Command.Hone do
 
   def raise_stat(save, :skill) do
     save.stats |> Map.put(:max_skill_points, stat_at(save, :skill) + @hone_points_boost)
+  end
+
+  def raise_stat(save, :endurance) do
+    save.stats |> Map.put(:max_endurance_points, stat_at(save, :endurance) + @hone_points_boost)
   end
 
   def raise_stat(save, stat) do
