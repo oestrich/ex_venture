@@ -23,7 +23,7 @@ defmodule Game.ExperienceTest do
   end
 
   test "on level up, boost stats by your level", state do
-    state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, wisdom: 5}}}
+    state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, awareness: 5, vitality: 3}}}
 
     {:ok, :level_up, _experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
 
@@ -35,14 +35,15 @@ defmodule Game.ExperienceTest do
       skill_points: 58,
       max_skill_points: 58,
 
-      move_points: 12,
-      max_move_points: 12,
+      endurance_points: 56,
+      max_endurance_points: 56,
 
       strength: 12,
-      dexterity: 11,
-      constitution: 11,
+      agility: 11,
       intelligence: 12,
-      wisdom: 11,
+      awareness: 11,
+      willpower: 11,
+      vitality: 11,
     }
   end
 
@@ -99,12 +100,12 @@ defmodule Game.ExperienceTest do
       assert save.level_stats.intelligence == 1
     end
 
-    test "recover - wisdom", %{save: save} do
+    test "recover - awareness", %{save: save} do
       effect = %{kind: "recover"}
 
       save = Experience.track_stat_usage(save, [effect])
 
-      assert save.level_stats.wisdom == 1
+      assert save.level_stats.awareness == 1
     end
   end
 end

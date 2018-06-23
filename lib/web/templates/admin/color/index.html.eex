@@ -144,9 +144,9 @@
 
             <%= color_field(:skill_bar_background, "Skill Bar Background") %>
 
-            <%= color_field(:move_bar, "Move Bar") %>
+            <%= color_field(:endurance_bar, "Move Bar") %>
 
-            <%= color_field(:move_bar_background, "Move Bar Background") %>
+            <%= color_field(:endurance_bar_background, "Move Bar Background") %>
           </div>
 
           <div class="box-footer">

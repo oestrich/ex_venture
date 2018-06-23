@@ -53,13 +53,13 @@ Any time a player's vitals change (stats) this will be broadcast. Every tick wil
 Character.Vitals {
   "strength": 15,
   "skill_points": 20,
-  "move_points": 10,
+  "endurance_points": 10,
   "max_skill_points": 20,
-  "max_move_points": 10,
+  "max_endurance_points": 10,
   "max_health_points": 30,
   "intelligence": 15,
   "health_points": 30,
-  "dexterity": 15
+  "agility": 15
 }
 ```
 

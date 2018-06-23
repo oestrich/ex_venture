@@ -21,19 +21,19 @@ defmodule Game.Command.RecallTest do
 
       {:update, state} = Recall.run({}, state)
 
-      assert state.save.stats.move_points == 0
+      assert state.save.stats.endurance_points == 0
       assert_received {:"$gen_cast", {:teleport, 2}}
     end
 
-    test "not enough movement", %{state: state} do
+    test "not enough endurance", %{state: state} do
       %{save: save}  = state
 
-      state = %{state | save: %{save | stats: %{save.stats | move_points: 5, max_move_points: 10}}}
+      state = %{state | save: %{save | stats: %{save.stats | endurance_points: 5, max_endurance_points: 10}}}
 
       :ok = Recall.run({}, state)
 
       [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r{do not have enough movement}, echo)
+      assert Regex.match?(~r{do not have enough endurance}, echo)
     end
 
     test "zone does not have a graveyard", %{state: state} do

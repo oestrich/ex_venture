@@ -14,7 +14,7 @@ defmodule Game.Command.Recall do
 
   def help(:full) do
     """
-    #{help(:short)}. Spends all movement points, and you must have >90% left.
+    #{help(:short)}. Spends all endurance points, and you must have >90% left.
 
     [ ] > {command}recall{/command}
     """
@@ -45,21 +45,21 @@ defmodule Game.Command.Recall do
 
   def run({}, state) do
     state
-    |> check_movement_points()
+    |> check_endurance_points()
     |> maybe_recall()
   end
 
-  def check_movement_points(state = %{save: %{stats: stats}}) do
-    case stats.move_points / stats.max_move_points do
+  def check_endurance_points(state = %{save: %{stats: stats}}) do
+    case stats.endurance_points / stats.max_endurance_points do
       ratio when ratio > 0.9 ->
         state
 
       _ ->
-        min = round(stats.max_move_points * 0.9)
+        min = round(stats.max_endurance_points * 0.9)
 
         state.socket
         |> @socket.echo(
-          "You do not have enough movement points to recall. You must have at least #{min}mp first."
+          "You do not have enough endurance points to recall. You must have at least #{min}mp first."
         )
     end
   end
@@ -71,7 +71,7 @@ defmodule Game.Command.Recall do
 
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->
-        save = %{save | stats: %{save.stats | move_points: 0}}
+        save = %{save | stats: %{save.stats | endurance_points: 0}}
 
         user = %{state.user | save: save}
         state = %{state | user: user, save: save}

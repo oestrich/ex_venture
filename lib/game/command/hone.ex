@@ -20,10 +20,11 @@ defmodule Game.Command.Hone do
     """
     Honing lets you increase your basic stats:
     - Strength
-    - Dexterity
-    - Constitution
+    - Agility
     - Intelligence
-    - Wisdom
+    - Awareness
+    - Vitality
+    - Willpower
     - Health Points
     - Skill Points
 
@@ -89,12 +90,14 @@ defmodule Game.Command.Hone do
   def fields() do
     [
       :strength,
-      :dexterity,
-      :constitution,
+      :agility,
       :intelligence,
-      :wisdom,
+      :awareness,
+      :vitality,
+      :willpower,
       :health,
-      :skill
+      :skill,
+      :endurance
     ]
   end
 
@@ -132,20 +135,24 @@ defmodule Game.Command.Hone do
       Your strength is currently at #{save.stats.strength}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
-    {command send='hone dexterity'}Dexterity{/command}
-      Your dexterity is currently at #{save.stats.dexterity}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone constitution'}Constitution{/command}
-      Your constitution is currently at #{save.stats.constitution}, honing will add {yellow}#{
+    {command send='hone agility'}Agility{/command}
+      Your agility is currently at #{save.stats.agility}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
     {command send='hone intelligence'}Intelligence{/command}
       Your intelligence is currently at #{save.stats.intelligence}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
-    {command send='hone wisdom'}Wisdom{/command}
-      Your wisdom is currently at #{save.stats.wisdom}, honing will add {yellow}#{
+    {command send='hone awareness'}Awareness{/command}
+      Your awareness is currently at #{save.stats.awareness}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
+    {command send='hone vitality'}Vitality{/command}
+      Your vitality is currently at #{save.stats.vitality}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
+    {command send='hone willpower'}Willpower{/command}
+      Your willpower is currently at #{save.stats.willpower}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
     {command send='hone health'}Health{/command} Points
@@ -154,6 +161,10 @@ defmodule Game.Command.Hone do
     }{/yellow}
     {command send='hone skill'}Skill{/command} Points
       Your max skill points are currently at #{save.stats.max_skill_points}, honing will add {yellow}#{
+      @hone_points_boost
+    }{/yellow}
+    {command send='hone endurance'}Endurance{/command} Points
+      Your max endurance points are currently at #{save.stats.max_endurance_points}, honing will add {yellow}#{
       @hone_points_boost
     }{/yellow}
 
@@ -198,6 +209,10 @@ defmodule Game.Command.Hone do
     Map.get(save.stats, :max_skill_points)
   end
 
+  def stat_at(save, :endurance) do
+    Map.get(save.stats, :max_endurance_points)
+  end
+
   def stat_at(save, stat) do
     Map.get(save.stats, stat)
   end
@@ -208,6 +223,10 @@ defmodule Game.Command.Hone do
 
   def raise_stat(save, :skill) do
     save.stats |> Map.put(:max_skill_points, stat_at(save, :skill) + @hone_points_boost)
+  end
+
+  def raise_stat(save, :endurance) do
+    save.stats |> Map.put(:max_endurance_points, stat_at(save, :endurance) + @hone_points_boost)
   end
 
   def raise_stat(save, stat) do

@@ -13,7 +13,7 @@ defmodule Game.EffectTest do
       key: "arcane",
       stat_modifier: :intelligence,
       boost_ratio: 20,
-      reverse_stat: :wisdom,
+      reverse_stat: :awareness,
       reverse_boost: 20,
     })
 
@@ -21,7 +21,7 @@ defmodule Game.EffectTest do
       key: "slashing",
       stat_modifier: :strength,
       boost_ratio: 20,
-      reverse_stat: :dexterity,
+      reverse_stat: :agility,
       reverse_boost: 20,
     })
 
@@ -29,7 +29,7 @@ defmodule Game.EffectTest do
       key: "bludgeoning",
       stat_modifier: :strength,
       boost_ratio: 20,
-      reverse_stat: :constitution,
+      reverse_stat: :vitality,
       reverse_boost: 20,
     })
 
@@ -142,10 +142,10 @@ defmodule Game.EffectTest do
       assert stats == %{skill_points: 30, max_skill_points: 30}
     end
 
-    test "recover move points" do
-      effect = %{kind: "recover", type: "move", amount: 10}
-      stats = Effect.apply_effect(effect, %{move_points: 25, max_move_points: 30})
-      assert stats == %{move_points: 30, max_move_points: 30}
+    test "recover endurance points" do
+      effect = %{kind: "recover", type: "endurance", amount: 10}
+      stats = Effect.apply_effect(effect, %{endurance_points: 25, max_endurance_points: 30})
+      assert stats == %{endurance_points: 30, max_endurance_points: 30}
     end
   end
 

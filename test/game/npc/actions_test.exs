@@ -17,7 +17,7 @@ defmodule Game.NPC.ActionsTest do
       key: "slashing",
       stat_modifier: :strength,
       boost_ratio: 20,
-      reverse_stat: :dexterity,
+      reverse_stat: :agility,
       reverse_boost: 20,
     })
 
@@ -138,7 +138,7 @@ defmodule Game.NPC.ActionsTest do
     setup do
       effect = %{id: :id, kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
       from = {:user, %{id: 1, name: "Player"}}
-      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25, dexterity: 10}}
+      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25, agility: 10}}
       npc_spawner = %{id: 1, spawn_interval: 0}
 
       state = %State{

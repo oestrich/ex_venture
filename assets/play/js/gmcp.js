@@ -47,7 +47,7 @@ let characterVitals = (channel, data) => {
 
   let healthWidth = data.health_points / data.max_health_points;
   let skillWidth = data.skill_points / data.max_skill_points;
-  let moveWidth = data.move_points / data.max_move_points;
+  let enduranceWidth = data.endurance_points / data.max_endurance_points;
 
   let health = _.first(Sizzle("#health .percentage"));
   health.style.width = `${healthWidth * 100}%`;
@@ -59,10 +59,10 @@ let characterVitals = (channel, data) => {
   let skillStat = _.first(Sizzle("#skills .stat"));
   skillStat.innerHTML = `${data.skill_points}/${data.max_skill_points} sp`;
 
-  let movement = _.first(Sizzle("#movement .percentage"));
-  movement.style.width = `${moveWidth * 100}%`;
-  let movementStat = _.first(Sizzle("#movement .stat"));
-  movementStat.innerHTML = `${data.move_points}/${data.max_move_points} mv`;
+  let endurance = _.first(Sizzle("#endurance .percentage"));
+  endurance.style.width = `${enduranceWidth * 100}%`;
+  let enduranceStat = _.first(Sizzle("#endurance .stat"));
+  enduranceStat.innerHTML = `${data.endurance_points}/${data.max_endurance_points} ep`;
 }
 
 /**
@@ -123,17 +123,20 @@ let renderStats = (stats) => {
   let strength = _.first(Sizzle(".character-info .strength"));
   strength.innerHTML = stats.strength;
 
-  let dexterity = _.first(Sizzle(".character-info .dexterity"));
-  dexterity.innerHTML = stats.dexterity;
-
-  let constitution = _.first(Sizzle(".character-info .constitution"));
-  constitution.innerHTML = stats.constitution;
+  let agility = _.first(Sizzle(".character-info .agility"));
+  agility.innerHTML = stats.agility;
 
   let intelligence = _.first(Sizzle(".character-info .intelligence"));
   intelligence.innerHTML = stats.intelligence;
 
-  let wisdom = _.first(Sizzle(".character-info .wisdom"));
-  wisdom.innerHTML = stats.wisdom;
+  let awareness = _.first(Sizzle(".character-info .awareness"));
+  awareness.innerHTML = stats.awareness;
+
+  let vitality = _.first(Sizzle(".character-info .vitality"));
+  vitality.innerHTML = stats.vitality;
+
+  let willpower = _.first(Sizzle(".character-info .willpower"));
+  willpower.innerHTML = stats.willpower;
 }
 
 /**

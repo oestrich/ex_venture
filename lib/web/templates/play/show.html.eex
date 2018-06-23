@@ -9,17 +9,20 @@
         <dt>Strength:</dt>
         <dd class="strength"></dd>
 
-        <dt>Dexterity:</dt>
-        <dd class="dexterity"></dd>
-
-        <dt>Constitution:</dt>
-        <dd class="constitution"></dd>
+        <dt>Agility:</dt>
+        <dd class="agility"></dd>
 
         <dt>Intelligence:</dt>
         <dd class="intelligence"></dd>
 
-        <dt>Wisdom:</dt>
-        <dd class="wisdom"></dd>
+        <dt>Awareness:</dt>
+        <dd class="awareness"></dd>
+
+        <dt>Vitality:</dt>
+        <dd class="vitality"></dd>
+
+        <dt>Willpower:</dt>
+        <dd class="willpower"></dd>
       </dl>
     </div>
   </div>
@@ -54,7 +57,7 @@
       </div>
     </div>
 
-    <div class="stat-block" id="movement">
+    <div class="stat-block" id="endurance">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>

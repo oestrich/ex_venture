@@ -14,7 +14,7 @@ defmodule Data.StatsTest do
     end
 
     test "a field does not line up with it's type", %{stats: stats} do
-      stats = %{stats | dexterity: :atom}
+      stats = %{stats | agility: :atom}
       refute Stats.valid_character?(stats)
     end
   end
@@ -25,14 +25,14 @@ defmodule Data.StatsTest do
   end
 
   describe "defaults" do
-    test "default move_points" do
+    test "default endurance_points" do
       stats = Stats.default(%{})
-      assert stats.move_points == 20
+      assert stats.endurance_points == 20
     end
 
-    test "default max_move_points" do
+    test "default max_endurance_points" do
       stats = Stats.default(%{})
-      assert stats.max_move_points == 20
+      assert stats.max_endurance_points == 20
     end
   end
 end

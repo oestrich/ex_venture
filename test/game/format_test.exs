@@ -135,13 +135,14 @@ defmodule Game.FormatTest do
         max_health_points: 55,
         skill_points: 10,
         max_skill_points: 10,
-        move_points: 10,
-        max_move_points: 10,
+        endurance_points: 10,
+        max_endurance_points: 10,
         strength: 10,
-        dexterity: 10,
-        constitution: 10,
+        agility: 10,
         intelligence: 10,
-        wisdom: 10,
+        awareness: 10,
+        vitality: 10,
+        willpower: 10,
       }
 
       save = %Data.Save{level: 1, experience_points: 0, spent_experience_points: 0, stats: stats}
@@ -189,28 +190,32 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r/Skill Points.+|.+10\/10/, Format.info(user))
     end
 
-    test "includes player move points", %{user: user} do
-      assert Regex.match?(~r/Movement.+|.+10\/10/, Format.info(user))
+    test "includes player endurance points", %{user: user} do
+      assert Regex.match?(~r/Stamina.+|.+10\/10/, Format.info(user))
     end
 
     test "includes player strength", %{user: user} do
       assert Regex.match?(~r/Strength.+|.+10/, Format.info(user))
     end
 
-    test "includes player dexterity", %{user: user} do
-      assert Regex.match?(~r/Dexterity.+|.+10/, Format.info(user))
-    end
-
-    test "includes player constitution", %{user: user} do
-      assert Regex.match?(~r/Constitution.+|.+10/, Format.info(user))
+    test "includes player agility", %{user: user} do
+      assert Regex.match?(~r/Agility.+|.+10/, Format.info(user))
     end
 
     test "includes player intelligence", %{user: user} do
       assert Regex.match?(~r/Intelligence.+|.+10/, Format.info(user))
     end
 
-    test "includes player wisdom", %{user: user} do
-      assert Regex.match?(~r/Wisdom.+|.+10/, Format.info(user))
+    test "includes player awareness", %{user: user} do
+      assert Regex.match?(~r/Awareness.+|.+10/, Format.info(user))
+    end
+
+    test "includes player vitality", %{user: user} do
+      assert Regex.match?(~r/Vitality.+|.+10/, Format.info(user))
+    end
+
+    test "includes player willpower", %{user: user} do
+      assert Regex.match?(~r/Willpower.+|.+10/, Format.info(user))
     end
 
     test "includes player play time", %{user: user} do

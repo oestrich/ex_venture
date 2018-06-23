@@ -12,7 +12,7 @@ defmodule Game.Session.Regen do
   alias Game.Stats
 
   @tick_wait 1000
-  @movement_regen 1
+  @endurance_regen 1
 
   @doc """
   Maybe trigger a regeneration, if not already regenerating and not at max stats
@@ -35,7 +35,7 @@ defmodule Game.Session.Regen do
   def tick(state) do
     state
     |> handle_regen(Config.regen_tick_count(5))
-    |> regen_movement()
+    |> regen_endurance()
     |> push(state)
     |> trigger_regen_if_not_max()
   end
@@ -64,7 +64,7 @@ defmodule Game.Session.Regen do
   end
 
   defp mp_max?(%{save: save}) do
-    save.stats.move_points == save.stats.max_move_points
+    save.stats.endurance_points == save.stats.max_endurance_points
   end
 
   @doc """
@@ -83,11 +83,11 @@ defmodule Game.Session.Regen do
   end
 
   @doc """
-  Regenerate movement points, 1 per tick
+  Regenerate endurance points, 1 per tick
   """
-  @spec regen_movement(map) :: map
-  def regen_movement(state = %{user: user, save: save = %{stats: stats}}) do
-    stats = Stats.regen(stats, :move_points, @movement_regen)
+  @spec regen_endurance(map) :: map
+  def regen_endurance(state = %{user: user, save: save = %{stats: stats}}) do
+    stats = Stats.regen(stats, :endurance_points, @endurance_regen)
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
@@ -109,7 +109,7 @@ defmodule Game.Session.Regen do
 
     stats =
       stats
-      |> Stats.regen(:health_points, round(0.1 * stats.constitution))
+      |> Stats.regen(:health_points, round(0.1 * stats.vitality))
       |> Stats.regen(:skill_points, round(0.1 * stats.intelligence))
 
     echo_health(save, stats)

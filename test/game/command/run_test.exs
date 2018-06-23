@@ -9,7 +9,7 @@ defmodule Game.Command.RunTest do
   @room Test.Game.Room
 
   setup do
-    user = %{id: 10, save: %{room_id: 1, stats: %{move_points: 10}}}
+    user = %{id: 10, save: %{room_id: 1, stats: %{endurance_points: 10}}}
 
     room = %Game.Environment.State.Room{
       id: 1,

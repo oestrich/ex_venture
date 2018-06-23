@@ -49,7 +49,7 @@
                 </td>
               </tr>
               <tr>
-                <th>Regen tick vount</th>
+                <th>Regen tick count</th>
                 <td><%= Config.regen_tick_count("Not set") %></td>
                 <td></td>
               </tr>
@@ -63,7 +63,9 @@
               <tr>
                 <th>Starting Save</th>
                 <td><pre><%= Config.starting_save() |> Poison.encode!(pretty: true) %></pre></td>
-                <td></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "starting_save"), class: "btn btn-default btn-xs") %>
+                </td>
               </tr>
               <tr>
                 <th>Random Character Names</th>

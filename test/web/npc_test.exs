@@ -21,15 +21,16 @@ defmodule Web.NPCTest do
       "stats" => %{
         health_points: 25,
         max_health_points: 25,
-        strength: 10,
-        dexterity: 10,
-        constitution: 13,
-        intelligence: 10,
-        wisdom: 10,
         skill_points: 10,
         max_skill_points: 10,
-        move_points: 10,
-        max_move_points: 10,
+        endurance_points: 10,
+        max_endurance_points: 10,
+        strength: 10,
+        agility: 10,
+        intelligence: 10,
+        awareness: 10,
+        vitality: 13,
+        willpower: 10,
       } |> Poison.encode!(),
     }
 

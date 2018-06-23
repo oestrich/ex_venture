@@ -21,12 +21,12 @@ defmodule Game.Session.EffectsTest do
       key: "slashing",
       stat_modifier: :strength,
       boost_ratio: 20,
-      reverse_stat: :dexterity,
+      reverse_stat: :agility,
       reverse_boost: 20,
     })
 
     user = %{id: 2, name: "user", class: class_attributes(%{})}
-    stats = %{health_points: 25, dexterity: 10}
+    stats = %{health_points: 25, agility: 10}
 
     state = %State{
       socket: socket,

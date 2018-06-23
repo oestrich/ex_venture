@@ -55,10 +55,10 @@ defmodule Game.Format do
 
   Example:
 
-      iex> stats = %{health_points: 50, max_health_points: 75, skill_points: 9, max_skill_points: 10, move_points: 4, max_move_points: 10}
-      ...> config = %{prompt: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"}
+      iex> stats = %{health_points: 50, max_health_points: 75, skill_points: 9, max_skill_points: 10, endurance_points: 4, max_endurance_points: 10}
+      ...> config = %{prompt: "%h/%Hhp %s/%Ssp %e/%Eep %xxp"}
       ...> Game.Format.prompt(%{name: "user"}, %{experience_points: 1010, stats: stats, config: config})
-      "[50/75hp 9/10sp 4/10mv 10xp] > "
+      "[50/75hp 9/10sp 4/10ep 10xp] > "
   """
   @spec prompt(User.t(), Save.t()) :: String.t()
   def prompt(user, save)
@@ -71,8 +71,8 @@ defmodule Game.Format do
     |> String.replace("%H", to_string(stats.max_health_points))
     |> String.replace("%s", to_string(stats.skill_points))
     |> String.replace("%S", to_string(stats.max_skill_points))
-    |> String.replace("%m", to_string(stats.move_points))
-    |> String.replace("%M", to_string(stats.max_move_points))
+    |> String.replace("%e", to_string(stats.endurance_points))
+    |> String.replace("%E", to_string(stats.max_endurance_points))
     |> String.replace("%x", to_string(exp))
   end
 
@@ -621,12 +621,13 @@ defmodule Game.Format do
       ["Spent XP", save.spent_experience_points],
       ["Health Points", "#{stats.health_points}/#{stats.max_health_points}"],
       ["Skill Points", "#{stats.skill_points}/#{stats.max_skill_points}"],
-      ["Movement Points", "#{stats.move_points}/#{stats.max_move_points}"],
+      ["Stamina Points", "#{stats.endurance_points}/#{stats.max_endurance_points}"],
       ["Strength", stats.strength],
-      ["Dexterity", stats.dexterity],
-      ["Constitution", stats.constitution],
+      ["Agility", stats.agility],
       ["Intelligence", stats.intelligence],
-      ["Wisdom", stats.wisdom],
+      ["Awareness", stats.awareness],
+      ["Vitality", stats.vitality],
+      ["Willpower", stats.willpower],
       ["Play Time", play_time(user.seconds_online)]
     ]
 
@@ -879,8 +880,8 @@ defmodule Game.Format do
       %{kind: "recover", type: "skill"} ->
         ["#{effect.amount} skill points are recovered." | effects(remaining, target)]
 
-      %{kind: "recover", type: "move"} ->
-        ["#{effect.amount} move points are recovered." | effects(remaining, target)]
+      %{kind: "recover", type: "endurance"} ->
+        ["#{effect.amount} endurance points are recovered." | effects(remaining, target)]
 
       _ ->
         effects(remaining, target)
