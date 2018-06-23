@@ -68,7 +68,7 @@ defmodule TestHelpers do
         pager_size: 20,
         regen_notifications: true,
       },
-      version: 9,
+      version: 10,
     }
   end
 

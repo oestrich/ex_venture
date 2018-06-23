@@ -184,7 +184,7 @@ defmodule Data.Save do
   end
 
   defp _migrate(save = %{version: 9}) do
-    config = %{save.config | prompt: Config.default_prompt()}
+    config = Map.put(save.config, :prompt, Config.default_prompt())
 
     save
     |> Map.put(:config, config)
