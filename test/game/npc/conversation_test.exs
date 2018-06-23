@@ -94,6 +94,14 @@ defmodule Game.NPC.ConversationTest do
       assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "unknown"}}}
     end
 
+    test "the unknown response is null - send nothing", %{user: user, state: state} do
+      state = Conversation.recv(state, user, "bandit")
+      state = Conversation.recv(state, user, "unknown")
+
+      assert %{key: "bandits"} = Map.get(state.conversations, user.id)
+      refute_receive {:channel, {:tell, {:npc, _}, %Message{message: nil}}}, 50
+    end
+
     test "no previous conversation is considered a greeting", %{user: user, state: state} do
       state = %{state | conversations: %{}}
 

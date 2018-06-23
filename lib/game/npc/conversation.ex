@@ -83,14 +83,24 @@ defmodule Game.NPC.Conversation do
   def respond(state = %{npc: npc}, metadata, conversation, user, message) do
     case find_listener(conversation, message) do
       nil ->
-        message = Message.npc_tell(npc, conversation.unknown)
-        Channel.tell({:user, user}, {:npc, npc}, message)
+        maybe_send_unknown(npc, conversation, user)
 
         state
 
       %{key: key} ->
         npc |> send_message(user, metadata, key)
         state |> update_conversation_state(key, metadata.script, user)
+    end
+  end
+
+  defp maybe_send_unknown(npc, conversation, user) do
+    case conversation.unknown do
+      nil ->
+        :ok
+
+      unknown ->
+        message = Message.npc_tell(npc, unknown)
+        Channel.tell({:user, user}, {:npc, npc}, message)
     end
   end
 
