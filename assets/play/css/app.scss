@@ -36,6 +36,16 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  input[type="text"] {
+    border: none;
+    padding: 10px;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: 3px solid #268bd2;
+    }
+  }
 }
 
 .character-info {

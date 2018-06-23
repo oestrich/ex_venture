@@ -124,6 +124,10 @@
 
             <%= color_field(:panel_border, "Panel Border") %>
 
+            <%= color_field(:prompt_background, "Prompt Background") %>
+
+            <%= color_field(:prompt_color, "Prompt Text") %>
+
             <%= color_field(:character_info_background, "Character Info Background") %>
 
             <%= color_field(:character_info_text, "Character Info Text") %>
@@ -144,9 +148,11 @@
 
             <%= color_field(:skill_bar_background, "Skill Bar Background") %>
 
-            <%= color_field(:endurance_bar, "Move Bar") %>
+            <%= color_field(:endurance_bar, "Endurance Bar") %>
 
-            <%= color_field(:endurance_bar_background, "Move Bar Background") %>
+            <%= color_field(:endurance_bar_background, "Endurance Bar Background") %>
+
+            <%= color_field(:experience_bar, "Experience Bar") %>
           </div>
 
           <div class="box-footer">

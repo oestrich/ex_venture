@@ -61,6 +61,11 @@ body {
   background: <%= Config.color_experience_bar() %>;
 }
 
+.prompt input[type='text'] {
+  background-color: <%= Config.color_prompt_background() %>;
+  color: <%= Config.color_prompt_color() %>;
+}
+
 .tooltip {
   color: white;
 }

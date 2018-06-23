@@ -22,6 +22,8 @@ defmodule Game.Config do
     color_background: "#002b36",
     color_text_color: "#93a1a1",
     color_panel_border: "#073642",
+    color_prompt_background: "#fdf6e3",
+    color_prompt_color: "#586e75",
     color_character_info_background: "#073642",
     color_character_info_text: "#93a1a1",
     color_room_info_background: "#073642",
