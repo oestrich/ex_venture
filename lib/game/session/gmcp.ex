@@ -51,8 +51,11 @@ defmodule Game.Session.GMCP do
   """
   @spec vitals(map) :: :ok
   def vitals(%{socket: socket, save: save}) do
-    %{stats: stats} = save
-    socket |> @socket.push_gmcp("Character.Vitals", stats |> Poison.encode!())
+    vitals =
+      save.stats
+      |> Map.put(:experience_towards_level, rem(save.experience_points, 1000))
+
+    socket |> @socket.push_gmcp("Character.Vitals", vitals |> Poison.encode!())
   end
 
   @doc """

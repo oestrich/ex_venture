@@ -48,6 +48,7 @@ let characterVitals = (channel, data) => {
   let healthWidth = data.health_points / data.max_health_points;
   let skillWidth = data.skill_points / data.max_skill_points;
   let enduranceWidth = data.endurance_points / data.max_endurance_points;
+  let experienceWidth = data.experience_towards_level / 1000;
 
   let health = _.first(Sizzle("#health .percentage"));
   health.style.width = `${healthWidth * 100}%`;
@@ -63,6 +64,9 @@ let characterVitals = (channel, data) => {
   endurance.style.width = `${enduranceWidth * 100}%`;
   let enduranceStat = _.first(Sizzle("#endurance .stat"));
   enduranceStat.innerHTML = `${data.endurance_points}/${data.max_endurance_points} ep`;
+
+  let experience = _.first(Sizzle("#experience .percentage"));
+  experience.style.width = `${experienceWidth * 100}%`;
 }
 
 /**

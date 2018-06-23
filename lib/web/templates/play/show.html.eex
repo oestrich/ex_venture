@@ -43,25 +43,29 @@
 </div>
 <div class="prompt">
   <div class="stats">
-    <div class="stat-block" id="health">
+    <div class="stat-block tooltip" id="health" data-title="Health Points">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
     </div>
 
-    <div class="stat-block" id="skills">
+    <div class="stat-block tooltip" id="skills" data-title="Skill Points">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
     </div>
 
-    <div class="stat-block" id="endurance">
+    <div class="stat-block tooltip" id="endurance" data-title="Endurance Points">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>
       </div>
+    </div>
+
+    <div class="experience-bar tooltip" id="experience" data-title="Experience to next level">
+      <div class="percentage"></div>
     </div>
   </div>
   <div class="prompt-container">

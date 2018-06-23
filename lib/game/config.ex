@@ -34,6 +34,7 @@ defmodule Game.Config do
     color_skill_bar_background: "#fdf6e3",
     color_endurance_bar: "#268bd2",
     color_endurance_bar_background: "#fdf6e3",
+    color_experience_bar: "#6c71c4",
     color_black: "#003541",
     color_red: "#dc322f",
     color_green: "#859900",
