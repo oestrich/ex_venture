@@ -14,7 +14,7 @@ defmodule Data.StatsTest do
     end
 
     test "a field does not line up with it's type", %{stats: stats} do
-      stats = %{stats | dexterity: :atom}
+      stats = %{stats | agility: :atom}
       refute Stats.valid_character?(stats)
     end
   end

@@ -20,10 +20,11 @@ defmodule Game.Command.Hone do
     """
     Honing lets you increase your basic stats:
     - Strength
-    - Dexterity
-    - Constitution
+    - Agility
     - Intelligence
-    - Wisdom
+    - Awareness
+    - Vitality
+    - Willpower
     - Health Points
     - Skill Points
 
@@ -89,10 +90,10 @@ defmodule Game.Command.Hone do
   def fields() do
     [
       :strength,
-      :dexterity,
-      :constitution,
+      :agility,
+      :vitality,
       :intelligence,
-      :wisdom,
+      :awareness,
       :health,
       :skill
     ]
@@ -132,20 +133,24 @@ defmodule Game.Command.Hone do
       Your strength is currently at #{save.stats.strength}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
-    {command send='hone dexterity'}Dexterity{/command}
-      Your dexterity is currently at #{save.stats.dexterity}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone constitution'}Constitution{/command}
-      Your constitution is currently at #{save.stats.constitution}, honing will add {yellow}#{
+    {command send='hone agility'}Agility{/command}
+      Your agility is currently at #{save.stats.agility}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
     {command send='hone intelligence'}Intelligence{/command}
       Your intelligence is currently at #{save.stats.intelligence}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
-    {command send='hone wisdom'}Wisdom{/command}
-      Your wisdom is currently at #{save.stats.wisdom}, honing will add {yellow}#{
+    {command send='hone awareness'}Awareness{/command}
+      Your awareness is currently at #{save.stats.awareness}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
+    {command send='hone vitality'}Vitality{/command}
+      Your vitality is currently at #{save.stats.vitality}, honing will add {yellow}#{
+      @hone_stat_boost
+    }{/yellow}
+    {command send='hone vitality'}Willpower{/command}
+      Your willpower is currently at #{save.stats.willpower}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
     {command send='hone health'}Health{/command} Points

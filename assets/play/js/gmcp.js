@@ -123,17 +123,20 @@ let renderStats = (stats) => {
   let strength = _.first(Sizzle(".character-info .strength"));
   strength.innerHTML = stats.strength;
 
-  let dexterity = _.first(Sizzle(".character-info .dexterity"));
-  dexterity.innerHTML = stats.dexterity;
-
-  let constitution = _.first(Sizzle(".character-info .constitution"));
-  constitution.innerHTML = stats.constitution;
+  let agility = _.first(Sizzle(".character-info .agility"));
+  agility.innerHTML = stats.agility;
 
   let intelligence = _.first(Sizzle(".character-info .intelligence"));
   intelligence.innerHTML = stats.intelligence;
 
-  let wisdom = _.first(Sizzle(".character-info .wisdom"));
-  wisdom.innerHTML = stats.wisdom;
+  let awareness = _.first(Sizzle(".character-info .awareness"));
+  awareness.innerHTML = stats.awareness;
+
+  let vitality = _.first(Sizzle(".character-info .vitality"));
+  vitality.innerHTML = stats.vitality;
+
+  let willpower = _.first(Sizzle(".character-info .willpower"));
+  willpower.innerHTML = stats.willpower;
 }
 
 /**

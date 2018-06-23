@@ -20,7 +20,7 @@ defmodule Game.NPCTest do
       key: "slashing",
       stat_modifier: :strength,
       boost_ratio: 20,
-      reverse_stat: :dexterity,
+      reverse_stat: :agility,
       reverse_boost: 20,
     })
 
@@ -29,7 +29,7 @@ defmodule Game.NPCTest do
 
   test "applying effects" do
     effect = %{kind: "damage", type: "slashing", amount: 15}
-    state = %State{npc: %{id: 1, name: "NPC", stats: %{health_points: 25, dexterity: 10}}}
+    state = %State{npc: %{id: 1, name: "NPC", stats: %{health_points: 25, agility: 10}}}
 
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2, name: "Player"}}, "description"}, state)
     assert state.npc.stats.health_points == 15
@@ -40,7 +40,7 @@ defmodule Game.NPCTest do
     from = {:user, %{id: 2, name: "Player"}}
 
     state = %State{
-      npc: %{id: 1, name: "NPC", stats: %{health_points: 25, dexterity: 10}},
+      npc: %{id: 1, name: "NPC", stats: %{health_points: 25, agility: 10}},
       continuous_effects: [],
     }
 
@@ -56,7 +56,7 @@ defmodule Game.NPCTest do
   test "applying effects - died" do
     effect = %{kind: "damage", type: "slashing", amount: 15}
 
-    npc = %{currency: 0, npc_items: [], id: 1, name: "NPC", stats: %{health_points: 10, dexterity: 10}}
+    npc = %{currency: 0, npc_items: [], id: 1, name: "NPC", stats: %{health_points: 10, agility: 10}}
     npc_spawner = %{spawn_interval: 0}
     state = %State{room_id: 1, npc: npc, npc_spawner: npc_spawner}
 

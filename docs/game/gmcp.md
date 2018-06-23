@@ -59,7 +59,7 @@ Character.Vitals {
   "max_health_points": 30,
   "intelligence": 15,
   "health_points": 30,
-  "dexterity": 15
+  "agility": 15
 }
 ```
 

@@ -623,10 +623,11 @@ defmodule Game.Format do
       ["Skill Points", "#{stats.skill_points}/#{stats.max_skill_points}"],
       ["Stamina Points", "#{stats.endurance_points}/#{stats.max_endurance_points}"],
       ["Strength", stats.strength],
-      ["Dexterity", stats.dexterity],
-      ["Constitution", stats.constitution],
+      ["Agility", stats.agility],
       ["Intelligence", stats.intelligence],
-      ["Wisdom", stats.wisdom],
+      ["Awareness", stats.awareness],
+      ["Vitality", stats.vitality],
+      ["Willpower", stats.willpower],
       ["Play Time", play_time(user.seconds_online)]
     ]
 

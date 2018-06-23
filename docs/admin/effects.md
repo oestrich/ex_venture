@@ -49,14 +49,14 @@ This deals damage over time. It will damage every `every` milliseconds. Every ti
 }
 ```
 
-The amount of damage a usee will be healed for. This is boosted by wisdom.
+The amount of damage a usee will be healed for. This is boosted by awareness.
 
 ## stats
 
 ```
 {
   'kind': 'stats',
-  'field': 'dexterity',
+  'field': 'agility',
   'amount': 10
 }
 ```
@@ -68,7 +68,7 @@ This effect boosts the user's stats before any other effects are calulated.
 ```
 {
   'kind': 'stats/boost',
-  'field': 'dexterity',
+  'field': 'agility',
   'amount': 10,
   'duration': 1500
 }

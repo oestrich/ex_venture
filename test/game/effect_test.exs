@@ -13,7 +13,7 @@ defmodule Game.EffectTest do
       key: "arcane",
       stat_modifier: :intelligence,
       boost_ratio: 20,
-      reverse_stat: :wisdom,
+      reverse_stat: :awareness,
       reverse_boost: 20,
     })
 
@@ -21,7 +21,7 @@ defmodule Game.EffectTest do
       key: "slashing",
       stat_modifier: :strength,
       boost_ratio: 20,
-      reverse_stat: :dexterity,
+      reverse_stat: :agility,
       reverse_boost: 20,
     })
 
@@ -29,7 +29,7 @@ defmodule Game.EffectTest do
       key: "bludgeoning",
       stat_modifier: :strength,
       boost_ratio: 20,
-      reverse_stat: :constitution,
+      reverse_stat: :vitality,
       reverse_boost: 20,
     })
 

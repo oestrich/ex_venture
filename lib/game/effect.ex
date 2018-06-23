@@ -111,13 +111,13 @@ defmodule Game.Effect do
   Calculate recovery
 
       iex> effect = %{kind: "recover", type: "health", amount: 10}
-      iex> Game.Effect.calculate_recover(effect, %{wisdom: 10})
+      iex> Game.Effect.calculate_recover(effect, %{awareness: 10})
       %{kind: "recover", type: "health", amount: 15}
   """
   @spec calculate_recover(Effect.t(), Stats.t()) :: map()
   def calculate_recover(effect, stats) do
-    wisdom_modifier = 1 + stats.wisdom / 20.0
-    modified_amount = round(Float.ceil(effect.amount * wisdom_modifier))
+    awareness_modifier = 1 + stats.awareness / 20.0
+    modified_amount = round(Float.ceil(effect.amount * awareness_modifier))
     effect |> Map.put(:amount, modified_amount)
   end
 

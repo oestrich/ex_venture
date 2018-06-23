@@ -99,8 +99,8 @@ defmodule Data.Effect do
       iex> Data.Effect.load(%{"kind" => "damage/over-time", "type" => "slashing", "amount" => 10, "every" => 3})
       {:ok, %{kind: "damage/over-time", type: "slashing", amount: 10, every: 3}}
 
-      iex> Data.Effect.load(%{"kind" => "stats", "field" => "dexterity"})
-      {:ok, %{kind: "stats", field: :dexterity, mode: "add"}}
+      iex> Data.Effect.load(%{"kind" => "stats", "field" => "agility"})
+      {:ok, %{kind: "stats", field: :agility, mode: "add"}}
   """
   @impl Ecto.Type
   def load(effect) do
@@ -151,11 +151,11 @@ defmodule Data.Effect do
   end
 
   def starting_effect("stats") do
-    %{kind: "stats", field: :dexterity, amount: 0}
+    %{kind: "stats", field: :agility, amount: 0}
   end
 
   def starting_effect("stats/boost") do
-    %{kind: "stats/boost", field: :dexterity, amount: 0, duration: 1000, mode: "add"}
+    %{kind: "stats/boost", field: :agility, amount: 0, duration: 1000, mode: "add"}
   end
 
   @doc """

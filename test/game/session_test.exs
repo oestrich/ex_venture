@@ -51,7 +51,7 @@ defmodule Game.SessionTest do
         max_endurance_points: 10,
 
         intelligence: 20,
-        constitution: 20,
+        vitality: 20,
       }
 
       state = Map.merge(state, %{

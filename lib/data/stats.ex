@@ -13,10 +13,11 @@ defmodule Data.Stats do
           endurance_points: integer(),
           max_endurance_points: integer(),
           strength: integer(),
-          dexterity: integer(),
-          constitution: integer(),
+          agility: integer(),
           intelligence: integer(),
-          wisdom: integer()
+          awareness: integer(),
+          vitality: integer(),
+          willpower: integer()
         }
   @type armor :: %{
           slot: :atom
@@ -69,11 +70,12 @@ defmodule Data.Stats do
     |> ensure(:max_skill_points, 50)
     |> ensure(:endurance_points, 20)
     |> ensure(:max_endurance_points, 20)
-    |> ensure(:strength, 10)
-    |> ensure(:dexterity, 10)
-    |> ensure(:constitution, 10)
+    |> ensure(:agility, 10)
+    |> ensure(:awareness, 10)
     |> ensure(:intelligence, 10)
-    |> ensure(:wisdom, 10)
+    |> ensure(:strength, 10)
+    |> ensure(:vitality, 10)
+    |> ensure(:willpower, 10)
   end
 
   defp migrate(stats = %{health: health, max_health: max_health}) do
@@ -99,11 +101,12 @@ defmodule Data.Stats do
   @spec basic_fields() :: [atom]
   def basic_fields(),
     do: [
-      :constitution,
-      :dexterity,
+      :agility,
+      :awareness,
       :intelligence,
       :strength,
-      :wisdom
+      :vitality,
+      :willpower
     ]
 
   @doc """
@@ -112,8 +115,8 @@ defmodule Data.Stats do
   @spec fields() :: [atom]
   def fields(),
     do: [
-      :constitution,
-      :dexterity,
+      :agility,
+      :awareness,
       :endurance_points,
       :health_points,
       :intelligence,
@@ -122,7 +125,8 @@ defmodule Data.Stats do
       :max_skill_points,
       :skill_points,
       :strength,
-      :wisdom
+      :vitality,
+      :willpower
     ]
 
   @doc """

@@ -21,16 +21,16 @@
         <td><%= @race |> stat(:strength) %></td>
       </tr>
       <tr>
-        <th>Dexterity</th>
-        <td><%= @race |> stat(:dexterity) %></td>
+        <th>Agility</th>
+        <td><%= @race |> stat(:agility) %></td>
       </tr>
       <tr>
         <th>Intelligence</th>
         <td><%= @race |> stat(:intelligence) %></td>
       </tr>
       <tr>
-        <th>Wisdom</th>
-        <td><%= @race |> stat(:wisdom) %></td>
+        <th>Awareness</th>
+        <td><%= @race |> stat(:awareness) %></td>
       </tr>
     </table>
   </div>

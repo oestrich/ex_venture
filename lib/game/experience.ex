@@ -180,16 +180,16 @@ defmodule Game.Experience do
       iex> Game.Experience.stat_boost_on_level(%{}, :strength)
       1
 
-      iex> Game.Experience.stat_boost_on_level(%{}, :dexterity)
+      iex> Game.Experience.stat_boost_on_level(%{}, :agility)
       1
 
-      iex> Game.Experience.stat_boost_on_level(%{}, :constitution)
+      iex> Game.Experience.stat_boost_on_level(%{}, :vitality)
       1
 
       iex> Game.Experience.stat_boost_on_level(%{}, :intelligence)
       1
 
-      iex> Game.Experience.stat_boost_on_level(%{}, :wisdom)
+      iex> Game.Experience.stat_boost_on_level(%{}, :awareness)
       1
   """
   @spec stat_boost_on_level(map(), atom()) :: integer()
@@ -224,15 +224,8 @@ defmodule Game.Experience do
     end
   end
 
-  def stat_boost_on_level(level_stats, :dexterity) do
-    case :dexterity in top_stats_used_in_level(level_stats) do
-      true -> 2
-      false -> 1
-    end
-  end
-
-  def stat_boost_on_level(level_stats, :constitution) do
-    case :constitution in top_stats_used_in_level(level_stats) do
+  def stat_boost_on_level(level_stats, :agility) do
+    case :agility in top_stats_used_in_level(level_stats) do
       true -> 2
       false -> 1
     end
@@ -245,8 +238,22 @@ defmodule Game.Experience do
     end
   end
 
-  def stat_boost_on_level(level_stats, :wisdom) do
-    case :wisdom in top_stats_used_in_level(level_stats) do
+  def stat_boost_on_level(level_stats, :awareness) do
+    case :awareness in top_stats_used_in_level(level_stats) do
+      true -> 2
+      false -> 1
+    end
+  end
+
+  def stat_boost_on_level(level_stats, :vitality) do
+    case :vitality in top_stats_used_in_level(level_stats) do
+      true -> 2
+      false -> 1
+    end
+  end
+
+  def stat_boost_on_level(level_stats, :willpower) do
+    case :willpower in top_stats_used_in_level(level_stats) do
       true -> 2
       false -> 1
     end
@@ -254,7 +261,7 @@ defmodule Game.Experience do
 
   defp health_usage(level_stats) do
     level_stats
-    |> Map.take([:strength, :dexterity, :constitution])
+    |> Map.take([:strength, :agility])
     |> Map.to_list()
     |> Enum.map(fn {_, count} -> count end)
     |> Enum.sum()
@@ -265,7 +272,7 @@ defmodule Game.Experience do
 
   defp skill_usage(level_stats) do
     level_stats
-    |> Map.take([:dexterity, :intelligence])
+    |> Map.take([:intelligence, :awareness])
     |> Map.to_list()
     |> Enum.map(fn {_, count} -> count end)
     |> Enum.sum()
@@ -276,7 +283,7 @@ defmodule Game.Experience do
 
   defp endurance_usage(level_stats) do
     level_stats
-    |> Map.take([:constitution, :wisdom])
+    |> Map.take([:vitality, :willpower])
     |> Map.to_list()
     |> Enum.map(fn {_, count} -> count end)
     |> Enum.sum()
@@ -323,7 +330,7 @@ defmodule Game.Experience do
   end
 
   defp _track_stat_usage(%{kind: "recover"}, save) do
-    increment_level_stat(save, :wisdom)
+    increment_level_stat(save, :awareness)
   end
 
   defp _track_stat_usage(_, save), do: save

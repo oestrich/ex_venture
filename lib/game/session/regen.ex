@@ -109,7 +109,7 @@ defmodule Game.Session.Regen do
 
     stats =
       stats
-      |> Stats.regen(:health_points, round(0.1 * stats.constitution))
+      |> Stats.regen(:health_points, round(0.1 * stats.vitality))
       |> Stats.regen(:skill_points, round(0.1 * stats.intelligence))
 
     echo_health(save, stats)

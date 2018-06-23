@@ -268,10 +268,11 @@ defmodule Seeds do
       endurance_points: 10,
       max_endurance_points: 10,
       strength: 13,
-      dexterity: 10,
-      constitution: 10,
+      agility: 10,
       intelligence: 10,
-      wisdom: 10,
+      awareness: 10,
+      vitality: 10,
+      willpower: 10,
     }
 
     bran = create_npc(%{
@@ -349,7 +350,7 @@ defmodule Seeds do
       description: "An elven chest piece.",
       type: "armor",
       stats: %{slot: :chest, armor: 10},
-      effects: [%{kind: "stats", field: :dexterity, amount: 5, mode: "add"}, %{kind: "stats", field: :strength, amount: 5, mode: "add"}],
+      effects: [%{kind: "stats", field: :agility, amount: 5, mode: "add"}, %{kind: "stats", field: :strength, amount: 5, mode: "add"}],
       keywords: ["elven"],
     })
     entrance = entrance |> add_item_to_room(elven_armor, %{spawn_interval: 15})
@@ -411,10 +412,11 @@ defmodule Seeds do
         endurance_points: 15,
         max_endurance_points: 15,
         strength: 10,
-        dexterity: 10,
-        constitution: 10,
+        agility: 10,
         intelligence: 10,
-        wisdom: 10,
+        awareness: 10,
+        vitality: 10,
+        willpower: 10,
       },
     })
 
@@ -429,10 +431,11 @@ defmodule Seeds do
         endurance_points: 15,
         max_endurance_points: 15,
         strength: 12,
-        dexterity: 8,
-        constitution: 10,
+        agility: 8,
         intelligence: 10,
-        wisdom: 10,
+        awareness: 10,
+        vitality: 10,
+        willpower: 10,
       },
     })
 
@@ -447,10 +450,11 @@ defmodule Seeds do
         endurance_points: 15,
         max_endurance_points: 15,
         strength: 8,
-        dexterity: 12,
-        constitution: 10,
+        agility: 12,
         intelligence: 10,
-        wisdom: 10,
+        awareness: 10,
+        vitality: 10,
+        willpower: 10,
       },
     })
 
@@ -619,10 +623,11 @@ defmodule Seeds.LargeScale do
         endurance_points: 10,
         max_endurance_points: 10,
         strength: 13,
-        dexterity: 10,
-        constitution: 10,
+        agility: 10,
         intelligence: 10,
-        wisdom: 10,
+        awareness: 10,
+        vitality: 10,
+        willpower: 10,
       }
 
       move_event = %{

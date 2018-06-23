@@ -14,7 +14,7 @@ defmodule Data.EffectTest do
     test "load them" do
       stats_boost = %{
         "kind" => "stats/boost",
-        "field" => "dexterity",
+        "field" => "agility",
         "amount" => 10,
         "mode" => "add",
         "duration" => 1000
@@ -24,7 +24,7 @@ defmodule Data.EffectTest do
 
       assert stat_boost == %{
         kind: "stats/boost",
-        field: :dexterity,
+        field: :agility,
         amount: 10,
         mode: "add",
         duration: 1000
@@ -34,7 +34,7 @@ defmodule Data.EffectTest do
     test "validate them" do
       stat_boost = %{
         kind: "stats/boost",
-        field: :dexterity,
+        field: :agility,
         amount: 10,
         mode: "add",
         duration: 1000
@@ -46,7 +46,7 @@ defmodule Data.EffectTest do
     test "validate the mode" do
       stat_boost = %{
         kind: "stats/boost",
-        field: :dexterity,
+        field: :agility,
         amount: 10,
         mode: "add",
         duration: 1000

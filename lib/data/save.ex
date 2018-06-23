@@ -183,6 +183,30 @@ defmodule Data.Save do
     end
   end
 
+  defp _migrate(save = %{version: 10, stats: stats}) when stats != nil do
+    stats =
+      stats
+      |> Map.put(:agility, stats.dexterity)
+      |> Map.put(:awareness, stats.wisdom)
+      |> Map.put(:vitality, stats.constitution)
+      |> Map.put(:willpower, stats.constitution)
+      |> Map.delete(:constitution)
+      |> Map.delete(:dexterity)
+      |> Map.delete(:wisdom)
+
+    save
+    |> Map.put(:stats, stats)
+    |> Map.put(:version, 11)
+    |> _migrate()
+  end
+
+  # for the starting save which has empty stats, migrate the version forward
+  defp _migrate(save = %{version: 10}) do
+    save
+    |> Map.put(:version, 11)
+    |> _migrate()
+  end
+
   defp _migrate(save = %{version: 9}) do
     config = Map.put(save.config, :prompt, Config.default_prompt())
 
