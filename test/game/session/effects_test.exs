@@ -33,7 +33,7 @@ defmodule Game.Session.EffectsTest do
       state: "active",
       mode: "commands",
       user: user,
-      save: %{room_id: 1, stats: stats},
+      save: %{room_id: 1, experience_points: 10, stats: stats},
       is_targeting: MapSet.new(),
     }
 
