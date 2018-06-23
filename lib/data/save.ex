@@ -183,6 +183,15 @@ defmodule Data.Save do
     end
   end
 
+  defp _migrate(save = %{version: 9}) do
+    config = %{save.config | prompt: Config.default_prompt()}
+
+    save
+    |> Map.put(:config, config)
+    |> Map.put(:version, 10)
+    |> _migrate()
+  end
+
   defp _migrate(save = %{version: 8, stats: stats}) when stats != nil do
     stats =
       stats
