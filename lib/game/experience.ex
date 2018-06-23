@@ -172,10 +172,10 @@ defmodule Game.Experience do
       5
 
       iex> Game.Experience.stat_boost_on_level(%{}, :endurance_points)
-      2
+      5
 
       iex> Game.Experience.stat_boost_on_level(%{}, :max_endurance_points)
-      2
+      5
 
       iex> Game.Experience.stat_boost_on_level(%{}, :strength)
       1
@@ -209,8 +209,13 @@ defmodule Game.Experience do
     5 + skill_usage(level_stats)
   end
 
-  def stat_boost_on_level(_, :endurance_points), do: 2
-  def stat_boost_on_level(_, :max_endurance_points), do: 2
+  def stat_boost_on_level(level_stats, :endurance_points) do
+    5 + endurance_usage(level_stats)
+  end
+
+  def stat_boost_on_level(level_stats, :max_endurance_points) do
+    5 + endurance_usage(level_stats)
+  end
 
   def stat_boost_on_level(level_stats, :strength) do
     case :strength in top_stats_used_in_level(level_stats) do
@@ -260,7 +265,18 @@ defmodule Game.Experience do
 
   defp skill_usage(level_stats) do
     level_stats
-    |> Map.take([:intelligence, :wisdom])
+    |> Map.take([:dexterity, :intelligence])
+    |> Map.to_list()
+    |> Enum.map(fn {_, count} -> count end)
+    |> Enum.sum()
+    |> Kernel.*(0.2)
+    |> round()
+    |> min(10)
+  end
+
+  defp endurance_usage(level_stats) do
+    level_stats
+    |> Map.take([:constitution, :wisdom])
     |> Map.to_list()
     |> Enum.map(fn {_, count} -> count end)
     |> Enum.sum()

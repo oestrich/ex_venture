@@ -23,20 +23,20 @@ defmodule Game.ExperienceTest do
   end
 
   test "on level up, boost stats by your level", state do
-    state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, wisdom: 5}}}
+    state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, wisdom: 5, constitution: 3}}}
 
     {:ok, :level_up, _experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
 
     assert state.save.level_stats == %{}
     assert state.save.stats == %{
-      health_points: 57,
-      max_health_points: 57,
+      health_points: 58,
+      max_health_points: 58,
 
-      skill_points: 58,
-      max_skill_points: 58,
+      skill_points: 57,
+      max_skill_points: 57,
 
-      endurance_points: 12,
-      max_endurance_points: 12,
+      endurance_points: 57,
+      max_endurance_points: 57,
 
       strength: 12,
       dexterity: 11,
