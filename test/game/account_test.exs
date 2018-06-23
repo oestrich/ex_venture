@@ -8,13 +8,13 @@ defmodule Game.AccountTest do
   test "updating the save force saves it" do
     user = create_user(%{name: "user", password: "password"})
 
-    user = %{user | save: %{user.save | stats: %{user.save.stats | move_points: 3}}}
-    assert user.save.stats.move_points == 3
+    user = %{user | save: %{user.save | stats: %{user.save.stats | endurance_points: 3}}}
+    assert user.save.stats.endurance_points == 3
 
     {:ok, user} = Account.save(user, user.save)
 
     user = Repo.get(User, user.id)
-    assert user.save.stats.move_points == 3
+    assert user.save.stats.endurance_points == 3
   end
 
   describe "online playing time" do

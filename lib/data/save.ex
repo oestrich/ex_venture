@@ -175,9 +175,33 @@ defmodule Data.Save do
   """
   def migrate(save) do
     case Map.has_key?(save, :version) do
-      true -> save |> _migrate()
-      false -> save |> Map.put(:version, 1) |> _migrate()
+      true ->
+        save |> _migrate()
+
+      false ->
+        save |> Map.put(:version, 1) |> _migrate()
     end
+  end
+
+  defp _migrate(save = %{version: 8, stats: stats}) when stats != nil do
+    stats =
+      stats
+      |> Map.put(:endurance_points, stats.move_points)
+      |> Map.put(:max_endurance_points, stats.max_move_points)
+      |> Map.delete(:move_points)
+      |> Map.delete(:max_move_points)
+
+    save
+    |> Map.put(:stats, stats)
+    |> Map.put(:version, 9)
+    |> _migrate()
+  end
+
+  # for the starting save which has empty stats, migrate the version forward
+  defp _migrate(save = %{version: 8}) do
+    save
+    |> Map.put(:version, 9)
+    |> _migrate()
   end
 
   defp _migrate(save = %{version: 7}) do

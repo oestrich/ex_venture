@@ -171,10 +171,10 @@ defmodule Game.Experience do
       iex> Game.Experience.stat_boost_on_level(%{}, :max_skill_points)
       5
 
-      iex> Game.Experience.stat_boost_on_level(%{}, :move_points)
+      iex> Game.Experience.stat_boost_on_level(%{}, :endurance_points)
       2
 
-      iex> Game.Experience.stat_boost_on_level(%{}, :max_move_points)
+      iex> Game.Experience.stat_boost_on_level(%{}, :max_endurance_points)
       2
 
       iex> Game.Experience.stat_boost_on_level(%{}, :strength)
@@ -209,8 +209,8 @@ defmodule Game.Experience do
     5 + skill_usage(level_stats)
   end
 
-  def stat_boost_on_level(_, :move_points), do: 2
-  def stat_boost_on_level(_, :max_move_points), do: 2
+  def stat_boost_on_level(_, :endurance_points), do: 2
+  def stat_boost_on_level(_, :max_endurance_points), do: 2
 
   def stat_boost_on_level(level_stats, :strength) do
     case :strength in top_stats_used_in_level(level_stats) do

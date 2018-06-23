@@ -38,8 +38,8 @@ defmodule TestHelpers do
       max_health_points: 50,
       skill_points: 50,
       max_skill_points: 50,
-      move_points: 10,
-      max_move_points: 10,
+      endurance_points: 10,
+      max_endurance_points: 10,
       strength: 10,
       dexterity: 10,
       constitution: 10,
@@ -68,7 +68,7 @@ defmodule TestHelpers do
         pager_size: 20,
         regen_notifications: true,
       },
-      version: 8,
+      version: 9,
     }
   end
 
@@ -207,8 +207,8 @@ defmodule TestHelpers do
         wisdom: 10,
         skill_points: 10,
         max_skill_points: 10,
-        move_points: 10,
-        max_move_points: 10,
+        endurance_points: 10,
+        max_endurance_points: 10,
       },
     }, attributes)
   end
@@ -282,8 +282,8 @@ defmodule TestHelpers do
         constitution: 13,
         intelligence: 10,
         wisdom: 10,
-        move_points: 1,
-        max_move_points: 10,
+        endurance_points: 1,
+        max_endurance_points: 10,
       },
     }, attributes)
   end

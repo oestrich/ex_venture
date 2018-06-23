@@ -79,7 +79,7 @@ defmodule Data.Save.Config do
   Starting prompt
   """
   @spec default_prompt() :: String.t()
-  def default_prompt(), do: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"
+  def default_prompt(), do: "%h/%Hhp %s/%Ssp %e/%Eep %xxp"
 
   @doc """
   Check if a key is color configuration

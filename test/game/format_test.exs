@@ -135,8 +135,8 @@ defmodule Game.FormatTest do
         max_health_points: 55,
         skill_points: 10,
         max_skill_points: 10,
-        move_points: 10,
-        max_move_points: 10,
+        endurance_points: 10,
+        max_endurance_points: 10,
         strength: 10,
         dexterity: 10,
         constitution: 10,
@@ -189,8 +189,8 @@ defmodule Game.FormatTest do
       assert Regex.match?(~r/Skill Points.+|.+10\/10/, Format.info(user))
     end
 
-    test "includes player move points", %{user: user} do
-      assert Regex.match?(~r/Movement.+|.+10\/10/, Format.info(user))
+    test "includes player endurance points", %{user: user} do
+      assert Regex.match?(~r/Stamina.+|.+10\/10/, Format.info(user))
     end
 
     test "includes player strength", %{user: user} do

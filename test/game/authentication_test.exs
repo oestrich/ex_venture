@@ -14,7 +14,7 @@ defmodule Game.AuthenticationTest do
 
     user = Authentication.find_user(user.id)
 
-    assert user.save.stats.move_points == 20
-    assert user.save.stats.max_move_points == 20
+    assert user.save.stats.endurance_points == 20
+    assert user.save.stats.max_endurance_points == 20
   end
 end

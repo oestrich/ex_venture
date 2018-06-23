@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <div class="stat-block" id="movement">
+    <div class="stat-block" id="endurance">
       <div class="percentage"></div>
       <div class="container">
         <span class="stat"></span>

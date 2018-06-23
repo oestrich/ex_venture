@@ -83,8 +83,8 @@ defmodule Helpers do
 
   def create_exit(attributes) do
     reverse_attributes = %{
-      start_id: attributes.finish_id,
-      finish_id: attributes.start_id,
+      start_room_id: attributes.finish_room_id,
+      finish_room_id: attributes.start_room_id,
       direction: to_string(Exit.opposite(attributes.direction)),
     }
 
@@ -188,7 +188,7 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{direction: "west", start_id: entrance.id, finish_id: hallway.id})
+    create_exit(%{direction: "west", start_room_id: entrance.id, finish_room_id: hallway.id})
 
     hallway_turn = create_room(bandit_hideout, %{
       name: "Hallway",
@@ -198,7 +198,7 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{direction: "west", start_id: hallway.id, finish_id: hallway_turn.id})
+    create_exit(%{direction: "west", start_room_id: hallway.id, finish_room_id: hallway_turn.id})
 
     hallway_south = create_room(bandit_hideout, %{
       name: "Hallway",
@@ -208,7 +208,7 @@ defmodule Seeds do
       y: 2,
       map_layer: 1,
     })
-    create_exit(%{direction: "south", start_id: hallway_turn.id, finish_id: hallway_south.id})
+    create_exit(%{direction: "south", start_room_id: hallway_turn.id, finish_room_id: hallway_south.id})
 
     great_room = create_room(bandit_hideout, %{
       name: "Great Room",
@@ -218,7 +218,7 @@ defmodule Seeds do
       y: 3,
       map_layer: 1,
     })
-    create_exit(%{direction: "south", start_id: hallway_south.id, finish_id: great_room.id})
+    create_exit(%{direction: "south", start_room_id: hallway_south.id, finish_room_id: great_room.id})
 
     dorm = create_room(bandit_hideout, %{
       name: "Bedroom",
@@ -228,7 +228,7 @@ defmodule Seeds do
       y: 3,
       map_layer: 1,
     })
-    create_exit(%{direction: "west", start_id: great_room.id, finish_id: dorm.id})
+    create_exit(%{direction: "west", start_room_id: great_room.id, finish_room_id: dorm.id})
 
     kitchen = create_room(bandit_hideout, %{
       name: "Kitchen",
@@ -238,7 +238,7 @@ defmodule Seeds do
       y: 3,
       map_layer: 1,
     })
-    create_exit(%{direction: "east", start_id: great_room.id, finish_id: kitchen.id})
+    create_exit(%{direction: "east", start_room_id: great_room.id, finish_room_id: kitchen.id})
 
     shack = create_room(village, %{
       name: "Shack",
@@ -248,7 +248,7 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{direction: "east", start_id: entrance.id, finish_id: shack.id})
+    create_exit(%{direction: "east", start_room_id: entrance.id, finish_room_id: shack.id})
 
     forest_path = create_room(village, %{
       name: "Forest Path",
@@ -258,15 +258,15 @@ defmodule Seeds do
       y: 1,
       map_layer: 1,
     })
-    create_exit(%{direction: "east", start_id: shack.id, finish_id: forest_path.id})
+    create_exit(%{direction: "east", start_room_id: shack.id, finish_room_id: forest_path.id})
 
     stats = %{
       health_points: 25,
       max_health_points: 25,
       skill_points: 10,
       max_skill_points: 10,
-      move_points: 10,
-      max_move_points: 10,
+      endurance_points: 10,
+      max_endurance_points: 10,
       strength: 13,
       dexterity: 10,
       constitution: 10,
@@ -408,8 +408,8 @@ defmodule Seeds do
         max_health_points: 40,
         skill_points: 15,
         max_skill_points: 15,
-        move_points: 15,
-        max_move_points: 15,
+        endurance_points: 15,
+        max_endurance_points: 15,
         strength: 10,
         dexterity: 10,
         constitution: 10,
@@ -426,8 +426,8 @@ defmodule Seeds do
         max_health_points: 50,
         skill_points: 15,
         max_skill_points: 15,
-        move_points: 15,
-        max_move_points: 15,
+        endurance_points: 15,
+        max_endurance_points: 15,
         strength: 12,
         dexterity: 8,
         constitution: 10,
@@ -444,8 +444,8 @@ defmodule Seeds do
         max_health_points: 35,
         skill_points: 35,
         max_skill_points: 15,
-        move_points: 15,
-        max_move_points: 15,
+        endurance_points: 15,
+        max_endurance_points: 15,
         strength: 8,
         dexterity: 12,
         constitution: 10,
@@ -560,7 +560,7 @@ defmodule Seeds do
         pager_size: 20,
         regen_notifications: true,
       })
-      |> Map.put(:version, 8)
+      |> Map.put(:version, 9)
 
     create_user(%{
       name: "eric",
@@ -616,8 +616,8 @@ defmodule Seeds.LargeScale do
         max_health_points: 25,
         skill_points: 10,
         max_skill_points: 10,
-        move_points: 10,
-        max_move_points: 10,
+        endurance_points: 10,
+        max_endurance_points: 10,
         strength: 13,
         dexterity: 10,
         constitution: 10,

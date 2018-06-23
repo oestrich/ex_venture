@@ -35,8 +35,8 @@ defmodule Game.ExperienceTest do
       skill_points: 58,
       max_skill_points: 58,
 
-      move_points: 12,
-      max_move_points: 12,
+      endurance_points: 12,
+      max_endurance_points: 12,
 
       strength: 12,
       dexterity: 11,

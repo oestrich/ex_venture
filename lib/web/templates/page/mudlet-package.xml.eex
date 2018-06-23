@@ -340,18 +340,18 @@ GUI.Skill.front:setFontSize(16)
 GUI.Skill.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
 GUI.Skill.front:echo(&quot;Skill Points&quot;)
 
-GUI.Move = Geyser.Gauge:new({
-  name = &quot;GUI.Move&quot;,
+GUI.Endurance = Geyser.Gauge:new({
+  name = &quot;GUI.Endurance&quot;,
   x = &quot;66.66%&quot;, y = 0,
   width = &quot;33.33%&quot;,
   height = &quot;100%&quot;,
 }, GUI.Bottom)
-GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_move_bar_background() %>&quot;)
-GUI.Move.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
-GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_move_bar() %>&quot;)
-GUI.Move.front:setFontSize(16)
-GUI.Move.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
-GUI.Move.front:echo(&quot;Move Points&quot;)</script>
+GUI.GaugeBackCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_endurance_bar_background() %>&quot;)
+GUI.Endurance.back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+GUI.GaugeFrontCSS:set(&quot;background-color&quot;, &quot;<%= Config.color_endurance_bar() %>&quot;)
+GUI.Endurance.front:setFontSize(16)
+GUI.Endurance.front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+GUI.Endurance.front:echo(&quot;Endurance Points&quot;)</script>
                     <eventHandlerList/>
                 </Script>
                 <Script isActive="yes" isFolder="no">
@@ -445,12 +445,12 @@ end</script>
   local max_health_points = tonumber(gmcp.Character.Vitals.max_health_points)
   local skill_points = tonumber(gmcp.Character.Vitals.skill_points)
   local max_skill_points = tonumber(gmcp.Character.Vitals.max_skill_points)
-  local move_points = tonumber(gmcp.Character.Vitals.move_points)
-  local max_move_points = tonumber(gmcp.Character.Vitals.max_move_points)
+  local endurance_points = tonumber(gmcp.Character.Vitals.endurance_points)
+  local max_endurance_points = tonumber(gmcp.Character.Vitals.max_endurance_points)
 
   GUI.Health:setValue(health_points, max_health_points, string.format(&quot;%d/%d hp&quot;, health_points, max_health_points))
   GUI.Skill:setValue(skill_points, max_skill_points, string.format(&quot;%d/%d sp&quot;, skill_points, max_skill_points))
-  GUI.Move:setValue(move_points, max_move_points, string.format(&quot;%d/%d mv&quot;, move_points, max_move_points))
+  GUI.Endurance:setValue(endurance_points, max_endurance_points, string.format(&quot;%d/%d ep&quot;, endurance_points, max_endurance_points))
 end</script>
                     <eventHandlerList>
                         <string>gmcp.Character.Vitals</string>

@@ -49,11 +49,11 @@ body {
   background: <%= Config.color_skill_bar() %>;
 }
 
-#movement .container {
-  color: <%= Config.color_move_bar_background() %>;
+#endurance .container {
+  color: <%= Config.color_endurance_bar_background() %>;
 }
-#movement .percentage {
-  background: <%= Config.color_move_bar() %>;
+#endurance .percentage {
+  background: <%= Config.color_endurance_bar() %>;
 }
 
 .command:hover:after {

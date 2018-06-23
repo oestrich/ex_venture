@@ -10,8 +10,8 @@ defmodule Data.Stats do
           max_health_points: integer(),
           skill_points: integer(),
           max_skill_points: integer(),
-          move_points: integer(),
-          max_move_points: integer(),
+          endurance_points: integer(),
+          max_endurance_points: integer(),
           strength: integer(),
           dexterity: integer(),
           constitution: integer(),
@@ -67,8 +67,8 @@ defmodule Data.Stats do
     |> ensure(:max_health_points, 50)
     |> ensure(:skill_points, 50)
     |> ensure(:max_skill_points, 50)
-    |> ensure(:move_points, 20)
-    |> ensure(:max_move_points, 20)
+    |> ensure(:endurance_points, 20)
+    |> ensure(:max_endurance_points, 20)
     |> ensure(:strength, 10)
     |> ensure(:dexterity, 10)
     |> ensure(:constitution, 10)
@@ -114,12 +114,12 @@ defmodule Data.Stats do
     do: [
       :constitution,
       :dexterity,
+      :endurance_points,
       :health_points,
       :intelligence,
+      :max_endurance_points,
       :max_health_points,
-      :max_move_points,
       :max_skill_points,
-      :move_points,
       :skill_points,
       :strength,
       :wisdom

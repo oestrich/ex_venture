@@ -47,8 +47,8 @@ defmodule Game.SessionTest do
         max_health_points: 15,
         skill_points: 9,
         max_skill_points: 12,
-        move_points: 8,
-        max_move_points: 10,
+        endurance_points: 8,
+        max_endurance_points: 10,
 
         intelligence: 20,
         constitution: 20,
@@ -79,7 +79,7 @@ defmodule Game.SessionTest do
 
       assert stats.health_points == 12
       assert stats.skill_points == 11
-      assert stats.move_points == 9
+      assert stats.endurance_points == 9
 
       assert_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
 
@@ -92,8 +92,8 @@ defmodule Game.SessionTest do
         max_health_points: 15,
         skill_points: 12,
         max_skill_points: 12,
-        move_points: 10,
-        max_move_points: 10,
+        endurance_points: 10,
+        max_endurance_points: 10,
       })
 
       save = %{state.save | stats: stats}
@@ -102,7 +102,7 @@ defmodule Game.SessionTest do
 
       assert stats.health_points == 15
       assert stats.skill_points == 12
-      assert stats.move_points == 10
+      assert stats.endurance_points == 10
 
       refute_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
     end
@@ -118,7 +118,7 @@ defmodule Game.SessionTest do
 
       assert stats.health_points == 12
       assert stats.skill_points == 11
-      assert stats.move_points == 9
+      assert stats.endurance_points == 9
 
       refute_receive {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
     end
@@ -157,7 +157,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
-    state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
+    state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | endurance_points: 10}}, regen: %{is_regenerating: false}}
     {:noreply, state} = Process.handle_cast({:recv, "run 2n"}, state)
 
     assert state.mode == "continuing"
@@ -171,7 +171,7 @@ defmodule Game.SessionTest do
     |> Repo.preload([class: [:skills]])
 
     @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
-    state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | move_points: 10}}, regen: %{is_regenerating: false}}
+    state = %{state | user: user, save: %{room_id: 1, stats: %{base_stats() | endurance_points: 10}}, regen: %{is_regenerating: false}}
     command = %Command{module: Command.Run, args: {[:north, :north]}}
     {:noreply, _state} = Process.handle_info({:continue, command}, state)
 

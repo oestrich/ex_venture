@@ -227,10 +227,10 @@ defmodule Game.Effect do
     %{stats | skill_points: skill_points}
   end
 
-  def apply_effect(effect = %{kind: "recover", type: "move"}, stats) do
-    %{move_points: move_points, max_move_points: max_move_points} = stats
-    move_points = max_recover(move_points, effect.amount, max_move_points)
-    %{stats | move_points: move_points}
+  def apply_effect(effect = %{kind: "recover", type: "endurance"}, stats) do
+    %{endurance_points: endurance_points, max_endurance_points: max_endurance_points} = stats
+    endurance_points = max_recover(endurance_points, effect.amount, max_endurance_points)
+    %{stats | endurance_points: endurance_points}
   end
 
   def apply_effect(_effect, stats), do: stats

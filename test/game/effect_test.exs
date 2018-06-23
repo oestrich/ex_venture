@@ -142,10 +142,10 @@ defmodule Game.EffectTest do
       assert stats == %{skill_points: 30, max_skill_points: 30}
     end
 
-    test "recover move points" do
-      effect = %{kind: "recover", type: "move", amount: 10}
-      stats = Effect.apply_effect(effect, %{move_points: 25, max_move_points: 30})
-      assert stats == %{move_points: 30, max_move_points: 30}
+    test "recover endurance points" do
+      effect = %{kind: "recover", type: "endurance", amount: 10}
+      stats = Effect.apply_effect(effect, %{endurance_points: 25, max_endurance_points: 30})
+      assert stats == %{endurance_points: 30, max_endurance_points: 30}
     end
   end
 
