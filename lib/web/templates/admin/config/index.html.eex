@@ -49,7 +49,7 @@
                 </td>
               </tr>
               <tr>
-                <th>Regen tick vount</th>
+                <th>Regen tick count</th>
                 <td><%= Config.regen_tick_count("Not set") %></td>
                 <td></td>
               </tr>
