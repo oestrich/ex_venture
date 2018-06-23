@@ -261,13 +261,13 @@ defmodule Seeds do
     create_exit(%{direction: "east", start_room_id: shack.id, finish_room_id: forest_path.id})
 
     stats = %{
-      health_points: 25,
-      max_health_points: 25,
-      skill_points: 10,
-      max_skill_points: 10,
-      endurance_points: 10,
-      max_endurance_points: 10,
-      strength: 13,
+      health_points: 50,
+      max_health_points: 50,
+      skill_points: 50,
+      max_skill_points: 50,
+      endurance_points: 50,
+      max_endurance_points: 50,
+      strength: 10,
       agility: 10,
       intelligence: 10,
       awareness: 10,
@@ -405,12 +405,12 @@ defmodule Seeds do
       name: "Human",
       description: "A human",
       starting_stats: %{
-        health_points: 40,
-        max_health_points: 40,
-        skill_points: 15,
-        max_skill_points: 15,
-        endurance_points: 15,
-        max_endurance_points: 15,
+        health_points: 50,
+        max_health_points: 50,
+        skill_points: 50,
+        max_skill_points: 50,
+        endurance_points: 50,
+        max_endurance_points: 50,
         strength: 10,
         agility: 10,
         intelligence: 10,
@@ -426,10 +426,10 @@ defmodule Seeds do
       starting_stats: %{
         health_points: 50,
         max_health_points: 50,
-        skill_points: 15,
-        max_skill_points: 15,
-        endurance_points: 15,
-        max_endurance_points: 15,
+        skill_points: 50,
+        max_skill_points: 50,
+        endurance_points: 50,
+        max_endurance_points: 50,
         strength: 12,
         agility: 8,
         intelligence: 10,
@@ -443,12 +443,12 @@ defmodule Seeds do
       name: "Elf",
       description: "An elf",
       starting_stats: %{
-        health_points: 15,
-        max_health_points: 35,
-        skill_points: 35,
-        max_skill_points: 15,
-        endurance_points: 15,
-        max_endurance_points: 15,
+        health_points: 50,
+        max_health_points: 50,
+        skill_points: 50,
+        max_skill_points: 50,
+        endurance_points: 50,
+        max_endurance_points: 50,
         strength: 8,
         agility: 12,
         intelligence: 10,
@@ -564,7 +564,7 @@ defmodule Seeds do
         pager_size: 20,
         regen_notifications: true,
       })
-      |> Map.put(:version, 9)
+      |> Map.put(:version, 11)
 
     create_user(%{
       name: "eric",
