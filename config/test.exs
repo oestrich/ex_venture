@@ -25,7 +25,7 @@ config :ex_venture, :game,
   rand: Test.ChanceSuccess,
   report_users: false,
   continue_wait: 10,
-  random_damage: 0..0
+  random_effect_range: 0..0
 
 config :ex_venture, :npc,
   reaction_time_ms: 0

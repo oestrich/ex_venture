@@ -7,7 +7,7 @@ defmodule Game.Effect do
   alias Data.Stats
   alias Game.DamageTypes
 
-  @random_damage Application.get_env(:ex_venture, :game)[:random_damage]
+  @random_effect_range Application.get_env(:ex_venture, :game)[:random_effect_range]
 
   @type continuous_effect :: {Character.t(), Effec.t()}
 
@@ -97,7 +97,7 @@ defmodule Game.Effect do
     case DamageTypes.get(effect.type) do
       {:ok, damage_type} ->
         stat = Map.get(stats, damage_type.stat_modifier)
-        random_swing = Enum.random(@random_damage)
+        random_swing = Enum.random(@random_effect_range)
         modifier = 1 + stat / damage_type.boost_ratio + random_swing / 100
         modified_amount = max(round(Float.ceil(effect.amount * modifier)), 0)
         effect |> Map.put(:amount, modified_amount)
@@ -111,13 +111,15 @@ defmodule Game.Effect do
   Calculate recovery
 
       iex> effect = %{kind: "recover", type: "health", amount: 10}
-      iex> Game.Effect.calculate_recover(effect, %{awareness: 10})
-      %{kind: "recover", type: "health", amount: 15}
+      iex> Game.Effect.calculate_recover(effect, %{})
+      %{kind: "recover", type: "health", amount: 10}
   """
   @spec calculate_recover(Effect.t(), Stats.t()) :: map()
-  def calculate_recover(effect, stats) do
-    awareness_modifier = 1 + stats.awareness / 20.0
-    modified_amount = round(Float.ceil(effect.amount * awareness_modifier))
+  def calculate_recover(effect, _stats) do
+    random_swing = Enum.random(@random_effect_range)
+    modifier = 1 + random_swing / 100
+    modified_amount = round(Float.ceil(effect.amount * modifier))
+
     effect |> Map.put(:amount, modified_amount)
   end
 
@@ -163,7 +165,7 @@ defmodule Game.Effect do
     case DamageTypes.get(effect.type) do
       {:ok, damage_type} ->
         stat = Map.get(stats, damage_type.reverse_stat)
-        random_swing = Enum.random(@random_damage)
+        random_swing = Enum.random(@random_effect_range)
         modifier = 1 + stat / damage_type.reverse_boost + random_swing / 100
         modified_amount = round(Float.ceil(effect.amount / modifier))
 
@@ -178,7 +180,7 @@ defmodule Game.Effect do
     case DamageTypes.get(effect.type) do
       {:ok, damage_type} ->
         stat = Map.get(stats, damage_type.reverse_stat)
-        random_swing = Enum.random(@random_damage)
+        random_swing = Enum.random(@random_effect_range)
         modifier = 1 + stat / damage_type.reverse_boost + random_swing / 100
         modified_amount = round(Float.ceil(effect.amount / modifier))
 

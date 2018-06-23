@@ -13,7 +13,7 @@ config :ex_venture, :game,
   currency: "gold",
   timeout_seconds: 10 * 60,
   rand: :rand,
-  random_damage: -25..25,
+  random_effect_range: -25..25,
   report_users: true
 
 config :ex_venture, :npc,
