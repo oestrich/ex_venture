@@ -560,7 +560,7 @@ defmodule Seeds do
       |> Map.put(:stats, dwarf.starting_stats())
       |> Map.put(:config, %{
         hints: true,
-        prompt: "%h/%Hhp %s/%Ssp %m/%Mmv %x",
+        prompt: "%h/%Hhp %s/%Ssp %e/%Eep %x",
         pager_size: 20,
         regen_notifications: true,
       })

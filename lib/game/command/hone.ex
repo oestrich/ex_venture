@@ -151,7 +151,7 @@ defmodule Game.Command.Hone do
       Your vitality is currently at #{save.stats.vitality}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
-    {command send='hone vitality'}Willpower{/command}
+    {command send='hone willpower'}Willpower{/command}
       Your willpower is currently at #{save.stats.willpower}, honing will add {yellow}#{
       @hone_stat_boost
     }{/yellow}
@@ -163,7 +163,7 @@ defmodule Game.Command.Hone do
       Your max skill points are currently at #{save.stats.max_skill_points}, honing will add {yellow}#{
       @hone_points_boost
     }{/yellow}
-    {command send='hone skill'}Endurance{/command} Points
+    {command send='hone endurance'}Endurance{/command} Points
       Your max endurance points are currently at #{save.stats.max_endurance_points}, honing will add {yellow}#{
       @hone_points_boost
     }{/yellow}
