@@ -32,7 +32,7 @@ exports.config = {
           /popper/,
           "admin/js/vendor/bootstrap.js",
           "admin/js/vendor/adminlte.js",
-          "home/js/vendor/bootstrap.min.js",
+          "home/js/vendor/bootstrap.js",
         ],
       },
     },
@@ -48,7 +48,7 @@ exports.config = {
           "admin/css/vendor/AdminLTE.css",
           "admin/css/vendor/skin-black.css",
           "admin/css/vendor/skin-black-light.css",
-          "home/css/vendor/bootstrap.min.css",
+          "home/css/vendor/bootstrap.css",
         ],
         after: [
           "admin/css/app.css",
