@@ -70,35 +70,35 @@ defmodule Game.MapTest do
   describe "displaying the map" do
     test "display a map in text form", %{zone: zone} do
       map = [
-        "       +---+    ",
-        "       |[ ]|    ",
-        "   +---+ = +---+",
-        "   |[ ] [X]=[ ]|",
-        "   +---+   +---+",
-        "       |[ ]|    ",
-        "       +---+    ",
+        "                      ",
+        "           [ ]        ",
+        "            |         ",
+        "     [ ] - [X] - [ ]  ",
+        "            |         ",
+        "           [ ]        ",
+        "                      ",
       ]
       assert Map.display_map(zone, {2, 2, 1}) == Enum.join(map, "\n")
     end
 
     test "viewing another layer", %{zone: zone} do
       map = [
-        "   +---+",
-        "   |[X]|",
-        "   +---+",
+        "          ",
+        "     [X]  ",
+        "          ",
       ]
       assert Map.display_map(zone, {2, 2, 2}) == Enum.join(map, "\n")
     end
 
     test "view a mini map", %{zone: zone} do
       map = [
-        "       +---+    ",
-        "       |[ ]|    ",
-        "   +---+ = +---+",
-        "   |[ ] [X]=[ ]|",
-        "   +---+   +---+",
-        "       |[ ]|    ",
-        "       +---+    ",
+        "                      ",
+        "           [ ]        ",
+        "            |         ",
+        "     [ ] - [X] - [ ]  ",
+        "            |         ",
+        "           [ ]        ",
+        "                      ",
       ]
       assert Map.display_map(zone, {2, 2, 1}, [mini: true]) == Enum.join(map, "\n")
     end

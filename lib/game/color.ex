@@ -137,12 +137,13 @@ defmodule Game.Color do
   def format_basic_color("{magenta}"), do: "\e[35m"
   def format_basic_color("{cyan}"), do: "\e[36m"
   def format_basic_color("{white}"), do: "\e[37m"
+  def format_basic_color("{map:default}"), do: ""
   def format_basic_color("{map:blue}"), do: "\e[38;5;26m"
   def format_basic_color("{map:brown}"), do: "\e[38;5;94m"
   def format_basic_color("{map:dark-green}"), do: "\e[38;5;22m"
   def format_basic_color("{map:green}"), do: "\e[38;5;34m"
-  def format_basic_color("{map:grey}"), do: "\e[38;5;247m"
-  def format_basic_color("{map:light-grey}"), do: "\e[38;5;252m"
+  def format_basic_color("{map:grey}"), do: "\e[38;5;240m"
+  def format_basic_color("{map:light-grey}"), do: "\e[38;5;250m"
 
   def format_basic_color(key) do
     key =

@@ -4,7 +4,6 @@ defmodule Game.Map do
   """
 
   alias Data.Exit
-  alias Game.Door
 
   @doc """
   Find the coordinates for each room in a zone and the size of the zone
@@ -110,9 +109,9 @@ defmodule Game.Map do
   """
   def display_room({_, nil}, _) do
     [
-      "     ",
-      "     ",
-      "     "
+      "       ",
+      "       ",
+      "       "
     ]
   end
 
@@ -138,32 +137,23 @@ defmodule Game.Map do
   defp exits(room, direction) when direction in [:north, :south] do
     case Exit.exit_to(room, direction) do
       nil ->
-        "+---+"
-
-      %{door_id: door_id, has_door: true} ->
-        case Door.get(door_id) do
-          "open" -> "+ / +"
-          "closed" -> "+ = +"
-        end
+        "       "
 
       _ ->
-        "+   +"
+        "   |   "
     end
   end
 
   defp exits(room, direction) when direction in [:east, :west] do
     case Exit.exit_to(room, direction) do
       nil ->
-        "|"
+        "  "
 
-      %{door_id: door_id, has_door: true} ->
-        case Door.get(door_id) do
-          "open" -> "/"
-          "closed" -> "="
-        end
+      %{direction: "east"} ->
+        " -"
 
-      _ ->
-        " "
+      %{direction: "west"} ->
+        "- "
     end
   end
 
@@ -262,7 +252,7 @@ defmodule Game.Map do
   Determine the color of the room in the map
 
       iex> Game.Map.room_color(%{ecology: "default"})
-      nil
+      "map:default"
   """
   @spec room_color(room :: Room.t()) :: String.t()
   def room_color(room)
@@ -275,7 +265,7 @@ defmodule Game.Map do
       ecology when ecology in ["forest", "jungle"] -> "map:dark-green"
       ecology when ecology in ["town", "dungeon"] -> "map:grey"
       ecology when ecology in ["inside"] -> "map:light-grey"
-      _ -> nil
+      _ -> "map:default"
     end
   end
 

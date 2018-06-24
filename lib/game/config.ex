@@ -44,12 +44,13 @@ defmodule Game.Config do
     color_magenta: "#d33682",
     color_cyan: "#2aa198",
     color_white: "#eee8d5",
+    color_map_default: "#9cb7ba",
     color_map_blue: "#005fd7",
     color_map_brown: "#875f00",
     color_map_dark_green: "#005f00",
     color_map_green: "#00af00",
-    color_map_grey: "#9e9e9e",
-    color_map_light_grey: "#d0d0d0"
+    color_map_grey: "#7e9693",
+    color_map_light_grey: "#b6c6c6"
   }
 
   @basic_stats %{
