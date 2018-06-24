@@ -39,8 +39,14 @@ body {
 
   input[type="text"] {
     border: none;
-    padding: 10px;
+    padding: 6px;
+    padding-left: 10px;
     box-sizing: border-box;
+    margin-top: 6px;
+    margin-left: 3px;
+    margin-right: 3px;
+    width: calc(100% - 6px);
+    font-family: "Lucida Console", Monaco, monospace;
 
     &:focus {
       outline: 3px solid #268bd2;
@@ -133,14 +139,13 @@ pre {
 .prompt-container {
   position: relative;
   width: 98%;
-  padding-left: 1%;
-  padding-right: 1%;
+  margin-left: 1%;
+  margin-right: 1%;
 }
 
 input {
-  font-size: 18px;
+  font-size: 1.1em;
   width: 100%;
-  margin-top: 10px;
 }
 
 .stats {
