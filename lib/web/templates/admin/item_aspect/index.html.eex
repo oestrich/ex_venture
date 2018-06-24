@@ -23,27 +23,29 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @item_aspects, fn (item_aspect) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= item_aspect.id %></td>
-                  <td><%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %></td>
-                  <td>
-                    <%= link("View", to: item_aspect_path(@conn, :show, item_aspect.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: item_aspect_path(@conn, :edit, item_aspect.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @item_aspects, fn (item_aspect) -> %>
+                  <tr>
+                    <td><%= item_aspect.id %></td>
+                    <td><%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %></td>
+                    <td>
+                      <%= link("View", to: item_aspect_path(@conn, :show, item_aspect.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: item_aspect_path(@conn, :edit, item_aspect.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

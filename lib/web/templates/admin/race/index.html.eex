@@ -23,27 +23,29 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @races, fn (race) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= race.id %></td>
-                  <td><%= link(race.name, to: race_path(@conn, :show, race.id)) %></td>
-                  <td>
-                    <%= link("View", to: race_path(@conn, :show, race.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: race_path(@conn, :edit, race.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @races, fn (race) -> %>
+                  <tr>
+                    <td><%= race.id %></td>
+                    <td><%= link(race.name, to: race_path(@conn, :show, race.id)) %></td>
+                    <td>
+                      <%= link("View", to: race_path(@conn, :show, race.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: race_path(@conn, :edit, race.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

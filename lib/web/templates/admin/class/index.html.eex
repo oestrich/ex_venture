@@ -23,27 +23,29 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Value</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @classes, fn (class) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= class.id %></td>
-                  <td><%= link(class.name, to: class_path(@conn, :show, class.id)) %></td>
-                  <td>
-                    <%= link("View", to: class_path(@conn, :show, class.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: class_path(@conn, :edit, class.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>Name</th>
+                  <th>Value</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @classes, fn (class) -> %>
+                  <tr>
+                    <td><%= class.id %></td>
+                    <td><%= link(class.name, to: class_path(@conn, :show, class.id)) %></td>
+                    <td>
+                      <%= link("View", to: class_path(@conn, :show, class.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: class_path(@conn, :edit, class.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
 
           <%= SharedView.pagination(path: class_path(@conn, :index), pagination: @pagination, name: "classes") %>
         </div>

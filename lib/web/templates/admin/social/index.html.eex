@@ -14,29 +14,31 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Command</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map(@socials, fn social -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= social.id %></td>
-                  <td><%= social.name %></td>
-                  <td><%= social.command %></td>
-                  <td>
-                    <%= link("View", to: social_path(@conn, :show, social.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: social_path(@conn, :edit, social.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Command</th>
+                  <th>Actions</th>
                 </tr>
-              <% end) %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map(@socials, fn social -> %>
+                  <tr>
+                    <td><%= social.id %></td>
+                    <td><%= social.name %></td>
+                    <td><%= social.command %></td>
+                    <td>
+                      <%= link("View", to: social_path(@conn, :show, social.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: social_path(@conn, :edit, social.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end) %>
+              </tbody>
+            </table>
+          </div>
 
           <%= SharedView.pagination(path: social_path(@conn, :index, social: @filter), pagination: @pagination, name: "socials") %>
         </div>

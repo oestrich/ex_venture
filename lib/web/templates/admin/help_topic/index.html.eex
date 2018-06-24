@@ -24,29 +24,31 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Keywords</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @help_topics, fn (help_topic) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= help_topic.id %></td>
-                  <td><%= link(help_topic.name, to: help_topic_path(@conn, :show, help_topic.id)) %></td>
-                  <td><%= help_topic.keywords |> Enum.join(", ") %></td>
-                  <td>
-                    <%= link("View", to: help_topic_path(@conn, :show, help_topic.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: help_topic_path(@conn, :edit, help_topic.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Keywords</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @help_topics, fn (help_topic) -> %>
+                  <tr>
+                    <td><%= help_topic.id %></td>
+                    <td><%= link(help_topic.name, to: help_topic_path(@conn, :show, help_topic.id)) %></td>
+                    <td><%= help_topic.keywords |> Enum.join(", ") %></td>
+                    <td>
+                      <%= link("View", to: help_topic_path(@conn, :show, help_topic.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: help_topic_path(@conn, :edit, help_topic.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div class="box-footer">
           <%= SharedView.pagination(path: help_topic_path(@conn, :index), pagination: @pagination, name: "help topics") %>
