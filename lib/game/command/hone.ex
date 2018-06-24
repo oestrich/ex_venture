@@ -131,45 +131,38 @@ defmodule Game.Command.Hone do
     """
     Which statistic do you want to hone?
 
-    {command send='hone strength'}Strength{/command}
-      Your strength is currently at #{save.stats.strength}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone agility'}Agility{/command}
-      Your agility is currently at #{save.stats.agility}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone intelligence'}Intelligence{/command}
-      Your intelligence is currently at #{save.stats.intelligence}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone awareness'}Awareness{/command}
-      Your awareness is currently at #{save.stats.awareness}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone vitality'}Vitality{/command}
-      Your vitality is currently at #{save.stats.vitality}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone willpower'}Willpower{/command}
-      Your willpower is currently at #{save.stats.willpower}, honing will add {yellow}#{
-      @hone_stat_boost
-    }{/yellow}
-    {command send='hone health'}Health{/command} Points
-      Your max health points are currently at #{save.stats.max_health_points}, honing will add {yellow}#{
-      @hone_points_boost
-    }{/yellow}
-    {command send='hone skill'}Skill{/command} Points
-      Your max skill points are currently at #{save.stats.max_skill_points}, honing will add {yellow}#{
-      @hone_points_boost
-    }{/yellow}
-    {command send='hone endurance'}Endurance{/command} Points
-      Your max endurance points are currently at #{save.stats.max_endurance_points}, honing will add {yellow}#{
-      @hone_points_boost
-    }{/yellow}
+    #{hone_field_help(save, :strength, "Stregnth")}
+    #{hone_field_help(save, :agility, "Agility")}
+    #{hone_field_help(save, :intelligence, "Intelligence")}
+    #{hone_field_help(save, :awareness, "Awareness")}
+    #{hone_field_help(save, :vitality, "Vitality")}
+    #{hone_field_help(save, :willpower, "Willpower")}
+    #{hone_points_help(save, :health, "Health")}
+    #{hone_points_help(save, :skill, "Skill")}
+    #{hone_points_help(save, :endurance, "Endurance")}
 
     Honing costs #{@hone_cost} xp. You have #{spendable_experience} xp left to spend.
     """
+  end
+
+  defp hone_field_help(save, field, title) do
+    stat = Map.get(save.stats, field)
+
+    String.trim("""
+    {command send='hone #{field}'}#{title}{/command}
+      Your #{field} is currently at #{stat}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
+    """)
+  end
+
+  defp hone_points_help(save, field, title) do
+    stat = Map.get(save.stats, :"max_#{field}_points")
+
+    boost = @hone_points_boost
+
+    String.trim("""
+    {command send='hone #{field}'}#{title}{/command} Points
+      Your max #{field} points are currently at #{stat}, honing will add {yellow}#{boost}{/yellow}
+    """)
   end
 
   defp check_if_enough_experience_to_spend(state = %{save: save}, stat) do
