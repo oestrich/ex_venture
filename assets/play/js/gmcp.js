@@ -22,9 +22,6 @@ let characterInfo = (channel, data) => {
 
   renderCharacter(data);
 
-  let stats = _.first(Sizzle(".stats"));
-  stats.style.display = "flex";
-
   let characterInfo = _.first(Sizzle(".character-info"));
   characterInfo.style.display = "inherit";
 

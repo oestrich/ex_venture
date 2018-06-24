@@ -65,7 +65,7 @@
     </div>
 
     <div class="experience-bar tooltip" id="experience" data-title="Experience to next level">
-      <div class="percentage"></div>
+      <div class="percentage" style="width: 0"></div>
     </div>
   </div>
   <div class="prompt-container">
