@@ -25,7 +25,7 @@ defmodule Game.Environment.State do
       :exits,
       players: [],
       npcs: [],
-      features: [],
+      features: []
     ]
   end
 
@@ -41,7 +41,7 @@ defmodule Game.Environment.State do
       :ecology,
       :exits,
       players: [],
-      npcs: [],
+      npcs: []
     ]
   end
 end

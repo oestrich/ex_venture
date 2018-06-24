@@ -12,7 +12,8 @@ defmodule Game.Format.Scan do
     [
       room_current(room),
       rooms(rooms)
-    ] |> Enum.join("\n")
+    ]
+    |> Enum.join("\n")
   end
 
   defp rooms(rooms) do

@@ -97,7 +97,11 @@ defmodule Web.Router do
       post("/complete", BugController, :complete, as: :complete)
     end
 
-    resources("/channels", ChannelController, only: [:index, :new, :show, :create, :edit, :update])
+    resources(
+      "/channels",
+      ChannelController,
+      only: [:index, :new, :show, :create, :edit, :update]
+    )
 
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
       resources("/skills", ClassSkillController, only: [:new, :create], as: :skill)
@@ -146,9 +150,9 @@ defmodule Web.Router do
 
       resources("/items", NPCItemController, only: [:new, :create], as: :item)
 
-      get "/script", NPCScriptController, :show, as: :script
-      get "/script/edit", NPCScriptController, :edit, as: :script
-      put "/script", NPCScriptController, :update, as: :script
+      get("/script", NPCScriptController, :show, as: :script)
+      get("/script/edit", NPCScriptController, :edit, as: :script)
+      put("/script", NPCScriptController, :update, as: :script)
 
       resources("/skills", NPCSkillController, only: [:new, :create, :delete], as: :skill)
 

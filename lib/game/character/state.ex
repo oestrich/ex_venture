@@ -7,6 +7,6 @@ defmodule Game.Character.State do
   alias Game.Character
 
   @type t :: %{
-    continuous_effects: [{Character.t(), Effect.t()}]
-  }
+          continuous_effects: [{Character.t(), Effect.t()}]
+        }
 end

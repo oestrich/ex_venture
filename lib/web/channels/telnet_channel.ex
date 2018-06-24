@@ -135,7 +135,7 @@ defmodule Web.TelnetChannel do
         socket: socket,
         user_id: nil,
         config: %{},
-        restart_count: 0,
+        restart_count: 0
       }
 
       {:ok, state}
@@ -227,9 +227,12 @@ defmodule Web.TelnetChannel do
     def handle_cast(:restart_session, state) do
       case state.restart_count do
         count when count > 5 ->
-          Logger.info(fn ->
-            "Session cannot recover. Giving up"
-          end, type: :session)
+          Logger.info(
+            fn ->
+              "Session cannot recover. Giving up"
+            end,
+            type: :session
+          )
 
           send(state.socket.channel_pid, {:echo, Protocol.error_disconnect_message()})
 
@@ -246,9 +249,12 @@ defmodule Web.TelnetChannel do
     end
 
     def handle_info(:restart_session, state) do
-      Logger.info(fn ->
-        "Restarting a session"
-      end, type: :session)
+      Logger.info(
+        fn ->
+          "Restarting a session"
+        end,
+        type: :session
+      )
 
       {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
 

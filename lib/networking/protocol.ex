@@ -91,6 +91,7 @@ defmodule Networking.Protocol do
     Logger.debug(fn ->
       "Pushing GMCP #{module} - #{data}"
     end)
+
     GenServer.cast(socket, {:gmcp, module, data})
   end
 
@@ -322,9 +323,12 @@ defmodule Networking.Protocol do
   defp restart_session(state) do
     case state.restart_count do
       count when count > 5 ->
-        Logger.info(fn ->
-          "Session cannot recover. Giving up"
-        end, type: :session)
+        Logger.info(
+          fn ->
+            "Session cannot recover. Giving up"
+          end,
+          type: :session
+        )
 
         ErrorReport.send_error("Session cannot be recovered. Game is offline.")
         echo(self(), error_disconnect_message())
@@ -426,9 +430,12 @@ defmodule Networking.Protocol do
   - Core.Supports.Set
   """
   def handle_gmcp("Core.Supports.Set " <> supports, state) do
-    Logger.debug(fn ->
-      "Got a Core.Supports.Set of #{supports}"
-    end, type: :socket)
+    Logger.debug(
+      fn ->
+        "Got a Core.Supports.Set of #{supports}"
+      end,
+      type: :socket
+    )
 
     case Poison.decode(supports) do
       {:ok, supports} ->
@@ -495,7 +502,7 @@ defmodule Networking.Protocol do
 
   def broadcast(%{user_id: user_id}, data) when is_integer(user_id) do
     case data do
-      <<@iac, _data :: binary()>> ->
+      <<@iac, _data::binary()>> ->
         :ok
 
       _ ->

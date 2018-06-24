@@ -23,7 +23,7 @@ defmodule Web.HelpTopic do
     built_ins = HelpAgent.built_in()
 
     (help_topics ++ built_ins)
-    |> Enum.sort_by(&(&1.name))
+    |> Enum.sort_by(& &1.name)
   end
 
   def all(opts) do

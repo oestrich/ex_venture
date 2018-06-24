@@ -18,7 +18,6 @@ defmodule Game.Config do
     color_home_secondary: "#fdf6e3",
     color_home_secondary_hover: "#fcf1d5",
     color_home_secondary_text: "#657b83",
-
     color_background: "#002b36",
     color_text_color: "#93a1a1",
     color_panel_border: "#073642",
@@ -64,7 +63,7 @@ defmodule Game.Config do
     agility: 10,
     vitality: 10,
     intelligence: 10,
-    awareness: 10,
+    awareness: 10
   }
 
   @doc false

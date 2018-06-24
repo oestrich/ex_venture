@@ -423,7 +423,10 @@ defmodule Game.NPC.Events do
       @environment.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
-        NPC.delay_notify({"room/entered", {{:user, player}, :enter}}, milliseconds: @npc_reaction_time_ms)
+        NPC.delay_notify(
+          {"room/entered", {{:user, player}, :enter}},
+          milliseconds: @npc_reaction_time_ms
+        )
       end)
     end)
 

@@ -59,7 +59,7 @@ defmodule Game.Effect do
   @spec calculate_stats_from_continuous_effects(Stats.t(), map()) :: [Effect.t()]
   def calculate_stats_from_continuous_effects(stats, state) do
     state.continuous_effects
-    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.map(&elem(&1, 1))
     |> Enum.filter(&(&1.kind == "stats/boost"))
     |> Enum.reduce(stats, &process_stats/2)
   end

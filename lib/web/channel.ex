@@ -27,7 +27,10 @@ defmodule Web.Channel do
 
     Channel
     |> where([c], c.id == ^id)
-    |> preload([messages: ^from(m in ChannelMessage, where: m.inserted_at > ^one_day_ago, order_by: [m.inserted_at])])
+    |> preload(
+      messages:
+        ^from(m in ChannelMessage, where: m.inserted_at > ^one_day_ago, order_by: [m.inserted_at])
+    )
     |> Repo.one()
   end
 
@@ -37,7 +40,7 @@ defmodule Web.Channel do
     ChannelMessage
     |> where([cm], cm.channel_id == ^channel.id)
     |> where([cm], cm.inserted_at >= ^ten_minutes_ago)
-    |> order_by([cm], [asc: cm.inserted_at])
+    |> order_by([cm], asc: cm.inserted_at)
     |> limit(10)
     |> Repo.all()
     |> Enum.map(fn message ->

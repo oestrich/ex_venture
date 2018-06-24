@@ -18,6 +18,7 @@ defmodule Game.Session.GMCP do
     case Config.discord_invite_url() do
       nil ->
         state.socket |> @socket.push_gmcp("External.Discord.Info", "{}")
+
       url ->
         data = %{inviteurl: url}
         state.socket |> @socket.push_gmcp("External.Discord.Info", data |> Poison.encode!())
@@ -39,7 +40,7 @@ defmodule Game.Session.GMCP do
       name: user.name,
       level: user.save.level,
       class: %{
-        name: user.class.name,
+        name: user.class.name
       }
     }
 
@@ -220,6 +221,7 @@ defmodule Game.Session.GMCP do
       command: skill.command,
       active: opts[:active]
     }
+
     socket |> @socket.push_gmcp("Character.Skill", Poison.encode!(data))
   end
 
@@ -230,7 +232,7 @@ defmodule Game.Session.GMCP do
   def discord_status(state) do
     data = %{
       game: Config.game_name(),
-      starttime: state.session_started_at |> Timex.to_unix(),
+      starttime: state.session_started_at |> Timex.to_unix()
     }
 
     state.socket |> @socket.push_gmcp("External.Discord.Status", data |> Poison.encode!())

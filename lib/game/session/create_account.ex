@@ -28,6 +28,7 @@ defmodule Game.Session.CreateAccount do
     We need a name and password for you to sign up.
     #{random_names()}
     """
+
     message = String.trim(message)
 
     @socket.echo(socket, message)
@@ -159,11 +160,7 @@ defmodule Game.Session.CreateAccount do
         ""
 
       names ->
-        """
-
-        Here are a few names to help you pick one:
-        #{Enum.join(names, ", ")}
-        """
+        "\nHere are a few names to help you pick one:\n#{Enum.join(names, ", ")}\n"
     end
   end
 end

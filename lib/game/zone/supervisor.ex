@@ -31,7 +31,12 @@ defmodule Game.Zone.Supervisor do
   defp children(zone = %{type: "overworld"}) do
     [
       worker(Zone, [zone], id: zone.id, restart: :permanent),
-      supervisor(Overworld.SectorSupervisor, [zone], id: "sectors:#{zone.id}", restart: :permanent),
+      supervisor(
+        Overworld.SectorSupervisor,
+        [zone],
+        id: "sectors:#{zone.id}",
+        restart: :permanent
+      )
     ]
   end
 end

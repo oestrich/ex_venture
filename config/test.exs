@@ -27,8 +27,7 @@ config :ex_venture, :game,
   continue_wait: 10,
   random_effect_range: 0..0
 
-config :ex_venture, :npc,
-  reaction_time_ms: 0
+config :ex_venture, :npc, reaction_time_ms: 0
 
 config :bcrypt_elixir, :log_rounds, 4
 

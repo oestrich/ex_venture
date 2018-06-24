@@ -25,7 +25,7 @@ defmodule Web.Admin.ItemView do
         []
 
       effects ->
-       effects
+        effects
     end
   end
 

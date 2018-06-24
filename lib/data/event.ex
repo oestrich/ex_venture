@@ -145,7 +145,10 @@ defmodule Data.Event do
   def validate_event(event) do
     event
     |> validate()
-    |> validate_keys(required: required_event_keys(event.type), one_of: one_of_event_keys(event.type))
+    |> validate_keys(
+      required: required_event_keys(event.type),
+      one_of: one_of_event_keys(event.type)
+    )
     |> validate_action_for_type()
     |> validate_event_action()
     |> validate_event_condition()

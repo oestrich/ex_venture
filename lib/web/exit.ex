@@ -41,7 +41,7 @@ defmodule Web.Exit do
     reverse_params = %{
       direction: to_string(Exit.opposite(params["direction"])),
       has_door: Map.get(params, "has_door", false),
-      door_id: Map.get(params, "door_id", nil),
+      door_id: Map.get(params, "door_id", nil)
     }
 
     reverse_params
@@ -88,9 +88,14 @@ defmodule Web.Exit do
   @spec delete_exit(params :: map) :: {:ok, Exit.t()} | {:error, changeset :: map}
   def delete_exit(exit_id) do
     room_exit = Exit |> Repo.get(exit_id)
-    reverse_exit = Exit |> Repo.get_by([
-      direction: to_string(Exit.opposite(room_exit.direction)),
-    ] ++ reverse_id(room_exit))
+
+    reverse_exit =
+      Exit
+      |> Repo.get_by(
+        [
+          direction: to_string(Exit.opposite(room_exit.direction))
+        ] ++ reverse_id(room_exit)
+      )
 
     with {:ok, room_exit} <- Repo.delete(room_exit),
          {:ok, reverse_exit} <- Repo.delete(reverse_exit) do

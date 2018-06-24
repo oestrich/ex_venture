@@ -36,9 +36,10 @@ defmodule Game.Command.Who do
   def run({}, %{socket: socket}) do
     players = Session.Registry.connected_players()
 
-    {admins, players} = Enum.split_with(players, fn %{user: user} ->
-      User.is_admin?(user)
-    end)
+    {admins, players} =
+      Enum.split_with(players, fn %{user: user} ->
+        User.is_admin?(user)
+      end)
 
     names =
       (admins ++ players)

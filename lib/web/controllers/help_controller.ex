@@ -6,6 +6,7 @@ defmodule Web.HelpController do
 
   def index(conn, _params) do
     help_topics = HelpTopic.all(alpha: true)
+
     conn
     |> assign(:help_topics, help_topics)
     |> render("index.html")

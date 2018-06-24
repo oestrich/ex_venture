@@ -16,7 +16,7 @@ defmodule Web.Admin.ItemAspectView do
         []
 
       effects ->
-       effects
+        effects
     end
   end
 end

@@ -16,9 +16,10 @@ defmodule Web.Admin.ZoneOverworldView do
     zone
     |> Zone.room_exits()
     |> Enum.map(fn {zone_name, rooms} ->
-      rooms = Enum.map(rooms, fn {name, id} ->
-        %{id: id, name: name}
-      end)
+      rooms =
+        Enum.map(rooms, fn {name, id} ->
+          %{id: id, name: name}
+        end)
 
       %{name: zone_name, rooms: rooms}
     end)

@@ -38,7 +38,15 @@ defmodule Data.Exit do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:direction, :has_door, :door_id, :start_room_id, :finish_room_id, :start_overworld_id, :finish_overworld_id])
+    |> cast(params, [
+      :direction,
+      :has_door,
+      :door_id,
+      :start_room_id,
+      :finish_room_id,
+      :start_overworld_id,
+      :finish_overworld_id
+    ])
     |> cast(params, [:start_zone_id, :finish_zone_id])
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
@@ -79,6 +87,7 @@ defmodule Data.Exit do
   @spec load_exits(Room.t()) :: Room.t()
   def load_exits(room, opts \\ []) do
     query = where(__MODULE__, [e], e.start_room_id == ^room.id)
+
     query =
       case Keyword.get(opts, :preload) do
         true ->

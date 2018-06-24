@@ -16,8 +16,7 @@ config :ex_venture, :game,
   random_effect_range: -25..25,
   report_users: true
 
-config :ex_venture, :npc,
-  reaction_time_ms: 750
+config :ex_venture, :npc, reaction_time_ms: 750
 
 config :ex_venture, :cluster, size: 1
 

@@ -154,7 +154,9 @@ defmodule Game.Command.Say do
           |> Message.format()
 
         state.socket |> @socket.echo(Format.say_to(:you, character, parsed_message))
-        room.id |> @environment.say({:user, user}, Message.say_to(user, character, parsed_message))
+
+        room.id
+        |> @environment.say({:user, user}, Message.say_to(user, character, parsed_message))
     end
   end
 

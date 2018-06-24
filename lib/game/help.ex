@@ -28,7 +28,9 @@ defmodule Game.Help do
     built_ins =
       HelpAgent.built_in()
       |> Enum.map(fn built_in ->
-        "\t{command send='help #{String.downcase(built_in.name)}'}#{built_in.name}{/command}: #{built_in.short}\n"
+        "\t{command send='help #{String.downcase(built_in.name)}'}#{built_in.name}{/command}: #{
+          built_in.short
+        }\n"
       end)
 
     topics =

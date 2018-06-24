@@ -30,7 +30,7 @@ defmodule Game.Overworld.Sector do
       zone_id: zone_id,
       sector: sector,
       players: [],
-      npcs: [],
+      npcs: []
     }
 
     {:ok, state}
@@ -107,10 +107,11 @@ defmodule Game.Overworld.Sector do
         zone: zone.name,
         x: cell.x,
         y: cell.y,
-        ecology: "default", # eventually from the editor
+        # eventually from the editor
+        ecology: "default",
         exits: Overworld.exits(zone, cell),
         players: characters.players,
-        npcs: characters.npcs,
+        npcs: characters.npcs
       }
 
       {{:ok, environment}, state}

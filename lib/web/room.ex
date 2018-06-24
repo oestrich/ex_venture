@@ -36,7 +36,7 @@ defmodule Web.Room do
   """
   @spec ecologies() :: [{String.t(), integer()}]
   def ecologies() do
-    Enum.with_index(Room.ecologies)
+    Enum.with_index(Room.ecologies())
   end
 
   @doc """
@@ -58,7 +58,7 @@ defmodule Web.Room do
       4 => ["ocean", "lake", "river"],
       7 => ["inside"],
       8 => ["town", "dungeon", "default"],
-      10 => ["forest", "jungle"],
+      10 => ["forest", "jungle"]
     }
 
     id =

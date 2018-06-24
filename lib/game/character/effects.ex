@@ -14,7 +14,7 @@ defmodule Game.Character.Effects do
   Common character effect application
   """
   @spec apply_effects(Character.t(), Stats.t(), State.t(), [Effect.t()], Character.t()) ::
-    {Stat.t(), [Effect.t()], [Effect.continuous_effect()]}
+          {Stat.t(), [Effect.t()], [Effect.continuous_effect()]}
   def apply_effects(character, stats, state, effects, from) do
     continuous_effects = effects |> Effect.continuous_effects(from)
 
@@ -25,9 +25,12 @@ defmodule Game.Character.Effects do
     from |> Character.effects_applied(effects, character)
 
     Enum.each(continuous_effects, fn {_from, effect} ->
-      Logger.debug(fn ->
-        "Maybe delaying effect (#{effect.id})"
-      end, type: :character)
+      Logger.debug(
+        fn ->
+          "Maybe delaying effect (#{effect.id})"
+        end,
+        type: :character
+      )
 
       effect |> Effect.maybe_tick_effect(self())
     end)
@@ -51,9 +54,10 @@ defmodule Game.Character.Effects do
   """
   @spec clear_continuous_effect(State.t(), String.t()) :: State.t()
   def clear_continuous_effect(state, effect_id) do
-    continuous_effects = Enum.reject(state.continuous_effects, fn {_from, effect} ->
-      effect.id == effect_id
-    end)
+    continuous_effects =
+      Enum.reject(state.continuous_effects, fn {_from, effect} ->
+        effect.id == effect_id
+      end)
 
     %{state | continuous_effects: continuous_effects}
   end

@@ -65,14 +65,21 @@ defmodule Game.Overworld do
     west = %{direction: "west", start_id: start_id, x: cell.x - 1, y: cell.y}
 
     [north, south, east, west]
-    |> Enum.filter(&(in_overworld?(&1, zone)))
+    |> Enum.filter(&in_overworld?(&1, zone))
     |> Enum.map(fn direction ->
-      real_exit = Enum.find(zone.exits, &(&1.start_id == start_id && &1.direction == direction.direction))
+      real_exit =
+        Enum.find(zone.exits, &(&1.start_id == start_id && &1.direction == direction.direction))
 
       case real_exit do
         nil ->
           finish_id = "overworld:#{zone.id}:#{direction.x},#{direction.y}"
-          %{id: direction.start_id, direction: direction.direction, start_id: direction.start_id, finish_id: finish_id}
+
+          %{
+            id: direction.start_id,
+            direction: direction.direction,
+            start_id: direction.start_id,
+            finish_id: finish_id
+          }
 
         real_exit ->
           real_exit
@@ -100,7 +107,7 @@ defmodule Game.Overworld do
     |> Enum.filter(fn overworld_cell ->
       close?(overworld_cell, cell, @view_distance)
     end)
-    |> Enum.group_by(&(&1.y))
+    |> Enum.group_by(& &1.y)
     |> Enum.into([])
     |> Enum.sort(fn {y_a, _}, {y_b, _} ->
       y_a <= y_b
@@ -128,9 +135,9 @@ defmodule Game.Overworld do
     |> Enum.map(fn y ->
       min_x..max_x
       |> Enum.map(fn x ->
-         map
-         |> Map.get(y, %{})
-         |> Map.get(x, "  ")
+        map
+        |> Map.get(y, %{})
+        |> Map.get(x, "  ")
       end)
       |> Enum.join()
     end)
@@ -138,7 +145,9 @@ defmodule Game.Overworld do
   end
 
   defp close?(cell_a, cell_b, expected) do
-    actual = round(:math.sqrt(:math.pow((cell_b.x - cell_a.x), 2) + :math.pow((cell_b.y - cell_a.y), 2)))
+    actual =
+      round(:math.sqrt(:math.pow(cell_b.x - cell_a.x, 2) + :math.pow(cell_b.y - cell_a.y, 2)))
+
     actual < expected
   end
 
@@ -146,6 +155,7 @@ defmodule Game.Overworld do
     case overworld_cell.x == cell.x && overworld_cell.y == cell.y do
       true ->
         "X "
+
       false ->
         case overworld_cell.c do
           nil ->

@@ -69,7 +69,11 @@ defmodule Raft.Server do
             Raft.announce_candidate(pid, term)
           end)
 
-          Process.send_after(self(), {:election, :check_election_status, term}, @check_election_timeout)
+          Process.send_after(
+            self(),
+            {:election, :check_election_status, term},
+            @check_election_timeout
+          )
 
           {:ok, %{state | highest_seen_term: term}}
         end
@@ -297,9 +301,12 @@ defmodule Raft.Server do
   """
   @spec check_election_status(State.t(), integer()) :: {:ok, State.t()}
   def check_election_status(state, term) do
-    Logger.debug(fn ->
-      "Checking election status for term #{term}"
-    end, type: :raft)
+    Logger.debug(
+      fn ->
+        "Checking election status for term #{term}"
+      end,
+      type: :raft
+    )
 
     case state.term < term do
       true ->

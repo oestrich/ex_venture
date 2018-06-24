@@ -20,7 +20,7 @@ defmodule Web.Admin.SkillView do
         []
 
       effects ->
-       effects
+        effects
     end
   end
 end

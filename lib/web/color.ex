@@ -68,7 +68,7 @@ defmodule Web.Color do
   """
   def color_keys() do
     basic_keys = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
-    custom_keys = Enum.map(ColorCode.all(), &(&1.key))
+    custom_keys = Enum.map(ColorCode.all(), & &1.key)
     basic_keys ++ custom_keys
   end
 

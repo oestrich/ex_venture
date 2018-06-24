@@ -84,7 +84,7 @@ defmodule Game.Channel.Server do
     local_broadcast(state, channel, message)
   end
 
-  def broadcast(state, channel, message, [echo: true]) do
+  def broadcast(state, channel, message, echo: true) do
     local_broadcast(state, channel, message)
   end
 
@@ -98,7 +98,7 @@ defmodule Game.Channel.Server do
           channel_id: channel.id,
           user_id: message.sender.id,
           message: message.message,
-          formatted: message.formatted,
+          formatted: message.formatted
         }
 
         %ChannelMessage{}

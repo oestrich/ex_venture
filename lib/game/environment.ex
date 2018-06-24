@@ -34,6 +34,7 @@ defmodule Game.Environment do
   @spec look(integer() | String.t()) :: state()
   def look("overworld:" <> overworld_id) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+
     case :global.whereis_name({Sector, zone_id, sector}) do
       :undefined ->
         {:error, :room_offline}
@@ -192,6 +193,7 @@ defmodule Game.Environment do
   """
   def link("overworld:" <> overworld_id) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+
     case :global.whereis_name({Sector, zone_id, sector}) do
       :undefined ->
         {:error, :room_offline}
@@ -216,6 +218,7 @@ defmodule Game.Environment do
   """
   def unlink("overworld:" <> overworld_id) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+
     case :global.whereis_name({Sector, zone_id, sector}) do
       :undefined ->
         {:error, :room_offline}

@@ -302,9 +302,11 @@ defmodule Game.Session.Character do
   """
   def apply_experience(state, {:user, _user}), do: state
 
-  def apply_experience(state, {:quest, quest}), do: gain_experience(state, quest.level, quest.experience)
+  def apply_experience(state, {:quest, quest}),
+    do: gain_experience(state, quest.level, quest.experience)
 
-  def apply_experience(state, {:npc, npc}), do: gain_experience(state, npc.level, npc.experience_points)
+  def apply_experience(state, {:npc, npc}),
+    do: gain_experience(state, npc.level, npc.experience_points)
 
   defp gain_experience(state, level, experience_points) do
     state =

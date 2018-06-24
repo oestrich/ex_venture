@@ -81,7 +81,7 @@ defmodule Game.Room do
       shops: room.shops,
       exits: room.exits,
       players: players,
-      npcs: npcs,
+      npcs: npcs
     }
 
     {:reply, {:ok, environment}, state}

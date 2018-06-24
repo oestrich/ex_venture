@@ -46,7 +46,9 @@ defmodule Data.Type do
     required_missing_keys = Enum.reject(required, &Enum.member?(keys, &1))
     required_valid? = Enum.empty?(required_missing_keys)
 
-    required_one_of_keys_count = one_of |> Enum.map(&Enum.member?(keys, &1)) |> Enum.filter(&(&1)) |> length()
+    required_one_of_keys_count =
+      one_of |> Enum.map(&Enum.member?(keys, &1)) |> Enum.filter(& &1) |> length()
+
     one_of_valid? = Enum.empty?(one_of) || required_one_of_keys_count == 1
 
     extra_keys = ((keys -- required) -- optional) -- one_of
@@ -90,7 +92,11 @@ defmodule Data.Type do
         changeset
 
       false ->
-        add_error(changeset, :keys, "there are extra keys, please remove them: #{Enum.join(extra_keys, ", ")}")
+        add_error(
+          changeset,
+          :keys,
+          "there are extra keys, please remove them: #{Enum.join(extra_keys, ", ")}"
+        )
     end
   end
 

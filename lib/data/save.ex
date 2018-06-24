@@ -487,6 +487,7 @@ defmodule Data.Save do
   """
   @spec valid_room_id?(Save.t()) :: boolean()
   def valid_room_id?(save)
+
   def valid_room_id?(%{room_id: room_id}) do
     case room_id do
       "overworld:" <> overworld_id ->

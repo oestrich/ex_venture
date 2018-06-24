@@ -88,7 +88,7 @@ defmodule Game.NPC do
   Send a delayed notification, to the same process
   """
   @spec delay_notify(tuple(), Keyword.t()) :: :ok
-  def delay_notify(action, [milliseconds: ms]) do
+  def delay_notify(action, milliseconds: ms) do
     Process.send_after(self(), {:notify, action}, ms)
   end
 

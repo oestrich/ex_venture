@@ -12,8 +12,8 @@ defmodule Data.ChannelMessage do
     field(:message, :string)
     field(:formatted, :string)
 
-    belongs_to :channel, Channel
-    belongs_to :user, User
+    belongs_to(:channel, Channel)
+    belongs_to(:user, User)
 
     timestamps()
   end

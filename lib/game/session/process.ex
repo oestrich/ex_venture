@@ -307,9 +307,12 @@ defmodule Game.Session.Process do
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
-    Logger.debug(fn ->
-      "Processing effect (#{effect_id})"
-    end, type: :player)
+    Logger.debug(
+      fn ->
+        "Processing effect (#{effect_id})"
+      end,
+      type: :player
+    )
 
     state =
       state
@@ -320,9 +323,12 @@ defmodule Game.Session.Process do
   end
 
   def handle_info({:continuous_effect, :clear, effect_id}, state) do
-    Logger.debug(fn ->
-      "Clearing effect (#{effect_id})"
-    end, type: :player)
+    Logger.debug(
+      fn ->
+        "Clearing effect (#{effect_id})"
+      end,
+      type: :player
+    )
 
     state = Character.Effects.clear_continuous_effect(state, effect_id)
     {:noreply, state}

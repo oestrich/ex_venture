@@ -13,8 +13,9 @@ defmodule Game.Format.Who do
       player_stats(player),
       Format.player_name(player),
       Format.player_flags(player, none: false),
-      afk(metadata),
-    ] |> Enum.join(" ")
+      afk(metadata)
+    ]
+    |> Enum.join(" ")
   end
 
   defp player_stats(player) do

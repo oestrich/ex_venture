@@ -100,7 +100,7 @@ defmodule Data.Room do
   end
 
   def exits(room) do
-    Enum.map(room.exits, &(&1.direction))
+    Enum.map(room.exits, & &1.direction)
   end
 
   defp ensure_items(changeset) do

@@ -179,7 +179,9 @@ defmodule Game.Session.Login do
         state
 
       {:error, :disabled} ->
-        state.socket |> @socket.echo("Sorry, your account has been disabled. Please contact the admins.")
+        state.socket
+        |> @socket.echo("Sorry, your account has been disabled. Please contact the admins.")
+
         state.socket |> @socket.disconnect()
         state
     end
