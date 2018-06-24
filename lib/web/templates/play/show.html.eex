@@ -6,25 +6,37 @@
         <span class="class-name"></span> - Level <span class="level"></span>
       </div>
       <div class="character-stats">
-        <dl>
-          <dt>Strength:</dt>
-          <dd class="strength"></dd>
+        <table>
+          <tr>
+            <th>Strength:</th>
+            <td class="strength"></td>
+          </tr>
 
-          <dt>Agility:</dt>
-          <dd class="agility"></dd>
+          <tr>
+            <th>Agility:</th>
+            <td class="agility"></td>
+          </tr>
 
-          <dt>Intelligence:</dt>
-          <dd class="intelligence"></dd>
+          <tr>
+            <th>Intelligence:</th>
+            <td class="intelligence"></td>
+          </tr>
 
-          <dt>Awareness:</dt>
-          <dd class="awareness"></dd>
+          <tr>
+            <th>Awareness:</th>
+            <td class="awareness"></td>
+          </tr>
 
-          <dt>Vitality:</dt>
-          <dd class="vitality"></dd>
+          <tr>
+            <th>Vitality:</th>
+            <td class="vitality"></td>
+          </tr>
 
-          <dt>Willpower:</dt>
-          <dd class="willpower"></dd>
-        </dl>
+          <tr>
+            <th>Willpower:</th>
+            <td class="willpower"></td>
+          </tr>
+        </table>
       </div>
     </div>
 
