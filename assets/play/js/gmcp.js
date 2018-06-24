@@ -4,6 +4,7 @@ import _ from "underscore"
 import {format, defaultColorCSS} from "./color"
 import Logger from "./logger"
 import Notifacations from "./notifications"
+import {appendMessage} from "./panel"
 
 let notifications = new Notifacations();
 
@@ -11,6 +12,7 @@ let notifications = new Notifacations();
  * Channel.Broadcast module
  */
 let channelBroadcast = (channel, data) => {
+  appendMessage({message: `${data.formatted}\n`}, "channels", ".channels-container");
   notifications.display(`[${data.channel}] ${data.from.name}`, data.message);
 }
 

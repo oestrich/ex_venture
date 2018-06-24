@@ -8,6 +8,10 @@ body {
   color: <%= Config.color_text_color() %>;
 }
 
+.channels-container {
+  background-color: <%= Config.color_background() %>;
+}
+
 .panel {
   border-left: 2px solid <%= Config.color_panel_border() %>;
   border-right: 2px solid <%= Config.color_panel_border() %>;

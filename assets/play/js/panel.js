@@ -3,26 +3,37 @@ import _ from "underscore"
 
 import {format} from "./color"
 
-let scrollToBottom = (callback) => {
-  let panel = _.first(Sizzle(".panel"))
+let scrollToBottom = (panelSelector, callback) => {
+  let panel = _.first(Sizzle(panelSelector));
 
   if (callback != undefined) {
     callback();
   }
 
+  console.log(panelSelector, panel);
+
   panel.scrollTop = panel.scrollHeight;
 }
 
-let appendMessage = (payload) => {
+let appendMessage = (payload, terminalSelector, panelSelector) => {
+  console.log(terminalSelector, panelSelector);
+
+  if (!terminalSelector) {
+    terminalSelector = "terminal";
+  }
+  if (!panelSelector) {
+    panelSelector = ".panel";
+  }
+
   let message = format(payload);
   var fragment = document.createDocumentFragment();
   let html = document.createElement('span');
   html.innerHTML = message;
   fragment.appendChild(html);
 
-  scrollToBottom(() => {
-    document.getElementById("terminal").appendChild(fragment);
-  })
+  scrollToBottom(panelSelector, () => {
+    document.getElementById(terminalSelector).appendChild(fragment);
+  });
 }
 
 export { appendMessage, scrollToBottom }

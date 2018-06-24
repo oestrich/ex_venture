@@ -136,7 +136,8 @@ defmodule Game.Session.GMCP do
     data = %{
       channel: channel,
       from: character_info({message.type, message.sender}),
-      message: message.message
+      message: message.message,
+      formatted: message.formatted,
     }
 
     socket |> @socket.push_gmcp("Channels.Broadcast", Poison.encode!(data))

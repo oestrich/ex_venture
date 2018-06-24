@@ -62,13 +62,17 @@ channel.on("option", payload => {
 })
 
 channel.on("gmcp", gmcpMessage(channelWrapper))
-channel.on("prompt", appendMessage)
-channel.on("echo", appendMessage)
+channel.on("prompt", payload => {
+  appendMessage(payload);
+});
+channel.on("echo", payload => {
+  appendMessage(payload);
+});
 channel.on("disconnect", payload => {
   document.getElementById("terminal").append("\nDisconnected.")
   socket.disconnect()
-  scrollToBottom()
-})
+  scrollToBottom(".panel")
+});
 
 let commandHistory = new CommandHistory()
 
