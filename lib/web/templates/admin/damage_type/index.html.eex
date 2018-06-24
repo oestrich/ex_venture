@@ -24,32 +24,34 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Stat Modifier</th>
-                <th>Boost Ratio</th>
-                <th>Actions</th>
-                <th>Reverse Stat Modifier</th>
-                <th>Reverse Boost Ratio</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @damage_types, fn (damage_type) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= damage_type.key %></td>
-                  <td><%= damage_type.stat_modifier %></td>
-                  <td><%= damage_type.boost_ratio %></td>
-                  <td><%= damage_type.reverse_stat %></td>
-                  <td><%= damage_type.reverse_boost %></td>
-                  <td>
-                    <%= link("Edit", to: damage_type_path(@conn, :edit, damage_type.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>Key</th>
+                  <th>Stat Modifier</th>
+                  <th>Boost Ratio</th>
+                  <th>Actions</th>
+                  <th>Reverse Stat Modifier</th>
+                  <th>Reverse Boost Ratio</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @damage_types, fn (damage_type) -> %>
+                  <tr>
+                    <td><%= damage_type.key %></td>
+                    <td><%= damage_type.stat_modifier %></td>
+                    <td><%= damage_type.boost_ratio %></td>
+                    <td><%= damage_type.reverse_stat %></td>
+                    <td><%= damage_type.reverse_boost %></td>
+                    <td>
+                      <%= link("Edit", to: damage_type_path(@conn, :edit, damage_type.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

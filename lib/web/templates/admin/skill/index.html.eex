@@ -14,43 +14,45 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Level</th>
-                <th>Tags</th>
-                <th>Classes</th>
-                <th>Is Global?</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @skills, fn (skill) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= skill.id %></td>
-                  <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
-                  <td><%= skill.level %></td>
-                  <td>
-                    <%= Enum.map(skill.tags, fn (tag) -> %>
-                      <span class="label label-info"><%= tag %></span>
-                    <% end) %>
-                  </td>
-                  <td>
-                    <%= Enum.map(skill.classes, fn (class) -> %>
-                      <%= link(class.name, to: class_path(@conn, :show, class.id), class: "btn btn-success btn-xs") %>
-                    <% end) %>
-                  </td>
-                  <td><span class="label label-default"><%= skill.is_global %></span></td>
-                  <td>
-                    <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Level</th>
+                  <th>Tags</th>
+                  <th>Classes</th>
+                  <th>Is Global?</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @skills, fn (skill) -> %>
+                  <tr>
+                    <td><%= skill.id %></td>
+                    <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
+                    <td><%= skill.level %></td>
+                    <td>
+                      <%= Enum.map(skill.tags, fn (tag) -> %>
+                        <span class="label label-info"><%= tag %></span>
+                      <% end) %>
+                    </td>
+                    <td>
+                      <%= Enum.map(skill.classes, fn (class) -> %>
+                        <%= link(class.name, to: class_path(@conn, :show, class.id), class: "btn btn-success btn-xs") %>
+                      <% end) %>
+                    </td>
+                    <td><span class="label label-default"><%= skill.is_global %></span></td>
+                    <td>
+                      <%= link("View", to: skill_path(@conn, :show, skill.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: skill_path(@conn, :edit, skill.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
 
           <%= SharedView.pagination(path: skill_path(@conn, :index), pagination: @pagination, name: "skills") %>
         </div>

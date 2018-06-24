@@ -9,38 +9,40 @@
     <div class="col-md-9">
       <div class="box box-primary">
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Last Saved</th>
-                <th>Level</th>
-                <th>Race</th>
-                <th>Class</th>
-                <th>Play Time</th>
-                <th>Flags</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @users, fn (user) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= user.id %></td>
-                  <td><%= link(user.name, to: user_path(@conn, :show, user.id)) %></td>
-                  <td><%= user.updated_at |> time() %></td>
-                  <td><%= user.save.level %></td>
-                  <td><%= link(user.race.name, to: race_path(@conn, :show, user.race_id)) %></td>
-                  <td><%= link(user.class.name, to: class_path(@conn, :show, user.class_id)) %></td>
-                  <td><%= user.seconds_online |> Format.play_time() %></td>
-                  <td><%= user.flags |> Enum.join(", ") %></td>
-                  <td>
-                    <%= link("View", to: user_path(@conn, :show, user.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Last Saved</th>
+                  <th>Level</th>
+                  <th>Race</th>
+                  <th>Class</th>
+                  <th>Play Time</th>
+                  <th>Flags</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @users, fn (user) -> %>
+                  <tr>
+                    <td><%= user.id %></td>
+                    <td><%= link(user.name, to: user_path(@conn, :show, user.id)) %></td>
+                    <td><%= user.updated_at |> time() %></td>
+                    <td><%= user.save.level %></td>
+                    <td><%= link(user.race.name, to: race_path(@conn, :show, user.race_id)) %></td>
+                    <td><%= link(user.class.name, to: class_path(@conn, :show, user.class_id)) %></td>
+                    <td><%= user.seconds_online |> Format.play_time() %></td>
+                    <td><%= user.flags |> Enum.join(", ") %></td>
+                    <td>
+                      <%= link("View", to: user_path(@conn, :show, user.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
 
           <%= SharedView.pagination(path: user_path(@conn, :index), pagination: @pagination, name: "users") %>
         </div>

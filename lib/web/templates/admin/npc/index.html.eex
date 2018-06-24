@@ -23,34 +23,36 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Tags</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @npcs, fn (npc) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= npc.id %></td>
-                  <td><%= link(npc.name, to: npc_path(@conn, :show, npc.id)) %></td>
-                  <td>
-                    <%= Enum.map(npc.tags, fn (tag) -> %>
-                      <span class="label label-info"><%= tag %></span>
-                    <% end) %>
-                  </td>
-                  <td>
-                    <%= link("View", to: npc_path(@conn, :show, npc.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: npc_path(@conn, :edit, npc.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Clone", to: npc_path(@conn, :new, clone_id: npc.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Tags</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @npcs, fn (npc) -> %>
+                  <tr>
+                    <td><%= npc.id %></td>
+                    <td><%= link(npc.name, to: npc_path(@conn, :show, npc.id)) %></td>
+                    <td>
+                      <%= Enum.map(npc.tags, fn (tag) -> %>
+                        <span class="label label-info"><%= tag %></span>
+                      <% end) %>
+                    </td>
+                    <td>
+                      <%= link("View", to: npc_path(@conn, :show, npc.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: npc_path(@conn, :edit, npc.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Clone", to: npc_path(@conn, :new, clone_id: npc.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
 
           <%= SharedView.pagination(path: npc_path(@conn, :index), pagination: @pagination, name: "npcs") %>
         </div>

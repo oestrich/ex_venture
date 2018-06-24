@@ -23,46 +23,48 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Level</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Tags</th>
-                <th>Aspects</th>
-                <th>Cost</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @items, fn (item) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= item.id %></td>
-                  <td><%= item.level %></td>
-                  <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
-                  <td><%= item.type %></td>
-                  <td>
-                    <%= Enum.map(item.tags, fn (tag) -> %>
-                      <span class="label label-info"><%= tag %></span>
-                    <% end) %>
-                  </td>
-                  <td>
-                    <%= Enum.map(item.item_aspects, fn (item_aspect) -> %>
-                      <%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %>
-                    <% end) %>
-                  </td>
-                  <td><%= item.cost %> <%= currency() %></td>
-                  <td>
-                    <%= link("View", to: item_path(@conn, :show, item.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: item_path(@conn, :edit, item.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Clone", to: item_path(@conn, :new, clone_id: item.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Level</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Tags</th>
+                  <th>Aspects</th>
+                  <th>Cost</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @items, fn (item) -> %>
+                  <tr>
+                    <td><%= item.id %></td>
+                    <td><%= item.level %></td>
+                    <td><%= link(item.name, to: item_path(@conn, :show, item.id)) %></td>
+                    <td><%= item.type %></td>
+                    <td>
+                      <%= Enum.map(item.tags, fn (tag) -> %>
+                        <span class="label label-info"><%= tag %></span>
+                      <% end) %>
+                    </td>
+                    <td>
+                      <%= Enum.map(item.item_aspects, fn (item_aspect) -> %>
+                        <%= link(item_aspect.name, to: item_aspect_path(@conn, :show, item_aspect.id)) %>
+                      <% end) %>
+                    </td>
+                    <td><%= item.cost %> <%= currency() %></td>
+                    <td>
+                      <%= link("View", to: item_path(@conn, :show, item.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: item_path(@conn, :edit, item.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Clone", to: item_path(@conn, :new, clone_id: item.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
 
           <%= SharedView.pagination(path: item_path(@conn, :index), pagination: @pagination, name: "items") %>
         </div>

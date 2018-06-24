@@ -23,33 +23,35 @@
           </div>
         </div>
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Tags</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @notes, fn (note) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= note.id %></td>
-                  <td><%= link(note.name, to: note_path(@conn, :show, note.id)) %></td>
-                  <td>
-                    <%= Enum.map(note.tags, fn (tag) -> %>
-                      <span class="label label-info"><%= tag %></span>
-                    <% end) %>
-                  </td>
-                  <td>
-                    <%= link("View", to: note_path(@conn, :show, note.id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: note_path(@conn, :edit, note.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Tags</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @notes, fn (note) -> %>
+                  <tr>
+                    <td><%= note.id %></td>
+                    <td><%= link(note.name, to: note_path(@conn, :show, note.id)) %></td>
+                    <td>
+                      <%= Enum.map(note.tags, fn (tag) -> %>
+                        <span class="label label-info"><%= tag %></span>
+                      <% end) %>
+                    </td>
+                    <td>
+                      <%= link("View", to: note_path(@conn, :show, note.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: note_path(@conn, :edit, note.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div class="box-footer">
           <%= SharedView.pagination(path: note_path(@conn, :index), pagination: @pagination, name: "notes") %>

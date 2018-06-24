@@ -18,30 +18,32 @@
     <div class="col-md-12">
       <div class="box box-primary">
         <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Reporter</th>
-                <th>Room</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= Enum.map @typos, fn (typo) -> %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td><%= typo.id %></td>
-                  <td><%= typo.title %></td>
-                  <td><%= link(typo.reporter.name, to: user_path(@conn, :show, typo.reporter.id)) %></td>
-                  <td><%= link(typo.room.name, to: room_path(@conn, :show, typo.room.id)) %></td>
-                  <td>
-                    <%= link("View", to: typo_path(@conn, :show, typo.id), class: "btn btn-default btn-xs") %>
-                  </td>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Reporter</th>
+                  <th>Room</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= Enum.map @typos, fn (typo) -> %>
+                  <tr>
+                    <td><%= typo.id %></td>
+                    <td><%= typo.title %></td>
+                    <td><%= link(typo.reporter.name, to: user_path(@conn, :show, typo.reporter.id)) %></td>
+                    <td><%= link(typo.room.name, to: room_path(@conn, :show, typo.room.id)) %></td>
+                    <td>
+                      <%= link("View", to: typo_path(@conn, :show, typo.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div class="box-footer">
           <%= SharedView.pagination(path: typo_path(@conn, :index), pagination: @pagination, name: "typos") %>
