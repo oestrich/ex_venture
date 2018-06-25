@@ -38,44 +38,21 @@
     <div class="col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :up) %>
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "north west") %>
         </div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :north) %>
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "north") %>
         </div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :out) %>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4">
-      <div class="box">
-        <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :west) %>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="box">
-        <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :in) %>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="box">
-        <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :east) %>
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "north east") %>
         </div>
       </div>
     </div>
@@ -84,14 +61,71 @@
     <div class="col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :down) %>
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "west") %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-md-offset-4">
+      <div class="box">
+        <div class="box-body">
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "east") %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "south west") %>
         </div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="box">
         <div class="box-body">
-          <%= render("_exit.html", conn: @conn, room: @room, direction: :south) %>
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "south") %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "south east") %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "up") %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "in") %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "out") %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="box">
+        <div class="box-body">
+          <%= render("_exit.html", conn: @conn, room: @room, direction: "down") %>
         </div>
       </div>
     </div>

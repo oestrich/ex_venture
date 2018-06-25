@@ -37,7 +37,7 @@ defmodule Game.Command.Listen do
       {}
 
       iex> Game.Command.Listen.parse("listen north")
-      {:north}
+      {"north"}
 
       iex> Game.Command.Listen.parse("listen outside")
       {:error, :bad_parse, "listen outside"}
@@ -52,7 +52,7 @@ defmodule Game.Command.Listen do
   def parse("listen " <> direction) do
     case Exit.exit?(direction) do
       true ->
-        {String.to_atom(direction)}
+        {direction}
 
       false ->
         {:error, :bad_parse, "listen " <> direction}

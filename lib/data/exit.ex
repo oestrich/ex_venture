@@ -8,7 +8,20 @@ defmodule Data.Exit do
   alias Data.Room
   alias Data.Zone
 
-  @directions ["north", "east", "south", "west", "up", "down", "in", "out"]
+  @directions [
+    "north",
+    "east",
+    "south",
+    "west",
+    "up",
+    "down",
+    "in",
+    "out",
+    "north west",
+    "north east",
+    "south west",
+    "south east"
+  ]
 
   schema "exits" do
     field(:direction, :string)
@@ -172,68 +185,60 @@ defmodule Data.Exit do
   From a direction find the opposite direction's id
 
       iex> Data.Exit.opposite("north")
-      :south
-      iex> Data.Exit.opposite(:north)
-      :south
+      "south"
 
       iex> Data.Exit.opposite("east")
-      :west
-      iex> Data.Exit.opposite(:east)
-      :west
+      "west"
 
       iex> Data.Exit.opposite("south")
-      :north
-      iex> Data.Exit.opposite(:south)
-      :north
+      "north"
 
       iex> Data.Exit.opposite("west")
-      :east
-      iex> Data.Exit.opposite(:west)
-      :east
+      "east"
 
       iex> Data.Exit.opposite("up")
-      :down
-      iex> Data.Exit.opposite(:up)
-      :down
+      "down"
 
       iex> Data.Exit.opposite("down")
-      :up
-      iex> Data.Exit.opposite(:down)
-      :up
+      "up"
 
       iex> Data.Exit.opposite("in")
-      :out
-      iex> Data.Exit.opposite(:in)
-      :out
+      "out"
 
       iex> Data.Exit.opposite("out")
-      :in
-      iex> Data.Exit.opposite(:out)
-      :in
+      "in"
+
+      iex> Data.Exit.opposite("north west")
+      "south east"
+
+      iex> Data.Exit.opposite("north east")
+      "south west"
+
+      iex> Data.Exit.opposite("south west")
+      "north east"
+
+      iex> Data.Exit.opposite("south east")
+      "north west"
   """
   @spec opposite(String.t() | atom) :: atom
-  def opposite("north"), do: :south
-  def opposite("east"), do: :west
-  def opposite("south"), do: :north
-  def opposite("west"), do: :east
-  def opposite("up"), do: :down
-  def opposite("down"), do: :up
-  def opposite("in"), do: :out
-  def opposite("out"), do: :in
-  def opposite(:north), do: :south
-  def opposite(:east), do: :west
-  def opposite(:south), do: :north
-  def opposite(:west), do: :east
-  def opposite(:up), do: :down
-  def opposite(:down), do: :up
-  def opposite(:in), do: :out
-  def opposite(:out), do: :in
+  def opposite("north"), do: "south"
+  def opposite("east"), do: "west"
+  def opposite("south"), do: "north"
+  def opposite("west"), do: "east"
+  def opposite("up"), do: "down"
+  def opposite("down"), do: "up"
+  def opposite("in"), do: "out"
+  def opposite("out"), do: "in"
+  def opposite("north west"), do: "south east"
+  def opposite("north east"), do: "south west"
+  def opposite("south west"), do: "north east"
+  def opposite("south east"), do: "north west"
 
   @doc """
   Get an exit in a direction
   """
   @spec exit_to(Room.t(), String.t() | atom) :: Exit.t() | nil
   def exit_to(room, direction) do
-    Enum.find(room.exits, &(&1.direction == to_string(direction)))
+    Enum.find(room.exits, &(&1.direction == direction))
   end
 end
