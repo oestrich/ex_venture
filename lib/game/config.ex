@@ -256,6 +256,10 @@ defmodule Game.Config do
     end
   end
 
+  def discord_client_id() do
+    find_config("discord_client_id")
+  end
+
   def discord_invite_url() do
     find_config("discord_invite_url")
   end

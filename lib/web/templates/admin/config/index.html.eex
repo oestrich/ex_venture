@@ -80,6 +80,20 @@
                   <%= link("Edit", to: config_path(@conn, :edit, "character_names"), class: "btn btn-default btn-xs") %>
                 </td>
               </tr>
+              <tr>
+                <th>Discord Client ID</th>
+                <td><%= Config.discord_client_id() %></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "discord_client_id"), class: "btn btn-default btn-xs") %>
+                </td>
+              </tr>
+              <tr>
+                <th>Discord Invite URL</th>
+                <td><%= Config.discord_invite_url() %></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "discord_invite_url"), class: "btn btn-default btn-xs") %>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
