@@ -122,9 +122,9 @@ defmodule Game.Map do
       |> color_room(room_color(room))
 
     [
-      exits(room, :north),
-      "#{exits(room, :west)}#{room_display}#{exits(room, :east)}",
-      exits(room, :south)
+      exits(room, "north"),
+      "#{exits(room, "west")}#{room_display}#{exits(room, "east")}",
+      exits(room, "south")
     ]
   end
 
@@ -134,7 +134,7 @@ defmodule Game.Map do
   defp color_room(room_string, nil), do: room_string
   defp color_room(room_string, color), do: "{#{color}}#{room_string}{/#{color}}"
 
-  defp exits(room, direction) when direction in [:north, :south] do
+  defp exits(room, direction) when direction in ["north", "south"] do
     case Exit.exit_to(room, direction) do
       nil ->
         "       "
@@ -144,7 +144,7 @@ defmodule Game.Map do
     end
   end
 
-  defp exits(room, direction) when direction in [:east, :west] do
+  defp exits(room, direction) when direction in ["east", "west"] do
     case Exit.exit_to(room, direction) do
       nil ->
         "  "

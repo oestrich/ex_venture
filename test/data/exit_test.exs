@@ -31,7 +31,7 @@ defmodule Data.ExitTest do
   test "find an exit" do
     room = %Room{id: 10, exits: [%{direction: "south", start_room_id: 10, finish_room_id: 11}]}
 
-    assert %{direction: "south"} = Exit.exit_to(room, :south)
+    assert %{direction: "south"} = Exit.exit_to(room, "south")
   end
 
   describe "validate start/finish fields" do

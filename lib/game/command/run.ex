@@ -93,7 +93,7 @@ defmodule Game.Command.Run do
   Expand a single direction command into a list of directions
 
       iex> Game.Command.Run.expand_direction("3e")
-      [:east, :east, :east]
+      ["east", "east", "east"]
   """
   def expand_direction(direction) do
     case Regex.named_captures(@direction_regex, direction) do
@@ -109,12 +109,12 @@ defmodule Game.Command.Run do
     end
   end
 
-  def _direction("n"), do: :north
-  def _direction("e"), do: :east
-  def _direction("s"), do: :south
-  def _direction("w"), do: :west
-  def _direction("u"), do: :up
-  def _direction("d"), do: :down
-  def _direction("i"), do: :in
-  def _direction("o"), do: :out
+  def _direction("n"), do: "north"
+  def _direction("e"), do: "east"
+  def _direction("s"), do: "south"
+  def _direction("w"), do: "west"
+  def _direction("u"), do: "up"
+  def _direction("d"), do: "down"
+  def _direction("i"), do: "in"
+  def _direction("o"), do: "out"
 end

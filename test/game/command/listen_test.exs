@@ -79,14 +79,14 @@ defmodule Game.Command.ListenTest do
     end
 
     test "includes the room listen text", %{state: state} do
-      :ok = Listen.run({:north}, state)
+      :ok = Listen.run({"north"}, state)
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r/trickling/, echo)
     end
 
     test "nothing in specified direction", %{state: state} do
-      :ok = Listen.run({:south}, state)
+      :ok = Listen.run({"south"}, state)
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r/no exit/i, echo)

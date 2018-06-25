@@ -172,68 +172,44 @@ defmodule Data.Exit do
   From a direction find the opposite direction's id
 
       iex> Data.Exit.opposite("north")
-      :south
-      iex> Data.Exit.opposite(:north)
-      :south
+      "south"
 
       iex> Data.Exit.opposite("east")
-      :west
-      iex> Data.Exit.opposite(:east)
-      :west
+      "west"
 
       iex> Data.Exit.opposite("south")
-      :north
-      iex> Data.Exit.opposite(:south)
-      :north
+      "north"
 
       iex> Data.Exit.opposite("west")
-      :east
-      iex> Data.Exit.opposite(:west)
-      :east
+      "east"
 
       iex> Data.Exit.opposite("up")
-      :down
-      iex> Data.Exit.opposite(:up)
-      :down
+      "down"
 
       iex> Data.Exit.opposite("down")
-      :up
-      iex> Data.Exit.opposite(:down)
-      :up
+      "up"
 
       iex> Data.Exit.opposite("in")
-      :out
-      iex> Data.Exit.opposite(:in)
-      :out
+      "out"
 
       iex> Data.Exit.opposite("out")
-      :in
-      iex> Data.Exit.opposite(:out)
-      :in
+      "in"
   """
   @spec opposite(String.t() | atom) :: atom
-  def opposite("north"), do: :south
-  def opposite("east"), do: :west
-  def opposite("south"), do: :north
-  def opposite("west"), do: :east
-  def opposite("up"), do: :down
-  def opposite("down"), do: :up
-  def opposite("in"), do: :out
-  def opposite("out"), do: :in
-  def opposite(:north), do: :south
-  def opposite(:east), do: :west
-  def opposite(:south), do: :north
-  def opposite(:west), do: :east
-  def opposite(:up), do: :down
-  def opposite(:down), do: :up
-  def opposite(:in), do: :out
-  def opposite(:out), do: :in
+  def opposite("north"), do: "south"
+  def opposite("east"), do: "west"
+  def opposite("south"), do: "north"
+  def opposite("west"), do: "east"
+  def opposite("up"), do: "down"
+  def opposite("down"), do: "up"
+  def opposite("in"), do: "out"
+  def opposite("out"), do: "in"
 
   @doc """
   Get an exit in a direction
   """
   @spec exit_to(Room.t(), String.t() | atom) :: Exit.t() | nil
   def exit_to(room, direction) do
-    Enum.find(room.exits, &(&1.direction == to_string(direction)))
+    Enum.find(room.exits, &(&1.direction == direction))
   end
 end

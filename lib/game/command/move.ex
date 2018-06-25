@@ -60,20 +60,20 @@ defmodule Game.Command.Move do
   @spec parse(command :: String.t()) :: {atom}
   def parse(commnd)
   def parse("move " <> direction), do: parse(direction)
-  def parse("north"), do: {:move, :north}
-  def parse("n"), do: {:move, :north}
-  def parse("east"), do: {:move, :east}
-  def parse("e"), do: {:move, :east}
-  def parse("south"), do: {:move, :south}
-  def parse("s"), do: {:move, :south}
-  def parse("west"), do: {:move, :west}
-  def parse("w"), do: {:move, :west}
-  def parse("up"), do: {:move, :up}
-  def parse("u"), do: {:move, :up}
-  def parse("down"), do: {:move, :down}
-  def parse("d"), do: {:move, :down}
-  def parse("in"), do: {:move, :in}
-  def parse("out"), do: {:move, :out}
+  def parse("north"), do: {:move, "north"}
+  def parse("n"), do: {:move, "north"}
+  def parse("east"), do: {:move, "east"}
+  def parse("e"), do: {:move, "east"}
+  def parse("south"), do: {:move, "south"}
+  def parse("s"), do: {:move, "south"}
+  def parse("west"), do: {:move, "west"}
+  def parse("w"), do: {:move, "west"}
+  def parse("up"), do: {:move, "up"}
+  def parse("u"), do: {:move, "up"}
+  def parse("down"), do: {:move, "down"}
+  def parse("d"), do: {:move, "down"}
+  def parse("in"), do: {:move, "in"}
+  def parse("out"), do: {:move, "out"}
 
   def parse("open " <> direction) do
     case parse(direction) do
