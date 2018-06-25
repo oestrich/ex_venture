@@ -8,7 +8,20 @@ defmodule Data.Exit do
   alias Data.Room
   alias Data.Zone
 
-  @directions ["north", "east", "south", "west", "up", "down", "in", "out"]
+  @directions [
+    "north",
+    "east",
+    "south",
+    "west",
+    "up",
+    "down",
+    "in",
+    "out",
+    "north west",
+    "north east",
+    "south west",
+    "south east"
+  ]
 
   schema "exits" do
     field(:direction, :string)
@@ -194,6 +207,18 @@ defmodule Data.Exit do
 
       iex> Data.Exit.opposite("out")
       "in"
+
+      iex> Data.Exit.opposite("north west")
+      "south east"
+
+      iex> Data.Exit.opposite("north east")
+      "south west"
+
+      iex> Data.Exit.opposite("south west")
+      "north east"
+
+      iex> Data.Exit.opposite("south east")
+      "north west"
   """
   @spec opposite(String.t() | atom) :: atom
   def opposite("north"), do: "south"
@@ -204,6 +229,10 @@ defmodule Data.Exit do
   def opposite("down"), do: "up"
   def opposite("in"), do: "out"
   def opposite("out"), do: "in"
+  def opposite("north west"), do: "south east"
+  def opposite("north east"), do: "south west"
+  def opposite("south west"), do: "north east"
+  def opposite("south east"), do: "north west"
 
   @doc """
   Get an exit in a direction

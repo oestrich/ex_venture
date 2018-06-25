@@ -35,7 +35,7 @@ defmodule Game.Command.RunTest do
   end
 
   test "run in a set of directions", %{state: state} do
-    {:update, state, continue_command} = Command.Run.run({"nen"}, state)
+    {:update, state, continue_command} = Command.Run.run({"1n1e1n"}, state)
 
     assert state.save.room_id == 2
     assert continue_command == {%Command{module: Command.Run, args: {["east", "north"]}, continue: true}, 10}
@@ -62,11 +62,12 @@ defmodule Game.Command.RunTest do
 
   describe "parsing run directions" do
     test "expand directions" do
-      assert Command.Run.parse_run("2en3s1u2d") == ["east", "east", "north", "south", "south", "south", "up", "down", "down"]
+      assert Command.Run.parse_run("2e1n3s1u2d") == ["east", "east", "north", "south", "south", "south", "up", "down", "down"]
     end
 
     test "handles bad input" do
       assert Command.Run.parse_run("2ef3s") == ["east", "east", "south", "south", "south"]
+      assert Command.Run.parse_run("2en3s") == ["south", "south", "south"]
     end
 
     test "handles no directions" do

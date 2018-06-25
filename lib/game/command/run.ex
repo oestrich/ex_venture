@@ -9,7 +9,7 @@ defmodule Game.Command.Run do
   alias Game.Command.Move
   alias Game.Session.GMCP
 
-  @direction_regex ~r/(?<count>\d+)?(?<direction>[neswudio])/
+  @direction_regex ~r/(?<count>\d+)?(?<direction>[neswudio]{1,2})/
   @continue_wait Application.get_env(:ex_venture, :game)[:continue_wait]
 
   commands(["run"])
@@ -22,8 +22,23 @@ defmodule Game.Command.Run do
     """
     #{help(:short)}. You will stop running if an exit cannot be found.
 
+    You must provide a number before each direction. Possible directions are:
+
+    {white}n{/white}: north
+    {white}s{/white}: south
+    {white}e{/white}: east
+    {white}w{/white}: west
+    {white}i{/white}: in
+    {white}o{/white}: out
+    {white}u{/white}: up
+    {white}d{/white}: down
+    {white}nw{/white}: north west
+    {white}ne{/white}: north east
+    {white}sw{/white}: south west
+    {white}se{/white}: south east
+
     Example:
-    [ ] > {command}run 3en4s{/command}
+    [ ] > {command}run 3e1n4s{/command}
     """
   end
 
@@ -87,6 +102,7 @@ defmodule Game.Command.Run do
     |> String.split(@direction_regex, include_captures: true)
     |> Enum.reject(&(&1 == ""))
     |> Enum.flat_map(&expand_direction/1)
+    |> Enum.reject(&(&1 == :error))
   end
 
   @doc """
@@ -117,4 +133,9 @@ defmodule Game.Command.Run do
   def _direction("d"), do: "down"
   def _direction("i"), do: "in"
   def _direction("o"), do: "out"
+  def _direction("nw"), do: "north west"
+  def _direction("ne"), do: "north east"
+  def _direction("sw"), do: "south west"
+  def _direction("se"), do: "south east"
+  def _direction(_), do: :error
 end
