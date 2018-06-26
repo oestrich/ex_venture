@@ -63,8 +63,12 @@ defmodule Game.Overworld do
     south = %{direction: "south", start_id: start_id, x: cell.x, y: cell.y + 1}
     east = %{direction: "east", start_id: start_id, x: cell.x + 1, y: cell.y}
     west = %{direction: "west", start_id: start_id, x: cell.x - 1, y: cell.y}
+    north_west = %{direction: "north west", start_id: start_id, x: cell.x - 1, y: cell.y - 1}
+    north_east = %{direction: "north east", start_id: start_id, x: cell.x + 1, y: cell.y - 1}
+    south_west = %{direction: "south west", start_id: start_id, x: cell.x - 1, y: cell.y + 1}
+    south_east = %{direction: "south east", start_id: start_id, x: cell.x + 1, y: cell.y + 1}
 
-    [north, south, east, west]
+    [north, south, east, west, north_west, north_east, south_west, south_east]
     |> Enum.filter(&in_overworld?(&1, zone))
     |> Enum.map(fn direction ->
       real_exit =
