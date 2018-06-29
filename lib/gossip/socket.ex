@@ -1,6 +1,8 @@
 defmodule Gossip.Socket do
   use WebSockex
 
+  require Logger
+
   @url Application.get_env(:ex_venture, :gossip)[:url]
   @client_id Application.get_env(:ex_venture, :gossip)[:client_id]
   @client_secret Application.get_env(:ex_venture, :gossip)[:client_secret]
@@ -8,7 +10,7 @@ defmodule Gossip.Socket do
   alias Gossip.Socket.Implementation
 
   def start_link() do
-    WebSockex.start_link(@url, __MODULE__, %{authenticated: false}, [name: __MODULE__])
+    WebSockex.start_link(@url, __MODULE__, %{authenticated: false})
   end
 
   def handle_connect(_conn, state) do
@@ -20,6 +22,10 @@ defmodule Gossip.Socket do
     case Implementation.receive(state, message) do
       {:ok, state} ->
         {:ok, state}
+
+      :stop ->
+        Logger.info("Closing the Gossip websocket", type: :gossip)
+        {:close, state}
 
       :error ->
         {:ok, state}
@@ -43,7 +49,7 @@ defmodule Gossip.Socket do
     {:reply, {:text, message}, state}
   end
 
-  def handle_cast(_message, state) do
+  def handle_cast(_, state) do
     {:ok, state}
   end
 
@@ -67,6 +73,9 @@ defmodule Gossip.Socket do
            {:ok, state} <- process(state, message) do
        {:ok, state}
       else
+        :stop ->
+          :stop
+
         _ ->
           {:ok, state}
       end
@@ -76,8 +85,11 @@ defmodule Gossip.Socket do
       case message do
         %{"status" => "success"} ->
           Logger.info("Authenticated against Gossip", type: :gossip)
-
           {:ok, Map.put(state, :authenticated, true)}
+
+        %{"status" => "failure"} ->
+          Logger.info("Failed to authenticate against Gossip", type: :gossip)
+          :stop
 
         _ ->
           {:ok, state}
