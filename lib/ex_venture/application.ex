@@ -18,6 +18,7 @@ defmodule ExVenture.Application do
         supervisor(Data.Repo, []),
         supervisor(Web.Supervisor, []),
         supervisor(Game.Supervisor, []),
+        supervisor(Gossip.Supervisor, []),
         listener()
       ]
       |> Enum.reject(&is_nil/1)
