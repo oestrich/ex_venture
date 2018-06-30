@@ -1,4 +1,8 @@
 defmodule Gossip.Socket do
+  @moduledoc """
+  The websocket connection to the Gossip network
+  """
+
   use WebSockex
 
   alias Game.Channel
@@ -75,6 +79,8 @@ defmodule Gossip.Socket do
   end
 
   defmodule Implementation do
+    @moduledoc false
+
     require Logger
 
     def receive(state, message) do

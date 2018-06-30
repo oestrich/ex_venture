@@ -1,4 +1,8 @@
 defmodule Gossip.Monitor do
+  @moduledoc """
+  A side process to monitor and restart the websocket for Gossip
+  """
+
   use GenServer, restart: :permanent
 
   @restart_delay 15_000
