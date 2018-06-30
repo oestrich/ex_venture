@@ -23,10 +23,10 @@ defmodule Game.Command.Channels do
     [ ] > {command}global Hello!{/command}
 
     Turn a channel on:
-    [ ] > {command}channel on global{/command}
+    [ ] > {command}channels on global{/command}
 
     Turn a channel off:
-    [ ] > {command}channel off global{/command}
+    [ ] > {command}channels off global{/command}
     """
   end
 

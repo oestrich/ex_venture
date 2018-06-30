@@ -18,6 +18,14 @@
           <%= error_tag f, :color %>
         </div>
       </div>
+
+      <%= FormView.checkbox_field(f, :is_gossip_connected, label: "Is Connected to the Gossip Network?") do %>
+        <span class="help-block"><%= Help.get("channel.is_gossip_connected") %></span>
+      <% end %>
+
+      <%= FormView.text_field(f, :gossip_channel) do %>
+        <span class="help-block"><%= Help.get("channel.gossip_channel") %></span>
+      <% end %>
     </div>
 
     <div class="box-footer">

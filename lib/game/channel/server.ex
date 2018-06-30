@@ -72,7 +72,10 @@ defmodule Game.Channel.Server do
 
     Endpoint.broadcast("chat:#{channel}", "broadcast", %{message: message.formatted})
 
-    record_message(channel, message)
+    channel
+    |> Channels.get()
+    |> maybe_record_message(message)
+    |> maybe_send_to_gossip(message)
 
     Channel.pg2_key()
     |> :pg2.get_members()
@@ -88,12 +91,12 @@ defmodule Game.Channel.Server do
     local_broadcast(state, channel, message)
   end
 
-  defp record_message(channel, message) do
-    case Channels.get(channel) do
-      nil ->
-        :ok
+  defp maybe_record_message(channel, message) do
+    case channel.is_gossip_connected do
+      true ->
+        channel
 
-      channel ->
+      false ->
         params = %{
           channel_id: channel.id,
           user_id: message.sender.id,
@@ -104,6 +107,27 @@ defmodule Game.Channel.Server do
         %ChannelMessage{}
         |> ChannelMessage.changeset(params)
         |> Repo.insert()
+
+        channel
+    end
+  end
+
+  defp maybe_send_to_gossip(channel, message) do
+    case channel.is_gossip_connected do
+      true ->
+        message = %{
+          sender: %{
+            name: message.sender.name,
+          },
+          message: message.message,
+        }
+
+        Gossip.send(channel.gossip_channel, message)
+
+        channel
+
+      false ->
+        channel
     end
   end
 

@@ -1,3 +1,9 @@
+channel.gossip_channel:
+  The remote channel on the [Gossip](https://github.com/oestrich/gossip/blob/master/README.md) network. **Must** be filled in if this is a gossip connected channel.
+
+channel.is_gossip_connected:
+  If connected to the [Gossip](https://github.com/oestrich/gossip/blob/master/README.md) network, all messages will be sent to the Gossip router.
+
 class.name:
   Try to limit to 10 characters, it will be cut off in the `who` list otherwise.
 

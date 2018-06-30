@@ -30,6 +30,8 @@
                   <th>ID</th>
                   <th>Name</th>
                   <th>Color</th>
+                  <th>Connected to Gossip?</th>
+                  <th>Gossip Channel</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -39,6 +41,8 @@
                     <td><%= channel.id %></td>
                     <td><%= channel.name %></td>
                     <td><code><%= channel.color %></code></td>
+                    <td><span class="label label-default"><%= channel.is_gossip_connected %></span></td>
+                    <td><%= channel.gossip_channel %></td>
                     <td>
                       <%= link("View Log", to: channel_path(@conn, :show, channel.id), class: "btn btn-default btn-xs") %>
                       <%= link("Edit", to: channel_path(@conn, :edit, channel.id), class: "btn btn-default btn-xs") %>
