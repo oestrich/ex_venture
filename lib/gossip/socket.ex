@@ -7,6 +7,7 @@ defmodule Gossip.Socket do
   @client_id Application.get_env(:ex_venture, :gossip)[:client_id]
   @client_secret Application.get_env(:ex_venture, :gossip)[:client_secret]
 
+  alias Gossip.Monitor
   alias Gossip.Socket.Implementation
 
   def start_link() do
@@ -14,6 +15,8 @@ defmodule Gossip.Socket do
   end
 
   def handle_connect(_conn, state) do
+    Monitor.monitor()
+
     send(self(), {:authorize})
     {:ok, state}
   end

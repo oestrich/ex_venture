@@ -7,6 +7,8 @@ defmodule Gossip do
 
   @type channel :: String.t()
 
+  def start_socket(), do: Gossip.Supervisor.start_socket()
+
   @doc """
   Send a message to the Gossip network
   """

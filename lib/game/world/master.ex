@@ -17,10 +17,15 @@ defmodule Game.World.Master do
 
   @start_world Application.get_env(:ex_venture, :game)[:world]
 
+  @doc """
+  The local node was selected as a leader
+  """
   def leader_selected() do
     if @start_world do
       GenServer.cast(__MODULE__, :rebalance_zones)
     end
+
+    Gossip.start_socket()
   end
 
   def start_link(_) do
