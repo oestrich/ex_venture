@@ -266,7 +266,7 @@ defmodule Game.Session.GMCP do
   def user_info(user) do
     %{
       type: :player,
-      id: user.id,
+      id: Map.get(user, :id, nil),
       name: user.name
     }
   end

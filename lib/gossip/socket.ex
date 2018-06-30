@@ -1,6 +1,10 @@
 defmodule Gossip.Socket do
   use WebSockex
 
+  alias Game.Channel
+  alias Game.Channels
+  alias Game.Message
+
   require Logger
 
   @url Application.get_env(:ex_venture, :gossip)[:url]
@@ -131,9 +135,17 @@ defmodule Gossip.Socket do
       {:ok, state}
     end
 
-    def process(state, message = %{"event" => "messages/broadcast"}) do
-      IO.inspect message
-      {:ok, state}
+    def process(state, %{"event" => "messages/broadcast", "payload" => payload}) do
+      case Channels.gossip_channel(payload["channel"]) do
+        {:ok, channel} ->
+          message = Message.gossip_broadcast(channel, payload)
+          Channel.broadcast(channel.name, message)
+
+          {:ok, state}
+
+        {:error, :not_found} ->
+          {:ok, state}
+      end
     end
 
     def process(state, _), do: {:ok, state}
