@@ -143,14 +143,14 @@ defmodule Gossip.Socket do
     end
 
     def process(state, %{"event" => "messages/broadcast", "payload" => payload}) do
-      case Channels.gossip_channel(payload["channel"]) do
-        {:ok, channel} ->
-          message = Message.gossip_broadcast(channel, payload)
-          Channel.broadcast(channel.name, message)
+      with {:ok, channel} <- Channels.gossip_channel(payload["channel"]),
+           true <- Raft.node_is_leader?() do
+        message = Message.gossip_broadcast(channel, payload)
+        Channel.broadcast(channel.name, message)
 
-          {:ok, state}
-
-        {:error, :not_found} ->
+        {:ok, state}
+      else
+        _ ->
           {:ok, state}
       end
     end

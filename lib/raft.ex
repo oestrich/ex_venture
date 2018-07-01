@@ -13,6 +13,7 @@ defmodule Raft do
 
   require Logger
 
+  @key :raft
   @election_initial_delay 500
   @election_random_delay 500
 
@@ -62,8 +63,25 @@ defmodule Raft do
     GenServer.call(Raft, :debug)
   end
 
+  @doc """
+  Check if the current node is the leader
+  """
+  @spec node_is_leader?() :: boolean()
+  def node_is_leader?() do
+    case :ets.lookup(@key, :is_leader?) do
+      [{_, value}] when is_boolean(value) ->
+        value
+
+      _ ->
+        false
+    end
+  end
+
   def init(_) do
     PG.join()
+
+    :ets.new(@key, [:set, :protected, :named_table])
+    :ets.insert(@key, {:is_leader?, false})
 
     send(self(), {:election, :check})
     start_election(1)
