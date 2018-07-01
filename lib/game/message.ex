@@ -3,7 +3,7 @@ defmodule Game.Message do
   Player or NPC message, something said
   """
 
-  defstruct [:type, :sender, :message, :formatted]
+  defstruct [:type, :sender, :message, :formatted, from_gossip: false]
 
   alias Data.User
   alias Game.Format
@@ -88,7 +88,8 @@ defmodule Game.Message do
       type: :user,
       sender: user,
       message: message,
-      formatted: Format.channel_say(channel, {:user, user}, %{message: message})
+      formatted: Format.channel_say(channel, {:user, user}, %{message: message}),
+      from_gossip: true,
     }
   end
 

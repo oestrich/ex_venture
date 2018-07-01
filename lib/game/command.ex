@@ -134,7 +134,11 @@ defmodule Game.Command do
 
   def parse(command, user) do
     start_parsing_at = Timex.now()
-    command = command |> String.replace(~r/  /, " ")
+    command =
+      command
+      |> String.replace(~r/  /, " ")
+      |> String.replace(~r/<[^>]*>/, "")
+
     skill_parse = command |> Skills.parse_skill(user)
 
     case skill_parse do

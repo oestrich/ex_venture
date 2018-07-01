@@ -115,20 +115,30 @@ defmodule Game.Channel.Server do
   defp maybe_send_to_gossip(channel, message) do
     case channel.is_gossip_connected do
       true ->
-        message = %{
-          sender: %{
-            name: message.sender.name,
-          },
-          message: message.message,
-        }
+        case message.from_gossip do
+          true ->
+            channel
 
-        Gossip.send(channel.gossip_channel, message)
+          false ->
+            send_to_gossip(channel, message)
 
-        channel
+            channel
+        end
 
       false ->
         channel
     end
+  end
+
+  defp send_to_gossip(channel, message) do
+    message = %{
+      sender: %{
+        name: message.sender.name,
+      },
+      message: message.message,
+    }
+
+    Gossip.send(channel.gossip_channel, message)
   end
 
   defp local_broadcast(%{channels: channels}, channel, message) do
