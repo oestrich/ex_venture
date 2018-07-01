@@ -70,8 +70,9 @@ defmodule Gossip.Socket do
     message = Poison.encode!(%{
       "event" => "authenticate",
       "payload" => %{
-        "client-id" => @client_id,
-        "client-secret" => @client_secret,
+        "client_id" => @client_id,
+        "client_secret" => @client_secret,
+        "user_agent" => ExVenture.version(),
       },
     })
 
