@@ -56,6 +56,26 @@ defmodule Game.Channels do
   end
 
   @doc """
+  Match a Gossip channel with a local channel
+  """
+  @spec gossip_channel(String.t()) :: {:ok, Channel.t()} | {:error, :not_found}
+  def gossip_channel(remote_channel) do
+    channel =
+      all()
+      |> Enum.find(fn channel ->
+        channel.gossip_channel == remote_channel
+      end)
+
+    case channel do
+      nil ->
+        {:error, :not_found}
+
+      channel ->
+        {:ok, channel}
+    end
+  end
+
+  @doc """
   For testing only: clear the EST table
   """
   def clear() do

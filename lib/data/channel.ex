@@ -11,6 +11,8 @@ defmodule Data.Channel do
   schema "channels" do
     field(:name, :string)
     field(:color, :string, default: "red")
+    field(:is_gossip_connected, :boolean, default: false)
+    field(:gossip_channel, :string)
 
     has_many(:messages, ChannelMessage)
 
@@ -19,8 +21,9 @@ defmodule Data.Channel do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :color])
-    |> validate_required([:name, :color])
+    |> cast(params, [:name, :color, :is_gossip_connected, :gossip_channel])
+    |> validate_required([:name, :color, :is_gossip_connected])
+    |> validate_gossip_channel()
     |> validate_inclusion(:color, Color.options())
     |> validate_single_word_name()
   end
@@ -35,6 +38,16 @@ defmodule Data.Channel do
 
       _ ->
         changeset
+    end
+  end
+
+  defp validate_gossip_channel(changeset) do
+    case get_field(changeset, :is_gossip_connected) do
+      true ->
+        validate_required(changeset, [:gossip_channel])
+
+      _ ->
+        put_change(changeset, :gossip_channel, nil)
     end
   end
 end

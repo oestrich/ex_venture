@@ -3,7 +3,7 @@ defmodule Game.Message do
   Player or NPC message, something said
   """
 
-  defstruct [:type, :sender, :message, :formatted]
+  defstruct [:type, :sender, :message, :formatted, from_gossip: false]
 
   alias Data.User
   alias Game.Format
@@ -76,6 +76,20 @@ defmodule Game.Message do
       sender: user,
       message: message,
       formatted: Format.whisper({:user, user}, message)
+    }
+  end
+
+  def gossip_broadcast(channel, payload) do
+    name = "#{Map.get(payload, "name", "")}@#{Map.get(payload, "game", "")}"
+    message = Map.get(payload, "message", "")
+    user = %{name: name}
+
+    %__MODULE__{
+      type: :user,
+      sender: user,
+      message: message,
+      formatted: Format.channel_say(channel, {:user, user}, %{message: message}),
+      from_gossip: true,
     }
   end
 

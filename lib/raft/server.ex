@@ -8,8 +8,9 @@ defmodule Raft.Server do
 
   require Logger
 
+  @key :raft
   @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
-  @winner_subscriptions [Game.World.Master]
+  @winner_subscriptions [Game.World.Master, Raft.Server]
   @check_election_timeout 1500
 
   def debug(state) do
@@ -21,6 +22,13 @@ defmodule Raft.Server do
       end)
 
     [Map.put(state, :node, node()) | debug_info]
+  end
+
+  @doc """
+  Set the node as a leader in ETS
+  """
+  def leader_selected() do
+    :ets.insert(@key, {:is_leader?, true})
   end
 
   @doc """
@@ -162,6 +170,8 @@ defmodule Raft.Server do
         "Setting leader for term #{term} as #{inspect(leader_pid)}"
       end)
 
+      :ets.insert(@key, {:is_leader?, false})
+
       state =
         state
         |> Map.put(:term, term)
@@ -288,11 +298,12 @@ defmodule Raft.Server do
       "Won the election for term #{term}"
     end)
 
+    {:ok, state} = set_leader(state, self(), node(), term)
+
     Enum.each(@winner_subscriptions, fn module ->
       module.leader_selected()
     end)
 
-    {:ok, state} = set_leader(state, self(), node(), term)
     {:ok, %{state | state: "leader"}}
   end
 

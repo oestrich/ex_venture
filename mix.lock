@@ -61,6 +61,7 @@
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.3.1", "a1f612a7b512638634a603c8f401892afbf99b8ce93a45041f8aaca99cadb85e", [:rebar3], [], "hexpm"},
   "unsafe": {:hex, :unsafe, "1.0.0", "7c21742cd05380c7875546b023481d3a26f52df8e5dfedcb9f958f322baae305", [:mix], [], "hexpm"},
   "uuid": {:hex, :uuid, "1.1.8", "e22fc04499de0de3ed1116b770c7737779f226ceefa0badb3592e64d5cfb4eb9", [:mix], [], "hexpm"},
+  "websockex": {:hex, :websockex, "0.4.1", "d7b7191ec3d5dd136683b60114405a5a130a175faade773a07cb52dbd98f9442", [:mix], [], "hexpm"},
   "yamerl": {:hex, :yamerl, "0.5.0", "6ec55a5d830f6f0d65a4030f5c5db24b0e72b813dfbde32fea44b4951ed9417c", [:rebar3], [], "hexpm"},
   "yaml_elixir": {:hex, :yaml_elixir, "1.3.1", "b84b6333343b0cba176c43c463e622f838825e7476e35334f719b83df4535bff", [:mix], [{:yamerl, "~> 0.5", [hex: :yamerl, repo: "hexpm", optional: false]}], "hexpm"},
 }
