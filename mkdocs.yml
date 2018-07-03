@@ -27,6 +27,7 @@ pages:
     - Classes: admin/classes.md
     - Config: admin/config.md
     - Effects: admin/effects.md
+    - Gossip: admin/gossip.md
     - Help Topics: admin/help-topics.md
     - Insights: admin/insights.md
     - Items: admin/items.md
