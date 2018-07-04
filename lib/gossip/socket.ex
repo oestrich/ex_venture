@@ -39,6 +39,9 @@ defmodule Gossip.Socket do
       {:ok, state} ->
         {:ok, state}
 
+      {:reply, message, state} ->
+        {:reply, {:text, message}, state}
+
       :stop ->
         Logger.info("Closing the Gossip websocket", type: :gossip)
         {:close, state}
@@ -48,7 +51,7 @@ defmodule Gossip.Socket do
     end
   end
 
-  def handle_frame(_, state) do
+  def handle_frame(_frame, state) do
     {:ok, state}
   end
 
@@ -91,6 +94,9 @@ defmodule Gossip.Socket do
       else
         :stop ->
           :stop
+
+        {:reply, message, state} ->
+          {:reply, message, state}
 
         _ ->
           {:ok, state}
@@ -138,8 +144,13 @@ defmodule Gossip.Socket do
     end
 
     def process(state, %{"event" => "heartbeat"}) do
-      Logger.debug("Gossip heartbeat", type: :gossip)
-      {:ok, state}
+      Logger.info("Gossip heartbeat", type: :gossip)
+
+      message = Poison.encode!(%{
+        "event" => "heartbeat",
+      })
+
+      {:reply, message, state}
     end
 
     def process(state, %{"event" => "messages/broadcast", "payload" => payload}) do
