@@ -14,6 +14,7 @@ defmodule ExVenture.Application do
     # Define workers and child supervisors to be supervised
     children =
       [
+        cluster_supervisor(),
         worker(Raft, []),
         supervisor(Data.Repo, []),
         supervisor(Web.Supervisor, []),
@@ -34,6 +35,13 @@ defmodule ExVenture.Application do
     end
 
     Supervisor.start_link(children, opts)
+  end
+
+  defp cluster_supervisor() do
+    if Code.ensure_compiled?(Cluster.Supervisor) do
+      topologies = Application.get_env(:libcluster, :topologies)
+      {Cluster.Supervisor, [topologies, [name: ExVenture.ClusterSupervisor]]}
+    end
   end
 
   defp listener() do
