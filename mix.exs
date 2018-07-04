@@ -57,6 +57,7 @@ defmodule ExVenture.Mixfile do
       {:distillery, "~> 1.4", runtime: false},
       {:earmark, "~> 1.2.3"},
       {:ecto, "~> 2.1"},
+      {:elixir_uuid, "~> 1.2"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:libcluster, "~> 3.0", only: [:dev, :prod]},
       {:logger_file_backend, "~> 0.0.10"},
@@ -73,10 +74,9 @@ defmodule ExVenture.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:qrcode, git: "https://gitlab.com/oestrich/qrcode.git"},
       {:ranch, "~> 1.4"},
-      {:sentry, "~> 6.2.1"},
+      {:sentry, "~> 6.2"},
       {:timex, "~> 3.1"},
       {:timex_ecto, "~> 3.1"},
-      {:uuid, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
       {:yaml_elixir, "~> 2.0"}
     ]
