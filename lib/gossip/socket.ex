@@ -144,7 +144,7 @@ defmodule Gossip.Socket do
     end
 
     def process(state, %{"event" => "heartbeat"}) do
-      Logger.info("Gossip heartbeat", type: :gossip)
+      Logger.debug("Gossip heartbeat", type: :gossip)
 
       message = Poison.encode!(%{
         "event" => "heartbeat",
