@@ -38,8 +38,8 @@ defmodule ExVenture.Application do
   end
 
   defp cluster_supervisor() do
-    if Code.ensure_compiled?(Cluster.Supervisor) do
-      topologies = Application.get_env(:libcluster, :topologies)
+    topologies = Application.get_env(:libcluster, :topologies)
+    if topologies && Code.ensure_compiled?(Cluster.Supervisor) do
       {Cluster.Supervisor, [topologies, [name: ExVenture.ClusterSupervisor]]}
     end
   end
