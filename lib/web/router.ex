@@ -231,6 +231,6 @@ defmodule Web.Router do
   end
 
   if Mix.env() == :dev do
-    forward("/emails/sent", Bamboo.EmailPreviewPlug)
+    forward("/emails/sent", Bamboo.SentEmailViewerPlug)
   end
 end
