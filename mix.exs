@@ -78,7 +78,7 @@ defmodule ExVenture.Mixfile do
       {:timex_ecto, "~> 3.1"},
       {:uuid, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
-      {:yaml_elixir, "~> 1.3"}
+      {:yaml_elixir, "~> 2.0"}
     ]
   end
 
