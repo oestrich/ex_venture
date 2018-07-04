@@ -8,6 +8,7 @@ defmodule Gossip.Socket do
   alias Game.Channel
   alias Game.Channels
   alias Game.Message
+  alias Game.Session
 
   require Logger
 
@@ -146,8 +147,15 @@ defmodule Gossip.Socket do
     def process(state, %{"event" => "heartbeat"}) do
       Logger.debug("Gossip heartbeat", type: :gossip)
 
+      players =
+        Session.Registry.connected_players()
+        |> Enum.map(&(&1.user.name))
+
       message = Poison.encode!(%{
         "event" => "heartbeat",
+        "payload" => %{
+          "players" => players,
+        },
       })
 
       {:reply, message, state}
