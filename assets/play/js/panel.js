@@ -16,8 +16,6 @@ let scrollToBottom = (panelSelector, callback) => {
 }
 
 let appendMessage = (payload, terminalSelector, panelSelector) => {
-  console.log(terminalSelector, panelSelector);
-
   if (!terminalSelector) {
     terminalSelector = "terminal";
   }
