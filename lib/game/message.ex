@@ -133,8 +133,14 @@ defmodule Game.Message do
   @spec format(String.t()) :: String.t()
   def format(message) do
     message
-    |> String.capitalize()
+    |> capitalize_first_letter()
     |> maybe_punctuate()
+  end
+
+  defp capitalize_first_letter(string) do
+    [letter | rest] = String.graphemes(string)
+    letter = String.upcase(letter)
+    Enum.join([letter | rest])
   end
 
   defp maybe_punctuate(message) do
