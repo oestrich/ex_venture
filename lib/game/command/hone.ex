@@ -28,7 +28,7 @@ defmodule Game.Command.Hone do
     - Health Points
     - Skill Points
 
-    It costs #{@hone_cost} expereince points. All stats are raised by #{@hone_stat_boost},
+    It costs #{@hone_cost} experience points. All stats are raised by #{@hone_stat_boost},
     except health points and skill points which are raised by #{@hone_points_boost}.
 
     {command}hone{/command} by itself will show your current stats, what they will
@@ -131,7 +131,7 @@ defmodule Game.Command.Hone do
     """
     Which statistic do you want to hone?
 
-    #{hone_field_help(save, :strength, "Stregnth")}
+    #{hone_field_help(save, :strength, "Strength")}
     #{hone_field_help(save, :agility, "Agility")}
     #{hone_field_help(save, :intelligence, "Intelligence")}
     #{hone_field_help(save, :awareness, "Awareness")}
