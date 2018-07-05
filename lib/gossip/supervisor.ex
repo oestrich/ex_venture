@@ -4,8 +4,6 @@ defmodule Gossip.Supervisor do
   """
   use Supervisor
 
-  @client_id Application.get_env(:ex_venture, :gossip)[:client_id]
-
   def start_link() do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
@@ -16,7 +14,7 @@ defmodule Gossip.Supervisor do
   Will only start if the client id is available
   """
   def start_socket() do
-    if @client_id do
+    if Gossip.configured?() do
       child_spec = worker(Gossip.Socket, [], id: Gossip.Socket, restart: :transient)
       Supervisor.start_child(Gossip.Supervisor.Tether, child_spec)
     end

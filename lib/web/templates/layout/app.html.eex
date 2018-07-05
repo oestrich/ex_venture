@@ -97,6 +97,10 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@user))) %>
       <div class="container">
         <p class="text-muted">
           Built with <%= link(ExVenture.version(), to: "https://exventure.org", target: "_blank") %>.
+
+          <%= if Gossip.configured?() do %>
+            Part of the <%= link("Gossip Network", to: "https://gossip.haus", target: "_blank") %>.
+          <% end %>
         </p>
       </div>
     </footer>
