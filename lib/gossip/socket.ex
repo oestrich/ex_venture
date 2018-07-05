@@ -77,6 +77,7 @@ defmodule Gossip.Socket do
         "client_id" => @client_id,
         "client_secret" => @client_secret,
         "user_agent" => ExVenture.version(),
+        "supports" => ["channels"],
       },
     })
 
