@@ -71,6 +71,8 @@ defmodule Gossip.Socket do
   end
 
   def handle_info({:authorize}, state) do
+    channels = Enum.map(Channels.gossip_channels(), &(&1.gossip_channel))
+
     message = Poison.encode!(%{
       "event" => "authenticate",
       "payload" => %{
@@ -78,8 +80,11 @@ defmodule Gossip.Socket do
         "client_secret" => @client_secret,
         "user_agent" => ExVenture.version(),
         "supports" => ["channels"],
+        "channels" => channels,
       },
     })
+
+    state = Map.put(state, :channels, channels)
 
     {:reply, {:text, message}, state}
   end
@@ -137,12 +142,6 @@ defmodule Gossip.Socket do
         _ ->
           {:ok, state}
       end
-    end
-
-    def process(state, %{"event" => "channels/subscribed", "payload" => payload}) do
-      channels = Map.get(payload, "channels", [])
-      state = Map.put(state, :channels, channels)
-      {:ok, state}
     end
 
     def process(state, %{"event" => "heartbeat"}) do

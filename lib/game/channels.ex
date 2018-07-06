@@ -56,6 +56,14 @@ defmodule Game.Channels do
   end
 
   @doc """
+  Get a list of Gossip connected channels
+  """
+  @spec gossip_channels() :: [Channel.t()]
+  def gossip_channels() do
+    Enum.filter(all(), &(&1.is_gossip_connected))
+  end
+
+  @doc """
   Match a Gossip channel with a local channel
   """
   @spec gossip_channel(String.t()) :: {:ok, Channel.t()} | {:error, :not_found}
