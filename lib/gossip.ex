@@ -16,8 +16,8 @@ defmodule Gossip do
   @doc """
   Send a message to the Gossip network
   """
-  @spec send(channel(), Message.t()) :: :ok
-  def send(channel, message) do
+  @spec broadcast(Gossip.Client.channel_name(), Gossip.Message.send()) :: :ok
+  def broadcast(channel, message) do
     WebSockex.cast(Gossip.Socket, {:broadcast, channel, message})
   end
 end

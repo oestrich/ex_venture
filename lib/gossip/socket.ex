@@ -5,16 +5,11 @@ defmodule Gossip.Socket do
 
   use WebSockex
 
-  alias Game.Channel
-  alias Game.Channels
-  alias Game.Message
-  alias Game.Session
+  alias Gossip.Message
 
   require Logger
 
   @url Application.get_env(:ex_venture, :gossip)[:url]
-  @client_id Application.get_env(:ex_venture, :gossip)[:client_id]
-  @client_secret Application.get_env(:ex_venture, :gossip)[:client_secret]
 
   alias Gossip.Monitor
   alias Gossip.Socket.Implementation
@@ -71,21 +66,7 @@ defmodule Gossip.Socket do
   end
 
   def handle_info({:authorize}, state) do
-    channels = Enum.map(Channels.gossip_channels(), &(&1.gossip_channel))
-
-    message = Poison.encode!(%{
-      "event" => "authenticate",
-      "payload" => %{
-        "client_id" => @client_id,
-        "client_secret" => @client_secret,
-        "user_agent" => ExVenture.version(),
-        "supports" => ["channels"],
-        "channels" => channels,
-      },
-    })
-
-    state = Map.put(state, :channels, channels)
-
+    {state, message} = Implementation.authorize(state)
     {:reply, {:text, message}, state}
   end
 
@@ -94,10 +75,33 @@ defmodule Gossip.Socket do
 
     require Logger
 
+    @client_id Application.get_env(:ex_venture, :gossip)[:client_id]
+    @client_secret Application.get_env(:ex_venture, :gossip)[:client_secret]
+    @callback_module Game.Channel.Gossip
+
+    def authorize(state) do
+      channels = @callback_module.channels()
+
+      message = Poison.encode!(%{
+        "event" => "authenticate",
+        "payload" => %{
+          "client_id" => @client_id,
+          "client_secret" => @client_secret,
+          "user_agent" => @callback_module.user_agent(),
+          "supports" => ["channels"],
+          "channels" => channels,
+        },
+      })
+
+      state = Map.put(state, :channels, channels)
+
+      {state, message}
+    end
+
     def receive(state, message) do
       with {:ok, message} <- Poison.decode(message),
            {:ok, state} <- process(state, message) do
-       {:ok, state}
+        {:ok, state}
       else
         :stop ->
           :stop
@@ -117,7 +121,7 @@ defmodule Gossip.Socket do
             "event" => "messages/new",
             "payload" => %{
               "channel" => channel,
-              "name" => message.sender.name,
+              "name" => message.name,
               "message" => message.message,
             },
           })
@@ -133,10 +137,12 @@ defmodule Gossip.Socket do
       case message do
         %{"status" => "success"} ->
           Logger.info("Authenticated against Gossip", type: :gossip)
+
           {:ok, Map.put(state, :authenticated, true)}
 
         %{"status" => "failure"} ->
           Logger.info("Failed to authenticate against Gossip", type: :gossip)
+
           :stop
 
         _ ->
@@ -147,14 +153,10 @@ defmodule Gossip.Socket do
     def process(state, %{"event" => "heartbeat"}) do
       Logger.debug("Gossip heartbeat", type: :gossip)
 
-      players =
-        Session.Registry.connected_players()
-        |> Enum.map(&(&1.user.name))
-
       message = Poison.encode!(%{
         "event" => "heartbeat",
         "payload" => %{
-          "players" => players,
+          "players" => @callback_module.players(),
         },
       })
 
@@ -162,16 +164,16 @@ defmodule Gossip.Socket do
     end
 
     def process(state, %{"event" => "messages/broadcast", "payload" => payload}) do
-      with {:ok, channel} <- Channels.gossip_channel(payload["channel"]),
-           true <- Raft.node_is_leader?() do
-        message = Message.gossip_broadcast(channel, payload)
-        Channel.broadcast(channel.name, message)
+      message = %Message{
+        channel: payload["channel"],
+        game: payload["game"],
+        name: payload["name"],
+        message: payload["message"],
+      }
 
-        {:ok, state}
-      else
-        _ ->
-          {:ok, state}
-      end
+      @callback_module.message_broadcast(message)
+
+      {:ok, state}
     end
 
     def process(state, _), do: {:ok, state}

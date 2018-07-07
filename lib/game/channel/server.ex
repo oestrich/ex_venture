@@ -132,13 +132,11 @@ defmodule Game.Channel.Server do
 
   defp send_to_gossip(channel, message) do
     message = %{
-      sender: %{
-        name: message.sender.name,
-      },
+      name: message.sender.name,
       message: message.message,
     }
 
-    Gossip.send(channel.gossip_channel, message)
+    Gossip.broadcast(channel.gossip_channel, message)
   end
 
   defp local_broadcast(%{channels: channels}, channel, message) do

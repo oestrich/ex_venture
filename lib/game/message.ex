@@ -79,16 +79,15 @@ defmodule Game.Message do
     }
   end
 
-  def gossip_broadcast(channel, payload) do
-    name = "#{Map.get(payload, "name", "")}@#{Map.get(payload, "game", "")}"
-    message = Map.get(payload, "message", "")
+  def gossip_broadcast(channel, message) do
+    name = "#{message.name}@#{message.game}"
     user = %{name: name}
 
     %__MODULE__{
       type: :user,
       sender: user,
-      message: message,
-      formatted: Format.channel_say(channel, {:user, user}, %{message: message}),
+      message: message.message,
+      formatted: Format.channel_say(channel, {:user, user}, message),
       from_gossip: true,
     }
   end
