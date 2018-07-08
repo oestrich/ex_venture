@@ -18,6 +18,12 @@ defmodule Gossip do
   """
   @spec broadcast(Gossip.Client.channel_name(), Gossip.Message.send()) :: :ok
   def broadcast(channel, message) do
-    WebSockex.cast(Gossip.Socket, {:broadcast, channel, message})
+    case Process.whereis(Gossip.Socket) do
+      nil ->
+        :ok
+
+      _pid ->
+        WebSockex.cast(Gossip.Socket, {:broadcast, channel, message})
+    end
   end
 end
