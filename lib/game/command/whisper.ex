@@ -13,7 +13,7 @@ defmodule Game.Command.Whisper do
   commands(["whisper"], parse: false)
 
   @impl Game.Command
-  def help(:topic), do: "Whipser"
+  def help(:topic), do: "Whisper"
   def help(:short), do: "Whisper to someone in the same room as you"
 
   def help(:full) do
