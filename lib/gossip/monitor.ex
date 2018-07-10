@@ -18,7 +18,7 @@ defmodule Gossip.Monitor do
 
   def init(_) do
     Process.flag(:trap_exit, true)
-    :timer.send_interval(@sweep_delay, :check_socket_alive)
+    Process.send_after(self(), :check_socket_alive, @sweep_delay)
     {:ok, %{process: nil, online: false}}
   end
 
@@ -34,25 +34,14 @@ defmodule Gossip.Monitor do
   end
 
   def handle_info(:restart_socket, state) do
-    case state.online do
-      false ->
-        Gossip.start_socket()
-        {:noreply, state}
-
-      true ->
-        {:noreply, state}
-    end
+    Gossip.start_socket()
+    {:noreply, state}
   end
 
   def handle_info(:check_socket_alive, state) do
-    case Process.whereis(Gossip.Socket) do
-      nil ->
-        Gossip.start_socket()
-        {:noreply, state}
-
-      _pid ->
-        {:noreply, state}
-    end
+    Gossip.start_socket()
+    Process.send_after(self(), :check_socket_alive, @sweep_delay)
+    {:noreply, state}
   end
 
   def handle_info({:EXIT, pid, _reason}, state) do
@@ -63,7 +52,7 @@ defmodule Gossip.Monitor do
           |> Map.put(:online, false)
           |> Map.put(:process, nil)
 
-        :erlang.send_after(@restart_delay, self(), :restart_socket)
+        Process.send_after(self(), :restart_socket, @restart_delay)
 
         {:noreply, state}
 
