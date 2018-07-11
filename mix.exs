@@ -59,6 +59,7 @@ defmodule ExVenture.Mixfile do
       {:ecto, "~> 2.1"},
       {:elixir_uuid, "~> 1.2"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:gossip, git: "https://github.com/oestrich/gossip-elixir.git"},
       {:libcluster, "~> 3.0", only: [:dev, :prod]},
       {:logger_file_backend, "~> 0.0.10"},
       {:logster, "~> 0.4"},
