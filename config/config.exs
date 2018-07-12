@@ -52,4 +52,7 @@ config :prometheus, Metrics.PipelineInstrumenter,
   registry: :default,
   duration_unit: :microseconds
 
+config :gossip, :url, "wss://gossip.haus/socket"
+config :gossip, :callback_module, Game.Channel.Gossip
+
 import_config "#{Mix.env()}.exs"
