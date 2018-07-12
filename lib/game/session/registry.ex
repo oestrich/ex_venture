@@ -104,6 +104,8 @@ defmodule Game.Session.Registry do
   """
   @spec player_offline(User.t()) :: nil
   def player_offline(disconnecting_user) do
+    Gossip.player_sign_out(disconnecting_user.name)
+
     connected_players()
     |> Enum.reject(fn %{user: user} ->
       user.id == disconnecting_user.id
@@ -118,6 +120,8 @@ defmodule Game.Session.Registry do
   """
   @spec player_online(User.t()) :: nil
   def player_online(connecting_user) do
+    Gossip.player_sign_in(connecting_user.name)
+
     connected_players()
     |> Enum.reject(fn %{user: user} ->
       user.id == connecting_user.id

@@ -3,8 +3,11 @@ defmodule Game.Channel.Gossip do
   Callback module for Gossip
   """
 
+  require Logger
+
   alias Game.Channel
   alias Game.Channels
+  alias Game.Character
   alias Game.Message
   alias Game.Session
 
@@ -38,5 +41,29 @@ defmodule Game.Channel.Gossip do
       _ ->
         :ok
     end
+  end
+
+  @impl true
+  def player_sign_in(game_name, player_name) do
+    Logger.info(fn ->
+      "Gossip - new player sign in #{player_name}@#{game_name}"
+    end)
+
+    Session.Registry.connected_players()
+    |> Enum.each(fn %{user: user} ->
+      Character.notify({:user, user}, {"gossip/player-online", game_name, player_name})
+    end)
+  end
+
+  @impl true
+  def player_sign_out(game_name, player_name) do
+    Logger.info(fn ->
+      "Gossip - new player sign out #{player_name}@#{game_name}"
+    end)
+
+    Session.Registry.connected_players()
+    |> Enum.each(fn %{user: user} ->
+      Character.notify({:user, user}, {"gossip/player-offline", game_name, player_name})
+    end)
   end
 end
