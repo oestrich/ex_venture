@@ -61,16 +61,16 @@ Install Erlang via [asdf][asdf-erlang].
 
 ```bash
 asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
-asdf install erlang 20.1
-asdf global erlang 20.1
+asdf install erlang 21.0.2
+asdf global erlang 21.0.2
 ```
 
 Install Elixir via [asdf][asdf-elixir].
 
 ```bash
 asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
-asdf install elixir 1.6.1
-asdf global elixir 1.6.1
+asdf install elixir 1.6.6
+asdf global elixir 1.6.6
 mix local.hex
 mix local.rebar
 ```
@@ -82,8 +82,8 @@ Install node.js via [asdf][asdf-nodejs].
 ```bash
 asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-asdf install nodejs 8.8.1
-asdf global nodejs 8.8.1
+asdf install nodejs 8.6.0
+asdf global nodejs 8.6.0
 ```
 
 You will also need python for node-sass:
