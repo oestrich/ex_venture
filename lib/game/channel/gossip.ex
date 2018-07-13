@@ -49,10 +49,16 @@ defmodule Game.Channel.Gossip do
       "Gossip - new player sign in #{player_name}@#{game_name}"
     end)
 
-    Session.Registry.connected_players()
-    |> Enum.each(fn %{user: user} ->
-      Character.notify({:user, user}, {"gossip/player-online", game_name, player_name})
-    end)
+    case Raft.node_is_leader?() do
+      true ->
+        Session.Registry.connected_players()
+        |> Enum.each(fn %{user: user} ->
+          Character.notify({:user, user}, {"gossip/player-online", game_name, player_name})
+        end)
+
+      false ->
+        :ok
+    end
   end
 
   @impl true
@@ -61,9 +67,15 @@ defmodule Game.Channel.Gossip do
       "Gossip - new player sign out #{player_name}@#{game_name}"
     end)
 
-    Session.Registry.connected_players()
-    |> Enum.each(fn %{user: user} ->
-      Character.notify({:user, user}, {"gossip/player-offline", game_name, player_name})
-    end)
+    case Raft.node_is_leader?() do
+      true ->
+        Session.Registry.connected_players()
+        |> Enum.each(fn %{user: user} ->
+          Character.notify({:user, user}, {"gossip/player-offline", game_name, player_name})
+        end)
+
+      false ->
+        :ok
+    end
   end
 end
