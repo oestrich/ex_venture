@@ -9,9 +9,8 @@ the environment. You can get the Client ID and Client secret after signing in or
 from [Gossip Config](https://gossip.haus/config).
 
 ```elixir
-config :ex_venture, :gossip,
-  client_id: "get from gossip.haus/config",
-  client_secret: "get from gossip.haus/config",
+config :gossip, :client_id, "get from gossip.haus/config"
+config :gossip, :client_secret, "get from gossip.haus/config"
 ```
 
 ## Connecting Channels to Gossip
