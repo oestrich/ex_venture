@@ -20,21 +20,28 @@ sudo apt install postgresql
 
 For Arch, following the [wiki on installing PostgreSQL][arch-wiki-pg].
 
-Ensure a superuser is enabled for your login name.
+#### Create a User
+
+Create a PostgreSQL user that has a password with the following command. This will make a PostgreSQL user with the same name as your login user. It will also attach a password to this account, don't forget it as you will need it later on.
 
 ```bash
-sudo -u postgres createuser --superuser `whoami`
+sudo -u postgres createuser -P --superuser `whoami`
 ```
 
 #### PostgreSQL Authentication
 
-By default ExVenture will try ident based authentication. You may need to alter your hba.config settings to allow this. This is _only_ recommended for development.
+Set up a `config/dev.local.exs` file. This does not exist so you will need to make it. Place the following inside of it, change the username and password to match what you picked above.
 
-```
-# IPv4 local connections:
-host    all             all             127.0.0.1/32            trust
-# IPv6 local connections:
-host    all             all             ::1/128                 trust
+```elixir
+use Mix.Config
+
+config :ex_venture, Data.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  database: "ex_venture_dev",
+  hostname: "localhost",
+  username: "CHANGEME",
+  password: "CHANGEME",
+  pool_size: 10
 ```
 
 ### Elixir / Erlang
