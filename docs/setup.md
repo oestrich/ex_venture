@@ -106,7 +106,7 @@ sudo apt install python
 With requirements set up we can start to get ExVenture going. These commands will set up the elixir side:
 
 ```bash
-git clone git@github.com:oestrich/ex_venture.git
+git clone https://github.com/oestrich/ex_venture.git
 cd ex_venture
 mix deps.get
 mix compile
