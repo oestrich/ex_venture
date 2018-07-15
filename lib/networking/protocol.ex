@@ -373,13 +373,25 @@ defmodule Networking.Protocol do
         forward_options(socket, data)
         fun.(:mccp)
 
+      <<@iac, @telnet_dont, @mccp, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:iac)
+
       <<@iac, @telnet_do, @mssp, data::binary>> ->
         forward_options(socket, data)
         fun.(:mssp)
 
+      <<@iac, @telnet_dont, @mssp, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:iac)
+
       <<@iac, @telnet_do, @gmcp, data::binary>> ->
         forward_options(socket, data)
         fun.(:gmcp)
+
+      <<@iac, @telnet_dont, @gmcp, data::binary>> ->
+        forward_options(socket, data)
+        fun.(:iac)
 
       <<@iac, @will, @gmcp, data::binary>> ->
         forward_options(socket, data)
@@ -397,10 +409,6 @@ defmodule Networking.Protocol do
         {data, forward} = split_iac_sb(data)
         forward_options(socket, forward)
         fun.({:gmcp, data})
-
-      <<@iac, @telnet_dont, @mssp, data::binary>> ->
-        forward_options(socket, data)
-        fun.(:iac)
 
       <<@iac, @telnet_do, @telnet_option_echo, data::binary>> ->
         forward_options(socket, data)
