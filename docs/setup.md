@@ -1,6 +1,6 @@
 # Setup
 
-By the end of this guide you should have a working ExVenture development environment.
+By the end of this guide you should have a working ExVenture development environment. We need to install PostgreSQL and several programming languages that are used by ExVenture.
 
 ## Requirements
 
@@ -8,17 +8,23 @@ By the end of this guide you should have a working ExVenture development environ
 
 You should install Git via your platform's package manager.
 
+Ubuntu:
+
+```bash
+sudo apt install git
+```
+
 ### PostgreSQL
 
 You should install PostgreSQL via your platforms package manager or Postgres.app for Mac.
+
+Make sure this is PostgreSQL 10+, older versions will not work with ExVenture.
 
 Ubuntu:
 
 ```bash
 sudo apt install postgresql
 ```
-
-For Arch, following the [wiki on installing PostgreSQL][arch-wiki-pg].
 
 #### Create a User
 
@@ -46,7 +52,9 @@ config :ex_venture, Data.Repo,
 
 ### Elixir / Erlang
 
-The easiest way to get Erlang/Elixir going is to install [asdf][asdf]. You can follow their install guide on the [README][asdf-install]. Below is the Ubuntu bash set up for reference.
+The easiest way to get Erlang/Elixir going is to install [asdf][asdf]. asdf is a tool that manages programming language versions. It will simply getting and staying on the correct versions required for running ExVenture.
+
+You can follow their install guide on the [README][asdf-install]. Below is the Ubuntu bash set up for reference.
 
 ```bash
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.4.0
@@ -82,9 +90,11 @@ mix local.hex
 mix local.rebar
 ```
 
+Note that you *must* install these versions or higher. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
+
 ### node.js
 
-Install node.js via [asdf][asdf-nodejs].
+Install node.js via [asdf][asdf-nodejs]. Node is required for compiling the game's web assets, CSS and javascript.
 
 ```bash
 asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
@@ -93,9 +103,9 @@ asdf install nodejs 8.6.0
 asdf global nodejs 8.6.0
 ```
 
-You will also need python for node-sass:
+`node-sass` required python to run. Make sure it is installed and available.
 
-Ubuntu
+Ubuntu:
 
 ```bash
 sudo apt install python
@@ -112,7 +122,7 @@ mix deps.get
 mix compile
 ```
 
-To get assets set up, which uses [brunch][brunch]:
+To get assets set up, which uses [brunch][brunch]. brunch is a package that handles asset compilation for us.
 
 ```bash
 cd assets
@@ -135,12 +145,21 @@ With that the app is up and running. You can boot it with:
 mix run --no-halt
 ```
 
-And connect via telnet on 5555 and via web on 4000. Both of these are configurable via the file `config/dev.exs`.
+And connect via telnet on 5555 and via web on 4000. Both of these are configurable via the file `config/dev.local.exs`.
 
 If you have [tintin++][tt++] installed you can connect with:
 
 ```bash
 tt++ -G local.tin
+```
+
+After connecting you will see:
+
+```
+ExVenture v0.23.0
+Welcome to the MUD
+
+What is your player name (Enter create for a new account)?
 ```
 
 The `local.tin` tintin script sets up base GMCP and can turn debug mode on my removing a `nop` on `config {debug telnet} {on}`.
