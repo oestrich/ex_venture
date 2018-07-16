@@ -24,16 +24,6 @@ defmodule Game.World.Master do
     if @start_world do
       GenServer.cast(__MODULE__, :rebalance_zones)
     end
-
-    start_gossip_sockets()
-  end
-
-  defp start_gossip_sockets() do
-    members = :pg2.get_members(@group)
-
-    Enum.each(members, fn member ->
-      send(member, {:start, :gossip})
-    end)
   end
 
   def start_link(_) do
@@ -80,11 +70,6 @@ defmodule Game.World.Master do
   def handle_info({:set, :world_online, status}, state) do
     :ets.insert(@table, {:world_online, status})
     Logger.info("World is online? #{status}")
-    {:noreply, state}
-  end
-
-  def handle_info({:start, :gossip}, state) do
-    Gossip.start_socket()
     {:noreply, state}
   end
 
