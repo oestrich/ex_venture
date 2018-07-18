@@ -49,9 +49,6 @@ defmodule Game.Session.Login do
   """
   @spec login(map, pid, map) :: map
   def login(user, socket, state) do
-    Session.Registry.register(user)
-    Session.Registry.player_online(user)
-
     self() |> Process.schedule_save()
     self() |> Process.schedule_inactive_check()
     self() |> Process.schedule_heartbeat()
@@ -105,6 +102,9 @@ defmodule Game.Session.Login do
   end
 
   defp finish_login(state = %{user: user}, session) do
+    Session.Registry.register(user)
+    Session.Registry.player_online(user)
+
     @environment.link(user.save.room_id)
     @environment.enter(user.save.room_id, {:user, user}, :login)
     session |> Session.recv("look")
