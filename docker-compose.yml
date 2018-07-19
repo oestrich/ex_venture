@@ -1,0 +1,42 @@
+# https://docs.docker.com/compose/compose-file/
+version: '3.6'
+services:
+  ex_venture:
+    build: .
+    depends_on:
+      - postgres
+    ports:
+      - 4000:4000
+      - 5555:5555
+
+  postgres:
+    image: postgres:10.4-alpine
+    environment:
+      POSTGRES_DB: ex_venture
+      POSTGRES_PASSWORD: ex_venture
+      POSTGRES_USER: ex_venture
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  postgres_exporter:
+    depends_on:
+      - postgres
+    environment:
+      DATA_SOURCE_NAME: "postgresql://ex_venture:ex_venture@postgres:5432/?sslmode=disable"
+    image: wrouesnel/postgres_exporter:v0.4.6
+
+
+  prometheus:
+    image: prom/prometheus:v2.3.2
+    ports:
+      - 9090:9090
+    volumes:
+      - ./contrib/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+volumes:
+  grafana-data: {}
+  postgres-data: {}
+  prometheus-data: {}

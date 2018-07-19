@@ -33,4 +33,6 @@ config/dev.local.exs
 # Ignores for Docker context only below
 .git
 Dockerfile
+contrib
+docker-compose.yml
 docs
