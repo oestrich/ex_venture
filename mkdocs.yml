@@ -17,6 +17,7 @@ theme:
 pages:
   - Home: index.md
   - Setup: setup.md
+  - Contributing: contributing.md
   - Web Client: client.md
   - Game:
     - GMCP: game/gmcp.md
