@@ -92,14 +92,20 @@ defmodule Game.Channel.Gossip do
       "Received a new tell from #{from_player}@#{from_game} to #{to_player} - #{message}"
     end)
 
-    case Session.Registry.find_player(to_player) do
-      {:ok, player} ->
-        player_name = "#{from_player}@#{from_game}"
-        Channel.tell({:user, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
+    case Raft.node_is_leader?() do
+      true ->
+        case Session.Registry.find_player(to_player) do
+          {:ok, player} ->
+            player_name = "#{from_player}@#{from_game}"
+            Channel.tell({:user, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
 
-        :ok
+            :ok
 
-      {:error, :not_found} ->
+          {:error, :not_found} ->
+            :ok
+        end
+
+      false ->
         :ok
     end
   end
