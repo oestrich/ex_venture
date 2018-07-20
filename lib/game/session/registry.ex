@@ -131,6 +131,26 @@ defmodule Game.Session.Registry do
     end)
   end
 
+  @doc """
+  Find a connected player by name
+  """
+  @spec find_player(String.t()) :: {:ok, map()} | {:error, :not_found}
+  def find_player(to_player) do
+    player =
+      connected_players()
+      |> Enum.find(fn %{user: user} ->
+        user.name |> String.downcase() == to_player |> String.downcase()
+      end)
+
+    case player do
+      nil ->
+        {:error, :not_found}
+
+      player ->
+        {:ok, player.user}
+    end
+  end
+
   #
   # Server
   #

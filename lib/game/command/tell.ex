@@ -55,6 +55,7 @@ defmodule Game.Command.Tell do
     state
     |> maybe_tell_player(message)
     |> maybe_tell_npc(message)
+    |> maybe_tell_gossip(message)
     |> maybe_fail_tell(message)
   end
 
@@ -65,6 +66,9 @@ defmodule Game.Command.Tell do
 
       {:user, user} ->
         message |> reply_to_player(user, state)
+
+      {:gossip, player_name} ->
+        message |> reply_to_gossip(player_name, state)
 
       {:npc, npc} ->
         message |> reply_to_npc(npc, state)
@@ -96,6 +100,7 @@ defmodule Game.Command.Tell do
   end
 
   defp maybe_tell_npc(:ok, _message), do: :ok
+
   defp maybe_tell_npc({:update, state}, _message), do: {:update, state}
 
   defp maybe_tell_npc(state = %{socket: socket, save: %{room_id: room_id}, user: from}, message) do
@@ -120,13 +125,55 @@ defmodule Game.Command.Tell do
     end
   end
 
+  defp maybe_tell_gossip(:ok, _message), do: :ok
+
+  defp maybe_tell_gossip({:update, state}, _message), do: {:update, state}
+
+  defp maybe_tell_gossip(state, message) do
+    [player_name | message] = String.split(message, " ")
+    message = Enum.join(message, " ")
+
+    case String.contains?(player_name, "@") do
+      true ->
+        tell_gossip(state, player_name, message)
+
+      false ->
+        state
+    end
+  end
+
   defp maybe_fail_tell(:ok, _message), do: :ok
+
   defp maybe_fail_tell({:update, state}, _message), do: {:update, state}
 
   defp maybe_fail_tell(%{socket: socket}, message) do
     [name | _] = String.split(message, " ")
     socket |> @socket.echo(~s("#{name}" is not online.))
-    :ok
+  end
+
+  defp tell_gossip(state, player_name, message) do
+    [name, game] = String.split(player_name, "@")
+
+    case Gossip.send_tell(state.user.name, game, name, message) do
+      :ok ->
+        state.socket |> @socket.echo(Format.send_tell({:user, %{name: player_name}}, message))
+        {:update, %{state | reply_to: {:gossip, player_name}}}
+
+      {:error, :offline} ->
+        state.socket |> @socket.echo("Error: Gossip is offline.")
+
+      {:error, "game offline"} ->
+        state.socket |> @socket.echo("The remote game is offline.")
+
+      {:error, "player offline"} ->
+        state.socket |> @socket.echo("The remote player is offline.")
+
+      {:error, "not supported"} ->
+        state.socket |> @socket.echo("The remote game does not support tells.")
+
+      {:error, message} ->
+        state.socket |> @socket.echo(~s(Error: Gossip responded with "#{message}".))
+    end
   end
 
   defp reply_to_player(message, reply_to, %{socket: socket, user: from}) do
@@ -143,6 +190,10 @@ defmodule Game.Command.Tell do
         socket |> @socket.echo(Format.send_tell({:user, reply_to}, message))
         Channel.tell({:user, reply_to}, {:user, from}, Message.tell(from, message))
     end
+  end
+
+  defp reply_to_gossip(message, player_name, state) do
+    tell_gossip(state, player_name, message)
   end
 
   defp reply_to_npc(message, reply_to, %{socket: socket, user: from, save: %{room_id: room_id}}) do

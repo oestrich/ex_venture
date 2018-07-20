@@ -78,4 +78,29 @@ defmodule Game.Channel.Gossip do
         :ok
     end
   end
+
+  @impl true
+  def players_status(game_name, player_names) do
+    Logger.debug(fn ->
+      "Received update for game #{game_name} - #{inspect(player_names)}"
+    end)
+  end
+
+  @impl true
+  def tell_received(from_game, from_player, to_player, message) do
+    Logger.info(fn ->
+      "Received a new tell from #{from_player}@#{from_game} to #{to_player} - #{message}"
+    end)
+
+    case Session.Registry.find_player(to_player) do
+      {:ok, player} ->
+        player_name = "#{from_player}@#{from_game}"
+        Channel.tell({:user, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
+
+        :ok
+
+      {:error, :not_found} ->
+        :ok
+    end
+  end
 end

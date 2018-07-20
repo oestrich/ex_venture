@@ -55,7 +55,7 @@ defmodule Game.Command.TellTest do
       assert_receive {:channel, {:tell, {:user, _}, %Message{message: "Howdy."}}}
     end
 
-    test "send a reply - npc not in the room", %{state: state} do
+    test "send a tell - npc not in the room", %{state: state} do
       room = %{id: 1, npcs: []}
       @room.set_room(Map.merge(@room._room(), room))
 

@@ -258,6 +258,7 @@ defmodule Game.Session.GMCP do
   @spec character_info(Character.t()) :: map()
   def character_info({:user, user}), do: user_info(user)
   def character_info({:npc, npc}), do: npc_info(npc)
+  def character_info({:gossip, player_name}), do: gossip_info(player_name)
 
   @doc """
   Gather information for a user
@@ -280,6 +281,17 @@ defmodule Game.Session.GMCP do
       type: :npc,
       id: npc.id,
       name: npc.name
+    }
+  end
+
+  @doc """
+  Gather information for a Gossip player
+  """
+  @spec gossip_info(String.t()) :: map()
+  def gossip_info(player_name) do
+    %{
+      type: :gossip,
+      name: player_name
     }
   end
 
