@@ -21,6 +21,10 @@ scrape_configs:
   static_configs:
   - targets:
     - ex_venture:4000
+- job_name: grafana
+  static_configs:
+  - targets:
+    - grafana:3000
 - job_name: postgres
   static_configs:
   - targets:
