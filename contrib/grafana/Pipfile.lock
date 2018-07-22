@@ -1,0 +1,49 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "0e9ae738ea72634007e174dd0db7e9ec34575afb7a707ebddfbbe95efc3d124b"
+        },
+        "host-environment-markers": {
+            "implementation_name": "cpython",
+            "implementation_version": "3.6.5",
+            "os_name": "posix",
+            "platform_machine": "x86_64",
+            "platform_python_implementation": "CPython",
+            "platform_release": "17.7.0",
+            "platform_system": "Darwin",
+            "platform_version": "Darwin Kernel Version 17.7.0: Thu Jun 21 22:53:14 PDT 2018; root:xnu-4570.71.2~1/RELEASE_X86_64",
+            "python_full_version": "3.6.5",
+            "python_version": "3.6",
+            "sys_platform": "darwin"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.6"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "attrs": {
+            "hashes": [
+                "sha256:4b90b09eeeb9b88c35bc642cbac057e45a5fd85367b985bd2809c62b7b939265",
+                "sha256:e0d0eb91441a3b53dab4d9b743eafc1ac44476296a2053b6ca3af0b139faf87b"
+            ],
+            "version": "==18.1.0"
+        },
+        "grafanalib": {
+            "hashes": [
+                "sha256:885a9c3ca9bd8cd2390a1c3cd4a2bd500fd19e1d2521a2b972503b509547d853",
+                "sha256:9d1372daa83bc7148d995059561bec24efaae7b628449b0a440e7e9f49b42521",
+                "sha256:aba4f87028edd826d6444967fdcfa7d1307e3e564bfe0cadea813a2595088e5d"
+            ],
+            "version": "==0.5.3"
+        }
+    },
+    "develop": {}
+}
