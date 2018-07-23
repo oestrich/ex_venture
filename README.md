@@ -22,6 +22,11 @@ A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixi
 - Using Phoenix Channels, ExVenture ships with a built in web client
 - Hosted by the app itself, accessible by browsing to `/play`
 
+### Cross Game Chat
+- ExVenture fully supports the [Gossip][gossip] network
+- Cross game channels
+- Cross game tells
+
 ### Front Page
 - News announcements
 - Help is web accessible
@@ -120,3 +125,5 @@ stream {
 ## Metrics
 
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
+
+[gosisp]: https://gossip.haus/
