@@ -126,4 +126,4 @@ stream {
 
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
 
-[gosisp]: https://gossip.haus/
+[gossip]: https://gossip.haus/
