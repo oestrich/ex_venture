@@ -1,4 +1,4 @@
-defmodule Game.Channel.Gossip do
+defmodule Game.Gossip do
   @moduledoc """
   Callback module for Gossip
   """

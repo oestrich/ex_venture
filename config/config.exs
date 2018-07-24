@@ -52,6 +52,6 @@ config :prometheus, Metrics.PipelineInstrumenter,
   registry: :default,
   duration_unit: :microseconds
 
-config :gossip, :callback_module, Game.Channel.Gossip
+config :gossip, :callback_module, Game.Gossip
 
 import_config "#{Mix.env()}.exs"
