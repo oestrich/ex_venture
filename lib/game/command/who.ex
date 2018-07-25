@@ -33,23 +33,51 @@ defmodule Game.Command.Who do
   @spec run(args :: [], state :: map) :: :ok
   def run(command, state)
 
-  def run({}, %{socket: socket}) do
+  def run({}, state) do
     players = Session.Registry.connected_players()
 
+    message = """
+    There are #{length(players)} players online:
+    #{local_names(players)}
+    #{remote_names()}
+    """
+
+    state.socket |> @socket.echo(String.trim(message))
+  end
+
+  def run({name}, state), do: Info.run({name}, state)
+
+  defp local_names(players) do
     {admins, players} =
       Enum.split_with(players, fn %{user: user} ->
         User.is_admin?(user)
       end)
 
-    names =
-      (admins ++ players)
-      |> Enum.map(fn %{user: user, metadata: metadata} ->
-        Format.Who.player_line(user, metadata)
-      end)
-      |> Enum.join("\n")
-
-    socket |> @socket.echo("There are #{players |> length} players online:\n#{names}")
+    (admins ++ players)
+    |> Enum.map(fn %{user: user, metadata: metadata} ->
+      Format.Who.player_line(user, metadata)
+    end)
+    |> Enum.join("\n")
   end
 
-  def run({name}, state), do: Info.run({name}, state)
+  defp remote_names() do
+    names =
+      Gossip.who()
+      |> Enum.flat_map(fn {game_name, players} ->
+        Enum.map(players, &Format.Who.remote_player_line(game_name, &1))
+      end)
+      |> Enum.sort()
+
+    case Enum.empty?(names) do
+      false ->
+        """
+
+        Remote players (on {white}Gossip{/white}):
+        #{Enum.join(names, "\n")}
+        """
+
+      true ->
+        ""
+    end
+  end
 end

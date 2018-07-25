@@ -18,6 +18,15 @@ defmodule Game.Format.Who do
     |> Enum.join(" ")
   end
 
+  @doc """
+  Format a remote player name
+  """
+  def remote_player_line(game_name, player_name) do
+    player = %{name: "#{player_name}@#{game_name}"}
+
+    " - #{Format.player_name(player)}"
+  end
+
   defp player_stats(player) do
     Enum.join([
       "[",
