@@ -17,6 +17,7 @@ defmodule Game.Color do
   def delink_commands(string) do
     string
     |> String.replace(~r/{command( send='.*')?}/i, "{command click=false}")
+    |> String.replace(~r/{link}/i, "{link click=false}")
   end
 
   @doc """
@@ -56,6 +57,7 @@ defmodule Game.Color do
     string
     |> String.replace(~r/{command send='.*'}/, "{command}")
     |> String.replace(~r/{command click=false}/, "{command}")
+    |> String.replace(~r/{link click=false}/, "{link}")
     |> String.replace(~r/{exit click=false}/, "{exit}")
   end
 
@@ -117,6 +119,7 @@ defmodule Game.Color do
   def format_semantic_color("{quest}"), do: {:quest, :yellow}
   def format_semantic_color("{room}"), do: {:room, :green}
   def format_semantic_color("{say}"), do: {:say, :green}
+  def format_semantic_color("{link}"), do: {:link, :white}
   def format_semantic_color("{command}"), do: {:command, :white}
   def format_semantic_color("{exit}"), do: {:exit, :white}
   def format_semantic_color("{shop}"), do: {:shop, :magenta}

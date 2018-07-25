@@ -160,7 +160,7 @@ defmodule Game.Session.Login do
     echo = """
     Please sign in via the website to authorize this connection.
 
-    #{Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id)}
+    {link}#{Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id)}{/link}
     """
 
     state.socket |> @socket.echo(echo)

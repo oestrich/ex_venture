@@ -49,6 +49,15 @@ function formatColor(payload) {
     }
   });
 
+  string = string.replace(/{link}(.*){\/link}/g, (_match, link) => {
+    let color = defaultColorCSS("link", "white");
+    if (payload.delink == undefined || payload.delink == false) {
+      return `<a href='${link}' class='${color} link' target='_blank'>${link}</a>`;
+    } else {
+      return `<span class='${color}'>${link}</span>`;
+    }
+  });
+
   string = string.replace(/{black}/g, "<span class='black'>")
   string = string.replace(/{red}/g, "<span class='red'>")
   string = string.replace(/{green}/g, "<span class='green'>")

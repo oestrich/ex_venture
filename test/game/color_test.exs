@@ -2,6 +2,7 @@ defmodule Game.ColorTest do
   use ExUnit.Case
   doctest Game.Color
 
+  alias Game.Color
   alias Game.ColorCodes
 
   import Game.Color, only: [format: 1, format: 2]
@@ -99,6 +100,18 @@ defmodule Game.ColorTest do
 
     test "converts dynamic colors" do
       assert format("{new-white}hi there {/new-white}") == "\e[38;2;255;255;255;mhi there \e[0m"
+    end
+  end
+
+  describe "delinks" do
+    test "removes commands" do
+      string = Color.delink_commands("{command}help colors{/command}")
+      assert string == "{command click=false}help colors{/command}"
+    end
+
+    test "removes links" do
+      string = Color.delink_commands("{link}http://example.com{/link}")
+      assert string == "{link click=false}http://example.com{/link}"
     end
   end
 end
