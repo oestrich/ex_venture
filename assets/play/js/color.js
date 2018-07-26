@@ -35,6 +35,7 @@ function formatColor(payload) {
 
   string = string.replace(/{command click=false}/g, defaultColor("command", "white"));
   string = string.replace(/{exit click=false}/g, defaultColor("exit", "white"));
+  string = string.replace(/{link click=false}/g, defaultColor("link", "white"));
 
   string = string.replace(/{command( send='(.*)')?}/g, (_match, _fullSend, command) => {
     let color = defaultColorCSS("command", "white");

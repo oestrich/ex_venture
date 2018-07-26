@@ -49,8 +49,9 @@ defmodule Game.Color do
   end
 
   @doc """
-  Strip extra attributes from command color tags. Used for going out via
-  the telnet client.
+  Strip extra attributes from command color tags.
+
+  Used for going out via the telnet client. Should not be used outside of this module.
   """
   @spec strip_commands(String.t()) :: String.t()
   def strip_commands(string) do
