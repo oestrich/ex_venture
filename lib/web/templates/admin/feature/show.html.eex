@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    <%= @feature.name %>
+    <%= @feature.key %>
   </h1>
 
   <ol class="breadcrumb">
@@ -10,7 +10,7 @@
       <% end %>
     </li>
     <li><%= link("Features", to: feature_path(@conn, :index)) %></li>
-    <li class="active"><%= @feature.name %></li>
+    <li class="active"><%= @feature.key %></li>
   </ol>
 </section>
 
@@ -28,11 +28,7 @@
           <table class="table">
             <tbody>
               <tr>
-                <th>Name</th>
-                <td><%= @feature.name %></td>
-              </tr>
-              <tr>
-                <th>Name</th>
+                <th>Key</th>
                 <td><%= @feature.key %></td>
               </tr>
               <tr>

@@ -17,7 +17,7 @@ defmodule Web.Feature do
     opts = Enum.into(opts, %{})
 
     Feature
-    |> order_by([f], asc: f.name)
+    |> order_by([f], asc: f.key)
     |> Pagination.paginate(opts)
   end
 

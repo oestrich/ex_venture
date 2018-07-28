@@ -1,10 +1,6 @@
 <div class="box box-primary">
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
-      <%= FormView.text_field(f, :name) do %>
-        <span class="help-block"><%= Help.get("feature.name") %></span>
-      <% end %>
-
       <%= FormView.text_field(f, :key) do %>
         <span class="help-block"><%= Help.get("room_feature.key") %></span>
       <% end %>

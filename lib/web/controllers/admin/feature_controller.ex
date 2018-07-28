@@ -35,7 +35,7 @@ defmodule Web.Admin.FeatureController do
     case Feature.create(params) do
       {:ok, feature} ->
         conn
-        |> put_flash(:info, "#{feature.name} created!")
+        |> put_flash(:info, "#{feature.key} created!")
         |> redirect(to: feature_path(conn, :show, feature.id))
 
       {:error, changeset} ->
@@ -60,14 +60,14 @@ defmodule Web.Admin.FeatureController do
     case Feature.update(id, params) do
       {:ok, feature} ->
         conn
-        |> put_flash(:info, "#{feature.name} updated!")
+        |> put_flash(:info, "#{feature.key} updated!")
         |> redirect(to: feature_path(conn, :show, feature.id))
 
       {:error, changeset} ->
         feature = Feature.get(id)
 
         conn
-        |> put_flash(:error, "There was a problem updating #{feature.name}. Please try again.")
+        |> put_flash(:error, "There was a problem updating #{feature.key}. Please try again.")
         |> assign(:feature, feature)
         |> assign(:changeset, changeset)
         |> render("edit.html")

@@ -27,8 +27,6 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
                   <th>Key</th>
                   <th>Short Description</th>
                   <th>Actions</th>
@@ -37,9 +35,7 @@
               <tbody>
                 <%= Enum.map @features, fn (feature) -> %>
                   <tr>
-                    <td><%= feature.id %></td>
-                    <td><%= link(feature.name, to: feature_path(@conn, :show, feature.id)) %></td>
-                    <td><%= feature.key %>
+                    <td><%= link(feature.key, to: feature_path(@conn, :show, feature.id)) %></td>
                     <td><%= feature.short_description %>
                     <td>
                       <%= link("View", to: feature_path(@conn, :show, feature.id), class: "btn btn-default btn-xs") %>
