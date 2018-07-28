@@ -87,6 +87,12 @@
               <% end %>
             </li>
             <li class="header">THE WORLD</li>
+            <li class="<%= tab_selected(@conn, "features") %>">
+              <%= link(to: feature_path(@conn, :index)) do %>
+                <i class="fa fa-map-signs"></i>
+                <span>Features</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "items") %>">
               <%= link(to: item_path(@conn, :index)) do %>
                 <i class="fa fa-shopping-basket"></i>

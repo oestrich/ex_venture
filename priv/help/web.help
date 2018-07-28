@@ -25,6 +25,9 @@ damage_type.boost_ratio:
 damage_type.stat_modifier:
   This is the player statistics that boosts the effect by a percentage of the stat.
 
+feature.name:
+  A unique name for this feature.
+
 item.whitelist_effects:
   Effects in this whitelist will be calculated when using the item. Anything not in the list will be filtered out.
 
@@ -107,10 +110,10 @@ room_feature.listen:
   What the user will hear when they listen in the room. If the key is in this text, it will be highlighted white.
 
 room_feature.key:
-  This will be used as the lookup key for the `look` command
+  This will be used as the lookup key for the `look` command.
 
 room_feature.short_description:
-  The key should be included in this description, it will be color coded white to show it can be looked at further
+  The key should be included in this description, it will be color coded white to show it can be looked at further.
 
 skill.cooldown_time:
   Milliseconds the player must wait before the skill can be used again.

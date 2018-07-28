@@ -1,0 +1,59 @@
+<section class="content-header">
+  <h1>
+    Features
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Features</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Item", to: feature_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Key</th>
+                  <th>Short Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= Enum.map @features, fn (feature) -> %>
+                  <tr>
+                    <td><%= feature.id %></td>
+                    <td><%= link(feature.name, to: feature_path(@conn, :show, feature.id)) %></td>
+                    <td><%= feature.key %>
+                    <td><%= feature.short_description %>
+                    <td>
+                      <%= link("View", to: feature_path(@conn, :show, feature.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: feature_path(@conn, :edit, feature.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <%= SharedView.pagination(path: feature_path(@conn, :index), pagination: @pagination, name: "features") %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
