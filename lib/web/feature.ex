@@ -7,6 +7,7 @@ defmodule Web.Feature do
 
   alias Data.Feature
   alias Data.Repo
+  alias Game.Features
   alias Web.Pagination
 
   @doc """
@@ -47,9 +48,16 @@ defmodule Web.Feature do
   """
   @spec create(map()) :: {:ok, Feature.t()} | {:error, Ecto.Changeset.t()}
   def create(params) do
-    %Feature{}
-    |> Feature.changeset(params)
-    |> Repo.insert()
+    changeset = %Feature{} |> Feature.changeset(params)
+
+    case changeset |> Repo.insert() do
+      {:ok, feature} ->
+        Features.insert(feature)
+        {:ok, feature}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -57,10 +65,17 @@ defmodule Web.Feature do
   """
   @spec update(integer(), map()) :: {:ok, Feature.t()} | {:error, Ecto.Changeset.t()}
   def update(id, params) do
-    id
-    |> get()
-    |> Feature.changeset(params)
-    |> Repo.update()
+    feature = id |> get()
+    changeset = feature |> Feature.changeset(params)
+
+    case changeset |> Repo.update() do
+      {:ok, feature} ->
+        Features.reload(feature)
+        {:ok, feature}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
