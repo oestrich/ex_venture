@@ -34,15 +34,19 @@
               </tr>
               <tr>
                 <th>Short Description</th>
-                <td><%= @feature.short_description %></td>
+                <td><pre class="console"><%= raw(Color.format(Format.feature(@feature))) %></pre></td>
               </tr>
               <tr>
                 <th>Description</th>
-                <td><%= @feature.description %></td>
+                <td><pre class="console"><%= raw(Color.format(@feature.description)) %></pre></td>
               </tr>
               <tr>
                 <th>Listen</th>
-                <td><%= @feature.listen %></td>
+                <td>
+                  <%= if @feature.listen do %>
+                    <pre class="console"><%= raw(Color.format(@feature.listen)) %></pre>
+                  <% end %>
+                </td>
               </tr>
             </tbody>
           </table>

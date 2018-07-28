@@ -249,15 +249,17 @@ defmodule Game.Format do
   end
 
   @doc """
+  Display a room's feature
+  """
+  def feature(feature) do
+    String.replace(feature.short_description, feature.key, "{white}#{feature.key}{/white}")
+  end
+
+  @doc """
   Display room features
   """
-  def features([]), do: []
-
-  def features([feature | list]) do
-    [
-      String.replace(feature.short_description, feature.key, "{white}#{feature.key}{/white}")
-      | features(list)
-    ]
+  def features(features) do
+    Enum.map(features, &feature/1)
   end
 
   @doc """
