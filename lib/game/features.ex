@@ -39,7 +39,7 @@ defmodule Game.Features do
   end
 
   @doc """
-  Insert a new feature into the loaded data
+  Insert a new feature into the cache
   """
   @spec insert(Feature.t()) :: :ok
   def insert(feature) do
@@ -51,10 +51,21 @@ defmodule Game.Features do
   end
 
   @doc """
-  Trigger an feature reload
+  Reload a feature in the cache
   """
   @spec reload(Feature.t()) :: :ok
   def reload(feature), do: insert(feature)
+
+  @doc """
+  Remove a feature from the cache
+  """
+  def remove(feature) do
+    members = :pg2.get_members(@key)
+
+    Enum.map(members, fn member ->
+      GenServer.call(member, {:remove, feature})
+    end)
+  end
 
   @doc """
   For testing only: clear the EST table
@@ -86,6 +97,11 @@ defmodule Game.Features do
 
   def handle_call({:insert, feature}, _from, state) do
     Cachex.set(@key, feature.id, feature)
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:remove, feature}, _from, state) do
+    Cachex.del(@key, feature.id)
     {:reply, :ok, state}
   end
 
