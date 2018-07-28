@@ -73,4 +73,18 @@ defmodule Web.Admin.FeatureController do
         |> render("edit.html")
     end
   end
+
+  def delete(conn, %{"id" => id}) do
+    case Feature.delete(id) do
+      {:ok, feature} ->
+        conn
+        |> put_flash(:info, "#{feature.key} has been deleted!")
+        |> redirect(to: feature_path(conn, :index))
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "There was an issue deleting the feature. Please try again.")
+        |> redirect(to: feature_path(conn, :index))
+    end
+  end
 end

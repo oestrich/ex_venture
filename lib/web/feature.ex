@@ -62,4 +62,14 @@ defmodule Web.Feature do
     |> Feature.changeset(params)
     |> Repo.update()
   end
+
+  @doc """
+  Delete a feature
+  """
+  @spec delete(integer()) :: {:ok, Feature.t()}
+  def delete(id) do
+    id
+    |> get()
+    |> Repo.delete()
+  end
 end
