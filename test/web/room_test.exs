@@ -146,6 +146,29 @@ defmodule Web.RoomTest do
     end
   end
 
+  describe "global features" do
+    test "add a feature", %{zone: zone} do
+      {:ok, room} = Room.create(zone, room_attributes(%{}))
+      {:ok, feature} = create_feature()
+
+      {:ok, _feature} = Room.add_global_feature(room, Integer.to_string(feature.id))
+
+      state = Game.Room._get_state(room.id)
+      assert state.room.feature_ids |> length() == 1
+    end
+
+    test "remove a feature", %{zone: zone} do
+      {:ok, room} = Room.create(zone, room_attributes(%{}))
+      {:ok, feature} = create_feature()
+
+      {:ok, _room} = Room.add_global_feature(room, Integer.to_string(feature.id))
+      {:ok, _room} = Room.remove_global_feature(room, Integer.to_string(feature.id))
+
+      state = Game.Room._get_state(room.id)
+      assert state.room.features |> length() == 0
+    end
+  end
+
   describe "deleting a room" do
     setup %{zone: zone} do
       params = %{

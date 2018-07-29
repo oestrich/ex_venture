@@ -34,6 +34,7 @@ defmodule Data.Room do
     field(:currency, :integer)
     field(:items, {:array, Item.Instance})
     field(:features, {:array, Feature}, default: [])
+    field(:feature_ids, {:array, :integer}, default: [])
     field(:listen, :string)
 
     field(:x, :integer)
@@ -97,6 +98,12 @@ defmodule Data.Room do
     |> cast(params, [:features])
     |> validate_required([:features])
     |> Feature.validate_features()
+  end
+
+  def global_feature_changeset(struct, params) do
+    struct
+    |> cast(params, [:feature_ids])
+    |> validate_required([:feature_ids])
   end
 
   def exits(room) do

@@ -121,6 +121,8 @@ defmodule Web.Router do
 
     resources("/exits", RoomExitController, only: [:delete], as: :exit)
 
+    resources("/features", FeatureController)
+
     resources(
       "/help_topics",
       HelpTopicController,
@@ -190,6 +192,8 @@ defmodule Web.Router do
         only: [:new, :create, :edit, :update, :delete],
         as: :feature
       )
+
+      resources("/features/global", RoomGlobalFeatureController, only: [:new, :create, :delete], as: :global_feature)
 
       resources("/items", RoomItemController, only: [:new, :create])
 

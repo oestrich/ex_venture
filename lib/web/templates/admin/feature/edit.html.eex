@@ -1,0 +1,24 @@
+<section class="content-header">
+  <h1>
+    <%= @feature.key %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Features", to: feature_path(@conn, :index)) %></li>
+    <li><%= link(@feature.key, to: feature_path(@conn, :show, @feature.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <%= render "_form.html", path: feature_path(@conn, :update, @feature.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+    </div>
+  </div>
+</section>

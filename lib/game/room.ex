@@ -9,6 +9,7 @@ defmodule Game.Room do
 
   alias Data.Room
   alias Game.Environment
+  alias Game.Features
   alias Game.Items
   alias Game.NPC
   alias Game.Room.Actions
@@ -77,6 +78,9 @@ defmodule Game.Room do
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
+    global_features = room.feature_ids |> Features.features()
+    features = room.features ++ global_features
+
     environment = %Environment.State.Room{
       id: room.id,
       zone_id: room.zone_id,
@@ -85,7 +89,7 @@ defmodule Game.Room do
       description: room.description,
       currency: room.currency,
       items: room.items,
-      features: room.features,
+      features: features,
       listen: room.listen,
       x: room.x,
       y: room.y,

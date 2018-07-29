@@ -1,0 +1,75 @@
+<section class="content-header">
+  <h1>
+    <%= @feature.key %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Features", to: feature_path(@conn, :index)) %></li>
+    <li class="active"><%= @feature.key %></li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header">
+          <h3 class="box-title">Attributes</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: feature_path(@conn, :edit, @feature.id), class: "btn btn-primary") %>
+            <%= link("Delete", to: "#", class: "btn btn-danger", data: [toggle: "modal", target: "#delete-confirm"]) %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Key</th>
+                <td><%= @feature.key %></td>
+              </tr>
+              <tr>
+                <th>Short Description</th>
+                <td><pre class="console"><%= raw(Color.format(Format.feature(@feature))) %></pre></td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><pre class="console"><%= raw(Color.format(@feature.description)) %></pre></td>
+              </tr>
+              <tr>
+                <th>Listen</th>
+                <td>
+                  <%= if @feature.listen do %>
+                    <pre class="console"><%= raw(Color.format(@feature.listen)) %></pre>
+                  <% end %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="delete-confirm" class="modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Are you sure?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Deleting a feature will remove it from <em>all</em> rooms that it is attached to.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <%= link("Yes, Delete", to: feature_path(@conn, :delete, @feature.id), method: :delete, class: "btn btn-danger") %>
+      </div>
+    </div>
+  </div>
+</div>
