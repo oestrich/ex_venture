@@ -8,7 +8,10 @@ defmodule Web.Feature do
   alias Data.Feature
   alias Data.Repo
   alias Game.Features
+  alias Web.Filter
   alias Web.Pagination
+
+  @behaviour Filter
 
   @doc """
   Get all features
@@ -19,7 +22,13 @@ defmodule Web.Feature do
 
     Feature
     |> order_by([f], asc: f.key)
+    |> Filter.filter(opts[:filter], __MODULE__)
     |> Pagination.paginate(opts)
+  end
+
+  @impl Filter
+  def filter_on_attribute({"key", key}, query) do
+    query |> where([f], ilike(f.key, ^"%#{key}%"))
   end
 
   @doc """

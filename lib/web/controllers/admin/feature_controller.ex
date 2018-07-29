@@ -5,12 +5,14 @@ defmodule Web.Admin.FeatureController do
 
   alias Web.Feature
 
-  def index(conn, _params) do
+  def index(conn, params) do
     %{page: page, per: per} = conn.assigns
-    %{page: features, pagination: pagination} = Feature.all(page: page, per: per)
+    filter = Map.get(params, "feature", %{})
+    %{page: features, pagination: pagination} = Feature.all(filter: filter, page: page, per: per)
 
     conn
     |> assign(:features, features)
+    |> assign(:filter, filter)
     |> assign(:pagination, pagination)
     |> render("index.html")
   end
