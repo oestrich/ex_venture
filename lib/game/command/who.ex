@@ -70,11 +70,8 @@ defmodule Game.Command.Who do
 
     case Enum.empty?(names) do
       false ->
-        """
-
-        Remote players (on {white}Gossip{/white}):
-        #{Enum.join(names, "\n")}
-        """
+        names = Enum.join(names, "\n")
+        "\nRemote players (on {white}Gossip{/white}):\n#{names}"
 
       true ->
         ""
