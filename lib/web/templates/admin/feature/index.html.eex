@@ -19,7 +19,7 @@
       <div class="box box-primary">
         <div class="box-header">
           <div class="box-tools">
-            <%= link("New Item", to: feature_path(@conn, :new), class: "btn btn-primary") %>
+            <%= link("New Feature", to: feature_path(@conn, :new), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
