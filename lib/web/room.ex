@@ -459,4 +459,38 @@ defmodule Web.Room do
         anything
     end
   end
+
+  @doc """
+  Add a global feature to the room
+  """
+  def add_global_feature(room, feature_id) do
+    feature_ids = Enum.uniq([String.to_integer(feature_id) | room.feature_ids])
+    changeset = room |> Room.global_feature_changeset(%{feature_ids: feature_ids})
+
+    case changeset |> Repo.update() do
+      {:ok, room} ->
+        Game.Room.update(room.id, room)
+        {:ok, room}
+
+      {:error, _} ->
+        :error
+    end
+  end
+
+  @doc """
+  Remove a global feature from the room
+  """
+  def remove_global_feature(room, feature_id) do
+    feature_ids = List.delete(room.feature_ids, String.to_integer(feature_id))
+    changeset = room |> Room.global_feature_changeset(%{feature_ids: feature_ids})
+
+    case changeset |> Repo.update() do
+      {:ok, room} ->
+        Game.Room.update(room.id, room)
+        {:ok, room}
+
+      {:error, _} ->
+        :error
+    end
+  end
 end

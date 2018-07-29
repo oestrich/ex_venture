@@ -6,6 +6,7 @@ defmodule TestHelpers do
   alias Data.ClassSkill
   alias Data.Config
   alias Data.Exit
+  alias Data.Feature
   alias Data.HelpTopic
   alias Data.Item
   alias Data.ItemAspect
@@ -462,5 +463,20 @@ defmodule TestHelpers do
         %{x: x, y: y, s: ".", c: "green"}
       end)
     end)
+  end
+
+  def create_feature(params \\ %{}) do
+    %Feature{}
+    |> Feature.changeset(feature_attributes(params))
+    |> Repo.insert()
+  end
+
+  def feature_attributes(params) do
+    Map.merge(%{
+      key: "fallen log",
+      short_description: "There is a fallen log alongside the road.",
+      description: "A fall log rots alongside the road.",
+      listen: "You can hear small bugs crawling around the log."
+    }, params)
   end
 end

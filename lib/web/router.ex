@@ -193,6 +193,8 @@ defmodule Web.Router do
         as: :feature
       )
 
+      resources("/features/global", RoomGlobalFeatureController, only: [:new, :create, :delete], as: :global_feature)
+
       resources("/items", RoomItemController, only: [:new, :create])
 
       resources("/shops", ShopController, only: [:new, :create])

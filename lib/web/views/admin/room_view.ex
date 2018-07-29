@@ -4,6 +4,7 @@ defmodule Web.Admin.RoomView do
 
   alias Data.Exit
   alias Data.Room
+  alias Game.Features
   alias Game.Format
   alias Game.Items
   alias Web.Color
@@ -99,7 +100,10 @@ defmodule Web.Admin.RoomView do
   end
 
   def description(room) do
-    description = "#{room.description} #{room.features |> Format.features() |> Enum.join(" ")}"
+    features = room.features |> Format.features() |> Enum.join(" ")
+    global_features = room.feature_ids |> Features.features() |> Format.features() |> Enum.join(" ")
+
+    description = "#{room.description} #{features} #{global_features}"
 
     description
     |> Format.wrap()
