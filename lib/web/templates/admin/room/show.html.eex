@@ -135,12 +135,13 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
-          <h3 class="box-title">Room Features</h3>
+          <h3 class="box-title">Features</h3>
 
           <i class="fa fa-question-circle" data-toggle="tooltip" title="<%= Help.get("room.feature") %>"></i>
 
           <div class="box-tools">
-            <%= link("New Feature", to: room_feature_path(@conn, :new, @room.id), class: "btn btn-primary") %>
+            <%= link("New Local Feature", to: room_feature_path(@conn, :new, @room.id), class: "btn btn-primary") %>
+            <%= link("Add Global Feature", to: room_global_feature_path(@conn, :new, @room.id), class: "btn btn-primary") %>
           </div>
         </div>
 
@@ -148,6 +149,7 @@
           <table class="table">
             <thead>
               <tr>
+                <th>Type</th>
                 <th>Key</th>
                 <th>Short Description</th>
                 <th>Description</th>
@@ -158,6 +160,7 @@
             <tbody>
               <%= Enum.map(@room.features, fn (feature) -> %>
                 <tr>
+                  <td><code>local</code></td>
                   <td><%= feature.key %></td>
                   <td><%= feature.short_description %></td>
                   <td><%= feature.description %></td>
@@ -170,45 +173,15 @@
                   </td>
                 </tr>
               <% end) %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Global Features</h3>
-
-          <i class="fa fa-question-circle" data-toggle="tooltip" title="<%= Help.get("room.feature") %>"></i>
-
-          <div class="box-tools">
-            <%= link("Add Feature", to: room_global_feature_path(@conn, :new, @room.id), class: "btn btn-primary") %>
-          </div>
-        </div>
-
-        <div class="box-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Short Description</th>
-                <th>Description</th>
-                <th>Listen</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
               <%= Enum.map(Features.features(@room.feature_ids), fn (feature) -> %>
                 <tr>
+                  <td><code>global</code></td>
                   <td><%= feature.key %></td>
                   <td><%= feature.short_description %></td>
                   <td><%= feature.description %></td>
                   <td><%= feature.listen %></td>
                   <td>
+                    <%= link("View", to: feature_path(@conn, :show, feature.id), class: "btn btn-default btn-xs") %>
                     <%= link(to: room_global_feature_path(@conn, :delete, @room.id, feature.id), method: :delete, class: "btn btn-warning btn-xs") do %>
                       <i class="fa fa-times"></i>
                     <% end %>
