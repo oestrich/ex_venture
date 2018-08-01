@@ -16,7 +16,7 @@ defmodule Networking.Protocol do
 
   @type state :: map()
 
-  @mudlet_version 15
+  @mudlet_version 16
 
   @behaviour :ranch_protocol
   @behaviour Networking.Socket
