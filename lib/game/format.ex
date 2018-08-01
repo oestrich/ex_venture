@@ -234,7 +234,7 @@ defmodule Game.Format do
     """
     #{room_name(room)}
     #{underline(room.name)}
-    #{description |> wrap()}\n
+    #{description}\n
     #{map}
 
     #{who_is_here(room)}
