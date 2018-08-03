@@ -8,9 +8,10 @@
 
 A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
 
-## Docs
-
-[Elixir Docs](https://exventure.org/elixir/readme.html). [General usage docs](https://exventure.org/).
+- [Documentation for Admins](https://exventure.org/)
+- [Support ExVenture on Patreon](https://www.patreon.com/midmud)
+- [Trello Issues](https://trello.com/b/PFGmFWmu/exventure)
+- [Chat with us on Discord](https://discord.gg/GPEa6dB)
 
 ## Features
 
