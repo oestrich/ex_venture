@@ -11,6 +11,8 @@ google_analytics: ['UA-20355001-8', 'exventure.org']
 
 theme:
   name: 'material'
+  logo:
+    icon: layers
   palette:
     primary: "Blue Grey"
 
