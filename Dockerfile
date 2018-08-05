@@ -34,7 +34,7 @@ FROM builder as releaser
 COPY --from=frontend /priv/static /app/priv/static
 COPY . /app/
 RUN mix phx.digest
-ARG APP_VERSION=0.23.0
+ARG APP_VERSION=0.24.0
 RUN cp config/prod.docker.exs config/prod.exs && \
     mix release --env=prod --no-tar
 
