@@ -227,7 +227,7 @@ defmodule Game.Format do
   """
   @spec room(Room.t(), [Item.t()], Map.t()) :: String.t()
   def room(room, items, map) do
-    description = "#{room.description} #{room.features |> features() |> Enum.join(" ")}"
+    description = "#{room_description(room)} #{room.features |> features() |> Enum.join(" ")}"
 
     """
     #{room_name(room)}
@@ -240,6 +240,12 @@ defmodule Game.Format do
     #{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
     """
     |> String.trim()
+  end
+
+  defp room_description(room) do
+    context()
+    |> assign(:zone, room.zone.name)
+    |> template(room.description)
   end
 
   def room_name(room) do

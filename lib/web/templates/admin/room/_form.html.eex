@@ -6,7 +6,9 @@
 
       <%= FormView.text_field(f, :name) %>
 
-      <%= FormView.textarea_field(f, :description, rows: 5) %>
+      <%= FormView.textarea_field(f, :description, rows: 5) do %>
+        <span class="help-block">Available template replacements: <code>zone</code></span>
+      <% end %>
 
       <%= FormView.textarea_field(f, :listen, rows: 5) %>
 
