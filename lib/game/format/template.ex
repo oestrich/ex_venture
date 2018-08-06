@@ -21,9 +21,10 @@ defmodule Game.Format.Template do
       You say, {say}"Hello"{/say}
   """
   @spec render(String.t(), map()) :: String.t()
-  def render(string, context) do
+  def render(context, string) do
     context =
       context
+      |> Map.get(:assigns, %{})
       |> Enum.map(fn {key, val} -> {to_string(key), val} end)
       |> Enum.into(%{})
 

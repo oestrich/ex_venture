@@ -5,6 +5,8 @@ defmodule Game.Format.Listen do
 
   alias Game.Format
 
+  import Game.Format.Context
+
   def to_room(room) do
     features =
       room.features
@@ -18,11 +20,16 @@ defmodule Game.Format.Listen do
       room.npcs
       |> Enum.reject(&(is_nil(&1.status_listen) || &1.status_listen == ""))
       |> Enum.map(fn npc ->
-        npc.status_listen |> Format.template(%{name: Format.npc_name(npc)})
+        context()
+        |> assign(:name, Format.npc_name(npc))
+        |> Format.template(npc.status_listen)
       end)
 
-    "{white}You can hear:{/white}[\nroom][\nfeatures][\nnpcs]"
-    |> Format.template(%{room: room.listen, features: features, npcs: npcs})
+    context()
+    |> assign(:room, room.listen)
+    |> assign(:features, features)
+    |> assign(:npcs, npcs)
+    |> Format.template("{white}You can hear:{/white}[\nroom][\nfeatures][\nnpcs]")
     |> Format.wrap()
   end
 end

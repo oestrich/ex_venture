@@ -2,41 +2,55 @@ defmodule Game.Format.TemplateTest do
   use ExUnit.Case
   doctest Game.Format.Template
 
+  import Game.Format.Context, only: [context: 0]
+
+  alias Game.Format.Context
   alias Game.Format.Template
 
   test "simple template" do
-    assert Template.render("[name]", %{name: "Player"}) == "Player"
+    context = Context.assign(context(), :name, "Player")
+
+    assert Template.render(context, "[name]") == "Player"
   end
 
   describe "variable can include spaces" do
-    test "includes the space" do
-      assert Template.render("[ name]", %{name: "Player"}) == " Player"
+    setup do
+      %{context: %Context{assigns: %{}}}
     end
 
-    test "includes newlines" do
-      assert Template.render("[\nname]", %{name: "Player"}) == "\nPlayer"
+    test "includes the space", %{context: context} do
+      context = Context.assign(context, :name, "Player")
+
+      assert Template.render(context, "[ name]") == " Player"
     end
 
-    test "if key not found skips the space" do
-      assert Template.render("[ name]", %{}) == ""
+    test "includes newlines", %{context: context} do
+      context = Context.assign(context, :name, "Player")
+
+      assert Template.render(context, "[\nname]") == "\nPlayer"
     end
 
-    test "if key not found skips newlines" do
-      assert Template.render("[\nname]", %{}) == ""
+    test "if key not found skips the space", %{context: context} do
+      assert Template.render(context, "[ name]") == ""
     end
 
-    test "empty strings are considered 'nil'" do
-      assert Template.render("[\nname]", %{name: ""}) == ""
+    test "if key not found skips newlines", %{context: context} do
+      assert Template.render(context, "[\nname]") == ""
+    end
+
+    test "empty strings are considered 'nil'", %{context: context} do
+      context = Context.assign(context, :name, "")
+
+      assert Template.render(context, "[\nname]") == ""
     end
   end
 
   test "nil variables are treated as empty" do
     string =
-      ~s(You say[ adverb_phrase], {say}"[message]"{/say})
-      |> Template.render(%{
-        message: "Hello",
-        adverb_phrase: nil,
-      })
+      context()
+      |> Context.assign(:message, "Hello")
+      |> Context.assign(:adverb_phrase, nil)
+      |> Template.render(~s(You say[ adverb_phrase], {say}"[message]"{/say}))
 
     assert string == "You say, {say}\"Hello\"{/say}"
   end

@@ -5,6 +5,8 @@ defmodule Game.Format do
 
   use Game.Currency
 
+  import Game.Format.Context
+
   alias Data.Exit
   alias Data.Item
   alias Data.Mail
@@ -22,11 +24,11 @@ defmodule Game.Format do
   @doc """
   Template a string
 
-      iex> Game.Format.template("[name] says hello", %{name: "Player"})
+      iex> Game.Format.template(%{assigns: %{name: "Player"}}, "[name] says hello")
       "Player says hello"
   """
-  def template(string, context) do
-    Template.render(string, context)
+  def template(context, string) do
+    Template.render(context, string)
   end
 
   @doc """
@@ -97,20 +99,18 @@ defmodule Game.Format do
   """
   @spec say(Character.t(), map()) :: String.t()
   def say(:you, message) do
-    ~s(You say[ adverb_phrase], {say}"[message]"{/say})
-    |> template(%{
-      message: message.message,
-      adverb_phrase: Map.get(message, :adverb_phrase, nil)
-    })
+    context()
+    |> assign(:message, message.message)
+    |> assign(:adverb_phrase, Map.get(message, :adverb_phrase, nil))
+    |> template(~s(You say[ adverb_phrase], {say}"[message]"{/say}))
   end
 
   def say(character, message) do
-    ~s([name] says[ adverb_phrase], {say}"[message]"{/say})
-    |> template(%{
-      name: name(character),
-      message: message.message,
-      adverb_phrase: Map.get(message, :adverb_phrase, nil)
-    })
+    context()
+    |> assign(:name, name(character))
+    |> assign(:message, message.message)
+    |> assign(:adverb_phrase, Map.get(message, :adverb_phrase, nil))
+    |> template(~s([name] says[ adverb_phrase], {say}"[message]"{/say}))
   end
 
   @doc """
@@ -135,22 +135,20 @@ defmodule Game.Format do
   """
   @spec say_to(Character.t(), Character.t(), map()) :: String.t()
   def say_to(:you, sayee, parsed_message) do
-    ~s(You say[ adverb_phrase] to [sayee], {say}"[message]"{/say})
-    |> template(%{
-      sayee: name(sayee),
-      message: parsed_message.message,
-      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil)
-    })
+    context()
+    |> assign(:sayee, name(sayee))
+    |> assign(:message, parsed_message.message)
+    |> assign(:adverb_phrase, Map.get(parsed_message, :adverb_phrase, nil))
+    |> template(~s(You say[ adverb_phrase] to [sayee], {say}"[message]"{/say}))
   end
 
   def say_to(sayer, sayee, parsed_message) do
-    ~s([sayer] says[ adverb_phrase] to [sayee], {say}"[message]"{/say})
-    |> template(%{
-      sayer: name(sayer),
-      sayee: name(sayee),
-      message: parsed_message.message,
-      adverb_phrase: Map.get(parsed_message, :adverb_phrase, nil)
-    })
+    context()
+    |> assign(:sayer, name(sayer))
+    |> assign(:sayee, name(sayee))
+    |> assign(:message, parsed_message.message)
+    |> assign(:adverb_phrase, Map.get(parsed_message, :adverb_phrase, nil))
+    |> template(~s([sayer] says[ adverb_phrase] to [sayee], {say}"[message]"{/say}))
   end
 
   @doc """
@@ -420,8 +418,9 @@ defmodule Game.Format do
   """
   @spec player_full(User.t()) :: String.t()
   def player_full(user) do
-    "[name] is here."
-    |> template(%{name: player_name(user)})
+    context()
+    |> assign(:name, player_name(user))
+    |> template("[name] is here.")
   end
 
   @doc """
@@ -445,7 +444,9 @@ defmodule Game.Format do
   The status of an NPC
   """
   def npc_status(npc) do
-    template(npc.status_line, %{name: npc_name_for_status(npc)})
+    context()
+    |> assign(:name, npc_name_for_status(npc))
+    |> template(npc.status_line)
   end
 
   @doc """
@@ -453,8 +454,10 @@ defmodule Game.Format do
   """
   @spec npc_full(Npc.t()) :: String.t()
   def npc_full(npc) do
-    npc.description
-    |> template(%{name: npc_name(npc), status_line: npc_status(npc)})
+    context()
+    |> assign(:name, npc_name(npc))
+    |> assign(:status_line, npc_status(npc))
+    |> template(npc.description)
   end
 
   def maybe_items(room, items) do
@@ -721,11 +724,10 @@ defmodule Game.Format do
   def skill_user(skill, user, target)
 
   def skill_user(%{user_text: user_text}, user, target) do
-    user_text
-    |> template(%{
-      user: target_name(user),
-      target: target_name(target)
-    })
+    context()
+    |> assign(:user, target_name(user))
+    |> assign(:target, target_name(target))
+    |> template(user_text)
   end
 
   @doc """
@@ -744,11 +746,10 @@ defmodule Game.Format do
   end
 
   def skill_usee(usee_text, opts) do
-    usee_text
-    |> template(%{
-      user: target_name(Keyword.get(opts, :user)),
-      target: target_name(Keyword.get(opts, :target))
-    })
+    context()
+    |> assign(:user, target_name(Keyword.get(opts, :user)))
+    |> assign(:target, target_name(Keyword.get(opts, :target)))
+    |> template(usee_text)
   end
 
   @doc """
@@ -758,12 +759,11 @@ defmodule Game.Format do
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def user_item(item, opts \\ []) do
-    item.user_text
-    |> template(%{
-      name: item_name(item),
-      target: target_name(Keyword.get(opts, :target)),
-      user: target_name(Keyword.get(opts, :user))
-    })
+    context()
+    |> assign(:name, item_name(item))
+    |> assign(:target, target_name(Keyword.get(opts, :target)))
+    |> assign(:user, target_name(Keyword.get(opts, :user)))
+    |> template(item.user_text)
   end
 
   @doc """
@@ -773,12 +773,11 @@ defmodule Game.Format do
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def usee_item(item, opts \\ []) do
-    item.usee_text
-    |> template(%{
-      name: item_name(item),
-      target: target_name(Keyword.get(opts, :target)),
-      user: target_name(Keyword.get(opts, :user))
-    })
+    context()
+    |> assign(:name, item_name(item))
+    |> assign(:target, target_name(Keyword.get(opts, :target)))
+    |> assign(:user, target_name(Keyword.get(opts, :user)))
+    |> template(item.usee_text)
   end
 
   @doc """
@@ -1072,16 +1071,19 @@ defmodule Game.Format do
   Format the social without_target text
   """
   def social_without_target(social, user) do
-    "{say}#{social.without_target}{say}"
-    |> template(%{user: player_name(user)})
+    context()
+    |> assign(:user, player_name(user))
+    |> template("{say}#{social.without_target}{say}")
   end
 
   @doc """
   Format the social with_target text
   """
   def social_with_target(social, user, target) do
-    "{say}#{social.with_target}{say}"
-    |> template(%{user: player_name(user), target: name(target)})
+    context()
+    |> assign(:user, player_name(user))
+    |> assign(:target, name(target))
+    |> template("{say}#{social.with_target}{say}")
   end
 
   @doc """
