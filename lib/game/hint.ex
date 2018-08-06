@@ -6,14 +6,16 @@ defmodule Game.Hint do
   use ExVenture.TextCompiler, "help/hint.help"
   use Networking.Socket
 
+  import Game.Format.Context, only: [context: 0, assign: 2]
+
   alias Game.Format
 
   def hint(key, context) do
-    context = Enum.into(context, %{})
+    assigns = Enum.into(context, %{})
 
-    key
-    |> get()
-    |> Format.template(context)
+    context()
+    |> assign(assigns)
+    |> Format.template(get(key))
   end
 
   def gate(state, key, context \\ %{}) do

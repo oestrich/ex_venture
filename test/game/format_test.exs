@@ -72,6 +72,7 @@ defmodule Game.FormatTest do
       room = %{
         id: 1,
         name: "Hallway",
+        zone: %{name: "Cave"},
         description: "A hallway",
         currency: 100,
         players: [%{name: "Player"}],
