@@ -95,7 +95,19 @@ defmodule Game.Command.Listen do
         false
 
       _ ->
-        !is_nil(room.listen) || Enum.any?(room.features, &(!is_nil(&1.listen)))
+        !is_nil(room.listen) || npc_listens_present?(room) || feature_listens_present?(room)
     end
   end
+
+  defp npc_listens_present?(room) do
+    Enum.any?(room.npcs, &(listen_present?(&1.status_listen)))
+  end
+
+  defp feature_listens_present?(room) do
+    Enum.any?(room.features, &(listen_present?(&1.listen)))
+  end
+
+  defp listen_present?(nil), do: false
+  defp listen_present?(""), do: false
+  defp listen_present?(_str), do: true
 end
