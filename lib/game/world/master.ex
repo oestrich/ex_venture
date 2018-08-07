@@ -12,15 +12,22 @@ defmodule Game.World.Master do
 
   require Logger
 
+  @behaviour Raft.Leader
+
   @group :world_leaders
   @table :world_leader
 
   @start_world Application.get_env(:ex_venture, :game)[:world]
 
-  @doc """
-  The local node was selected as a leader
-  """
+  @impl true
   def leader_selected() do
+    if @start_world do
+      GenServer.cast(__MODULE__, :rebalance_zones)
+    end
+  end
+
+  @impl true
+  def node_down() do
     if @start_world do
       GenServer.cast(__MODULE__, :rebalance_zones)
     end
@@ -44,6 +51,7 @@ defmodule Game.World.Master do
     end
   end
 
+  @impl true
   def init(_) do
     :ok = :pg2.create(@group)
     :ok = :pg2.join(@group, self())
@@ -54,6 +62,7 @@ defmodule Game.World.Master do
   end
 
   # This is started by the raft
+  @impl true
   def handle_cast(:rebalance_zones, state) do
     Logger.info("Starting zones")
     rebalance_zones()
@@ -67,6 +76,7 @@ defmodule Game.World.Master do
     {:noreply, state}
   end
 
+  @impl true
   def handle_info({:set, :world_online, status}, state) do
     :ets.insert(@table, {:world_online, status})
     Logger.info("World is online? #{status}")

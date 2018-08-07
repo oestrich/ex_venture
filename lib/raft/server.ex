@@ -8,6 +8,8 @@ defmodule Raft.Server do
 
   require Logger
 
+  @behaviour Raft.Leader
+
   @key :raft
   @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
   @winner_subscriptions [Game.World.Master, Raft.Server]
@@ -24,12 +26,13 @@ defmodule Raft.Server do
     [Map.put(state, :node, node()) | debug_info]
   end
 
-  @doc """
-  Set the node as a leader in ETS
-  """
+  @impl true
   def leader_selected() do
     :ets.insert(@key, {:is_leader?, true})
   end
+
+  @impl true
+  def node_down(), do: :ok
 
   @doc """
   Check for a leader already in the cluster
@@ -229,6 +232,8 @@ defmodule Raft.Server do
   """
   @spec node_down(State.t(), atom()) :: {:ok, State.t()}
   def node_down(state, node) do
+    send_node_down_notice()
+
     case state.leader_node do
       ^node ->
         Raft.start_election(state.term + 1)
@@ -237,6 +242,16 @@ defmodule Raft.Server do
 
       _ ->
         {:ok, state}
+    end
+  end
+
+  defp send_node_down_notice() do
+    case Raft.node_is_leader?() do
+      true ->
+        Game.World.Master.node_down()
+
+      false ->
+        :ok
     end
   end
 
