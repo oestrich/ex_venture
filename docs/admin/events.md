@@ -124,8 +124,9 @@ You can also include a `status` key to change the status of the NPC during the e
     "type": "emote",
     "message": "moves about the store",
     "chance": 50,
-    "wait": 15
+    "wait": 15,
     "status": {
+      "key": "moving",
       "line": "[name] is moving around the store",
       "listen": "[name] is whistling"
     }
