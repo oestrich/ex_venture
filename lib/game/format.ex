@@ -244,7 +244,7 @@ defmodule Game.Format do
 
   defp room_description(room) do
     context()
-    |> assign(:room, "{white}#{room.name}{/white}")
+    |> assign(:room, "{green}#{room.name}{/green}")
     |> assign(:zone, "{white}#{room.zone.name}{/white}")
     |> template(room.description)
   end
