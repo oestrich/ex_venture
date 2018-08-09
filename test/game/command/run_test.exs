@@ -73,5 +73,13 @@ defmodule Game.Command.RunTest do
     test "handles no directions" do
       assert Command.Run.parse_run("") == []
     end
+
+    test "handles weird directions" do
+      # no, rth
+      assert Command.Run.parse_run("north") == []
+
+      # e, a, s, t
+      assert Command.Run.parse_run("east") == ["east", "south"]
+    end
   end
 end

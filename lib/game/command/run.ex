@@ -85,6 +85,8 @@ defmodule Game.Command.Run do
     end
   end
 
+  def move([], _state), do: :ok
+
   defp maybe_continue(state, []), do: {:update, state}
 
   defp maybe_continue(state, directions) do
