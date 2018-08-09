@@ -12,6 +12,23 @@
           <%= error_tag f, :type %>
         </div>
       </div>
+
+      <dl>
+        <dt>item/collect</dt>
+        <dd><%= Help.get("quest.item_collect") %></dd>
+
+        <dt>item/give</dt>
+        <dd><%= Help.get("quest.item_give") %></dd>
+
+        <dt>item/have</dt>
+        <dd><%= Help.get("quest.item_have") %></dd>
+
+        <dt>npc/kill</dt>
+        <dd><%= Help.get("quest.npc_kill") %></dd>
+
+        <dt>room/explore</dt>
+        <dd><%= Help.get("quest.room_explore") %></dd>
+      </dl>
     </div>
 
     <div class="box-footer">

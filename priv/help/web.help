@@ -136,6 +136,21 @@ social.with_target:
 social.without_target:
   When used with out a target, template replacements: `[user]`
 
+quest.item_collect:
+  Players must have these items in their possession when turning in the quest, the item will be collected on completion.
+
+quest.item_give:
+  Players must give the item to a specified NPC. This will be tracked in their quest progress.
+
+quest.item_have:
+  Players must simply have these items in their possession when turning in the quest.
+
+quest.npc_kill:
+  Players must kill an NPC certain number of times.
+
+quest.room_explore:
+  Players must nagivate to a certain room. This will be tracked and saved when they enter the chosen room.
+
 zone.name:
   This will be seen in the player's map.
 

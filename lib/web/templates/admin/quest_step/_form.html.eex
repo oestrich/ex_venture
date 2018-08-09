@@ -5,6 +5,8 @@
 
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
+      <div class="lead"><%= Help.get(type_help(@type)) %></div>
+
       <div class="form-group">
         <%= label f, :type, class: "col-md-4" %>
         <div class="col-md-8">
