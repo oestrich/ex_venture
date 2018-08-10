@@ -202,11 +202,10 @@ defmodule Game.Session.Registry do
   def handle_cast({:register, pid, user, metadata}, state) do
     Process.link(pid)
 
-    %{connected_players: connected_players} = state
+    # Remove the user from the list, slight chance this was a double registration
+    # Consider the new session theirs
+    connected_players = Enum.reject(state.connected_players, &(&1.user.id == user.id))
     connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
-    connected_players = Enum.uniq_by(connected_players, fn %{user: user} ->
-      user.id
-    end)
 
     {:noreply, %{state | connected_players: connected_players}}
   end
