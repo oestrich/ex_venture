@@ -211,13 +211,22 @@ defmodule Game.Session.Registry do
   end
 
   def handle_cast({:update, pid, user, metadata}, state = %{connected_players: connected_players}) do
-    connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
+    user_ids = Enum.map(state.connected_players, &(&1.user.id))
 
-    connected_players =
-      connected_players
-      |> Enum.uniq_by(& &1.pid)
+    case user.id in user_ids do
+      true ->
+        connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
 
-    {:noreply, %{state | connected_players: connected_players}}
+        connected_players =
+          connected_players
+          |> Enum.uniq_by(& &1.pid)
+
+        {:noreply, %{state | connected_players: connected_players}}
+
+      false ->
+        # Ignore updates for unregistered users
+        {:noreply, state}
+    end
   end
 
   def handle_cast({:unregister, pid}, state) do
