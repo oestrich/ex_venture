@@ -200,9 +200,14 @@ defmodule Game.Session.Registry do
   end
 
   def handle_cast({:register, pid, user, metadata}, state) do
-    %{connected_players: connected_players} = state
     Process.link(pid)
+
+    %{connected_players: connected_players} = state
     connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
+    connected_players = Enum.uniq_by(connected_players, fn %{user: user} ->
+      user.id
+    end)
+
     {:noreply, %{state | connected_players: connected_players}}
   end
 
