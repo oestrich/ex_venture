@@ -23,6 +23,11 @@ body {
     left: 0;
     width: 100%;
   }
+
+  @media only screen and (min-device-width: 1900px) {
+    left: 15%;
+    width: 70%;
+  }
 }
 
 .panel .container {
@@ -74,6 +79,10 @@ body {
 
   @media only screen and (max-device-width: 667px) {
     display: none !important;
+  }
+
+  @media only screen and (min-device-width: 1900px) {
+    width: 15%;
   }
 
   .container {
@@ -149,6 +158,10 @@ body {
 
   @media only screen and (max-device-width: 667px) {
     display: none !important;
+  }
+
+  @media only screen and (min-device-width: 1900px) {
+    width: 15%;
   }
 
   .container {
