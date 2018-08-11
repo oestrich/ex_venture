@@ -77,7 +77,7 @@ defmodule Game.Command.PickUp do
   def run({@currency}, state) do
     case pick_up_currency(state) do
       {:ok, currency, state} ->
-        state.socket |> @socket.echo("You picked up #{currency} #{@currency}")
+        state.socket |> @socket.echo("You picked up {item}#{currency} #{@currency}{/item}")
         {:update, state}
 
       {:error, :no_currency, _state} ->
@@ -94,7 +94,7 @@ defmodule Game.Command.PickUp do
 
     with {:ok, state} <- pick_up_all_items(state, room),
          {:ok, currency, state} <- pick_up_currency(state) do
-      state.socket |> @socket.echo("You picked up #{currency} #{@currency}")
+      state.socket |> @socket.echo("You picked up {item}#{currency} #{@currency}{/item}")
       {:update, state}
     else
       {:error, :no_currency, state} ->
