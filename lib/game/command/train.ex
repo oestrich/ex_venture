@@ -17,10 +17,19 @@ defmodule Game.Command.Train do
 
   def help(:full) do
     """
-    #{help(:short)}.
+    #{help(:short)}. You can train new skills from NPCs around the world.
 
-    Example:
+    If you find an NPC that trains skills, you can list available skills with:
     [ ] > {command}train list{/command}
+
+    If there are multiple trainers in the same room, specify the NPC
+    [ ] > {command}train list from guard{/command}
+
+    Once you pick a skill to train, train it with:
+    [ ] > {command}train skill{/command}
+
+    If there are multiple trainers in the same room, specify the NPC
+    [ ] > {command}train skill from guard{/command}
     """
   end
 
