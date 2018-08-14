@@ -42,3 +42,4 @@ pages:
     - Users: admin/users.md
     - Zones: admin/zones.md
   - Metrics: metrics.md
+  - Docker: docker.md

@@ -45,6 +45,12 @@ defmodule ExVenture.ReleaseTasks do
   def seed do
     startup()
 
+    # Start dependencies only needed for Seed task
+    {:ok, _app_list} = Application.ensure_all_started(:prometheus_ecto)
+
+    Game.Config.start_link()
+    Metrics.Setup.setup()
+
     # Run the seed script if it exists
     seed_script = Path.join([priv_dir(:ex_venture), "repo", "seeds.exs"])
 

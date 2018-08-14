@@ -1,0 +1,40 @@
+# https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+# Default content
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
+# Default content
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: []
+    scheme: http
+    timeout: 10s
+
+# Default content
+rule_files: []
+
+scrape_configs:
+- job_name: ex_venture
+  static_configs:
+  - targets:
+    - ex_venture:4000
+- job_name: grafana
+  static_configs:
+  - targets:
+    - grafana:3000
+- job_name: postgres
+  static_configs:
+  - targets:
+    - postgres_exporter:9187
+# Default content
+- job_name: prometheus
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - localhost:9090
