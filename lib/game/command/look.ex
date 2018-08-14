@@ -6,12 +6,14 @@ defmodule Game.Command.Look do
   use Game.Command
   use Game.Zone
 
+  alias Data.Exit
   alias Game.Environment
   alias Game.Environment.State.Overworld
   alias Game.Environment.State.Room
-  alias Data.Exit
+  alias Game.Hint
   alias Game.Item
   alias Game.Items
+  alias Game.Quest
   alias Game.Session.GMCP
   alias Game.Utility
 
@@ -127,6 +129,8 @@ defmodule Game.Command.Look do
 
     room = remove_yourself(room, state)
     state.socket |> @socket.echo(Format.room(room, items, room_map))
+
+    maybe_hint_quest(state, room)
   end
 
   defp look_room(state, room = %Overworld{}) do
@@ -136,6 +140,24 @@ defmodule Game.Command.Look do
 
     room = remove_yourself(room, state)
     state.socket |> @socket.echo(Format.overworld_room(room, mini_map))
+  end
+
+  defp maybe_hint_quest(state, room) do
+    npc_ids = Enum.map(room.npcs, & &1.original_id)
+
+    quest =
+      state.user
+      |> Quest.for()
+      |> Quest.filter_active_quests_for_room(npc_ids)
+      |> Quest.find_quest_for_ready_to_complete(state.save)
+
+    case quest do
+      {:ok, quest} ->
+        Hint.gate(state, "quests.complete", %{quest_id: quest.quest_id})
+
+      {:error, :none} ->
+        :ok
+    end
   end
 
   defp remove_yourself(room, state) do

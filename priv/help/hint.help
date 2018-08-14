@@ -4,6 +4,9 @@ afk.started:
 quests.new:
   You can view this with {command}quest info [id]{/command}.
 
+quests.complete:
+  You have a quest that you can complete, use {command}quest complete [quest_id]{/command}. See {command}help quests{/command} for more information.
+
 say.quoted:
   You don't need to add quotes when using the {command click=false}say{/command} command, they are added for you.
 

@@ -132,6 +132,35 @@ defmodule Game.Quest do
   end
 
   @doc """
+  Filter active quests for a list of NPCs
+  """
+  @spec filter_active_quests_for_room([QuestProgress.t()], [integer()]) :: [QuestProgress.t()]
+  def filter_active_quests_for_room(quest_progress, npc_ids) do
+    Enum.filter(quest_progress, fn progress ->
+      progress.quest.giver_id in npc_ids
+    end)
+  end
+
+  @doc """
+  Find a quest ready to be completed by a player
+  """
+  @spec find_quest_for_ready_to_complete([QuestProgress.t()], Save.t()) :: {:ok, QuestProgress.t()} | {:error, :none}
+  def find_quest_for_ready_to_complete(quest_progress, save) do
+    progress =
+      Enum.find(quest_progress, fn progress ->
+        requirements_complete?(progress, save)
+      end)
+
+    case progress do
+      nil ->
+        {:error, :none}
+
+      progress ->
+        {:ok, progress}
+    end
+  end
+
+  @doc """
   Check if the quest progress is complete, all steps have been completed
   """
   @spec requirements_complete?(QuestProgress.t(), Save.t()) :: boolean()
@@ -309,7 +338,7 @@ defmodule Game.Quest do
     Quest
     |> where([q], q.giver_id == ^npc.id)
     |> where([q], q.level <= ^user.save.level)
-    |> order_by([q], q.id)
+    |> order_by([q], [q.level, q.id])
     |> preload([:parent_relations])
     |> Repo.all()
     |> Enum.filter(&filter_progress(&1, user))

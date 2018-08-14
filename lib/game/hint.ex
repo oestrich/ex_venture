@@ -18,6 +18,10 @@ defmodule Game.Hint do
     |> Format.template(get(key))
   end
 
+  @doc """
+  Gate a hint on the player's config
+  """
+  @spec gate(State.t(), String.t(), map()) :: :ok
   def gate(state, key, context \\ %{}) do
     case state.save.config.hints do
       true ->
