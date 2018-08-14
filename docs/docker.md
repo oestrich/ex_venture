@@ -16,7 +16,7 @@ The included `docker-compose.yml` supports the following components, some of whi
 
 ### Docker
 
-This environment has been tested with [Docker For Mac][docker-for-mac] `18.06.0-ce` on OSX 10.13.6, but should be compatible with most versions 18.02 and above, as long as they support the included Docker-Compose syntax and its version as noted below.
+This environment has been tested with [Docker For Mac][docker-for-mac] `18.06.0-ce` on OSX 10.13.6 and Arch Linux, but should be compatible with most versions 18.02 and above, as long as they support the included Docker-Compose syntax and its version as noted below.
 
 ### Docker-Compose
 
