@@ -54,14 +54,19 @@ defmodule Game.Session.Channels do
     state |> GMCP.tell(from, message)
 
     state
-    |> maybe_hint_tell()
+    |> maybe_hint_tell(from)
     |> Map.put(:reply_to, from)
   end
 
-  def maybe_hint_tell(state = %{reply_to: nil}) do
+  def maybe_hint_tell(state = %{reply_to: nil}, {:npc, _}) do
+    Hint.gate(state, "tells.new_npc")
+    state
+  end
+
+  def maybe_hint_tell(state = %{reply_to: nil}, {:user, _}) do
     Hint.gate(state, "tells.new")
     state
   end
 
-  def maybe_hint_tell(state), do: state
+  def maybe_hint_tell(state, _), do: state
 end

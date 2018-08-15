@@ -15,3 +15,6 @@ skills.cooldown_time:
 
 tells.new:
   You can reply with {command}reply my message{/command}.
+
+tells.new_npc:
+  You got a tell from an NPC. This might be the lead up to a quest. Please read carefully what they are asking about and you can {command}reply{/command} with your response.
