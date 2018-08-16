@@ -127,6 +127,13 @@ defmodule Game.FormatTest do
     test "includes features", %{room: room, items: items, map: map} do
       assert Regex.match?(~r/log/, Format.room(room, items, map))
     end
+
+    test "includes features if added to the description", %{room: room, items: items, map: map} do
+      room = Map.put(room, :description, "[log]")
+
+      refute Regex.match?(~r/\[log\]/, Format.room(room, items, map))
+      assert Regex.match?(~r/log/, Format.room(room, items, map))
+    end
   end
 
   describe "info formatting" do

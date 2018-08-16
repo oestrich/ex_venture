@@ -30,7 +30,7 @@ defmodule Data.Room do
 
   schema "rooms" do
     field(:name, :string)
-    field(:description, :string)
+    field(:description, :string, default: "[features]")
     field(:currency, :integer)
     field(:items, {:array, Item.Instance})
     field(:features, {:array, Feature}, default: [])

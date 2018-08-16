@@ -100,12 +100,11 @@ defmodule Web.Admin.RoomView do
   end
 
   def description(room) do
-    features = room.features |> Format.features() |> Enum.join(" ")
-    global_features = room.feature_ids |> Features.features() |> Format.features() |> Enum.join(" ")
+    features = room.features ++ Features.features(room.feature_ids)
+    room = Map.put(room, :features, features)
 
-    description = "#{room.description} #{features} #{global_features}"
-
-    description
+    room
+    |> Format.room_description()
     |> Format.wrap()
     |> Color.format()
     |> raw()

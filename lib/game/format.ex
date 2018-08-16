@@ -227,12 +227,10 @@ defmodule Game.Format do
   """
   @spec room(Room.t(), [Item.t()], Map.t()) :: String.t()
   def room(room, items, map) do
-    description = "#{room_description(room)} #{room.features |> features() |> Enum.join(" ")}"
-
     """
     #{room_name(room)}
     #{underline(room.name)}
-    #{description}\n
+    #{room_description(room)}\n
     #{map}
 
     #{who_is_here(room)}
@@ -242,13 +240,44 @@ defmodule Game.Format do
     |> String.trim()
   end
 
-  defp room_description(room) do
-    context()
-    |> assign(:room, "{green}#{room.name}{/green}")
-    |> assign(:zone, "{white}#{room.zone.name}{/white}")
-    |> template(room.description)
+  @doc """
+  Template a room's description
+  """
+  def room_description(room) do
+    description = room_description_with_features(room)
+
+    context =
+      context()
+      |> assign(:room, "{green}#{room.name}{/green}")
+      |> assign(:zone, "{white}#{room.zone.name}{/white}")
+      |> assign(:features, Enum.join(features(room.features), " "))
+
+    context =
+      Enum.reduce(room.features, context, fn room_feature, context ->
+        assign(context, room_feature.key, feature(room_feature))
+      end)
+
+    template(context, description)
   end
 
+  defp room_description_with_features(room) do
+    contains_features? = String.contains?(room.description, "[features]")
+    contains_sub_features? = Enum.any?(room.features, fn feature ->
+      String.contains?(room.description, "[#{feature.key}]")
+    end)
+
+    case contains_features? || contains_sub_features? do
+      true ->
+        room.description
+
+      false ->
+        "#{room.description} [features]"
+    end
+  end
+
+  @doc """
+  Display a room's name
+  """
   def room_name(room) do
     "{room}#{room.name}{/room}"
   end
