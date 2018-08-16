@@ -100,6 +100,21 @@ defmodule Game.Command.Channels do
     end
   end
 
+  def run({channel_name, ""}, state) do
+    with {:ok, channel} <- get_channel(channel_name) do
+      case in_channel?(channel.name, state.user) do
+        true ->
+          state.socket |> @socket.echo("You are part of #{Format.channel_name(channel)}.")
+
+        false ->
+          state.socket |> @socket.echo("You are not part of #{Format.channel_name(channel)}.")
+      end
+    else
+      _ ->
+        :ok
+    end
+  end
+
   def run({channel, message}, state) do
     with {:ok, channel} <- get_joined_channel(channel, state) do
       parsed_message = Say.parse_message(message)
