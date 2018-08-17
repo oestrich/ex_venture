@@ -10,11 +10,17 @@ defmodule Raft.Server do
 
   @behaviour Raft.Leader
 
+  @type debug() :: map()
+
   @key :raft
   @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
   @winner_subscriptions [Game.World.Master, Raft.Server]
   @check_election_timeout 1500
 
+  @doc """
+  Send back debug information from the raft cluster
+  """
+  @spec debug(State.t()) :: [debug()]
   def debug(state) do
     members = PG.members(others: true)
 
