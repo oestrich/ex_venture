@@ -21,6 +21,8 @@ defmodule Game.World.Master do
 
   @impl true
   def leader_selected() do
+    Logger.info("#{node()} chosen as the leader.", type: :leader)
+
     if @start_world do
       GenServer.cast(__MODULE__, :rebalance_zones)
     end
@@ -64,7 +66,7 @@ defmodule Game.World.Master do
   # This is started by the raft
   @impl true
   def handle_cast(:rebalance_zones, state) do
-    Logger.info("Starting zones")
+    Logger.info("Starting zones", type: :leader)
     rebalance_zones()
 
     members = :pg2.get_members(@group)
@@ -83,11 +85,21 @@ defmodule Game.World.Master do
     {:noreply, state}
   end
 
+  # filter the member list down to connected nodes
+  # pg2 may not have caught up with the node falling off yet
+  defp master_pids() do
+    :world
+    |> :pg2.get_members()
+    |> Enum.map(&{&1, node(&1)})
+    |> Enum.filter(fn {_pid, controller_node} ->
+      controller_node == node() || controller_node in Node.list()
+    end)
+    |> Enum.map(&elem(&1, 0))
+  end
+
   defp rebalance_zones() do
-    members = :pg2.get_members(:world)
-
+    members = master_pids()
     hosted_zones = get_member_zones(members)
-
     zones = Zone.all()
 
     zone_count = length(zones)
@@ -104,9 +116,7 @@ defmodule Game.World.Master do
   end
 
   defp get_member_zones(members) do
-    members
-    |> Enum.reject(&(&1 == self()))
-    |> Enum.map(fn controller ->
+    Enum.map(members, fn controller ->
       {controller, ZoneController.hosted_zones(controller)}
     end)
   end
@@ -127,7 +137,7 @@ defmodule Game.World.Master do
         restart_zones([zone | zones], controllers_with_zones, max_zones)
 
       false ->
-        Logger.info("Starting zone on #{inspect(controller)}")
+        Logger.info("Starting zone #{zone.id} on #{inspect(controller)}", type: :leader)
 
         ZoneController.start_zone(controller, zone)
 

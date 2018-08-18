@@ -33,7 +33,7 @@ defmodule Game.World.ZoneController do
   end
 
   def handle_call({:start, zone}, _from, state) do
-    Logger.info("Starting zone #{zone.id}")
+    Logger.info("Starting zone #{zone.id}", type: :zone)
     World.start_child(zone)
     {:reply, :ok, %{state | zones: [zone.id | state.zones]}}
   end
