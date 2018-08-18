@@ -33,7 +33,7 @@ defmodule Raft.Server do
   end
 
   @impl true
-  def leader_selected() do
+  def leader_selected(_term) do
     :ets.insert(@key, {:is_leader?, true})
   end
 
@@ -45,7 +45,7 @@ defmodule Raft.Server do
   """
   @spec look_for_leader(State.t()) :: {:ok, State.t()}
   def look_for_leader(state) do
-    Logger.debug("Checking for a current leader.")
+    Logger.debug("Checking for a current leader.", type: :raft)
 
     PG.broadcast([others: true], fn pid ->
       Raft.leader_check(pid)
@@ -75,7 +75,7 @@ defmodule Raft.Server do
   def start_election(state, term) do
     Logger.debug(fn ->
       "Starting an election for term #{term}, announcing candidacy"
-    end)
+    end, type: :raft)
 
     case check_term_newer(state, term) do
       {:ok, :newer} ->
@@ -98,14 +98,14 @@ defmodule Raft.Server do
       {:error, :same} ->
         Logger.debug(fn ->
           "Someone already won this round, not starting"
-        end)
+        end, type: :raft)
 
         {:ok, state}
 
       {:error, :older} ->
         Logger.debug(fn ->
           "This term has already completed, not starting"
-        end)
+        end, type: :raft)
 
         {:ok, state}
     end
@@ -117,7 +117,7 @@ defmodule Raft.Server do
   def vote_leader(state, pid, term) do
     Logger.debug(fn ->
       "Received ballot for term #{term}, from #{inspect(pid)}, voting"
-    end)
+    end, type: :raft)
 
     with {:ok, :newer} <- check_term_newer(state, term),
          {:ok, :not_voted} <- check_voted(state) do
@@ -127,7 +127,7 @@ defmodule Raft.Server do
       {:error, :same} ->
         Logger.debug(fn ->
           "Received a vote for the same term"
-        end)
+        end, type: :raft)
 
         {:ok, state}
 
@@ -142,7 +142,7 @@ defmodule Raft.Server do
   def vote_received(state, pid, term) do
     Logger.debug(fn ->
       "Received a vote for leader for term #{term}, from #{inspect(pid)}"
-    end)
+    end, type: :raft)
 
     with {:ok, :newer} <- check_term_newer(state, term),
          {:ok, state} <- append_vote(state, pid),
@@ -154,17 +154,17 @@ defmodule Raft.Server do
       voted_leader(state, term)
     else
       {:error, :same} ->
-        Logger.debug("An old vote received - ignoring")
+        Logger.debug("An old vote received - ignoring", type: :raft)
 
         {:ok, state}
 
       {:error, :older} ->
-        Logger.debug("An old vote received - ignoring")
+        Logger.debug("An old vote received - ignoring", type: :raft)
 
         {:ok, state}
 
       {:error, :not_enough} ->
-        Logger.debug("Not enough votes to be a winner")
+        Logger.debug("Not enough votes to be a winner", type: :raft)
 
         append_vote(state, pid)
     end
@@ -174,10 +174,11 @@ defmodule Raft.Server do
   Set the winner as leader
   """
   def set_leader(state, leader_pid, leader_node, term) do
-    with {:ok, :newer} <- check_term_newer(state, term) do
+    with :ok <- check_leader_different(state, leader_pid, leader_node, term),
+         {:ok, :newer} <- check_term_newer(state, term) do
       Logger.debug(fn ->
         "Setting leader for term #{term} as #{inspect(leader_pid)}"
-      end)
+      end, type: :raft)
 
       :ets.insert(@key, {:is_leader?, false})
 
@@ -196,7 +197,7 @@ defmodule Raft.Server do
       {:error, :same} ->
         Logger.debug(fn ->
           "Another node has the same term and is a leader, starting a new term"
-        end)
+        end, type: :raft)
 
         Raft.start_election(state.term + 1)
 
@@ -204,6 +205,16 @@ defmodule Raft.Server do
 
       _ ->
         {:ok, state}
+    end
+  end
+
+  defp check_leader_different(state, leader_pid, leader_node, term) do
+    case state.term == term && state.leader_pid == leader_pid && state.leader_node == leader_node do
+      true ->
+        {:error, :leader, :same}
+
+      false ->
+        :ok
     end
   end
 
@@ -216,14 +227,14 @@ defmodule Raft.Server do
       "leader" ->
         Logger.debug(fn ->
           "A new node came online, asserting leadership"
-        end)
+        end, type: :raft)
 
         PG.broadcast([others: true], fn pid ->
           Raft.new_leader(pid, state.term)
         end)
 
         Enum.each(@winner_subscriptions, fn module ->
-          module.leader_selected()
+          module.leader_selected(state.term)
         end)
 
         {:ok, state}
@@ -317,12 +328,12 @@ defmodule Raft.Server do
   def voted_leader(state, term) do
     Logger.debug(fn ->
       "Won the election for term #{term}"
-    end)
+    end, type: :raft)
 
     {:ok, state} = set_leader(state, self(), node(), term)
 
     Enum.each(@winner_subscriptions, fn module ->
-      module.leader_selected()
+      module.leader_selected(term)
     end)
 
     {:ok, %{state | state: "leader"}}

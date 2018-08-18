@@ -20,8 +20,8 @@ defmodule Game.World.Master do
   @start_world Application.get_env(:ex_venture, :game)[:world]
 
   @impl true
-  def leader_selected() do
-    Logger.info("#{node()} chosen as the leader.", type: :leader)
+  def leader_selected(term) do
+    Logger.info("#{node()} chosen as the leader for term #{term}.", type: :leader)
 
     if @start_world do
       GenServer.cast(__MODULE__, :rebalance_zones)

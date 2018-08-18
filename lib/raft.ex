@@ -83,7 +83,6 @@ defmodule Raft do
     :ets.new(@key, [:set, :protected, :named_table])
     :ets.insert(@key, {:is_leader?, false})
 
-    send(self(), {:election, :check})
     start_election(1)
 
     :ok = :net_kernel.monitor_nodes(true)
@@ -95,7 +94,12 @@ defmodule Raft do
       votes: []
     }
 
-    {:ok, state}
+    {:ok, state, {:continue, {:election, :check}}}
+  end
+
+  def handle_continue({:election, :check}, state) do
+    {:ok, state} = Server.look_for_leader(state)
+    {:noreply, state}
   end
 
   def handle_call(:state, _from, state) do
@@ -129,11 +133,6 @@ defmodule Raft do
 
   def handle_cast({:election, :winner, leader_pid, leader_node, term}, state) do
     {:ok, state} = Server.set_leader(state, leader_pid, leader_node, term)
-    {:noreply, state}
-  end
-
-  def handle_info({:election, :check}, state) do
-    {:ok, state} = Server.look_for_leader(state)
     {:noreply, state}
   end
 
