@@ -141,12 +141,12 @@ defmodule Game.Door do
   end
 
   def handle_call({:load, door_id}, _from, state) do
-    Cachex.set(@key, door_id, @closed)
+    Cachex.put(@key, door_id, @closed)
     {:reply, @closed, state}
   end
 
   def handle_call({:set, door_id, door_state}, _from, state) do
-    Cachex.set(@key, door_id, door_state)
+    Cachex.put(@key, door_id, door_state)
     {:reply, door_state, state}
   end
 

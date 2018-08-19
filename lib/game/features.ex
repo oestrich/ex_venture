@@ -89,14 +89,14 @@ defmodule Game.Features do
     features = Repo.all(Feature)
 
     Enum.each(features, fn feature ->
-      Cachex.set(@key, feature.id, feature)
+      Cachex.put(@key, feature.id, feature)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, feature}, _from, state) do
-    Cachex.set(@key, feature.id, feature)
+    Cachex.put(@key, feature.id, feature)
     {:reply, :ok, state}
   end
 

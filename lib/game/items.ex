@@ -93,7 +93,7 @@ defmodule Game.Items do
 
     Enum.each(items, fn item ->
       item = Item.compile(item)
-      Cachex.set(@key, item.id, item)
+      Cachex.put(@key, item.id, item)
     end)
 
     {:noreply, state}
@@ -105,12 +105,12 @@ defmodule Game.Items do
       |> Repo.preload([:item_aspects])
       |> Item.compile()
 
-    Cachex.set(@key, item.id, item)
+    Cachex.put(@key, item.id, item)
     {:reply, :ok, state}
   end
 
   def handle_call({:insert, item}, _from, state) do
-    Cachex.set(@key, item.id, item)
+    Cachex.put(@key, item.id, item)
     {:reply, :ok, state}
   end
 

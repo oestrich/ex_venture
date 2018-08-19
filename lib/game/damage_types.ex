@@ -34,7 +34,7 @@ defmodule Game.DamageTypes do
         create_default_damage_type(key)
 
       damage_type ->
-        Cachex.set(@key, damage_type.key, damage_type)
+        Cachex.put(@key, damage_type.key, damage_type)
         {:ok, damage_type}
     end
   end
@@ -50,7 +50,7 @@ defmodule Game.DamageTypes do
 
     case changeset |> Repo.insert() do
       {:ok, damage_type} ->
-        Cachex.set(@key, damage_type.key, damage_type)
+        Cachex.put(@key, damage_type.key, damage_type)
         {:ok, damage_type}
 
       {:error, _changeset} ->
@@ -107,14 +107,14 @@ defmodule Game.DamageTypes do
     damage_types = DamageType |> Repo.all()
 
     Enum.each(damage_types, fn damage_type ->
-      Cachex.set(@key, damage_type.key, damage_type)
+      Cachex.put(@key, damage_type.key, damage_type)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, damage_type}, _from, state) do
-    Cachex.set(@key, damage_type.key, damage_type)
+    Cachex.put(@key, damage_type.key, damage_type)
 
     {:reply, :ok, state}
   end

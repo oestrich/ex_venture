@@ -21,7 +21,7 @@ defmodule Game.Overworld.SectorTest do
 
   describe "looking" do
     test "looks at the current overworld", %{state: state, overworld_id: overworld_id} do
-      Cachex.set(:zones, 1, %{id: 1, name: "Zone", overworld_map: []})
+      Cachex.put(:zones, 1, %{id: 1, name: "Zone", overworld_map: []})
 
       {:reply, {:ok, environment}, _state} = Sector.handle_call({:look, overworld_id}, nil, state)
 

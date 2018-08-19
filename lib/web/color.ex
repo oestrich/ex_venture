@@ -48,7 +48,7 @@ defmodule Web.Color do
   """
   @spec set_latest_version(integer()) :: integer()
   def set_latest_version(version) do
-    Cachex.set(@cache_key, :latest_version, version)
+    Cachex.put(@cache_key, :latest_version, version)
     version
   end
 

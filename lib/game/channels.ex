@@ -120,16 +120,16 @@ defmodule Game.Channels do
     channels = Channel |> Repo.all()
 
     Enum.each(channels, fn channel ->
-      Cachex.set(@key, channel.id, channel)
-      Cachex.set(@key, channel.name, channel)
+      Cachex.put(@key, channel.id, channel)
+      Cachex.put(@key, channel.name, channel)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, channel}, _from, state) do
-    Cachex.set(@key, channel.id, channel)
-    Cachex.set(@key, channel.name, channel)
+    Cachex.put(@key, channel.id, channel)
+    Cachex.put(@key, channel.name, channel)
 
     {:reply, :ok, state}
   end

@@ -101,16 +101,16 @@ defmodule Game.Skills do
     skills = Skill |> Repo.all()
 
     Enum.each(skills, fn skill ->
-      Cachex.set(@key, skill.id, skill)
-      Cachex.set(@key, skill.command, skill)
+      Cachex.put(@key, skill.id, skill)
+      Cachex.put(@key, skill.command, skill)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, skill}, _from, state) do
-    Cachex.set(@key, skill.id, skill)
-    Cachex.set(@key, skill.command, skill)
+    Cachex.put(@key, skill.id, skill)
+    Cachex.put(@key, skill.command, skill)
     {:reply, :ok, state}
   end
 

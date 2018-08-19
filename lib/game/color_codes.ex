@@ -96,14 +96,14 @@ defmodule Game.ColorCodes do
     color_codes = ColorCode |> Repo.all()
 
     Enum.each(color_codes, fn color_code ->
-      Cachex.set(@key, color_code.key, color_code)
+      Cachex.put(@key, color_code.key, color_code)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, color_code}, _from, state) do
-    Cachex.set(@key, color_code.key, color_code)
+    Cachex.put(@key, color_code.key, color_code)
 
     {:reply, :ok, state}
   end

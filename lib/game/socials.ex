@@ -115,16 +115,16 @@ defmodule Game.Socials do
     socials = Social |> Repo.all()
 
     Enum.each(socials, fn social ->
-      Cachex.set(@key, social.id, social)
-      Cachex.set(@key, social.command, social)
+      Cachex.put(@key, social.id, social)
+      Cachex.put(@key, social.command, social)
     end)
 
     {:noreply, state}
   end
 
   def handle_call({:insert, social}, _from, state) do
-    Cachex.set(@key, social.id, social)
-    Cachex.set(@key, social.command, social)
+    Cachex.put(@key, social.id, social)
+    Cachex.put(@key, social.command, social)
 
     {:reply, :ok, state}
   end
