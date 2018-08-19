@@ -48,11 +48,11 @@ defmodule Game.Command.Scan do
 
   defp scan_rooms(room) do
     room.exits
-    |> Enum.map(&scan_room(room, &1))
+    |> Enum.map(&scan_room/1)
     |> Enum.reject(&room_empty?/1)
   end
 
-  defp scan_room(room, room_exit) do
+  defp scan_room(room_exit) do
     case room_exit.has_door && Door.closed?(room_exit.door_id) do
       true ->
         {room_exit.direction, :closed}
