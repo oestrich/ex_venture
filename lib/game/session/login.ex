@@ -15,9 +15,9 @@ defmodule Game.Session.Login do
   alias Data.Room
   alias Game.Authentication
   alias Game.Command.Config, as: CommandConfig
-  alias Game.Config
   alias Game.Channel
   alias Game.Mail
+  alias Game.MOTD
   alias Game.Session
   alias Game.Session.Process
   alias Game.Session.GMCP
@@ -30,16 +30,12 @@ defmodule Game.Session.Login do
   """
   @spec start(socket :: pid) :: :ok
   def start(socket) do
-    socket |> @socket.echo("#{ExVenture.version()}\n#{motd()}")
+    socket |> @socket.echo("#{ExVenture.version()}\n#{MOTD.random_motd()}")
 
     socket
     |> @socket.prompt(
       "What is your player name (Enter {command}create{/command} for a new account)? "
     )
-  end
-
-  defp motd() do
-    Config.motd("Welcome to ExVenture.")
   end
 
   @doc """
@@ -67,7 +63,7 @@ defmodule Game.Session.Login do
     message = """
     Welcome, #{user.name}!
 
-    #{Config.after_sign_in_message()}
+    #{MOTD.random_asim()}
     """
 
     socket |> @socket.echo(message)

@@ -145,7 +145,7 @@ defmodule Game.Config do
   Used during sign in
   """
   @spec motd(String.t()) :: String.t()
-  def motd(default) do
+  def motd(default \\ "Welcome to ExVenture") do
     case find_config("motd") do
       nil ->
         default

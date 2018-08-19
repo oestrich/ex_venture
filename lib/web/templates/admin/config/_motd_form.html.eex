@@ -1,1 +1,3 @@
-<%= FormView.textarea_field(@f, :value, rows: 15) %>
+<%= FormView.textarea_field(@f, :value, rows: 15) do %>
+  <span class="help-block"><%= Help.get("config.message_break") %></span>
+<% end %>

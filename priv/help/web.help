@@ -16,6 +16,9 @@ color_code.hex_code:
 color_code.key:
   This key is used when adding color to game text fields, e.g. if the key was `gold`, you would use it as `{gold}text{/gold}`
 
+config.message_break:
+  You can crate multiple messages by adding in a break, `(----)`. A random message will be selected.
+
 damage_type.key:
   This key is used in damage effects, this should be a single word and lower case.
 
