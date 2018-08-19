@@ -51,8 +51,8 @@ A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixi
 ## Requirements
 
 - PostgreSQL 10
-- Elixir 1.6.6
-- Erlang 21.0.2
+- Elixir 1.7.2
+- Erlang 21.0.5
 - node.js 8.6
 
 ## Setup

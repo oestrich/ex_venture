@@ -11,7 +11,6 @@ defmodule Metrics.Setup do
     Metrics.PipelineInstrumenter.setup()
     Metrics.PlayerInstrumenter.setup()
     Metrics.NPCInstrumenter.setup()
-    Metrics.RepoInstrumenter.setup()
     Metrics.ShopInstrumenter.setup()
 
     Web.PrometheusExporter.setup()

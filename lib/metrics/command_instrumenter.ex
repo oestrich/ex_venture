@@ -47,8 +47,8 @@ defmodule Metrics.CommandInstrumenter do
 
   defp record_timing(%{parsed_in: parsed_in, ran_in: ran_in})
        when parsed_in != nil and ran_in != nil do
-    Histogram.dobserve(:exventure_command_parsed_in_microseconds, parsed_in)
-    Histogram.dobserve(:exventure_command_ran_in_microseconds, ran_in)
+    Histogram.observe([name: :exventure_command_parsed_in_microseconds], parsed_in)
+    Histogram.observe([name: :exventure_command_ran_in_microseconds], ran_in)
   end
 
   defp record_timing(_), do: nil

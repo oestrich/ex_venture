@@ -31,7 +31,7 @@ defmodule Metrics.CharacterInstrumenter do
       |> :erlang.convert_time_unit(:microsecond, :native)
 
     Counter.inc(name: :exventure_character_movement_total, labels: [type])
-    Histogram.dobserve(:exventure_character_moved_in_microseconds, moved_in)
+    Histogram.observe([name: :exventure_character_moved_in_microseconds], moved_in)
 
     movement
   end

@@ -76,16 +76,16 @@ Install Erlang via [asdf][asdf-erlang].
 
 ```bash
 asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
-asdf install erlang 21.0.2
-asdf global erlang 21.0.2
+asdf install erlang 21.0.5
+asdf global erlang 21.0.5
 ```
 
 Install Elixir via [asdf][asdf-elixir].
 
 ```bash
 asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
-asdf install elixir 1.6.6
-asdf global elixir 1.6.6
+asdf install elixir 1.7.2
+asdf global elixir 1.7.2
 mix local.hex
 mix local.rebar
 ```
