@@ -17,6 +17,9 @@ defmodule Game.World.Master do
   @group :world_leaders
   @table :world_leader
 
+  # rebalance every 15 minutes
+  @rebalance_delay 15 * 60 * 1000
+
   @start_world Application.get_env(:ex_venture, :game)[:world]
 
   @impl true
@@ -60,6 +63,8 @@ defmodule Game.World.Master do
 
     :ets.new(@table, [:set, :protected, :named_table])
 
+    schedule_rebalance()
+
     {:ok, %{}}
   end
 
@@ -74,6 +79,17 @@ defmodule Game.World.Master do
     Enum.each(members, fn member ->
       send(member, {:set, :world_online, true})
     end)
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(:maybe_rebalance_zones, state) do
+    if Raft.node_is_leader?() do
+      GenServer.cast(__MODULE__, :rebalance_zones)
+    end
+
+    schedule_rebalance()
 
     {:noreply, state}
   end
@@ -144,5 +160,9 @@ defmodule Game.World.Master do
         controller_zones = [zone | controller_zones]
         restart_zones(zones, [{controller, controller_zones} | controllers_with_zones], max_zones)
     end
+  end
+
+  defp schedule_rebalance() do
+    Process.send_after(self(), :maybe_rebalance_zones, @rebalance_delay)
   end
 end
