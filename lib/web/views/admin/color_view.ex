@@ -16,7 +16,7 @@ defmodule Web.Admin.ColorView do
   end
 
   def color_field(field, name) do
-    field = :"color_#{field}"
+    field = String.to_atom("color_#{field}")
     code = apply(Config, field, [])
 
     content_tag(:div, class: "form-group") do

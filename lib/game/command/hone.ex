@@ -155,7 +155,7 @@ defmodule Game.Command.Hone do
   end
 
   defp hone_points_help(save, field, title) do
-    stat = Map.get(save.stats, :"max_#{field}_points")
+    stat = Map.get(save.stats, String.to_atom("max_#{field}_points"))
 
     boost = @hone_points_boost
 

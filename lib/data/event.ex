@@ -211,7 +211,7 @@ defmodule Data.Event do
           changeset
 
         false ->
-          merge_changeset(action_changeset, :"action_#{i}", changeset)
+          merge_changeset(action_changeset, String.to_atom("action_#{i}"), changeset)
       end
     end)
   end

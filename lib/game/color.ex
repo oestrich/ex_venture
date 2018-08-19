@@ -108,7 +108,7 @@ defmodule Game.Color do
         format_basic_color(tag)
 
       {tag, color} ->
-        color = Map.get(config, :"color_#{tag}", color)
+        color = Map.get(config, String.to_atom("color_#{tag}"), color)
         format_basic_color("{#{color}}")
     end
   end
