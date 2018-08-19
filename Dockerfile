@@ -1,4 +1,4 @@
-FROM elixir:1.6.6-otp-21-alpine as builder
+FROM elixir:1.7.2-alpine as builder
 
 # The nuclear approach:
 # RUN apk add --no-cache alpine-sdk
