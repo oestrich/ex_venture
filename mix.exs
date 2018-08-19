@@ -75,7 +75,7 @@ defmodule ExVenture.Mixfile do
       {:pot, git: "https://github.com/yuce/pot.git"},
       {:postgrex, ">= 0.0.0"},
       {:qrcode, git: "https://gitlab.com/oestrich/qrcode.git"},
-      {:ranch, "~> 1.4"},
+      {:ranch, "~> 1.5.0"},
       {:sentry, "~> 6.2"},
       {:timex, "~> 3.1"},
       {:timex_ecto, "~> 3.1"},
