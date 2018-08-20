@@ -10,13 +10,15 @@
     <h3>Skills</h3>
     <ul class="list-group">
       <%= Enum.map(@class.class_skills, fn (class_skill) -> %>
-        <li class="list-group-item">
-          <span>
-            <%= link(to: public_skill_path(@conn, :show, class_skill.skill_id)) do %>
-              Level <%= class_skill.skill.level %> - <%= class_skill.skill.name %>
-            <% end %>
-          </span>
-        </li>
+        <%= if class_skill.skill.is_enabled do %>
+          <li class="list-group-item">
+            <span>
+              <%= link(to: public_skill_path(@conn, :show, class_skill.skill_id)) do %>
+                Level <%= class_skill.skill.level %> - <%= class_skill.skill.name %>
+              <% end %>
+            </span>
+          </li>
+        <% end %>
       <% end) %>
     </ul>
   </div>

@@ -42,6 +42,10 @@ defmodule Web.Skill do
     |> where([n], fragment("? @> ?::varchar[]", n.tags, [^value]))
   end
 
+  def filter_on_attribute({:enabled, value}, query) do
+    query |> where([s], s.is_enabled == ^value)
+  end
+
   def filter_on_attribute(_, query), do: query
 
   @doc """
