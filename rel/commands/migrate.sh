@@ -1,3 +1,3 @@
 #!/bin/sh
 
-bin/ex_venture command Elixir.ExVenture.ReleaseTasks migrate
+bin/ex_venture eval 'ExVenture.ReleaseTasks.migrate()'

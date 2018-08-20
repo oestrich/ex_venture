@@ -17,20 +17,6 @@ defmodule ExVenture.ReleaseTasks do
     Data.Repo
   ]
 
-  defp startup() do
-    IO.puts("Loading ex_venture...")
-    # Load the code for ex_venture, but don't start it
-    :ok = Application.load(:ex_venture)
-
-    IO.puts("Starting dependencies..")
-    # Start apps necessary for executing migrations
-    Enum.each(@start_apps, &Application.ensure_all_started/1)
-
-    # Start the Repo(s) for ex_venture
-    IO.puts("Starting repos..")
-    Enum.each(@repos, & &1.start_link(pool_size: 1))
-  end
-
   def migrate() do
     startup()
 
@@ -45,11 +31,7 @@ defmodule ExVenture.ReleaseTasks do
   def seed do
     startup()
 
-    # Start dependencies only needed for Seed task
-    {:ok, _app_list} = Application.ensure_all_started(:prometheus_ecto)
-
     Game.Config.start_link()
-    Metrics.Setup.setup()
 
     # Run the seed script if it exists
     seed_script = Path.join([priv_dir(:ex_venture), "repo", "seeds.exs"])
@@ -64,7 +46,22 @@ defmodule ExVenture.ReleaseTasks do
     :init.stop()
   end
 
-  def priv_dir(app), do: "#{:code.priv_dir(app)}"
+  defp startup() do
+    IO.puts("Loading ex_venture...")
+
+    # Load the code for ex_venture, but don't start it
+    Application.load(:ex_venture)
+
+    IO.puts("Starting dependencies..")
+    # Start apps necessary for executing migrations
+    Enum.each(@start_apps, &Application.ensure_all_started/1)
+
+    # Start the Repo(s) for ex_venture
+    IO.puts("Starting repos..")
+    Enum.each(@repos, & &1.start_link(pool_size: 1))
+  end
+
+  defp priv_dir(app), do: "#{:code.priv_dir(app)}"
 
   defp run_migrations_for(app) do
     IO.puts("Running migrations for #{app}")
