@@ -28,6 +28,10 @@
           <table class="table">
             <tbody>
               <tr>
+                <th>Is Enabled?</th>
+                <td><span class="label label-default"><%= @skill.is_enabled %></span></td>
+              </tr>
+              <tr>
                 <th>Level</th>
                 <td><%= @skill.level %></td>
               </tr>

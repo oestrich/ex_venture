@@ -161,7 +161,7 @@ defmodule Game.CommandTest do
 
     test "parsing skills", %{user: user} do
       start_and_clear_skills()
-      slash = %{id: 1, level: 1, command: "slash"}
+      slash = %{id: 1, level: 1, is_enabled: true, command: "slash"}
       insert_skill(slash)
 
       user = %{user | save: %{level: 1, skill_ids: [slash.id]}}

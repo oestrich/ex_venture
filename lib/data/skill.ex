@@ -23,6 +23,7 @@ defmodule Data.Skill do
     field(:whitelist_effects, {:array, :string}, default: [])
     field(:effects, {:array, Effect}, default: [])
     field(:tags, {:array, :string}, default: [])
+    field(:is_enabled, :boolean, default: true)
     field(:is_global, :boolean, default: false)
     field(:require_target, :boolean, default: false)
 
@@ -46,6 +47,7 @@ defmodule Data.Skill do
       :whitelist_effects,
       :effects,
       :tags,
+      :is_enabled,
       :is_global,
       :require_target
     ])
@@ -61,6 +63,7 @@ defmodule Data.Skill do
       :whitelist_effects,
       :effects,
       :tags,
+      :is_enabled,
       :is_global,
       :require_target
     ])

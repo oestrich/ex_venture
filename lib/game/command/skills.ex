@@ -63,11 +63,15 @@ defmodule Game.Command.Skills do
 
   def parse_skill(command, %{save: save}) do
     with {:ok, skill} <- parse_find_skill(command),
+         {:ok, skill} <- parse_check_skill_enabled(skill),
          {:ok, skill} <- parse_check_skill_known(skill, save),
          {:ok, skill} <- parse_check_skill_level(skill, save) do
       %Command{text: command, module: __MODULE__, args: {skill, command}}
     else
       {:error, :not_found} ->
+        {:error, :bad_parse, command}
+
+      {:error, :not_enabled, _skill} ->
         {:error, :bad_parse, command}
 
       {:error, :not_known, skill} ->
@@ -91,6 +95,16 @@ defmodule Game.Command.Skills do
 
       skill ->
         {:ok, skill}
+    end
+  end
+
+  defp parse_check_skill_enabled(skill) do
+    case skill.is_enabled do
+      true ->
+        {:ok, skill}
+
+      false ->
+        {:error, :not_enabled, skill}
     end
   end
 

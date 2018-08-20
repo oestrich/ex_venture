@@ -100,7 +100,7 @@ defmodule Web.FormView do
   def checkbox_field(form, field, opts \\ [], dopts \\ []) do
     opts = Keyword.merge(opts, dopts)
 
-    content_tag(:div, class: "checkbox") do
+    content_tag(:div, class: "checkbox form-group") do
       content_tag(:div, class: "col-md-8 col-md-offset-4") do
         [
           label(form, field) do

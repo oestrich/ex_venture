@@ -19,6 +19,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th>Enabled?</th>
                   <th>Name</th>
                   <th>Level</th>
                   <th>Tags</th>
@@ -31,6 +32,7 @@
                 <%= Enum.map @skills, fn (skill) -> %>
                   <tr>
                     <td><%= skill.id %></td>
+                    <td><span class="label label-default"><%= skill.is_enabled %></span></td>
                     <td><%= link(skill.name, to: skill_path(@conn, :show, skill.id)) %></td>
                     <td><%= skill.level %></td>
                     <td>

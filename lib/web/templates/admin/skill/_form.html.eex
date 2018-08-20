@@ -14,25 +14,17 @@
 
       <%= FormView.textarea_field(f, :description, rows: 5) %>
 
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :is_global do %>
-            <%= checkbox f, :is_global %> Is Global?
-          <% end %>
-          <%= error_tag f, :is_global %>
-          <span class="help-block">A global skill is something all players will unlock when they reach the skill level</span>
-        </div>
-      </div>
+      <%= FormView.checkbox_field(f, :is_enabled, label: "Enabled?") do %>
+        <span class="help-block">Only enabled skills will let players use them.</span>
+      <% end %>
 
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-4">
-          <%= label f, :require_target do %>
-            <%= checkbox f, :require_target %> Require a target?
-          <% end %>
-          <%= error_tag f, :is_global %>
+      <%= FormView.checkbox_field(f, :is_global, label: "Is Global?") do %>
+        <span class="help-block">A global skill is something all players will unlock when they reach the skill level</span>
+      <% end %>
+
+      <%= FormView.checkbox_field(f, :require_target, label: "Require a target?") do %>
           <span class="help-block"><%= Help.get("skill.require_target") %></span>
-        </div>
-      </div>
+      <% end %>
 
       <h4>Usage</h4>
       <hr />
