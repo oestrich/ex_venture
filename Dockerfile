@@ -38,7 +38,7 @@ ARG APP_VERSION=0.24.0
 RUN cp config/prod.docker.exs config/prod.exs && \
     mix release --env=prod --no-tar
 
-FROM alpine:3.7
+FROM alpine:3.8
 RUN apk add -U bash libssl1.0
 WORKDIR /app
 COPY --from=releaser /app/_build/prod/rel/ex_venture /app/
