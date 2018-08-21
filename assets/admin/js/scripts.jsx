@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from "lodash";
 
 class Listener extends React.Component {
   constructor(props) {
@@ -137,12 +138,56 @@ class Line extends React.Component {
     };
   }
 
+  triggerLine() {
+    if (this.state.trigger != "line") {
+      return null;
+    }
+
+    let key = this.state.triggerNext;
+    let delay = this.state.triggerDelay;
+
+    return (
+      <div className="row">
+        <div className="col-md-6">
+          <label>Next Key</label>
+          <input type="text" value={key} className="form-control" onChange={this.handleUpdateField("triggerNext")} />
+        </div>
+        <div className="col-md-6">
+          <label>Delay</label>
+          <input type="text" value={delay} className="form-control" onChange={this.handleUpdateField("triggerDelay")} />
+        </div>
+      </div>
+    );
+  }
+
+  listeners() {
+    if (this.state.trigger != null) {
+      return null;
+    }
+
+    let listeners = this.state.listeners;
+
+    return (
+      <div className="row">
+        <div className="col-md-12">
+          <label>Listeners</label>
+          {listeners.map((listener, index) => {
+            return (
+              <Listener key={index} listener={listener} handleUpdate={this.handleUpdateListener(index)} handleRemove={this.handleRemoveListener(index)} />
+            );
+          })}
+          <br />
+          <a href="#" className="btn btn-default" onClick={this.addListener}>Add Listener</a>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     let key = this.state.key;
     let message = this.state.message;
     let trigger = this.state.trigger || "none";
     let unknown = this.state.unknown || "";
-    let listeners = this.state.listeners;
 
     return (
       <div>
@@ -156,9 +201,11 @@ class Line extends React.Component {
             <select value={trigger} className="form-control" onChange={this.handleUpdateField("trigger")}>
               <option value="none">None</option>
               <option value="quest">Quest</option>
+              <option value="line">Line</option>
             </select>
           </div>
         </div>
+        {this.triggerLine()}
         <div className="row">
           <div className="col-md-12">
             <label>Message</label>
@@ -171,18 +218,7 @@ class Line extends React.Component {
             <textarea value={unknown} className="form-control" onChange={this.handleUpdateField("unknown")} />
           </div>
         </div>
-        <div className="row">
-          <div className="col-md-12">
-            <label>Listeners</label>
-            {listeners.map((listener, index) => {
-              return (
-                <Listener key={index} listener={listener} handleUpdate={this.handleUpdateListener(index)} handleRemove={this.handleRemoveListener(index)} />
-              );
-            })}
-            <br />
-            <a href="#" className="btn btn-default" onClick={this.addListener}>Add Listener</a>
-          </div>
-        </div>
+        {this.listeners()}
       </div>
     );
   }
@@ -193,12 +229,33 @@ class Editor extends React.Component {
     super(props);
 
     this.state = {
-      lines: props.lines,
+      lines: this.convertLines(props.lines),
     }
 
     this.addLine = this.addLine.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.removeLine = this.removeLine.bind(this);
+  }
+
+  convertLines(lines) {
+    console.log(lines);
+    return lines.map(line => {
+      let newLine = {
+        key: line.key,
+        message: line.message,
+        trigger: line.trigger,
+        unknown: line.unknown,
+        listeners: line.listeners,
+      };
+
+      if (line.trigger != null && line.trigger != undefined && line.trigger.type == "line") {
+        newLine.trigger = line.trigger.type;
+        newLine.triggerNext = line.trigger.next;
+        newLine.triggerDelay = line.trigger.delay;
+      }
+
+      return newLine;
+    });
   }
 
   handleUpdate(line, index) {
@@ -216,6 +273,8 @@ class Editor extends React.Component {
       key: "",
       message: "",
       trigger: null,
+      triggerDelay: 0.5,
+      triggerNext: "",
       unknown: null,
       listeners: [],
     };
@@ -233,11 +292,33 @@ class Editor extends React.Component {
     this.setState({lines: lines});
   }
 
+  toJSON() {
+    let script =this.state.lines.map(line => {
+      switch(line.trigger) {
+        case "quest":
+          return _.pick(line, ['key', 'trigger', 'message', 'unknown']);
+
+        case "line":
+          let newLine = _.pick(line, ['key', 'trigger', 'message', 'unknown']);
+          newLine['trigger'] = {
+            type: 'line',
+            next: line.triggerNext,
+            delay: parseFloat(line.triggerDelay),
+          };
+          return newLine;
+
+        default:
+          return _.pick(line, ['key', 'listeners', 'message', 'unknown']);
+      }
+    });
+    return JSON.stringify(script);
+  }
+
   render() {
     let lines = this.state.lines;
     let handleUpdate = this.handleUpdate;
 
-    let scriptJSON = JSON.stringify(this.state.lines);
+    let scriptJSON = this.toJSON();
     let removeLine = this.removeLine;
 
     return (
@@ -288,6 +369,8 @@ class Tester extends React.Component {
     this.handleMessage = this.handleMessage.bind(this);
     this.handleEnter = this.handleEnter.bind(this);
     this.nextLine = this.nextLine.bind(this);
+
+    this.state = this.attemptLineAdvance(this.state);
   }
 
   handleMessage(event) {
@@ -299,15 +382,18 @@ class Tester extends React.Component {
       event.preventDefault();
       let line = this.nextLine(this.state.message);
 
-      this.setState({
-        lines: [
-          ...this.state.lines,
-          {name: "Player", message: this.state.message},
-          {name: this.props.giver_name, message: line.message},
-        ],
-        currentLine: line,
-        message: "",
-      });
+      let state = this.state;
+      state.currentLine = line;
+      state.lines = [
+        ...this.state.lines,
+        {name: "Player", message: this.state.message},
+        {name: this.props.giver_name, message: line.message},
+      ];
+      state.message = "";
+
+      state = this.attemptLineAdvance(this.state);
+
+      this.setState(state);
     }
   }
 
@@ -327,6 +413,26 @@ class Tester extends React.Component {
       return this.props.script.find(line => {
         return line.key == "start";
       });
+    }
+  }
+
+  attemptLineAdvance(state) {
+    let line = state.currentLine;
+
+    if (line.trigger != null && line.trigger != undefined && line.trigger.type == "line") {
+      let nextLine = this.props.script.find(nextLine => {
+        return line.trigger.next == nextLine.key;
+      });
+
+      state.lines = [
+        ...state.lines,
+        {name: this.props.giver_name, message: nextLine.message},
+      ];
+      state.currentLine = nextLine;
+
+      return this.attemptLineAdvance(state);
+    } else {
+      return state;
     }
   }
 

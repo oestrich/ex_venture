@@ -49,15 +49,21 @@ defmodule Data.Script do
   @spec validate_script(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_script(changeset) do
     case get_change(changeset, :script) do
-      nil -> changeset
-      script -> _validate_script(changeset, script)
+      nil ->
+        changeset
+
+      script ->
+        _validate_script(changeset, script)
     end
   end
 
   defp _validate_script(changeset, script) do
     case valid_script?(script) do
-      true -> changeset
-      false -> add_error(changeset, :script, "are invalid")
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :script, "are invalid")
     end
   end
 
@@ -67,7 +73,7 @@ defmodule Data.Script do
   @spec valid_script?([t()]) :: boolean()
   def valid_script?(script) do
     Enum.all?(script, &Line.valid?/1) && contains_start_key?(script) &&
-      keys_are_all_included?(script)
+      listener_keys_are_all_included?(script) && trigger_line_keys_are_all_included?(script)
   end
 
   defp contains_start_key?(script) do
@@ -76,12 +82,26 @@ defmodule Data.Script do
     end)
   end
 
-  defp keys_are_all_included?(script) do
+  defp listener_keys_are_all_included?(script) do
     Enum.all?(script, fn line ->
       Enum.all?(line.listeners, fn listener ->
         Enum.any?(script, fn line ->
           listener.key == line.key
         end)
+      end)
+    end)
+  end
+
+  defp trigger_line_keys_are_all_included?(script) do
+    script
+    |> Enum.filter(fn line ->
+      is_map(Map.get(line, :trigger, nil))
+    end)
+    |> Enum.all?(fn line ->
+      next_key = line.trigger.next
+
+      Enum.any?(script, fn line ->
+        next_key == line.key
       end)
     end)
   end

@@ -27,5 +27,18 @@ defmodule Data.ScriptTest do
       ]
       refute Script.valid_script?(script)
     end
+
+    test "each key must be present - triggers" do
+      script = [
+        %Line{key: "start", message: "Hi", trigger: %{type: "line", next: "continue", delay: 0.5}},
+        %Line{key: "continue", message: "Hi"},
+      ]
+      assert Script.valid_script?(script)
+
+      script = [
+        %Line{key: "start", message: "Hi", trigger: %{type: "line", next: "continue", delay: 0.5}},
+      ]
+      refute Script.valid_script?(script)
+    end
   end
 end
