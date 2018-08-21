@@ -58,6 +58,21 @@ defmodule Game.NPC.Conversation do
     end
   end
 
+  @doc """
+  Continue a conversation
+
+  From `trigger: line`
+  """
+  def continue(state, user) do
+    case Map.get(state.conversations, user.id, nil) do
+      nil ->
+        state
+
+      metadata ->
+        handle_trigger_next(state, user, metadata)
+    end
+  end
+
   #
   # "Internal"
   #
@@ -129,6 +144,11 @@ defmodule Game.NPC.Conversation do
     Quest.start_quest(user, metadata.quest_id)
   end
 
+  def handle_trigger(%{trigger: %{type: "line", delay: delay}}, user, _metadata) do
+    delay = round(Float.ceil(delay * 1000))
+    Process.send_after(self(), {:conversation, :continue, user}, delay)
+  end
+
   @doc """
   Get a line struct by key
   """
@@ -162,11 +182,28 @@ defmodule Game.NPC.Conversation do
       |> Map.put(:key, key)
 
     case line_from_key(script, key) do
+      %{trigger: %{type: "line"}} ->
+        %{state | conversations: Map.put(state.conversations, user.id, conversation)}
+
       %{listeners: []} ->
         %{state | conversations: Map.delete(state.conversations, user.id)}
 
       _ ->
         %{state | conversations: Map.put(state.conversations, user.id, conversation)}
+    end
+  end
+
+  @doc """
+  Handle the next trigger after continuing a conversation
+  """
+  def handle_trigger_next(state, user, metadata) do
+    case line_from_key(metadata.script, metadata.key) do
+      %{trigger: %{next: key}} ->
+        state.npc |> send_message(user, metadata, key)
+        state |> update_conversation_state(key, metadata.script, user)
+
+      _ ->
+        state
     end
   end
 end

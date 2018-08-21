@@ -355,6 +355,11 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
+  def handle_info({:conversation, :continue, user}, state) do
+    state = Conversation.continue(state, user)
+    {:noreply, state}
+  end
+
   def handle_info({:channel, {:tell, {:user, user}, message}}, state) do
     state = Conversation.recv(state, user, message.message)
     schedule_cleaning_conversations()
