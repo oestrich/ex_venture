@@ -50,7 +50,7 @@ defmodule Game.Format.Resources do
       {:ok, npc} ->
         Format.npc_name(npc)
 
-      {:error, :offline} ->
+      {:error, :unknown} ->
         "{error}unknown{/error}"
     end
   end
@@ -62,7 +62,7 @@ defmodule Game.Format.Resources do
       {:ok, room} ->
         Format.room_name(room)
 
-      {:error, :room_offline} ->
+      {:error, :unknown} ->
         "{error}unknown{/error}"
     end
   end
@@ -74,7 +74,7 @@ defmodule Game.Format.Resources do
       {:ok, zone} ->
         Format.zone_name(zone)
 
-      {:error, :offline} ->
+      {:error, :unknown} ->
         "{error}unknown{/error}"
     end
   end

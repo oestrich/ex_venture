@@ -56,6 +56,17 @@ defmodule Game.World.Master do
     end
   end
 
+  @doc """
+  Update a local cache
+  """
+  def update_cache(type, item) do
+    members = :pg2.get_members(@group)
+
+    Enum.map(members, fn member ->
+      GenServer.cast(member, {:update_cache, type, item})
+    end)
+  end
+
   @impl true
   def init(_) do
     :ok = :pg2.create(@group)
@@ -66,6 +77,11 @@ defmodule Game.World.Master do
     schedule_rebalance()
 
     {:ok, %{}}
+  end
+
+  def handle_cast({:update_cache, type, item}, state) do
+    Cachex.put(type, item.id, item)
+    {:noreply, state}
   end
 
   # This is started by the raft

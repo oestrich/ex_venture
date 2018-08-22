@@ -18,6 +18,8 @@ defmodule Game.Caches do
       worker(Cachex, [:doors, []], id: :doors_cache),
       worker(Cachex, [:features, []], id: :features_cache),
       worker(Cachex, [:items, []], id: :items_cache),
+      worker(Cachex, [:npcs, []], id: :npcs_cache),
+      worker(Cachex, [:rooms, []], id: :rooms_cache),
       worker(Cachex, [:skills, []], id: :skills_cache),
       worker(Cachex, [:socials, []], id: :socials_cache),
       worker(Cachex, [:zones, []], id: :zones_cache),

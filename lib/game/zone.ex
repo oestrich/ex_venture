@@ -15,6 +15,7 @@ defmodule Game.Zone do
   alias Game.Overworld
   alias Game.Room
   alias Game.Shop
+  alias Game.World.Master, as: WorldMaster
   alias Game.Zone.Repo
 
   @key :zones
@@ -141,12 +142,12 @@ defmodule Game.Zone do
   Get a simple version of the zone
   """
   def name(id) do
-    case :global.whereis_name({__MODULE__, id}) do
-      :undefined ->
-        {:error, :offline}
+    case Cachex.get(@key, id) do
+      {:ok, zone} when zone != nil ->
+        {:ok, zone}
 
-      pid ->
-        GenServer.call(pid, {:name})
+      _ ->
+        {:error, :unknown}
     end
   end
 
@@ -205,22 +206,13 @@ defmodule Game.Zone do
   def handle_continue(:load_zone, state) do
     zone = Repo.get(state.zone_id)
 
-    Cachex.put(@key, zone.id, zone)
+    WorldMaster.update_cache(@key, zone)
 
     {:noreply, %{state | zone: zone}}
   end
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
-  end
-
-  def handle_call({:name}, _from, state) do
-    simple = %{
-      id: state.zone.id,
-      name: state.zone.name,
-    }
-
-    {:reply, {:ok, simple}, state}
   end
 
   def handle_call(:graveyard, _from, state) do
@@ -287,7 +279,7 @@ defmodule Game.Zone do
   end
 
   def handle_cast({:update, zone}, state) do
-    Cachex.put(@key, zone.id, zone)
+    WorldMaster.update_cache(@key, zone)
 
     {:noreply, Map.put(state, :zone, zone)}
   end

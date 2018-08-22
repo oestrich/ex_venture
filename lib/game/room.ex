@@ -15,10 +15,13 @@ defmodule Game.Room do
   alias Game.Room.Actions
   alias Game.Room.Repo
   alias Game.Session
+  alias Game.World.Master, as: WorldMaster
   alias Game.Zone
   alias Metrics.CommunicationInstrumenter
 
   @type t :: map
+
+  @key :rooms
 
   def start_link(room_id) do
     GenServer.start_link(__MODULE__, room_id, name: pid(room_id), id: room_id)
@@ -32,12 +35,12 @@ defmodule Game.Room do
   Get a simple version of the room
   """
   def name(id) do
-    case :global.whereis_name({Game.Room, id}) do
-      :undefined ->
-        {:error, :room_offline}
+    case Cachex.get(@key, id) do
+      {:ok, room} when room != nil ->
+        {:ok, room}
 
-      pid ->
-        GenServer.call(pid, {:name})
+      _ ->
+        {:error, :unknown}
     end
   end
 
@@ -85,18 +88,10 @@ defmodule Game.Room do
 
       room ->
         room.zone_id |> Zone.room_online(room)
+        WorldMaster.update_cache(@key, room)
         Logger.info("Room online #{room.id}", type: :room)
         {:noreply, %{state | room: room}}
     end
-  end
-
-  def handle_call({:name}, _from, state) do
-    simple = %{
-      id: state.room.id,
-      name: state.room.name,
-    }
-
-    {:reply, {:ok, simple}, state}
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
@@ -152,6 +147,7 @@ defmodule Game.Room do
   def handle_cast({:update, room}, state) do
     Logger.info("Room updated #{room.id}", type: :room)
     room.zone_id |> Zone.update_room(room)
+    WorldMaster.update_cache(@key, room)
 
     state = Map.put(state, :room, room)
 

@@ -17,8 +17,11 @@ defmodule Game.NPC do
   alias Game.NPC.Events
   alias Game.NPC.Repo, as: NPCRepo
   alias Game.NPC.Status
+  alias Game.World.Master, as: WorldMaster
   alias Game.Zone
   alias Metrics.NPCInstrumenter
+
+  @key :npcs
 
   defmacro __using__(_opts) do
     quote do
@@ -68,12 +71,12 @@ defmodule Game.NPC do
   Get a simple version of the zone
   """
   def name(id) do
-    case :global.whereis_name({__MODULE__, id}) do
-      :undefined ->
-        {:error, :offline}
+    case Cachex.get(@key, id) do
+      {:ok, npc} when npc != nil ->
+        {:ok, npc}
 
-      pid ->
-        GenServer.call(pid, {:name})
+      _ ->
+        {:error, :unknown}
     end
   end
 
@@ -199,6 +202,8 @@ defmodule Game.NPC do
 
     Logger.info("Starting NPC #{npc.id}", type: :npc)
 
+    WorldMaster.update_cache(@key, npc)
+
     state =
       state
       |> Map.put(:npc_spawner, npc_spawner)
@@ -215,15 +220,6 @@ defmodule Game.NPC do
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
-  end
-
-  def handle_call({:name}, _from, state) do
-    simple = %{
-      id: state.npc.id,
-      name: state.npc.name,
-    }
-
-    {:reply, {:ok, simple}, state}
   end
 
   def handle_call(:control, _from, state) do
@@ -291,6 +287,8 @@ defmodule Game.NPC do
       |> Map.put(:npc_spawner, npc_spawner)
       |> Map.put(:npc, customize_npc(npc_spawner, npc_spawner.npc))
       |> Events.start_tick_events(npc_spawner.npc)
+
+    WorldMaster.update_cache(@key, state.npc)
 
     @environment.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
