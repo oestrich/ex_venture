@@ -17,6 +17,20 @@ defmodule Game.Items do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  @doc """
+  Get an item from the cache
+  """
+  @spec get(integer()) :: {:ok, Item.t()} | {:error, :not_found}
+  def get(id) do
+    case item(id) do
+      nil ->
+        {:error, :not_found}
+
+      item ->
+        {:ok, item}
+    end
+  end
+
   @spec item(integer()) :: Item.t() | nil
   def item(instance = %Item.Instance{}) do
     item(instance.id)
@@ -24,8 +38,11 @@ defmodule Game.Items do
 
   def item(id) when is_integer(id) do
     case Cachex.get(@key, id) do
-      {:ok, item} when item != nil -> item
-      _ -> nil
+      {:ok, item} when item != nil ->
+        item
+
+      _ ->
+        nil
     end
   end
 

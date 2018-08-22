@@ -29,6 +29,7 @@
 
       <%= FormView.textarea_field(f, :description) do %>
         <span class="help-block"><%= Help.get("npc.description") %></span>
+        <span class="help-block"><%= Help.get("format.resources") %></span>
       <% end %>
 
       <h4>Stats</h4>

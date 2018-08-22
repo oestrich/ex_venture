@@ -28,6 +28,9 @@ damage_type.boost_ratio:
 damage_type.stat_modifier:
   This is the player statistics that boosts the effect by a percentage of the stat.
 
+format.resources:
+  This field has global resources enabled.
+
 item.whitelist_effects:
   Effects in this whitelist will be calculated when using the item. Anything not in the list will be filtered out.
 

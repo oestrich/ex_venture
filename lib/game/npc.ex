@@ -65,6 +65,19 @@ defmodule Game.NPC do
   end
 
   @doc """
+  Get a simple version of the zone
+  """
+  def name(id) do
+    case :global.whereis_name({__MODULE__, id}) do
+      :undefined ->
+        {:error, :offline}
+
+      pid ->
+        GenServer.call(pid, {:name})
+    end
+  end
+
+  @doc """
   Load all NPCs in the database
   """
   @spec for_zone(Zone.t()) :: [integer()]
@@ -202,6 +215,15 @@ defmodule Game.NPC do
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call({:name}, _from, state) do
+    simple = %{
+      id: state.npc.id,
+      name: state.npc.name,
+    }
+
+    {:reply, {:ok, simple}, state}
   end
 
   def handle_call(:control, _from, state) do

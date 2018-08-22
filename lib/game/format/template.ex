@@ -3,7 +3,7 @@ defmodule Game.Format.Template do
   Template a string with variables
   """
 
-  @variable_regex ~r/\[([^\]]*)\]/
+  @variable_regex ~r/\[([^\[][^\]]*)\]/
 
   @doc """
   Render a template with a context

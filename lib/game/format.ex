@@ -17,6 +17,7 @@ defmodule Game.Format do
   alias Game.Color
   alias Game.Door
   alias Game.Format.Listen
+  alias Game.Format.Resources
   alias Game.Format.Table
   alias Game.Format.Template
   alias Game.Quest
@@ -29,6 +30,13 @@ defmodule Game.Format do
   """
   def template(context, string) do
     Template.render(context, string)
+  end
+
+  @doc """
+  Run through the resources parser
+  """
+  def resources(string) do
+    Resources.parse(string)
   end
 
   @doc """
@@ -257,7 +265,7 @@ defmodule Game.Format do
         assign(context, room_feature.key, feature(room_feature))
       end)
 
-    template(context, description)
+    template(context, resources(description))
   end
 
   defp room_description_with_features(room) do
@@ -280,6 +288,13 @@ defmodule Game.Format do
   """
   def room_name(room) do
     "{room}#{room.name}{/room}"
+  end
+
+  @doc """
+  Display a zone's name
+  """
+  def zone_name(zone) do
+    "{zone}#{zone.name}{/zone}"
   end
 
   @doc """
@@ -493,7 +508,7 @@ defmodule Game.Format do
     context()
     |> assign(:name, npc_name(npc))
     |> assign(:status_line, npc_status(npc))
-    |> template(npc.description)
+    |> template(resources(npc.description))
   end
 
   def maybe_items(room, items) do
@@ -576,6 +591,7 @@ defmodule Game.Format do
     #{item_stats(item)}
     """
     |> String.trim()
+    |> resources()
   end
 
   @doc """
@@ -1028,6 +1044,7 @@ defmodule Game.Format do
     #{steps |> Enum.join("\n")}
     """
     |> String.trim()
+    |> resources()
   end
 
   defp quest_step(step, progress, save) do

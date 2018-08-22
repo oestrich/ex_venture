@@ -8,6 +8,7 @@ defmodule Game.NPC.Conversation do
   alias Data.NPC
   alias Data.User
   alias Game.Channel
+  alias Game.Format
   alias Game.Message
   alias Game.NPC.State
   alias Game.Quest
@@ -114,7 +115,7 @@ defmodule Game.NPC.Conversation do
         :ok
 
       unknown ->
-        message = Message.npc_tell(npc, unknown)
+        message = Message.npc_tell(npc, Format.resources(unknown))
         Channel.tell({:user, user}, {:npc, npc}, message)
     end
   end
@@ -129,7 +130,7 @@ defmodule Game.NPC.Conversation do
         :ok
 
       line ->
-        message = Message.npc_tell(npc, line.message)
+        message = Message.npc_tell(npc, Format.resources(line.message))
         Channel.tell({:user, user}, {:npc, npc}, message)
         handle_trigger(line, user, metadata)
     end

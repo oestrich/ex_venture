@@ -25,9 +25,11 @@ function formatColor(payload) {
   string = string.replace(/{skill}/g, defaultColor("skill", "white"));
   string = string.replace(/{quest}/g, defaultColor("quest", "yellow"));
   string = string.replace(/{room}/g, defaultColor("room", "green"));
+  string = string.replace(/{zone}/g, defaultColor("zone", "white"));
   string = string.replace(/{say}/g, defaultColor("say", "green"));
   string = string.replace(/{shop}/g, defaultColor("shop", "magenta"));
   string = string.replace(/{hint}/g, defaultColor("hint", "cyan"));
+  string = string.replace(/{error}/g, defaultColor("error", "red"));
 
   string = string.replace(/{exit}/g, () => {
     return `<span class='${defaultColorCSS("exit", "white")} command'>`;

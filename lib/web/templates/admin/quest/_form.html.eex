@@ -30,10 +30,12 @@
 
       <%= FormView.textarea_field(f, :description, rows: 5) do %>
         <span class="help-block"><%= Help.get("quest.description") %></span>
+        <span class="help-block"><%= Help.get("format.resources") %></span>
       <% end %>
 
       <%= FormView.textarea_field(f, :completed_message, rows: 5) do %>
         <span class="help-block"><%= Help.get("quest.completed_message") %></span>
+        <span class="help-block"><%= Help.get("format.resources") %></span>
       <% end %>
 
       <%= React.react_component("Components.Script.Editor", name: "quest[script]", lines: @changeset |> script()) %>

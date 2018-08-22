@@ -137,9 +137,14 @@ defmodule Game.Message do
   end
 
   defp capitalize_first_letter(string) do
-    [letter | rest] = String.graphemes(string)
-    letter = String.upcase(letter)
-    Enum.join([letter | rest])
+    case String.graphemes(string) do
+      [] ->
+        ""
+
+      [letter | rest] ->
+        letter = String.upcase(letter)
+        Enum.join([letter | rest])
+    end
   end
 
   defp maybe_punctuate(message) do

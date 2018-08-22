@@ -179,7 +179,7 @@ defmodule Game.NPC.Events do
       quest: %{id: quest.id}
     })
 
-    message = Message.npc_tell(npc, quest.completed_message)
+    message = Message.npc_tell(npc, Format.resources(quest.completed_message))
     Channel.tell({:user, user}, npc(state), message)
 
     :ok
@@ -455,7 +455,7 @@ defmodule Game.NPC.Events do
   end
 
   def emote_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
-    message = Message.npc_emote(state.npc, message)
+    message = Message.npc_emote(state.npc, Format.resources(message))
     room_id |> @environment.emote(npc(state), message)
     broadcast(state.npc, "room/heard", message)
 
@@ -517,7 +517,7 @@ defmodule Game.NPC.Events do
   end
 
   def say_to_room(state = %{room_id: room_id}, message) when is_binary(message) do
-    message = Message.npc_say(state.npc, message)
+    message = Message.npc_say(state.npc, Format.resources(message))
 
     room_id |> @environment.say(npc(state), message)
     broadcast(state.npc, "room/heard", message)

@@ -119,12 +119,14 @@ defmodule Game.Color do
   def format_semantic_color("{skill}"), do: {:skill, :white}
   def format_semantic_color("{quest}"), do: {:quest, :yellow}
   def format_semantic_color("{room}"), do: {:room, :green}
+  def format_semantic_color("{zone}"), do: {:zone, :white}
   def format_semantic_color("{say}"), do: {:say, :green}
   def format_semantic_color("{link}"), do: {:link, :white}
   def format_semantic_color("{command}"), do: {:command, :white}
   def format_semantic_color("{exit}"), do: {:exit, :white}
   def format_semantic_color("{shop}"), do: {:shop, :magenta}
   def format_semantic_color("{hint}"), do: {:hint, :cyan}
+  def format_semantic_color("{error}"), do: {:error, :red}
   def format_semantic_color(_), do: :error
 
   @doc """

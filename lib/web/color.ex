@@ -97,6 +97,7 @@ defmodule Web.Color do
     |> String.replace("{skill}", "<span class='white'>")
     |> String.replace("{quest}", "<span class='yellow'>")
     |> String.replace("{room}", "<span class='green'>")
+    |> String.replace("{zone}", "<span class='white'>")
     |> String.replace("{say}", "<span class='green'>")
     |> String.replace("{command}", "<span class='white'>")
     |> String.replace(~r/{command send='.*'}/, "<span class='white'>")
@@ -104,6 +105,7 @@ defmodule Web.Color do
     |> String.replace("{link}", "<span class='white'>")
     |> String.replace("{exit}", "<span class='white'>")
     |> String.replace("{shop}", "<span class='magenta'>")
+    |> String.replace("{error}", "<span class='red'>")
     |> custom_colors()
     |> String.replace(~r/{\/[\w:-]+}/, "</span>")
   end

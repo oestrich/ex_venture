@@ -138,6 +138,19 @@ defmodule Game.Zone do
   end
 
   @doc """
+  Get a simple version of the zone
+  """
+  def name(id) do
+    case :global.whereis_name({__MODULE__, id}) do
+      :undefined ->
+        {:error, :offline}
+
+      pid ->
+        GenServer.call(pid, {:name})
+    end
+  end
+
+  @doc """
   Get the graveyard for a zone
   """
   def graveyard(id) do
@@ -199,6 +212,15 @@ defmodule Game.Zone do
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call({:name}, _from, state) do
+    simple = %{
+      id: state.zone.id,
+      name: state.zone.name,
+    }
+
+    {:reply, {:ok, simple}, state}
   end
 
   def handle_call(:graveyard, _from, state) do

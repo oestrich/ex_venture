@@ -210,12 +210,14 @@ class Line extends React.Component {
           <div className="col-md-12">
             <label>Message</label>
             <textarea value={message} className="form-control" onChange={this.handleUpdateField("message")} />
+            <span className="help-block">This field has global resources enabled.</span>
           </div>
         </div>
         <div className="row">
           <div className="col-md-12">
             <label>Unknown Response</label>
             <textarea value={unknown} className="form-control" onChange={this.handleUpdateField("unknown")} />
+            <span className="help-block">This field has global resources enabled.</span>
           </div>
         </div>
         {this.listeners()}

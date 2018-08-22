@@ -29,6 +29,19 @@ defmodule Game.Room do
   end
 
   @doc """
+  Get a simple version of the room
+  """
+  def name(id) do
+    case :global.whereis_name({Game.Room, id}) do
+      :undefined ->
+        {:error, :room_offline}
+
+      pid ->
+        GenServer.call(pid, {:name})
+    end
+  end
+
+  @doc """
   Load all rooms in the database
   """
   @spec all() :: [map()]
@@ -75,6 +88,15 @@ defmodule Game.Room do
         Logger.info("Room online #{room.id}", type: :room)
         {:noreply, %{state | room: room}}
     end
+  end
+
+  def handle_call({:name}, _from, state) do
+    simple = %{
+      id: state.room.id,
+      name: state.room.name,
+    }
+
+    {:reply, {:ok, simple}, state}
   end
 
   def handle_call(:look, _from, state = %{room: room, players: players, npcs: npcs}) do
