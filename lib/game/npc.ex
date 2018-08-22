@@ -194,6 +194,8 @@ defmodule Game.NPC do
   def load(npc_spawner_id, state) do
     npc_spawner = NPCRepo.get(npc_spawner_id)
 
+    WorldMaster.update_cache(@key, npc_spawner.npc)
+
     npc = customize_npc(npc_spawner, npc_spawner.npc)
     npc = %{npc | stats: Stats.default(npc.stats)}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
@@ -201,8 +203,6 @@ defmodule Game.NPC do
     npc_spawner.zone_id |> Zone.npc_online(npc)
 
     Logger.info("Starting NPC #{npc.id}", type: :npc)
-
-    WorldMaster.update_cache(@key, npc)
 
     state =
       state
@@ -282,13 +282,13 @@ defmodule Game.NPC do
   end
 
   def handle_cast({:update, npc_spawner}, state = %{room_id: room_id}) do
+    WorldMaster.update_cache(@key, npc_spawner.npc)
+
     state =
       state
       |> Map.put(:npc_spawner, npc_spawner)
       |> Map.put(:npc, customize_npc(npc_spawner, npc_spawner.npc))
       |> Events.start_tick_events(npc_spawner.npc)
-
-    WorldMaster.update_cache(@key, state.npc)
 
     @environment.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
