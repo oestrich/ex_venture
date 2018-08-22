@@ -1,4 +1,5 @@
 import Logger from "./logger"
+import {stripColor} from "./color"
 
 let visible = true;
 
@@ -25,6 +26,8 @@ class Notifications {
   }
 
   display(title, body) {
+    body = stripColor(body);
+
     if (document.visibilityState == "visible" && visible) { return }
 
     this.enable(() => {

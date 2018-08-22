@@ -10,8 +10,6 @@ let scrollToBottom = (panelSelector, callback) => {
     callback();
   }
 
-  console.log(panelSelector, panel);
-
   panel.scrollTop = panel.scrollHeight;
 }
 

@@ -98,3 +98,7 @@ function formatLines(string) {
 export function format(payload) {
   return formatLines(formatColor(payload));
 }
+
+export function stripColor(payload) {
+  return payload.replace(/{\/?[\w:-]+}/g, "");
+}
