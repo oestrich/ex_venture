@@ -33,16 +33,7 @@ defmodule Web.Admin.UserView do
     |> List.last()
   end
 
-  def checked_flag?(changeset, flag) do
-    case get_field(changeset, :flags) do
-      nil ->
-        ""
-
-      flags ->
-        case flag in flags do
-          true -> "checked=checked"
-          false -> ""
-        end
-    end
+  def checked_flag?(user, flag) do
+    flag in user.flags
   end
 end

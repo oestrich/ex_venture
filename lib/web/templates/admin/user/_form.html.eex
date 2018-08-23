@@ -17,14 +17,33 @@
         <%= label f, :flags, class: "col-md-4" %>
         <ul class="col-md-8">
           <input type="hidden" name="user[flags][]" value=""/>
-          <%= Enum.map(User.flags(), fn flag -> %>
+
+          <%= Enum.map(@user.flags, fn flag -> %>
             <li class="checkbox">
               <label>
-                <input type="checkbox" name="user[flags][]" value="<%= flag %>" <%= checked_flag?(@changeset, flag) %>/>
+                <input type="checkbox" name="user[flags][]" value="<%= flag %>" checked="checked" />
                 <%= flag %>
               </label>
             </li>
           <% end) %>
+
+          <%= Enum.map(User.flags(), fn flag -> %>
+            <%= if !checked_flag?(@user, flag) do %>
+            <li class="checkbox">
+              <label>
+                <input type="checkbox" name="user[flags][]" value="<%= flag %>" />
+                <%= flag %>
+              </label>
+            </li>
+            <% end %>
+          <% end) %>
+
+          <li class="checkbox">
+            <label>
+              Custom
+              <input type="text" name="user[flags][]" />
+            </label>
+          </li>
         </ul>
         <%= error_tag f, :flags %>
       </div>
