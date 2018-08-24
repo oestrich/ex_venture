@@ -1,7 +1,6 @@
 defmodule Web.Admin.UserView do
   use Web, :view
 
-  import Ecto.Changeset
   import Web.TimeView
 
   alias Game.Format
