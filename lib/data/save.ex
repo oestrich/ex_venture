@@ -238,8 +238,14 @@ defmodule Data.Save do
   end
 
   defp _migrate(save = %{version: 7}) do
+    stats =
+      save
+      |> Map.get(:stats, %{})
+      |> ensure(:constitution, 10)
+
     save
     |> Map.put(:level_stats, %{})
+    |> Map.put(:stats, stats)
     |> Map.put(:version, 8)
     |> _migrate()
   end
@@ -316,9 +322,20 @@ defmodule Data.Save do
       |> Map.get(:item_ids, [])
       |> Enum.map(&Item.instantiate(%Data.Item{id: &1}))
 
+    stats =
+      save
+      |> Map.get(:stats, %{})
+      |> ensure(:wisdom, 10)
+      |> ensure(:dexterity, 10)
+      |> ensure(:health, 10)
+      |> ensure(:max_health, 10)
+      |> ensure(:move_points, 10)
+      |> ensure(:max_move_points, 10)
+
     save
     |> Map.put(:items, items)
     |> Map.delete(:item_ids)
+    |> Map.put(:stats, stats)
     |> Map.put(:version, 2)
     |> _migrate()
   end
