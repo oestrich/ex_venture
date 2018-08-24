@@ -15,7 +15,7 @@ defmodule Metrics.CharacterInstrumenter do
     Histogram.declare(
       name: :exventure_character_moved_in_microseconds,
       help: "Parse time for a command",
-      buckets: [10, 35, 80, 100, 135, 170, 200, 250, 300, 400],
+      buckets: [10, 35, 80, 100, 135, 170, 200, 250, 300, 400, 1_000, 5_000, 10_000, 25_000, 100_000],
       duration_unit: :microseconds
     )
   end

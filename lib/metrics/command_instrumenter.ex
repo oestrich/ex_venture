@@ -20,7 +20,7 @@ defmodule Metrics.CommandInstrumenter do
     Histogram.declare(
       name: :exventure_command_ran_in_microseconds,
       help: "Run time for a command",
-      buckets: [100, 1_000, 3_000, 4_000, 6_000, 8_000, 10_000],
+      buckets: [100, 1_000, 3_000, 4_000, 6_000, 8_000, 10_000, 20_000, 50_000, 100_000, 500_000],
       duration_unit: false
     )
 
