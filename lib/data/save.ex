@@ -238,14 +238,10 @@ defmodule Data.Save do
   end
 
   defp _migrate(save = %{version: 7}) do
-    stats =
-      save
-      |> Map.get(:stats, %{})
-      |> ensure(:constitution, 10)
 
     save
     |> Map.put(:level_stats, %{})
-    |> Map.put(:stats, stats)
+    |> default_version_stats(7)
     |> Map.put(:version, 8)
     |> _migrate()
   end
@@ -322,9 +318,24 @@ defmodule Data.Save do
       |> Map.get(:item_ids, [])
       |> Enum.map(&Item.instantiate(%Data.Item{id: &1}))
 
+    save
+    |> Map.put(:items, items)
+    |> Map.delete(:item_ids)
+    |> default_version_stats(1)
+    |> Map.put(:version, 2)
+    |> _migrate()
+  end
+
+  defp _migrate(save), do: save
+
+  defp default_version_stats(save = %{stats: stats}, 7) when stats != nil do
+    stats = ensure(stats, :constitution, 10)
+    %{save | stats: stats}
+  end
+
+  defp default_version_stats(save = %{stats: stats}, 1) when stats != nil do
     stats =
-      save
-      |> Map.get(:stats, %{})
+      stats
       |> ensure(:wisdom, 10)
       |> ensure(:dexterity, 10)
       |> ensure(:health, 10)
@@ -332,15 +343,10 @@ defmodule Data.Save do
       |> ensure(:move_points, 10)
       |> ensure(:max_move_points, 10)
 
-    save
-    |> Map.put(:items, items)
-    |> Map.delete(:item_ids)
-    |> Map.put(:stats, stats)
-    |> Map.put(:version, 2)
-    |> _migrate()
+    %{save | stats: stats}
   end
 
-  defp _migrate(save), do: save
+  defp default_version_stats(save, _version), do: save
 
   @doc """
   Validate a save struct
