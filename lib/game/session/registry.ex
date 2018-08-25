@@ -62,8 +62,10 @@ defmodule Game.Session.Registry do
   def register(user) do
     members = :pg2.get_members(@key)
 
+    character = Character.Simple.from_user(user)
+
     Enum.map(members, fn member ->
-      GenServer.cast(member, {:register, self(), user, %Metadata{is_afk: false}})
+      GenServer.cast(member, {:register, self(), character, %Metadata{is_afk: false}})
     end)
   end
 
@@ -74,8 +76,10 @@ defmodule Game.Session.Registry do
   def update(user, state) do
     members = :pg2.get_members(@key)
 
+    character = Character.Simple.from_user(user)
+
     Enum.map(members, fn member ->
-      GenServer.cast(member, {:update, self(), user, %Metadata{is_afk: state.is_afk}})
+      GenServer.cast(member, {:update, self(), character, %Metadata{is_afk: state.is_afk}})
     end)
   end
 
