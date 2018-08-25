@@ -11,8 +11,8 @@ defmodule Game.Room do
   alias Game.Environment
   alias Game.Features
   alias Game.Items
-  alias Game.NPC
   alias Game.Room.Actions
+  alias Game.Room.EventBus
   alias Game.Room.Repo
   alias Game.Session
   alias Game.World.Master, as: WorldMaster
@@ -161,65 +161,37 @@ defmodule Game.Room do
   end
 
   def handle_cast({:enter, {:user, user}, reason}, state) do
-    %{room: room, players: players, npcs: npcs} = state
-
+    %{room: room, players: players} = state
     Logger.debug(fn -> "Player (#{user.id}) entered room (#{room.id})" end, type: :room)
-
-    players |> inform_players({"room/entered", {{:user, user}, reason}})
-    npcs |> inform_npcs({"room/entered", {{:user, user}, reason}})
-
-    {:noreply, Map.put(state, :players, [user | players])}
+    state = %{state | players: [user | players]}
+    handle_cast({:notify, {:user, user}, {"room/entered", {{:user, user}, reason}}}, state)
   end
 
   def handle_cast({:enter, {:npc, npc}, reason}, state) do
-    %{room: room, players: players, npcs: npcs} = state
-
+    %{room: room, npcs: npcs} = state
     Logger.debug(fn -> "NPC (#{npc.id}) entered room (#{room.id})" end, type: :room)
-
-    players |> inform_players({"room/entered", {{:npc, npc}, reason}})
-    npcs |> inform_npcs({"room/entered", {{:npc, npc}, reason}})
-
-    {:noreply, Map.put(state, :npcs, [npc | npcs])}
+    state = %{state | npcs: [npc | npcs]}
+    handle_cast({:notify, {:npc, npc}, {"room/entered", {{:npc, npc}, reason}}}, state)
   end
 
   def handle_cast({:leave, {:user, user}, reason}, state) do
     %{room: room, players: players} = state
-
     Logger.debug(fn -> "Player (#{user.id}) left room (#{room.id})" end, type: :room)
     players = Enum.reject(players, &(&1.id == user.id))
     state = %{state | players: players}
-
     handle_cast({:notify, {:user, user}, {"room/leave", {{:user, user}, reason}}}, state)
   end
 
   def handle_cast({:leave, {:npc, npc}, reason}, state) do
     %{room: room, npcs: npcs} = state
-
     Logger.debug(fn -> "NPC (#{npc.id}) left room (#{room.id})" end, type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
     state = %{state | npcs: npcs}
-
     handle_cast({:notify, {:npc, npc}, {"room/leave", {{:npc, npc}, reason}}}, state)
   end
 
-  def handle_cast({:notify, {:user, sender}, event}, state = %{players: players, npcs: npcs}) do
-    # don't send to the sender
-    players
-    |> Enum.reject(&(&1.id == sender.id))
-    |> inform_players(event)
-
-    npcs |> inform_npcs(event)
-
-    {:noreply, state}
-  end
-
-  def handle_cast({:notify, {:npc, sender}, event}, state = %{players: players, npcs: npcs}) do
-    players |> inform_players(event)
-
-    # don't send to the sender
-    npcs
-    |> Enum.reject(&(&1.id == sender.id))
-    |> inform_npcs(event)
+  def handle_cast({:notify, actor, event}, state) do
+    EventBus.notify(state.room.id, actor, event, state.players, state.npcs)
 
     {:noreply, state}
   end
@@ -305,13 +277,6 @@ defmodule Game.Room do
   defp inform_players(players, action) do
     Enum.each(players, fn user ->
       Session.notify(user, action)
-    end)
-  end
-
-  @spec inform_npcs(npcs :: list, action :: tuple) :: :ok
-  defp inform_npcs(npcs, action) do
-    Enum.each(npcs, fn npc ->
-      NPC.notify(npc.id, action)
     end)
   end
 end

@@ -298,6 +298,7 @@ defmodule Game.Zone do
 
   def handle_cast({:spawn_room, room}, state = %{room_supervisor_pid: room_supervisor_pid}) do
     Room.Supervisor.start_child(room_supervisor_pid, room)
+    Room.Supervisor.start_bus(room_supervisor_pid, room)
     {:noreply, state}
   end
 

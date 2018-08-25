@@ -31,12 +31,20 @@ defmodule Game.Room.Supervisor do
     Supervisor.start_child(pid, child_spec)
   end
 
+  def start_bus(pid, room) do
+    child_spec = worker(Room.EventBus, [room.id], id: "#{room.id}-notify", restart: :permanent)
+    Supervisor.start_child(pid, child_spec)
+  end
+
   def init(zone) do
     children =
       zone.id
       |> Room.for_zone()
-      |> Enum.map(fn room_id ->
-        worker(Room, [room_id], id: room_id, restart: :permanent)
+      |> Enum.flat_map(fn room_id ->
+        [
+          worker(Room, [room_id], id: room_id, restart: :permanent),
+          worker(Room.EventBus, [room_id], id: "#{room_id}-notify", restart: :permanent),
+        ]
       end)
 
     Zone.room_supervisor(zone.id, self())
