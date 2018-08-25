@@ -24,7 +24,8 @@ defmodule Web.RoomTest do
 
     state = Game.Zone._get_state(zone.id)
     children = state.room_supervisor_pid |> Supervisor.which_children()
-    assert children |> length() == 1
+    # room + event bus
+    assert children |> length() == 2
 
     assert Game.Room._get_state(room.id)
   end
@@ -37,7 +38,8 @@ defmodule Web.RoomTest do
     # Check the supervision tree to make sure casts have gone through
     state = Game.Zone._get_state(zone.id)
     children = state.room_supervisor_pid |> Supervisor.which_children()
-    assert children |> length() == 1
+    # room + event bus
+    assert children |> length() == 2
 
     state = Game.Room._get_state(room.id)
     assert state.room.name == "Pathway"
@@ -53,7 +55,8 @@ defmodule Web.RoomTest do
     # Check the supervision tree to make sure casts have gone through
     state = Game.Zone._get_state(zone.id)
     children = state.room_supervisor_pid |> Supervisor.which_children()
-    assert children |> length() == 1
+    # room + event bus
+    assert children |> length() == 2
 
     {:ok, room} = Room.add_item(room, item.id)
 
