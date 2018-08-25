@@ -74,8 +74,6 @@ defmodule Game.SessionTest do
     end
 
     test "regens stats", %{state: state} do
-      @room.clear_update_characters()
-
       {:noreply, %{regen: %{count: 0}, save: %{stats: stats}}} = Process.handle_info(:regen, state)
 
       assert stats.health_points == 12
@@ -83,8 +81,6 @@ defmodule Game.SessionTest do
       assert stats.endurance_points == 9
 
       assert_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
-
-      assert @room.get_update_characters() |> length() == 2
     end
 
     test "does not echo if stats did not change", %{state: state} do
@@ -248,8 +244,6 @@ defmodule Game.SessionTest do
   end
 
   test "applying effects", %{state: state} do
-    @room.clear_update_characters()
-
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 25, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}
@@ -259,13 +253,9 @@ defmodule Game.SessionTest do
     assert state.save.stats.health_points == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
-
-    assert [{1, {:user,  %{name: "user", save: %{room_id: 1, stats: %{health_points: 15}}}}}] = @room.get_update_characters()
   end
 
   test "applying effects with continuous effects", %{state: state} do
-    @room.clear_update_characters()
-
     effect = %{kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
     stats = %{base_stats() | health_points: 25, strength: 10}
     user = %{id: 2, name: "user", class: class_attributes(%{})}

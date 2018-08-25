@@ -8,14 +8,6 @@ defmodule Game.Character.Helpers do
   alias Data.Effect
 
   @doc """
-  Update a character's stats in the room
-  """
-  @spec update_character(integer, User.t()) :: :ok
-  def update_character(room_id, user) do
-    room_id |> @environment.update_character({:user, user})
-  end
-
-  @doc """
   Update the effect count. If the effect count is 0, remove it from the states continuous effects list
   """
   @spec update_effect_count(map(), {Character.t(), Effect.t()}) :: map()

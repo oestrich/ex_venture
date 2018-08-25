@@ -78,7 +78,6 @@ defmodule Game.NPC.Events do
           state
           |> emote_to_room(action.message)
           |> maybe_merge_status(action)
-          |> update_character()
 
         {:update, state}
 
@@ -570,11 +569,6 @@ defmodule Game.NPC.Events do
   end
 
   defp npc(%{npc: npc}), do: {:npc, npc}
-
-  defp update_character(state) do
-    state.room_id |> @environment.update_character(npc(state))
-    state
-  end
 
   defp notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})

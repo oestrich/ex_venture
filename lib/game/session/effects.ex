@@ -15,7 +15,7 @@ defmodule Game.Session.Effects do
   alias Game.Session.Process
 
   import Game.Session, only: [echo: 2]
-  import Game.Character.Helpers, only: [update_character: 2, update_effect_count: 2, is_alive?: 1]
+  import Game.Character.Helpers, only: [update_effect_count: 2, is_alive?: 1]
 
   @doc """
   Apply effects after receiving them from a targeter
@@ -31,7 +31,6 @@ defmodule Game.Session.Effects do
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
-    save.room_id |> update_character(user)
     state = %{state | user: user, save: save}
 
     user |> echo_effects(from, description, effects)
@@ -123,7 +122,6 @@ defmodule Game.Session.Effects do
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
-    save.room_id |> update_character(user)
     state = %{state | user: user, save: save}
 
     effects_message =

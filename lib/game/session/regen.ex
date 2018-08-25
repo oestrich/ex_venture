@@ -4,7 +4,6 @@ defmodule Game.Session.Regen do
   """
 
   import Game.Session, only: [echo: 2]
-  import Game.Character.Helpers, only: [update_character: 2]
 
   alias Game.Config
   alias Game.Session.GMCP
@@ -91,9 +90,9 @@ defmodule Game.Session.Regen do
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
-    save.room_id |> update_character(user)
 
     state
+    |> Map.put(:user, user)
     |> Map.put(:save, save)
   end
 
@@ -116,9 +115,9 @@ defmodule Game.Session.Regen do
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
-    save.room_id |> update_character(user)
 
     state
+    |> Map.put(:user, user)
     |> Map.put(:save, save)
     |> Map.put(:regen, %{state.regen | count: 0})
   end
