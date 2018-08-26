@@ -35,7 +35,9 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [%Item.Instance{id: 1, created_at: Timex.now(), amount: 1}])
 
-    %{socket: :socket, user: %{id: 1, name: "Player"}, save: save}
+    user = %{base_user() | id: 1, save: save}
+
+    %{socket: :socket, user: user, save: user.save}
   end
 
   test "use an item - removes if amount ends up as 0", state = %{socket: socket} do

@@ -28,7 +28,7 @@ defmodule Game.NPC.EventsTest do
   describe "character/died" do
     setup do
       npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
-      user = %{id: 2, name: "Player"}
+      user = %{base_user() | id: 2}
 
       state = %State{room_id: 1, npc: npc, target: nil}
 
@@ -108,7 +108,8 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "calculates the effects and then applies them to the target", %{state: state, event: event} do
-      Registry.register(%{id: 1})
+      notify_user = %{base_user() | id: 1}
+      Registry.register(notify_user)
       state = %State{state | target: {:user, 1}}
 
       {:update, state} = Events.act_on(state, event)
@@ -149,42 +150,45 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "target the player when they entered" do
-      Registry.register(%{id: 2})
+      notify_user = %{base_user() | id: 2}
+      Registry.register(notify_user)
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
       assert state.target == {:user, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
 
     test "target the player when they entered - target if target is nil and in combat" do
-      Registry.register(%{id: 2})
+      notify_user = %{base_user() | id: 2}
+      Registry.register(notify_user)
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc, combat: true, target: nil}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
       assert state.target == {:user, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
 
     test "target the player when they entered - do nothing if already in combat" do
-      Registry.register(%{id: 2})
+      notify_user = %{base_user() | id: 2}
+      Registry.register(notify_user)
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
       assert state.target == {:user, 2}
       assert state.combat == true
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, %{id: 2, name: "Player"}}, :enter}})
+      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
       assert state.target == {:user, 2}
 
       refute_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}

@@ -24,7 +24,7 @@ defmodule Game.Command.MoveTest do
     start_and_clear_doors()
 
     socket = :socket
-    user = %{id: 10}
+    user = base_user()
     state = %State{
       state: "active",
       mode: "command",
