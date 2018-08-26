@@ -14,7 +14,7 @@ defmodule Game.Command.TellTest do
   setup do
     @socket.clear_messages
     @room.set_room(Map.merge(@room._room(), %{npcs: []}))
-    user = %{id: 10, name: "Player"}
+    user = base_user()
     state = %State{socket: :socket, state: "active", mode: "commands", user: user, save: %{room_id: 1}}
     %{state: state}
   end

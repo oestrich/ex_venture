@@ -20,7 +20,7 @@ defmodule Game.SessionTest do
     @socket.clear_messages()
     @room.clear_notifies()
 
-    user = %{id: 1, name: "user", save: base_save()}
+    user = base_user()
     state = %State{
       state: "active",
       mode: "commands",
@@ -151,10 +151,15 @@ defmodule Game.SessionTest do
 
   test "processing a command that has continued commands", %{state: state} do
     user = create_user(%{name: "user", password: "password"})
-    |> Repo.preload([class: [:skills]])
+    user = Repo.preload(user, [:race, class: [:skills]])
 
     @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
-    state = %{state | user: user, save: %{room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}}, regen: %{is_regenerating: false}}
+
+    state = %{state | user: user,
+      save: %{level: 1, room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}},
+      regen: %{is_regenerating: false},
+    }
+
     {:noreply, state} = Process.handle_cast({:recv, "run 2n"}, state)
 
     assert state.mode == "continuing"
@@ -165,10 +170,15 @@ defmodule Game.SessionTest do
 
   test "continuing with processed commands", %{state: state} do
     user = create_user(%{name: "user", password: "password"})
-    |> Repo.preload([class: [:skills]])
+    user = Repo.preload(user, [:race, class: [:skills]])
 
     @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
-    state = %{state | user: user, save: %{room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}}, regen: %{is_regenerating: false}}
+
+    state = %{state | user: user,
+      save: %{level: 1, room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}},
+      regen: %{is_regenerating: false},
+    }
+
     command = %Command{module: Command.Run, args: {["north", "north"]}}
     {:noreply, _state} = Process.handle_info({:continue, command}, state)
 
@@ -222,12 +232,12 @@ defmodule Game.SessionTest do
 
   describe "disconnects" do
     test "unregisters the pid when disconnected" do
-      user = %Data.User{name: "user", seconds_online: 0}
+      user = %{base_user() | seconds_online: 0}
       Session.Registry.register(user)
 
       state = %{state: "active", user: user, save: %{room_id: 1}, session_started_at: Timex.now(), stats: %{}}
       {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
-      assert Session.Registry.connected_players == []
+      assert Session.Registry.connected_players() == []
     after
       Session.Registry.unregister()
     end
@@ -276,7 +286,7 @@ defmodule Game.SessionTest do
   end
 
   test "applying effects - died", %{state: state} do
-    Session.Registry.register(%{id: 2})
+    Session.Registry.register(base_user())
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}
@@ -293,7 +303,7 @@ defmodule Game.SessionTest do
   end
 
   test "applying effects - died with zone graveyard", %{state: state} do
-    Session.Registry.register(%{id: 2})
+    Session.Registry.register(base_user())
 
     @room.set_room(@room._room())
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, 2))
@@ -314,7 +324,7 @@ defmodule Game.SessionTest do
   end
 
   test "applying effects - died with no zone graveyard", %{state: state} do
-    Session.Registry.register(%{id: 2})
+    Session.Registry.register(base_user())
 
     @room.set_room(@room._room())
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, nil))

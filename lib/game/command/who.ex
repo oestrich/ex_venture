@@ -50,7 +50,7 @@ defmodule Game.Command.Who do
   defp local_names(players) do
     {admins, players} =
       Enum.split_with(players, fn %{user: user} ->
-        User.is_admin?(user)
+        User.is_admin?(user.extra)
       end)
 
     (admins ++ players)

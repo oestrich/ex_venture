@@ -29,6 +29,7 @@ defmodule Game.Session.LoginTest do
 
   test "a session already exists", %{socket: socket} do
     user = create_user(%{name: "user", password: "password", class_id: create_class().id})
+    user = Repo.preload(user, [:race, :class])
     Registry.register(user)
 
     state = Login.sign_in(user.id, %{socket: socket, login: %{name: "user"}})

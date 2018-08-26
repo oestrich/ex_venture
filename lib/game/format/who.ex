@@ -12,7 +12,7 @@ defmodule Game.Format.Who do
     [
       player_stats(player),
       Format.player_name(player),
-      Format.player_flags(player, none: false),
+      Format.player_flags(player.extra, none: false),
       afk(metadata)
     ]
     |> Enum.join(" ")
@@ -30,9 +30,9 @@ defmodule Game.Format.Who do
   defp player_stats(player) do
     Enum.join([
       "[",
-      String.pad_leading(Integer.to_string(player.save.level), 3),
-      pad_and_limit(player.class.name),
-      pad_and_limit(player.race.name),
+      String.pad_leading(Integer.to_string(player.extra.level), 3),
+      pad_and_limit(player.extra.class),
+      pad_and_limit(player.extra.race),
       "]"
     ])
   end

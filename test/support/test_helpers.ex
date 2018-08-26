@@ -33,6 +33,17 @@ defmodule TestHelpers do
   alias Data.User
   alias Data.Zone
 
+  def base_user() do
+    %User{
+      id: 10,
+      name: "Player",
+      flags: [],
+      save: base_save(),
+      class: %{name: "Fighter"},
+      race: %{name: "Dwarf"},
+    }
+  end
+
   def base_stats() do
     %{
       health_points: 50,
@@ -86,6 +97,7 @@ defmodule TestHelpers do
     %User{}
     |> User.changeset(user_attributes(attributes))
     |> Repo.insert!
+    |> Repo.preload([:race, :class])
   end
 
   def create_config(name, value) do

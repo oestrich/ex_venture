@@ -28,7 +28,7 @@ defmodule Game.Command.SkillsTest do
     npc = %{id: 1, name: "Bandit"}
 
     save = %{base_save() | level: 1, stats: %{health_points: 20, strength: 10, skill_points: 10}, wearing: %{}, skill_ids: [slash.id]}
-    user = %{id: 10, name: "Player", save: save}
+    user = %{base_user() | save: save}
 
     room =
       @room._room()
