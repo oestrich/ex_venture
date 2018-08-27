@@ -2,7 +2,7 @@ language: elixir
 services:
   - postgresql
 addons:
-    postgresql: "9.6"
+    postgresql: "10.5"
 elixir:
   - 1.7.2
 otp_release:
