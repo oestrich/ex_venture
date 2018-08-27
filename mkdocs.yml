@@ -21,6 +21,7 @@ pages:
   - Setup: setup.md
   - Contributing: contributing.md
   - Web Client: client.md
+  - Deploying ExVenture: deploy.md
   - Game:
     - GMCP: game/gmcp.md
     - Help: game/help.md
