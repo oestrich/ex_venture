@@ -1,24 +1,24 @@
-defmodule Raft.Server do
+defmodule Squabble.Server do
   @moduledoc """
-  Implementation for the raft server
+  Implementation for the squabble server
   """
 
-  alias Raft.PG
-  alias Raft.State
+  alias Squabble.PG
+  alias Squabble.State
 
   require Logger
 
-  @behaviour Raft.Leader
+  @behaviour Squabble.Leader
 
   @type debug() :: map()
 
-  @key :raft
+  @key :squabble
   @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
-  @winner_subscriptions [Game.World.Master, Raft.Server]
+  @winner_subscriptions [Game.World.Master, Squabble.Server]
   @check_election_timeout 1500
 
   @doc """
-  Send back debug information from the raft cluster
+  Send back debug information from the squabble cluster
   """
   @spec debug(State.t()) :: [debug()]
   def debug(state) do
@@ -45,10 +45,10 @@ defmodule Raft.Server do
   """
   @spec look_for_leader(State.t()) :: {:ok, State.t()}
   def look_for_leader(state) do
-    Logger.debug("Checking for a current leader.", type: :raft)
+    Logger.debug("Checking for a current leader.", type: :squabble)
 
     PG.broadcast([others: true], fn pid ->
-      Raft.leader_check(pid)
+      Squabble.leader_check(pid)
     end)
 
     {:ok, state}
@@ -61,7 +61,7 @@ defmodule Raft.Server do
   def leader_check(state, pid) do
     case state.state do
       "leader" ->
-        Raft.notify_of_leader(pid, state.term)
+        Squabble.notify_of_leader(pid, state.term)
         {:ok, state}
 
       _ ->
@@ -75,7 +75,7 @@ defmodule Raft.Server do
   def start_election(state, term) do
     Logger.debug(fn ->
       "Starting an election for term #{term}, announcing candidacy"
-    end, type: :raft)
+    end, type: :squabble)
 
     case check_term_newer(state, term) do
       {:ok, :newer} ->
@@ -83,7 +83,7 @@ defmodule Raft.Server do
           voted_leader(state, 1)
         else
           PG.broadcast(fn pid ->
-            Raft.announce_candidate(pid, term)
+            Squabble.announce_candidate(pid, term)
           end)
 
           Process.send_after(
@@ -98,14 +98,14 @@ defmodule Raft.Server do
       {:error, :same} ->
         Logger.debug(fn ->
           "Someone already won this round, not starting"
-        end, type: :raft)
+        end, type: :squabble)
 
         {:ok, state}
 
       {:error, :older} ->
         Logger.debug(fn ->
           "This term has already completed, not starting"
-        end, type: :raft)
+        end, type: :squabble)
 
         {:ok, state}
     end
@@ -117,17 +117,17 @@ defmodule Raft.Server do
   def vote_leader(state, pid, term) do
     Logger.debug(fn ->
       "Received ballot for term #{term}, from #{inspect(pid)}, voting"
-    end, type: :raft)
+    end, type: :squabble)
 
     with {:ok, :newer} <- check_term_newer(state, term),
          {:ok, :not_voted} <- check_voted(state) do
-      Raft.vote_for(pid, term)
+      Squabble.vote_for(pid, term)
       {:ok, %{state | voted_for: pid, highest_seen_term: term}}
     else
       {:error, :same} ->
         Logger.debug(fn ->
           "Received a vote for the same term"
-        end, type: :raft)
+        end, type: :squabble)
 
         {:ok, state}
 
@@ -142,29 +142,29 @@ defmodule Raft.Server do
   def vote_received(state, pid, term) do
     Logger.debug(fn ->
       "Received a vote for leader for term #{term}, from #{inspect(pid)}"
-    end, type: :raft)
+    end, type: :squabble)
 
     with {:ok, :newer} <- check_term_newer(state, term),
          {:ok, state} <- append_vote(state, pid),
          {:ok, :majority} <- check_majority_votes(state) do
       PG.broadcast([others: true], fn pid ->
-        Raft.new_leader(pid, term)
+        Squabble.new_leader(pid, term)
       end)
 
       voted_leader(state, term)
     else
       {:error, :same} ->
-        Logger.debug("An old vote received - ignoring", type: :raft)
+        Logger.debug("An old vote received - ignoring", type: :squabble)
 
         {:ok, state}
 
       {:error, :older} ->
-        Logger.debug("An old vote received - ignoring", type: :raft)
+        Logger.debug("An old vote received - ignoring", type: :squabble)
 
         {:ok, state}
 
       {:error, :not_enough} ->
-        Logger.debug("Not enough votes to be a winner", type: :raft)
+        Logger.debug("Not enough votes to be a winner", type: :squabble)
 
         append_vote(state, pid)
     end
@@ -178,7 +178,7 @@ defmodule Raft.Server do
          {:ok, :newer} <- check_term_newer(state, term) do
       Logger.debug(fn ->
         "Setting leader for term #{term} as #{inspect(leader_pid)}"
-      end, type: :raft)
+      end, type: :squabble)
 
       :ets.insert(@key, {:is_leader?, false})
 
@@ -197,9 +197,9 @@ defmodule Raft.Server do
       {:error, :same} ->
         Logger.debug(fn ->
           "Another node has the same term and is a leader, starting a new term"
-        end, type: :raft)
+        end, type: :squabble)
 
-        Raft.start_election(state.term + 1)
+        Squabble.start_election(state.term + 1)
 
         {:ok, state}
 
@@ -227,10 +227,10 @@ defmodule Raft.Server do
       "leader" ->
         Logger.debug(fn ->
           "A new node came online, asserting leadership"
-        end, type: :raft)
+        end, type: :squabble)
 
         PG.broadcast([others: true], fn pid ->
-          Raft.new_leader(pid, state.term)
+          Squabble.new_leader(pid, state.term)
         end)
 
         Enum.each(@winner_subscriptions, fn module ->
@@ -253,7 +253,7 @@ defmodule Raft.Server do
 
     case state.leader_node do
       ^node ->
-        Raft.start_election(state.term + 1)
+        Squabble.start_election(state.term + 1)
 
         {:ok, state}
 
@@ -263,7 +263,7 @@ defmodule Raft.Server do
   end
 
   defp send_node_down_notice() do
-    case Raft.node_is_leader?() do
+    case Squabble.node_is_leader?() do
       true ->
         Game.World.Master.node_down()
 
@@ -328,7 +328,7 @@ defmodule Raft.Server do
   def voted_leader(state, term) do
     Logger.debug(fn ->
       "Won the election for term #{term}"
-    end, type: :raft)
+    end, type: :squabble)
 
     {:ok, state} = set_leader(state, self(), node(), term)
 
@@ -348,12 +348,12 @@ defmodule Raft.Server do
       fn ->
         "Checking election status for term #{term}"
       end,
-      type: :raft
+      type: :squabble
     )
 
     case state.term < term do
       true ->
-        Logger.debug("Restarting the election, it seems frozen", type: :raft)
+        Logger.debug("Restarting the election, it seems frozen", type: :squabble)
 
         _check_election_status(state, term)
 
@@ -365,7 +365,7 @@ defmodule Raft.Server do
   defp _check_election_status(state, term) do
     case state.state do
       "candidate" ->
-        Raft.start_election(term + 1)
+        Squabble.start_election(term + 1)
 
         {:ok, state}
 

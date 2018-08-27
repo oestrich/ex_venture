@@ -32,7 +32,7 @@ defmodule Game.Gossip do
   @impl true
   def message_broadcast(message) do
     with {:ok, channel} <- Channels.gossip_channel(message.channel),
-         true <- Raft.node_is_leader?() do
+         true <- Squabble.node_is_leader?() do
       message = Message.gossip_broadcast(channel, message)
       Channel.broadcast(channel.name, message)
 
@@ -49,7 +49,7 @@ defmodule Game.Gossip do
       "Gossip - new player sign in #{player_name}@#{game_name}"
     end)
 
-    case Raft.node_is_leader?() do
+    case Squabble.node_is_leader?() do
       true ->
         Session.Registry.connected_players()
         |> Enum.each(fn %{user: user} ->
@@ -67,7 +67,7 @@ defmodule Game.Gossip do
       "Gossip - new player sign out #{player_name}@#{game_name}"
     end)
 
-    case Raft.node_is_leader?() do
+    case Squabble.node_is_leader?() do
       true ->
         Session.Registry.connected_players()
         |> Enum.each(fn %{user: user} ->
@@ -92,7 +92,7 @@ defmodule Game.Gossip do
       "Received a new tell from #{from_player}@#{from_game} to #{to_player} - #{message}"
     end)
 
-    case Raft.node_is_leader?() do
+    case Squabble.node_is_leader?() do
       true ->
         case Session.Registry.find_player(to_player) do
           {:ok, player} ->

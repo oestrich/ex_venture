@@ -57,15 +57,15 @@ defmodule Game.Command.Debug do
     {white}Node{/white}: #{node()}
     {white}Session PID{/white}: #{inspect(self())}
 
-    {green}Raft{/green}
+    {green}Squabble{/green}
     -------
 
-    #{raft()}
+    #{squabble()}
     """
   end
 
-  defp raft() do
-    Raft.debug()
+  defp squabble() do
+    Squabble.debug()
     |> Enum.map(fn debug ->
       """
       {white}Node{/white}: #{debug.node}

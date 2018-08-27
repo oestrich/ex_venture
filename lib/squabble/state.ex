@@ -1,4 +1,4 @@
-defmodule Raft.State do
+defmodule Squabble.State do
   @moduledoc """
   Struct for the state of the local process
   """

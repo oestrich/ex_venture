@@ -12,7 +12,7 @@ defmodule Game.World.Master do
 
   require Logger
 
-  @behaviour Raft.Leader
+  @behaviour Squabble.Leader
 
   @group :world_leaders
   @table :world_leader
@@ -84,7 +84,7 @@ defmodule Game.World.Master do
     {:noreply, state}
   end
 
-  # This is started by the raft
+  # This is started by the squabble leader
   @impl true
   def handle_cast(:rebalance_zones, state) do
     Logger.info("Starting zones", type: :leader)
@@ -101,7 +101,7 @@ defmodule Game.World.Master do
 
   @impl true
   def handle_info(:maybe_rebalance_zones, state) do
-    if Raft.node_is_leader?() do
+    if Squabble.node_is_leader?() do
       GenServer.cast(__MODULE__, :rebalance_zones)
     end
 

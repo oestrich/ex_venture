@@ -1,4 +1,4 @@
-defmodule Raft.Leader do
+defmodule Squabble.Leader do
   @moduledoc """
   Behaviour for modules that care about leader functions
   """
@@ -11,7 +11,7 @@ defmodule Raft.Leader do
   @callback leader_selected(election_term()) :: :ok
 
   @doc """
-  A node went down, callback from the raft leader
+  A node went down, callback from the squabble leader
   """
   @callback node_down() :: :ok
 end

@@ -1,12 +1,12 @@
-defmodule Raft.PG do
+defmodule Squabble.PG do
   @moduledoc """
-  Raft process group helper
+  Squabble process group helper
   """
 
-  @key :raft
+  @key :squabble
 
   @doc """
-  Join the process group for raft communication
+  Join the process group for squabble communication
   """
   @spec join() :: :ok
   def join() do
@@ -35,7 +35,7 @@ defmodule Raft.PG do
   """
   @spec members() :: [pid()]
   def members() do
-    :pg2.get_members(:raft)
+    :pg2.get_members(:squabble)
   end
 
   @doc """

@@ -15,7 +15,7 @@ defmodule ExVenture.Application do
     children =
       [
         cluster_supervisor(),
-        worker(Raft, []),
+        worker(Squabble, []),
         supervisor(Data.Repo, []),
         supervisor(Web.Supervisor, []),
         supervisor(Game.Supervisor, []),

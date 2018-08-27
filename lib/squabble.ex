@@ -1,4 +1,4 @@
-defmodule Raft do
+defmodule Squabble do
   @moduledoc """
   A simple implementation of the raft protocol
 
@@ -7,13 +7,13 @@ defmodule Raft do
 
   use GenServer
 
-  alias Raft.PG
-  alias Raft.Server
-  alias Raft.State
+  alias Squabble.PG
+  alias Squabble.Server
+  alias Squabble.State
 
   require Logger
 
-  @key :raft
+  @key :squabble
   @election_initial_delay 500
   @election_random_delay 500
 
@@ -57,10 +57,10 @@ defmodule Raft do
   end
 
   @doc """
-  Get debug information out of the raft server
+  Get debug information out of the squabble server
   """
   def debug() do
-    GenServer.call(Raft, :debug)
+    GenServer.call(Squabble, :debug)
   end
 
   @doc """
