@@ -15,14 +15,19 @@ defmodule Game.Session.GMCP do
   def handle_gmcp(state, module, data)
 
   def handle_gmcp(state, "External.Discord.Hello", _data) do
-    case Config.discord_invite_url() do
-      nil ->
-        state.socket |> @socket.push_gmcp("External.Discord.Info", "{}")
+    data = %{
+      inviteurl: Config.discord_invite_url(),
+      applicationid: Config.discord_client_id(),
+    }
 
-      url ->
-        data = %{inviteurl: url}
-        state.socket |> @socket.push_gmcp("External.Discord.Info", data |> Poison.encode!())
-    end
+    data =
+      data
+      |> Enum.reject(fn {_key, val} ->
+        is_nil(val)
+      end)
+      |> Enum.into(%{})
+
+    state.socket |> @socket.push_gmcp("External.Discord.Info", data |> Poison.encode!())
   end
 
   def handle_gmcp(state, "External.Discord.Get", _data) do
