@@ -75,6 +75,7 @@ defmodule ExVenture.Mixfile do
       {:qrcode, git: "https://gitlab.com/oestrich/qrcode.git"},
       {:ranch, "~> 1.5.0"},
       {:sentry, "~> 6.2"},
+      {:squabble, git: "https://github.com/oestrich/squabble.git"},
       {:timex, "~> 3.1"},
       {:timex_ecto, "~> 3.1"},
       {:websockex, "~> 0.4.0"},
