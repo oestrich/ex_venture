@@ -18,8 +18,7 @@ config :ex_venture, :game,
 
 config :ex_venture, :npc, reaction_time_ms: 750
 
-config :squabble, :cluster, size: 1
-config :squabble, :cluster, subscriptions: [Game.World.Master]
+config :ex_venture, :cluster, size: 1
 
 config :ex_venture, :errors, report: false
 

@@ -5,6 +5,7 @@ defmodule ExVenture.Application do
 
   @server Application.get_env(:ex_venture, :networking)[:server]
   @report_errors Application.get_env(:ex_venture, :errors)[:report]
+  @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
 
   use Application
 
@@ -15,7 +16,7 @@ defmodule ExVenture.Application do
     children =
       [
         cluster_supervisor(),
-        {Squabble, []},
+        {Squabble, [subscriptions: [Game.World.Master], size: @cluster_size]},
         supervisor(Data.Repo, []),
         supervisor(Web.Supervisor, []),
         supervisor(Game.Supervisor, []),
