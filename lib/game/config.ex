@@ -188,6 +188,22 @@ defmodule Game.Config do
     end
   end
 
+  def starting_room_ids() do
+    case find_config("starting_room_ids") do
+      nil ->
+        []
+
+      room_ids ->
+        Poison.decode!(room_ids)
+    end
+  end
+
+  def starting_room_id() do
+    starting_room_ids()
+    |> Enum.shuffle()
+    |> List.first()
+  end
+
   @doc """
   Your pool of random character names to offer to players signing up
   """

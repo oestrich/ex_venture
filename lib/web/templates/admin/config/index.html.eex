@@ -68,6 +68,13 @@
                 </td>
               </tr>
               <tr>
+                <th>Starting Room IDs</th>
+                <td><pre><%= Config.starting_room_ids() |> Poison.encode!(pretty: true) %></pre></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "starting_room_ids"), class: "btn btn-default btn-xs") %>
+                </td>
+              </tr>
+              <tr>
                 <th>Random Character Names</th>
                 <td>
                   <ul>

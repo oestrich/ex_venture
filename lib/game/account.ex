@@ -26,6 +26,7 @@ defmodule Game.Account do
     save =
       Config.starting_save()
       |> Map.put(:stats, race.starting_stats() |> Stats.default())
+      |> maybe_change_starting_room()
 
     attributes =
       attributes
@@ -49,6 +50,16 @@ defmodule Game.Account do
 
       anything ->
         anything
+    end
+  end
+
+  def maybe_change_starting_room(save) do
+    case Config.starting_room_id() do
+      nil ->
+        save
+
+      room_id ->
+        Map.put(save, :room_id, room_id)
     end
   end
 
