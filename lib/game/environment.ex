@@ -3,6 +3,7 @@ defmodule Game.Environment do
   Look at your surroundings, whether a room or an overworld
   """
 
+  alias Game.Character
   alias Game.Room
   alias Game.Overworld
   alias Game.Overworld.Sector
@@ -62,10 +63,12 @@ defmodule Game.Environment do
   @spec enter(integer(), Character.t(), atom()) :: :ok
   def enter("overworld:" <> overworld_id, character, reason) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+    character = Character.to_simple(character)
     GenServer.cast(Sector.pid(zone_id, sector), {:enter, overworld_id, character, reason})
   end
 
   def enter(id, character, reason) do
+    character = Character.to_simple(character)
     GenServer.cast(Room.pid(id), {:enter, character, reason})
   end
 
@@ -77,10 +80,12 @@ defmodule Game.Environment do
   @spec leave(integer(), Character.t(), atom()) :: :ok
   def leave("overworld:" <> overworld_id, character, reason) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+    character = Character.to_simple(character)
     GenServer.cast(Sector.pid(zone_id, sector), {:leave, overworld_id, character, reason})
   end
 
   def leave(id, character, reason) do
+    character = Character.to_simple(character)
     GenServer.cast(Room.pid(id), {:leave, character, reason})
   end
 
@@ -90,10 +95,12 @@ defmodule Game.Environment do
   @spec notify(integer(), Character.t(), tuple()) :: :ok
   def notify("overworld:" <> overworld_id, character, event) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+    character = Character.to_simple(character)
     GenServer.cast(Sector.pid(zone_id, sector), {:notify, overworld_id, character, event})
   end
 
   def notify(id, character, event) do
+    character = Character.to_simple(character)
     GenServer.cast(Room.pid(id), {:notify, character, event})
   end
 
@@ -116,10 +123,12 @@ defmodule Game.Environment do
   @spec emote(integer(), pid(), Message.t()) :: :ok
   def emote("overworld:" <> overworld_id, sender, message) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+    sender = Character.to_simple(sender)
     GenServer.cast(Sector.pid(zone_id, sector), {:emote, overworld_id, sender, message})
   end
 
   def emote(id, sender, message) do
+    sender = Character.to_simple(sender)
     GenServer.cast(Room.pid(id), {:emote, sender, message})
   end
 
@@ -153,26 +162,30 @@ defmodule Game.Environment do
   Drop an item into a room
   """
   @spec drop(integer(), Character.t(), Item.t()) :: :ok
-  def drop("overworld:" <> overworld_id, who, item) do
+  def drop("overworld:" <> overworld_id, character, item) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
-    GenServer.cast(Sector.pid(zone_id, sector), {:drop, overworld_id, who, item})
+    character = Character.to_simple(character)
+    GenServer.cast(Sector.pid(zone_id, sector), {:drop, overworld_id, character, item})
   end
 
-  def drop(id, who, item) do
-    GenServer.cast(Room.pid(id), {:drop, who, item})
+  def drop(id, character, item) do
+    character = Character.to_simple(character)
+    GenServer.cast(Room.pid(id), {:drop, character, item})
   end
 
   @doc """
   Drop currency into a room
   """
   @spec drop_currency(integer(), Character.t(), integer()) :: :ok
-  def drop_currency("overworld:" <> overworld_id, who, currency) do
+  def drop_currency("overworld:" <> overworld_id, character, currency) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
-    GenServer.cast(Sector.pid(zone_id, sector), {:drop_currency, overworld_id, who, currency})
+    character = Character.to_simple(character)
+    GenServer.cast(Sector.pid(zone_id, sector), {:drop_currency, overworld_id, character, currency})
   end
 
-  def drop_currency(id, who, currency) do
-    GenServer.cast(Room.pid(id), {:drop_currency, who, currency})
+  def drop_currency(id, character, currency) do
+    character = Character.to_simple(character)
+    GenServer.cast(Room.pid(id), {:drop_currency, character, currency})
   end
 
   @doc """
@@ -181,10 +194,12 @@ defmodule Game.Environment do
   @spec update_character(integer(), tuple()) :: :ok
   def update_character("overworld:" <> overworld_id, character) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
+    character = Character.to_simple(character)
     GenServer.cast(Sector.pid(zone_id, sector), {:update_character, overworld_id, character})
   end
 
   def update_character(id, character) do
+    character = Character.to_simple(character)
     GenServer.cast(Room.pid(id), {:update_character, character})
   end
 

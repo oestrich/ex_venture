@@ -2,6 +2,7 @@ defmodule Game.Command.QuestTest do
   use Data.ModelCase
   doctest Game.Command.Quest
 
+  alias Game.Character
   alias Game.Command.Quest
 
   @socket Test.Networking.Socket
@@ -21,7 +22,7 @@ defmodule Game.Command.QuestTest do
       npc = create_npc(%{is_quest_giver: true})
       quest = create_quest(npc, %{name: "Into the Dungeon"})
 
-      %{npc: npc, quest: quest}
+      %{npc: Character.Simple.from_npc(npc), quest: quest}
     end
 
     test "with no active quests", %{state: state} do
@@ -105,10 +106,11 @@ defmodule Game.Command.QuestTest do
   describe "complete a quest" do
     setup %{state: state} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      guard = Map.put(guard, :original_id, guard.id)
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
 
       room = Map.merge(@room._room(), %{
-        npcs: [Map.put(guard, :original_id, guard.id)],
+        npcs: [Character.Simple.from_npc(guard)],
       })
       @room.set_room(room)
       @npc.clear_notifies()
@@ -222,10 +224,11 @@ defmodule Game.Command.QuestTest do
   describe "completing a quest with a shortcut" do
     setup %{state: state} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
+      guard = Map.put(guard, :original_id, guard.id)
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
 
       room = Map.merge(@room._room(), %{
-        npcs: [Map.put(guard, :original_id, guard.id)],
+        npcs: [Character.Simple.from_npc(guard)],
       })
       @room.set_room(room)
       @npc.clear_notifies()

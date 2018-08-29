@@ -438,7 +438,7 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", status_line: "[name] is here."}]})
+      iex> Game.Format.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", extra: %{status_line: "[name] is here."}}]})
       "{npc}Arthur{/npc} is here.\\n{player}Mordred{/player} is here."
   """
   def who_is_here(room) do
@@ -479,7 +479,9 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.npcs(%{npcs: [%{name: "Mordred", status_line: "[name] is in the room."}, %{name: "Arthur", status_line: "[name] is here."}]})
+      iex> mordred = %{name: "Mordred", extra: %{status_line: "[name] is in the room."}}
+      iex> arthur = %{name: "Arthur", extra: %{status_line: "[name] is here."}}
+      iex> Game.Format.npcs(%{npcs: [mordred, arthur]})
       "{npc}Mordred{/npc} is in the room.\\n{npc}Arthur{/npc} is here."
   """
   @spec npcs(Room.t()) :: String.t()
@@ -497,7 +499,7 @@ defmodule Game.Format do
   def npc_status(npc) do
     context()
     |> assign(:name, npc_name_for_status(npc))
-    |> template(npc.status_line)
+    |> template(npc.extra.status_line)
   end
 
   @doc """
@@ -508,7 +510,7 @@ defmodule Game.Format do
     context()
     |> assign(:name, npc_name(npc))
     |> assign(:status_line, npc_status(npc))
-    |> template(resources(npc.description))
+    |> template(resources(npc.extra.description))
   end
 
   def maybe_items(room, items) do
@@ -860,7 +862,7 @@ defmodule Game.Format do
   def npc_name(npc), do: "{npc}#{npc.name}{/npc}"
 
   def npc_name_for_status(npc) do
-    case Map.get(npc, :is_quest_giver, false) do
+    case Map.get(npc.extra, :is_quest_giver, false) do
       true -> "#{npc_name(npc)} ({quest}!{/quest})"
       false -> npc_name(npc)
     end

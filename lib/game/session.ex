@@ -6,6 +6,7 @@ defmodule Game.Session do
   @type t :: pid
 
   alias Data.User
+  alias Game.Character
   alias Game.Session
   alias Game.Session.Supervisor
   alias Game.World.Master, as: WorldMaster
@@ -70,8 +71,21 @@ defmodule Game.Session do
   @spec echo(pid, String.t()) :: :ok
   def echo(user = %User{}, message) do
     case find_connected_player(user) do
-      nil -> :ok
-      %{pid: pid} -> echo(pid, message)
+      nil ->
+        :ok
+
+      %{pid: pid} ->
+        echo(pid, message)
+    end
+  end
+
+  def echo(user = %Character.Simple{type: :user}, message) do
+    case find_connected_player(user) do
+      nil ->
+        :ok
+
+      %{pid: pid} ->
+        echo(pid, message)
     end
   end
 
@@ -93,8 +107,21 @@ defmodule Game.Session do
   @spec notify(pid, tuple()) :: :ok
   def notify(user = %User{}, action) do
     case find_connected_player(user) do
-      nil -> :ok
-      %{pid: pid} -> notify(pid, action)
+      nil ->
+        :ok
+
+      %{pid: pid} ->
+        notify(pid, action)
+    end
+  end
+
+  def notify(user = %Character.Simple{type: :user}, action) do
+    case find_connected_player(user) do
+      nil ->
+        :ok
+
+      %{pid: pid} ->
+        notify(pid, action)
     end
   end
 
