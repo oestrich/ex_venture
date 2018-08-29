@@ -9,7 +9,7 @@ defmodule Networking.Listener do
     :ranch.start_listener(
       make_ref(),
       :ranch_tcp,
-      [{:port, ExVenture.config_integer(@port)}],
+      [{:port, ExVenture.config_integer(@port)}, {:max_connections, 4096}],
       Networking.Protocol,
       []
     )
