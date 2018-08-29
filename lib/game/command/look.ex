@@ -143,7 +143,7 @@ defmodule Game.Command.Look do
   end
 
   defp maybe_hint_quest(state, room) do
-    npc_ids = Enum.map(room.npcs, & &1.original_id)
+    npc_ids = Enum.map(room.npcs, & &1.extra.original_id)
 
     quest =
       state.user

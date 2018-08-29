@@ -76,7 +76,7 @@ defmodule Game.FormatTest do
         description: "A hallway",
         currency: 100,
         players: [%{name: "Player"}],
-        npcs: [%{name: "Bandit", status_line: "[name] is here."}],
+        npcs: [%{name: "Bandit", extra: %{status_line: "[name] is here."}}],
         exits: [%{direction: "north"}, %{direction: "east"}],
         shops: [%{name: "Hole in the Wall"}],
         features: [%{key: "log", short_description: "A log"}],
@@ -304,7 +304,7 @@ defmodule Game.FormatTest do
 
   describe "npc status line" do
     setup do
-      npc = %{name: "Guard", is_quest_giver: false, status_line: "[name] is here."}
+      npc = %{name: "Guard", extra: %{status_line: "[name] is here.", is_quest_giver: false}}
 
       %{npc: npc}
     end
@@ -315,7 +315,7 @@ defmodule Game.FormatTest do
     end
 
     test "if a quest giver it includes a quest mark", %{npc: npc} do
-      npc = %{npc | is_quest_giver: true}
+      npc = %{npc | extra: Map.put(npc.extra, :is_quest_giver, true)}
       assert Format.npc_name_for_status(npc) == "{npc}Guard{/npc} ({quest}!{/quest})"
       assert Format.npc_status(npc) == "{npc}Guard{/npc} ({quest}!{/quest}) is here."
     end

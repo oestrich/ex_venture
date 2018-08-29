@@ -15,10 +15,20 @@ defmodule Game.Command.LookTest do
       item = create_item(%{name: "Short Sword", description: "A simple blade", keywords: ["sword"]})
       insert_item(item)
 
+      bandit = %{
+        id: 1,
+        name: "Bandit",
+        extra: %{
+          original_id: 1,
+          description: "bandit description",
+          status_line: "[name] is here."
+        },
+      }
+
       room = %{
         items: [Item.instantiate(item)],
-        npcs: [npc_attributes(%{id: 1, name: "Bandit", description: "bandit description"})],
-        players: [user_attributes(%{id: 1, name: "Player"})],
+        npcs: [bandit],
+        players: [%{id: 1, name: "Player"}],
         features: [%{key: "log", short_description: "log", description: "a log"}],
         zone: %{id: 10, name: "Zone"}
       }

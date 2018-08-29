@@ -11,6 +11,7 @@ defmodule Game.Character do
 
   alias Data.NPC
   alias Data.User
+  alias Game.Character.Simple
   alias Game.Character.Via
 
   @typedoc """
@@ -21,6 +22,11 @@ defmodule Game.Character do
   - `{:npc, npc}`
   """
   @type t :: tuple()
+
+  @doc """
+  Convert a character into a stripped down version
+  """
+  def to_simple(character), do: Simple.from_character(character)
 
   @doc """
   Let the target know they are being targeted
