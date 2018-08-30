@@ -22,6 +22,7 @@ defmodule Game.Session.Process do
   alias Game.Session.Character, as: SessionCharacter
   alias Game.Session.Commands
   alias Game.Session.Effects
+  alias Game.Session.Help
   alias Game.Session.GMCP
   alias Game.Session.Regen
   alias Game.Session.SessionStats
@@ -61,12 +62,15 @@ defmodule Game.Session.Process do
   end
 
   defp clean_state(socket) do
+    now = Timex.now()
+
     %State{
       id: UUID.uuid4(),
       socket: socket,
       state: "login",
-      session_started_at: Timex.now(),
-      last_recv: Timex.now(),
+      session_started_at: now,
+      last_recv: now,
+      idle: Help.init_idle(now),
       mode: "commands",
       target: nil,
       is_targeting: MapSet.new(),
@@ -400,6 +404,8 @@ defmodule Game.Session.Process do
 
   defp check_for_inactive(state = %{last_recv: last_recv}) do
     self() |> schedule_inactive_check()
+
+    {:ok, state} = state |> Help.maybe_display_hints()
 
     case Timex.diff(Timex.now(), last_recv, :seconds) do
       time when time > @timeout_seconds ->

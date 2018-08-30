@@ -10,6 +10,15 @@ quests.complete:
 say.quoted:
   You don't need to add quotes when using the {command click=false}say{/command} command, they are added for you.
 
+session.idle_help:
+  There are many commands available to use, see what is available with {command}help{/command}.
+
+session.idle_movement:
+  You can move around the world with commands. Look for the {white}Exits:{/white} line in the description. See {command}help move{/command} for more information.
+
+session.idle_communication:
+  You can chat with other users in the game. See {command}help channels{/command} for more information.
+
 skills.cooldown_time:
   You must wait [remaining_seconds] seconds longer to use this skill.
 

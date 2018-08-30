@@ -19,7 +19,10 @@ defmodule Game.Command.Channels do
     """
     #{help(:short)}
 
-    Talk to players in a channel
+    List out all of the channels you are subscribed to
+    [ ] > {command}channels{/command}
+
+    Use the name of the channel before your message to broadcast to that channel.
     [ ] > {command}global Hello!{/command}
 
     Turn a channel on:
