@@ -24,6 +24,8 @@ defmodule Game.SessionTest do
     state = %State{
       state: "active",
       mode: "commands",
+      session_started_at: Timex.now(),
+      idle: Session.Help.init_idle(Timex.now()),
       socket: socket,
       user: user,
       save: user.save,
