@@ -14,7 +14,7 @@ config :ex_venture, :game,
   timeout_seconds: 10 * 60,
   rand: :rand,
   random_effect_range: -25..25,
-  report_users: true
+  report_players: true
 
 config :ex_venture, :npc, reaction_time_ms: 750
 

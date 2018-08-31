@@ -102,13 +102,13 @@ defmodule Game.Session.Login do
     Session.Registry.player_online(user)
 
     @environment.link(user.save.room_id)
-    @environment.enter(user.save.room_id, {:user, user}, :login)
+    @environment.enter(user.save.room_id, {:player, user}, :login)
     session |> Session.recv("look")
     state |> GMCP.character()
     state |> GMCP.discord_status()
 
     Enum.each(user.save.channels, &Channel.join/1)
-    Channel.join_tell({:user, user})
+    Channel.join_tell({:player, user})
 
     state
     |> Regen.maybe_trigger_regen()
@@ -226,10 +226,10 @@ defmodule Game.Session.Login do
     state
   end
 
-  defp check_already_signed_in(user) do
+  defp check_already_signed_in(player) do
     online? =
       Session.Registry.connected_players()
-      |> Enum.any?(&(&1.user.id == user.id))
+      |> Enum.any?(&(&1.player.id == player.id))
 
     case online? do
       true ->
@@ -240,8 +240,8 @@ defmodule Game.Session.Login do
     end
   end
 
-  defp check_disabled(user) do
-    case "disabled" in user.flags do
+  defp check_disabled(player) do
+    case "disabled" in player.flags do
       true ->
         {:error, :disabled}
 

@@ -72,15 +72,15 @@ defmodule Game.Command.Use do
     effects = save.stats |> Effect.calculate(effects)
 
     Character.apply_effects(
-      {:user, user},
+      {:player, user},
       effects,
-      {:user, user},
-      Format.usee_item(item, target: {:user, user}, user: {:user, user})
+      {:player, user},
+      Format.usee_item(item, target: {:player, user}, user: {:player, user})
     )
 
-    description = Format.user_item(item, target: {:user, user}, user: {:user, user})
+    description = Format.user_item(item, target: {:player, user}, user: {:player, user})
 
-    effects_message = Enum.join([description | Format.effects(effects, {:user, user})], "\n")
+    effects_message = Enum.join([description | Format.effects(effects, {:player, user})], "\n")
     socket |> @socket.echo(effects_message)
 
     spend_item(state, instance)

@@ -124,8 +124,8 @@ defmodule Game.Overworld.Sector do
       state.npcs |> inform_npcs(cell, {"room/entered", {character, reason}})
 
       case character do
-        {:user, user} ->
-          Map.put(state, :players, [{cell, user} | state.players])
+        {:player, player} ->
+          Map.put(state, :players, [{cell, player} | state.players])
 
         {:npc, npc} ->
           Map.put(state, :npcs, [{cell, npc} | state.npcs])
@@ -159,8 +159,8 @@ defmodule Game.Overworld.Sector do
       state = filter_character(state, cell, character)
 
       case character do
-        {:user, user} ->
-          Map.put(state, :players, [{cell, user} | state.players])
+        {:player, player} ->
+          Map.put(state, :players, [{cell, player} | state.players])
 
         {:npc, npc} ->
           Map.put(state, :npcs, [{cell, npc} | state.npcs])
@@ -187,11 +187,11 @@ defmodule Game.Overworld.Sector do
 
     defp filter_character(state, cell, character) do
       case character do
-        {:user, user} ->
+        {:player, player} ->
           players =
             state.players
             |> Enum.reject(fn {existing_cell, existing_player} ->
-              existing_cell == cell && existing_player.id == user.id
+              existing_cell == cell && existing_player.id == player.id
             end)
 
           Map.put(state, :players, players)
@@ -212,8 +212,8 @@ defmodule Game.Overworld.Sector do
       |> Enum.filter(fn {player_cell, _npc} ->
         cell == player_cell
       end)
-      |> Enum.each(fn {_cell, user} ->
-        Session.notify(user, action)
+      |> Enum.each(fn {_cell, player} ->
+        Session.notify(player, action)
       end)
     end
 

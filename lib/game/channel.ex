@@ -47,7 +47,7 @@ defmodule Game.Channel do
   end
 
   @doc """
-  Join the user's private tell channel
+  Join the player's private tell channel
   """
   @spec join_tell(Character.t()) :: :ok
   def join_tell(character) do
@@ -73,14 +73,14 @@ defmodule Game.Channel do
   end
 
   @doc """
-  Tell a message to a user
+  Tell a message to a player
   """
   @spec tell(Character.t(), Character.t(), Message.t()) :: :ok
-  def tell(user, from, message) do
+  def tell(player, from, message) do
     members = :pg2.get_members(@key)
 
     Enum.map(members, fn member ->
-      GenServer.cast(member, {:tell, user, from, message})
+      GenServer.cast(member, {:tell, player, from, message})
     end)
   end
 
@@ -139,8 +139,8 @@ defmodule Game.Channel do
     {:noreply, state}
   end
 
-  def handle_cast({:tell, user, from, message}, state) do
-    Server.tell(state, user, from, message)
+  def handle_cast({:tell, player, from, message}, state) do
+    Server.tell(state, player, from, message)
     {:noreply, state}
   end
 

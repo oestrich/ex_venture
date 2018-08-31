@@ -61,7 +61,7 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format the user's prompt
+  Format the player's prompt
 
   Example:
 
@@ -71,9 +71,9 @@ defmodule Game.Format do
       "[50/75hp 9/10sp 4/10ep 10xp] > "
   """
   @spec prompt(User.t(), Save.t()) :: String.t()
-  def prompt(user, save)
+  def prompt(player, save)
 
-  def prompt(_user, %{experience_points: exp, stats: stats, config: config}) do
+  def prompt(_player, %{experience_points: exp, stats: stats, config: config}) do
     exp = rem(exp, 1000)
 
     "[#{config.prompt}] > "
@@ -86,7 +86,7 @@ defmodule Game.Format do
     |> String.replace("%x", to_string(exp))
   end
 
-  def prompt(_user, _save), do: "> "
+  def prompt(_player, _save), do: "> "
 
   @doc """
   Format a say message
@@ -99,10 +99,10 @@ defmodule Game.Format do
       iex> Game.Format.say({:npc, %{name: "NPC"}}, %{message: "Hello"})
       ~s[{npc}NPC{/npc} says, {say}"Hello"{/say}]
 
-      iex> Game.Format.say({:user, %{name: "Player"}}, %{message: "Hello"})
+      iex> Game.Format.say({:player, %{name: "Player"}}, %{message: "Hello"})
       ~s[{player}Player{/player} says, {say}"Hello"{/say}]
 
-      iex> Game.Format.say({:user, %{name: "Player"}}, %{adverb_phrase: "softly", message: "Hello"})
+      iex> Game.Format.say({:player, %{name: "Player"}}, %{adverb_phrase: "softly", message: "Hello"})
       ~s[{player}Player{/player} says softly, {say}"Hello"{/say}]
   """
   @spec say(Character.t(), map()) :: String.t()
@@ -126,19 +126,19 @@ defmodule Game.Format do
 
   Example:
 
-      iex> Game.Format.say_to(:you, {:user, %{name: "Player"}}, %{message: "Hello"})
+      iex> Game.Format.say_to(:you, {:player, %{name: "Player"}}, %{message: "Hello"})
       ~s[You say to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Game.Format.say_to(:you, {:user, %{name: "Player"}}, %{message: "Hello", adverb_phrase: "softly"})
+      iex> Game.Format.say_to(:you, {:player, %{name: "Player"}}, %{message: "Hello", adverb_phrase: "softly"})
       ~s[You say softly to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Game.Format.say_to({:npc, %{name: "NPC"}}, {:user, %{name: "Player"}}, %{message: "Hello"})
+      iex> Game.Format.say_to({:npc, %{name: "NPC"}}, {:player, %{name: "Player"}}, %{message: "Hello"})
       ~s[{npc}NPC{/npc} says to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Game.Format.say_to({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello"})
+      iex> Game.Format.say_to({:player, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello"})
       ~s[{player}Player{/player} says to {npc}Guard{/npc}, {say}"Hello"{/say}]
 
-      iex> Game.Format.say_to({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello", adverb_phrase: "softly"})
+      iex> Game.Format.say_to({:player, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello", adverb_phrase: "softly"})
       ~s[{player}Player{/player} says softly to {npc}Guard{/npc}, {say}"Hello"{/say}]
   """
   @spec say_to(Character.t(), Character.t(), map()) :: String.t()
@@ -162,7 +162,7 @@ defmodule Game.Format do
   @doc """
   Format a tell message
 
-      iex> Game.Format.tell({:user, %{name: "Player"}}, "secret message")
+      iex> Game.Format.tell({:player, %{name: "Player"}}, "secret message")
       ~s[{player}Player{/player} tells you, {say}"secret message"{/say}]
   """
   @spec tell(Character.t(), String.t()) :: String.t()
@@ -173,7 +173,7 @@ defmodule Game.Format do
   @doc """
   Format a tell message, for display of the sender
 
-      iex> Game.Format.send_tell({:user, %{name: "Player"}}, "secret message")
+      iex> Game.Format.send_tell({:player, %{name: "Player"}}, "secret message")
       ~s[You tell {player}Player{/player}, {say}"secret message"{/say}]
   """
   @spec send_tell(Character.t(), String.t()) :: String.t()
@@ -189,7 +189,7 @@ defmodule Game.Format do
       iex> Game.Format.emote({:npc, %{name: "NPC"}}, "does something")
       ~s[{npc}NPC{/npc} {say}does something{/say}]
 
-      iex> Game.Format.emote({:user, %{name: "Player"}}, "does something")
+      iex> Game.Format.emote({:player, %{name: "Player"}}, "does something")
       ~s[{player}Player{/player} {say}does something{/say}]
   """
   @spec emote(Character.t(), String.t()) :: String.t()
@@ -200,7 +200,7 @@ defmodule Game.Format do
   @doc """
   Format a whisper message
 
-      iex> Game.Format.whisper({:user, %{name: "Player"}}, "secret message")
+      iex> Game.Format.whisper({:player, %{name: "Player"}}, "secret message")
       ~s[{player}Player{/player} whispers to you, {say}"secret message"{/say}]
   """
   @spec whisper(Character.t(), String.t()) :: String.t()
@@ -209,9 +209,9 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format a whisper message from the user
+  Format a whisper message from the player
 
-      iex> Game.Format.send_whisper({:user, %{name: "Player"}}, "secret message")
+      iex> Game.Format.send_whisper({:player, %{name: "Player"}}, "secret message")
       ~s[You whisper to {player}Player{/player}, {say}"secret message"{/say}]
   """
   @spec send_whisper(Character.t(), String.t()) :: String.t()
@@ -222,7 +222,7 @@ defmodule Game.Format do
   @doc """
   Format a whisper overheard message for others in the room
 
-      iex> Game.Format.whisper_overheard({:user, %{name: "Player"}}, {:npc, %{name: "Guard"}})
+      iex> Game.Format.whisper_overheard({:player, %{name: "Player"}}, {:npc, %{name: "Guard"}})
       ~s[You overhear {player}Player{/player} whispering to {npc}Guard{/npc}.]
   """
   @spec whisper_overheard(Character.t(), String.t()) :: String.t()
@@ -468,9 +468,9 @@ defmodule Game.Format do
   Look at a Player
   """
   @spec player_full(User.t()) :: String.t()
-  def player_full(user) do
+  def player_full(player) do
     context()
-    |> assign(:name, player_name(user))
+    |> assign(:name, player_name(player))
     |> template("[name] is here.")
   end
 
@@ -671,7 +671,7 @@ defmodule Game.Format do
   Format your info sheet
   """
   @spec info(User.t()) :: String.t()
-  def info(user = %{save: save}) do
+  def info(player = %{save: save}) do
     %{stats: stats} = save
 
     rows = [
@@ -687,22 +687,22 @@ defmodule Game.Format do
       ["Awareness", stats.awareness],
       ["Vitality", stats.vitality],
       ["Willpower", stats.willpower],
-      ["Play Time", play_time(user.seconds_online)]
+      ["Play Time", play_time(player.seconds_online)]
     ]
 
-    Table.format("#{player_name(user)} - #{user.race.name} - #{user.class.name}", rows, [16, 15])
+    Table.format("#{player_name(player)} - #{player.race.name} - #{player.class.name}", rows, [16, 15])
   end
 
   @doc """
   View information about another player
   """
-  def short_info(user = %{save: save}) do
+  def short_info(player = %{save: save}) do
     rows = [
       ["Level", save.level],
-      ["Flags", player_flags(user)]
+      ["Flags", player_flags(player)]
     ]
 
-    Table.format("#{player_name(user)} - #{user.race.name} - #{user.class.name}", rows, [12, 15])
+    Table.format("#{player_name(player)} - #{player.race.name} - #{player.class.name}", rows, [12, 15])
   end
 
   @doc """
@@ -767,19 +767,19 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format a skill, from perspective of the user
+  Format a skill, from perspective of the player
 
-      iex> Game.Format.skill_user(%{user_text: "Slash away"}, {:user, %{name: "Player"}}, {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_user(%{user_text: "Slash away"}, {:player, %{name: "Player"}}, {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> Game.Format.skill_user(%{user_text: "You slash away at [target]"}, {:user, %{name: "Player"}}, {:npc, %{name: "Bandit"}})
+      iex> Game.Format.skill_user(%{user_text: "You slash away at [target]"}, {:player, %{name: "Player"}}, {:npc, %{name: "Bandit"}})
       "You slash away at {npc}Bandit{/npc}"
   """
-  def skill_user(skill, user, target)
+  def skill_user(skill, player, target)
 
-  def skill_user(%{user_text: user_text}, user, target) do
+  def skill_user(%{user_text: user_text}, player, target) do
     context()
-    |> assign(:user, target_name(user))
+    |> assign(:user, target_name(player))
     |> assign(:target, target_name(target))
     |> template(user_text)
   end
@@ -790,7 +790,7 @@ defmodule Game.Format do
       iex> Game.Format.skill_usee(%{usee_text: "Slash away"}, user: {:npc, %{name: "Bandit"}}, target: {:npc, %{name: "Bandit"}})
       "Slash away"
 
-      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by [user]"}, user: {:npc, %{name: "Bandit"}}, target: {:user, %{name: "Player"}})
+      iex> Game.Format.skill_usee(%{usee_text: "You were slashed at by [user]"}, user: {:npc, %{name: "Bandit"}}, target: {:player, %{name: "Player"}})
       "You were slashed at by {npc}Bandit{/npc}"
   """
   def skill_usee(skill, opts \\ [])
@@ -809,7 +809,7 @@ defmodule Game.Format do
   @doc """
   Message for users of items
 
-      iex> Game.Format.user_item(%{name: "Potion", user_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
+      iex> Game.Format.user_item(%{name: "Potion", user_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:player, %{name: "Player"}})
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def user_item(item, opts \\ []) do
@@ -823,7 +823,7 @@ defmodule Game.Format do
   @doc """
   Message for usees of items
 
-      iex> Game.Format.usee_item(%{name: "Potion", usee_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:user, %{name: "Player"}})
+      iex> Game.Format.usee_item(%{name: "Potion", usee_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:player, %{name: "Player"}})
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def usee_item(item, opts \\ []) do
@@ -835,9 +835,9 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format a target name, blue for user, yellow for npc
+  Format a target name, blue for player, yellow for npc
 
-    iex> Game.Format.target_name({:user, %{name: "Player"}})
+    iex> Game.Format.target_name({:player, %{name: "Player"}})
     "{player}Player{/player}"
 
     iex> Game.Format.target_name({:npc, %{name: "Bandit"}})
@@ -845,15 +845,15 @@ defmodule Game.Format do
   """
   @spec target_name(Character.t()) :: String.t()
   def target_name({:npc, npc}), do: npc_name(npc)
-  def target_name({:user, user}), do: player_name(user)
+  def target_name({:player, player}), do: player_name(player)
 
   def name(who), do: target_name(who)
 
   @doc """
-  Colorize a user's name
+  Colorize a player's name
   """
   @spec player_name(User.t()) :: String.t()
-  def player_name(user), do: "{player}#{user.name}{/player}"
+  def player_name(player), do: "{player}#{player.name}{/player}"
 
   @doc """
   Colorize an npc's name
@@ -973,10 +973,10 @@ defmodule Game.Format do
       iex> Game.Format.dropped({:npc, %{name: "NPC"}}, %{name: "Sword"})
       "{npc}NPC{/npc} dropped a {item}Sword{/item}."
 
-      iex> Game.Format.dropped({:user, %{name: "Player"}}, %{name: "Sword"})
+      iex> Game.Format.dropped({:player, %{name: "Player"}}, %{name: "Sword"})
       "{player}Player{/player} dropped a {item}Sword{/item}."
 
-      iex> Game.Format.dropped({:user, %{name: "Player"}}, {:currency, 100})
+      iex> Game.Format.dropped({:player, %{name: "Player"}}, {:currency, 100})
       "{player}Player{/player} dropped {item}100 gold{/item}."
   """
   @spec dropped(Character.t(), Item.t()) :: String.t()
@@ -989,7 +989,7 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format mail for a user
+  Format mail for a player
   """
   @spec list_mail([Mail.t()]) :: String.t()
   def list_mail(mail) do
@@ -1003,7 +1003,7 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format a single piece of mail for a user
+  Format a single piece of mail for a player
 
       iex> Game.Format.display_mail(%{id: 1,sender: %{name: "Player"}, title: "hello", body: "A\\nlong message"})
       "1 - {player}Player{/player} - hello\\n----------------------\\n\\nA\\nlong message"
@@ -1015,7 +1015,7 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format the status of a user's quests
+  Format the status of a player's quests
   """
   @spec quest_progress([QuestProgress.t()]) :: String.t()
   def quest_progress(quests) do
@@ -1029,7 +1029,7 @@ defmodule Game.Format do
   end
 
   @doc """
-  Format the status of a user's quest
+  Format the status of a player's quest
   """
   @spec quest_detail(QuestProgress.t(), Save.t()) :: String.t()
   def quest_detail(progress, save) do
@@ -1125,24 +1125,24 @@ defmodule Game.Format do
   @doc """
   Format the social without_target text
   """
-  def social_without_target(social, user) do
+  def social_without_target(social, player) do
     context()
-    |> assign(:user, player_name(user))
+    |> assign(:user, player_name(player))
     |> template("{say}#{social.without_target}{say}")
   end
 
   @doc """
   Format the social with_target text
   """
-  def social_with_target(social, user, target) do
+  def social_with_target(social, player, target) do
     context()
-    |> assign(:user, player_name(user))
+    |> assign(:user, player_name(player))
     |> assign(:target, name(target))
     |> template("{say}#{social.with_target}{say}")
   end
 
   @doc """
-  Format the user's config
+  Format the player's config
   """
   @spec config(Save.t()) :: String.t()
   def config(save) do

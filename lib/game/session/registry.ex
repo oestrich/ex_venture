@@ -1,6 +1,6 @@
 defmodule Game.Session.Registry do
   @moduledoc """
-  Helper functions for the connected users registry
+  Helper functions for the connected players registry
   """
 
   use GenServer
@@ -39,8 +39,8 @@ defmodule Game.Session.Registry do
   Load all connected players
   """
   @spec authorize_connection(User.t(), String.t()) :: :ok
-  def authorize_connection(user, id) do
-    GenServer.cast(__MODULE__, {:authorize, user, id})
+  def authorize_connection(player, id) do
+    GenServer.cast(__MODULE__, {:authorize, player, id})
   end
 
   @doc """
@@ -56,13 +56,13 @@ defmodule Game.Session.Registry do
   end
 
   @doc """
-  Register the session PID for the user
+  Register the session PID for the player
   """
   @spec register(User.t()) :: :ok
-  def register(user) do
+  def register(player) do
     members = :pg2.get_members(@key)
 
-    character = Character.Simple.from_user(user)
+    character = Character.Simple.from_player(player)
 
     Enum.map(members, fn member ->
       GenServer.cast(member, {:register, self(), character, %Metadata{is_afk: false}})
@@ -70,13 +70,13 @@ defmodule Game.Session.Registry do
   end
 
   @doc """
-  Update user's information, pulls out metadata from the session state
+  Update player's information, pulls out metadata from the session state
   """
   @spec update(User.t(), State.t()) :: :ok
-  def update(user, state) do
+  def update(player, state) do
     members = :pg2.get_members(@key)
 
-    character = Character.Simple.from_user(user)
+    character = Character.Simple.from_player(player)
 
     Enum.map(members, fn member ->
       GenServer.cast(member, {:update, self(), character, %Metadata{is_afk: state.is_afk}})
@@ -107,15 +107,15 @@ defmodule Game.Session.Registry do
   Player has gone offline
   """
   @spec player_offline(User.t()) :: nil
-  def player_offline(disconnecting_user) do
-    Gossip.player_sign_out(disconnecting_user.name)
+  def player_offline(disconnecting_player) do
+    Gossip.player_sign_out(disconnecting_player.name)
 
     connected_players()
-    |> Enum.reject(fn %{user: user} ->
-      user.id == disconnecting_user.id
+    |> Enum.reject(fn %{player: player} ->
+      player.id == disconnecting_player.id
     end)
-    |> Enum.each(fn %{user: user} ->
-      Character.notify({:user, user}, {"player/offline", disconnecting_user})
+    |> Enum.each(fn %{player: player} ->
+      Character.notify({:player, player}, {"player/offline", disconnecting_player})
     end)
   end
 
@@ -123,15 +123,15 @@ defmodule Game.Session.Registry do
   Player has come online
   """
   @spec player_online(User.t()) :: nil
-  def player_online(connecting_user) do
-    Gossip.player_sign_in(connecting_user.name)
+  def player_online(connecting_player) do
+    Gossip.player_sign_in(connecting_player.name)
 
     connected_players()
-    |> Enum.reject(fn %{user: user} ->
-      user.id == connecting_user.id
+    |> Enum.reject(fn %{player: player} ->
+      player.id == connecting_player.id
     end)
-    |> Enum.each(fn %{user: user} ->
-      Character.notify({:user, user}, {"player/online", connecting_user})
+    |> Enum.each(fn %{player: player} ->
+      Character.notify({:player, player}, {"player/online", connecting_player})
     end)
   end
 
@@ -142,8 +142,8 @@ defmodule Game.Session.Registry do
   def find_player(to_player) do
     player =
       connected_players()
-      |> Enum.find(fn %{user: user} ->
-        user.name |> String.downcase() == to_player |> String.downcase()
+      |> Enum.find(fn %{player: player} ->
+        player.name |> String.downcase() == to_player |> String.downcase()
       end)
 
     case player do
@@ -151,7 +151,7 @@ defmodule Game.Session.Registry do
         {:error, :not_found}
 
       player ->
-        {:ok, player.user}
+        {:ok, player.player}
     end
   end
 
@@ -178,7 +178,7 @@ defmodule Game.Session.Registry do
     {:noreply, %{state | connections: connections}}
   end
 
-  def handle_cast({:authorize, user, id}, state) do
+  def handle_cast({:authorize, player, id}, state) do
     connection =
       state.connections
       |> Enum.find(fn connection ->
@@ -192,7 +192,7 @@ defmodule Game.Session.Registry do
       connection ->
         remove_connection(id)
 
-        send(connection.pid, {:authorize, user})
+        send(connection.pid, {:authorize, player})
 
         {:noreply, state}
     end
@@ -203,23 +203,23 @@ defmodule Game.Session.Registry do
     {:noreply, %{state | connections: connections}}
   end
 
-  def handle_cast({:register, pid, user, metadata}, state) do
+  def handle_cast({:register, pid, player, metadata}, state) do
     Process.link(pid)
 
-    # Remove the user from the list, slight chance this was a double registration
+    # Remove the player from the list, slight chance this was a double registration
     # Consider the new session theirs
-    connected_players = Enum.reject(state.connected_players, &(&1.user.id == user.id))
-    connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
+    connected_players = Enum.reject(state.connected_players, &(&1.player.id == player.id))
+    connected_players = [%{player: player, pid: pid, metadata: metadata} | connected_players]
 
     {:noreply, %{state | connected_players: connected_players}}
   end
 
-  def handle_cast({:update, pid, user, metadata}, state = %{connected_players: connected_players}) do
-    user_ids = Enum.map(state.connected_players, &(&1.user.id))
+  def handle_cast({:update, pid, player, metadata}, state = %{connected_players: connected_players}) do
+    player_ids = Enum.map(state.connected_players, &(&1.player.id))
 
-    case user.id in user_ids do
+    case player.id in player_ids do
       true ->
-        connected_players = [%{user: user, pid: pid, metadata: metadata} | connected_players]
+        connected_players = [%{player: player, pid: pid, metadata: metadata} | connected_players]
 
         connected_players =
           connected_players
@@ -228,7 +228,7 @@ defmodule Game.Session.Registry do
         {:noreply, %{state | connected_players: connected_players}}
 
       false ->
-        # Ignore updates for unregistered users
+        # Ignore updates for unregistered player
         {:noreply, state}
     end
   end

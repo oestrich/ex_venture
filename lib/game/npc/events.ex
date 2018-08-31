@@ -172,14 +172,14 @@ defmodule Game.NPC.Events do
     {:update, state}
   end
 
-  def act_on(state = %{npc: npc}, {"quest/completed", user, quest}) do
+  def act_on(state = %{npc: npc}, {"quest/completed", player, quest}) do
     broadcast(npc, "quest/completed", %{
-      user: %{id: user.id, name: user.name},
+      player: %{id: player.id, name: player.name},
       quest: %{id: quest.id}
     })
 
     message = Message.npc_tell(npc, Format.resources(quest.completed_message))
-    Channel.tell({:user, user}, npc(state), message)
+    Channel.tell({:player, player}, npc(state), message)
 
     :ok
   end
@@ -259,9 +259,9 @@ defmodule Game.NPC.Events do
   """
   def act_on_item_receive(state, character, item_instance)
 
-  def act_on_item_receive(state, {:user, user}, item_instance) do
+  def act_on_item_receive(state, {:player, player}, item_instance) do
     npc = %{state.npc | id: state.npc.original_id}
-    Quest.track_progress(user, {:item, item_instance, npc})
+    Quest.track_progress(player, {:item, item_instance, npc})
     :ok
   end
 
@@ -273,21 +273,21 @@ defmodule Game.NPC.Events do
   @spec act_on_room_entered(NPC.State.t(), Character.t(), Event.t()) :: NPC.State.t()
   def act_on_room_entered(state, character, event)
 
-  def act_on_room_entered(state, {:user, _}, event = %{action: %{type: "emote"}}) do
+  def act_on_room_entered(state, {:player, _}, event = %{action: %{type: "emote"}}) do
     state |> emote_to_room(event)
   end
 
-  def act_on_room_entered(state, {:user, _}, event = %{action: %{type: "say"}}) do
+  def act_on_room_entered(state, {:player, _}, event = %{action: %{type: "say"}}) do
     state |> say_to_room(event)
   end
 
-  def act_on_room_entered(state, {:user, user}, %{action: %{type: "target"}}) do
+  def act_on_room_entered(state, {:player, player}, %{action: %{type: "target"}}) do
     case state do
       %{combat: false} ->
-        start_combat(state, user)
+        start_combat(state, player)
 
       %{target: nil} ->
-        start_combat(state, user)
+        start_combat(state, player)
 
       _ ->
         state
@@ -296,8 +296,8 @@ defmodule Game.NPC.Events do
 
   def act_on_room_entered(state, _character, _event), do: state
 
-  defp start_combat(state = %{npc: npc}, user) do
-    Character.being_targeted({:user, user}, npc(state))
+  defp start_combat(state = %{npc: npc}, player) do
+    Character.being_targeted({:player, player}, npc(state))
 
     case state.combat do
       true ->
@@ -307,8 +307,8 @@ defmodule Game.NPC.Events do
         notify_delayed({"combat/tick"}, 1500)
     end
 
-    broadcast(npc, "character/targeted", who({:user, user}))
-    %{state | combat: true, target: Character.who({:user, user})}
+    broadcast(npc, "character/targeted", who({:player, player}))
+    %{state | combat: true, target: Character.who({:player, player})}
   end
 
   def act_on_room_heard(state, event, message)
@@ -423,7 +423,7 @@ defmodule Game.NPC.Events do
 
       Enum.each(new_room.players, fn player ->
         NPC.delay_notify(
-          {"room/entered", {{:user, player}, :enter}},
+          {"room/entered", {{:player, player}, :enter}},
           milliseconds: @npc_reaction_time_ms
         )
       end)
@@ -562,7 +562,7 @@ defmodule Game.NPC.Events do
   end
 
   def who({:npc, npc}), do: %{type: :npc, name: npc.name}
-  def who({:user, user}), do: %{type: :user, name: user.name}
+  def who({:player, player}), do: %{type: :player, name: player.name}
 
   defp npc(%{npc: npc, status: status}) when status != nil do
     {:npc, %{npc | status_line: status.line, status_listen: status.listen}}

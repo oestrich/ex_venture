@@ -30,7 +30,7 @@ defmodule Game.Command.TargetTest do
   test "targeting another player", %{socket: socket, user: user} do
     {:update, state} = Game.Command.Target.run({"player"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
-    assert state.target == {:user, 2}
+    assert state.target == {:player, 2}
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look)
     assert [{^socket, "Target.Character", _}] = @socket.get_push_gmcps()
@@ -39,7 +39,7 @@ defmodule Game.Command.TargetTest do
   test "targeting yourself", %{socket: socket, user: user} do
     {:update, state} = Game.Command.Target.run({"self"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
-    assert state.target == {:user, user.id}
+    assert state.target == {:player, user.id}
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look)
@@ -80,14 +80,14 @@ defmodule Game.Command.TargetTest do
   end
 
   test "viewing your target - user", %{socket: socket} do
-    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:user, 2}})
+    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:player, 2}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Your target is), look)
   end
 
   test "viewing your target - user no longer there", %{socket: socket} do
-    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:user, 3}})
+    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:player, 3}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Your target could not be found), look)

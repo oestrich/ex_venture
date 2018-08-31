@@ -58,7 +58,7 @@ defmodule Game.Session.Character do
     state |> GMCP.character_leave(character)
 
     # see if who is you
-    case Character.who(who) == Character.who({:user, state.user}) do
+    case Character.who(who) == Character.who({:player, state.user}) do
       true ->
         state =
           state
@@ -82,7 +82,7 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"currency/dropped", character, currency}) do
-    case Character.who(character) == {:user, state.user.id} do
+    case Character.who(character) == {:player, state.user.id} do
       true ->
         state
 
@@ -104,7 +104,7 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"item/dropped", character, item}) do
-    case Character.who(character) == {:user, state.user.id} do
+    case Character.who(character) == {:player, state.user.id} do
       true ->
         state
 
@@ -220,7 +220,7 @@ defmodule Game.Session.Character do
   def notify(state, {"room/overheard", characters, message}) do
     skip_echo? =
       Enum.any?(characters, fn character ->
-        character == {:user, state.user}
+        character == {:player, state.user}
       end)
 
     case skip_echo? do
@@ -290,7 +290,7 @@ defmodule Game.Session.Character do
     state |> GMCP.target(player)
 
     player = Character.who(player)
-    Character.being_targeted(player, {:user, state.user})
+    Character.being_targeted(player, {:player, state.user})
 
     %{state | target: player}
   end
@@ -302,7 +302,7 @@ defmodule Game.Session.Character do
   def possible_new_target(state) do
     state.is_targeting
     |> MapSet.to_list()
-    |> Enum.reject(&(&1 == {:user, state.user.id}))
+    |> Enum.reject(&(&1 == {:player, state.user.id}))
     |> List.first()
     |> character_info()
   end
@@ -316,7 +316,7 @@ defmodule Game.Session.Character do
   @doc """
   Apply experience for killing an npc
   """
-  def apply_experience(state, {:user, _user}), do: state
+  def apply_experience(state, {:player, _player}), do: state
 
   def apply_experience(state, {:quest, quest}),
     do: gain_experience(state, quest.level, quest.experience)
@@ -346,7 +346,7 @@ defmodule Game.Session.Character do
   @doc """
   Track quest progress if an npc was killed
   """
-  def track_quest_progress(state, {:user, _user}), do: state
+  def track_quest_progress(state, {:player, _player}), do: state
 
   def track_quest_progress(state, {:npc, npc}) do
     Quest.track_progress(state.user, {:npc, %{npc | id: npc.original_id}})

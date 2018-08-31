@@ -148,9 +148,9 @@ defmodule Game.Channel.Server do
   end
 
   @doc """
-  Send a tell to a user
+  Send a tell to a player
 
-  A message will be sent to the user's session in the form of `{:channel, {:tell, from, message}}`.
+  A message will be sent to the player's session in the form of `{:channel, {:tell, from, message}}`.
   """
   @spec tell(Channel.state(), Character.t(), Character.t(), Message.t()) :: :ok
   def tell(%{tells: tells}, {type, who}, from, message) do
@@ -166,7 +166,7 @@ defmodule Game.Channel.Server do
   @doc """
   The session process died, due to a crash or the player quitting.
 
-  Leave all channels and their user tell channel.
+  Leave all channels and their player tell channel.
   """
   @spec process_died(Channel.state(), pid()) :: Channel.state()
   def process_died(state = %{channels: channels, tells: tells}, pid) do

@@ -160,11 +160,11 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:enter, {:user, user}, reason}, state) do
+  def handle_cast({:enter, {:player, player}, reason}, state) do
     %{room: room, players: players} = state
-    Logger.debug(fn -> "Player (#{user.id}) entered room (#{room.id})" end, type: :room)
-    state = %{state | players: [user | players]}
-    handle_cast({:notify, {:user, user}, {"room/entered", {{:user, user}, reason}}}, state)
+    Logger.debug(fn -> "Player (#{player.id}) entered room (#{room.id})" end, type: :room)
+    state = %{state | players: [player | players]}
+    handle_cast({:notify, {:player, player}, {"room/entered", {{:player, player}, reason}}}, state)
   end
 
   def handle_cast({:enter, {:npc, npc}, reason}, state) do
@@ -174,12 +174,12 @@ defmodule Game.Room do
     handle_cast({:notify, {:npc, npc}, {"room/entered", {{:npc, npc}, reason}}}, state)
   end
 
-  def handle_cast({:leave, {:user, user}, reason}, state) do
+  def handle_cast({:leave, {:player, player}, reason}, state) do
     %{room: room, players: players} = state
-    Logger.debug(fn -> "Player (#{user.id}) left room (#{room.id})" end, type: :room)
-    players = Enum.reject(players, &(&1.id == user.id))
+    Logger.debug(fn -> "Player (#{player.id}) left room (#{room.id})" end, type: :room)
+    players = Enum.reject(players, &(&1.id == player.id))
     state = %{state | players: players}
-    handle_cast({:notify, {:user, user}, {"room/leave", {{:user, user}, reason}}}, state)
+    handle_cast({:notify, {:player, player}, {"room/leave", {{:player, player}, reason}}}, state)
   end
 
   def handle_cast({:leave, {:npc, npc}, reason}, state) do
@@ -206,11 +206,11 @@ defmodule Game.Room do
     handle_cast({:notify, sender, {"room/heard", message}}, state)
   end
 
-  def handle_cast({:update_character, {:user, user}}, state = %{players: players}) do
-    case Enum.member?(Enum.map(players, & &1.id), user.id) do
+  def handle_cast({:update_character, {:player, player}}, state = %{players: players}) do
+    case Enum.member?(Enum.map(players, & &1.id), player.id) do
       true ->
-        players = players |> Enum.reject(&(&1.id == user.id))
-        players = [user | players]
+        players = players |> Enum.reject(&(&1.id == player.id))
+        players = [player | players]
         {:noreply, Map.put(state, :players, players)}
 
       false ->
@@ -275,8 +275,8 @@ defmodule Game.Room do
   end
 
   defp inform_players(players, action) do
-    Enum.each(players, fn user ->
-      Session.notify(user, action)
+    Enum.each(players, fn player ->
+      Session.notify(player, action)
     end)
   end
 end

@@ -10,7 +10,7 @@ defmodule Game.Session.GMCPTest do
   end
 
   test "character enters - player", state do
-    GMCP.character_enter(state, {:user, %{id: 10, name: "user"}})
+    GMCP.character_enter(state, {:player, %{id: 10, name: "user"}})
 
     assert [{:socket, "Room.Character.Enter", json}] = @socket.get_push_gmcps()
     assert Poison.decode!(json) == %{"type" => "player", "id" => 10, "name" => "user"}
@@ -24,7 +24,7 @@ defmodule Game.Session.GMCPTest do
   end
 
   test "character leaves - player", state do
-    GMCP.character_leave(state, {:user, %{id: 10, name: "user"}})
+    GMCP.character_leave(state, {:player, %{id: 10, name: "user"}})
 
     assert [{:socket, "Room.Character.Leave", json}] = @socket.get_push_gmcps()
     assert Poison.decode!(json) == %{"type" => "player", "id" => 10, "name" => "user"}

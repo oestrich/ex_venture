@@ -28,7 +28,7 @@ defmodule Game.NPC.ConversationTest do
         ],
       })
 
-      Channel.join_tell({:user, user})
+      Channel.join_tell({:player, user})
 
       npc = %{npc | original_id: npc.id}
       %{user: user, npc: npc, state: %State{npc: npc}}
@@ -70,7 +70,7 @@ defmodule Game.NPC.ConversationTest do
         ],
       })
 
-      Channel.join_tell({:user, user})
+      Channel.join_tell({:player, user})
 
       state = %State{
         npc: npc,
@@ -145,7 +145,7 @@ defmodule Game.NPC.ConversationTest do
         ],
       })
 
-      Channel.join_tell({:user, user})
+      Channel.join_tell({:player, user})
 
       state = %State{
         npc: %{npc | original_id: npc.id},

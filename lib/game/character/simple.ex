@@ -11,22 +11,22 @@ defmodule Game.Character.Simple do
   Convert a character into their simple version
   """
   def from_character({:npc, npc}), do: {:npc, from_npc(npc)}
-  def from_character({:user, user}), do: {:user, from_user(user)}
+  def from_character({:player, player}), do: {:player, from_player(player)}
 
   @doc """
-  Convert a user to the simple version
+  Convert a player to the simple version
   """
-  def from_user(user) do
+  def from_player(player) do
     %__MODULE__{
-      type: :user,
-      id: user.id,
-      name: user.name,
+      type: :player,
+      id: player.id,
+      name: player.name,
       extra: %{
-        room_id: user.save.room_id,
-        flags: user.flags,
-        level: user.save.level,
-        race: user.race.name,
-        class: user.class.name,
+        room_id: player.save.room_id,
+        flags: player.flags,
+        level: player.save.level,
+        race: player.race.name,
+        class: player.class.name,
       }
     }
   end

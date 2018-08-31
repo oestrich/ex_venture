@@ -9,85 +9,85 @@ defmodule Game.Message do
   alias Game.Format
 
   @type t :: %{
-          type: :user | :npc,
+          type: :player | :npc,
           sender: User.t(),
           message: String.t(),
           formatted: String.t()
         }
 
-  def new(user, message), do: say(user, message)
+  def new(player, message), do: say(player, message)
 
-  def say(user, parsed_message) do
+  def say(player, parsed_message) do
     parsed_message = format(parsed_message)
 
     %__MODULE__{
-      type: :user,
-      sender: user,
+      type: :player,
+      sender: player,
       message: parsed_message.message,
-      formatted: Format.say({:user, user}, parsed_message)
+      formatted: Format.say({:player, player}, parsed_message)
     }
   end
 
-  def say_to(user, character, parsed_message) do
+  def say_to(player, character, parsed_message) do
     parsed_message = format(parsed_message)
 
     %__MODULE__{
-      type: :user,
-      sender: user,
+      type: :player,
+      sender: player,
       message: parsed_message.message,
-      formatted: Format.say_to({:user, user}, character, parsed_message)
+      formatted: Format.say_to({:player, player}, character, parsed_message)
     }
   end
 
-  def emote(user, message) do
+  def emote(player, message) do
     %__MODULE__{
-      type: :user,
-      sender: user,
+      type: :player,
+      sender: player,
       message: message,
-      formatted: Format.emote({:user, user}, message)
+      formatted: Format.emote({:player, player}, message)
     }
   end
 
-  def broadcast(user, channel, parsed_message) do
+  def broadcast(player, channel, parsed_message) do
     parsed_message = format(parsed_message)
 
     %__MODULE__{
-      type: :user,
-      sender: user,
+      type: :player,
+      sender: player,
       message: parsed_message.message,
-      formatted: Format.channel_say(channel, {:user, user}, parsed_message)
+      formatted: Format.channel_say(channel, {:player, player}, parsed_message)
     }
   end
 
-  def tell(user, message) do
+  def tell(player, message) do
     %__MODULE__{
-      type: :user,
-      sender: user,
+      type: :player,
+      sender: player,
       message: message,
-      formatted: Format.tell({:user, user}, message)
+      formatted: Format.tell({:player, player}, message)
     }
   end
 
-  def whisper(user, message) do
+  def whisper(player, message) do
     message = format(message)
 
     %__MODULE__{
-      type: :user,
-      sender: user,
+      type: :player,
+      sender: player,
       message: message,
-      formatted: Format.whisper({:user, user}, message)
+      formatted: Format.whisper({:player, player}, message)
     }
   end
 
   def gossip_broadcast(channel, message) do
     name = "#{message.name}@#{message.game}"
-    user = %{name: name}
+    player = %{name: name}
 
     %__MODULE__{
-      type: :user,
-      sender: user,
+      type: :player,
+      sender: player,
       message: message.message,
-      formatted: Format.channel_say(channel, {:user, user}, message),
+      formatted: Format.channel_say(channel, {:player, player}, message),
       from_gossip: true,
     }
   end

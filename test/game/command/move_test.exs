@@ -86,7 +86,7 @@ defmodule Game.Command.MoveTest do
     @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
     Registry.register(user)
 
-    state = Map.merge(state, %{user: user, save: %{room_id: 1}, target: {:user, 10}})
+    state = Map.merge(state, %{user: user, save: %{room_id: 1}, target: {:player, 10}})
     command = %Command{module: Command.Move, args: {:move, "north"}}
     {:update, state} = Command.run(command, state)
 

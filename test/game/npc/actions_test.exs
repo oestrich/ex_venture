@@ -137,7 +137,7 @@ defmodule Game.NPC.ActionsTest do
   describe "continuous effects" do
     setup do
       effect = %{id: :id, kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
-      from = {:user, %{id: 1, name: "Player"}}
+      from = {:player, %{id: 1, name: "Player"}}
       npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25, agility: 10}}
       npc_spawner = %{id: 1, spawn_interval: 0}
 

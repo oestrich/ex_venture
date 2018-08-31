@@ -38,7 +38,7 @@ defmodule Game.Room.EventBus do
     end
   end
 
-  def handle_cast({:notify, {:user, sender}, event, players, npcs}, state) do
+  def handle_cast({:notify, {:player, sender}, event, players, npcs}, state) do
     # don't send to the sender
     players
     |> Enum.reject(&(&1.id == sender.id))
@@ -61,8 +61,8 @@ defmodule Game.Room.EventBus do
   end
 
   defp inform_players(players, action) do
-    Enum.each(players, fn user ->
-      Session.notify(user, action)
+    Enum.each(players, fn player ->
+      Session.notify(player, action)
     end)
   end
 

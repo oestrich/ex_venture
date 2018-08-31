@@ -40,12 +40,12 @@ defmodule Game.Session.GMCP do
   Push Character data (save stats)
   """
   @spec character(map) :: :ok
-  def character(%{socket: socket, user: user}) do
+  def character(%{socket: socket, user: player}) do
     data = %{
-      name: user.name,
-      level: user.save.level,
+      name: player.name,
+      level: player.save.level,
       class: %{
-        name: user.class.name
+        name: player.class.name
       }
     }
 
@@ -194,7 +194,7 @@ defmodule Game.Session.GMCP do
   def mail_new(%{socket: socket}, mail) do
     data = %{
       id: mail.id,
-      from: user_info(mail.sender),
+      from: player_info(mail.sender),
       title: mail.title
     }
 
@@ -261,19 +261,19 @@ defmodule Game.Session.GMCP do
   Get info for an NPC or a User
   """
   @spec character_info(Character.t()) :: map()
-  def character_info({:user, user}), do: user_info(user)
+  def character_info({:player, player}), do: player_info(player)
   def character_info({:npc, npc}), do: npc_info(npc)
   def character_info({:gossip, player_name}), do: gossip_info(player_name)
 
   @doc """
-  Gather information for a user
+  Gather information for a player
   """
-  @spec user_info(User.t()) :: map
-  def user_info(user) do
+  @spec player_info(User.t()) :: map
+  def player_info(player) do
     %{
       type: :player,
-      id: Map.get(user, :id, nil),
-      name: user.name
+      id: Map.get(player, :id, nil),
+      name: player.name
     }
   end
 
