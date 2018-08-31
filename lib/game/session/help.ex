@@ -20,7 +20,7 @@ defmodule Game.Session.Help do
   def maybe_display_hints(state) do
     idle_time = Timex.now() |> Timex.shift(seconds: -1 * @idle_hint_seconds)
 
-    anything? = abs(Timex.diff(state.last_recv, state.session_started_at, :seconds)) < 3
+    anything? = Timex.diff(state.last_recv, state.session_started_at, :milliseconds) < 500
     idling? = Timex.after?(idle_time, state.last_recv)
     hintable? = Timex.after?(idle_time, state.idle.last_hint)
 
