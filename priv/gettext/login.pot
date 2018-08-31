@@ -1,0 +1,56 @@
+## This file is a PO Template file.
+##
+## `msgid`s here are often extracted from source code.
+## Add new translations manually only if they're dynamic
+## translations that can't be statically extracted.
+##
+## Run `mix gettext.extract` to bring this file up to
+## date. Leave `msgstr`s empty as changing them here as no
+## effect: edit them in PO (`.po`) files instead.
+msgid ""
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:37
+msgid "What is your player name? (Enter {command}create{/command} for a new account) "
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:90
+msgid "Sending you back to the starting room!"
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:220
+msgid "Session recovering..."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:172 lib/game/session/login.ex:204
+msgid "Sorry, this player is already logged in."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:177
+msgid "Sorry, your account has been disabled. Please contact the admins."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:89
+msgid "The room you were in has been deleted."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:76
+msgid "You have mail."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:79
+msgid "[Press enter to continue]"
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:160
+msgid "Please sign in via the website to authorize this connection."
+msgstr ""

@@ -1,0 +1,57 @@
+## `msgid`s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove `msgid`s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use `mix gettext.extract --merge` or `mix gettext.merge`
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2\n"
+
+#, elixir-format
+#: lib/game/session/login.ex:37
+msgid "What is your player name? (Enter {command}create{/command} for a new account) "
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:90
+msgid "Sending you back to the starting room!"
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:220
+msgid "Session recovering..."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:172 lib/game/session/login.ex:204
+msgid "Sorry, this player is already logged in."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:177
+msgid "Sorry, your account has been disabled. Please contact the admins."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:89
+msgid "The room you were in has been deleted."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:76
+msgid "You have mail."
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:79
+msgid "[Press enter to continue]"
+msgstr ""
+
+#, elixir-format
+#: lib/game/session/login.ex:160
+msgid "Please sign in via the website to authorize this connection."
+msgstr ""
