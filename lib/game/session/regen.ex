@@ -85,14 +85,14 @@ defmodule Game.Session.Regen do
   Regenerate endurance points, 1 per tick
   """
   @spec regen_endurance(map) :: map
-  def regen_endurance(state = %{user: user, save: save = %{stats: stats}}) do
+  def regen_endurance(state = %{user: player, save: save = %{stats: stats}}) do
     stats = Stats.regen(stats, :endurance_points, @endurance_regen)
 
     save = Map.put(save, :stats, stats)
-    user = Map.put(user, :save, save)
+    player = Map.put(player, :save, save)
 
     state
-    |> Map.put(:user, user)
+    |> Map.put(:user, player)
     |> Map.put(:save, save)
   end
 
@@ -103,7 +103,7 @@ defmodule Game.Session.Regen do
   """
   @spec handle_regen(map, integer) :: map
   def handle_regen(state = %{regen: %{count: count}}, count) do
-    %{user: user, save: save} = state
+    %{user: player, save: save} = state
     %{stats: stats} = save
 
     stats =
@@ -114,10 +114,10 @@ defmodule Game.Session.Regen do
     echo_health(save, stats)
 
     save = Map.put(save, :stats, stats)
-    user = Map.put(user, :save, save)
+    player = Map.put(player, :save, save)
 
     state
-    |> Map.put(:user, user)
+    |> Map.put(:user, player)
     |> Map.put(:save, save)
     |> Map.put(:regen, %{state.regen | count: 0})
   end
@@ -128,7 +128,7 @@ defmodule Game.Session.Regen do
   end
 
   @doc """
-  Display regen text to the user
+  Display regen text to the player
   """
   @spec echo_health(Save.t(), Stats.t()) :: nil
   def echo_health(%{stats: starting_stats, config: config}, stats) do

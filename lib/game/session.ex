@@ -26,11 +26,11 @@ defmodule Game.Session do
 
   Creates a session pointing at a socket
   """
-  @spec start_with_user(pid, integer()) :: {:ok, pid}
-  def start_with_user(socket, nil), do: start(socket)
+  @spec start_with_player(pid, integer()) :: {:ok, pid}
+  def start_with_player(socket, nil), do: start(socket)
 
-  def start_with_user(socket, user_id) do
-    Supervisor.start_child(socket, user_id)
+  def start_with_player(socket, player_id) do
+    Supervisor.start_child(socket, player_id)
   end
 
   @doc """
@@ -69,8 +69,8 @@ defmodule Game.Session do
   Echo to the socket
   """
   @spec echo(pid, String.t()) :: :ok
-  def echo(user = %User{}, message) do
-    case find_connected_player(user) do
+  def echo(player = %User{}, message) do
+    case find_connected_player(player) do
       nil ->
         :ok
 
@@ -79,8 +79,8 @@ defmodule Game.Session do
     end
   end
 
-  def echo(user = %Character.Simple{type: :user}, message) do
-    case find_connected_player(user) do
+  def echo(player = %Character.Simple{type: :player}, message) do
+    case find_connected_player(player) do
       nil ->
         :ok
 
@@ -105,8 +105,8 @@ defmodule Game.Session do
   Notify the session of an event, e.g. someone left the room
   """
   @spec notify(pid, tuple()) :: :ok
-  def notify(user = %User{}, action) do
-    case find_connected_player(user) do
+  def notify(player = %User{}, action) do
+    case find_connected_player(player) do
       nil ->
         :ok
 
@@ -115,8 +115,8 @@ defmodule Game.Session do
     end
   end
 
-  def notify(user = %Character.Simple{type: :user}, action) do
-    case find_connected_player(user) do
+  def notify(player = %Character.Simple{type: :player}, action) do
+    case find_connected_player(player) do
       nil ->
         :ok
 
@@ -130,7 +130,7 @@ defmodule Game.Session do
   end
 
   @doc """
-  Teleport the user to the room passed in
+  Teleport the player to the room passed in
   """
   @spec teleport(pid, integer) :: :ok
   def teleport(pid, room_id) do
@@ -138,13 +138,13 @@ defmodule Game.Session do
   end
 
   @doc """
-  Sign in a user to a session, from the web client
+  Sign in a player to a session, from the web client
   """
   @spec sign_in(pid(), User.t()) :: :ok
-  def sign_in(pid, user) do
+  def sign_in(pid, player) do
     case WorldMaster.is_world_online?() do
       true ->
-        GenServer.cast(pid, {:sign_in, user.id})
+        GenServer.cast(pid, {:sign_in, player.id})
 
       false ->
         :ok
@@ -160,13 +160,13 @@ defmodule Game.Session do
   end
 
   @doc """
-  Find a connected user by their user struct
+  Find a connected player by their player struct
   """
   @spec find_connected_player(User.t()) :: pid()
-  def find_connected_player(user) do
+  def find_connected_player(player) do
     Session.Registry.connected_players()
-    |> Enum.find(fn %{user: player} ->
-      player.id == user.id
+    |> Enum.find(fn %{player: connected_player} ->
+      connected_player.id == player.id
     end)
   end
 end

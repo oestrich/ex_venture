@@ -1,6 +1,6 @@
 defmodule Game.Account do
   @moduledoc """
-  Handle database interactions for a user's account.
+  Handle database interactions for a player's account.
   """
 
   alias Data.ClassSkill
@@ -19,7 +19,7 @@ defmodule Game.Account do
   import Ecto.Query
 
   @doc """
-  Create a new user from attributes. Preloads everything required to start playing the game.
+  Create a new player from attributes. Preloads everything required to start playing the game.
   """
   @spec create(map, map) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def create(attributes, %{race: race, class: class}) do
@@ -35,18 +35,18 @@ defmodule Game.Account do
       |> Map.put(:save, save)
 
     case create_account(attributes) do
-      {:ok, user} ->
-        user |> maybe_email_welcome()
+      {:ok, player} ->
+        player |> maybe_email_welcome()
 
-        Config.claim_character_name(user.name)
+        Config.claim_character_name(player.name)
 
-        user =
-          user
+        player =
+          player
           |> Repo.preload([:race])
           |> Repo.preload(class: :skills)
           |> migrate()
 
-        {:ok, user}
+        {:ok, player}
 
       anything ->
         anything
@@ -69,13 +69,13 @@ defmodule Game.Account do
     |> Repo.insert()
   end
 
-  def maybe_email_welcome(user) do
-    case user.email do
+  def maybe_email_welcome(player) do
+    case player.email do
       nil ->
         :ok
 
       _ ->
-        user
+        player
         |> Emails.welcome()
         |> Mailer.deliver_later()
     end
@@ -85,13 +85,13 @@ defmodule Game.Account do
   Save the final session data for a play
   """
   @spec save_session(User.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
-  def save_session(user, save, session_started_at, now, stats) do
-    case user |> save(save) do
-      {:ok, user} ->
-        user |> update_time_online(session_started_at, now)
-        user |> create_session(session_started_at, now, stats)
+  def save_session(player, save, session_started_at, now, stats) do
+    case player |> save(save) do
+      {:ok, player} ->
+        player |> update_time_online(session_started_at, now)
+        player |> create_session(session_started_at, now, stats)
 
-        {:ok, user}
+        {:ok, player}
 
       {:error, changeset} ->
         {:error, changeset}
@@ -99,13 +99,13 @@ defmodule Game.Account do
   end
 
   @doc """
-  Update the user's save data.
+  Update the player's save data.
   """
   @spec save(User.t(), Save.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def save(user, save) do
-    user = %{user | save: %{}}
+  def save(player, save) do
+    player = %{player | save: %{}}
 
-    user
+    player
     |> User.changeset(%{save: save})
     |> Repo.update()
   end
@@ -115,9 +115,9 @@ defmodule Game.Account do
   """
   @spec update_time_online(User.t(), Timex.t(), Timex.t()) ::
           {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def update_time_online(user, session_started_at, now) do
-    user
-    |> User.changeset(%{seconds_online: current_play_time(user, session_started_at, now)})
+  def update_time_online(player, session_started_at, now) do
+    player
+    |> User.changeset(%{seconds_online: current_play_time(player, session_started_at, now)})
     |> Repo.update()
   end
 
@@ -125,20 +125,20 @@ defmodule Game.Account do
   Calculate the current play time, old + current session.
   """
   @spec current_play_time(User.t(), DateTime.t(), DateTime.t()) :: integer()
-  def current_play_time(user, session_started_at, now) do
+  def current_play_time(player, session_started_at, now) do
     play_time = Timex.diff(now, session_started_at, :seconds)
-    user.seconds_online + play_time
+    player.seconds_online + play_time
   end
 
   @doc """
   Create a new session record
   """
   @spec create_session(User.t(), Timex.t(), Timex.t(), map) :: {:ok, User.Session.t()}
-  def create_session(user, session_started_at, now, stats) do
+  def create_session(player, session_started_at, now, stats) do
     commands = Map.get(stats, :commands, %{})
     play_time = Timex.diff(now, session_started_at, :seconds)
 
-    user
+    player
     |> Ecto.build_assoc(:sessions)
     |> Session.changeset(%{
       started_at: session_started_at,
@@ -154,8 +154,8 @@ defmodule Game.Account do
   - Migrate items
   """
   @spec migrate(User.t()) :: User.t()
-  def migrate(user) do
-    user
+  def migrate(player) do
+    player
     |> migrate_items()
     |> migrate_skills()
   end
@@ -166,9 +166,9 @@ defmodule Game.Account do
   - Ensure usable items have an amount, checks item state
   """
   @spec migrate_items(User.t()) :: User.t()
-  def migrate_items(user) do
-    items = user.save.items |> Enum.map(&Item.migrate_instance/1)
-    %{user | save: %{user.save | items: items}}
+  def migrate_items(player) do
+    items = player.save.items |> Enum.map(&Item.migrate_instance/1)
+    %{player | save: %{player.save | items: items}}
   end
 
   @doc """
@@ -179,16 +179,16 @@ defmodule Game.Account do
   - Ensure no duplicated ids
   """
   @spec migrate_skills(User.t()) :: User.t()
-  def migrate_skills(user) do
+  def migrate_skills(player) do
     class_skill_ids =
       ClassSkill
-      |> where([cs], cs.class_id == ^user.class_id)
+      |> where([cs], cs.class_id == ^player.class_id)
       |> select([cs], cs.skill_id)
       |> Repo.all()
 
     race_skill_ids =
       RaceSkill
-      |> where([cs], cs.race_id == ^user.race_id)
+      |> where([cs], cs.race_id == ^player.race_id)
       |> select([cs], cs.skill_id)
       |> Repo.all()
 
@@ -198,10 +198,10 @@ defmodule Game.Account do
       |> select([s], s.id)
       |> Repo.all()
 
-    skill_ids = class_skill_ids ++ race_skill_ids ++ global_skill_ids ++ user.save.skill_ids
+    skill_ids = class_skill_ids ++ race_skill_ids ++ global_skill_ids ++ player.save.skill_ids
     skill_ids = Enum.uniq(skill_ids)
 
-    %{user | save: %{user.save | skill_ids: skill_ids}}
+    %{player | save: %{player.save | skill_ids: skill_ids}}
   end
 
   @doc """

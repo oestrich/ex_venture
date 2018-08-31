@@ -31,13 +31,13 @@ defmodule Game.NPCTest do
     effect = %{kind: "damage", type: "slashing", amount: 15}
     state = %State{npc: %{id: 1, name: "NPC", stats: %{health_points: 25, agility: 10}}}
 
-    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2, name: "Player"}}, "description"}, state)
+    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:player, %{id: 2, name: "Player"}}, "description"}, state)
     assert state.npc.stats.health_points == 15
   end
 
   test "applying continuous effects - damage over time" do
     effect = %{kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
-    from = {:user, %{id: 2, name: "Player"}}
+    from = {:player, %{id: 2, name: "Player"}}
 
     state = %State{
       npc: %{id: 1, name: "NPC", stats: %{health_points: 25, agility: 10}},
@@ -60,7 +60,7 @@ defmodule Game.NPCTest do
     npc_spawner = %{spawn_interval: 0}
     state = %State{room_id: 1, npc: npc, npc_spawner: npc_spawner}
 
-    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:user, %{id: 2, name: "Player"}}, "description"}, state)
+    {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:player, %{id: 2, name: "Player"}}, "description"}, state)
     assert state.npc.stats.health_points == 0
 
     assert [{1, {:npc, _}, :death}] = @room.get_leaves()

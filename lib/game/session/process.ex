@@ -2,7 +2,7 @@ defmodule Game.Session.Process do
   @moduledoc """
   GenServer process module, client access is at `Game.Session`
 
-  Holds knowledge if the user is logged in, who they are, what they're save is.
+  Holds knowledge if the player is logged in, who they are, what they're save is.
   """
 
   use GenServer, restart: :temporary
@@ -54,10 +54,10 @@ defmodule Game.Session.Process do
     {:ok, state}
   end
 
-  def init([socket, user_id]) do
-    send(self(), {:recover_session, user_id})
+  def init([socket, player_id]) do
+    send(self(), {:recover_session, player_id})
     PlayerInstrumenter.session_recovered()
-    Logger.info("Session recovering (#{user_id}) - #{inspect(self())}", type: :session)
+    Logger.info("Session recovering (#{player_id}) - #{inspect(self())}", type: :session)
     {:ok, clean_state(socket)}
   end
 
@@ -101,7 +101,7 @@ defmodule Game.Session.Process do
     Session.Registry.unregister()
     Session.Registry.player_offline(state.user)
 
-    @environment.leave(save.room_id, {:user, user}, :signout)
+    @environment.leave(save.room_id, {:player, user}, :signout)
     @environment.unlink(save.room_id)
 
     user |> Account.save_session(save, session_started_at, Timex.now(), stats)
@@ -220,7 +220,7 @@ defmodule Game.Session.Process do
   end
 
   def handle_call(:info, _from, state) do
-    {:reply, {:user, state.user}, state}
+    {:reply, {:player, state.user}, state}
   end
 
   #

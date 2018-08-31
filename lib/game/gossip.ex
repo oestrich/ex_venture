@@ -26,7 +26,7 @@ defmodule Game.Gossip do
   @impl true
   def players() do
     Session.Registry.connected_players()
-    |> Enum.map(&(&1.user.name))
+    |> Enum.map(&(&1.player.name))
   end
 
   @impl true
@@ -52,8 +52,8 @@ defmodule Game.Gossip do
     case Squabble.node_is_leader?() do
       true ->
         Session.Registry.connected_players()
-        |> Enum.each(fn %{user: user} ->
-          Character.notify({:user, user}, {"gossip/player-online", game_name, player_name})
+        |> Enum.each(fn %{player: player} ->
+          Character.notify({:player, player}, {"gossip/player-online", game_name, player_name})
         end)
 
       false ->
@@ -70,8 +70,8 @@ defmodule Game.Gossip do
     case Squabble.node_is_leader?() do
       true ->
         Session.Registry.connected_players()
-        |> Enum.each(fn %{user: user} ->
-          Character.notify({:user, user}, {"gossip/player-offline", game_name, player_name})
+        |> Enum.each(fn %{player: player} ->
+          Character.notify({:player, player}, {"gossip/player-offline", game_name, player_name})
         end)
 
       false ->
@@ -97,7 +97,7 @@ defmodule Game.Gossip do
         case Session.Registry.find_player(to_player) do
           {:ok, player} ->
             player_name = "#{from_player}@#{from_game}"
-            Channel.tell({:user, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
+            Channel.tell({:player, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
 
             :ok
 

@@ -256,7 +256,7 @@ defmodule Web.TelnetChannel do
         type: :session
       )
 
-      {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
+      {:ok, pid} = Game.Session.start_with_player(self(), state.user_id)
 
       Monitor.demonitor(self())
       Monitor.monitor(self(), pid)

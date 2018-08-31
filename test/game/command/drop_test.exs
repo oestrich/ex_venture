@@ -25,7 +25,7 @@ defmodule Game.Command.DropTest do
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You dropped), look)
 
-    assert [{1, {:user, _}, %{id: 1}}] = @room.get_drops()
+    assert [{1, {:player, _}, %{id: 1}}] = @room.get_drops()
   end
 
   test "drop currency in a room", %{socket: socket} do
@@ -39,7 +39,7 @@ defmodule Game.Command.DropTest do
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You dropped), look)
 
-    assert [{1, {:user, _}, 100}] = @room.get_drop_currencies()
+    assert [{1, {:player, _}, 100}] = @room.get_drop_currencies()
   end
 
   test "drop currency in a room - not enough to do so", %{socket: socket} do

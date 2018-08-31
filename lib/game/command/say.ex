@@ -135,7 +135,7 @@ defmodule Game.Command.Say do
   def say(state = %{user: user, save: save}, parsed_message) do
     parsed_message = Message.format(parsed_message)
     state.socket |> @socket.echo(Format.say(:you, parsed_message))
-    save.room_id |> @environment.say({:user, user}, Message.new(user, parsed_message))
+    save.room_id |> @environment.say({:player, user}, Message.new(user, parsed_message))
   end
 
   def say_directed(state = %{user: user, save: save}, parsed_message) do
@@ -156,7 +156,7 @@ defmodule Game.Command.Say do
         state.socket |> @socket.echo(Format.say_to(:you, character, parsed_message))
 
         room.id
-        |> @environment.say({:user, user}, Message.say_to(user, character, parsed_message))
+        |> @environment.say({:player, user}, Message.say_to(user, character, parsed_message))
     end
   end
 

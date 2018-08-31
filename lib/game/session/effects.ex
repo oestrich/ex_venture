@@ -27,7 +27,7 @@ defmodule Game.Session.Effects do
     %{user: user, save: save} = state
 
     {stats, effects, continuous_effects} =
-      Character.Effects.apply_effects({:user, user}, save.stats, state, effects, from)
+      Character.Effects.apply_effects({:player, user}, save.stats, state, effects, from)
 
     save = Map.put(save, :stats, stats)
     user = Map.put(user, :save, save)
@@ -49,25 +49,25 @@ defmodule Game.Session.Effects do
   Check for health < 0 and perform actions if it is
   """
   @spec maybe_died(User.t(), State.t(), Character.t()) :: :ok
-  def maybe_died(user, state, from)
+  def maybe_died(player, state, from)
 
-  def maybe_died(user = %{save: %{stats: %{health_points: health_points}}}, state, from)
+  def maybe_died(player = %{save: %{stats: %{health_points: health_points}}}, state, from)
       when health_points < 1 do
-    user |> maybe_transport_to_graveyard()
+    player |> maybe_transport_to_graveyard()
 
     state.save.room_id
-    |> @environment.notify({:user, user}, {"character/died", {:user, user}, :character, from})
+    |> @environment.notify({:player, player}, {"character/died", {:player, player}, :character, from})
 
     :ok
   end
 
-  def maybe_died(_user, _state, _from), do: :ok
+  def maybe_died(_player, _state, _from), do: :ok
 
   @doc """
   Check if there is a graveyard to teleport to. The zone will have it set
   """
   @spec maybe_transport_to_graveyard(User.t()) :: :ok
-  def maybe_transport_to_graveyard(user)
+  def maybe_transport_to_graveyard(player)
 
   def maybe_transport_to_graveyard(%{save: %{room_id: room_id}}) do
     {:ok, room} = room_id |> @environment.look()
@@ -82,23 +82,23 @@ defmodule Game.Session.Effects do
   end
 
   @doc """
-  Echo effects to the user's session
+  Echo effects to the player's session
   """
-  def echo_effects(user, from, description, effects) do
-    user_id = user.id
+  def echo_effects(player, from, description, effects) do
+    player_id = player.id
 
     case Character.who(from) do
-      {:user, ^user_id} ->
+      {:player, ^player_id} ->
         :ok
 
       _ ->
-        description = [description | Format.effects(effects, {:user, user})]
+        description = [description | Format.effects(effects, {:player, player})]
         echo(self(), description |> Enum.join("\n"))
     end
   end
 
   @doc """
-  Apply a continuous effect to the user
+  Apply a continuous effect to the player
   """
   @spec handle_continuous_effect(State.t(), String.t()) :: State.t()
   def handle_continuous_effect(state, effect_id) do
@@ -112,7 +112,7 @@ defmodule Game.Session.Effects do
   end
 
   @doc """
-  Apply a continuous effect to the user
+  Apply a continuous effect to the player
   """
   @spec apply_continuous_effect(State.t(), Effect.t()) :: State.t()
   def apply_continuous_effect(state, {from, effect}) do
@@ -126,7 +126,7 @@ defmodule Game.Session.Effects do
 
     effects_message =
       effects
-      |> Format.effects({:user, user})
+      |> Format.effects({:player, user})
       |> Enum.join("\n")
 
     socket |> @socket.echo(effects_message)

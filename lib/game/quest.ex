@@ -21,24 +21,24 @@ defmodule Game.Quest do
   end
 
   @doc """
-  Get quests for a user, loads from their quest progress.
+  Get quests for a player, loads from their quest progress.
   """
   @spec for(User.t()) :: [QuestProgress.t()]
-  def for(user) do
+  def for(player) do
     QuestProgress
-    |> where([qp], qp.user_id == ^user.id)
+    |> where([qp], qp.user_id == ^player.id)
     |> where([qp], qp.status == "active")
     |> preloads()
     |> Repo.all()
   end
 
   @doc """
-  Find progress of a particular quest for a user
+  Find progress of a particular quest for a player
   """
   @spec progress_for(User.t(), integer()) :: QuestProgress.t()
-  def progress_for(user, quest_id) do
+  def progress_for(player, quest_id) do
     QuestProgress
-    |> where([qp], qp.user_id == ^user.id and qp.quest_id == ^quest_id)
+    |> where([qp], qp.user_id == ^player.id and qp.quest_id == ^quest_id)
     |> preloads()
     |> Repo.one()
   end
@@ -47,9 +47,9 @@ defmodule Game.Quest do
   Get the current tracked quest
   """
   @spec current_tracked_quest(User.t()) :: QuestProgress.t() | nil
-  def current_tracked_quest(user) do
+  def current_tracked_quest(player) do
     QuestProgress
-    |> where([qp], qp.user_id == ^user.id and qp.is_tracking == true and qp.status != "complete")
+    |> where([qp], qp.user_id == ^player.id and qp.is_tracking == true and qp.status != "complete")
     |> preloads()
     |> limit(1)
     |> Repo.one()
@@ -60,26 +60,26 @@ defmodule Game.Quest do
   end
 
   @doc """
-  Start a quest for a user
+  Start a quest for a player
   """
   @spec start_quest(User.t(), Quest.t()) :: :ok
-  def start_quest(user, quest_id) when is_integer(quest_id) do
+  def start_quest(player, quest_id) when is_integer(quest_id) do
     quest = Quest |> Repo.get(quest_id)
-    start_quest(user, quest)
+    start_quest(player, quest)
   end
 
-  def start_quest(user, quest) do
+  def start_quest(player, quest) do
     changeset =
       %QuestProgress{}
       |> QuestProgress.changeset(%{
-        user_id: user.id,
+        user_id: player.id,
         quest_id: quest.id,
         status: "active"
       })
 
     case changeset |> Repo.insert() do
       {:ok, _} ->
-        Session.notify(user, {"quest/new", quest})
+        Session.notify(player, {"quest/new", quest})
         :ok
 
       {:error, _} ->
@@ -88,7 +88,7 @@ defmodule Game.Quest do
   end
 
   @doc """
-  Get the current progress of a user on a given step of a quest
+  Get the current progress of a player on a given step of a quest
   """
   @spec current_step_progress(QuestStep.t(), QuestProgress.t(), Save.t()) :: String.t()
   def current_step_progress(step, quest_progress, save) do
@@ -185,7 +185,7 @@ defmodule Game.Quest do
   end
 
   @doc """
-  Mark a quest as complete and update the user's save
+  Mark a quest as complete and update the player's save
   """
   @spec complete(QuestProgress.t(), Save.t()) :: Save.t()
   def complete(progress, save) do
@@ -224,16 +224,16 @@ defmodule Game.Quest do
   end
 
   @doc """
-  Track quest progress for the user
+  Track quest progress for the player
   """
   @spec track_progress(User.t(), any()) :: :ok
-  def track_progress(user, {:item, item_instance, npc}) do
+  def track_progress(player, {:item, item_instance, npc}) do
     QuestProgress
     |> join(:left, [qp], q in assoc(qp, :quest))
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
       [qp, q, qs],
-      qp.user_id == ^user.id and qs.type == "item/give" and qs.npc_id == ^npc.id and
+      qp.user_id == ^player.id and qs.type == "item/give" and qs.npc_id == ^npc.id and
         qs.item_id == ^item_instance.id
     )
     |> select([qp, q, qs], [qp.id, qs.id])
@@ -243,14 +243,14 @@ defmodule Game.Quest do
     :ok
   end
 
-  def track_progress(user, {:npc, npc}) do
+  def track_progress(player, {:npc, npc}) do
     QuestProgress
     |> where([qp], qp.status == "active")
     |> join(:left, [qp], q in assoc(qp, :quest))
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
       [qp, q, qs],
-      qp.user_id == ^user.id and qs.type == "npc/kill" and qs.npc_id == ^npc.id
+      qp.user_id == ^player.id and qs.type == "npc/kill" and qs.npc_id == ^npc.id
     )
     |> select([qp, q, qs], [qp.id, qs.id])
     |> Repo.all()
@@ -260,18 +260,18 @@ defmodule Game.Quest do
   end
 
   # overworld room's don't track progress yet
-  def track_progress(_user, {:room, "overworld:" <> _id}) do
+  def track_progress(_player, {:room, "overworld:" <> _id}) do
     :ok
   end
 
-  def track_progress(user, {:room, room_id}) do
+  def track_progress(player, {:room, room_id}) do
     QuestProgress
     |> where([qp], qp.status == "active")
     |> join(:left, [qp], q in assoc(qp, :quest))
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
       [qp, q, qs],
-      qp.user_id == ^user.id and qs.type == "room/explore" and qs.room_id == ^room_id
+      qp.user_id == ^player.id and qs.type == "room/explore" and qs.room_id == ^room_id
     )
     |> select([qp, q, qs], [qp.id, qs.id])
     |> Repo.all()
@@ -324,8 +324,8 @@ defmodule Game.Quest do
   an available one is found.
   """
   @spec next_available_quest_from(NPC.t(), User.t()) :: {:ok, Quest.t()} | {:error, :no_quests}
-  def next_available_quest_from(npc, user) do
-    case find_available_quests(npc, user) do
+  def next_available_quest_from(npc, player) do
+    case find_available_quests(npc, player) do
       [] ->
         {:error, :no_quests}
 
@@ -334,20 +334,20 @@ defmodule Game.Quest do
     end
   end
 
-  defp find_available_quests(npc, user) do
+  defp find_available_quests(npc, player) do
     Quest
     |> where([q], q.giver_id == ^npc.id)
-    |> where([q], q.level <= ^user.save.level)
+    |> where([q], q.level <= ^player.save.level)
     |> order_by([q], [q.level, q.id])
     |> preload([:parent_relations])
     |> Repo.all()
-    |> Enum.filter(&filter_progress(&1, user))
-    |> Enum.filter(&filter_parent_not_complete(&1, user))
+    |> Enum.filter(&filter_progress(&1, player))
+    |> Enum.filter(&filter_parent_not_complete(&1, player))
   end
 
   # filter out quests with progress
-  defp filter_progress(quest, user) do
-    case progress_for(user, quest.id) do
+  defp filter_progress(quest, player) do
+    case progress_for(player, quest.id) do
       nil ->
         true
 
@@ -357,9 +357,9 @@ defmodule Game.Quest do
   end
 
   # filter out quests that have incomplete parents
-  defp filter_parent_not_complete(quest, user) do
+  defp filter_parent_not_complete(quest, player) do
     Enum.all?(quest.parent_relations, fn parent_relation ->
-      case progress_for(user, parent_relation.parent_id) do
+      case progress_for(player, parent_relation.parent_id) do
         %{status: "complete"} ->
           true
 
@@ -373,18 +373,18 @@ defmodule Game.Quest do
   Set a quest as being tracked, clears other quests they have and sets this one
   """
   @spec track_quest(User.t(), Quest.t()) :: :ok | {:error, :not_started}
-  def track_quest(user, quest_id) do
-    case progress_for(user, quest_id) do
+  def track_quest(player, quest_id) do
+    case progress_for(player, quest_id) do
       nil ->
         {:error, :not_started}
 
       quest_progress ->
-        _track_quest(user, quest_progress)
+        _track_quest(player, quest_progress)
     end
   end
 
-  defp _track_quest(user, quest_progress) do
-    reset_query = QuestProgress |> where([qp], qp.user_id == ^user.id)
+  defp _track_quest(player, quest_progress) do
+    reset_query = QuestProgress |> where([qp], qp.user_id == ^player.id)
 
     track_changeset =
       quest_progress

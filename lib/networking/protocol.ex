@@ -299,7 +299,7 @@ defmodule Networking.Protocol do
   end
 
   def handle_info(:restart_session, state) do
-    {:ok, pid} = Game.Session.start_with_user(self(), state.user_id)
+    {:ok, pid} = Game.Session.start_with_player(self(), state.user_id)
     Process.link(pid)
 
     state =

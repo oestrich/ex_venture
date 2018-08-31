@@ -349,20 +349,20 @@ defmodule Game.SessionTest do
 
   describe "targeted" do
     test "being targeted tracks the targeter", %{state: state} do
-      targeter = {:user, %{id: 10, name: "Player"}}
+      targeter = {:player, %{id: 10, name: "Player"}}
 
       {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{state | target: nil, is_targeting: MapSet.new})
 
       assert state.is_targeting |> MapSet.size() == 1
-      assert state.is_targeting |> MapSet.member?({:user, 10})
+      assert state.is_targeting |> MapSet.member?({:player, 10})
     end
 
     test "if your target is empty, set to the targeter", %{state: state} do
-      targeter = {:user, %{id: 10, name: "Player"}}
+      targeter = {:player, %{id: 10, name: "Player"}}
 
       {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{state | target: nil, is_targeting: MapSet.new})
 
-      assert state.target == {:user, 10}
+      assert state.target == {:player, 10}
     end
   end
 
@@ -376,11 +376,11 @@ defmodule Game.SessionTest do
     test "receiving a tell", %{state: state, from: from} do
       message = Message.tell(from, "Howdy")
 
-      {:noreply, state} = Process.handle_info({:channel, {:tell, {:user, from}, message}}, state)
+      {:noreply, state} = Process.handle_info({:channel, {:tell, {:player, from}, message}}, state)
 
       [{_socket, tell} | _] = @socket.get_echos()
       assert Regex.match?(~r/Howdy/, tell)
-      assert state.reply_to == {:user, from}
+      assert state.reply_to == {:player, from}
     end
 
     test "receiving a join", %{state: state} do
@@ -446,8 +446,8 @@ defmodule Game.SessionTest do
 
       {:noreply, _state} = Process.handle_info({:resurrect, 2}, state)
 
-      [{1, {:user, _}, :death}] = @room.get_leaves()
-      [{2, {:user, _}, :respawn}] = @room.get_enters()
+      [{1, {:player, _}, :death}] = @room.get_leaves()
+      [{2, {:player, _}, :respawn}] = @room.get_enters()
     end
 
     test "does not touch health_points if > 0", %{state: state} do
@@ -462,7 +462,7 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:user, %{id: 1, name: "Player"}}, {:enter, "south"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:player, %{id: 1, name: "Player"}}, {:enter, "south"}}}}, state)
       [{_, "{player}Player{/player} enters from the {command}south{/command}."}] = @socket.get_echos()
     end
 
@@ -472,7 +472,7 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:player, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
       [{_, "{player}Player{/player} leaves heading {command}north{/command}."}] = @socket.get_echos()
     end
 
@@ -482,8 +482,8 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room and they were the target", %{state: state} do
-      state = %{state | target: {:user, 1}}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:user, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
+      state = %{state | target: {:player, 1}}
+      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:player, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
       assert is_nil(state.target)
     end
 
@@ -509,7 +509,7 @@ defmodule Game.SessionTest do
     end
 
     test "room overheard - does not echo if user is in the list of characters", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [{:user, state.user}], "hi"}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [{:player, state.user}], "hi"}}, state)
 
       assert [] = @socket.get_echos()
     end
@@ -563,13 +563,13 @@ defmodule Game.SessionTest do
 
   describe "character dying" do
     setup %{state: state} do
-      target = {:user, %{id: 10, name: "Player"}}
+      target = {:player, %{id: 10, name: "Player"}}
       user = %{id: 10, name: "Player", class: class_attributes(%{}), save: base_save()}
 
       state = Map.merge(state, %{
         user: user,
         save: user.save,
-        target: {:user, 10},
+        target: {:player, 10},
         is_targeting: MapSet.new(),
       })
 
@@ -577,7 +577,7 @@ defmodule Game.SessionTest do
     end
 
     test "clears your target", %{state: state, target: target} do
-      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:user, state.user}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
 
       assert is_nil(state.target)
     end
@@ -586,7 +586,7 @@ defmodule Game.SessionTest do
       target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 1200}}
       state = %{state | target: {:npc, 10}}
 
-      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:user, state.user}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
 
       assert is_nil(state.target)
       assert state.save.level == 2

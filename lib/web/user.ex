@@ -33,10 +33,10 @@ defmodule Web.User do
   def flags(), do: ["admin", "disabled"]
 
   @doc """
-  Check if a user is disabled
+  Check if a player is disabled
   """
-  def disabled?(user) do
-    "disabled" in user.flags
+  def disabled?(player) do
+    "disabled" in player.flags
   end
 
   @doc """
@@ -212,7 +212,7 @@ defmodule Web.User do
   @spec connected_players() :: [User.t()]
   def connected_players() do
     SessionRegistry.connected_players()
-    |> Enum.map(& &1.user)
+    |> Enum.map(& &1.player)
   end
 
   @doc """
@@ -240,7 +240,7 @@ defmodule Web.User do
   def teleport_player_in_game(user, room_id) do
     player =
       SessionRegistry.connected_players()
-      |> Enum.find(fn %{user: player} -> player.id == user.id end)
+      |> Enum.find(fn %{player: player} -> player.id == user.id end)
 
     case player do
       nil -> nil

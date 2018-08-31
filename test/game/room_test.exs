@@ -12,7 +12,7 @@ defmodule Game.RoomTest do
     test "entering a room", %{user: user, room: room} do
       state = %{room: room, players: [], npcs: []}
 
-      {:noreply, state} = Room.handle_cast({:enter, {:user, user}, :enter}, state)
+      {:noreply, state} = Room.handle_cast({:enter, {:player, user}, :enter}, state)
 
       assert state.players == [user]
     end
@@ -21,7 +21,7 @@ defmodule Game.RoomTest do
   test "leaving a room - user", %{user: user, room: room} do
     state = %{room: room, players: [user], npcs: []}
 
-    {:noreply, state} = Room.handle_cast({:leave, {:user, user}, :leave}, state)
+    {:noreply, state} = Room.handle_cast({:leave, {:player, user}, :leave}, state)
 
     assert state.players == []
   end
@@ -35,7 +35,7 @@ defmodule Game.RoomTest do
   test "updating player data" do
     state = %{players: [%User{id: 11, name: "Player"}], npcs: []}
 
-    {:noreply, state} = Room.handle_cast({:update_character, {:user, %User{id: 11, name: "New Name"}}}, state)
+    {:noreply, state} = Room.handle_cast({:update_character, {:player, %User{id: 11, name: "New Name"}}}, state)
 
     assert state.players == [%User{id: 11, name: "New Name"}]
   end
@@ -43,7 +43,7 @@ defmodule Game.RoomTest do
   test "ignores updates to players not in the list already" do
     state = %{players: [%User{id: 11, name: "Player"}], npcs: []}
 
-    {:noreply, state} = Room.handle_cast({:update_character, {:user, %User{id: 12, name: "New Name"}}}, state)
+    {:noreply, state} = Room.handle_cast({:update_character, {:player, %User{id: 12, name: "New Name"}}}, state)
 
     assert state.players == [%User{id: 11, name: "Player"}]
   end

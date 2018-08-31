@@ -17,10 +17,10 @@ defmodule Game.Character.Via do
     :global.whereis_name({Game.NPC, id})
   end
 
-  def whereis_name({:user, id}) do
+  def whereis_name({:player, id}) do
     player =
       Session.Registry.connected_players()
-      |> Enum.find(&(&1.user.id == id))
+      |> Enum.find(&(&1.player.id == id))
 
     case player do
       %{pid: pid} -> pid
@@ -38,10 +38,10 @@ defmodule Game.Character.Via do
     :global.send({Game.NPC, id}, message)
   end
 
-  def send({:user, id}, message) do
-    case whereis_name({:user, id}) do
+  def send({:player, id}, message) do
+    case whereis_name({:player, id}) do
       :undefined ->
-        {:badarg, {{:user, id}, message}}
+        {:badarg, {{:player, id}, message}}
 
       pid ->
         Kernel.send(pid, message)

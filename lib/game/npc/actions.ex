@@ -21,12 +21,12 @@ defmodule Game.NPC.Actions do
   alias Game.NPC.Status
 
   @doc """
-  Clean up conversation state, after 5 minutes remove the state of the user
+  Clean up conversation state, after 5 minutes remove the state of the player
   """
   def clean_conversations(state, time) do
     conversations =
       state.conversations
-      |> Enum.filter(fn {_user, conversation} ->
+      |> Enum.filter(fn {_player, conversation} ->
         Timex.after?(conversation.started_at, time |> Timex.shift(minutes: -5))
       end)
       |> Enum.into(%{})
@@ -44,7 +44,7 @@ defmodule Game.NPC.Actions do
     {:ok, room} = @environment.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
-      GenServer.cast(self(), {:notify, {"room/entered", {{:user, player}, :enter}}})
+      GenServer.cast(self(), {:notify, {"room/entered", {{:player, player}, :enter}}})
     end)
 
     Events.broadcast(npc, "character/respawned")

@@ -37,13 +37,13 @@ defmodule Game.NPC.EventsTest do
       |> Map.put(:players, [%{id: 1, name: "Player"}])
       |> @room.set_room()
 
-      event = {"character/died", {:user, user}, :character, {:npc, npc}}
+      event = {"character/died", {:player, user}, :character, {:npc, npc}}
 
       %{state: state, event: event}
     end
 
     test "clears the target if they were targetting the character", %{state: state, event: event} do
-      state = %{state | target: {:user, 2}}
+      state = %{state | target: {:player, 2}}
       {:update, state} = Events.act_on(state, event)
       assert is_nil(state.target)
     end
@@ -90,7 +90,7 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "does nothing if target no longer in the room, and removes target", %{state: state, event: event} do
-      state = %State{state | target: {:user, 2}}
+      state = %State{state | target: {:player, 2}}
 
       {:update, state} = Events.act_on(state, event)
 
@@ -99,7 +99,7 @@ defmodule Game.NPC.EventsTest do
     end
 
     test "does nothing if there is no combat/tick events to pick from", %{state: state, event: event} do
-      state = %{state | npc: %{state.npc | events: []}, target: {:user, 1}}
+      state = %{state | npc: %{state.npc | events: []}, target: {:player, 1}}
 
       {:update, state} = Events.act_on(state, event)
 
@@ -110,7 +110,7 @@ defmodule Game.NPC.EventsTest do
     test "calculates the effects and then applies them to the target", %{state: state, event: event} do
       notify_user = %{base_user() | id: 1}
       Registry.register(notify_user)
-      state = %State{state | target: {:user, 1}}
+      state = %State{state | target: {:player, 1}}
 
       {:update, state} = Events.act_on(state, event)
 
@@ -126,7 +126,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "say", message: "Hello"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, %{name: "Player"}}, :enter}})
+      {:update, ^state} = Events.act_on(state, {"room/entered", {{:player, %{name: "Player"}}, :enter}})
 
       assert_receive {:"$gen_cast", {:act, %{type: "say", message: "Hello"}}}
     end
@@ -135,7 +135,7 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "emote", message: "stares at you"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, ^state} = Events.act_on(state, {"room/entered", {{:user, %{name: "Player"}}, :enter}})
+      {:update, ^state} = Events.act_on(state, {"room/entered", {{:player, %{name: "Player"}}, :enter}})
 
       assert_receive {:"$gen_cast", {:act, %{type: "emote", message: "stares at you"}}}
     end
@@ -156,8 +156,8 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
-      assert state.target == {:user, 2}
+      {:update, state} = Events.act_on(state, {"room/entered", {{:player, notify_user}, :enter}})
+      assert state.target == {:player, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
@@ -169,8 +169,8 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc, combat: true, target: nil}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
-      assert state.target == {:user, 2}
+      {:update, state} = Events.act_on(state, {"room/entered", {{:player, notify_user}, :enter}})
+      assert state.target == {:player, 2}
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
@@ -182,14 +182,14 @@ defmodule Game.NPC.EventsTest do
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
-      assert state.target == {:user, 2}
+      {:update, state} = Events.act_on(state, {"room/entered", {{:player, notify_user}, :enter}})
+      assert state.target == {:player, 2}
       assert state.combat == true
 
       assert_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
 
-      {:update, state} = Events.act_on(state, {"room/entered", {{:user, notify_user}, :enter}})
-      assert state.target == {:user, 2}
+      {:update, state} = Events.act_on(state, {"room/entered", {{:player, notify_user}, :enter}})
+      assert state.target == {:player, 2}
 
       refute_received {:"$gen_cast", {:targeted, {:npc, %{id: 1}}}}
     end
@@ -198,9 +198,9 @@ defmodule Game.NPC.EventsTest do
   describe "room/leave" do
     test "clears the target when player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
-      state = %State{room_id: 1, npc: npc, target: {:user, 2}, combat: true}
+      state = %State{room_id: 1, npc: npc, target: {:player, 2}, combat: true}
 
-      {:update, state} = Events.act_on(state, {"room/leave", {{:user, %{id: 2, name: "Player"}}, :leave}})
+      {:update, state} = Events.act_on(state, {"room/leave", {{:player, %{id: 2, name: "Player"}}, :leave}})
 
       assert is_nil(state.target)
       assert state.combat
@@ -208,9 +208,9 @@ defmodule Game.NPC.EventsTest do
 
     test "does not touch the target if another player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
-      state = %State{room_id: 1, npc: npc, target: {:user, 2}}
+      state = %State{room_id: 1, npc: npc, target: {:player, 2}}
 
-      :ok = Events.act_on(state, {"room/leave", {{:user, %{id: 3, name: "Player"}}, :leave}})
+      :ok = Events.act_on(state, {"room/leave", {{:player, %{id: 3, name: "Player"}}, :leave}})
     end
   end
 
@@ -369,7 +369,7 @@ defmodule Game.NPC.EventsTest do
 
       assert state.room_id == 2
 
-      assert_receive {:notify, {"room/entered", {{:user, %{id: 10}}, :enter}}}
+      assert_receive {:notify, {"room/entered", {{:player, %{id: 10}}, :enter}}}
     end
 
     test "will not move if the door is closed", %{state: state, event: event} do
@@ -588,7 +588,7 @@ defmodule Game.NPC.EventsTest do
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
       event = {"quest/completed", user, quest}
 
-      Channel.join_tell({:user, user})
+      Channel.join_tell({:player, user})
 
       %{state: state, event: event}
     end

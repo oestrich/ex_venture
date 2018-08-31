@@ -49,7 +49,7 @@ defmodule Game.Command.UseTest do
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Used a potion), look)
-    assert_receive {:"$gen_cast", {:apply_effects, [], {:user, %{id: 1}}, _}}
+    assert_receive {:"$gen_cast", {:apply_effects, [], {:player, %{id: 1}}, _}}
   end
 
   test "use an item with an amount - decrements amount", state do

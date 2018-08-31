@@ -160,8 +160,8 @@ defmodule Game.NPC do
   Greet an NPC
   """
   @spec greet(integer(), User.t()) :: :ok
-  def greet(id, user) do
-    GenServer.cast(pid(id), {:greet, user})
+  def greet(id, player) do
+    GenServer.cast(pid(id), {:greet, player})
   end
 
   @doc """
@@ -245,8 +245,8 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_cast({:greet, user}, state) do
-    state = Conversation.greet(state, user)
+  def handle_cast({:greet, player}, state) do
+    state = Conversation.greet(state, player)
     schedule_cleaning_conversations()
     {:noreply, state}
   end
@@ -375,13 +375,13 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_info({:conversation, :continue, user}, state) do
-    state = Conversation.continue(state, user)
+  def handle_info({:conversation, :continue, player}, state) do
+    state = Conversation.continue(state, player)
     {:noreply, state}
   end
 
-  def handle_info({:channel, {:tell, {:user, user}, message}}, state) do
-    state = Conversation.recv(state, user, message.message)
+  def handle_info({:channel, {:tell, {:player, player}, message}}, state) do
+    state = Conversation.recv(state, player, message.message)
     schedule_cleaning_conversations()
     {:noreply, state}
   end

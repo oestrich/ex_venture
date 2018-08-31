@@ -64,8 +64,8 @@ defmodule Game.Command.Tell do
       nil ->
         socket |> @socket.echo("There is no one to reply to.")
 
-      {:user, user} ->
-        message |> reply_to_player(user, state)
+      {:player, player} ->
+        message |> reply_to_player(player, state)
 
       {:gossip, player_name} ->
         message |> reply_to_gossip(player_name, state)
@@ -83,19 +83,19 @@ defmodule Game.Command.Tell do
 
     player =
       Session.Registry.connected_players()
-      |> Enum.find(fn %{user: user} ->
-        user.name |> String.downcase() == player_name |> String.downcase()
+      |> Enum.find(fn %{player: player} ->
+        player.name |> String.downcase() == player_name |> String.downcase()
       end)
 
     case player do
       nil ->
         state
 
-      %{user: user} ->
+      %{player: player} ->
         message = Message.format(message)
-        socket |> @socket.echo(Format.send_tell({:user, user}, message))
-        Channel.tell({:user, user}, {:user, from}, Message.tell(from, message))
-        {:update, %{state | reply_to: {:user, user}}}
+        socket |> @socket.echo(Format.send_tell({:player, player}, message))
+        Channel.tell({:player, player}, {:player, from}, Message.tell(from, message))
+        {:update, %{state | reply_to: {:player, player}}}
     end
   end
 
@@ -120,7 +120,7 @@ defmodule Game.Command.Tell do
         message = Utility.strip_name(npc, message)
         message = Message.format(message)
         socket |> @socket.echo(Format.send_tell({:npc, npc}, message))
-        Channel.tell({:npc, npc}, {:user, from}, Message.tell(from, message))
+        Channel.tell({:npc, npc}, {:player, from}, Message.tell(from, message))
         {:update, %{state | reply_to: {:npc, npc}}}
     end
   end
@@ -156,7 +156,7 @@ defmodule Game.Command.Tell do
 
     case Gossip.send_tell(state.user.name, game, name, message) do
       :ok ->
-        state.socket |> @socket.echo(Format.send_tell({:user, %{name: player_name}}, message))
+        state.socket |> @socket.echo(Format.send_tell({:player, %{name: player_name}}, message))
         {:update, %{state | reply_to: {:gossip, player_name}}}
 
       {:error, :offline} ->
@@ -179,7 +179,7 @@ defmodule Game.Command.Tell do
   defp reply_to_player(message, reply_to, %{socket: socket, user: from}) do
     player =
       Session.Registry.connected_players()
-      |> Enum.find(fn %{user: player} -> player.id == reply_to.id end)
+      |> Enum.find(fn %{player: player} -> player.id == reply_to.id end)
 
     case player do
       nil ->
@@ -187,8 +187,8 @@ defmodule Game.Command.Tell do
 
       _ ->
         message = Message.format(message)
-        socket |> @socket.echo(Format.send_tell({:user, reply_to}, message))
-        Channel.tell({:user, reply_to}, {:user, from}, Message.tell(from, message))
+        socket |> @socket.echo(Format.send_tell({:player, reply_to}, message))
+        Channel.tell({:player, reply_to}, {:player, from}, Message.tell(from, message))
     end
   end
 
@@ -207,7 +207,7 @@ defmodule Game.Command.Tell do
       _ ->
         message = Message.format(message)
         socket |> @socket.echo(Format.send_tell({:npc, reply_to}, message))
-        Channel.tell({:npc, reply_to}, {:user, from}, Message.tell(from, message))
+        Channel.tell({:npc, reply_to}, {:player, from}, Message.tell(from, message))
     end
   end
 end

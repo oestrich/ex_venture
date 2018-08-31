@@ -19,19 +19,19 @@ defmodule Game.NPC.Conversation do
   Start a conversation by greeting the NPC
   """
   @spec greet(State.t(), User.t()) :: State.t()
-  def greet(state = %{npc: npc}, user) do
+  def greet(state = %{npc: npc}, player) do
     npc = %{npc | id: npc.original_id}
 
     with true <- npc.is_quest_giver,
-         {:ok, quest} <- Quest.next_available_quest_from(npc, user) do
-      _greet(state, user, quest.script, %{quest_id: quest.id})
+         {:ok, quest} <- Quest.next_available_quest_from(npc, player) do
+      _greet(state, player, quest.script, %{quest_id: quest.id})
     else
       _ ->
-        _greet(state, user, npc.script)
+        _greet(state, player, npc.script)
     end
   end
 
-  defp _greet(state = %{npc: npc}, user, script, metadata \\ %{}) do
+  defp _greet(state = %{npc: npc}, player, script, metadata \\ %{}) do
     metadata =
       Map.merge(metadata, %{
         key: "start",
@@ -39,23 +39,23 @@ defmodule Game.NPC.Conversation do
         script: script
       })
 
-    npc |> send_message(user, metadata, "start")
+    npc |> send_message(player, metadata, "start")
 
-    state = %{state | conversations: Map.put(state.conversations, user.id, metadata)}
-    update_conversation_state(state, "start", script, user)
+    state = %{state | conversations: Map.put(state.conversations, player.id, metadata)}
+    update_conversation_state(state, "start", script, player)
   end
 
   @doc """
-  Receive a new message from a user
+  Receive a new message from a player
   """
   @spec recv(State.t(), User.t(), String.t()) :: State.t()
-  def recv(state, user, message) do
-    case Map.get(state.conversations, user.id, nil) do
+  def recv(state, player, message) do
+    case Map.get(state.conversations, player.id, nil) do
       nil ->
-        greet(state, user)
+        greet(state, player)
 
       metadata ->
-        continue_conversation(state, metadata, user, message)
+        continue_conversation(state, metadata, player, message)
     end
   end
 
@@ -64,13 +64,13 @@ defmodule Game.NPC.Conversation do
 
   From `trigger: line`
   """
-  def continue(state, user) do
-    case Map.get(state.conversations, user.id, nil) do
+  def continue(state, player) do
+    case Map.get(state.conversations, player.id, nil) do
       nil ->
         state
 
       metadata ->
-        handle_trigger_next(state, user, metadata)
+        handle_trigger_next(state, player, metadata)
     end
   end
 
@@ -82,57 +82,57 @@ defmodule Game.NPC.Conversation do
   Continue a found conversation
   """
   @spec continue_conversation(State.t(), metadata(), User.t(), String.t()) :: State.t()
-  def continue_conversation(state, metadata, user, message) do
+  def continue_conversation(state, metadata, player, message) do
     case line_from_key(metadata.script, metadata.key) do
       nil ->
         state
 
       conversation ->
-        respond(state, metadata, conversation, user, message)
+        respond(state, metadata, conversation, player, message)
     end
   end
 
   @doc """
-  Respond to a user's message
+  Respond to a player's message
   """
   @spec respond(State.t(), metadata(), Line.t(), User.t(), String.t()) :: String.t()
-  def respond(state = %{npc: npc}, metadata, conversation, user, message) do
+  def respond(state = %{npc: npc}, metadata, conversation, player, message) do
     case find_listener(conversation, message) do
       nil ->
-        maybe_send_unknown(npc, conversation, user)
+        maybe_send_unknown(npc, conversation, player)
 
         state
 
       %{key: key} ->
-        npc |> send_message(user, metadata, key)
-        state |> update_conversation_state(key, metadata.script, user)
+        npc |> send_message(player, metadata, key)
+        state |> update_conversation_state(key, metadata.script, player)
     end
   end
 
-  defp maybe_send_unknown(npc, conversation, user) do
+  defp maybe_send_unknown(npc, conversation, player) do
     case conversation.unknown do
       nil ->
         :ok
 
       unknown ->
         message = Message.npc_tell(npc, Format.resources(unknown))
-        Channel.tell({:user, user}, {:npc, npc}, message)
+        Channel.tell({:player, player}, {:npc, npc}, message)
     end
   end
 
   @doc """
-  Send a tell to a user
+  Send a tell to a player
   """
   @spec send_message(NPC.t(), User.t(), metadata(), String.t()) :: :ok
-  def send_message(npc, user, metadata, key) do
+  def send_message(npc, player, metadata, key) do
     case line_from_key(metadata.script, key) do
       nil ->
         :ok
 
       line ->
         message = Message.npc_tell(npc, Format.resources(line.message))
-        Channel.tell({:user, user}, {:npc, npc}, message)
-        handle_trigger(line, user, metadata)
+        Channel.tell({:player, player}, {:npc, npc}, message)
+        handle_trigger(line, player, metadata)
     end
   end
 
@@ -141,13 +141,13 @@ defmodule Game.NPC.Conversation do
   """
   def handle_trigger(%{trigger: nil}, _, _), do: :ok
 
-  def handle_trigger(%{trigger: "quest"}, user, metadata) do
-    Quest.start_quest(user, metadata.quest_id)
+  def handle_trigger(%{trigger: "quest"}, player, metadata) do
+    Quest.start_quest(player, metadata.quest_id)
   end
 
-  def handle_trigger(%{trigger: %{type: "line", delay: delay}}, user, _metadata) do
+  def handle_trigger(%{trigger: %{type: "line", delay: delay}}, player, _metadata) do
     delay = round(Float.ceil(delay * 1000))
-    Process.send_after(self(), {:conversation, :continue, user}, delay)
+    Process.send_after(self(), {:conversation, :continue, player}, delay)
   end
 
   @doc """
@@ -176,32 +176,32 @@ defmodule Game.NPC.Conversation do
   Update conversation state, possibly clearing out if the conversation ended
   """
   @spec update_conversation_state(State.t(), String.t(), Script.t(), User.t()) :: State.t()
-  def update_conversation_state(state, key, script, user) do
+  def update_conversation_state(state, key, script, player) do
     conversation =
       state.conversations
-      |> Map.get(user.id)
+      |> Map.get(player.id)
       |> Map.put(:key, key)
 
     case line_from_key(script, key) do
       %{trigger: %{type: "line"}} ->
-        %{state | conversations: Map.put(state.conversations, user.id, conversation)}
+        %{state | conversations: Map.put(state.conversations, player.id, conversation)}
 
       %{listeners: []} ->
-        %{state | conversations: Map.delete(state.conversations, user.id)}
+        %{state | conversations: Map.delete(state.conversations, player.id)}
 
       _ ->
-        %{state | conversations: Map.put(state.conversations, user.id, conversation)}
+        %{state | conversations: Map.put(state.conversations, player.id, conversation)}
     end
   end
 
   @doc """
   Handle the next trigger after continuing a conversation
   """
-  def handle_trigger_next(state, user, metadata) do
+  def handle_trigger_next(state, player, metadata) do
     case line_from_key(metadata.script, metadata.key) do
       %{trigger: %{next: key}} ->
-        state.npc |> send_message(user, metadata, key)
-        state |> update_conversation_state(key, metadata.script, user)
+        state.npc |> send_message(player, metadata, key)
+        state |> update_conversation_state(key, metadata.script, player)
 
       _ ->
         state

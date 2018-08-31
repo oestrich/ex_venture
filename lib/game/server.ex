@@ -10,7 +10,7 @@ defmodule Game.Server do
   alias Metrics.PlayerInstrumenter
 
   @tick_interval 10_000
-  @report_users Application.get_env(:ex_venture, :game)[:report_users]
+  @report_players Application.get_env(:ex_venture, :game)[:report_players]
 
   @doc """
   How often the server will send a :tick
@@ -38,13 +38,13 @@ defmodule Game.Server do
   end
 
   def handle_info(:tick, state) do
-    case @report_users do
+    case @report_players do
       true ->
         Config.character_names()
         |> PlayerInstrumenter.set_random_character_name_count()
 
         Session.Registry.connected_players()
-        |> Enum.map(& &1.user)
+        |> Enum.map(& &1.player)
         |> PlayerInstrumenter.set_player_count()
 
       false ->

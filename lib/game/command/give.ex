@@ -113,8 +113,8 @@ defmodule Game.Command.Give do
       {:error, :not_found} ->
         state.socket |> @socket.echo("\"#{character_name}\" could not be found.")
 
-      {:user, player} ->
-        send_item_to_character(state, instance, item, {:user, player})
+      {:player, player} ->
+        send_item_to_character(state, instance, item, {:player, player})
 
       {:npc, npc} ->
         send_item_to_character(state, instance, item, {:npc, npc})
@@ -133,7 +133,7 @@ defmodule Game.Command.Give do
         state.socket
         |> @socket.echo("Gave #{Format.currency(currency)} to #{Format.name(character)}.")
 
-        Character.notify(character, {"currency/receive", {:user, state.user}, currency})
+        Character.notify(character, {"currency/receive", {:player, state.user}, currency})
 
         save = %{save | currency: save.currency - currency}
         user = %{state.user | save: save}
@@ -146,7 +146,7 @@ defmodule Game.Command.Give do
   defp send_item_to_character(state = %{save: save}, instance, item, character) do
     state.socket |> @socket.echo("Gave #{Format.item_name(item)} to #{Format.name(character)}.")
 
-    Character.notify(character, {"item/receive", {:user, state.user}, instance})
+    Character.notify(character, {"item/receive", {:player, state.user}, instance})
 
     items = List.delete(save.items, instance)
     save = %{save | items: items}

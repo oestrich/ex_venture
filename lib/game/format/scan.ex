@@ -50,8 +50,8 @@ defmodule Game.Format.Scan do
   end
 
   defp players(room) do
-    Enum.map(room.players, fn user ->
-      " - #{Format.name({:user, user})}"
+    Enum.map(room.players, fn player ->
+      " - #{Format.name({:player, player})}"
     end)
   end
 end

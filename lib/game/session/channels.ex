@@ -63,7 +63,7 @@ defmodule Game.Session.Channels do
     state
   end
 
-  def maybe_hint_tell(state = %{reply_to: nil}, {:user, _}) do
+  def maybe_hint_tell(state = %{reply_to: nil}, {:player, _}) do
     Hint.gate(state, "tells.new")
     state
   end

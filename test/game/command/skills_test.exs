@@ -179,7 +179,7 @@ defmodule Game.Command.SkillsTest do
     end
 
     test "change your target", %{state: state, save: save, slash: slash} do
-      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:user, 3}}
+      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:player, 3}}
 
       {:skip, :prompt, state} = Skills.run({slash, "slash bandit"}, state)
       assert state.save.stats.skill_points == 8
