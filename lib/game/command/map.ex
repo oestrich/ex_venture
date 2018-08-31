@@ -17,15 +17,15 @@ defmodule Game.Command.Map do
 
   def help(:full) do
     """
-    View the map of the zone your are in. A room is shown as the [ ] symbols. Rooms that
-    are connected by open spaces between the [ ] symbols. Walls are drawn between rooms
-    that are next to each other but do not have an exit connecting them.
+    View the map of the zone your are in. A room is shown as the [ ] symbols. Rooms
+    that are connected by open spaces between the [ ] symbols. Walls are drawn
+    between rooms that are next to each other but do not have an exit connecting them.
 
     Sample map:
 
 
         [ ]   [ ]
-            \  |
+            \\  |
         [ ] - [X]
             /
         [ ]
@@ -36,7 +36,7 @@ defmodule Game.Command.Map do
       [ ] - Room
        -  - Path way
        |  - Path way
-       \  - Path way
+       \\  - Path way
        /  - Path way
 
     Map colors show what the room's ecology might be:
