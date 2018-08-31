@@ -49,13 +49,13 @@ defmodule Game.Command.Who do
 
   defp local_names(players) do
     {admins, players} =
-      Enum.split_with(players, fn %{user: user} ->
-        User.is_admin?(user.extra)
+      Enum.split_with(players, fn %{player: player} ->
+        User.is_admin?(player.extra)
       end)
 
     (admins ++ players)
-    |> Enum.map(fn %{user: user, metadata: metadata} ->
-      Format.Who.player_line(user, metadata)
+    |> Enum.map(fn %{player: player, metadata: metadata} ->
+      Format.Who.player_line(player, metadata)
     end)
     |> Enum.join("\n")
   end
