@@ -9,24 +9,24 @@ defmodule Game.Bugs do
   alias Data.Repo
 
   @doc """
-  Get a list of bugs that a user submitted
+  Get a list of bugs that a player submitted
   """
   @spec reported_by(User.t()) :: [Bug.t()]
-  def reported_by(user) do
+  def reported_by(player) do
     Bug
-    |> where([b], b.reporter_id == ^user.id)
+    |> where([b], b.reporter_id == ^player.id)
     |> order_by([b], asc: b.is_completed)
     |> Repo.all()
   end
 
   @doc """
-  Get a bug scoped by the user
+  Get a bug scoped by the player
   """
   @spec get(User.t(), integer()) :: {:ok, Bug.t()} | {:error, :not_found}
-  def get(user, id) do
+  def get(player, id) do
     bug =
       Bug
-      |> where([b], b.reporter_id == ^user.id)
+      |> where([b], b.reporter_id == ^player.id)
       |> where([b], b.id == ^id)
       |> Repo.one()
 

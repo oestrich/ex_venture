@@ -15,7 +15,7 @@ defmodule Game.Character do
   alias Game.Character.Via
 
   @typedoc """
-  Tagged tuple of a user or npc struct
+  Tagged tuple of a player or npc struct
 
   Valid options:
   - `{:player, player}`
@@ -77,5 +77,5 @@ defmodule Game.Character do
   def who({:npc, id}) when is_integer(id), do: {:npc, id}
   def who({:npc, npc}), do: {:npc, npc.id}
   def who({:player, id}) when is_integer(id), do: {:player, id}
-  def who({:player, user}), do: {:player, user.id}
+  def who({:player, player}), do: {:player, player.id}
 end

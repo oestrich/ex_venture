@@ -15,10 +15,10 @@ defmodule Game.Help do
 
   Which commands can be run.
   """
-  def base(user_flags) do
+  def base(player_flags) do
     commands =
       Command.commands()
-      |> Enum.filter(&allowed?(&1, user_flags))
+      |> Enum.filter(&allowed?(&1, player_flags))
       |> Enum.map(fn command ->
         key = command.help(:topic)
 
@@ -59,11 +59,11 @@ defmodule Game.Help do
   end
 
   @doc """
-  Check if a command is allowed for the user based on their flags
+  Check if a command is allowed for the player based on their flags
   """
   @spec allowed?(Command.t(), [String.t()]) :: boolean()
-  def allowed?(command, user_flags) do
-    Enum.empty?(command.required_flags -- user_flags)
+  def allowed?(command, player_flags) do
+    Enum.empty?(command.required_flags -- player_flags)
   end
 
   defp find_command(topic, flags) do
@@ -74,8 +74,8 @@ defmodule Game.Help do
 
   defp maybe_format_command_help(nil, _), do: nil
 
-  defp maybe_format_command_help(command, user_flags) do
-    case allowed?(command, user_flags) do
+  defp maybe_format_command_help(command, player_flags) do
+    case allowed?(command, player_flags) do
       true ->
         format_command_help(command)
 

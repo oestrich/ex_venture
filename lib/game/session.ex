@@ -26,11 +26,11 @@ defmodule Game.Session do
 
   Creates a session pointing at a socket
   """
-  @spec start_with_user(pid, integer()) :: {:ok, pid}
-  def start_with_user(socket, nil), do: start(socket)
+  @spec start_with_player(pid, integer()) :: {:ok, pid}
+  def start_with_player(socket, nil), do: start(socket)
 
-  def start_with_user(socket, user_id) do
-    Supervisor.start_child(socket, user_id)
+  def start_with_player(socket, player_id) do
+    Supervisor.start_child(socket, player_id)
   end
 
   @doc """

@@ -129,17 +129,17 @@ defmodule Game.Command do
   Parse a string to turn into a command tuple
   """
   @spec parse(String.t(), User.t()) :: t()
-  def parse(command, user)
-  def parse("", _user), do: {:skip, {}}
+  def parse(command, player)
+  def parse("", _player), do: {:skip, {}}
 
-  def parse(command, user) do
+  def parse(command, player) do
     start_parsing_at = Timex.now()
     command =
       command
       |> String.replace(~r/  /, " ")
       |> String.replace(~r/<[^>]*>/, "")
 
-    skill_parse = command |> Skills.parse_skill(user)
+    skill_parse = command |> Skills.parse_skill(player)
 
     case skill_parse do
       {:error, :bad_parse, _} ->

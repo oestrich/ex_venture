@@ -54,10 +54,10 @@ defmodule Game.Session.Process do
     {:ok, state}
   end
 
-  def init([socket, user_id]) do
-    send(self(), {:recover_session, user_id})
+  def init([socket, player_id]) do
+    send(self(), {:recover_session, player_id})
     PlayerInstrumenter.session_recovered()
-    Logger.info("Session recovering (#{user_id}) - #{inspect(self())}", type: :session)
+    Logger.info("Session recovering (#{player_id}) - #{inspect(self())}", type: :session)
     {:ok, clean_state(socket)}
   end
 

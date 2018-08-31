@@ -1,6 +1,6 @@
 defmodule Game.Authentication do
   @moduledoc """
-  Find and validate a user
+  Find and validate a player
   """
   import Ecto.Query
 
@@ -11,12 +11,12 @@ defmodule Game.Authentication do
   alias Game.Account
 
   @doc """
-  Find a user by an id and preload properly
+  Find a player by an id and preload properly
   """
   @spec find_user(integer()) :: nil | User.t()
-  def find_user(user_id) do
+  def find_user(player) do
     User
-    |> where([u], u.id == ^user_id)
+    |> where([u], u.id == ^player)
     |> preloads()
     |> Repo.one()
     |> set_defaults()
@@ -30,14 +30,14 @@ defmodule Game.Authentication do
   end
 
   @doc """
-  Ensure that the user's stats include all required fields. Uses `Data.Stats.default/1`.
+  Ensure that the player's stats include all required fields. Uses `Data.Stats.default/1`.
   """
   @spec set_defaults(nil | User.t()) :: nil | User.t()
-  def set_defaults(user)
+  def set_defaults(player)
   def set_defaults(nil), do: nil
 
-  def set_defaults(user) do
-    stats = user.save.stats |> Stats.default()
-    %{user | save: %{user.save | stats: stats}}
+  def set_defaults(player) do
+    stats = player.save.stats |> Stats.default()
+    %{player | save: %{player.save | stats: stats}}
   end
 end
