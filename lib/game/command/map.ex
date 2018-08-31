@@ -23,19 +23,21 @@ defmodule Game.Command.Map do
 
     Sample map:
 
-           +---+
-           |[ ]|
-       +---+   +---+
-       |[ ]=[X]=[ ]|
-       +---+   +---+
-           |[ ]|
-           +---+
+
+        [ ]   [ ]
+            \  |
+        [ ] - [X]
+            /
+        [ ]
+
 
     Map Legend:
        X  - You
       [ ] - Room
-       =  - Closed Door
-       /  - Open Door
+       -  - Path way
+       |  - Path way
+       \  - Path way
+       /  - Path way
 
     Map colors show what the room's ecology might be:
     {map:blue}[ ]{/map:blue} - Ocean, lake, or river
