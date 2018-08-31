@@ -95,7 +95,7 @@ defmodule Game.Command.Config do
         update_config(config_name, true, state)
 
       false ->
-        state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
+        state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\".")
     end
   end
 
@@ -105,7 +105,7 @@ defmodule Game.Command.Config do
         update_config(config_name, false, state)
 
       false ->
-        state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
+        state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\".")
     end
   end
 
@@ -127,7 +127,7 @@ defmodule Game.Command.Config do
         end
 
       false ->
-        state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\"")
+        state.socket |> @socket.echo("Unknown configuration option, \"#{config_name}\".")
     end
   end
 
@@ -166,16 +166,16 @@ defmodule Game.Command.Config do
 
     case value do
       true ->
-        state.socket |> @socket.echo("#{config_name} is turned on")
+        state.socket |> @socket.echo("#{config_name} is turned on.")
 
       false ->
-        state.socket |> @socket.echo("#{config_name} is turned off")
+        state.socket |> @socket.echo("#{config_name} is turned off.")
 
       string when is_binary(string) ->
-        state.socket |> @socket.echo("#{config_name} is set to \"#{string}\"")
+        state.socket |> @socket.echo("#{config_name} is set to \"#{string}\".")
 
       integer when is_integer(integer) ->
-        state.socket |> @socket.echo("#{config_name} is set to \"#{integer}\"")
+        state.socket |> @socket.echo("#{config_name} is set to \"#{integer}\".")
     end
 
     state |> push_config(config)

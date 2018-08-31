@@ -414,7 +414,7 @@ defmodule Game.Session.Process do
         state = %{state | is_afk: true}
         Session.Registry.update(%{state.user | save: state.save}, state)
 
-        state.socket |> @socket.echo("You seem to be idle, setting you to {command}AFK{/command}")
+        state.socket |> @socket.echo("You seem to be idle, setting you to {command}AFK{/command}.")
         Hint.gate(state, "afk.started")
 
         state

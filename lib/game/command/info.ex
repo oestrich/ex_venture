@@ -66,7 +66,7 @@ defmodule Game.Command.Info do
         :ok
 
       {:error, :not_found} ->
-        socket |> @socket.echo("Could not find a player with the name \"#{name}\"")
+        socket |> @socket.echo("Could not find a player with the name \"#{name}\".")
         :ok
     end
   end

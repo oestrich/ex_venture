@@ -81,8 +81,7 @@ defmodule Game.Command.Wear do
         slot |> String.to_atom() |> run_remove(state)
 
       false ->
-        socket |> @socket.echo("Unknown armor slot")
-        :ok
+        socket |> @socket.echo("Unknown armor slot.")
     end
   end
 
@@ -115,7 +114,6 @@ defmodule Game.Command.Wear do
 
       false ->
         socket |> @socket.echo("Nothing was on your #{slot}.")
-        :ok
     end
   end
 

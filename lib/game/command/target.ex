@@ -114,7 +114,7 @@ defmodule Game.Command.Target do
         socket |> @socket.echo("Your target could not be found.")
 
       npc ->
-        socket |> @socket.echo("Your target is #{Format.npc_name(npc)}")
+        socket |> @socket.echo("Your target is #{Format.npc_name(npc)}.")
     end
   end
 
@@ -124,7 +124,7 @@ defmodule Game.Command.Target do
         socket |> @socket.echo("Your target could not be found.")
 
       user ->
-        socket |> @socket.echo("Your target is #{Format.player_name(user)}")
+        socket |> @socket.echo("Your target is #{Format.player_name(user)}.")
     end
   end
 

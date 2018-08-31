@@ -70,7 +70,7 @@ defmodule Game.Session.CreateAccount do
         Map.merge(state, %{create: %{name: name, email: email, race: race, class: class}})
 
       false ->
-        socket |> @socket.echo("Invalid email, please enter again")
+        socket |> @socket.echo("Invalid email, please enter again.")
         socket |> email_prompt()
         Map.merge(state, %{create: %{name: name, race: race, class: class}})
     end
@@ -111,7 +111,7 @@ defmodule Game.Session.CreateAccount do
   def process(name, state = %{socket: socket}) do
     case String.contains?(name, " ") do
       true ->
-        socket |> @socket.echo("Your name cannot contain spaces. Please pick a new one")
+        socket |> @socket.echo("Your name cannot contain spaces. Please pick a new one.")
         socket |> @socket.prompt("Name: ")
         state
 

@@ -79,7 +79,7 @@ defmodule Game.Command.Drop do
 
   defp _drop_currency(amount, state = %{socket: socket, save: %{currency: currency}}) do
     save = %{state.save | currency: currency - amount}
-    socket |> @socket.echo("You dropped #{amount} #{currency()}")
+    socket |> @socket.echo("You dropped #{amount} #{currency()}.")
     @environment.drop_currency(save.room_id, {:user, state.user}, amount)
 
     {:update, Map.put(state, :save, save)}
@@ -90,7 +90,7 @@ defmodule Game.Command.Drop do
 
     case Enum.find(items, &Item.matches_lookup?(&1, item_name)) do
       nil ->
-        socket |> @socket.echo(~s(Could not find "#{item_name}"))
+        socket |> @socket.echo(~s(Could not find "#{item_name}".))
 
       item ->
         _drop_item(item, state)
@@ -102,7 +102,7 @@ defmodule Game.Command.Drop do
     save = %{save | items: items}
     @environment.drop(save.room_id, {:user, user}, instance)
 
-    socket |> @socket.echo("You dropped #{Format.item_name(item)}")
+    socket |> @socket.echo("You dropped #{Format.item_name(item)}.")
 
     {:update, Map.put(state, :save, save)}
   end

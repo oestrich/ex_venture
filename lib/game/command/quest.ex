@@ -157,7 +157,7 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo("You have not started this quest to start tracking it.")
 
       {:ok, progress} ->
-        socket |> @socket.echo("You are tracking #{Format.quest_name(progress.quest)}")
+        socket |> @socket.echo("You are tracking #{Format.quest_name(progress.quest)}.")
     end
 
     :ok

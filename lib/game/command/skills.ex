@@ -274,7 +274,7 @@ defmodule Game.Command.Skills do
         {:skip, :prompt, state}
 
       {:error, _} ->
-        socket |> @socket.echo(~s(You don't have enough skill points to use "#{skill.command}"))
+        socket |> @socket.echo(~s(You don't have enough skill points to use "#{skill.command}".))
         {:update, state}
     end
   end

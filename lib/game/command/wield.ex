@@ -64,7 +64,7 @@ defmodule Game.Command.Wield do
         state.socket |> @socket.echo(message)
 
       {:error, :cannot_wield, item} ->
-        state.socket |> @socket.echo(~s(#{Format.item_name(item)} cannot be wielded))
+        state.socket |> @socket.echo(~s(#{Format.item_name(item)} cannot be wielded.))
 
       {:error, :not_found} ->
         state.socket |> @socket.echo(~s("#{item_name}" could not be found."))

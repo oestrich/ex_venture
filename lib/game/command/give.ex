@@ -111,7 +111,7 @@ defmodule Game.Command.Give do
   defp maybe_give_to_character(state, room, instance, item, character_name) do
     case find_character(room, character_name) do
       {:error, :not_found} ->
-        state.socket |> @socket.echo("\"#{character_name}\" could not be found")
+        state.socket |> @socket.echo("\"#{character_name}\" could not be found.")
 
       {:user, player} ->
         send_item_to_character(state, instance, item, {:user, player})
@@ -126,12 +126,12 @@ defmodule Game.Command.Give do
       false ->
         state.socket
         |> @socket.echo(
-          "You do not have enough #{currency()} to give to #{Format.name(character)}"
+          "You do not have enough #{currency()} to give to #{Format.name(character)}."
         )
 
       true ->
         state.socket
-        |> @socket.echo("Gave #{Format.currency(currency)} to #{Format.name(character)}")
+        |> @socket.echo("Gave #{Format.currency(currency)} to #{Format.name(character)}.")
 
         Character.notify(character, {"currency/receive", {:user, state.user}, currency})
 
@@ -144,7 +144,7 @@ defmodule Game.Command.Give do
   end
 
   defp send_item_to_character(state = %{save: save}, instance, item, character) do
-    state.socket |> @socket.echo("Gave #{Format.item_name(item)} to #{Format.name(character)}")
+    state.socket |> @socket.echo("Gave #{Format.item_name(item)} to #{Format.name(character)}.")
 
     Character.notify(character, {"item/receive", {:user, state.user}, instance})
 

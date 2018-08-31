@@ -54,7 +54,7 @@ defmodule Game.Session.Character do
   def notify(state, event)
 
   def notify(state, {"character/died", character, :character, who}) do
-    state.socket |> @socket.echo("#{Format.name(character)} has died")
+    state.socket |> @socket.echo("#{Format.name(character)} has died.")
     state |> GMCP.character_leave(character)
 
     # see if who is you
@@ -88,7 +88,7 @@ defmodule Game.Session.Character do
 
       false ->
         state.socket
-        |> @socket.echo("#{Format.name(character)} dropped #{Format.currency(currency)}")
+        |> @socket.echo("#{Format.name(character)} dropped #{Format.currency(currency)}.")
 
         state
     end
@@ -96,7 +96,7 @@ defmodule Game.Session.Character do
 
   def notify(state = %{save: save}, {"currency/receive", character, currency}) do
     state.socket
-    |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}")
+    |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}.")
 
     save = %{save | currency: save.currency + currency}
     user = %{state.user | save: save}
@@ -110,7 +110,7 @@ defmodule Game.Session.Character do
 
       false ->
         state.socket
-        |> @socket.echo("#{Format.name(character)} dropped #{Format.item_name(item)}")
+        |> @socket.echo("#{Format.name(character)} dropped #{Format.item_name(item)}.")
 
         state
     end
@@ -120,7 +120,7 @@ defmodule Game.Session.Character do
     item = Items.item(instance)
 
     state.socket
-    |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}")
+    |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}.")
 
     save = %{save | items: [instance | save.items]}
     user = %{state.user | save: save}
@@ -129,7 +129,7 @@ defmodule Game.Session.Character do
 
   def notify(state, {"mail/new", mail}) do
     state.socket
-    |> @socket.echo("You have new mail. {command}mail read #{mail.id}{/command} to read it")
+    |> @socket.echo("You have new mail. {command}mail read #{mail.id}{/command} to read it.")
 
     state |> GMCP.mail_new(mail)
     state
@@ -170,13 +170,13 @@ defmodule Game.Session.Character do
         )
 
       :teleport ->
-        state.socket |> @socket.echo("#{Format.name(character)} warps in")
+        state.socket |> @socket.echo("#{Format.name(character)} warps in.")
 
       :login ->
-        state.socket |> @socket.echo("#{Format.name(character)} logs in")
+        state.socket |> @socket.echo("#{Format.name(character)} logs in.")
 
       :respawn ->
-        state.socket |> @socket.echo("#{Format.name(character)} respawns")
+        state.socket |> @socket.echo("#{Format.name(character)} respawns.")
     end
 
     state |> GMCP.character_enter(character)
@@ -192,7 +192,7 @@ defmodule Game.Session.Character do
         )
 
       :signout ->
-        state.socket |> @socket.echo("#{Format.name(character)} signs out")
+        state.socket |> @socket.echo("#{Format.name(character)} signs out.")
 
       :teleport ->
         :ok
@@ -241,7 +241,7 @@ defmodule Game.Session.Character do
 
   def notify(state, {"quest/new", quest}) do
     state.socket
-    |> @socket.echo("You received a new quest, #{Format.quest_name(quest)} (#{quest.id})")
+    |> @socket.echo("You received a new quest, #{Format.quest_name(quest)} (#{quest.id}).")
 
     Hint.gate(state, "quests.new", id: quest.id)
 
@@ -328,12 +328,12 @@ defmodule Game.Session.Character do
     state =
       case Experience.apply(state, level: level, experience_points: experience_points) do
         {:ok, experience, state} ->
-          state.socket |> @socket.echo("You received #{experience} experience points")
+          state.socket |> @socket.echo("You received #{experience} experience points.")
 
           state
 
         {:ok, :level_up, experience, state} ->
-          state.socket |> @socket.echo("You received #{experience} experience points")
+          state.socket |> @socket.echo("You received #{experience} experience points.")
           state.socket |> @socket.echo("You leveled up!")
 
           state

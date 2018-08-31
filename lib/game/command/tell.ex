@@ -183,7 +183,7 @@ defmodule Game.Command.Tell do
 
     case player do
       nil ->
-        socket |> @socket.echo(~s["#{reply_to.name}" is not online])
+        socket |> @socket.echo(~s["#{reply_to.name}" is not online.])
 
       _ ->
         message = Message.format(message)
@@ -202,7 +202,7 @@ defmodule Game.Command.Tell do
 
     case npc do
       nil ->
-        socket |> @socket.echo("Could not find #{Format.npc_name(reply_to)}")
+        socket |> @socket.echo("Could not find #{Format.npc_name(reply_to)}.")
 
       _ ->
         message = Message.format(message)

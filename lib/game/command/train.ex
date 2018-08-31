@@ -97,13 +97,11 @@ defmodule Game.Command.Train do
 
       {:error, :more_than_one_trainer} ->
         state.socket
-        |> @socket.echo("There are more than one trainer in this room. Please refer by name")
+        |> @socket.echo("There are more than one trainer in this room. Please refer by name.")
 
       {:error, :not_found} ->
         state.socket |> @socket.echo("There are no trainers in this room. Go find some!")
     end
-
-    :ok
   end
 
   def run({:list, name}, state = %{save: save}) do
@@ -118,8 +116,6 @@ defmodule Game.Command.Train do
         state.socket
         |> @socket.echo("There are no trainers by that name in this room. Go find them!")
     end
-
-    :ok
   end
 
   def run({:train, skill_name}, state = %{save: save}) do
@@ -131,13 +127,10 @@ defmodule Game.Command.Train do
 
       {:error, :more_than_one_trainer} ->
         state.socket
-        |> @socket.echo("There are more than one trainer in this room. Please refer by name")
-
-        :ok
+        |> @socket.echo("There are more than one trainer in this room. Please refer by name.")
 
       {:error, :not_found} ->
         state.socket |> @socket.echo("There are no trainers in this room. Go find some!")
-        :ok
     end
   end
 
@@ -151,8 +144,6 @@ defmodule Game.Command.Train do
       {:error, :not_found} ->
         state.socket
         |> @socket.echo("There are no trainers by that name in this room. Go find them!")
-
-        :ok
     end
   end
 
@@ -173,8 +164,7 @@ defmodule Game.Command.Train do
 
     case skill do
       nil ->
-        state.socket |> @socket.echo("Could not find skill \"#{skill_name}\"")
-        :ok
+        state.socket |> @socket.echo("Could not find skill \"#{skill_name}\".")
 
       skill ->
         skill
