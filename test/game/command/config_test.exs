@@ -32,6 +32,13 @@ defmodule Game.Command.ConfigTest do
       assert Regex.match?(~r/on/, echo)
     end
 
+    test "cannot turn on settable config options - like pager_size", %{state: state} do
+      :ok = Config.run({:on, "pager_size"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/cannot/i, echo)
+    end
+
     test "the key is not found - skips", %{state: state} do
       :ok = Config.run({:on, "missing"}, state)
 
@@ -50,6 +57,13 @@ defmodule Game.Command.ConfigTest do
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r/off/, echo)
+    end
+
+    test "cannot turn off settable config options - like pager_size", %{state: state} do
+      :ok = Config.run({:off, "pager_size"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/cannot/i, echo)
     end
 
     test "the key is not found - skips", %{state: state} do

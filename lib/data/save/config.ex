@@ -12,11 +12,20 @@ defmodule Data.Save.Config do
   @spec option?(String.t() | atom()) :: boolean()
   def option?(config) do
     case to_string(config) do
-      "prompt" -> true
-      "hints" -> true
-      "pager_size" -> true
-      "regen_notifications" -> true
-      config -> color_config?(config)
+      "prompt" ->
+        true
+
+      "hints" ->
+        true
+
+      "pager_size" ->
+        true
+
+      "regen_notifications" ->
+        true
+
+      config ->
+        color_config?(config)
     end
   end
 
@@ -26,9 +35,14 @@ defmodule Data.Save.Config do
   @spec settable?(String.t() | atom()) :: boolean()
   def settable?(config) do
     case to_string(config) do
-      "prompt" -> true
-      "pager_size" -> true
-      config -> color_config?(config)
+      "prompt" ->
+        true
+
+      "pager_size" ->
+        true
+
+      config ->
+        color_config?(config)
     end
   end
 
