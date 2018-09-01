@@ -64,8 +64,7 @@ defmodule Game.Command.Run do
 
   # run without directions
   def run({}, %{socket: socket}) do
-    socket |> @socket.echo("You run in place.")
-    :ok
+    socket |> @socket.echo(gettext("You run in place."))
   end
 
   @doc """
@@ -74,8 +73,8 @@ defmodule Game.Command.Run do
   def move([direction | directions], state) do
     case Move.run({:move, direction}, state) do
       {:error, :no_exit} ->
-        state.socket |> @socket.echo("Could not move #{direction}, no exit found.")
-        :ok
+        message = gettext("Could not move %{direction}, no exit found.", direction: direction)
+        state.socket |> @socket.echo(message)
 
       {:error, :no_movement} ->
         :ok

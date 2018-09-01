@@ -85,7 +85,7 @@ defmodule Game.Command.Quest do
   def run({:list, :active}, %{socket: socket, user: user}) do
     case Quest.for(user) do
       [] ->
-        socket |> @socket.echo("You have no active quests.")
+        socket |> @socket.echo(gettext("You have no active quests."))
 
       quests ->
         socket |> @socket.echo(Format.quest_progress(quests))
@@ -97,7 +97,7 @@ defmodule Game.Command.Quest do
   def run({:show, :tracked}, %{socket: socket, user: user, save: save}) do
     case Quest.current_tracked_quest(user) do
       nil ->
-        socket |> @socket.echo("You do not have have a tracked quest.")
+        socket |> @socket.echo(gettext("You do not have have a tracked quest."))
 
       progress ->
         socket |> @socket.echo(Format.quest_detail(progress, save))
@@ -111,14 +111,14 @@ defmodule Game.Command.Quest do
       {:ok, quest_id} ->
         case Quest.progress_for(user, quest_id) do
           nil ->
-            socket |> @socket.echo("You have not started this quest.")
+            socket |> @socket.echo(gettext("You have not started this quest."))
 
           progress ->
             socket |> @socket.echo(Format.quest_detail(progress, save))
         end
 
       :error ->
-        socket |> @socket.echo("Could not parse the quest ID, please try again.")
+        socket |> @socket.echo(gettext("Could not parse the quest ID, please try again."))
     end
 
     :ok
@@ -139,8 +139,7 @@ defmodule Game.Command.Quest do
   def run({:complete, quest_id}, state = %{socket: socket, user: user}) do
     case Quest.progress_for(user, quest_id) do
       nil ->
-        socket |> @socket.echo("You have not started this quest.")
-        :ok
+        socket |> @socket.echo(gettext("You have not started this quest."))
 
       progress ->
         progress
@@ -154,13 +153,12 @@ defmodule Game.Command.Quest do
   def run({:track, quest_id}, %{socket: socket, user: user}) do
     case Quest.track_quest(user, quest_id) do
       {:error, :not_started} ->
-        socket |> @socket.echo("You have not started this quest to start tracking it.")
+        socket |> @socket.echo(gettext("You have not started this quest to start tracking it."))
 
       {:ok, progress} ->
-        socket |> @socket.echo("You are tracking #{Format.quest_name(progress.quest)}.")
+        message = gettext("You are tracking %{name}.", name: Format.quest_name(progress.quest))
+        socket |> @socket.echo(message)
     end
-
-    :ok
   end
 
   @doc """
@@ -173,8 +171,7 @@ defmodule Game.Command.Quest do
         progress
 
       _ ->
-        state.socket |> @socket.echo("This quest is already complete.")
-        :ok
+        state.socket |> @socket.echo(gettext("This quest is already complete."))
     end
   end
 
@@ -196,12 +193,8 @@ defmodule Game.Command.Quest do
 
     case npc do
       nil ->
-        socket
-        |> @socket.echo(
-          "The quest giver #{Format.npc_name(progress.quest.giver)} cannot be found."
-        )
-
-        :ok
+        message = gettext("The quest giver %{name} cannot be found.", name: Format.npc_name(progress.quest.giver))
+        socket |> @socket.echo(message)
 
       _ ->
         {progress, npc}
@@ -223,12 +216,11 @@ defmodule Game.Command.Quest do
       false ->
         response =
           Format.wrap_lines([
-            "You have not completed the requirements for the quest.",
-            "See {command}quest info #{progress.quest_id}{/command} for your current progress."
+            gettext("You have not completed the requirements for the quest."),
+            gettext("See {command}quest info %{id}{/command} for your current progress.)", id: progress.quest_id)
           ])
 
         state.socket |> @socket.echo(response)
-        :ok
     end
   end
 
@@ -253,16 +245,15 @@ defmodule Game.Command.Quest do
         {:update, state}
 
       _ ->
-        socket
-        |> @socket.echo(
-          "Something went wrong, please contact the administrators if you encounter a problem again."
-        )
+        message = 
+          gettext("Something went wrong, please contact the administrators if you encounter a problem again.")
+
+        socket |> @socket.echo(message)
     end
   end
 
   defp find_active_quests_for_room([], _npc_ids, socket) do
-    socket |> @socket.echo("You have no quests to complete")
-    :ok
+    socket |> @socket.echo(gettext("You have no quests to complete"))
   end
 
   defp find_active_quests_for_room(quest_progress, npc_ids, _) do
@@ -282,10 +273,10 @@ defmodule Game.Command.Quest do
   defp maybe_complete(:ok, _), do: :ok
 
   defp maybe_complete(nil, %{socket: socket}) do
-    socket
-    |> @socket.echo(
-      "You cannot complete a quest in this room. Find the quest giver or complete required steps."
-    )
+    message =
+      gettext("You cannot complete a quest in this room. Find the quest giver or complete required steps.")
+
+    socket |> @socket.echo(message)
   end
 
   defp maybe_complete(progress, state), do: run({:complete, progress.quest_id}, state)

@@ -22,7 +22,7 @@ msgid "You are passed out and cannot perform this action."
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/bug.ex:70
+#: lib/game/command/bug.ex:70 lib/game/command/typo.ex:39
 msgid "Please enter in any more information you have (an empty new line will finish entering text): "
 msgstr ""
 
@@ -217,7 +217,7 @@ msgstr ""
 msgid "You do not have enough experience to spend to hone %{stat}."
 msgstr ""
 
-#, elixir-format, fuzzy
+#, elixir-format
 #: lib/game/command/greet.ex:81 lib/game/command/greet.ex:95
 msgid "You greet %{name}."
 msgstr ""
@@ -227,7 +227,7 @@ msgstr ""
 msgid "You honed your %{stat}. It is now at %{stat_value}!"
 msgstr ""
 
-#, elixir-format, fuzzy
+#, elixir-format
 #: lib/game/command/look.ex:236
 msgid "Could not find \"%{name}\"."
 msgstr ""
@@ -250,4 +250,479 @@ msgstr ""
 #, elixir-format
 #: lib/game/command/listen.ex:85
 msgid "There is no exit that direction to listen to."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pick_up.ex:89
+msgid "\"%{currency}\" could not be found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pick_up.ex:127 lib/game/command/pick_up.ex:131
+#: lib/game/command/socials.ex:117 lib/game/command/socials.ex:130
+#: lib/game/command/use.ex:54
+msgid "\"%{name}\" could not be found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/mail.ex:98
+msgid "Could not find \"%{player}\"."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/mail.ex:108
+msgid "Mail:"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pager.ex:61
+msgid "Pager"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/move.ex:258
+msgid "The door was already closed."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/move.ex:242
+msgid "The door was already open."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/mail.ex:76
+msgid "The mail requested could not be found. Please try again."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/mistake.ex:43
+msgid "There is no auto combat. Please read {command}help combat{/command} for more information."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/move.ex:130 lib/game/command/move.ex:147
+msgid "There is no door %{direction}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/move.ex:133 lib/game/command/move.ex:150
+msgid "There is no exit %{direction}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pick_up.ex:85
+msgid "There was no %{currency} to be found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pick_up.ex:112
+msgid "There was nothing to pick up."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/move.ex:180
+msgid "You cannot move while a skill is cooling down."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/move.ex:255
+msgid "You closed the door."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pick_up.ex:138
+msgid "You don't know what to %{verb}. See {command}help get{/command} for more information."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/mail.ex:66
+msgid "You have no unread mail."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/move.ex:239
+msgid "You opened the door."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pick_up.ex:121 lib/game/command/pick_up.ex:150
+msgid "You picked up the %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/pick_up.ex:80 lib/game/command/pick_up.ex:100
+msgid "You picked up {item}%{amount} %{currency}{/item}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wear.ex:74 lib/game/command/wield.ex:71
+msgid "\"%{name}\" could not be found.\""
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:151 lib/game/command/tell.ex:188
+msgid "\"%{name}\" is not online."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wield.ex:67
+msgid "%{name} cannot be wielded."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/target.ex:92
+msgid "%{name} could not be targeted."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/use.ex:59
+msgid "%{name} could not be used"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:183
+msgid "%{name} is already known."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wield.ex:101
+msgid "%{name} is now in your %{hand} hand."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:224
+msgid "%{name} trained successfully! %{cost} XP spent."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:320
+msgid "%{shop} does not have enough of %{item} for you to buy."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:208
+msgid "Could not find %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:170
+msgid "Could not find skill \"%{name}\"."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/target.ex:56
+msgid "Could not find target \"%{name}\"."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/run.ex:76
+msgid "Could not move %{direction}, no exit found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:121
+msgid "Could not parse the quest ID, please try again."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:164
+msgid "Error: Gossip is offline."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:176
+msgid "Error: Gossip responded with \"%{message}\"."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quit.ex:46
+msgid "Good bye."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/say.ex:146 lib/game/command/whisper.ex:56
+msgid "No character could be found matching your text."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wear.ex:122
+msgid "Nothing was on your %{slot}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/socials.ex:131
+msgid "Please make sure to enter the social command. See {command}socials{/command} for the list."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/typo.ex:33
+msgid "Please provide a typo title. See {command}help typo{/command} for more information."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/recall.ex:81
+msgid "Recalling to the zone's graveyard..."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:220
+msgid "See {command}quest info %{id}{/command} for your current progress.)"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:249
+msgid "Something went wrong, please contact the administrators if you encounter a problem again."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:350
+msgid "The \"%{item}\" could not be found in %{shop}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:311 lib/game/command/shops.ex:340
+msgid "The \"%{name}\" item could not be found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:196
+msgid "The quest giver %{name} cannot be found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:173
+msgid "The remote game does not support tells."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:167
+msgid "The remote game is offline."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:170
+msgid "The remote player is offline."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:159 lib/game/command/shops.ex:189
+#: lib/game/command/shops.ex:219 lib/game/command/shops.ex:249
+msgid "The shop could not be found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:100 lib/game/command/train.ex:131
+msgid "There are more than one trainer in this room. Please refer by name."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:123 lib/game/command/shops.ex:130
+msgid "There are no shops here."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:118 lib/game/command/train.ex:148
+msgid "There are no trainers by that name in this room. Go find them!"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:104 lib/game/command/train.ex:135
+msgid "There are no trainers in this room. Go find some!"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/tell.ex:65
+msgid "There is no one to reply to."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/typo.ex:93
+msgid "There was an issue creating the typo."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:174
+msgid "This quest is already complete."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wear.ex:87
+msgid "Unknown armor slot."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wield.ex:85
+msgid "Unknown hand"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:136
+msgid "Unknown usage of the shop(s) command. Please see {command}help shops{/command} for more information."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/skills.ex:191
+msgid "You are not high enough level to use this skill."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:196
+msgid "You are not ready to learn %{name}. Go experience the world more."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/use.ex:48
+msgid "You are not sure what to use. See {command}help use{/command} for more information."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/target.ex:75 lib/game/command/target.ex:98
+msgid "You are now targeting %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wear.ex:101
+msgid "You are now wearing %{name}"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/skills.ex:164
+msgid "You are too low of a level to use %{skill}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:159
+msgid "You are tracking %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:304
+msgid "You bought %{item} from %{shop}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:277
+msgid "You cannot complete a quest in this room. Find the quest giver or complete required steps."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/recall.ex:86
+msgid "You cannot recall here."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wear.ex:66
+msgid "You cannot wear \"%{name}\", you are not high enough level."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wear.ex:70
+msgid "You cannot wear %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wield.ex:63
+msgid "You cannot wield %{name}, you are not high enough level."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:315
+msgid "You do not have enough %{currency} for %{item}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/recall.ex:61
+msgid "You do not have enough endurance points to recall. You must have at least %{points}ep first."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:215
+msgid "You do not have enough experience to spend to train %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:100
+msgid "You do not have have a tracked quest."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/skills.ex:169
+msgid "You do not know %{skill}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/skills.ex:160 lib/game/command/target.ex:112
+msgid "You don't have a target."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/skills.ex:276
+msgid "You don't have enough skill points to use \"%{skill}\"."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/train.ex:95
+msgid "You have %{xp} XP to spend."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:88
+msgid "You have no active quests."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:256
+msgid "You have no quests to complete"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:219
+msgid "You have not completed the requirements for the quest."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:156
+msgid "You have not started this quest to start tracking it."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/quest.ex:114 lib/game/command/quest.ex:142
+msgid "You have not started this quest."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wear.ex:116
+msgid "You removed %{name} from your %{slot}"
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/run.ex:67
+msgid "You run in place."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/wield.ex:112
+msgid "Your %{hand} hand is now empty."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/skills.ex:188 lib/game/command/target.ex:118
+#: lib/game/command/target.ex:129
+msgid "Your target could not be found."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/target.ex:121 lib/game/command/target.ex:132
+msgid "Your target is %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/typo.ex:84
+msgid "Your typo has been submitted. Thanks!"
+msgstr ""
+
+#, elixir-format, fuzzy
+#: lib/game/command/shops.ex:146 lib/game/command/shops.ex:176
+#: lib/game/command/shops.ex:206 lib/game/command/shops.ex:236
+msgid "The \"%{name}\" shop could not be found."
 msgstr ""

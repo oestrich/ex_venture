@@ -44,22 +44,20 @@ defmodule Game.Command.Use do
   end
 
   def run({}, %{socket: socket}) do
-    socket
-    |> @socket.echo(
-      "You are not sure what to use. See {command}help use{/command} for more information."
-    )
+    message =
+      gettext("You are not sure what to use. See {command}help use{/command} for more information.")
 
-    :ok
+    socket |> @socket.echo(message)
   end
 
   defp item_not_found(socket, item_name) do
-    socket |> @socket.echo(~s("#{item_name}" could not be found.))
-    :ok
+    message = gettext(~s("%{name}" could not be found.), name: item_name)
+    socket |> @socket.echo(message)
   end
 
   defp use_item(%{socket: socket}, {_, item = %{is_usable: false}}) do
-    socket |> @socket.echo("#{Format.item_name(item)} could not be used")
-    :ok
+    message = gettext("%{name} could not be used", name: Format.item_name(item))
+    socket |> @socket.echo(message)
   end
 
   defp use_item(state = %{socket: socket, user: user, save: save}, {instance, item}) do

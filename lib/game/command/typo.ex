@@ -29,19 +29,15 @@ defmodule Game.Command.Typo do
   def run(command, state)
 
   def run({}, %{socket: socket}) do
-    socket
-    |> @socket.echo(
-      "Please provide a typo title. See {command}help typo{/command} for more information."
-    )
-
-    :ok
+    message = 
+      gettext("Please provide a typo title. See {command}help typo{/command} for more information.")
+    socket |> @socket.echo(message)
   end
 
   def run({typo_title}, state = %{socket: socket}) do
-    socket
-    |> @socket.echo(
-      "Please enter in any more information you have (an empty new line will finish entering text): "
-    )
+    message =
+      gettext("Please enter in any more information you have (an empty new line will finish entering text): ")
+    socket |> @socket.echo(message)
 
     commands =
       state
@@ -85,7 +81,7 @@ defmodule Game.Command.Typo do
 
     case changeset |> Repo.insert() do
       {:ok, _typo} ->
-        socket |> @socket.echo("Your typo has been submitted. Thanks!")
+        socket |> @socket.echo(gettext("Your typo has been submitted. Thanks!"))
 
       {:error, changeset} ->
         error =
@@ -94,7 +90,8 @@ defmodule Game.Command.Typo do
             "#{field} #{human_error}"
           end)
 
-        socket |> @socket.echo("There was an issue creating the typo.\n#{error}")
+        message = gettext("There was an issue creating the typo.")
+        socket |> @socket.echo("#{message}\n#{error}")
     end
   end
 end
