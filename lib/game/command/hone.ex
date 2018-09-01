@@ -75,7 +75,8 @@ defmodule Game.Command.Hone do
   def run({:hone, stat}, state) do
     case parse_stat(stat) do
       {:error, :bad_stat} ->
-        state.socket |> @socket.echo("\"#{stat}\" is not a stat you can hone.")
+        message = gettext("\"%{stat}\" is not a stat you can hone.", stat: stat)
+        state.socket |> @socket.echo(message)
 
       {:ok, stat} ->
         state
@@ -173,8 +174,8 @@ defmodule Game.Command.Hone do
         state
 
       false ->
-        state.socket
-        |> @socket.echo("You do not have enough experience to spend to hone #{stat}.")
+        message = gettext("You do not have enough experience to spend to hone %{stat}.", stat: stat)
+        state.socket |> @socket.echo(message)
     end
   end
 
@@ -189,7 +190,8 @@ defmodule Game.Command.Hone do
     user = %{user | save: save}
     state = %{state | user: user, save: save}
 
-    state.socket |> @socket.echo("You honed your #{stat}. It is now at #{stat_at(save, stat)}!")
+    message = gettext("You honed your %{stat}. It is now at %{stat_value}!", stat: stat, stat_value: stat_at(save, stat))
+    state.socket |> @socket.echo(message)
 
     {:update, state}
   end

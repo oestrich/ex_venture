@@ -45,7 +45,7 @@ defmodule Game.Command.Debug do
         state.socket |> @socket.echo(String.trim(debug()))
 
       false ->
-        state.socket |> @socket.echo("You must be an admin to use this command.")
+        state.socket |> @socket.echo(gettext("You must be an admin to use this command."))
     end
   end
 

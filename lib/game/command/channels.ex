@@ -79,7 +79,8 @@ defmodule Game.Command.Channels do
       |> Enum.map(&"  - {#{&1.color}}#{&1.name}{/#{&1.color}}")
       |> Enum.join("\n")
 
-    socket |> @socket.echo("You are subscribed to:\n#{channels}")
+    message = gettext("You are subscribed to:")
+    socket |> @socket.echo("#{message}\n#{channels}")
   end
 
   def run({:join, channel}, state = %{user: user}) do
@@ -88,7 +89,7 @@ defmodule Game.Command.Channels do
       Channel.join(channel.name)
     else
       _ ->
-        state.socket |> @socket.echo("You are already part of this channel.")
+        state.socket |> @socket.echo(gettext("You are already part of this channel."))
     end
   end
 
@@ -96,10 +97,10 @@ defmodule Game.Command.Channels do
     case get_joined_channel(channel, state) do
       {:ok, channel} ->
         Channel.leave(channel.name)
-        state.socket |> @socket.echo("You have left #{Format.channel_name(channel)}.")
+        state.socket |> @socket.echo(gettext("You have left %{channel_name}.", channel_name: Format.channel_name(channel)))
 
       {:error, :not_found} ->
-        state.socket |> @socket.echo("You are not part of that channel.")
+        state.socket |> @socket.echo(gettext("You are not part of that channel."))
     end
   end
 
@@ -107,10 +108,10 @@ defmodule Game.Command.Channels do
     with {:ok, channel} <- get_channel(channel_name) do
       case in_channel?(channel.name, state.user) do
         true ->
-          state.socket |> @socket.echo("You are part of #{Format.channel_name(channel)}.")
+          state.socket |> @socket.echo(gettext("You are part of %{channel_name}.", channel_name: Format.channel_name(channel)))
 
         false ->
-          state.socket |> @socket.echo("You are not part of #{Format.channel_name(channel)}.")
+          state.socket |> @socket.echo(gettext("You are not part of %{channel_name}.", Format.channel_name(channel)))
       end
     else
       _ ->
@@ -125,7 +126,7 @@ defmodule Game.Command.Channels do
       :ok
     else
       {:error, :not_found} ->
-        state.socket |> @socket.echo("You are not part of this channel.")
+        state.socket |> @socket.echo(gettext("You are not part of this channel."))
     end
   end
 

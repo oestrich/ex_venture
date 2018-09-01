@@ -99,7 +99,8 @@ defmodule Game.Command.Look do
         {:error, :room_offline}
 
       _ ->
-        state.socket |> @socket.echo("Nothing can be seen #{direction}.")
+        message = gettext("Nothing can be seen %{direction}.", direction: direction)
+        state.socket |> @socket.echo(message)
     end
   end
 
@@ -232,6 +233,6 @@ defmodule Game.Command.Look do
   defp could_not_find(:ok, _name, _state), do: :ok
 
   defp could_not_find(_, name, %{socket: socket}) do
-    socket |> @socket.echo("Could not find \"#{name}\".")
+    socket |> @socket.echo(gettext("Could not find \"%{name}\".", name: name))
   end
 end

@@ -40,13 +40,13 @@ defmodule Game.Command.Drop do
         drop(state, item_name)
 
       :overworld ->
-        state.socket |> @socket.echo("You cannot drop items in the overworld.")
+        state.socket |> @socket.echo(gettext("You cannot drop items in the overworld."))
     end
   end
 
   def run({}, %{socket: socket}) do
     message =
-      "Please provide an item to drop. See {command}help drop{/command} for more information."
+      gettext("Please provide an item to drop. See {command}help drop{/command} for more information.")
 
     socket |> @socket.echo(message)
   end
@@ -73,13 +73,17 @@ defmodule Game.Command.Drop do
         _drop_currency(amount, state)
 
       false ->
-        socket |> @socket.echo("You do not have enough #{currency()} to drop #{amount}.")
+        message = gettext("You do not have enough %{currency} to drop %{amount}.", currency: currency(), amount: amount)
+        socket |> @socket.echo(message)
     end
   end
 
   defp _drop_currency(amount, state = %{socket: socket, save: %{currency: currency}}) do
     save = %{state.save | currency: currency - amount}
-    socket |> @socket.echo("You dropped #{amount} #{currency()}.")
+
+    message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency)
+    socket |> @socket.echo(message)
+
     @environment.drop_currency(save.room_id, {:player, state.user}, amount)
 
     {:update, Map.put(state, :save, save)}
@@ -90,7 +94,8 @@ defmodule Game.Command.Drop do
 
     case Enum.find(items, &Item.matches_lookup?(&1, item_name)) do
       nil ->
-        socket |> @socket.echo(~s(Could not find "#{item_name}".))
+        message = gettext(~s(Could not find "%{item_name}".), item_name: item_name)
+        socket |> @socket.echo(message)
 
       item ->
         _drop_item(item, state)
@@ -102,7 +107,8 @@ defmodule Game.Command.Drop do
     save = %{save | items: items}
     @environment.drop(save.room_id, {:player, user}, instance)
 
-    socket |> @socket.echo("You dropped #{Format.item_name(item)}.")
+    message = gettext("You dropped %{item_name}.", item_name: Format.item_name(item))
+    socket |> @socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
   end
