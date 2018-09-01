@@ -191,7 +191,8 @@ defmodule Game.Command.Skills do
         state.socket |> @socket.echo(gettext("You are not high enough level to use this skill."))
 
       {:error, :skill_not_ready, remaining_seconds} ->
-        state.socket |> @socket.echo("#{Format.skill_name(skill)} is not ready yet.")
+        message = gettext("%{skill} is not ready yet.", skill: Format.skill_name(skill))
+        state.socket |> @socket.echo(message)
         Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
         :ok
     end

@@ -305,7 +305,7 @@ msgid "You have no unread mail."
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/move.ex:239
+#: lib/game/command/move.ex:170 lib/game/command/move.ex:239
 msgid "You opened the door."
 msgstr ""
 
@@ -440,12 +440,12 @@ msgid "Something went wrong, please contact the administrators if you encounter 
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/shops.ex:350
+#: lib/game/command/shops.ex:353
 msgid "The \"%{item}\" could not be found in %{shop}."
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/shops.ex:311 lib/game/command/shops.ex:340
+#: lib/game/command/shops.ex:311 lib/game/command/shops.ex:343
 msgid "The \"%{name}\" item could not be found."
 msgstr ""
 
@@ -621,7 +621,7 @@ msgid "You don't have a target."
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/skills.ex:276
+#: lib/game/command/skills.ex:277
 msgid "You don't have enough skill points to use \"%{skill}\"."
 msgstr ""
 
@@ -710,4 +710,14 @@ msgstr ""
 #, elixir-format
 #: lib/game/command/drop.ex:110
 msgid "You dropped %{name}."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/skills.ex:194
+msgid "%{skill} is not ready yet."
+msgstr ""
+
+#, elixir-format
+#: lib/game/command/shops.ex:330
+msgid "You sold %{item} to %{shop} for %{cost} %{currency}."
 msgstr ""

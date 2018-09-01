@@ -167,7 +167,7 @@ defmodule Game.Command.Move do
 
       "closed" ->
         Door.set(room_exit.door_id, "open")
-        socket |> @socket.echo("You opened the door.")
+        socket |> @socket.echo(gettext("You opened the door."))
         maybe_move_to(state, room_id, room_exit, direction)
     end
   end

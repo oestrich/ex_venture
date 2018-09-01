@@ -326,12 +326,15 @@ defmodule Game.Command.Shops do
   defp sell_item(shop, item_name, state = %{socket: socket, save: save}) do
     case shop.id |> @shop.sell(item_name, save) do
       {:ok, save, item} ->
-        socket
-        |> @socket.echo(
-          "You sold #{Format.item_name(item)} to #{Format.shop_name(shop)} for #{item.cost} #{
-            currency()
-          }."
-        )
+        message =
+          gettext("You sold %{item} to %{shop} for %{cost} %{currency}.", [
+            name: Format.item_name(item),
+            shop: Format.shop_name(shop),
+            cost: item.cost,
+            currency: currency()
+          ])
+
+        socket |> @socket.echo(message)
 
         state = %{state | save: save}
         {:update, state}
