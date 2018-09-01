@@ -39,7 +39,7 @@ defmodule Game.Command.Examine do
 
     case Item.find_item(items, item_name) do
       {:error, :not_found} ->
-        message = gettext("\"%{item_name}\" could not be found.", item_name: item_name)
+        message = gettext("\"%{name}\" could not be found.", name: item_name)
         state.socket |> @socket.echo(message)
 
       {:ok, item} ->

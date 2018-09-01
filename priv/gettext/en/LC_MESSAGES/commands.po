@@ -138,16 +138,6 @@ msgid "{white}%{config_name}{/white} is turned on."
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/examine.ex:42 lib/game/command/give.ex:76
-msgid "\"%{item_name}\" could not be found."
-msgstr ""
-
-#, elixir-format
-#: lib/game/command/drop.ex:97
-msgid "Could not find \"%{item_name}\"."
-msgstr ""
-
-#, elixir-format
 #: lib/game/command/drop.ex:49
 msgid "Please provide an item to drop. See {command}help drop{/command} for more information."
 msgstr ""
@@ -173,33 +163,8 @@ msgid "You dropped %{amount} %{currency}."
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/drop.ex:110
-msgid "You dropped %{item_name}."
-msgstr ""
-
-#, elixir-format
 #: lib/game/command/debug.ex:48
 msgid "You must be an admin to use this command."
-msgstr ""
-
-#, elixir-format
-#: lib/game/command/give.ex:115
-msgid "\"%{character_name}\" could not be found."
-msgstr ""
-
-#, elixir-format
-#: lib/game/command/give.ex:139
-msgid "Gave %{currency} to %{character}."
-msgstr ""
-
-#, elixir-format
-#: lib/game/command/give.ex:153
-msgid "Gave %{item} to %{character}."
-msgstr ""
-
-#, elixir-format
-#: lib/game/command/give.ex:130
-msgid "You do not have enough %{currency} to give to %{character_name}."
 msgstr ""
 
 #, elixir-format
@@ -228,7 +193,7 @@ msgid "You honed your %{stat}. It is now at %{stat_value}!"
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/look.ex:236
+#: lib/game/command/drop.ex:97 lib/game/command/look.ex:236
 msgid "Could not find \"%{name}\"."
 msgstr ""
 
@@ -258,9 +223,10 @@ msgid "\"%{currency}\" could not be found."
 msgstr ""
 
 #, elixir-format
-#: lib/game/command/pick_up.ex:127 lib/game/command/pick_up.ex:131
-#: lib/game/command/socials.ex:117 lib/game/command/socials.ex:130
-#: lib/game/command/use.ex:54
+#: lib/game/command/examine.ex:42 lib/game/command/give.ex:76
+#: lib/game/command/give.ex:115 lib/game/command/pick_up.ex:127
+#: lib/game/command/pick_up.ex:131 lib/game/command/socials.ex:117
+#: lib/game/command/socials.ex:130 lib/game/command/use.ex:54
 msgid "\"%{name}\" could not be found."
 msgstr ""
 
@@ -721,8 +687,28 @@ msgstr ""
 msgid "Your typo has been submitted. Thanks!"
 msgstr ""
 
-#, elixir-format, fuzzy
+#, elixir-format
 #: lib/game/command/shops.ex:146 lib/game/command/shops.ex:176
 #: lib/game/command/shops.ex:206 lib/game/command/shops.ex:236
 msgid "The \"%{name}\" shop could not be found."
+msgstr ""
+
+#, elixir-format, fuzzy
+#: lib/game/command/give.ex:135
+msgid "Gave %{currency} to %{name}."
+msgstr ""
+
+#, elixir-format, fuzzy
+#: lib/game/command/give.ex:149
+msgid "Gave %{item} to %{name}."
+msgstr ""
+
+#, elixir-format, fuzzy
+#: lib/game/command/give.ex:130
+msgid "You do not have enough %{currency} to give to %{name}."
+msgstr ""
+
+#, elixir-format, fuzzy
+#: lib/game/command/drop.ex:110
+msgid "You dropped %{name}."
 msgstr ""

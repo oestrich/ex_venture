@@ -94,7 +94,7 @@ defmodule Game.Command.Drop do
 
     case Enum.find(items, &Item.matches_lookup?(&1, item_name)) do
       nil ->
-        message = gettext(~s(Could not find "%{item_name}".), item_name: item_name)
+        message = gettext(~s(Could not find "%{name}".), name: item_name)
         socket |> @socket.echo(message)
 
       item ->
@@ -107,7 +107,7 @@ defmodule Game.Command.Drop do
     save = %{save | items: items}
     @environment.drop(save.room_id, {:player, user}, instance)
 
-    message = gettext("You dropped %{item_name}.", item_name: Format.item_name(item))
+    message = gettext("You dropped %{name}.", name: Format.item_name(item))
     socket |> @socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
