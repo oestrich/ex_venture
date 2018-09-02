@@ -41,11 +41,11 @@
       {white}%H{/white} - Your maximum health points
       {white}%s{/white} - Your current skill points
       {white}%S{/white} - Your maximum skill points
-      {white}%m{/white} - Your current movement points
-      {white}%M{/white} - Your maximum movement points
+      {white}%e{/white} - Your current endurance points
+      {white}%E{/white} - Your maximum endurance points
       {white}%x{/white} - The XP required for next level
 
-    The default prompt is: "%h/%Hhp %s/%Ssp %m/%Mmv %xxp"
+    The default prompt is: "%h/%Hhp %s/%Ssp %e/%Eep %xxp"
 
     To configure your prompt use the {command}config{/command} command as follows:
 
