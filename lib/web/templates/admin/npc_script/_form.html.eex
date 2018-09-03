@@ -1,10 +1,10 @@
 <div class="box box-primary">
-  <%= form_for @changeset, @path, [method: "PUT"], fn (f) -> %>
+  <%= form_for @changeset, @path, [method: "PUT"], fn _f -> %>
     <div class="box-body">
       <span class="lead">Enter in valid JSON</span>
 
       <div class="form-group">
-        <%= textarea(f, :script, value: @changeset |> script(), class: "form-control", rows: 15) %>
+        <%= React.react_component("Components.Script.Editor", name: "npc[script]", lines: @changeset |> script(), quest: false) %>
       </div>
     </div>
 

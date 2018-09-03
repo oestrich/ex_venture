@@ -183,10 +183,34 @@ class Line extends React.Component {
     );
   }
 
+  questOption() {
+    let isQuest = this.props.quest;
+
+    if (isQuest) {
+      return (
+        <option value="quest">Quest</option>
+      );
+    }
+  }
+
+  renderTriggers() {
+    let trigger = this.state.trigger || "none";
+
+    return (
+      <div className="col-md-4">
+        <label>Triggers</label>
+        <select value={trigger} className="form-control" onChange={this.handleUpdateField("trigger")}>
+          <option value="none">None</option>
+          {this.questOption()}
+          <option value="line">Line</option>
+        </select>
+      </div>
+    );
+  }
+
   render() {
     let key = this.state.key;
     let message = this.state.message;
-    let trigger = this.state.trigger || "none";
     let unknown = this.state.unknown || "";
 
     return (
@@ -196,14 +220,7 @@ class Line extends React.Component {
             <label>Key</label>
             <input type="text" value={key} className="form-control" onChange={this.handleUpdateField("key")} />
           </div>
-          <div className="col-md-4">
-            <label>Triggers</label>
-            <select value={trigger} className="form-control" onChange={this.handleUpdateField("trigger")}>
-              <option value="none">None</option>
-              <option value="quest">Quest</option>
-              <option value="line">Line</option>
-            </select>
-          </div>
+          {this.renderTriggers()}
         </div>
         {this.triggerLine()}
         <div className="row">
@@ -337,7 +354,7 @@ class Editor extends React.Component {
 
             return (
               <div key={index}>
-                <Line line={line} index={index} handleUpdate={handleUpdate} />
+                <Line line={line} index={index} handleUpdate={handleUpdate} quest={this.props.quest} />
                 <a href="#" onClick={onClick}>Remove</a>
                 <hr />
               </div>

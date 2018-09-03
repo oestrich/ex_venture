@@ -6,10 +6,10 @@ defmodule Web.Admin.NPCScriptView do
   def script(changeset) do
     case get_field(changeset, :script) do
       nil ->
-        ""
+        []
 
       script ->
-        script |> Poison.encode!(pretty: true)
+        script
     end
   end
 end
