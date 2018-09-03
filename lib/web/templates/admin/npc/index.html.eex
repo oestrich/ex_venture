@@ -23,6 +23,8 @@
           </div>
         </div>
         <div class="box-body">
+          <%= SharedView.pagination(path: npc_path(@conn, :index), pagination: @pagination, name: "npcs") %>
+
           <div class="table-responsive">
             <table class="table">
               <thead>
