@@ -35,12 +35,27 @@ defmodule Game.Quest do
   @doc """
   Find progress of a particular quest for a player
   """
-  @spec progress_for(User.t(), integer()) :: QuestProgress.t()
+  @spec progress_for(User.t(), integer()) :: {:ok, QuestProgress.t()} | {:error, :invalid_id} | {:error, :not_found}
   def progress_for(player, quest_id) do
-    QuestProgress
-    |> where([qp], qp.user_id == ^player.id and qp.quest_id == ^quest_id)
-    |> preloads()
-    |> Repo.one()
+    case Ecto.Type.cast(:integer, quest_id) do
+      {:ok, quest_id} ->
+        quest =
+          QuestProgress
+          |> where([qp], qp.user_id == ^player.id and qp.quest_id == ^quest_id)
+          |> preloads()
+          |> Repo.one()
+
+        case quest do
+          nil ->
+            {:error, :not_found}
+
+          quest ->
+            {:ok, quest}
+        end
+
+      :error ->
+        {:error, :invalid_id}
+    end
   end
 
   @doc """
@@ -348,10 +363,10 @@ defmodule Game.Quest do
   # filter out quests with progress
   defp filter_progress(quest, player) do
     case progress_for(player, quest.id) do
-      nil ->
+      {:error, :not_found} ->
         true
 
-      _ ->
+      {:ok, _progress} ->
         false
     end
   end
@@ -360,7 +375,7 @@ defmodule Game.Quest do
   defp filter_parent_not_complete(quest, player) do
     Enum.all?(quest.parent_relations, fn parent_relation ->
       case progress_for(player, parent_relation.parent_id) do
-        %{status: "complete"} ->
+        {:ok, %{status: "complete"}} ->
           true
 
         _ ->
@@ -375,11 +390,14 @@ defmodule Game.Quest do
   @spec track_quest(User.t(), Quest.t()) :: :ok | {:error, :not_started}
   def track_quest(player, quest_id) do
     case progress_for(player, quest_id) do
-      nil ->
+      {:ok, quest_progress} ->
+        _track_quest(player, quest_progress)
+
+      {:error, :not_found} ->
         {:error, :not_started}
 
-      quest_progress ->
-        _track_quest(player, quest_progress)
+      {:error, :invalid_id} ->
+        {:error, :not_started}
     end
   end
 

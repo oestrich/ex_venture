@@ -14,6 +14,10 @@ defmodule Web.Admin.UserView do
     Enum.any?(User.connected_players(), &(&1.id == user.id))
   end
 
+  def live(user) do
+    Enum.find(User.connected_players(), &(&1.id == user.id))
+  end
+
   def stat_display_name(stat) do
     stat
     |> to_string()

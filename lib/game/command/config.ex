@@ -92,7 +92,15 @@ defmodule Game.Command.Config do
   def run({:on, config_name}, state) do
     case is_config?(config_name) do
       true ->
-        update_config(config_name, true, state)
+        case PlayerConfig.settable?(config_name) do
+          true ->
+            message =
+              "Cannot turn on #{config_name}. See {command}help config{/command} for more information."
+            state.socket |> @socket.echo(message)
+
+          false ->
+            update_config(config_name, true, state)
+        end
 
       false ->
         state.socket
@@ -105,7 +113,15 @@ defmodule Game.Command.Config do
   def run({:off, config_name}, state) do
     case is_config?(config_name) do
       true ->
-        update_config(config_name, false, state)
+        case PlayerConfig.settable?(config_name) do
+          true ->
+            message =
+              "Cannot turn off #{config_name}. See {command}help config{/command} for more information."
+            state.socket |> @socket.echo(message)
+
+          false ->
+            update_config(config_name, false, state)
+        end
 
       false ->
         state.socket

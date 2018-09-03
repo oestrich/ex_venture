@@ -328,7 +328,7 @@ defmodule Game.Command.Shops do
       {:ok, save, item} ->
         message =
           gettext("You sold %{item} to %{shop} for %{cost} %{currency}.", [
-            name: Format.item_name(item),
+            item: Format.item_name(item),
             shop: Format.shop_name(shop),
             cost: item.cost,
             currency: currency()

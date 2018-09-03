@@ -18,11 +18,14 @@
     <div class="col-md-9">
       <div class="box box-primary">
         <div class="box-header">
+          <h3 class="box-title"></h3>
           <div class="box-tools">
             <%= link("New NPC", to: npc_path(@conn, :new), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
+          <%= SharedView.pagination(path: npc_path(@conn, :index), pagination: @pagination, name: "npcs") %>
+
           <div class="table-responsive">
             <table class="table">
               <thead>

@@ -11,13 +11,11 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
-            <%= if online?(@user) do %>
-              <%= link("Watch", to: user_watch_path(@conn, :watch, @user.id), class: "btn btn-warning") %>
-            <% else %>
+            <%= if !online?(@user) do %>
               <%= link("Cheat", to: user_cheat_path(@conn, :cheat, @user.id), class: "btn btn-warning") %>
               <%= link("Edit", to: user_path(@conn, :edit, @user.id), class: "btn btn-primary") %>
+              <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
             <% end %>
-            <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
           </div>
         </div>
         <div class="box-body">
@@ -59,6 +57,29 @@
           </table>
         </div>
       </div>
+
+      <%= if user = live(@user) do %>
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Live Stats</h3>
+            <div class="box-tools">
+              <%= link("Watch", to: user_watch_path(@conn, :watch, @user.id), class: "btn btn-warning") %>
+              <%= link("Teleport", to: user_path(@conn, :teleport, room_id: user.extra.room_id), method: "post", class: "btn btn-primary") %>
+              <%= link("Disconnect", to: user_disconnect_path(@conn, :disconnect, @user.id), method: "delete", class: "btn btn-warning") %>
+            </div>
+          </div>
+          <div class="box-body">
+            <table class="table">
+              <tr>
+                <th>Room</th>
+                <td>
+                  <%= link(user.extra.room_id, to: room_path(@conn, :show, user.extra.room_id)) %>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      <% end %>
     </div>
 
     <div class="col-md-6">

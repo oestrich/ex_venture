@@ -29,7 +29,8 @@ defmodule Game.QuestTest do
 
       {:ok, _qp} = Quest.track_quest(user, quest.id)
 
-      assert Quest.progress_for(user, quest.id).is_tracking
+      {:ok, progress} = Quest.progress_for(user, quest.id)
+      assert progress.is_tracking
     end
 
     test "does nothing if the quest progress is not found" do
@@ -44,7 +45,8 @@ defmodule Game.QuestTest do
 
       {:error, :not_started} = Quest.track_quest(user, quest2.id)
 
-      assert Quest.progress_for(user, quest1.id).is_tracking
+      {:ok, progress} = Quest.progress_for(user, quest1.id)
+      assert progress.is_tracking
     end
   end
 
@@ -190,7 +192,7 @@ defmodule Game.QuestTest do
       items = [item_instance(potion.id), item_instance(potion.id), item_instance(potion), item_instance(3)]
       user = %{user | save: %{user.save | items: items}}
       create_quest_progress(user, quest, %{progress: %{npc_step.id => 3}})
-      progress = Quest.progress_for(user, quest.id) # get preloads
+      {:ok, progress} = Quest.progress_for(user, quest.id) # get preloads
 
       {:ok, save} = Quest.complete(progress, user.save)
 
