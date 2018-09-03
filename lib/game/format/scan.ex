@@ -14,6 +14,7 @@ defmodule Game.Format.Scan do
       rooms(rooms)
     ]
     |> Enum.join("\n")
+    |> String.trim()
   end
 
   defp rooms(rooms) do

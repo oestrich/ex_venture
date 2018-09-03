@@ -49,4 +49,4 @@
 
     To configure your prompt use the {command}config{/command} command as follows:
 
-      [ ] > {command}config set prompt %h/%Hhp %s/%Ssp %m/%Mmv %xxp{/command}
+      [ ] > {command}config set prompt %h/%Hhp %s/%Ssp %e/%Eep %xxp{/command}

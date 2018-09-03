@@ -16,11 +16,12 @@ defmodule Game.Command.Emote do
     Performs an emote. Anything you type after emote will be added to your name.
 
     Example:
-    [ ] > {command}emote does something{/command}
-    Player does something
+
+    [ ] > {command}emote does something.{/command}
+    {player}Player{/player} does something.
 
     [ ] > {command}*does something{/command}
-    Player does something
+    {player}Player{/player} does something.
     """
   end
 

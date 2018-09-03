@@ -18,13 +18,19 @@ defmodule Game.Command.Socials do
 
   def help(:full) do
     """
-    #{help(:short)}
+    Say prewritten emotes to the room.
 
-    View a list of available socials
+    View a list of available socials:
     [ ] > {command}socials{/command}
 
-    Look at what a social will send
+    Look at what a social will send:
     [ ] > {command}social smile{/command}
+
+    You can then use that social by name:
+    [ ] > {command}smile{/command}
+
+    And add a target:
+    [ ] > {command}smile guard{/command}
     """
   end
 

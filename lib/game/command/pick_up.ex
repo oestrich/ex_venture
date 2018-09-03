@@ -21,9 +21,11 @@ defmodule Game.Command.PickUp do
 
   def help(:full) do
     """
-    #{help(:short)}.
+    Pick up items that are in the same room as you. Anything in the {white}Items{/white}
+    line of a room can be picked up.
 
     Example:
+
     [ ] > {command}pick up sword{/command}
     """
   end

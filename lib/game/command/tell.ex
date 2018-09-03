@@ -17,8 +17,8 @@ defmodule Game.Command.Tell do
 
   def help(:full) do
     """
-    #{help(:short)}. You can reply quickly to the last tell
-    you received by using {command}reply{/command}.
+    Send a message to one player that is online. You can reply quickly to the
+    last tell you received by using {command}reply{/command}.
 
     Example:
     [ ] > {command}tell player Hello{/command}

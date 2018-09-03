@@ -22,10 +22,21 @@ defmodule Game.Command.Target do
 
   def help(:full) do
     """
-    Targets an enemy for skills
+    Targets an enemy for skills.
 
-    Example:
+    Set your new target by name:
     [ ] > {command}target bandit{/command}
+
+    View your current target:
+    [ ] > {command}target{/command}
+
+    Skills can also set a new target by adding the target's name after
+    the skill command:
+    [ ] > {command}slash bandit{/command}
+
+    When you defeat an enemy, a new target might be chosen for you. If there
+    are more than one enemy attacking you, the next alive enemy will be picked
+    as your target.
     """
   end
 

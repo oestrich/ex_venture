@@ -17,10 +17,15 @@ defmodule Game.Command.Who do
 
   def help(:full) do
     """
-    #{help(:short)}
+    See who is online currently.
+
+    Any admins will show up first in the list.
 
     Example:
     [ ] > {command}who{/command}
+
+    You can also view more information about a player connected. Similar
+    to {command}info player{/command}.
 
     [ ] > {command}who player{/command}
     """

@@ -18,7 +18,8 @@ defmodule Game.Command.Typo do
   def help(:full) do
     """
     Report a typo you encounter to the game admins. After entering a title you will
-    be able to enter in multi line text for further information.
+    be able to enter in multi line text for further information. Finalize the typo
+    with a blank line.
 
     Example:
     [ ] > {command}typo title{/command}

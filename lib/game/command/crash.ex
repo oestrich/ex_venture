@@ -17,10 +17,13 @@ defmodule Game.Command.Crash do
 
   def help(:full) do
     """
-    #{help(:short)}
+    #{help(:short)}.
 
-    Crash the room process you are in
+    Crash the room process you are in:
     [ ] > {command}crash room{/command}
+
+    Crash the zone process you are in:
+    [ ] > {command}crash zone{/command}
     """
   end
 
@@ -63,8 +66,6 @@ defmodule Game.Command.Crash do
       false ->
         socket |> @socket.echo("You must be an admin to perform this.")
     end
-
-    :ok
   end
 
   def run({:zone}, %{user: user, save: save, socket: socket}) do
@@ -77,7 +78,5 @@ defmodule Game.Command.Crash do
       false ->
         socket |> @socket.echo("You must be an admin to perform this.")
     end
-
-    :ok
   end
 end

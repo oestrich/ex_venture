@@ -19,7 +19,8 @@ defmodule Game.Command.Quest do
   def help(:full) do
     """
     #{help(:short)}. Quests are handed out by NPCs that
-    have a "({yellow}!{/yellow})" next to their name.
+    have a "({yellow}!{/yellow})" next to their name. You must {command}greet{/command} NPCs in order for them to give
+    you a quest. See more at {command}help greet{/command}.
 
     Viewing all active quests:
 
@@ -29,6 +30,16 @@ defmodule Game.Command.Quest do
 
     [ ] > {command}quest show 1{/command}
     [ ] > {command}quest info 1{/command}
+
+    Quests are tracked as you pick them up. One quest will be the tracked quest
+    at a time. This quest is viewable with a shortened command.
+
+    [ ] > {command}quest info{/command}
+
+    You can track new quests with the track sub-command. This will replace your
+    currently tracked quest.
+
+    [ ] > {command}quest track 1{/command}
 
     Completing quests:
 

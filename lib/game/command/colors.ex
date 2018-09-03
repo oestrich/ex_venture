@@ -147,6 +147,9 @@ defmodule Game.Command.Colors do
         "exit" ->
           "{#{tag} click=false}#{tag}{/#{tag}}"
 
+        "link" ->
+          "{#{tag} click=false}#{tag}{/#{tag}}"
+
         _ ->
           "{#{tag}}#{tag}{/#{tag}}"
       end

@@ -15,6 +15,8 @@ defmodule Game.Command.AFK do
     """
     This command lets you set your AFK flag for others to see.
 
+    It will toggle your status.
+
     Example:
     [ ] > {command}afk{/command}
     """

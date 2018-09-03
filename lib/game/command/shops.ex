@@ -20,7 +20,11 @@ defmodule Game.Command.Shops do
 
   def help(:full) do
     """
-    View shops:
+    Some rooms have shops in them. You will see them on their own line
+    in the room's description. In general, if there is only one shop in
+    a room, you can omit the shop name at the end of the command.
+
+    View shops in the room:
     [ ] > {command}shops{/command}
 
     List items in a shop:

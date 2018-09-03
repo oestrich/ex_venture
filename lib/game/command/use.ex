@@ -18,7 +18,7 @@ defmodule Game.Command.Use do
 
   def help(:full) do
     """
-    #{help(:short)}
+    Use an item in your inventory.
 
     Example:
     [ ] > {command}use potion{/command}

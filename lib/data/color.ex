@@ -38,17 +38,20 @@ defmodule Data.Color do
   """
   def color_tags() do
     [
-      "npc",
+      "command",
+      "exit",
+      "error",
+      "hint",
       "item",
+      "link",
+      "npc",
       "player",
-      "skill",
       "quest",
       "room",
       "say",
-      "command",
-      "exit",
       "shop",
-      "hint"
+      "skill",
+      "zone",
     ]
   end
 end

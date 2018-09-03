@@ -26,20 +26,20 @@ defmodule Game.Command.Debug do
   @doc """
   Parse the command into arguments
 
-      iex> Game.Command.Debug.parse("debug info")
-      {:info}
+      iex> Game.Command.Debug.parse("debug squabble")
+      {:squabble}
 
       iex> Game.Command.Debug.parse("unknown")
       {:error, :bad_parse, "unknown"}
   """
   @spec parse(String.t()) :: {any()}
   def parse(command)
-  def parse("debug info"), do: {:info}
+  def parse("debug squabble"), do: {:squabble}
 
   @impl Game.Command
   def run(command, state)
 
-  def run({:info}, state) do
+  def run({:squabble}, state) do
     case "admin" in state.user.flags do
       true ->
         state.socket |> @socket.echo(String.trim(debug()))

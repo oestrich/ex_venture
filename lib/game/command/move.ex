@@ -49,7 +49,9 @@ defmodule Game.Command.Move do
     [ ] > {command}west{/command}
     [ ] > {command}w{/command}
 
-    Open and close doors.
+    Sometimes doors will be present between rooms. You will automatically open doors
+    if they are closed and you move in their direction. You can open and close them
+    manually as well.
 
     Example:
     [ ] > {command}open west{/command}

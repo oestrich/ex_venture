@@ -8,6 +8,7 @@ defmodule Game.Command.Mail do
 
   alias Game.Account
   alias Game.Format
+  alias Game.Hint
   alias Game.Mail
 
   commands(["mail"], parse: false)
@@ -18,13 +19,21 @@ defmodule Game.Command.Mail do
 
   def help(:full) do
     """
-    #{help(:short)}
+    #{help(:short)}.
 
     View mail
     [ ] > mail
 
     Read a piece of mail
     [ ] > mail read 10
+
+    Sending mail is a multi-step process. Start by instructing to send a
+    new piece of mail.
+
+    [ ] > mail new player
+
+    Then the title will be prompted for. After that you start typing the
+    body of the mail. To finish the body send an empty line.
     """
   end
 
@@ -105,6 +114,7 @@ defmodule Game.Command.Mail do
     mail = Map.put(mail, :title, title)
     state = %{state | commands: %{state.commands | mail: mail}}
 
+    state |> Hint.gate("mail.body")
     state.socket |> @socket.echo(gettext("Mail:"))
 
     {:update, state}

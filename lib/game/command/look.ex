@@ -25,7 +25,11 @@ defmodule Game.Command.Look do
 
   def help(:full) do
     """
-    View information about the room you are in.
+    View information about the room you are in. You can look at characters in
+    the same room as you, items, as well as exit directions.
+
+    Room's may also have highlighted words that you can look at to get further
+    detail about that feature of the room.
 
     Example:
     [ ] > {command}look{/command}

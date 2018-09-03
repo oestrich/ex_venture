@@ -14,7 +14,7 @@ defmodule Game.Command.DebugTest do
     end
 
     test "displays debug information", %{state: state} do
-      :ok = Debug.run({:info}, state)
+      :ok = Debug.run({:squabble}, state)
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(Node)i, echo)
@@ -23,7 +23,7 @@ defmodule Game.Command.DebugTest do
     test "must be an admin", %{state: state} do
       state = %{state | user: %{state.user | flags: []}}
 
-      :ok = Debug.run({:info}, state)
+      :ok = Debug.run({:squabble}, state)
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(must be an admin)i, echo)

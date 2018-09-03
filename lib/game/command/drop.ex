@@ -20,11 +20,12 @@ defmodule Game.Command.Drop do
 
   def help(:full) do
     """
-    Drop an item into the room you are in.
+    Drop an item into the room you are in. You can drop an item in your inventory
+    or some of your #{currency()} into the room.
 
     Example:
     [ ] > {command}drop sword{/command}
-    [ ] > {command}drop 10 gold{/command}
+    [ ] > {command}drop 10 #{currency()}{/command}
     """
   end
 

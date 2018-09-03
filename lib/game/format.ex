@@ -728,10 +728,6 @@ defmodule Game.Format do
 
   @doc """
   Format skills
-
-      iex> skills = [%{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}]
-      iex> Game.Format.skills(skills)
-      "Level - Name - Points - Description\\n1 - Slash ({command send='help slash'}slash{/command}) - 2sp - Fight your foe\\n"
   """
   @spec skills([Skill.t()]) :: String.t()
   def skills(skills)
@@ -743,9 +739,12 @@ defmodule Game.Format do
       |> Enum.join("\n")
 
     """
-    Level - Name - Points - Description
+    Known Skills
+    #{underline("Known Skills")}
+
     #{skills}
     """
+    |> String.trim()
   end
 
   @doc """
@@ -753,17 +752,15 @@ defmodule Game.Format do
 
       iex> skill = %{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}
       iex> Game.Format.skill(skill)
-      "1 - Slash ({command send='help slash'}slash{/command}) - 2sp - Fight your foe"
+      "{skill}Slash{/skill} - Level 1 - 2sp\\nCommand: {command send='help slash'}slash{/command}\\nFight your foe\\n"
   """
   @spec skill(Skill.t()) :: String.t()
   def skill(skill) do
-    [
-      skill.level,
-      "#{skill.name} ({command send='help #{skill.command}'}#{skill.command}{/command})",
-      "#{skill.points}sp",
-      skill.description
-    ]
-    |> Enum.join(" - ")
+    """
+    {skill}#{skill.name}{/skill} - Level #{skill.level} - #{skill.points}sp
+    Command: {command send='help #{skill.command}'}#{skill.command}{/command}
+    #{skill.description}
+    """
   end
 
   @doc """

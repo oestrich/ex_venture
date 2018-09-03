@@ -9,11 +9,11 @@ defmodule Game.Command.Version do
 
   @impl Game.Command
   def help(:topic), do: "Version"
-  def help(:short), do: "View the running MUD version"
+  def help(:short), do: "View the running version of ExVenture"
 
   def help(:full) do
     """
-    View the full version of ExVenture running
+    View the full version of ExVenture running.
 
     Example:
     [ ] > {command}version{/command}

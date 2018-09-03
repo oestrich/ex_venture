@@ -1,6 +1,9 @@
 afk.started:
   You are now set to away from keyboard (AFK). See {command}help afk{/command} for more information when you get back.
 
+mail.body:
+  When you are done with your mail, enter a blank line to finialize and send.
+
 quests.new:
   You can view this with {command}quest info [id]{/command}.
 

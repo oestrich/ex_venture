@@ -22,16 +22,30 @@ defmodule Game.Command.Skills do
 
   @impl Game.Command
   def help(:topic), do: "Skills"
-  def help(:short), do: "List out your class skills"
+  def help(:short), do: "List out your known skills"
 
   def help(:full) do
     """
-    #{help(:short)}. To use a skill you must also be
-    targeting something. Optionally pass in a target after your skill to switch or set
-    a target before using a skill.
+    List out the skills you know.
 
-    Example:
+    To use a skill you must also be targeting something. Optionally pass in
+    a target after your skill to switch or set a target before using a skill.
+
+    List out your known skills:
+
     [ ] > {command}skills{/command}
+
+    Some skills will automatically target yourself instead of your real target,
+    for instance a heal skill will target you before your opponent. You can get
+    around this by providing a target after the skill command.
+
+    Healing yourself:
+
+    [ ] > {command}heal{/command}
+
+    Healing your target:
+
+    [ ] > {command}heal guard{/command}
     """
   end
 
@@ -142,7 +156,6 @@ defmodule Game.Command.Skills do
       |> Enum.sort_by(& &1.level)
 
     socket |> @socket.echo(Format.skills(skills))
-    :ok
   end
 
   def run({:all}, %{socket: socket, save: save}) do
@@ -152,7 +165,6 @@ defmodule Game.Command.Skills do
       |> Enum.sort_by(& &1.level)
 
     socket |> @socket.echo(Format.skills(skills))
-    :ok
   end
 
   def run({%{command: command}, command}, %{socket: socket, target: target})

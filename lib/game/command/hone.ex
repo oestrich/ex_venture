@@ -27,6 +27,7 @@ defmodule Game.Command.Hone do
     - Willpower
     - Health Points
     - Skill Points
+    - Endurance Points
 
     It costs #{@hone_cost} experience points. All stats are raised by #{@hone_stat_boost},
     except health points and skill points which are raised by #{@hone_points_boost}.

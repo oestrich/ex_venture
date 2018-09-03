@@ -18,7 +18,10 @@ defmodule Game.Command.Whisper do
 
   def help(:full) do
     """
-    #{help(:short)}.
+    Whisper to someone in the same room as you.
+
+    Other players in the same room will be able to see that you are
+    whispering to someone else.
 
     Example:
     [ ] > {command}whisper player hello{/command}
