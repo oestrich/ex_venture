@@ -107,21 +107,16 @@ defmodule Game.Command.Quest do
   end
 
   def run({:show, quest_id}, %{socket: socket, user: user, save: save}) do
-    case Ecto.Type.cast(:integer, quest_id) do
-      {:ok, quest_id} ->
-        case Quest.progress_for(user, quest_id) do
-          nil ->
-            socket |> @socket.echo("You have not started this quest.")
+    case Quest.progress_for(user, quest_id) do
+      {:ok, progress} ->
+        socket |> @socket.echo(Format.quest_detail(progress, save))
 
-          progress ->
-            socket |> @socket.echo(Format.quest_detail(progress, save))
-        end
+      {:error, :not_found} ->
+        socket |> @socket.echo("You have not started this quest.")
 
-      :error ->
+      {:error, :invalid_id} ->
         socket |> @socket.echo("Could not parse the quest ID, please try again.")
     end
-
-    :ok
   end
 
   # find quests that are completed and see if npc in the room
@@ -138,16 +133,18 @@ defmodule Game.Command.Quest do
 
   def run({:complete, quest_id}, state = %{socket: socket, user: user}) do
     case Quest.progress_for(user, quest_id) do
-      nil ->
-        socket |> @socket.echo("You have not started this quest.")
-        :ok
-
-      progress ->
+      {:ok, progress} ->
         progress
         |> gate_for_active(state)
         |> check_npc_is_in_room(state)
         |> check_steps_are_complete(state)
         |> complete_quest(state)
+
+      {:error, :not_found} ->
+        socket |> @socket.echo("You have not started this quest.")
+
+      {:error, :invalid_id} ->
+        socket |> @socket.echo("Could not parse the quest ID, please try again.")
     end
   end
 
