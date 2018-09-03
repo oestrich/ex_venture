@@ -9,6 +9,8 @@ defmodule Game.Session.Login do
   use Networking.Socket
   use Game.Environment
 
+  import Game.Gettext, only: [dgettext: 2]
+
   require Logger
 
   alias Data.Repo
@@ -32,10 +34,8 @@ defmodule Game.Session.Login do
   def start(socket) do
     socket |> @socket.echo("#{ExVenture.version()}\n#{MOTD.random_motd()}")
 
-    socket
-    |> @socket.prompt(
-      "What is your player name (Enter {command}create{/command} for a new account)? "
-    )
+    prompt = dgettext("login", "What is your player name? (Enter {command}create{/command} for a new account) ")
+    socket |> @socket.prompt(prompt)
   end
 
   @doc """
@@ -73,10 +73,10 @@ defmodule Game.Session.Login do
         :ok
 
       _ ->
-        socket |> @socket.echo("You have mail.")
+        socket |> @socket.echo(dgettext("login", "You have mail."))
     end
 
-    socket |> @socket.echo("[Press enter to continue]")
+    socket |> @socket.echo(dgettext("login", "[Press enter to continue]"))
 
     state
   end
@@ -86,8 +86,8 @@ defmodule Game.Session.Login do
       finish_login(state, session)
     else
       {:error, :room, :missing} ->
-        state.socket |> @socket.echo("The room you were in has been deleted.")
-        state.socket |> @socket.echo("Sending you back to the starting room!")
+        state.socket |> @socket.echo(dgettext("login", "The room you were in has been deleted."))
+        state.socket |> @socket.echo(dgettext("login", "Sending you back to the starting room!"))
 
         starting_save = Game.Config.starting_save()
 
@@ -156,14 +156,10 @@ defmodule Game.Session.Login do
   end
 
   def process(message, state) do
-    echo = """
-    Please sign in via the website to authorize this connection.
-
-    {link}#{Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id)}{/link}
-    """
-
+    link = Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id)
+    echo = dgettext("login", "Please sign in via the website to authorize this connection.")
+    echo = "#{echo}\n\n{link}#{link}{/link}"
     state.socket |> @socket.echo(echo)
-
     Map.merge(state, %{login: %{name: message}})
   end
 
@@ -173,14 +169,13 @@ defmodule Game.Session.Login do
       player |> login(state.socket, state |> Map.delete(:login))
     else
       {:error, :signed_in} ->
-        state.socket |> @socket.echo("Sorry, this player is already logged in.")
+        state.socket |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
         state.socket |> @socket.disconnect()
         state
 
       {:error, :disabled} ->
-        state.socket
-        |> @socket.echo("Sorry, your account has been disabled. Please contact the admins.")
-
+        message = dgettext("login", "Sorry, your account has been disabled. Please contact the admins.")
+        state.socket |> @socket.echo(message)
         state.socket |> @socket.disconnect()
         state
     end
@@ -206,7 +201,7 @@ defmodule Game.Session.Login do
       player |> _recover_session(state)
     else
       {:error, :signed_in} ->
-        socket |> @socket.echo("Sorry, this player is already logged in.")
+        socket |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
         socket |> @socket.disconnect()
         state
     end
@@ -222,7 +217,7 @@ defmodule Game.Session.Login do
 
     state = after_sign_in(state, self())
 
-    state.socket |> @socket.echo("Session recovering...")
+    state.socket |> @socket.echo(dgettext("login", "Session recovering..."))
     state |> Process.prompt()
     state |> Regen.maybe_trigger_regen()
 

@@ -73,7 +73,8 @@ defmodule Game.Command.Give do
 
     case find_item_or_currency(state.save, item_name) do
       {:error, :not_found} ->
-        state.socket |> @socket.echo("\"#{item_name}\" could not be found.")
+        message = gettext("\"%{name}\" could not be found.", name: item_name)
+        state.socket |> @socket.echo(message)
 
       {:ok, instance, item} ->
         state |> maybe_give_to_character(room, instance, item, character_name)
@@ -111,7 +112,8 @@ defmodule Game.Command.Give do
   defp maybe_give_to_character(state, room, instance, item, character_name) do
     case find_character(room, character_name) do
       {:error, :not_found} ->
-        state.socket |> @socket.echo("\"#{character_name}\" could not be found.")
+        message = gettext("\"%{name}\" could not be found.", name: character_name)
+        state.socket |> @socket.echo(message)
 
       {:player, player} ->
         send_item_to_character(state, instance, item, {:player, player})
@@ -124,14 +126,14 @@ defmodule Game.Command.Give do
   defp send_item_to_character(state = %{save: save}, currency, :currency, character) do
     case save.currency >= currency do
       false ->
-        state.socket
-        |> @socket.echo(
-          "You do not have enough #{currency()} to give to #{Format.name(character)}."
-        )
+        message =
+          gettext("You do not have enough %{currency} to give to %{name}.", currency: currency(), name: Format.name(character))
+
+        state.socket |> @socket.echo(message)
 
       true ->
-        state.socket
-        |> @socket.echo("Gave #{Format.currency(currency)} to #{Format.name(character)}.")
+        message = gettext("Gave %{currency} to %{name}.", currency: Format.currency(currency), name: Format.name(character))
+        state.socket |> @socket.echo(message)
 
         Character.notify(character, {"currency/receive", {:player, state.user}, currency})
 
@@ -144,7 +146,8 @@ defmodule Game.Command.Give do
   end
 
   defp send_item_to_character(state = %{save: save}, instance, item, character) do
-    state.socket |> @socket.echo("Gave #{Format.item_name(item)} to #{Format.name(character)}.")
+    message = gettext("Gave %{item} to %{name}.", item: Format.item_name(item), name: Format.name(character))
+    state.socket |> @socket.echo(message)
 
     Character.notify(character, {"item/receive", {:player, state.user}, instance})
 

@@ -127,10 +127,10 @@ defmodule Game.Command.Move do
         state |> maybe_open_door(door_id) |> update_mini_map(room_id)
 
       %{id: _exit_id} ->
-        state.socket |> @socket.echo("There is no door #{direction}.")
+        state.socket |> @socket.echo(gettext("There is no door %{direction}.", direction: direction))
 
       _ ->
-        state.socket |> @socket.echo("There is no exit #{direction}.")
+        state.socket |> @socket.echo(gettext("There is no exit %{direction}.", direction: direction))
     end
 
     :ok
@@ -144,10 +144,10 @@ defmodule Game.Command.Move do
         state |> maybe_close_door(door_id) |> update_mini_map(room_id)
 
       %{id: _exit_id} ->
-        state.socket |> @socket.echo("There is no door #{direction}.")
+        state.socket |> @socket.echo(gettext("There is no door %{direction}.", direction: direction))
 
       _ ->
-        state.socket |> @socket.echo("There is no exit #{direction}.")
+        state.socket |> @socket.echo(gettext("There is no exit %{direction}.", direction: direction))
     end
 
     :ok
@@ -167,7 +167,7 @@ defmodule Game.Command.Move do
 
       "closed" ->
         Door.set(room_exit.door_id, "open")
-        socket |> @socket.echo("You opened the door.")
+        socket |> @socket.echo(gettext("You opened the door."))
         maybe_move_to(state, room_id, room_exit, direction)
     end
   end
@@ -177,7 +177,7 @@ defmodule Game.Command.Move do
       state |> move_to(room_id, {:leave, direction}, {:enter, Exit.opposite(direction)})
     else
       {:error, :cooldowns_active} ->
-        state.socket |> @socket.echo("You cannot move while a skill is cooling down.")
+        state.socket |> @socket.echo(gettext("You cannot move while a skill is cooling down."))
     end
   end
 
@@ -236,10 +236,10 @@ defmodule Game.Command.Move do
     case Door.get(door_id) do
       "closed" ->
         Door.set(door_id, "open")
-        state.socket |> @socket.echo("You opened the door.")
+        state.socket |> @socket.echo(gettext("You opened the door."))
 
       _ ->
-        state.socket |> @socket.echo("The door was already open.")
+        state.socket |> @socket.echo(gettext("The door was already open."))
     end
 
     state
@@ -252,10 +252,10 @@ defmodule Game.Command.Move do
     case Door.get(door_id) do
       "open" ->
         Door.set(door_id, "closed")
-        state.socket |> @socket.echo("You closed the door.")
+        state.socket |> @socket.echo(gettext("You closed the door."))
 
       _ ->
-        state.socket |> @socket.echo("The door was already closed.")
+        state.socket |> @socket.echo(gettext("The door was already closed."))
     end
 
     state

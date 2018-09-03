@@ -7,6 +7,7 @@ defmodule Game.Command.Pager do
 
   @default_lines 20
 
+  import Game.Gettext, only: [dgettext: 2]
   import Game.Session.Process, only: [prompt: 1]
 
   @doc """
@@ -57,10 +58,9 @@ defmodule Game.Command.Pager do
         state |> quit()
 
       _ ->
-        socket
-        |> @socket.prompt(
-          "Pager: [{command}Enter{/command}, {command}All{/command}, {command}Quit{/command}] > "
-        )
+        pager = dgettext("commands", "Pager")
+        message = "#{pager}: [{command}Enter{/command}, {command}All{/command}, {command}Quit{/command}] > "
+        socket |> @socket.prompt(message)
 
         to_save = Enum.join(to_save, "\n")
 

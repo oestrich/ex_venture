@@ -54,4 +54,6 @@ config :prometheus, Metrics.PipelineInstrumenter,
 
 config :gossip, :callback_module, Game.Gossip
 
+config :ex_venture, Game.Gettext, default_locale: "en"
+
 import_config "#{Mix.env()}.exs"

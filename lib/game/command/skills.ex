@@ -157,18 +157,17 @@ defmodule Game.Command.Skills do
 
   def run({%{command: command}, command}, %{socket: socket, target: target})
       when is_nil(target) do
-    socket |> @socket.echo("You don't have a target.")
-    :ok
+    socket |> @socket.echo(gettext("You don't have a target."))
   end
 
   def run({skill, :level_too_low}, state) do
-    state.socket |> @socket.echo("You are too low of a level to use #{Format.skill_name(skill)}.")
-    :ok
+    message = gettext("You are too low of a level to use %{skill}.", skill: Format.skill_name(skill))
+    state.socket |> @socket.echo(message)
   end
 
   def run({skill, :not_known}, state) do
-    state.socket |> @socket.echo("You do not know #{Format.skill_name(skill)}.")
-    :ok
+    message = gettext("You do not know %{skill}.", skill: Format.skill_name(skill))
+    state.socket |> @socket.echo(message)
   end
 
   def run({skill, command}, state = %{save: %{room_id: room_id}, target: target}) do
@@ -186,13 +185,14 @@ defmodule Game.Command.Skills do
       use_skill(skill, target, state)
     else
       {:error, :not_found} ->
-        state.socket |> @socket.echo("Your target could not be found.")
+        state.socket |> @socket.echo(gettext("Your target could not be found."))
 
       {:error, :skill, :level_too_low} ->
-        state.socket |> @socket.echo("You are not high enough level to use this skill.")
+        state.socket |> @socket.echo(gettext("You are not high enough level to use this skill."))
 
       {:error, :skill_not_ready, remaining_seconds} ->
-        state.socket |> @socket.echo("#{Format.skill_name(skill)} is not ready yet.")
+        message = gettext("%{skill} is not ready yet.", skill: Format.skill_name(skill))
+        state.socket |> @socket.echo(message)
         Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
         :ok
     end
@@ -274,7 +274,8 @@ defmodule Game.Command.Skills do
         {:skip, :prompt, state}
 
       {:error, _} ->
-        socket |> @socket.echo(~s(You don't have enough skill points to use "#{skill.command}".))
+        message = gettext(~s(You don't have enough skill points to use "%{skill}".), skill: skill.command)
+        socket |> @socket.echo(message)
         {:update, state}
     end
   end

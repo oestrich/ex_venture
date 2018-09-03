@@ -62,14 +62,17 @@ defmodule Game.Command.Wear do
       state |> item_found(item)
     else
       {:error, :level_too_low, item} ->
-        message = "You cannot wear \"#{Format.item_name(item)}\", you are not high enough level."
+        message =
+          gettext("You cannot wear \"%{name}\", you are not high enough level.", name: Format.item_name(item))
         state.socket |> @socket.echo(message)
 
       {:error, :cannot_wear, item} ->
-        state.socket |> @socket.echo(~s(You cannot wear #{Format.item_name(item)}.))
+        message = gettext(~s(You cannot wear %{name}.), name: Format.item_name(item))
+        state.socket |> @socket.echo(message)
 
       {:error, :not_found} ->
-        state.socket |> @socket.echo(~s("#{item_name}" could not be found."))
+        message = gettext(~s("%{name}" could not be found."), name: item_name)
+        state.socket |> @socket.echo(message)
     end
   end
 
@@ -81,7 +84,7 @@ defmodule Game.Command.Wear do
         slot |> String.to_atom() |> run_remove(state)
 
       false ->
-        socket |> @socket.echo("Unknown armor slot.")
+        socket |> @socket.echo(gettext("Unknown armor slot."))
     end
   end
 
@@ -95,7 +98,8 @@ defmodule Game.Command.Wear do
 
     save = %{save | items: items, wearing: wearing}
 
-    state.socket |> @socket.echo(~s(You are now wearing #{Format.item_name(item)}))
+    message = gettext(~s(You are now wearing %{name}), name: Format.item_name(item))
+    state.socket |> @socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
   end
@@ -109,11 +113,13 @@ defmodule Game.Command.Wear do
         {wearing, items} = remove(slot, wearing, items)
         save = %{save | wearing: wearing, items: items}
 
-        socket |> @socket.echo("You removed #{Format.item_name(item)} from your #{slot}")
+        message = gettext("You removed %{name} from your %{slot}", name: Format.item_name(item), slot: slot)
+        socket |> @socket.echo(message)
+
         {:update, Map.put(state, :save, save)}
 
       false ->
-        socket |> @socket.echo("Nothing was on your #{slot}.")
+        socket |> @socket.echo(gettext("Nothing was on your %{slot}.", slot: slot))
     end
   end
 

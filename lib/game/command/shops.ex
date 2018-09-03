@@ -120,20 +120,20 @@ defmodule Game.Command.Shops do
       :room ->
         case Enum.empty?(room.shops) do
           true ->
-            socket |> @socket.echo("There are no shops here.")
+            socket |> @socket.echo(gettext("There are no shops here."))
 
           false ->
             socket |> @socket.echo(Format.shops(room, label: false))
         end
 
       :overworld ->
-        socket |> @socket.echo("There are no shops here.")
+        socket |> @socket.echo(gettext("There are no shops here."))
     end
   end
 
   def run({:help}, %{socket: socket}) do
     message =
-      "Unknown usage of the shop(s) command. Please see {command}help shops{/command} for more information."
+      gettext("Unknown usage of the shop(s) command. Please see {command}help shops{/command} for more information.")
 
     socket |> @socket.echo(message)
   end
@@ -143,7 +143,8 @@ defmodule Game.Command.Shops do
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        message = gettext("The \"%{name}\" shop could not be found.", name: shop_name)
+        socket |> @socket.echo(message)
 
       {:ok, shop} ->
         list_items(shop, state)
@@ -155,7 +156,7 @@ defmodule Game.Command.Shops do
 
     case one_shop(room) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The shop could not be found.")
+        socket |> @socket.echo(gettext("The shop could not be found."))
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
@@ -172,7 +173,8 @@ defmodule Game.Command.Shops do
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        message = gettext("The \"%{name}\" shop could not be found.", name: shop_name)
+        socket |> @socket.echo(message)
 
       {:ok, shop} ->
         show_item(shop, item_name, state)
@@ -184,7 +186,7 @@ defmodule Game.Command.Shops do
 
     case one_shop(room) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The shop could not be found.")
+        socket |> @socket.echo(gettext("The shop could not be found."))
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
@@ -201,7 +203,8 @@ defmodule Game.Command.Shops do
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        message = gettext("The \"%{name}\" shop could not be found.", name: shop_name)
+        socket |> @socket.echo(message)
 
       {:ok, shop} ->
         buy_item(shop, item_name, state)
@@ -213,7 +216,7 @@ defmodule Game.Command.Shops do
 
     case one_shop(room) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The shop could not be found.")
+        socket |> @socket.echo(gettext("The shop could not be found."))
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
@@ -230,7 +233,8 @@ defmodule Game.Command.Shops do
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The \"#{shop_name}\" shop could not be found.")
+        message = gettext("The \"%{name}\" shop could not be found.", name: shop_name)
+        socket |> @socket.echo(message)
 
       {:ok, shop} ->
         sell_item(shop, item_name, state)
@@ -242,7 +246,7 @@ defmodule Game.Command.Shops do
 
     case one_shop(room) do
       {:error, :not_found} ->
-        socket |> @socket.echo("The shop could not be found.")
+        socket |> @socket.echo(gettext("The shop could not be found."))
 
       {:error, :more_than_one_shop} ->
         more_than_one_shop(socket)
@@ -297,22 +301,23 @@ defmodule Game.Command.Shops do
   defp buy_item(shop, item_name, state = %{socket: socket, save: save}) do
     case shop.id |> @shop.buy(item_name, save) do
       {:ok, save, item} ->
-        message = "You bought #{Format.item_name(item)} from #{Format.shop_name(shop)}."
+        message = gettext("You bought %{item} from %{shop}.", item: Format.item_name(item), shop: Format.shop_name(shop))
         socket |> @socket.echo(message)
 
         state = %{state | save: save}
         {:update, state}
 
       {:error, :item_not_found} ->
-        socket |> @socket.echo("The \"#{item_name}\" item could not be found.")
+        message = gettext("The \"%{name}\" item could not be found.", name: item_name)
+        socket |> @socket.echo(message)
 
       {:error, :not_enough_currency, item} ->
-        message = "You do not have enough #{currency()} for #{Format.item_name(item)}."
+        message = gettext("You do not have enough %{currency} for %{item}.", currency: currency(), item: Format.item_name(item))
         socket |> @socket.echo(message)
 
       {:error, :not_enough_quantity, item} ->
         message =
-          "#{Format.shop_name(shop)} does not have enough of #{Format.item_name(item)} for you to buy."
+          gettext("%{shop} does not have enough of %{item} for you to buy.", shop: Format.shop_name(shop), item: Format.item_name(item))
 
         socket |> @socket.echo(message)
     end
@@ -321,18 +326,22 @@ defmodule Game.Command.Shops do
   defp sell_item(shop, item_name, state = %{socket: socket, save: save}) do
     case shop.id |> @shop.sell(item_name, save) do
       {:ok, save, item} ->
-        socket
-        |> @socket.echo(
-          "You sold #{Format.item_name(item)} to #{Format.shop_name(shop)} for #{item.cost} #{
-            currency()
-          }."
-        )
+        message =
+          gettext("You sold %{item} to %{shop} for %{cost} %{currency}.", [
+            item: Format.item_name(item),
+            shop: Format.shop_name(shop),
+            cost: item.cost,
+            currency: currency()
+          ])
+
+        socket |> @socket.echo(message)
 
         state = %{state | save: save}
         {:update, state}
 
       {:error, :item_not_found} ->
-        socket |> @socket.echo("The \"#{item_name}\" item could not be found.")
+        message = gettext("The \"%{name}\" item could not be found.", name: item_name)
+        socket |> @socket.echo(message)
     end
   end
 
@@ -341,8 +350,8 @@ defmodule Game.Command.Shops do
 
     case Enum.find(items, &Game.Item.matches_lookup?(&1, item_name)) do
       nil ->
-        socket
-        |> @socket.echo("The \"#{item_name}\" could not be found in #{Format.shop_name(shop)}.")
+        message = gettext("The \"%{item}\" could not be found in %{shop}.", item: item_name, shop: Format.shop_name(shop))
+        socket |> @socket.echo(message)
 
       item ->
         socket |> @socket.echo(Format.item(item))
