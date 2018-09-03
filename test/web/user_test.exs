@@ -33,12 +33,22 @@ defmodule Web.UserTest do
     assert {:error, :invalid} = User.change_password(user, "p@ssword", %{password: "apassword", password_confirmation: "apassword"})
   end
 
-  test "disconnecting connected players", %{user: user} do
-    Session.Registry.register(user)
+  describe "disconnecting players" do
+    test "disconnecting connected players", %{user: user} do
+      Session.Registry.register(user)
 
-    User.disconnect()
+      User.disconnect()
 
-    assert_receive {:"$gen_cast", {:disconnect, [force: true]}}
+      assert_receive {:"$gen_cast", {:disconnect, [reason: "server shutdown", force: true]}}
+    end
+
+    test "disconnecting a single player", %{user: user} do
+      Session.Registry.register(user)
+
+      User.disconnect(user.id)
+
+      assert_receive {:"$gen_cast", {:disconnect, [reason: "disconnect", force: true]}}
+    end
   end
 
   test "create a new player" do

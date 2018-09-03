@@ -287,10 +287,22 @@ defmodule Web.User do
   def disconnect() do
     SessionRegistry.connected_players()
     |> Enum.each(fn %{pid: pid} ->
-      Session.disconnect(pid, force: true)
+      Session.disconnect(pid, reason: "server shutdown", force: true)
     end)
 
     :ok
+  end
+
+  @spec disconnect(integer()) :: :ok
+  def disconnect(user_id) do
+    case Session.find_connected_player(user_id) do
+      nil ->
+        :ok
+
+      %{pid: pid} ->
+        Session.disconnect(pid, reason: "disconnect", force: true)
+        :ok
+    end
   end
 
   @doc """

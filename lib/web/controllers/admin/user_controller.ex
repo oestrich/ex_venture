@@ -99,6 +99,16 @@ defmodule Web.Admin.UserController do
     end
   end
 
+  def disconnect(conn, %{"user_id" => id}) do
+    with {:ok, id} <- Ecto.Type.cast(:integer, id),
+         :ok <- User.disconnect(id) do
+      conn |> redirect(to: user_path(conn, :show, id))
+    else
+      _ ->
+        conn |> redirect(to: user_path(conn, :show, id))
+    end
+  end
+
   def disconnect(conn, _params) do
     case User.disconnect() do
       :ok ->

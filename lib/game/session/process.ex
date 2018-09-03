@@ -114,8 +114,14 @@ defmodule Game.Session.Process do
     {:stop, :normal, state}
   end
 
-  def handle_cast({:disconnect, [force: true]}, state = %{socket: socket}) do
-    socket |> @socket.echo("The server will be shutting down shortly.")
+  def handle_cast({:disconnect, opts}, state = %{socket: socket}) when is_list(opts) do
+    case Keyword.get(opts, :reason) do
+      "server shutdown" ->
+        state.socket |> @socket.echo("The server will be shutting down shortly.")
+
+      _ ->
+        state.socket |> @socket.echo("You are being signed out.\nGood bye.")
+    end
 
     Task.start(fn ->
       Process.sleep(@force_disconnect_period)
