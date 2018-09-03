@@ -29,7 +29,7 @@
             <div class="form-group">
               <%= label f, :feature_id, class: "col-md-4" %>
               <div class="col-md-8">
-                <%= select f, :feature_id, @features |> Enum.map(&({&1.key, &1.id})), class: "form-control" %>
+                <%= select f, :feature_id, feature_options(@features), class: "form-control" %>
                 <%= error_tag f, :feature_id %>
               </div>
             </div>

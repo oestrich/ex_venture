@@ -57,7 +57,7 @@ defmodule Web.Feature do
   """
   @spec create(map()) :: {:ok, Feature.t()} | {:error, Ecto.Changeset.t()}
   def create(params) do
-    changeset = %Feature{} |> Feature.changeset(params)
+    changeset = %Feature{} |> Feature.changeset(cast_params(params))
 
     case changeset |> Repo.insert() do
       {:ok, feature} ->
@@ -75,7 +75,7 @@ defmodule Web.Feature do
   @spec update(integer(), map()) :: {:ok, Feature.t()} | {:error, Ecto.Changeset.t()}
   def update(id, params) do
     feature = id |> get()
-    changeset = feature |> Feature.changeset(params)
+    changeset = feature |> Feature.changeset(cast_params(params))
 
     case changeset |> Repo.update() do
       {:ok, feature} ->
@@ -102,4 +102,25 @@ defmodule Web.Feature do
         {:error, changeset}
     end
   end
+
+  @doc """
+  Cast params into what `Data.Feature` expects
+  """
+  @spec cast_params(map) :: map
+  def cast_params(params) do
+    params
+    |> parse_tags()
+  end
+
+  defp parse_tags(params = %{"tags" => tags}) do
+    tags =
+      tags
+      |> String.split(",")
+      |> Enum.map(&String.trim/1)
+
+    params
+    |> Map.put("tags", tags)
+  end
+
+  defp parse_tags(params), do: params
 end

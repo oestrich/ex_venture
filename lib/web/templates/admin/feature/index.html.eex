@@ -27,6 +27,7 @@
             <table class="table">
               <thead>
                 <tr>
+                  <th>Tags</th>
                   <th>Key</th>
                   <th>Short Description</th>
                   <th>Actions</th>
@@ -35,6 +36,7 @@
               <tbody>
                 <%= Enum.map @features, fn (feature) -> %>
                   <tr>
+                    <td><%= Enum.join(feature.tags, ", ") %></td>
                     <td><%= link(feature.key, to: feature_path(@conn, :show, feature.id)) %></td>
                     <td><%= feature.short_description %>
                     <td>

@@ -29,6 +29,10 @@
           <table class="table">
             <tbody>
               <tr>
+                <th>Tags</th>
+                <td><%= Enum.join(@feature.tags, ", ") %></td>
+              </tr>
+              <tr>
                 <th>Key</th>
                 <td><%= @feature.key %></td>
               </tr>

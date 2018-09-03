@@ -4,4 +4,14 @@ defmodule Web.Admin.FeatureView do
   alias Game.Format
   alias Web.Admin.SharedView
   alias Web.Color
+
+  def tags(changeset) do
+    case Ecto.Changeset.get_field(changeset, :tags) do
+      nil ->
+        ""
+
+      tags ->
+        tags |> Enum.join(", ")
+    end
+  end
 end
