@@ -24,7 +24,7 @@ defmodule Game.Command.Say do
 
   commands([{"say", ["'"]}], parse: false)
 
-  @adverb_regex ~r/\[(?<adverb>.*)\]/
+  @adverb_regex ~r/^\[(?<adverb>.*)\]/
 
   @impl Game.Command
   def help(:topic), do: "Say"
@@ -96,6 +96,8 @@ defmodule Game.Command.Say do
   end
 
   defp parse_adverb_phrase(string) do
+    string = String.trim(string)
+
     case Regex.run(@adverb_regex, string) do
       nil ->
         {string, nil}
