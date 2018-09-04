@@ -75,4 +75,7 @@ defmodule Test.Networking.Socket do
 
   @impl Networking.Socket
   def set_config(_socket, _config), do: :ok
+
+  @impl true
+  def nop(_socket), do: :ok
 end

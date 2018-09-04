@@ -148,6 +148,9 @@ defmodule Web.TelnetChannel do
 
         {:echo, false} ->
           send(state.socket.channel_pid, {:option, :echo, false})
+
+        {:nop} ->
+          :ok
       end
 
       {:noreply, state}

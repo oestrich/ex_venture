@@ -5,13 +5,21 @@ defmodule Networking.Socket do
   Expected functions for a socket to use.
   """
 
-  @callback set_user_id(socket :: pid, user_id :: integer()) :: :ok
-  @callback set_config(socket :: pid, config :: map()) :: :ok
-  @callback echo(socket :: pid, message :: String.t()) :: :ok
-  @callback prompt(socket :: pid, message :: String.t()) :: :ok
-  @callback disconnect(socket :: pid) :: :ok
-  @callback tcp_option(socket :: pid, option :: atom, enabled :: boolean) :: :ok
-  @callback push_gmcp(socket :: pid, module :: String.t(), data :: String.t()) :: :ok
+  @callback set_user_id(socket :: pid(), user_id :: integer()) :: :ok
+
+  @callback set_config(socket :: pid(), config :: map()) :: :ok
+
+  @callback echo(socket :: pid(), message :: String.t()) :: :ok
+
+  @callback prompt(socket :: pid(), message :: String.t()) :: :ok
+
+  @callback disconnect(socket :: pid()) :: :ok
+
+  @callback tcp_option(socket :: pid(), option :: atom, enabled :: boolean) :: :ok
+
+  @callback nop(socket :: pid()) :: :ok
+
+  @callback push_gmcp(socket :: pid(), module :: String.t(), data :: String.t()) :: :ok
 
   defmacro __using__(_opts) do
     quote do

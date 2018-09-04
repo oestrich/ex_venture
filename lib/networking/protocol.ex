@@ -28,6 +28,7 @@ defmodule Networking.Protocol do
   @telnet_dont 254
   @sb 250
   @se 240
+  @nop 241
   @telnet_option_echo 1
   @ga 249
   @ayt 246
@@ -80,6 +81,11 @@ defmodule Networking.Protocol do
 
   def tcp_option(socket, :echo, false) do
     GenServer.cast(socket, {:command, <<@iac, @will, @telnet_option_echo>>, {:echo, false}})
+  end
+
+  @impl true
+  def nop(socket) do
+    GenServer.cast(socket, {:command, <<@iac, @nop>>, {:nop}})
   end
 
   @doc """

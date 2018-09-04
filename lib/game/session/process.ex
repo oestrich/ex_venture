@@ -312,6 +312,7 @@ defmodule Game.Session.Process do
 
   def handle_info(:heartbeat, state) do
     state |> GMCP.heartbeat()
+    state.socket |> @socket.nop()
     self() |> schedule_heartbeat()
     {:noreply, state}
   end
