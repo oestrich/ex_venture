@@ -6,29 +6,7 @@ Scripts are attached to NPCs and Quests. They dictate what an NPC will do during
 
 This is an example of a quest script.
 
-```json
-[
-  {
-    "unknown": "I don't know about that, but I can help you with bandits",
-    "trigger": null,
-    "message": "Hello, are you here to find out about our bandit problem?",
-    "listeners": [
-      {
-        "phrase": "yes|bandits",
-        "key": "bandits"
-      }
-    ],
-    "key": "start"
-  },
-  {
-    "unknown": null,
-    "trigger": "quest",
-    "message": "I heard they are hiding {white}down{/white} in a cave.",
-    "listeners": [],
-    "key": "bandits"
-  }
-]
-```
+![Admin script editing](/images/admin-script-edit-quest.png)
 
 ## How they work
 
@@ -50,3 +28,13 @@ You tell Guard, "yes"
 Guard replies, "I heard they are hiding {white}down{/white} in a cave."
 You have a new quest.
 ```
+
+## Trigger Types
+
+### Quest
+
+For quests only, this triggers giving the quest to a user
+
+### Line
+
+For any script, this continues the conversation in a new message to the user. The NPC will send the next key after the delay, continuing the conversation. This allows for breaking up large blocks of text.
