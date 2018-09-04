@@ -26,7 +26,7 @@ defmodule Game.Command.Debug do
   @doc """
   Parse the command into arguments
 
-      iex> Game.Command.Debug.parse("debug squabble")
+      iex> Game.Command.Debug.parse("debug info")
       {:squabble}
 
       iex> Game.Command.Debug.parse("unknown")
@@ -34,7 +34,7 @@ defmodule Game.Command.Debug do
   """
   @spec parse(String.t()) :: {any()}
   def parse(command)
-  def parse("debug squabble"), do: {:squabble}
+  def parse("debug info"), do: {:squabble}
 
   @impl Game.Command
   def run(command, state)
