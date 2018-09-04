@@ -91,6 +91,13 @@ defmodule Data.EventTest do
         action: %{type: "move", max_distance: 3, chance: 50, wait: 10},
       })
 
+      assert Event.valid?(%{
+        id: "id",
+        type: "tick",
+        condition: %{room_id: 10},
+        action: %{type: "say", message: "hi", chance: 50, wait: 10},
+      })
+
       refute Event.valid?(%{
         id: "id",
         type: "tick",
@@ -224,6 +231,11 @@ defmodule Data.EventTest do
     test "room heard - regex" do
       assert Event.valid_condition?(%{type: "room/heard", condition: %{regex: "hello"}})
       refute Event.valid_condition?(%{type: "room/heard", condition: %{regex: :hello}})
+    end
+
+    test "tick - room id" do
+      assert Event.valid_condition?(%{type: "tick", condition: %{room_id: 10}})
+      refute Event.valid_condition?(%{type: "tick", condition: %{room_id: :ten}})
     end
 
     test "any other type" do

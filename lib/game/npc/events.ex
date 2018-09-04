@@ -444,8 +444,14 @@ defmodule Game.NPC.Events do
   @doc """
   Emote the NPC's message to the room
   """
-  def emote_to_room(state, %{action: action}) do
-    emote_to_room(state, action)
+  def emote_to_room(state, event = %{action: action}) do
+    case room_condition_matches?(state, event) do
+      true ->
+        emote_to_room(state, action)
+
+      false ->
+        state
+    end
   end
 
   def emote_to_room(state, action) when is_map(action) do
@@ -506,8 +512,14 @@ defmodule Game.NPC.Events do
   @doc """
   Say the NPC's message to the room
   """
-  def say_to_room(state, %{action: action}) do
-    say_to_room(state, action)
+  def say_to_room(state, event = %{action: action}) do
+    case room_condition_matches?(state, event) do
+      true ->
+        say_to_room(state, action)
+
+      false ->
+        state
+    end
   end
 
   def say_to_room(state, action) when is_map(action) do
@@ -532,14 +544,32 @@ defmodule Game.NPC.Events do
   @doc """
   Say a random message to the room
   """
-  def say_random_to_room(state = %{room_id: room_id}, %{action: %{messages: messages}}) do
-    message = Enum.random(messages)
-    message = Message.npc_say(state.npc, message)
+  def say_random_to_room(state = %{room_id: room_id}, event = %{action: %{messages: messages}}) do
+    case room_condition_matches?(state, event) do
+      true ->
+        message = Enum.random(messages)
+        message = Message.npc_say(state.npc, message)
 
-    room_id |> @environment.say(npc(state), message)
-    broadcast(state.npc, "room/heard", message)
+        room_id |> @environment.say(npc(state), message)
+        broadcast(state.npc, "room/heard", message)
 
-    state
+        state
+
+      false ->
+        state
+    end
+  end
+
+  def room_condition_matches?(state, event) do
+    condition = Map.get(event, :condition, %{})
+
+    case condition != nil && Map.has_key?(condition, :room_id) do
+      true ->
+        condition.room_id == state.room_id
+
+      false ->
+        true
+    end
   end
 
   @doc """

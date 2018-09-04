@@ -472,6 +472,16 @@ defmodule Game.NPC.EventsTest do
 
       assert_receive {:"$gen_cast", {:act, %{type: "emote", message: "fidgets"}}}
     end
+
+    test "will emote to the room - only if the room id matches", %{state: state, event: event} do
+      event = Map.put(event, :condition, %{room_id: 10})
+      assert Events.act_on_tick(state, event)
+      refute_receive {:"$gen_cast", {:act, %{type: "emote", message: "fidgets"}}}, 50
+
+      event = Map.put(event, :condition, %{room_id: 1})
+      assert Events.act_on_tick(state, event)
+      assert_receive {:"$gen_cast", {:act, %{type: "emote", message: "fidgets"}}}
+    end
   end
 
   describe "merging status" do
@@ -550,6 +560,16 @@ defmodule Game.NPC.EventsTest do
 
       assert_receive {:"$gen_cast", {:act, %{type: "say", message: "Can I help you?"}}}
     end
+
+    test "will say to the room - only if the room id matches", %{state: state, event: event} do
+      event = Map.put(event, :condition, %{room_id: 10})
+      assert Events.act_on_tick(state, event)
+      refute_receive {:"$gen_cast", {:act, %{type: "say"}}}, 50
+
+      event = Map.put(event, :condition, %{room_id: 1})
+      assert Events.act_on_tick(state, event)
+      assert_receive {:"$gen_cast", {:act, %{type: "say"}}}
+    end
   end
 
   describe "tick - say/random" do
@@ -577,6 +597,16 @@ defmodule Game.NPC.EventsTest do
 
       [{_, message}] = @room.get_says()
       assert message.message == "Can I help you?"
+    end
+
+    test "will say to the room - only if the room id matches", %{state: state, event: event} do
+      event = Map.put(event, :condition, %{room_id: 10})
+      assert Events.act_on_tick(state, event)
+      assert @room.get_says() == []
+
+      event = Map.put(event, :condition, %{room_id: 1})
+      assert Events.act_on_tick(state, event)
+      refute @room.get_says() == []
     end
   end
 

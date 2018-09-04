@@ -147,7 +147,8 @@ defmodule Data.Event do
     |> validate()
     |> validate_keys(
       required: required_event_keys(event.type),
-      one_of: one_of_event_keys(event.type)
+      one_of: one_of_event_keys(event.type),
+      optional: optional_event_keys(event.type)
     )
     |> validate_action_for_type()
     |> validate_event_action()
@@ -168,6 +169,14 @@ defmodule Data.Event do
   end
 
   defp one_of_event_keys(_type) do
+    []
+  end
+
+  defp optional_event_keys("tick") do
+    [:condition]
+  end
+
+  defp optional_event_keys(_) do
     []
   end
 
@@ -295,13 +304,22 @@ defmodule Data.Event do
         |> validate_keys(required: [:regex])
         |> validate_values(&validate_condition_values/1)
 
+
+      "tick" ->
+        condition = Map.get(event, :condition, %{}) || %{}
+
+        condition
+        |> validate()
+        |> validate_keys(required: [], optional: [:room_id])
+        |> validate_values(&validate_condition_values/1)
+
       _ ->
-        case !Map.has_key?(event, :condition) do
-          true ->
+        case Map.has_key?(event, :condition) do
+          false ->
             event
             |> validate()
 
-          false ->
+          true ->
             event
             |> validate()
             |> Map.put(:valid?, false)
@@ -313,6 +331,9 @@ defmodule Data.Event do
     case key do
       :regex ->
         is_binary(value)
+
+      :room_id ->
+        is_integer(value)
 
       _ ->
         false
