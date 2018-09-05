@@ -35,6 +35,10 @@
         <span class="help-block">Amount of use an item has if usable</span>
       <% end %> 
 
+      <%= FormView.text_field(f, :usage_command) do %>
+        <span class="help-block">This is what the user will enter to trigger using the item. Valid for weapons only.</span>
+      <% end %>
+
       <%= FormView.text_field(f, :user_text) do %>
         <span class="help-block">Available replacements: <code>[user]</code>, <code>[name]</code>, <code>[target]</code></span>
       <% end %>

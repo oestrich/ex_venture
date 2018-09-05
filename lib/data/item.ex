@@ -23,7 +23,7 @@ defmodule Data.Item do
     "armor" => ["stats", "damage/type"]
   }
 
-  @fields [
+  @required_fields [
     :level,
     :name,
     :description,
@@ -40,6 +40,10 @@ defmodule Data.Item do
     :whitelist_effects
   ]
 
+  @optional_fields [
+    :usage_command
+  ]
+
   schema "items" do
     field(:name, :string)
     field(:description, :string)
@@ -50,6 +54,7 @@ defmodule Data.Item do
     field(:effects, {:array, Data.Effect})
     field(:cost, :integer, default: 0)
     field(:level, :integer, default: 1)
+    field(:usage_command, :string)
     field(:user_text, :string, default: "You use [name] on [target].")
     field(:usee_text, :string, default: "[user] uses [name] on you.")
     field(:is_usable, :boolean, default: false)
@@ -76,7 +81,7 @@ defmodule Data.Item do
   List out item fields
   """
   @spec fields() :: [atom()]
-  def fields(), do: @fields
+  def fields(), do: @required_fields ++ @optional_fields
 
   @doc """
   Provide a starting point for the web panel to edit new statistics
@@ -108,9 +113,9 @@ defmodule Data.Item do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, @fields)
-    |> ensure_keywords
-    |> validate_required(@fields)
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> ensure_keywords()
+    |> validate_required(@required_fields)
     |> validate_inclusion(:type, @types)
     |> validate_stats()
     |> Effect.validate_effects()
@@ -120,9 +125,14 @@ defmodule Data.Item do
 
   defp ensure_keywords(changeset) do
     case changeset do
-      %{changes: %{keywords: _keywords}} -> changeset
-      %{data: %{keywords: keywords}} when keywords != nil -> changeset
-      _ -> put_change(changeset, :keywords, [])
+      %{changes: %{keywords: _keywords}} ->
+        changeset
+
+      %{data: %{keywords: keywords}} when keywords != nil ->
+        changeset
+
+      _ ->
+        put_change(changeset, :keywords, [])
     end
   end
 
@@ -132,8 +142,11 @@ defmodule Data.Item do
   @spec validate_stats(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_stats(changeset) do
     case get_change(changeset, :stats) do
-      nil -> changeset
-      stats -> _validate_stats(changeset, stats)
+      nil ->
+        changeset
+
+      stats ->
+        _validate_stats(changeset, stats)
     end
   end
 
@@ -141,8 +154,11 @@ defmodule Data.Item do
     type = get_field(changeset, :type)
 
     case Stats.valid?(type, stats) do
-      true -> changeset
-      false -> add_error(changeset, :stats, "are invalid")
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :stats, "are invalid")
     end
   end
 
@@ -152,8 +168,11 @@ defmodule Data.Item do
   @spec validate_effects(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   def validate_effects(changeset) do
     case get_change(changeset, :effects) do
-      nil -> changeset
-      effects -> _validate_effects(changeset, effects)
+      nil ->
+        changeset
+
+      effects ->
+        _validate_effects(changeset, effects)
     end
   end
 
@@ -161,8 +180,11 @@ defmodule Data.Item do
     type = get_field(changeset, :type)
 
     case effects |> Enum.all?(&(&1.kind in @valid_effects[type])) do
-      true -> changeset
-      false -> add_error(changeset, :effects, "can only include damage or stats effects")
+      true ->
+        changeset
+
+      false ->
+        add_error(changeset, :effects, "can only include damage or stats effects")
     end
   end
 

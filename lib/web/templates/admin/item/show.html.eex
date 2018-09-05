@@ -64,6 +64,10 @@
                 <td><pre><%= @item |> json_field(:effects) %></pre></td>
               </tr>
               <tr>
+                <th>Usage Command</th>
+                <td><code><%= @item.usage_command %></code></td>
+              </tr>
+              <tr>
                 <th>User Text</th>
                 <td><code><%= @item.user_text %></code></td>
               </tr>
