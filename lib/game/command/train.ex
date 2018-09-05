@@ -83,7 +83,7 @@ defmodule Game.Command.Train do
     case one_trainer(room.npcs) do
       {:ok, trainer} ->
         skills =
-          trainer.trainable_skills
+          trainer.extra.trainable_skills
           |> Skills.skills()
           |> filter_player_skills(save)
           |> filter_skills_by_level(save)
@@ -111,7 +111,7 @@ defmodule Game.Command.Train do
 
     case find_trainer(room.npcs, name) do
       {:ok, trainer} ->
-        skills = Skills.skills(trainer.trainable_skills)
+        skills = Skills.skills(trainer.extra.trainable_skills)
         state.socket |> @socket.echo(Format.trainable_skills(trainer, skills))
 
       {:error, :not_found} ->
@@ -161,7 +161,7 @@ defmodule Game.Command.Train do
 
   defp find_skill(trainer, skill_name, state) do
     skill =
-      trainer.trainable_skills
+      trainer.extra.trainable_skills
       |> Skills.skills()
       |> Enum.find(&Utility.matches?(&1, skill_name))
 
@@ -235,7 +235,7 @@ defmodule Game.Command.Train do
   end
 
   defp one_trainer(npcs) do
-    case npcs |> Enum.filter(& &1.is_trainer) do
+    case npcs |> Enum.filter(& &1.extra.is_trainer) do
       [trainer] ->
         {:ok, trainer}
 

@@ -44,6 +44,8 @@ defmodule Game.Character.Simple do
         status_line: npc.status_line,
         description: npc.description,
         is_quest_giver: npc.is_quest_giver,
+        is_trainer: npc.is_trainer,
+        trainable_skills: npc.trainable_skills,
       }
     }
   end

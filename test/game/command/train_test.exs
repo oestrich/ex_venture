@@ -2,6 +2,7 @@ defmodule Game.Command.TrainTest do
   use Data.ModelCase
   doctest Game.Command.Train
 
+  alias Game.Character
   alias Game.Command.Train
 
   @socket Test.Networking.Socket
@@ -17,7 +18,7 @@ defmodule Game.Command.TrainTest do
   describe "list out trainable skills" do
     setup do
       guard = create_npc(%{name: "Guard", is_trainer: true})
-      %{guard: guard}
+      %{guard: Character.Simple.from_npc(guard)}
     end
 
     test "one npc in the room", %{state: state, guard: guard} do
@@ -35,7 +36,7 @@ defmodule Game.Command.TrainTest do
       slash = %{name: "Slash", command: "slash"} |> create_skill() |> insert_skill()
       kick = %{name: "Kick", command: "kick"} |> create_skill() |> insert_skill()
 
-      guard = %{guard | trainable_skills: [slash.id, kick.id]}
+      guard = %{guard | extra: %{guard.extra | trainable_skills: [slash.id, kick.id]}}
 
       @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
 
@@ -54,7 +55,7 @@ defmodule Game.Command.TrainTest do
       slash = %{name: "Slash", command: "slash"} |> create_skill() |> insert_skill()
       kick = %{name: "Kick", command: "kick", level: 3} |> create_skill() |> insert_skill()
 
-      guard = %{guard | trainable_skills: [slash.id, kick.id]}
+      guard = %{guard | extra: %{guard.extra | trainable_skills: [slash.id, kick.id]}}
 
       @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
 
@@ -78,6 +79,7 @@ defmodule Game.Command.TrainTest do
 
     test "more than one trainer", %{state: state, guard: guard} do
       master = create_npc(%{name: "Guard", is_trainer: true})
+      master = Character.Simple.from_npc(master)
       @room.set_room(Map.merge(@room._room(), %{npcs: [guard, master]}))
 
       :ok = Train.run({:list}, state)
@@ -112,7 +114,8 @@ defmodule Game.Command.TrainTest do
       slash = %{name: "Slash", command: "slash", level: 2} |> create_skill() |> insert_skill()
 
       guard = create_npc(%{name: "Guard", is_trainer: true})
-      guard = %{guard | trainable_skills: [slash.id]}
+      guard = Character.Simple.from_npc(guard)
+      guard = %{guard | extra: %{guard.extra | trainable_skills: [slash.id]}}
 
       %{guard: guard, slash: slash}
     end
@@ -181,6 +184,7 @@ defmodule Game.Command.TrainTest do
 
     test "more than one trainer", %{state: state, guard: guard} do
       master = create_npc(%{name: "Guard", is_trainer: true})
+      master = Character.Simple.from_npc(master)
       @room.set_room(Map.merge(@room._room(), %{npcs: [guard, master]}))
 
       :ok = Train.run({:train, "slash"}, state)
