@@ -72,10 +72,12 @@ defmodule Game.Command.Skills do
   @doc """
   Parse skill specific commands
   """
-  @spec parse_skill(String.t(), User.t()) :: Command.t() | {:error, :bad_parse, String.t()}
-  def parse_skill(command, user)
+  @spec parse_skill(String.t(), ParseContext.t()) :: Command.t() | {:error, :bad_parse, String.t()}
+  def parse_skill(command, context)
 
-  def parse_skill(command, %{save: save}) do
+  def parse_skill(command, context) do
+    %{save: save} = context.player
+
     with {:ok, skill} <- parse_find_skill(command),
          {:ok, skill} <- parse_check_skill_enabled(skill),
          {:ok, skill} <- parse_check_skill_known(skill, save),

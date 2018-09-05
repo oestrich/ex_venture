@@ -2,6 +2,7 @@ defmodule Game.Command.SkillsTest do
   use Data.ModelCase
   doctest Game.Command.Skills
 
+  alias Game.Command.ParseContext
   alias Game.Command.Skills
   alias Game.Session
   alias Game.Session.State
@@ -50,9 +51,14 @@ defmodule Game.Command.SkillsTest do
   end
 
   describe "parsing skills" do
-    test "parsing skills based on the user", %{state: state, slash: slash} do
-      assert %{text: "slash", module: Skills, args: {^slash, "slash"}} = Skills.parse_skill("slash", state.user)
-      assert {:error, :bad_parse, "look"} = Skills.parse_skill("look", state.user)
+    setup %{state: state} do
+      context = %ParseContext{player: state.user}
+      %{context: context}
+    end
+
+    test "parsing skills based on the user", %{context: context, slash: slash} do
+      assert %{text: "slash", module: Skills, args: {^slash, "slash"}} = Skills.parse_skill("slash", context)
+      assert {:error, :bad_parse, "look"} = Skills.parse_skill("look", context)
     end
 
     test "parses the skill but marks as not high enough level if they have the skill but too low", %{state: state} do
@@ -70,11 +76,12 @@ defmodule Game.Command.SkillsTest do
 
       user = state.user
       user = %{user | save: %{user.save | skill_ids: [kick.id | user.save.skill_ids]}}
+      context = %ParseContext{player: user}
 
-      assert %{text: "kick", module: Skills, args: {^kick, :level_too_low}} = Skills.parse_skill("kick", user)
+      assert %{text: "kick", module: Skills, args: {^kick, :level_too_low}} = Skills.parse_skill("kick", context)
     end
 
-    test "parses the skill but marks as not usable if skill exists but user does not have", %{state: state} do
+    test "parses the skill but marks as not usable if skill exists but user does not have", %{context: context} do
       kick = create_skill(%{
         level: 1,
         name: "Kick",
@@ -87,7 +94,7 @@ defmodule Game.Command.SkillsTest do
       })
       insert_skill(kick)
 
-      assert %{text: "kick", module: Skills, args: {^kick, :not_known}} = Skills.parse_skill("kick", state.user)
+      assert %{text: "kick", module: Skills, args: {^kick, :not_known}} = Skills.parse_skill("kick", context)
     end
   end
 

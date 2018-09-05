@@ -64,7 +64,6 @@ defmodule Game.Command do
 
   require Logger
 
-  alias Data.User
   alias Game.Command
   alias Game.Command.Skills
   alias Game.Insight
@@ -130,23 +129,24 @@ defmodule Game.Command do
   @doc """
   Parse a string to turn into a command tuple
   """
-  @spec parse(String.t(), User.t()) :: t()
-  def parse(command, player)
-  def parse("", _player), do: {:skip, {}}
+  @spec parse(String.t(), ParseContext.t()) :: t()
+  def parse(command, context)
 
-  def parse(command, player) do
+  def parse("", _context), do: {:skip, {}}
+
+  def parse(command, context) do
     start_parsing_at = Timex.now()
     command =
       command
       |> String.replace(~r/  /, " ")
       |> String.replace(~r/<[^>]*>/, "")
 
-    skill_parse = command |> Skills.parse_skill(player)
+    skill_parse = command |> Skills.parse_skill(context)
 
     case skill_parse do
       {:error, :bad_parse, _} ->
         command
-        |> _parse()
+        |> _parse(context)
         |> maybe_bad_parse(command)
         |> record_parse_time(start_parsing_at)
 
@@ -163,10 +163,10 @@ defmodule Game.Command do
 
   defp record_parse_time(command, _start_parsing_at), do: command
 
-  defp _parse(command) do
+  defp _parse(command, context) do
     @commands
     |> Enum.find_value(fn module ->
-      case module.parse(command) do
+      case module.parse(command, context) do
         {:error, :bad_parse, _} -> false
         arguments -> %__MODULE__{text: command, module: module, args: arguments}
       end

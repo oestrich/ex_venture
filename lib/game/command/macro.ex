@@ -45,6 +45,9 @@ defmodule Game.Command.Macro do
       @doc false
       def required_flags(), do: @required_flags
 
+      # Provide a pass through ignoring the context
+      def parse(command, _context), do: parse(command)
+
       # Provide a default bad parse
       def parse(command), do: {:error, :bad_parse, command}
     end

@@ -8,6 +8,7 @@ defmodule Game.Session.Commands do
   alias Game.Color
   alias Game.Command
   alias Game.Command.Pager
+  alias Game.Command.ParseContext
   alias Game.Session
   alias Game.Session.Regen
   alias Game.Session.State
@@ -19,9 +20,11 @@ defmodule Game.Session.Commands do
   def process_command(state = %{user: user}, message) do
     state = Map.merge(state, %{last_recv: Timex.now()})
 
+    context = %ParseContext{player: user}
+
     message
     |> Color.delink_commands()
-    |> Command.parse(user)
+    |> Command.parse(context)
     |> run_command(state)
   end
 
