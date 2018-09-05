@@ -269,7 +269,7 @@ defmodule Game.CommandTest do
     end
 
     test "debug", %{user: user} do
-      assert %Command{module: Command.Debug, args: {:squabble}} = Command.parse("debug squabble", user)
+      assert %Command{module: Command.Debug, args: {:squabble}} = Command.parse("debug info", user)
     end
 
     test "scan", %{user: user} do
