@@ -82,7 +82,7 @@ defmodule Game.Session.Commands do
 
       {:error, :room_offline} ->
         message =
-          "{red}ERROR{/red}: {white}The game is experience issues, the room is not online.{/white}"
+          "{red}ERROR{/red}: {white}The game is experiencing issues, the room is not online.{/white}"
 
         state.socket |> @socket.echo(message)
         {:stop, :normal, :state}
