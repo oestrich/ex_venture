@@ -254,7 +254,11 @@ defmodule Networking.Protocol do
 
       :gmcp ->
         Logger.info("Will do GCMP", type: :socket)
-        push_client_gui(state)
+
+        state
+        |> push_client_gui()
+        |> push_client_map()
+
         {:noreply, Map.put(state, :gmcp, true)}
 
       {:gmcp, :will} ->
@@ -537,5 +541,17 @@ defmodule Networking.Protocol do
     data = "#{@mudlet_version}\n#{RoutesHelper.public_page_url(Endpoint, :mudlet_package)}"
     message = <<@iac, @sb, @gmcp>> <> "Client.GUI " <> data <> <<@iac, @se>>
     send_data(state, message)
+
+    state
+  end
+
+  defp push_client_map(state) do
+    data = %{url: RoutesHelper.public_page_url(Endpoint, :map), version: "1"}
+    data = Poison.encode!(data)
+
+    message = <<@iac, @sb, @gmcp>> <> "Client.Map " <> data <> <<@iac, @se>>
+    send_data(state, message)
+
+    state
   end
 end
