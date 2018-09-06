@@ -18,11 +18,11 @@ defmodule Game.Format.Listen do
 
     npcs =
       room.npcs
-      |> Enum.reject(&(is_nil(&1.status_listen) || &1.status_listen == ""))
+      |> Enum.reject(&(is_nil(&1.extra.status_listen) || &1.extra.status_listen == ""))
       |> Enum.map(fn npc ->
         context()
         |> assign(:name, Format.npc_name(npc))
-        |> Format.template(npc.status_listen)
+        |> Format.template(npc.extra.status_listen)
       end)
 
     context()

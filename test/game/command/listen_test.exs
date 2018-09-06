@@ -21,7 +21,7 @@ defmodule Game.Command.ListenTest do
           %{key: "flag", listen: "A flag is flapping in the breeze"},
         ],
         npcs: [
-          %{name: "Guard", status_listen: "[name] is yelling."},
+          %{name: "Guard", extra: %{status_listen: "[name] is yelling."}},
         ],
       }
       @room.set_room(Map.merge(@room._room(), room))
