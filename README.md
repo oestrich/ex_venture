@@ -72,6 +72,7 @@ This will start a server on port 5555 that you can connect with using the `local
 ```bash
 MIX_ENV=test mix ecto.create
 MIX_ENV=test mix ecto.migrate
+mix test
 ```
 
 ## Web Client
