@@ -6,7 +6,7 @@ site_url: 'http://exventure.org'
 repo_name: 'oestrich/ex_venture'
 repo_url: 'https://github.com/oestrich/ex_venture'
 
-copyright: 'Copyright &copy; 2017 Eric Oestrich'
+copyright: 'Copyright &copy; 2017-2018 Eric Oestrich'
 google_analytics: ['UA-20355001-8', 'exventure.org']
 
 theme:
@@ -16,7 +16,7 @@ theme:
   palette:
     primary: "Blue Grey"
 
-pages:
+nav:
   - Home: index.md
   - Setup: setup.md
   - Contributing: contributing.md

@@ -16,19 +16,23 @@ A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixi
 ## Features
 
 ### Powerful web admin
+
 - Everything is editable by the web admin panel and live in the game on save
 - There are no text files to edit, everything is stored in PostgreSQL
 
 ### Web client
+
 - Using Phoenix Channels, ExVenture ships with a built in web client
 - Hosted by the app itself, accessible by browsing to `/play`
 
 ### Cross Game Chat
+
 - ExVenture fully supports the [Gossip][gossip] network
 - Cross game channels
 - Cross game tells
 
 ### Front Page
+
 - News announcements
 - Help is web accessible
 - Classes, skills, and races are all available on the home page
@@ -36,14 +40,17 @@ A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixi
 - Chat with players in the game from the web chat
 
 ### Security
+
 - The telnet connection does _not_ allow passwords to be entered over plaintext
 - Add TOTP to your account
 
 ### Resilient
+
 - Crashes are contained in the room that they occur and those processes restart cleanly
 - Player connections are _not_ dropped during session recovery
 
 ### Multi-node support
+
 - Use the power of elixir to start a cluster for your game
 - The world is spread across the entire cluster
 - Building on local resiliency, the app will stay alive if a node goes down
