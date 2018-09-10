@@ -567,7 +567,7 @@ defmodule Seeds do
       |> Map.put(:version, 11)
 
     create_user(%{
-      name: "eric",
+      name: "admin",
       password: "password",
       save: save,
       flags: ["admin"],
