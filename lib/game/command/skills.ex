@@ -155,6 +155,7 @@ defmodule Game.Command.Skills do
       save.skill_ids
       |> Skills.skills()
       |> Enum.filter(&(&1.level <= save.level))
+      |> Enum.filter(&(&1.is_enabled))
       |> Enum.sort_by(& &1.level)
 
     socket |> @socket.echo(Format.skills(skills))
