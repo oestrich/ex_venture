@@ -104,6 +104,40 @@ defmodule Game.Session.Registry do
   end
 
   @doc """
+  Check if a player is online or not
+  """
+  @spec player_online?(User.t()) :: boolean()
+  def player_online?(player) do
+    GenServer.call(__MODULE__, {:player_online?, player.id})
+  end
+
+  @doc """
+  Find a connected player by their player struct
+  """
+  @spec find_connected_player(integer()) :: pid()
+  @spec find_connected_player(User.t()) :: pid()
+  def find_connected_player(player_id) when is_integer(player_id) do
+    connected_players()
+    |> Enum.find(fn %{player: connected_player} ->
+      connected_player.id == player_id
+    end)
+  end
+
+  def find_connected_player([name: player_name]) do
+    connected_players()
+    |> Enum.find(fn %{player: player} ->
+      player.name |> String.downcase() == player_name |> String.downcase()
+    end)
+  end
+
+  def find_connected_player(player) do
+    connected_players()
+    |> Enum.find(fn %{player: connected_player} ->
+      connected_player.id == player.id
+    end)
+  end
+
+  @doc """
   Player has gone offline
   """
   @spec player_offline(User.t()) :: nil
@@ -169,6 +203,14 @@ defmodule Game.Session.Registry do
 
   def handle_call(:connected_players, _from, state) do
     {:reply, state.connected_players, state}
+  end
+
+  def handle_call({:player_online?, player_id}, _from, state) do
+    online? =
+      state.connected_players()
+      |> Enum.any?(&(&1.player.id == player_id))
+
+    {:reply, online?, state}
   end
 
   def handle_cast({:register_connection, pid, id}, state) do

@@ -162,19 +162,5 @@ defmodule Game.Session do
   @doc """
   Find a connected player by their player struct
   """
-  @spec find_connected_player(integer()) :: pid()
-  @spec find_connected_player(User.t()) :: pid()
-  def find_connected_player(player_id) when is_integer(player_id) do
-    Session.Registry.connected_players()
-    |> Enum.find(fn %{player: connected_player} ->
-      connected_player.id == player_id
-    end)
-  end
-
-  def find_connected_player(player) do
-    Session.Registry.connected_players()
-    |> Enum.find(fn %{player: connected_player} ->
-      connected_player.id == player.id
-    end)
-  end
+  def find_connected_player(player), do: Session.Registry.find_connected_player(player)
 end
