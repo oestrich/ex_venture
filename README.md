@@ -2,14 +2,14 @@
 
 [![Trello](https://img.shields.io/badge/issues-trello-blue.svg)](https://trello.com/b/PFGmFWmu/exventure)
 [![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/GPEa6dB)
-[![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/midmud)
+[![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/exventure)
 
 <img src="https://exventure.org/images/exventure.png" alt="ExVenture Logo" width="200" />
 
 A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
 
 - [Documentation for Admins](https://exventure.org/)
-- [Support ExVenture on Patreon](https://www.patreon.com/midmud)
+- [Support ExVenture on Patreon](https://www.patreon.com/exventure)
 - [Trello Issues](https://trello.com/b/PFGmFWmu/exventure)
 - [Chat with us on Discord](https://discord.gg/GPEa6dB)
 
