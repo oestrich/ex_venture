@@ -6,6 +6,7 @@ defmodule Game.Session.RegistryTest do
   describe "online/offline" do
     test "receive a notification for offline" do
       Registry.register(base_user())
+      Registry.catch_up()
 
       Registry.player_offline(%{id: 2, name: "Player 2"})
 
@@ -16,6 +17,7 @@ defmodule Game.Session.RegistryTest do
 
     test "receive a notification for online" do
       Registry.register(base_user())
+      Registry.catch_up()
 
       Registry.player_online(%{id: 2, name: "Player 2"})
 
