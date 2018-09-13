@@ -602,8 +602,8 @@ defmodule Seeds.LargeScale do
         north_room = Enum.find(rooms, &(&1.x == x && &1.y == y - 1))
         west_room = Enum.find(rooms, &(&1.x == x - 1 && &1.y == y))
 
-        if west_room, do: create_exit(%{west_id: west_room.id, east_id: room.id})
-        if north_room, do: create_exit(%{north_id: north_room.id, south_id: room.id})
+        if west_room, do: create_exit(%{direction: "west", finish_room_id: west_room.id, start_room_id: room.id})
+        if north_room, do: create_exit(%{direction: "north", finish_room_id: north_room.id, start_room_id: room.id})
       end)
     end)
   end
