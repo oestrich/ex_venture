@@ -23,6 +23,7 @@ defmodule Game.Command.TellTest do
     test "send a tell", %{state: state} do
       Channel.join_tell({:player, state.user})
       Session.Registry.register(state.user)
+      Session.Registry.catch_up()
 
       {:update, %{reply_to: {:player, _}}} = Tell.run({"tell", "player hello"}, state)
 
@@ -70,6 +71,7 @@ defmodule Game.Command.TellTest do
     test "send a reply", %{state: state} do
       Channel.join_tell({:player, state.user})
       Session.Registry.register(state.user)
+      Session.Registry.catch_up()
 
       :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.user}})
 

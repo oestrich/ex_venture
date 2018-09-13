@@ -238,13 +238,12 @@ defmodule Web.User do
   end
 
   def teleport_player_in_game(user, room_id) do
-    player =
-      SessionRegistry.connected_players()
-      |> Enum.find(fn %{player: player} -> player.id == user.id end)
+    case SessionRegistry.find_connected_player(user.id) do
+      nil ->
+        nil
 
-    case player do
-      nil -> nil
-      %{pid: pid} -> pid |> Session.teleport(room_id)
+      %{pid: pid} ->
+        pid |> Session.teleport(room_id)
     end
   end
 

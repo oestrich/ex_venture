@@ -8,7 +8,8 @@ defmodule Game.Session.Registry do
   alias Data.User
   alias Game.Character
 
-  @key :session
+  @group :session
+  @ets_key :session_registry
 
   defmodule Metadata do
     @moduledoc """
@@ -28,7 +29,7 @@ defmodule Game.Session.Registry do
   """
   @spec register_connection(String.t()) :: :ok
   def register_connection(id) do
-    members = :pg2.get_members(@key)
+    members = :pg2.get_members(@group)
 
     Enum.map(members, fn member ->
       GenServer.cast(member, {:register_connection, self(), id})
@@ -48,7 +49,7 @@ defmodule Game.Session.Registry do
   """
   @spec remove_connection(String.t()) :: :ok
   def remove_connection(id) do
-    members = :pg2.get_members(@key)
+    members = :pg2.get_members(@group)
 
     Enum.map(members, fn member ->
       GenServer.cast(member, {:remove_connection, id})
@@ -60,7 +61,7 @@ defmodule Game.Session.Registry do
   """
   @spec register(User.t()) :: :ok
   def register(player) do
-    members = :pg2.get_members(@key)
+    members = :pg2.get_members(@group)
 
     character = Character.Simple.from_player(player)
 
@@ -74,7 +75,7 @@ defmodule Game.Session.Registry do
   """
   @spec update(User.t(), State.t()) :: :ok
   def update(player, state) do
-    members = :pg2.get_members(@key)
+    members = :pg2.get_members(@group)
 
     character = Character.Simple.from_player(player)
 
@@ -88,7 +89,7 @@ defmodule Game.Session.Registry do
   """
   @spec unregister() :: :ok
   def unregister() do
-    members = :pg2.get_members(@key)
+    members = :pg2.get_members(@group)
 
     Enum.map(members, fn member ->
       GenServer.cast(member, {:unregister, self()})
@@ -100,7 +101,49 @@ defmodule Game.Session.Registry do
   """
   @spec connected_players() :: [{pid, User.t()}]
   def connected_players() do
-    GenServer.call(__MODULE__, :connected_players)
+    @ets_key
+    |> :ets.match_object({:"$1", :"$2"})
+    |> Enum.map(&elem(&1, 1))
+  end
+
+  @doc """
+  Check if a player is online or not
+  """
+  @spec player_online?(User.t()) :: boolean()
+  def player_online?(player) do
+    case :ets.lookup(@ets_key, player.id) do
+      [{_id, _player}] ->
+        true
+
+      _ ->
+        false
+    end
+  end
+
+  @doc """
+  Find a connected player by their player struct
+  """
+  @spec find_connected_player(integer()) :: pid()
+  @spec find_connected_player(User.t()) :: pid()
+  def find_connected_player(player_id) when is_integer(player_id) do
+    case :ets.lookup(@ets_key, player_id) do
+      [{_id, player_state}] ->
+        player_state
+
+      _ ->
+        nil
+    end
+  end
+
+  def find_connected_player([name: player_name]) do
+    connected_players()
+    |> Enum.find(fn %{player: player} ->
+      player.name |> String.downcase() == player_name |> String.downcase()
+    end)
+  end
+
+  def find_connected_player(player) do
+    find_connected_player(player.id)
   end
 
   @doc """
@@ -155,20 +198,31 @@ defmodule Game.Session.Registry do
     end
   end
 
+  @doc """
+  For testing only
+
+  Performs a call to allow for tests to ensure this is caught up
+  """
+  def catch_up() do
+    GenServer.call(__MODULE__, {:catch_up})
+  end
+
   #
   # Server
   #
 
   def init(_) do
-    :ok = :pg2.create(@key)
-    :ok = :pg2.join(@key, self())
+    :ok = :pg2.create(@group)
+    :ok = :pg2.join(@group, self())
+
+    :ets.new(@ets_key, [:set, :protected, :named_table, read_concurrency: true])
 
     Process.flag(:trap_exit, true)
     {:ok, %{connected_players: [], connections: []}}
   end
 
-  def handle_call(:connected_players, _from, state) do
-    {:reply, state.connected_players, state}
+  def handle_call({:catch_up}, _from, state) do
+    {:reply, :ok, state}
   end
 
   def handle_cast({:register_connection, pid, id}, state) do
@@ -209,7 +263,10 @@ defmodule Game.Session.Registry do
     # Remove the player from the list, slight chance this was a double registration
     # Consider the new session theirs
     connected_players = Enum.reject(state.connected_players, &(&1.player.id == player.id))
-    connected_players = [%{player: player, pid: pid, metadata: metadata} | connected_players]
+    player_state = %{player: player, pid: pid, metadata: metadata}
+    connected_players = [player_state | connected_players]
+
+    :ets.insert(@ets_key, {player.id, player_state})
 
     {:noreply, %{state | connected_players: connected_players}}
   end
@@ -219,7 +276,10 @@ defmodule Game.Session.Registry do
 
     case player.id in player_ids do
       true ->
-        connected_players = [%{player: player, pid: pid, metadata: metadata} | connected_players]
+        player_state = %{player: player, pid: pid, metadata: metadata}
+        connected_players = [player_state | connected_players]
+
+        :ets.insert(@ets_key, {player.id, player_state})
 
         connected_players =
           connected_players
@@ -234,6 +294,14 @@ defmodule Game.Session.Registry do
   end
 
   def handle_cast({:unregister, pid}, state) do
+    player_state =
+      state.connected_players
+      |> Enum.find(&(&1.pid == pid))
+
+    if player_state do
+      :ets.delete(@ets_key, player_state.player.id)
+    end
+
     connected_players =
       state.connected_players
       |> Enum.reject(&(&1.pid == pid))

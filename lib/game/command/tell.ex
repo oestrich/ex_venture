@@ -81,13 +81,7 @@ defmodule Game.Command.Tell do
     [player_name | message] = String.split(message, " ")
     message = Enum.join(message, " ")
 
-    player =
-      Session.Registry.connected_players()
-      |> Enum.find(fn %{player: player} ->
-        player.name |> String.downcase() == player_name |> String.downcase()
-      end)
-
-    case player do
+    case Session.Registry.find_connected_player(name: player_name) do
       nil ->
         state
 
@@ -179,11 +173,7 @@ defmodule Game.Command.Tell do
   end
 
   defp reply_to_player(message, reply_to, %{socket: socket, user: from}) do
-    player =
-      Session.Registry.connected_players()
-      |> Enum.find(fn %{player: player} -> player.id == reply_to.id end)
-
-    case player do
+    case Session.Registry.find_connected_player(reply_to.id) do
       nil ->
         message = gettext(~s("%{name}" is not online.), name: reply_to.name)
         socket |> @socket.echo(message)

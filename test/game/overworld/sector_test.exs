@@ -47,6 +47,7 @@ defmodule Game.Overworld.SectorTest do
     test "sends a notification to users in the same cell", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 1}, notify_user}]}
 
@@ -58,6 +59,7 @@ defmodule Game.Overworld.SectorTest do
     test "does not send notifications to users in different cells", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 2}, notify_user}]}
 
@@ -87,6 +89,7 @@ defmodule Game.Overworld.SectorTest do
     test "sends a notification to users in the same cell", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
 
@@ -98,6 +101,7 @@ defmodule Game.Overworld.SectorTest do
     test "does not send notifications to users in different cells", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 2}, notify_user}]}
 
@@ -111,6 +115,7 @@ defmodule Game.Overworld.SectorTest do
     test "sends notifications to players in the same cell", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
 
@@ -122,6 +127,7 @@ defmodule Game.Overworld.SectorTest do
     test "does not send notifications to users in different cells", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 2}, notify_user}]}
 
@@ -135,6 +141,7 @@ defmodule Game.Overworld.SectorTest do
     test "sends a say message", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
 
@@ -148,6 +155,7 @@ defmodule Game.Overworld.SectorTest do
     test "sends an emote message", %{state: state, user: user, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
       Session.Registry.register(notify_user)
+      Session.Registry.catch_up()
 
       state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
 

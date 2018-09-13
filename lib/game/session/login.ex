@@ -225,11 +225,7 @@ defmodule Game.Session.Login do
   end
 
   defp check_already_signed_in(player) do
-    online? =
-      Session.Registry.connected_players()
-      |> Enum.any?(&(&1.player.id == player.id))
-
-    case online? do
+    case Session.Registry.player_online?(player) do
       true ->
         {:error, :signed_in}
 

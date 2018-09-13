@@ -42,6 +42,7 @@ defmodule Game.Command.UseTest do
 
   test "use an item - removes if amount ends up as 0", state = %{socket: socket} do
     Registry.register(state.user)
+    Registry.catch_up()
 
     {:skip, :prompt, state} = Command.Use.run({"potion"}, state)
 
@@ -54,6 +55,7 @@ defmodule Game.Command.UseTest do
 
   test "use an item with an amount - decrements amount", state do
     Registry.register(state.user)
+    Registry.catch_up()
 
     save =
       base_save()
@@ -66,6 +68,7 @@ defmodule Game.Command.UseTest do
 
   test "use an item with an amount - -1 is unlimited", state do
     Registry.register(state.user)
+    Registry.catch_up()
 
     save =
       base_save()

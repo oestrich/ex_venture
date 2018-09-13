@@ -17,14 +17,13 @@ defmodule Game.Character.Via do
     :global.whereis_name({Game.NPC, id})
   end
 
-  def whereis_name({:player, id}) do
-    player =
-      Session.Registry.connected_players()
-      |> Enum.find(&(&1.player.id == id))
+  def whereis_name({:player, player_id}) do
+    case Session.Registry.find_connected_player(player_id) do
+      %{pid: pid} ->
+        pid
 
-    case player do
-      %{pid: pid} -> pid
-      _ -> :undefined
+      _ ->
+        :undefined
     end
   end
 

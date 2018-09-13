@@ -110,6 +110,7 @@ defmodule Game.NPC.EventsTest do
     test "calculates the effects and then applies them to the target", %{state: state, event: event} do
       notify_user = %{base_user() | id: 1}
       Registry.register(notify_user)
+      Registry.catch_up()
       state = %State{state | target: {:player, 1}}
 
       {:update, state} = Events.act_on(state, event)
@@ -152,6 +153,7 @@ defmodule Game.NPC.EventsTest do
     test "target the player when they entered" do
       notify_user = %{base_user() | id: 2}
       Registry.register(notify_user)
+      Registry.catch_up()
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}
@@ -165,6 +167,7 @@ defmodule Game.NPC.EventsTest do
     test "target the player when they entered - target if target is nil and in combat" do
       notify_user = %{base_user() | id: 2}
       Registry.register(notify_user)
+      Registry.catch_up()
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc, combat: true, target: nil}
@@ -178,6 +181,7 @@ defmodule Game.NPC.EventsTest do
     test "target the player when they entered - do nothing if already in combat" do
       notify_user = %{base_user() | id: 2}
       Registry.register(notify_user)
+      Registry.catch_up()
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
       state = %State{room_id: 1, npc: npc}

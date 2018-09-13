@@ -36,6 +36,7 @@ defmodule Web.UserTest do
   describe "disconnecting players" do
     test "disconnecting connected players", %{user: user} do
       Session.Registry.register(user)
+      Session.Registry.catch_up()
 
       User.disconnect()
 
@@ -44,6 +45,7 @@ defmodule Web.UserTest do
 
     test "disconnecting a single player", %{user: user} do
       Session.Registry.register(user)
+      Session.Registry.catch_up()
 
       User.disconnect(user.id)
 
