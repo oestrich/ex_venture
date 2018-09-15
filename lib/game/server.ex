@@ -43,9 +43,10 @@ defmodule Game.Server do
         Config.character_names()
         |> PlayerInstrumenter.set_random_character_name_count()
 
-        Session.Registry.connected_players()
-        |> Enum.map(& &1.player)
-        |> PlayerInstrumenter.set_player_count()
+        admin_count = Session.Registry.admin_count()
+        player_count = Session.Registry.player_count()
+
+         PlayerInstrumenter.set_player_count(player_count, admin_count)
 
       false ->
         :ok

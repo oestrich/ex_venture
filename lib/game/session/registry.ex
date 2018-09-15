@@ -9,7 +9,9 @@ defmodule Game.Session.Registry do
   alias Game.Character
 
   @group :session
+
   @ets_key :session_registry
+  @metadata_ets_key :session_registry_metadata
 
   defmodule Metadata do
     @moduledoc """
@@ -104,6 +106,36 @@ defmodule Game.Session.Registry do
     @ets_key
     |> :ets.match_object({:"$1", :"$2"})
     |> Enum.map(&elem(&1, 1))
+  end
+
+  @doc """
+  Get the current player count
+
+  Cached in ETS. Updated when players come and go
+  """
+  def player_count() do
+    case :ets.lookup(@metadata_ets_key, :player_count) do
+      [{_id, count}] ->
+        count
+
+      _ ->
+        0
+    end
+  end
+
+  @doc """
+  Get the current admin count
+
+  Cached in ETS. Updated when admins come and go
+  """
+  def admin_count() do
+    case :ets.lookup(@metadata_ets_key, :admin_count) do
+      [{_id, count}] ->
+        count
+
+      _ ->
+        0
+    end
   end
 
   @doc """
@@ -216,6 +248,7 @@ defmodule Game.Session.Registry do
     :ok = :pg2.join(@group, self())
 
     :ets.new(@ets_key, [:set, :protected, :named_table, read_concurrency: true])
+    :ets.new(@metadata_ets_key, [:set, :protected, :named_table, read_concurrency: true])
 
     Process.flag(:trap_exit, true)
     {:ok, %{connected_players: [], connections: []}}
@@ -268,6 +301,8 @@ defmodule Game.Session.Registry do
 
     :ets.insert(@ets_key, {player.id, player_state})
 
+    update_counts(connected_players)
+
     {:noreply, %{state | connected_players: connected_players}}
   end
 
@@ -310,6 +345,8 @@ defmodule Game.Session.Registry do
       state.connections
       |> Enum.reject(&(&1.pid == pid))
 
+    update_counts(connected_players)
+
     state =
       state
       |> Map.put(:connections, connections)
@@ -320,5 +357,12 @@ defmodule Game.Session.Registry do
 
   def handle_info({:EXIT, pid, _reason}, state) do
     handle_cast({:unregister, pid}, state)
+  end
+
+  defp update_counts(connected_players) do
+    {admins, players} = Enum.split_with(connected_players, &User.is_admin?(&1.player.extra))
+
+    :ets.insert(@metadata_ets_key, {:admin_count, length(admins)})
+    :ets.insert(@metadata_ets_key, {:player_count, length(players)})
   end
 end

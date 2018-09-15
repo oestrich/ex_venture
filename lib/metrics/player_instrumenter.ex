@@ -77,11 +77,10 @@ defmodule Metrics.PlayerInstrumenter do
   @doc """
   Set the player count gauge, will return the player list
   """
-  @spec set_player_count(list) :: list
-  def set_player_count(players) do
-    {admins, players} = Enum.split_with(players, &("admin" in &1.extra.flags))
-    Gauge.set([name: :exventure_player_count, labels: [:players]], length(players))
-    Gauge.set([name: :exventure_player_count, labels: [:admins]], length(admins))
+  @spec set_player_count(integer(), integer()) :: :ok
+  def set_player_count(player_count, admin_count) do
+    Gauge.set([name: :exventure_player_count, labels: [:players]], player_count)
+    Gauge.set([name: :exventure_player_count, labels: [:admins]], admin_count)
   end
 
   @doc """
