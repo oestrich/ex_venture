@@ -84,7 +84,7 @@ mix test
 
 ## Web Client
 
-There is a web client located at [http://localhost:4000/play](http://localhost:4000/play]).
+A web client is hosted by the game. Once it is running locally, you can access it via [http://localhost:4000/play](http://localhost:4000/play]).
 
 ![Web Client](https://exventure.org/images/web-client.png)
 
