@@ -24,6 +24,9 @@ defmodule Game.Command.Inventory do
     """
   end
 
+  @impl true
+  def parse(command, _context), do: parse(command)
+
   @impl Game.Command
   @doc """
   Parse the command into arguments

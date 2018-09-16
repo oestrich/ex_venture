@@ -18,6 +18,9 @@ defmodule Game.Command.Mistake do
     """
   end
 
+  @impl true
+  def parse(command, _context), do: parse(command)
+
   @impl Game.Command
   @doc """
   Parse out extra information

@@ -59,6 +59,39 @@ defmodule Game.Utility do
   @doc """
   Remove the matching name from the string
 
+      iex> Game.Utility.strip_leading_text("Guard Captain", "guard message")
+      "message"
+
+      iex> Game.Utility.strip_leading_text("Guard Captain", "guard captain message")
+      "message"
+
+      iex> Game.Utility.strip_leading_text("Guard Captain", "bandit message")
+      "bandit message"
+  """
+  @spec strip_leading_text(String.t(), String.t()) :: boolean()
+  def strip_leading_text(text_to_strip, string) do
+    _strip_leading_text(String.split(text_to_strip), string)
+  end
+
+  defp _strip_leading_text([], string), do: string
+
+  defp _strip_leading_text(pieces, string) do
+    case message_starts_with?(string, pieces |> Enum.join(" ")) do
+      true ->
+        string
+        |> String.replace(~r/^#{pieces |> Enum.join(" ")}/i, "")
+        |> String.trim()
+
+      false ->
+        [_ | pieces] = pieces |> Enum.reverse()
+        pieces = pieces |> Enum.reverse()
+        _strip_leading_text(pieces, string)
+    end
+  end
+
+  @doc """
+  Remove the matching name from the string
+
       iex> Game.Utility.strip_name(%{name: "Guard Captain"}, "guard message")
       "message"
 
@@ -70,22 +103,6 @@ defmodule Game.Utility do
   """
   @spec strip_name(map(), String.t()) :: boolean()
   def strip_name(%{name: name}, string) do
-    _strip_name(String.split(name), string)
-  end
-
-  defp _strip_name([], string), do: string
-
-  defp _strip_name(pieces, string) do
-    case message_starts_with?(string, pieces |> Enum.join(" ")) do
-      true ->
-        string
-        |> String.replace(~r/^#{pieces |> Enum.join(" ")}/i, "")
-        |> String.trim()
-
-      false ->
-        [_ | pieces] = pieces |> Enum.reverse()
-        pieces = pieces |> Enum.reverse()
-        _strip_name(pieces, string)
-    end
+    strip_leading_text(name, string)
   end
 end

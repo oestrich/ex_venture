@@ -16,6 +16,7 @@ defmodule Data.Item.Compiled do
     :stats,
     :effects,
     :cost,
+    :usage_command,
     :user_text,
     :usee_text,
     :is_usable,

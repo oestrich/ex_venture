@@ -1,8 +1,10 @@
 defmodule Game.Command.UseTest do
   use Data.ModelCase
+  doctest Game.Command.Use
 
   alias Data.Item
-  alias Game.Command
+  alias Game.Command.ParseContext
+  alias Game.Command.Use
   alias Game.Session.Registry
 
   @socket Test.Networking.Socket
@@ -15,6 +17,7 @@ defmodule Game.Command.UseTest do
       keywords: [],
       stats: %{},
       effects: [],
+      usage_command: "drink",
       user_text: "Used a potion",
       usee_text: "",
       is_usable: true,
@@ -40,11 +43,18 @@ defmodule Game.Command.UseTest do
     %{socket: :socket, user: user, save: user.save}
   end
 
+  describe "parsing a custom command" do
+    test "pick up an item's custom command", state do
+      context = %ParseContext{player: state.user}
+      assert {:use, "potion"} = Use.parse("drink potion", context)
+    end
+  end
+
   test "use an item - removes if amount ends up as 0", state = %{socket: socket} do
     Registry.register(state.user)
     Registry.catch_up()
 
-    {:skip, :prompt, state} = Command.Use.run({"potion"}, state)
+    {:skip, :prompt, state} = Use.run({:use, "potion"}, state)
 
     assert [] = state.save.items
 
@@ -61,7 +71,7 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [%Item.Instance{id: 1, created_at: Timex.now(), amount: 2}])
 
-    {:skip, :prompt, state} = Command.Use.run({"potion"}, %{state | save: save})
+    {:skip, :prompt, state} = Use.run({:use, "potion"}, %{state | save: save})
 
     assert [%Item.Instance{amount: 1}] = state.save.items
   end
@@ -74,7 +84,7 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [%Item.Instance{id: 1, created_at: Timex.now(), amount: -1}])
 
-    assert {:skip, :prompt} = Command.Use.run({"potion"}, %{state | save: save})
+    assert {:skip, :prompt} = Use.run({:use, "potion"}, %{state | save: save})
   end
 
   test "trying to use a non-usable item", state = %{socket: socket} do
@@ -82,14 +92,14 @@ defmodule Game.Command.UseTest do
       base_save()
       |> Map.put(:items, [item_instance(2)])
 
-    :ok = Command.Use.run({"leather armor"}, %{state | save: save})
+    :ok = Use.run({:use, "leather armor"}, %{state | save: save})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(could not be used), look)
   end
 
   test "item not found", state = %{socket: socket} do
-    :ok = Command.Use.run({"poton"}, state)
+    :ok = Use.run({:use, "poton"}, state)
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(could not be found), look)

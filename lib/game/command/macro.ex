@@ -45,9 +45,6 @@ defmodule Game.Command.Macro do
       @doc false
       def required_flags(), do: @required_flags
 
-      # Provide a pass through ignoring the context
-      def parse(command, _context), do: parse(command)
-
       # Provide a default bad parse
       def parse(command), do: {:error, :bad_parse, command}
     end
@@ -60,12 +57,26 @@ defmodule Game.Command.Macro do
 
   Examples:
 
-      commands ["look at", {"look", ["l"]}]
-      commands ["north", "south"], parse: false
+      commands(["look at", {"look", ["l"]}])
+      commands(["north", "south"], parse: false)
   """
   defmacro commands(commands, opts \\ []) do
     parse = Keyword.get(opts, :parse, true)
-    Enum.map(commands, &expand_command(&1, parse))
+
+    commands = Enum.map(commands, &expand_command(&1, parse))
+
+    parse_two_func =
+      if parse do
+        quote do
+          @impl true
+          def parse(command, _context), do: parse(command)
+        end
+      end
+
+    quote do
+      unquote(commands)
+      unquote(parse_two_func)
+    end
   end
 
   defp expand_command({command, aliases}, parse) do

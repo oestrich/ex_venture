@@ -15,7 +15,7 @@ defmodule Game.CommandTest do
 
   describe "parsing commands" do
     setup do
-      user = %{save: %{skill_ids: []}}
+      user = %{save: %{skill_ids: [], items: []}}
 
       context = %ParseContext{
         player: user
@@ -216,7 +216,7 @@ defmodule Game.CommandTest do
     end
 
     test "using items", %{context: context} do
-      assert %Command{module: Command.Use, args: {"potion"}} = Command.parse("use potion", context)
+      assert %Command{module: Command.Use, args: {:use, "potion"}} = Command.parse("use potion", context)
     end
 
     test "mail", %{context: context} do
@@ -294,7 +294,7 @@ defmodule Game.CommandTest do
 
   describe "bad parse" do
     setup do
-      user = %{save: %{skill_ids: []}}
+      user = %{save: %{skill_ids: [], items: []}}
 
       context = %ParseContext{
         player: user

@@ -36,7 +36,7 @@
       <% end %> 
 
       <%= FormView.text_field(f, :usage_command) do %>
-        <span class="help-block">This is what the user will enter to trigger using the item. Valid for weapons only.</span>
+        <span class="help-block">This is what the user will enter to trigger using the item. If empty defaults to <code>use</code>.</span>
       <% end %>
 
       <%= FormView.text_field(f, :user_text) do %>

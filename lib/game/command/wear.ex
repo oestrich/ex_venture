@@ -30,6 +30,9 @@ defmodule Game.Command.Wear do
     """
   end
 
+  @impl true
+  def parse(command, _context), do: parse(command)
+
   @impl Game.Command
   @doc """
   Parse the command to determine wield or unwield

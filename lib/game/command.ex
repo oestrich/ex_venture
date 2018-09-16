@@ -45,6 +45,13 @@ defmodule Game.Command do
   @callback parse(command :: String.t()) :: tuple() | {:error, :bad_parse, command :: String.t()}
 
   @doc """
+  Parse a command into arguments
+
+  Should return `{:error, :bad_parse, command}` on a failed parse.
+  """
+  @callback parse(command :: String.t(), context :: Command.ParseContext.t()) :: tuple() | {:error, :bad_parse, command :: String.t()}
+
+  @doc """
   Run a command
 
   Returns `:ok` or `{:update, new_state}` and the Session server will accept the new state.
@@ -109,14 +116,14 @@ defmodule Game.Command do
     Command.Tell,
     Command.Train,
     Command.Typo,
-    Command.Use,
     Command.Version,
     Command.Wear,
     Command.Whisper,
     Command.Who,
     Command.Wield,
 
-    # Socials are last
+    # Use and Socials are last, they can be anything
+    Command.Use,
     Command.Socials
   ]
 

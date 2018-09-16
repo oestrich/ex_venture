@@ -9,8 +9,9 @@ defmodule Game.Command.Use do
   alias Game.Effect
   alias Game.Item
   alias Game.Items
+  alias Game.Utility
 
-  commands(["use"])
+  commands(["use"], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Use"
@@ -27,11 +28,45 @@ defmodule Game.Command.Use do
 
   @impl Game.Command
   @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Use.parse("use item")
+      {:use, "item"}
+
+      iex> Game.Command.Use.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  def parse(command)
+  def parse("use " <> item), do: {:use, item}
+  def parse("use"), do: {}
+
+  @impl Game.Command
+  def parse(command, context)
+
+  def parse(command, %{player: %{save: save}}) do
+    item =
+      save.items
+      |> Items.items()
+      |> Enum.find(fn item ->
+        Utility.matches?(command, item.usage_command)
+      end)
+
+    case item do
+      nil ->
+        parse(command)
+
+      item ->
+        {:use, Utility.strip_leading_text(item.usage_command, command)}
+    end
+  end
+
+  @impl Game.Command
+  @doc """
   Use an item
   """
   def run(command, state)
 
-  def run({item_name}, state = %{socket: socket, save: %{items: items}}) do
+  def run({:use, item_name}, state = %{socket: socket, save: %{items: items}}) do
     items = Items.items_keep_instance(items)
 
     case Item.find_item(items, item_name) do
