@@ -85,13 +85,11 @@ defmodule Game.Session.Effects do
   Echo effects to the player's session
   """
   def echo_effects(player, from, description, effects) do
-    player_id = player.id
-
-    case Character.who(from) do
-      {:player, ^player_id} ->
+    case Character.who(from) == {:player, player.id} do
+      true ->
         :ok
 
-      _ ->
+      false ->
         description = [description | Format.effects(effects, {:player, player})]
         echo(self(), description |> Enum.join("\n"))
     end

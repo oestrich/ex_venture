@@ -39,15 +39,7 @@ defmodule Game.Character.Simple do
       type: :npc,
       id: npc.id,
       name: npc.name,
-      extra: %{
-        original_id: npc.original_id,
-        status_line: npc.status_line,
-        status_listen: npc.status_listen,
-        description: npc.description,
-        is_quest_giver: npc.is_quest_giver,
-        is_trainer: npc.is_trainer,
-        trainable_skills: npc.trainable_skills,
-      }
+      extra: Map.take(npc, [:original_id, :status_line, :status_listen, :description, :is_quest_giver, :is_trainer, :trainable_skills])
     }
   end
 end

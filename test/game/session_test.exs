@@ -258,9 +258,10 @@ defmodule Game.SessionTest do
   test "applying effects", %{state: state} do
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 25, strength: 10}
-    user = %{id: 2, name: "user", class: class_attributes(%{})}
+    user = %{base_user() | id: 2, name: "user", class: class_attributes(%{})}
+    save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
 
-    state = %{state | user: user, save: %{room_id: 1, experience_points: 10, stats: stats}, is_targeting: MapSet.new}
+    state = %{state | user: user, save: save, is_targeting: MapSet.new}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health_points == 15
 
@@ -270,9 +271,10 @@ defmodule Game.SessionTest do
   test "applying effects with continuous effects", %{state: state} do
     effect = %{kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
     stats = %{base_stats() | health_points: 25, strength: 10}
-    user = %{id: 2, name: "user", class: class_attributes(%{})}
+    save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    user = %{base_user() | id: 2, name: "user", class: class_attributes(%{}), save: save}
     from = {:npc, %{id: 1, name: "Bandit"}}
-    state = %{state | user: user, save: %{room_id: 1, experience_points: 10, stats: stats}, is_targeting: MapSet.new()}
+    state = %{state | user: user, save: user.save, is_targeting: MapSet.new()}
 
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], from, "description"}, state)
 
@@ -292,9 +294,10 @@ defmodule Game.SessionTest do
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}
-    user = %{id: 2, name: "user", class: class_attributes(%{})}
+    user = %{base_user() | id: 2, name: "user", class: class_attributes(%{})}
+    save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
 
-    state = %{state | user: user, save: %{room_id: 1, experience_points: 10, stats: stats}}
+    state = %{state | user: user, save: save}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
     assert state.save.stats.health_points == -5
 
@@ -312,8 +315,8 @@ defmodule Game.SessionTest do
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}
-    user = %{id: 2, name: "user", class: class_attributes(%{})}
-    save = %{room_id: 1, experience_points: 10, stats: stats}
+    user = %{base_user() | id: 2, name: "user", class: class_attributes(%{})}
+    save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
 
     state = %{state | user: user, save: save, is_targeting: MapSet.new()}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
@@ -334,8 +337,8 @@ defmodule Game.SessionTest do
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}
-    user = %{id: 2, name: "user", class: class_attributes(%{})}
-    save = %{room_id: 1, experience_points: 10, stats: stats}
+    user = %{base_user() | id: 2, name: "user", class: class_attributes(%{})}
+    save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
 
     state = %{state | user: user, save: save, is_targeting: MapSet.new()}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
