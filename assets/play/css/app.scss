@@ -24,6 +24,12 @@ body {
     width: 100%;
   }
 
+  @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+    height: calc(100% - #{$mobile-prompt-height});
+    left: 0;
+    width: 100%;
+  }
+
   @media only screen and (min-device-width: 1900px) {
     left: 15%;
     width: 70%;
@@ -47,6 +53,10 @@ body {
   justify-content: center;
 
   @media only screen and (max-device-width: 667px) {
+    height: $mobile-prompt-height;
+  }
+
+  @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
     height: $mobile-prompt-height;
   }
 
@@ -78,6 +88,10 @@ body {
   height: calc(100% - #{$prompt-height});
 
   @media only screen and (max-device-width: 667px) {
+    display: none !important;
+  }
+
+  @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
     display: none !important;
   }
 
@@ -157,6 +171,10 @@ body {
   height: calc(100% - #{$prompt-height});
 
   @media only screen and (max-device-width: 667px) {
+    display: none !important;
+  }
+
+  @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
     display: none !important;
   }
 
