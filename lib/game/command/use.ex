@@ -47,6 +47,7 @@ defmodule Game.Command.Use do
     item =
       save.items
       |> Items.items()
+      |> Enum.reject(&Utility.empty_string?(&1.usage_command))
       |> Enum.find(fn item ->
         Utility.matches?(command, item.usage_command)
       end)

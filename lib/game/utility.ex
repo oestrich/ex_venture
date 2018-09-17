@@ -105,4 +105,21 @@ defmodule Game.Utility do
   def strip_name(%{name: name}, string) do
     strip_leading_text(name, string)
   end
+
+  @doc """
+  Check if a string is empty, `nil` or `""`
+
+      iex> Game.Utility.empty_string?(nil)
+      true
+
+      iex> Game.Utility.empty_string?("")
+      true
+
+      iex> Game.Utility.empty_string?("Hello")
+      false
+  """
+  @spec empty_string?(String.t() | nil) :: boolean()
+  def empty_string?(string) do
+    is_nil(string) || string == ""
+  end
 end
