@@ -94,15 +94,21 @@ defmodule Game.Command.Move do
 
   def parse("open " <> direction) do
     case parse(direction) do
-      {:move, direction} -> {:open, direction}
-      _ -> {:error, :bad_parse, "open #{direction}"}
+      {:move, direction} ->
+        {:open, direction}
+
+      _ ->
+        {:error, :bad_parse, "open #{direction}"}
     end
   end
 
   def parse("close " <> direction) do
     case parse(direction) do
-      {:move, direction} -> {:close, direction}
-      _ -> {:error, :bad_parse, "close #{direction}"}
+      {:move, direction} ->
+        {:close, direction}
+
+      _ ->
+        {:error, :bad_parse, "close #{direction}"}
     end
   end
 
@@ -120,6 +126,8 @@ defmodule Game.Command.Move do
         maybe_move_to(state, id, room_exit, direction)
 
       _ ->
+        state.socket |> @socket.echo(gettext("Could not move %{direction}, no exit found.", direction: direction))
+
         {:error, :no_exit}
     end
   end

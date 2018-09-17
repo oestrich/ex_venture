@@ -73,8 +73,7 @@ defmodule Game.Command.Run do
   def move([direction | directions], state) do
     case Move.run({:move, direction}, state) do
       {:error, :no_exit} ->
-        message = gettext("Could not move %{direction}, no exit found.", direction: direction)
-        state.socket |> @socket.echo(message)
+        :ok
 
       {:error, :no_movement} ->
         :ok
