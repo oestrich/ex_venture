@@ -8,6 +8,7 @@ defmodule Game.Session.GMCP do
   alias Data.Exit
   alias Data.Room
   alias Game.Config
+  alias Game.Skills
 
   @doc """
   Handle a GMCP request from the client
@@ -32,6 +33,10 @@ defmodule Game.Session.GMCP do
 
   def handle_gmcp(state, "External.Discord.Get", _data) do
     discord_status(state)
+  end
+
+  def handle_gmcp(state, "Character.Skills.Get", _data) do
+    character_skills(state)
   end
 
   def handle_gmcp(state, _module, _data), do: state
@@ -229,6 +234,28 @@ defmodule Game.Session.GMCP do
     }
 
     socket |> @socket.push_gmcp("Character.Skill", Poison.encode!(data))
+  end
+
+  @doc """
+  Send the player's skills
+  """
+  @spec character_skills(State.t()) :: :ok
+  def character_skills(state) do
+    skills =
+      state.user.save.skill_ids
+      |> Skills.skills()
+      |> Enum.map(fn skill ->
+        %{
+          name: skill.name,
+          command: skill.command,
+          points: skill.points,
+          cooldown: skill.cooldown_time,
+        }
+      end)
+
+    data = %{skills: skills}
+
+    state.socket |> @socket.push_gmcp("Character.Skills", Poison.encode!(data))
   end
 
   @doc """

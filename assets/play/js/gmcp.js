@@ -38,6 +38,10 @@ let characterSkill = (channel, data) => {
   Logger.log("Skill", data);
 }
 
+let characterSkills = (channel, data) => {
+  Logger.log("Skills", data);
+}
+
 /**
  * Character.Vitals module
  */
@@ -242,6 +246,7 @@ let gmcp = {
   "Channels.Tell": tell,
   "Character.Info": characterInfo,
   "Character.Skill": characterSkill,
+  "Character.Skills": characterSkills,
   "Character.Vitals": characterVitals,
   "Config.Update": configUpdate,
   "Core.Heartbeat": coreHeartbeat,

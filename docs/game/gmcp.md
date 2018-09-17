@@ -41,8 +41,36 @@ Character.Info {
 ### Character.Skill
 
 Fired when a skill's active state changes.
+
 ```
-Character.Skill {"name": "Magic Missile", "command": "magic missile", "active": true}
+Character.Skill {
+  "name": "Magic Missile",
+  "command": "magic missile",
+  "active": true
+}
+```
+
+### Character.Skills
+
+Sent on login and can be requested from the player.
+
+```
+Character.Skills {
+  "skills": [
+    {"name": "Magic Missile", "command": "magic missile", "points": 2, "cooldown": 3000},
+    {"name": "Frosy Ray", "command": "frost ray", "points": 3, "cooldown": 5000}
+  ]
+}
+```
+
+### Character.Skills.Get
+
+*Client Message*
+
+You may request the full list of skills known at any point.
+
+```
+Character.Skills.Get {}
 ```
 
 ### Character.Vitals
@@ -79,7 +107,9 @@ Config.Update {
 
 This follows the Mudlet External.Discord package spec.
 
-### External.Discord.Get (Client Sent)
+### External.Discord.Get
+
+*Client Message*
 
 Sent from the client when they wish to receive current discord status.
 
@@ -87,7 +117,9 @@ Sent from the client when they wish to receive current discord status.
 External.Discord.Get {}
 ```
 
-### External.Discord.Hello (Client Sent)
+### External.Discord.Hello
+
+*Client Message*
 
 Sent as a welcome from the client to see if Discord integration is available.
 

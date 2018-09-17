@@ -10,11 +10,19 @@ import Logger from "./logger"
 
 class ChannelWrapper {
   constructor(channel) {
-    this.channel = channel
+    this.channel = channel;
+  }
+
+  join() {
+    this.channel.join();
   }
 
   send(message) {
-    this.channel.push("recv", {message: message})
+    this.channel.push("recv", {message: message});
+  }
+
+  sendGMCP(module, data) {
+    this.channel.push("gmcp", {module, data});
   }
 }
 
@@ -129,5 +137,7 @@ document.addEventListener("mouseover", e => {
     }
   }
 }, false);
+
+channel = channelWrapper
 
 export {channel}

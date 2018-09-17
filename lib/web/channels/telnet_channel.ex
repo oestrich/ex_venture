@@ -217,6 +217,16 @@ defmodule Web.TelnetChannel do
       end
     end
 
+    def handle_cast({:recv_gmcp, module, data}, state) do
+      with %{session: pid} <- state do
+        pid |> Game.Session.recv_gmcp(module, data)
+        {:noreply, state}
+      else
+        _ ->
+          {:noreply, state}
+      end
+    end
+
     def handle_cast({:user_id, user_id}, state) do
       send(state.socket.channel_pid, {:user_id, user_id})
       {:noreply, %{state | user_id: user_id}}
@@ -304,6 +314,18 @@ defmodule Web.TelnetChannel do
     case socket.assigns do
       %{server_pid: pid} ->
         GenServer.cast(pid, {:recv, message})
+
+      _ ->
+        nil
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_in("gmcp", %{"module" => module, "data" => data}, socket) do
+    case socket.assigns do
+      %{server_pid: pid} ->
+        GenServer.cast(pid, {:recv_gmcp, module, data})
 
       _ ->
         nil

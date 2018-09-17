@@ -3,4 +3,4 @@ import {channel} from "./socket"
 
 window.gameConfig = {};
 
-channel.join()
+channel.join();
