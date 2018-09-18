@@ -86,7 +86,7 @@ defmodule Game.Session.CreateAccountTest do
     state = CreateAccount.process("password", %{socket: socket, create: %{name: "user", email: "", race: human, class: fighter}})
 
     refute Map.has_key?(state, :create)
-    [{^socket, "Welcome, user!\n\nHi\n"}, {^socket, "[Press enter to continue]"}] = @socket.get_echos()
+    [{^socket, "Welcome, user!\n\nHi\n"}, {^socket, "{command send='Sign In'}[Press enter to continue]{/command}"}] = @socket.get_echos()
   end
 
   test "failure creating the account after entering the password", %{socket: socket, race: human, class: fighter} do
