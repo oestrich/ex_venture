@@ -1,5 +1,5 @@
-$prompt-height: 150px;
-$mobile-prompt-height: 110px;
+$prompt-height: 180px;
+$mobile-prompt-height: 200px;
 
 /**
  * Main layout
@@ -253,6 +253,43 @@ pre {
 input {
   font-size: 1.1em;
   width: 100%;
+}
+
+.action-bar {
+  width: 98%;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-bottom: 6px;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  .button {
+    flex: 1;
+
+    @media only screen and (max-device-width: 667px) {
+      flex: 1 0 15%;
+      margin-top: 6px;
+    }
+
+    border: 2px solid #fdf6e3;
+    background-color: #fdf6e3;
+    margin-left: 3px;
+    margin-right: 3px;
+  }
+
+  .container {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    background-color: #b58900;
+    font-size: 1.1em;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .stats {
