@@ -22,17 +22,17 @@ msgid "Sending you back to the starting room!"
 msgstr ""
 
 #, elixir-format
-#: lib/game/session/login.ex:220
+#: lib/game/session/login.ex:221
 msgid "Session recovering..."
 msgstr ""
 
 #, elixir-format
-#: lib/game/session/login.ex:172 lib/game/session/login.ex:204
+#: lib/game/session/login.ex:173 lib/game/session/login.ex:205
 msgid "Sorry, this player is already logged in."
 msgstr ""
 
 #, elixir-format
-#: lib/game/session/login.ex:177
+#: lib/game/session/login.ex:178
 msgid "Sorry, your account has been disabled. Please contact the admins."
 msgstr ""
 
@@ -47,11 +47,11 @@ msgid "You have mail."
 msgstr ""
 
 #, elixir-format
-#: lib/game/session/login.ex:79
-msgid "[Press enter to continue]"
+#: lib/game/session/login.ex:161
+msgid "Please sign in via the website to authorize this connection."
 msgstr ""
 
 #, elixir-format
-#: lib/game/session/login.ex:160
-msgid "Please sign in via the website to authorize this connection."
+#: lib/game/session/login.ex:79
+msgid "{command send='Sign In'}[Press enter to continue]{/command}"
 msgstr ""
