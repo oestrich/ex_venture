@@ -151,7 +151,7 @@ defmodule Data.Save do
       save.config
       |> ensure_config(:prompt, Config.default_prompt())
       |> ensure_config(:pager_size, 20)
-      |> ensure_config(:regen_notifications, true)
+      |> ensure_config(:regen_notifications, false)
 
     %{save | config: config}
   end
