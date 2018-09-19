@@ -78,6 +78,35 @@ body {
 .command:hover:after {
   background: #657b83;
 }
+
+.target-bar .button,
+.action-bar .button {
+  color: white;
+  border: 2px solid #fdf6e3;
+  background-color: #fdf6e3;
+}
+
+.action-bar .container.empty {
+  background-color: #fdf6e3;
+}
+
+.action-bar .container {
+  background-color: #b58900;
+}
+
+.target-bar .button {
+  border: 2px solid #fdf6e3;
+  background-color: #fdf6e3;
+}
+
+.target-bar .container {
+  background-color: #073642;
+}
+
+.target-bar .button.selected {
+  background-color: #657b83;
+  border: 2px solid #657b83;
+}
 <% end %>
 
 <%= if @is_home do %>

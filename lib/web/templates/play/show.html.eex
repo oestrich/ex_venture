@@ -65,6 +65,43 @@
   </div>
 </div>
 <div class="prompt">
+  <div class="target-bar">
+    <div class="button selected tooltip" data-title="Select Target">
+      <div class="container">
+        <span class="yellow">Bandit</span>
+      </div>
+    </div>
+    <div class="button tooltip" data-title="Select Target">
+      <div class="container">
+        <span class="yellow">Bandit</span>
+      </div>
+    </div>
+    <div class="button tooltip" data-title="Select Target">
+      <div class="container">
+        <span class="yellow">Bandit</span>
+      </div>
+    </div>
+    <div class="button tooltip" data-title="Select Target">
+      <div class="container">
+        <span class="yellow">Goblin</span>
+      </div>
+    </div>
+    <div class="button tooltip" data-title="Select Target">
+      <div class="container">
+        <span class="yellow">Goblin</span>
+      </div>
+    </div>
+    <div class="button tooltip" data-title="Select Target">
+      <div class="container">
+        <span class="yellow">Goblin</span>
+      </div>
+    </div>
+    <div class="button tooltip" data-title="Select Target">
+      <div class="container">
+        <span class="yellow">Goblin</span>
+      </div>
+    </div>
+  </div>
   <div class="action-bar">
     <div class="button tooltip" data-title="Magic Missile">
       <div class="container">
@@ -77,42 +114,42 @@
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>
     <div class="button">
-      <div class="container">
+      <div class="container empty">
         &nbsp;
       </div>
     </div>

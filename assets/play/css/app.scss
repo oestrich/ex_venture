@@ -1,5 +1,5 @@
-$prompt-height: 180px;
-$mobile-prompt-height: 200px;
+$prompt-height: 210px;
+$mobile-prompt-height: 220px;
 
 /**
  * Main layout
@@ -255,6 +255,46 @@ input {
   width: 100%;
 }
 
+.target-bar {
+  width: 98%;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-bottom: 6px;
+
+  white-space: nowrap;
+  overflow-x: scroll;
+
+  font-size: 0;
+
+  @media only screen and (max-device-width: 667px) {
+    margin-bottom: 0px;
+  }
+
+  .button {
+    font-size: 1rem;
+    display: inline-block;
+    width: calc(calc(98% / 6) - 15px);
+    margin-left: 3px;
+    margin-right: 3px;
+
+    @media only screen and (max-device-width: 667px) {
+      width: calc(calc(98% / 3) - 15px);
+    }
+  }
+
+  .button .container {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 1.1em;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+  }
+}
+
 .action-bar {
   width: 98%;
   margin-left: 1%;
@@ -274,8 +314,6 @@ input {
       margin-top: 6px;
     }
 
-    border: 2px solid #fdf6e3;
-    background-color: #fdf6e3;
     margin-left: 3px;
     margin-right: 3px;
   }
@@ -283,12 +321,17 @@ input {
   .container {
     padding-top: 3px;
     padding-bottom: 3px;
-    background-color: #b58900;
     font-size: 1.1em;
     display: flex;
 
     justify-content: center;
     align-items: center;
+
+    cursor: pointer;
+
+    &.empty {
+      cursor: default;
+    }
   }
 }
 
