@@ -108,7 +108,7 @@ defmodule Game.Command.Target do
     Character.being_targeted({:player, id}, {:player, user})
     message = gettext("You are now targeting %{name}.", name: Format.player_name(player))
     socket |> @socket.echo(message)
-    state |> GMCP.target({:player, user})
+    state |> GMCP.target({:player, player})
 
     {:update, Map.put(state, :target, {:player, id})}
   end

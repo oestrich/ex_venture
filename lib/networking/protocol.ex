@@ -479,7 +479,20 @@ defmodule Networking.Protocol do
     {:noreply, state}
   end
 
-  def handle_gmcp(_, state), do: {:noreply, state}
+  def handle_gmcp(message, state) do
+    [module | _] = String.split(message, " ")
+    module = String.trim(module)
+    data = String.replace(message, module, "", global: false)
+
+    with {:ok, data} <- Poison.decode(data) do
+      state.session |> Game.Session.recv_gmcp(module, data)
+
+      {:noreply, state}
+    else
+      _ ->
+        {:noreply, state}
+    end
+  end
 
   defp split_iac_sb(<<@iac, @se, data::binary>>), do: {[], data}
 

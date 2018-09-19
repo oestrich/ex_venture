@@ -5,8 +5,10 @@ import {format, defaultColorCSS} from "./color"
 import Logger from "./logger"
 import Notifacations from "./notifications"
 import {appendMessage} from "./panel"
+import TargetBar from "./targetBar"
 
 let notifications = new Notifacations();
+let target = null;
 
 /**
  * Channel.Broadcast module
@@ -165,17 +167,15 @@ let renderRoom = (channel, room) => {
   let npcColor = defaultColorCSS("npc", "yellow");
   let playerColor = defaultColorCSS("player", "blue");
 
-  let characters = _.first(Sizzle(".room-info .characters"))
-  characters.innerHTML = ""
+  let targetBar = new TargetBar(channel, _.first(Sizzle(".target-bar")), target);
+  targetBar.reset();
   _.each(room.npcs, (npc) => {
-    let html = document.createElement('div')
-    html.innerHTML = `<li class="${npcColor}">${npc.name}</li>`
-    _.each(html.children, (li) => { characters.append(li) })
+    npc.type = "npc";
+    targetBar.render(npc, npcColor);
   })
   _.each(room.players, (player) => {
-    let html = document.createElement('div')
-    html.innerHTML = `<li class="${playerColor}">${player.name}</li>`
-    _.each(html.children, (li) => { characters.append(li) })
+    player.type = "player";
+    targetBar.render(player, playerColor);
   })
 }
 
@@ -190,6 +190,7 @@ let roomHeard = (channel, data) => {
  * Room.Info module
  */
 let roomInfo = (channel, data) => {
+  // room is global, up above
   room = data
   renderRoom(channel, room)
 }
@@ -226,6 +227,17 @@ let roomCharacterLeave = (channel, data) => {
   }
 }
 
+let targetCharacter = (channel, data) => {
+  // target is global, up above
+  target = data;
+  renderRoom(channel, room);
+}
+
+let targetClear = (channel, data) => {
+  target = null;
+  renderRoom(channel, room);
+}
+
 let targetYou = (channel, data) => {
   notifications.display(`${data.name} is targetting you`, "");
 }
@@ -255,6 +267,8 @@ let gmcp = {
   "Room.Info": roomInfo,
   "Room.Character.Enter": roomCharacterEnter,
   "Room.Character.Leave": roomCharacterLeave,
+  "Target.Character": targetCharacter,
+  "Target.Clear": targetClear,
   "Target.You": targetYou,
   "Zone.Map": zoneMap,
 }

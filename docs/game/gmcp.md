@@ -238,8 +238,20 @@ Target.Character {"type": "player", "name": "Player", "id": 3}
 
 ### Target.Clear
 
+This is notifying that your target is emtpy.
+
 ```
 Target.Clear {}
+```
+
+### Target.Set
+
+*Client Message*
+
+Set your current target
+
+```
+Target.Set {"name": "Player"}
 ```
 
 ### Target.You

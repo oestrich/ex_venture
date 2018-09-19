@@ -132,10 +132,11 @@ defmodule Game.Command.Look do
       |> Enum.join("\n")
 
     items = room_items(room)
+    room = remove_yourself(room, state)
+
     state |> GMCP.room(room, items)
     state |> GMCP.map(mini_map)
 
-    room = remove_yourself(room, state)
     state.socket |> @socket.echo(Format.room(room, items, room_map))
 
     maybe_hint_quest(state, room)

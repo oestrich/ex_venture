@@ -39,6 +39,10 @@ defmodule Game.Session.GMCP do
     character_skills(state)
   end
 
+  def handle_gmcp(state, "Target.Set", %{"name" => name}) do
+    Game.Command.Target.run({name}, state)
+  end
+
   def handle_gmcp(state, _module, _data), do: state
 
   @doc """
