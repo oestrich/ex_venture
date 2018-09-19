@@ -14,7 +14,7 @@ defmodule Game.Command.Target do
 
   @must_be_alive true
 
-  commands([{"target", ["t"]}])
+  commands([{"target", ["t"]}], parse: false)
 
   @impl Game.Command
   def help(:topic), do: "Target"
@@ -40,13 +40,41 @@ defmodule Game.Command.Target do
     """
   end
 
+  @impl true
+  def parse(command, _context), do: parse(command)
+
+  @impl Game.Command
+  @doc """
+  Parse the command into arguments
+
+      iex> Game.Command.Target.parse("target clear")
+      {:clear}
+
+      iex> Game.Command.Target.parse("target bandit")
+      {:set, "bandit"}
+
+      iex> Game.Command.Target.parse("unknown")
+      {:error, :bad_parse, "unknown"}
+  """
+  @spec parse(String.t()) :: {any()}
+  def parse(command)
+  def parse("target clear"), do: {:clear}
+  def parse("target " <> name), do: {:set, name}
+  def parse("t " <> name), do: {:set, name}
+  def parse("target"), do: {}
+
   @impl Game.Command
   @doc """
   Target an enemy
   """
   def run(command, state)
 
-  def run({target}, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:clear}, state) do
+    state |> GMCP.clear_target()
+    {:update, Map.put(state, :target, nil)}
+  end
+
+  def run({:set, target}, state = %{socket: socket, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
     socket |> target_character(target, room, state)
   end

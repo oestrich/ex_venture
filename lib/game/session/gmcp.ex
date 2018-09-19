@@ -40,7 +40,11 @@ defmodule Game.Session.GMCP do
   end
 
   def handle_gmcp(state, "Target.Set", %{"name" => name}) do
-    Game.Command.Target.run({name}, state)
+    Game.Command.Target.run({:set, name}, state)
+  end
+
+  def handle_gmcp(state, "Target.Clear", _data) do
+    Game.Command.Target.run({:clear}, state)
   end
 
   def handle_gmcp(state, _module, _data), do: state

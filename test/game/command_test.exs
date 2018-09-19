@@ -161,8 +161,8 @@ defmodule Game.CommandTest do
     end
 
     test "target", %{context: context} do
-      assert %Command{module: Command.Target, args: {"mob"}} = Command.parse("target mob", context)
-      assert %Command{module: Command.Target, args: {"mob"}} = Command.parse("t mob", context)
+      assert %Command{module: Command.Target, args: {:set, "mob"}} = Command.parse("target mob", context)
+      assert %Command{module: Command.Target, args: {:set, "mob"}} = Command.parse("t mob", context)
       assert %Command{module: Command.Target, args: {}} = Command.parse("target", context)
     end
 

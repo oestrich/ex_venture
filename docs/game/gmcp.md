@@ -238,7 +238,9 @@ Target.Character {"type": "player", "name": "Player", "id": 3}
 
 ### Target.Clear
 
-This is notifying that your target is emtpy.
+*Can be a Client Message*
+
+This is notifying that your target is emtpy, or if sent will clear your target.
 
 ```
 Target.Clear {}

@@ -23,15 +23,24 @@ export default class TargetBar {
     </div>`;
 
     let target = html.children[0];
-    if (this.currentTarget != null && this.currentTarget.type == character.type && this.currentTarget.id == character.id) {
+    if (this.isTarget(character)) {
       target.classList.add("selected");
     }
 
     target.addEventListener("click", (e) => {
-      appendMessage({message: `target ${character.name}`});
-      this.channel.sendGMCP("Target.Set", {name: character.name});
+      if (this.isTarget(character)) {
+        appendMessage({message: `target clear\n`});
+        this.channel.sendGMCP("Target.Clear", {});
+      } else {
+        appendMessage({message: `target ${character.name}\n`});
+        this.channel.sendGMCP("Target.Set", {name: character.name});
+      }
     });
 
     this.targetBar.append(target);
+  }
+
+  isTarget(character) {
+    return this.currentTarget != null && this.currentTarget.type == character.type && this.currentTarget.id == character.id;
   }
 }
