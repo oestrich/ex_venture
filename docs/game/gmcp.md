@@ -44,6 +44,7 @@ Fired when a skill's active state changes.
 
 ```
 Character.Skill {
+  "id": 10,
   "name": "Magic Missile",
   "command": "magic missile",
   "active": true
@@ -57,8 +58,8 @@ Sent on login and can be requested from the player.
 ```
 Character.Skills {
   "skills": [
-    {"name": "Magic Missile", "command": "magic missile", "points": 2, "cooldown": 3000},
-    {"name": "Frosy Ray", "command": "frost ray", "points": 3, "cooldown": 5000}
+    {"id": 10, "name": "Magic Missile", "command": "magic missile", "points": 2, "cooldown": 3000},
+    {"id": 11, "name": "Frosy Ray", "command": "frost ray", "points": 3, "cooldown": 5000}
   ]
 }
 ```

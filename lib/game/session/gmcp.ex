@@ -236,6 +236,7 @@ defmodule Game.Session.GMCP do
   @spec skill_state(State.t(), Skill.t(), Keyword.t()) :: :ok
   def skill_state(%{socket: socket}, skill, opts) do
     data = %{
+      id: skill.id,
       name: skill.name,
       command: skill.command,
       active: opts[:active]
@@ -254,6 +255,7 @@ defmodule Game.Session.GMCP do
       |> Skills.skills()
       |> Enum.map(fn skill ->
         %{
+          id: skill.id,
           name: skill.name,
           command: skill.command,
           points: skill.points,

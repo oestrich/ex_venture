@@ -34,19 +34,19 @@ export default class ActionBar {
 
       if (action != null) {
         if (action.type == "skill") {
-          if (!action.active) {
-            actionElement.classList.add("inactive");
-          }
-
           let skill = this.context.skills.find(skill => {
-            return skill.name == action.name;
+            return skill.id == action.id;
           });
 
-          if (skill && !skill.active) {
+          if (skill == undefined) {
+            return;
+          }
+
+          if (!skill.active) {
             actionElement.classList.add("inactive");
           }
 
-          this.fillInAction(actionElement, action.name, action.command, action.command);
+          this.fillInAction(actionElement, skill.name, skill.command, skill.command);
         }
 
         if (action.type == "command") {

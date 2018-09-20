@@ -14,9 +14,10 @@ let context = {
   target: null,
   skills: [],
   actions: [
-    {type: "skill", command: "magic missile", name: "Magic Missile", active: true},
-    {type: "skill", command: "heal", name: "Heal", active: true},
+    {type: "skill", id: 2},
+    {type: "skill", id: 3},
     {type: "command", command: "look", name: "Look"},
+    {type: "command", command: "get all", name: "Get All"},
   ]
 };
 
@@ -49,7 +50,7 @@ let characterInfo = (channel, data) => {
 let characterSkill = (channel, data) => {
   Logger.log("Skill", data);
   let skills = context.skills.filter(skill => {
-    return skill.name != data.name;
+    return skill.id != data.id;
   });
 
   skills.push(data);
