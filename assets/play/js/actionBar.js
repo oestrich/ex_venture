@@ -60,7 +60,7 @@ export default class ActionBar {
 
     element.addEventListener("click", (e) => {
       appendMessage({message: `${command}\n`});
-      this.channel.send(action.command);
+      this.channel.send(command);
     });
   }
 }
