@@ -339,6 +339,7 @@ input {
 
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 
     @media only screen and (max-device-width: 667px) {
       justify-content: left;

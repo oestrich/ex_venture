@@ -4,10 +4,11 @@ import _ from "underscore";
 import {appendMessage} from "./panel";
 
 export default class ActionBar {
-  constructor(channel, actionBar, actions) {
+  constructor(channel, actionBar, context) {
     this.channel = channel;
     this.actionBar = actionBar;
-    this.actions = this.fill(actions);
+    this.context = context;
+    this.actions = this.fill(context.actions);
   }
 
   fill(actions) {
@@ -36,6 +37,15 @@ export default class ActionBar {
           if (!action.active) {
             actionElement.classList.add("inactive");
           }
+
+          let skill = this.context.skills.find(skill => {
+            return skill.name == action.name;
+          });
+
+          if (skill && !skill.active) {
+            actionElement.classList.add("inactive");
+          }
+
           this.fillInAction(actionElement, action.name, action.command, action.command);
         }
 
