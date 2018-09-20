@@ -1,7 +1,7 @@
-import Sizzle from "sizzle"
-import _ from "underscore"
+import Sizzle from "sizzle";
+import _ from "underscore";
 
-import {appendMessage} from "./panel"
+import {appendMessage} from "./panel";
 
 export default class TargetBar {
   constructor(channel, targetBar, currentTarget) {

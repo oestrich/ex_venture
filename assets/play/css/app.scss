@@ -21,7 +21,7 @@ body {
   @media only screen and (max-device-width: 667px) {
     height: calc(100% - #{$mobile-prompt-height});
     left: 0;
-    width: 100%;
+    width: 99%;
   }
 
   @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
@@ -302,6 +302,7 @@ input {
 }
 
 .action-bar {
+  height: 33px;
   width: 98%;
   margin-left: 1%;
   margin-right: 1%;
@@ -312,6 +313,10 @@ input {
   flex-wrap: wrap;
   align-items: flex-start;
 
+  @media only screen and (max-device-width: 667px) {
+    height: 72px;
+  }
+
   .button {
     flex: 1;
 
@@ -320,6 +325,8 @@ input {
       margin-top: 6px;
     }
 
+    width: 15%;
+    white-space: nowrap;
     margin-left: 3px;
     margin-right: 3px;
   }
@@ -332,6 +339,13 @@ input {
 
     justify-content: center;
     align-items: center;
+
+    @media only screen and (max-device-width: 667px) {
+      justify-content: left;
+      align-items: left;
+      padding-left: 10px;
+      overflow: hidden;
+    }
 
     cursor: pointer;
 

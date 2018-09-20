@@ -5,10 +5,16 @@ import {format, defaultColorCSS} from "./color"
 import Logger from "./logger"
 import Notifacations from "./notifications"
 import {appendMessage} from "./panel"
+import ActionBar from "./actionBar"
 import TargetBar from "./targetBar"
 
 let notifications = new Notifacations();
 let target = null;
+let actions = [
+  {type: "skill", command: "magic missile", name: "Magic Missile", active: true},
+  {type: "skill", command: "heal", name: "Heal", active: true},
+  {type: "command", command: "look", name: "Look"},
+];
 
 /**
  * Channel.Broadcast module
@@ -177,6 +183,9 @@ let renderRoom = (channel, room) => {
     player.type = "player";
     targetBar.render(player, playerColor);
   })
+
+  let actionBar = new ActionBar(channel, _.first(Sizzle(".action-bar")), actions);
+  actionBar.render();
 }
 
 /**

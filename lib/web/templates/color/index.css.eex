@@ -86,12 +86,20 @@ body {
   background-color: #fdf6e3;
 }
 
-.action-bar .container.empty {
-  background-color: #fdf6e3;
-}
-
 .action-bar .container {
   background-color: #b58900;
+}
+
+.action-bar .container:hover {
+  background-color: #C2960D;
+}
+
+.action-bar .inactive .container {
+  background-color: #825600;
+}
+
+.action-bar .container.empty {
+  background-color: #fdf6e3;
 }
 
 .target-bar .button {

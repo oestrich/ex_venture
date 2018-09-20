@@ -68,56 +68,6 @@
     </div>
   </div>
   <div class="action-bar">
-    <div class="button tooltip" data-title="Magic Missile">
-      <div class="container">
-        MM
-      </div>
-    </div>
-    <div class="button tooltip" data-title="Frost Ray">
-      <div class="container">
-        FR
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
-    <div class="button">
-      <div class="container empty">
-        &nbsp;
-      </div>
-    </div>
   </div>
   <div class="stats">
     <div class="stat-block tooltip" id="health" data-title="Health Points">
