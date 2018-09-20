@@ -167,7 +167,7 @@ let renderRoom = (channel, room) => {
   let npcColor = defaultColorCSS("npc", "yellow");
   let playerColor = defaultColorCSS("player", "blue");
 
-  let targetBar = new TargetBar(channel, _.first(Sizzle(".target-bar")), target);
+  let targetBar = new TargetBar(channel, _.first(Sizzle(".target-bar-container")), target);
   targetBar.reset();
   _.each(room.npcs, (npc) => {
     npc.type = "npc";

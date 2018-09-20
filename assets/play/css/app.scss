@@ -262,13 +262,18 @@ input {
   margin-right: 1%;
   margin-bottom: 6px;
 
-  white-space: nowrap;
-  overflow-x: scroll;
-
-  font-size: 0;
+  overflow: hidden;
 
   @media only screen and (max-device-width: 667px) {
     margin-bottom: 0px;
+  }
+
+  .target-bar-container {
+    height: 50px;
+    overflow-x: scroll;
+    white-space: nowrap;
+    font-size: 0;
+    margin-right: 3px;
   }
 
   .button {

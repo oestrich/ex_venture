@@ -64,6 +64,8 @@
 </div>
 <div class="prompt">
   <div class="target-bar">
+    <div class="target-bar-container">
+    </div>
   </div>
   <div class="action-bar">
     <div class="button tooltip" data-title="Magic Missile">
