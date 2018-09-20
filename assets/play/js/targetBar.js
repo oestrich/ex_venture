@@ -16,7 +16,7 @@ export default class TargetBar {
 
   render(character, color) {
     let html = document.createElement('div');
-    html.innerHTML = `<div class="button tooltip" data-title="Select Target">
+    html.innerHTML = `<div class="button tooltip">
       <div class="container">
         <span class="${color}">${character.name}</span>
       </div>
@@ -25,6 +25,9 @@ export default class TargetBar {
     let target = html.children[0];
     if (this.isTarget(character)) {
       target.classList.add("selected");
+      target.dataset.title = "Clear Target";
+    } else {
+      target.dataset.title = "Select Target";
     }
 
     target.addEventListener("click", (e) => {

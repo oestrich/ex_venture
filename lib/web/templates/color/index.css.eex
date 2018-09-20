@@ -103,6 +103,10 @@ body {
   background-color: #073642;
 }
 
+.target-bar .container:hover {
+  background-color: #14434F;
+}
+
 .target-bar .button.selected {
   background-color: #657b83;
   border: 2px solid #657b83;
