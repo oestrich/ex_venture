@@ -22,29 +22,45 @@ defmodule Game.ExperienceTest do
     assert experience == 1200
   end
 
-  test "on level up, boost stats by your level", state do
-    state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, awareness: 5, vitality: 3}}}
+  describe "leveling up" do
+    test "on level up, boost stats by your level", state do
+      state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, awareness: 5, vitality: 3}}}
 
-    {:ok, :level_up, _experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
+      {:ok, :level_up, _experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
 
-    assert state.save.level_stats == %{}
-    assert state.save.stats == %{
-      health_points: 57,
-      max_health_points: 57,
+      assert state.save.level_stats == %{}
+      assert state.save.stats == %{
+        health_points: 57,
+        max_health_points: 57,
 
-      skill_points: 58,
-      max_skill_points: 58,
+        skill_points: 58,
+        max_skill_points: 58,
 
-      endurance_points: 56,
-      max_endurance_points: 56,
+        endurance_points: 56,
+        max_endurance_points: 56,
 
-      strength: 12,
-      agility: 11,
-      intelligence: 12,
-      awareness: 11,
-      willpower: 11,
-      vitality: 11,
-    }
+        strength: 12,
+        agility: 11,
+        intelligence: 12,
+        awareness: 11,
+        willpower: 11,
+        vitality: 11,
+      }
+    end
+
+    test "notifies of new skills that you to use", state do
+      start_and_clear_skills()
+
+      insert_skill(%{id: 1, level: 1, is_enabled: true, command: "slash", name: "Slash"})
+      insert_skill(%{id: 2, level: 2, is_enabled: true, command: "bash", name: "Bash"})
+
+      state = %{state | save: %{state.save | skill_ids: [1, 2]}}
+
+      Experience.notify_new_skills(state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r[can now use], echo)
+    end
   end
 
   test "receive experience and no level up", state do

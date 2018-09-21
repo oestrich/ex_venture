@@ -14,7 +14,7 @@ defmodule Game.Command.QuestTest do
     user = create_user(%{name: "user", password: "password"})
     user = %{user | class: %{name: "Fighter"}}
 
-    %{state: %{socket: :socket, user: user, save: %{items: []}}}
+    %{state: %{socket: :socket, user: user, save: %{user.save | items: []}}}
   end
 
   describe "listing out quests" do
@@ -115,7 +115,7 @@ defmodule Game.Command.QuestTest do
       @room.set_room(room)
       @npc.clear_notifies()
 
-      state = state |> Map.put(:save, %{room_id: 1, level: 1, experience_points: 20, currency: 15})
+      state = state |> Map.put(:save, %{state.save | room_id: 1, level: 1, experience_points: 20, currency: 15})
 
       %{quest: quest, state: state}
     end
@@ -233,7 +233,7 @@ defmodule Game.Command.QuestTest do
       @room.set_room(room)
       @npc.clear_notifies()
 
-      state = state |> Map.put(:save, %{room_id: 1, level: 1, experience_points: 20, currency: 15})
+      state = state |> Map.put(:save, %{state.save | room_id: 1, level: 1, experience_points: 20, currency: 15})
 
       %{quest: quest, guard: guard, state: state}
     end

@@ -223,6 +223,22 @@ defmodule Game.Session.GMCP do
   end
 
   @doc """
+  Send the player's configured action bar
+  """
+  @spec config_actions(State.t()) :: :ok
+  def config_actions(state) do
+    actions =
+      state.user.save.actions
+      |> Enum.map(fn action ->
+        Map.delete(action, :__struct__)
+      end)
+
+    data = %{actions: actions}
+
+    state.socket |> @socket.push_gmcp("Config.Actions", Poison.encode!(data))
+  end
+
+  @doc """
   Push Core.Heartbeat
   """
   @spec heartbeat(map) :: :ok

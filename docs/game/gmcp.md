@@ -94,6 +94,19 @@ Character.Vitals {
 
 ## Config
 
+### Config.Actions
+
+This will contain the full set of actions the player has configured for their action bar
+
+```
+Config.Actions {
+  "actions": [
+    {"type": "skill", "id": 1},
+    {"type": "skill", "id": 2}
+  ]
+}
+```
+
 ### Config.Update
 
 This will contain the full config that the player has, anytime it is updated.

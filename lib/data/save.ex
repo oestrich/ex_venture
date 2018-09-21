@@ -5,6 +5,7 @@ defmodule Data.Save do
 
   import Data.Type
 
+  alias Data.ActionBar
   alias Data.Item
   alias Data.Stats
   alias Data.Save.Config
@@ -20,6 +21,7 @@ defmodule Data.Save do
           currency: integer,
           skill_ids: [integer()],
           items: [Item.instance()],
+          actions: [ActionBar.action()],
           config: %{
             hints: boolean(),
             prompt: String.t()
@@ -34,6 +36,7 @@ defmodule Data.Save do
         }
 
   defstruct [
+    :actions,
     :channels,
     :config,
     :currency,
@@ -79,9 +82,31 @@ defmodule Data.Save do
       |> migrate()
       |> migrate_config()
       |> load_items()
+      |> atomize_actions()
 
     {:ok, struct(__MODULE__, save)}
   end
+
+  defp atomize_actions(save = %{actions: actions}) when actions != nil do
+    actions =
+      actions
+      |> Enum.map(fn action ->
+        for {key, val} <- action, into: %{}, do: {String.to_atom(key), val}
+      end)
+      |> Enum.map(fn action ->
+        case action.type do
+          "skill" ->
+            struct(ActionBar.SkillAction, action)
+
+          "command" ->
+            struct(ActionBar.CommandAction, action)
+        end
+      end)
+
+    %{save | actions: actions}
+  end
+
+  defp atomize_actions(save), do: save
 
   defp atomize_config(save = %{config: config}) when config != nil do
     config = for {key, val} <- config, into: %{}, do: {String.to_atom(key), val}
@@ -167,7 +192,20 @@ defmodule Data.Save do
   end
 
   @impl Ecto.Type
-  def dump(save) when is_map(save), do: {:ok, Map.delete(save, :__struct__)}
+  def dump(save) when is_map(save) do
+    actions =
+      save.actions
+      |> Enum.map(fn action ->
+        Map.delete(action, :__struct__)
+      end)
+
+    save =
+      save
+      |> Map.put(:actions, actions)
+      |> Map.delete(:__struct__)
+
+    {:ok, save}
+  end
   def dump(_), do: :error
 
   @doc """
@@ -181,6 +219,13 @@ defmodule Data.Save do
       false ->
         save |> Map.put(:version, 1) |> _migrate()
     end
+  end
+
+  defp _migrate(save = %{version: 11}) do
+    save
+    |> Map.put(:actions, [])
+    |> Map.put(:version, 12)
+    |> _migrate()
   end
 
   defp _migrate(save = %{version: 10, stats: stats}) when stats != nil do
@@ -363,6 +408,7 @@ defmodule Data.Save do
   @spec valid?(Save.t()) :: boolean()
   def valid?(save) do
     keys(save) == [
+      :actions,
       :channels,
       :config,
       :currency,

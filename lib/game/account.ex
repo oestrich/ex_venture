@@ -3,6 +3,7 @@ defmodule Game.Account do
   Handle database interactions for a player's account.
   """
 
+  alias Data.ActionBar
   alias Data.ClassSkill
   alias Data.RaceSkill
   alias Data.Repo
@@ -15,6 +16,7 @@ defmodule Game.Account do
   alias Game.Config
   alias Game.Emails
   alias Game.Item
+  alias Game.Skills
 
   import Ecto.Query
 
@@ -158,6 +160,7 @@ defmodule Game.Account do
     player
     |> migrate_items()
     |> migrate_skills()
+    |> migrate_actions()
   end
 
   @doc """
@@ -202,6 +205,34 @@ defmodule Game.Account do
     skill_ids = Enum.uniq(skill_ids)
 
     %{player | save: %{player.save | skill_ids: skill_ids}}
+  end
+
+  @doc """
+  Give players a base set of actions
+  """
+  def migrate_actions(player) do
+    case Enum.empty?(player.save.actions) do
+      true ->
+        actions =
+          player.save.skill_ids
+          |> Skills.skills()
+          |> Enum.filter(fn skill ->
+            skill.level <= player.save.level
+          end)
+          |> Enum.take(10)
+          |> Enum.map(fn skill ->
+            %ActionBar.SkillAction{id: skill.id}
+          end)
+
+        save =
+          player.save
+          |> Map.put(:actions, actions)
+
+        %{player | save: save}
+
+      false ->
+        player
+    end
   end
 
   @doc """

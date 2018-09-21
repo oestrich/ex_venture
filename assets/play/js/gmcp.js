@@ -13,12 +13,7 @@ let context = {
   room: {},
   target: null,
   skills: [],
-  actions: [
-    {type: "skill", id: 2},
-    {type: "skill", id: 3},
-    {type: "command", command: "look", name: "Look"},
-    {type: "command", command: "get all", name: "Get All"},
-  ]
+  actions: []
 };
 
 /**
@@ -96,6 +91,14 @@ let characterVitals = (channel, data) => {
 
   let experience = _.first(Sizzle("#experience .percentage"));
   experience.style.width = `${experienceWidth * 100}%`;
+}
+
+/**
+ * Config.Actions module
+ */
+let configActions = (channel, data) => {
+  context.actions = data.actions;
+  renderRoom(channel, context.room);
 }
 
 /**
@@ -286,6 +289,7 @@ let gmcp = {
   "Character.Skill": characterSkill,
   "Character.Skills": characterSkills,
   "Character.Vitals": characterVitals,
+  "Config.Actions": configActions,
   "Config.Update": configUpdate,
   "Core.Heartbeat": coreHeartbeat,
   "Mail.New": mailNew,

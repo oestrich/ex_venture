@@ -5,6 +5,8 @@ defmodule Game.Command.Train do
 
   use Game.Command
 
+  alias Data.ActionBar
+  alias Game.Session.GMCP
   alias Game.Skill
   alias Game.Skills
   alias Game.Utility
@@ -69,8 +71,11 @@ defmodule Game.Command.Train do
   @spec parse_train_command(String.t()) :: :ok
   def parse_train_command(string) do
     case Regex.run(~r/(?<skill>.+) from (?<shop>.+)/i, string, capture: :all) do
-      nil -> {:train, string}
-      [_string, skill_name, shop_name] -> {:train, skill_name, :from, shop_name}
+      nil ->
+        {:train, string}
+
+      [_string, skill_name, shop_name] ->
+        {:train, skill_name, :from, shop_name}
     end
   end
 
@@ -231,8 +236,13 @@ defmodule Game.Command.Train do
     spent_experience_points = save.spent_experience_points + skill_cost
 
     save = %{save | skill_ids: skill_ids, spent_experience_points: spent_experience_points}
+    save = ActionBar.maybe_add_action(save, %ActionBar.SkillAction{id: skill.id})
+
     user = %{user | save: save}
     state = %{state | user: user, save: save}
+
+    state |> GMCP.character_skills()
+    state |> GMCP.config_actions()
 
     {:update, state}
   end
