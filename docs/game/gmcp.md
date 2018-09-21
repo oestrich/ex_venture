@@ -44,6 +44,7 @@ Fired when a skill's active state changes.
 
 ```
 Character.Skill {
+  "id": 10,
   "name": "Magic Missile",
   "command": "magic missile",
   "active": true
@@ -57,8 +58,8 @@ Sent on login and can be requested from the player.
 ```
 Character.Skills {
   "skills": [
-    {"name": "Magic Missile", "command": "magic missile", "points": 2, "cooldown": 3000},
-    {"name": "Frosy Ray", "command": "frost ray", "points": 3, "cooldown": 5000}
+    {"id": 10, "name": "Magic Missile", "command": "magic missile", "points": 2, "cooldown": 3000},
+    {"id": 11, "name": "Frosy Ray", "command": "frost ray", "points": 3, "cooldown": 5000}
   ]
 }
 ```
@@ -92,6 +93,19 @@ Character.Vitals {
 ```
 
 ## Config
+
+### Config.Actions
+
+This will contain the full set of actions the player has configured for their action bar
+
+```
+Config.Actions {
+  "actions": [
+    {"type": "skill", "id": 1},
+    {"type": "skill", "id": 2}
+  ]
+}
+```
 
 ### Config.Update
 
@@ -238,8 +252,22 @@ Target.Character {"type": "player", "name": "Player", "id": 3}
 
 ### Target.Clear
 
+*Can be a Client Message*
+
+This is notifying that your target is emtpy, or if sent will clear your target.
+
 ```
 Target.Clear {}
+```
+
+### Target.Set
+
+*Client Message*
+
+Set your current target
+
+```
+Target.Set {"name": "Player"}
 ```
 
 ### Target.You

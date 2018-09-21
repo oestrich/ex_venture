@@ -421,6 +421,7 @@ defmodule Game.Format do
   defp exits(room) do
     room
     |> Room.exits()
+    |> Enum.sort()
     |> Enum.map(fn direction ->
       case Exit.exit_to(room, direction) do
         %{door_id: door_id, has_door: true} ->

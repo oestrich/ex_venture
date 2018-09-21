@@ -59,6 +59,7 @@ defmodule Game.Session.Login do
 
     socket |> @socket.set_user_id(player.id)
     state |> CommandConfig.push_config(player.save.config)
+    state |> GMCP.config_actions()
 
     message = """
     Welcome, #{player.name}!

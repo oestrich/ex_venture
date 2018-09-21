@@ -1,5 +1,5 @@
-$prompt-height: 150px;
-$mobile-prompt-height: 110px;
+$prompt-height: 210px;
+$mobile-prompt-height: 220px;
 
 /**
  * Main layout
@@ -21,7 +21,7 @@ body {
   @media only screen and (max-device-width: 667px) {
     height: calc(100% - #{$mobile-prompt-height});
     left: 0;
-    width: 100%;
+    width: 99%;
   }
 
   @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
@@ -253,6 +253,107 @@ pre {
 input {
   font-size: 1.1em;
   width: 100%;
+}
+
+.target-bar {
+  height: 33px;
+  width: 98%;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-bottom: 6px;
+
+  overflow: hidden;
+
+  @media only screen and (max-device-width: 667px) {
+    margin-bottom: 0px;
+  }
+
+  .target-bar-container {
+    height: 50px;
+    overflow-x: scroll;
+    white-space: nowrap;
+    font-size: 0;
+    margin-right: 3px;
+  }
+
+  .button {
+    font-size: 1rem;
+    display: inline-block;
+    width: calc(calc(98% / 6) - 15px);
+    margin-left: 3px;
+    margin-right: 3px;
+
+    @media only screen and (max-device-width: 667px) {
+      width: calc(calc(98% / 3) - 15px);
+    }
+  }
+
+  .button .container {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 1.1em;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+  }
+}
+
+.action-bar {
+  height: 33px;
+  width: 98%;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-bottom: 6px;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  @media only screen and (max-device-width: 667px) {
+    height: 72px;
+  }
+
+  .button {
+    flex: 1;
+
+    @media only screen and (max-device-width: 667px) {
+      flex: 1 0 15%;
+      margin-top: 6px;
+    }
+
+    width: 15%;
+    white-space: nowrap;
+    margin-left: 3px;
+    margin-right: 3px;
+  }
+
+  .container {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 1.1em;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    @media only screen and (max-device-width: 667px) {
+      justify-content: left;
+      align-items: left;
+      padding-left: 10px;
+      overflow: hidden;
+    }
+
+    cursor: pointer;
+
+    &.empty {
+      cursor: default;
+    }
+  }
 }
 
 .stats {

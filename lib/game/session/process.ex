@@ -189,8 +189,13 @@ defmodule Game.Session.Process do
   end
 
   def handle_cast({:recv_gmcp, module, data}, state) do
-    GMCP.handle_gmcp(state, module, data)
-    {:noreply, state}
+    case GMCP.handle_gmcp(state, module, data) do
+      :ok ->
+        {:noreply, state}
+
+      {:update, state} ->
+        {:noreply, state}
+    end
   end
 
   def handle_cast({:teleport, room_id}, state) do

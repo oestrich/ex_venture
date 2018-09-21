@@ -5,8 +5,13 @@ defmodule Game.Experience do
 
   use Networking.Socket
 
+  require Game.Gettext
+
+  alias Data.ActionBar
   alias Data.Save
   alias Game.DamageTypes
+  alias Game.Format
+  alias Game.Skills
 
   @doc """
   Apply experience points to the user's save
@@ -33,6 +38,26 @@ defmodule Game.Experience do
     state
     |> Map.put(:user, %{state.user | save: save})
     |> Map.put(:save, save)
+  end
+
+  @doc """
+  Notify player of any new skills they already have but can use now
+
+  Will try to add these skills to their action bar
+  """
+  def notify_new_skills(state = %{save: save}) do
+    save =
+      save.skill_ids
+      |> Skills.skills()
+      |> Enum.filter(&(&1.level == save.level))
+      |> Enum.reduce(save, fn skill, save ->
+        message = Game.Gettext.dgettext("experience", "You can now use %{skill_name}!", skill_name: Format.skill_name(skill))
+        state.socket |> @socket.echo(message)
+        ActionBar.maybe_add_action(save, %ActionBar.SkillAction{id: skill.id})
+      end)
+
+    user = %{state.user | save: save}
+    %{state | user: user, save: save}
   end
 
   @doc """

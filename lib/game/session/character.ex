@@ -335,12 +335,20 @@ defmodule Game.Session.Character do
       case Experience.apply(state, level: level, experience_points: experience_points) do
         {:ok, experience, state} ->
           state.socket |> @socket.echo("You received #{experience} experience points.")
+          state |> GMCP.vitals()
 
           state
 
         {:ok, :level_up, experience, state} ->
           state.socket |> @socket.echo("You received #{experience} experience points.")
           state.socket |> @socket.echo("You leveled up!")
+
+          # May add to the action bar
+          state = state |> Experience.notify_new_skills()
+
+          state |> GMCP.vitals()
+          state |> GMCP.character_skills()
+          state |> GMCP.config_actions()
 
           state
       end

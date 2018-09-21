@@ -75,6 +75,7 @@ defmodule TestHelpers do
       stats: base_stats(),
       wearing: %{},
       wielding: %{},
+      actions: [],
       config: %{
         hints: true,
         prompt: "%h/%Hhp",

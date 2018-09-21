@@ -19,7 +19,7 @@ defmodule Game.Command.TargetTest do
   end
 
   test "set your target from someone in the room", %{socket: socket, user: user} do
-    {:update, state} = Game.Command.Target.run({"bandit"}, %{socket: socket, user: user, save: %{room_id: 1}})
+    {:update, state} = Game.Command.Target.run({:set, "bandit"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
     assert state.target == {:npc, 1}
     [{^socket, look}] = @socket.get_echos()
@@ -28,7 +28,7 @@ defmodule Game.Command.TargetTest do
   end
 
   test "targeting another player", %{socket: socket, user: user} do
-    {:update, state} = Game.Command.Target.run({"player"}, %{socket: socket, user: user, save: %{room_id: 1}})
+    {:update, state} = Game.Command.Target.run({:set, "player"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
     assert state.target == {:player, 2}
     [{^socket, look}] = @socket.get_echos()
@@ -37,7 +37,7 @@ defmodule Game.Command.TargetTest do
   end
 
   test "targeting yourself", %{socket: socket, user: user} do
-    {:update, state} = Game.Command.Target.run({"self"}, %{socket: socket, user: user, save: %{room_id: 1}})
+    {:update, state} = Game.Command.Target.run({:set, "self"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
     assert state.target == {:player, user.id}
 
@@ -52,14 +52,14 @@ defmodule Game.Command.TargetTest do
     |> Map.put(:players, [%{id: 2, name: "Player", save: %{stats: %{health_points: -1}}}])
     @room.set_room(room)
 
-    :ok = Game.Command.Target.run({"player"}, %{socket: socket, user: user, save: %{room_id: 1}})
+    :ok = Game.Command.Target.run({:set, "player"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(could not be targeted), look)
   end
 
   test "target not found", %{socket: socket, user: user} do
-    :ok = Game.Command.Target.run({"unknown"}, %{socket: socket, user: user, save: %{room_id: 1}})
+    :ok = Game.Command.Target.run({:set, "unknown"}, %{socket: socket, user: user, save: %{room_id: 1}})
 
     [{^socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(not find), look)

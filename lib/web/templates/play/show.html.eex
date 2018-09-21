@@ -60,11 +60,15 @@
     </div>
     <h3 class="room-name"></h3>
     <div class="exits"></div>
-    <h4>Characters</h4>
-    <ul class="characters"></ul>
   </div>
 </div>
 <div class="prompt">
+  <div class="target-bar">
+    <div class="target-bar-container">
+    </div>
+  </div>
+  <div class="action-bar">
+  </div>
   <div class="stats">
     <div class="stat-block tooltip" id="health" data-title="Health Points">
       <div class="percentage"></div>

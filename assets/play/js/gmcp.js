@@ -5,8 +5,16 @@ import {format, defaultColorCSS} from "./color"
 import Logger from "./logger"
 import Notifacations from "./notifications"
 import {appendMessage} from "./panel"
+import ActionBar from "./actionBar"
+import TargetBar from "./targetBar"
 
 let notifications = new Notifacations();
+let context = {
+  room: {},
+  target: null,
+  skills: [],
+  actions: []
+};
 
 /**
  * Channel.Broadcast module
@@ -36,10 +44,23 @@ let characterInfo = (channel, data) => {
  */
 let characterSkill = (channel, data) => {
   Logger.log("Skill", data);
+  let skills = context.skills.filter(skill => {
+    return skill.id != data.id;
+  });
+
+  skills.push(data);
+
+  context.skills = skills;
+
+  renderRoom(channel, context.room);
 }
 
 let characterSkills = (channel, data) => {
   Logger.log("Skills", data);
+  context.skills = _.map(data.skills, skill => {
+    skill.active = true;
+    return skill;
+  });
 }
 
 /**
@@ -73,6 +94,14 @@ let characterVitals = (channel, data) => {
 }
 
 /**
+ * Config.Actions module
+ */
+let configActions = (channel, data) => {
+  context.actions = data.actions;
+  renderRoom(channel, context.room);
+}
+
+/**
  * Config.Update module
  */
 let configUpdate = (channel, data) => {
@@ -103,7 +132,6 @@ let tell = (channel, data) => {
 /**
  * Room state
  */
-let room = {};
 
 let sendExit = (channel, exit) => {
   return (e) => {
@@ -151,11 +179,11 @@ let renderStats = (stats) => {
  */
 let renderRoom = (channel, room) => {
   let roomName = _.first(Sizzle(".room-info .room-name"))
-  roomName.innerHTML = room.name
+  roomName.innerHTML = context.room.name
 
   let exits = _.first(Sizzle(".room-info .exits"))
   exits.innerHTML = ""
-  _.each(room.exits, (exit) => {
+  _.each(context.room.exits, (exit) => {
     let html = document.createElement("span")
     html.innerHTML = `<span class="exit white">${exit.direction}</span>`
     html.addEventListener("click", sendExit(channel, exit.direction))
@@ -165,18 +193,19 @@ let renderRoom = (channel, room) => {
   let npcColor = defaultColorCSS("npc", "yellow");
   let playerColor = defaultColorCSS("player", "blue");
 
-  let characters = _.first(Sizzle(".room-info .characters"))
-  characters.innerHTML = ""
-  _.each(room.npcs, (npc) => {
-    let html = document.createElement('div')
-    html.innerHTML = `<li class="${npcColor}">${npc.name}</li>`
-    _.each(html.children, (li) => { characters.append(li) })
+  let targetBar = new TargetBar(channel, _.first(Sizzle(".target-bar-container")), context.target);
+  targetBar.reset();
+  _.each(context.room.npcs, (npc) => {
+    npc.type = "npc";
+    targetBar.render(npc, npcColor);
   })
-  _.each(room.players, (player) => {
-    let html = document.createElement('div')
-    html.innerHTML = `<li class="${playerColor}">${player.name}</li>`
-    _.each(html.children, (li) => { characters.append(li) })
+  _.each(context.room.players, (player) => {
+    player.type = "player";
+    targetBar.render(player, playerColor);
   })
+
+  let actionBar = new ActionBar(channel, _.first(Sizzle(".action-bar")), context);
+  actionBar.render();
 }
 
 /**
@@ -190,8 +219,8 @@ let roomHeard = (channel, data) => {
  * Room.Info module
  */
 let roomInfo = (channel, data) => {
-  room = data
-  renderRoom(channel, room)
+  context.room = data;
+  renderRoom(channel, context.room);
 }
 
 /**
@@ -200,12 +229,13 @@ let roomInfo = (channel, data) => {
 let roomCharacterEnter = (channel, data) => {
   switch (data.type) {
     case "player":
-      room.players.push(data)
-      renderRoom(channel, room)
+      context.room.players.push(data);
+      renderRoom(channel, context.room);
       break;
+
     case "npc":
-      room.npcs.push(data)
-      renderRoom(channel, room)
+      context.room.npcs.push(data);
+      renderRoom(channel, context.room);
       break;
   }
 }
@@ -216,14 +246,25 @@ let roomCharacterEnter = (channel, data) => {
 let roomCharacterLeave = (channel, data) => {
   switch (data.type) {
     case "player":
-      room.players = _.reject(room.players, (player) => player.id == data.id)
-      renderRoom(channel, room)
+      context.room.players = _.reject(context.room.players, (player) => player.id == data.id);
+      renderRoom(channel, context.room);
       break;
+
     case "npc":
-      room.npcs = _.reject(room.npcs, (npc) => npc.id == data.id)
-      renderRoom(channel, room)
+      context.room.npcs = _.reject(context.room.npcs, (npc) => npc.id == data.id);
+      renderRoom(channel, context.room);
       break;
   }
+}
+
+let targetCharacter = (channel, data) => {
+  context.target = data;
+  renderRoom(channel, context.room);
+}
+
+let targetClear = (channel, data) => {
+  context.target = null;
+  renderRoom(channel, context.room);
 }
 
 let targetYou = (channel, data) => {
@@ -248,6 +289,7 @@ let gmcp = {
   "Character.Skill": characterSkill,
   "Character.Skills": characterSkills,
   "Character.Vitals": characterVitals,
+  "Config.Actions": configActions,
   "Config.Update": configUpdate,
   "Core.Heartbeat": coreHeartbeat,
   "Mail.New": mailNew,
@@ -255,6 +297,8 @@ let gmcp = {
   "Room.Info": roomInfo,
   "Room.Character.Enter": roomCharacterEnter,
   "Room.Character.Leave": roomCharacterLeave,
+  "Target.Character": targetCharacter,
+  "Target.Clear": targetClear,
   "Target.You": targetYou,
   "Zone.Map": zoneMap,
 }

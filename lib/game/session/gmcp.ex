@@ -39,6 +39,14 @@ defmodule Game.Session.GMCP do
     character_skills(state)
   end
 
+  def handle_gmcp(state, "Target.Set", %{"name" => name}) do
+    Game.Command.Target.run({:set, name}, state)
+  end
+
+  def handle_gmcp(state, "Target.Clear", _data) do
+    Game.Command.Target.run({:clear}, state)
+  end
+
   def handle_gmcp(state, _module, _data), do: state
 
   @doc """
@@ -215,6 +223,22 @@ defmodule Game.Session.GMCP do
   end
 
   @doc """
+  Send the player's configured action bar
+  """
+  @spec config_actions(State.t()) :: :ok
+  def config_actions(state) do
+    actions =
+      state.user.save.actions
+      |> Enum.map(fn action ->
+        Map.delete(action, :__struct__)
+      end)
+
+    data = %{actions: actions}
+
+    state.socket |> @socket.push_gmcp("Config.Actions", Poison.encode!(data))
+  end
+
+  @doc """
   Push Core.Heartbeat
   """
   @spec heartbeat(map) :: :ok
@@ -228,6 +252,7 @@ defmodule Game.Session.GMCP do
   @spec skill_state(State.t(), Skill.t(), Keyword.t()) :: :ok
   def skill_state(%{socket: socket}, skill, opts) do
     data = %{
+      id: skill.id,
       name: skill.name,
       command: skill.command,
       active: opts[:active]
@@ -246,6 +271,7 @@ defmodule Game.Session.GMCP do
       |> Skills.skills()
       |> Enum.map(fn skill ->
         %{
+          id: skill.id,
           name: skill.name,
           command: skill.command,
           points: skill.points,
