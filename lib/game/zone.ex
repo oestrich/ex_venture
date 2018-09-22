@@ -16,7 +16,7 @@ defmodule Game.Zone do
   alias Game.Room
   alias Game.Shop
   alias Game.World.Master, as: WorldMaster
-  alias Game.Zone.Repo
+  alias Game.Zone.Repo, as: ZoneRepo
 
   @key :zones
 
@@ -39,7 +39,7 @@ defmodule Game.Zone do
   """
   @spec all() :: [map]
   def all() do
-    Repo.all()
+    ZoneRepo.all()
   end
 
   #
@@ -147,7 +147,14 @@ defmodule Game.Zone do
         {:ok, zone}
 
       _ ->
-        {:error, :unknown}
+        case ZoneRepo.get_name(id) do
+          {:ok, zone} ->
+            Cachex.put(@key, zone.id, zone)
+            {:ok, zone}
+
+          {:error, :unknown} ->
+            {:error, :unknown}
+        end
     end
   end
 
@@ -204,9 +211,9 @@ defmodule Game.Zone do
   end
 
   def handle_continue(:load_zone, state) do
-    zone = Repo.get(state.zone_id)
+    zone = ZoneRepo.get(state.zone_id)
 
-    WorldMaster.update_cache(@key, zone)
+    WorldMaster.update_cache(@key, Map.take(zone, [:id, :name]))
 
     {:noreply, %{state | zone: zone}}
   end

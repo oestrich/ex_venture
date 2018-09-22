@@ -51,4 +51,17 @@ defmodule Game.Room.Repo do
     |> Room.changeset(params)
     |> Repo.update()
   end
+
+  @doc """
+  Read through cache for the global resources
+  """
+  def get_name(id) do
+    case Room |> Repo.get(id) do
+      nil ->
+        {:error, :unknown}
+
+      room ->
+        {:ok, Map.take(room, [:id, :name])}
+    end
+  end
 end

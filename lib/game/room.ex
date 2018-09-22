@@ -13,7 +13,7 @@ defmodule Game.Room do
   alias Game.Items
   alias Game.Room.Actions
   alias Game.Room.EventBus
-  alias Game.Room.Repo
+  alias Game.Room.Repo, as: RoomRepo
   alias Game.Session
   alias Game.World.Master, as: WorldMaster
   alias Game.Zone
@@ -40,7 +40,14 @@ defmodule Game.Room do
         {:ok, room}
 
       _ ->
-        {:error, :unknown}
+        case RoomRepo.get_name(id) do
+          {:ok, room} ->
+            Cachex.put(@key, room.id, room)
+            {:ok, room}
+
+          {:error, :unknown} ->
+            {:error, :unknown}
+        end
     end
   end
 
@@ -49,7 +56,7 @@ defmodule Game.Room do
   """
   @spec all() :: [map()]
   def all() do
-    Repo.all()
+    RoomRepo.all()
   end
 
   @doc """
@@ -57,7 +64,7 @@ defmodule Game.Room do
   """
   @spec for_zone(integer()) :: [map()]
   def for_zone(zone_id) do
-    Repo.for_zone(zone_id)
+    RoomRepo.for_zone(zone_id)
   end
 
   @doc """
@@ -81,14 +88,14 @@ defmodule Game.Room do
   end
 
   def handle_continue({:load_room, room_id}, state) do
-    case Repo.get(room_id) do
+    case RoomRepo.get(room_id) do
       nil ->
         Logger.error("No room could be found for ID #{room_id}", type: :room)
         {:stop, :normal, state}
 
       room ->
         room.zone_id |> Zone.room_online(room)
-        WorldMaster.update_cache(@key, room)
+        WorldMaster.update_cache(@key, Map.take(room, [:id, :name]))
         Logger.info("Room online #{room.id}", type: :room)
         {:noreply, %{state | room: room}}
     end

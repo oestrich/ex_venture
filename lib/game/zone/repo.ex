@@ -20,4 +20,17 @@ defmodule Game.Zone.Repo do
     |> Repo.get(id)
     |> Exit.load_zone_exits()
   end
+
+  @doc """
+  Read through cache for the global resources
+  """
+  def get_name(id) do
+    case Zone |> Repo.get(id) do
+      nil ->
+        {:error, :unknown}
+
+      zone ->
+        {:ok, Map.take(zone, [:id, :name])}
+    end
+  end
 end

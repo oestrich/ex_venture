@@ -28,4 +28,17 @@ defmodule Game.NPC.Repo do
     |> select([ns], ns.id)
     |> Repo.all()
   end
+
+  @doc """
+  Read through cache for the global resources
+  """
+  def get_name(id) do
+    case NPC |> Repo.get(id) do
+      nil ->
+        {:error, :unknown}
+
+      npc ->
+        {:ok, Map.take(npc, [:id, :name])}
+    end
+  end
 end

@@ -76,7 +76,14 @@ defmodule Game.NPC do
         {:ok, npc}
 
       _ ->
-        {:error, :unknown}
+        case NPCRepo.get_name(id) do
+          {:ok, npc} ->
+            Cachex.put(@key, npc.id, npc)
+            {:ok, npc}
+
+          {:error, :unknown} ->
+            {:error, :unknown}
+        end
     end
   end
 
@@ -194,7 +201,7 @@ defmodule Game.NPC do
   def load(npc_spawner_id, state) do
     npc_spawner = NPCRepo.get(npc_spawner_id)
 
-    WorldMaster.update_cache(@key, npc_spawner.npc)
+    WorldMaster.update_cache(@key, Map.take(npc_spawner.npc, [:id, :name]))
 
     npc = customize_npc(npc_spawner, npc_spawner.npc)
     npc = %{npc | stats: Stats.default(npc.stats)}
