@@ -143,8 +143,8 @@ body {
     padding-left: 15px;
     padding-right: 3px;
     box-sizing: content-box;
-    height: 100%;
-    width: 100%;
+    height: calc(100% - 50px);
+    width: calc(100% - 15px);
 
     pre {
       margin: 0;
