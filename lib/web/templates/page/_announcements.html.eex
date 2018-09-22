@@ -10,7 +10,9 @@
             <% end %>
             <%= link(announcement.title, to: public_announcement_path(@conn, :show, announcement.uuid)) %>
           </h5>
-          <small><%= TimeView.relative(announcement.published_at) %></small>
+          <%= if !announcement.is_sticky do %>
+            <small><%= TimeView.relative(announcement.published_at) %></small>
+          <% end %>
         </div>
       </li>
     <% end) %>
