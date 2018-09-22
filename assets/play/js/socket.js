@@ -26,11 +26,11 @@ class ChannelWrapper {
   }
 }
 
-var body = document.getElementById("body")
-var userToken = body.getAttribute("data-user-token")
+var body = document.getElementById("body");
+var userToken = body.getAttribute("data-user-token");
 
-let socket = new Socket("/socket", {params: {token: userToken}})
-socket.connect()
+let socket = new Socket("/socket", {params: {token: userToken}});
+socket.connect();
 
 let options = {
   echo: true,
@@ -137,6 +137,38 @@ document.addEventListener("mouseover", e => {
     }
   }
 }, false);
+
+class Keys {
+  constructor() {
+    this.keysDown = [];
+  }
+
+  isModifierKeyPressed() {
+    return this.keysDown.includes("Control") || this.keysDown.includes("Alt");
+  }
+
+  keyDown(key) {
+    this.keysDown.push(key);
+  }
+
+  keyUp(keyDown) {
+    this.keysDown = this.keysDown.filter(key => {
+      return key != keyDown;
+    });
+  }
+}
+
+let keys = new Keys();
+document.addEventListener("keydown", e => {
+  keys.keyDown(e.key);
+  if (!keys.isModifierKeyPressed()) {
+    document.getElementById("prompt").focus();
+  }
+});
+
+document.addEventListener("keyup", e => {
+  keys.keyUp(e.key);
+});
 
 channel = channelWrapper
 
