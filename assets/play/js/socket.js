@@ -144,7 +144,7 @@ class Keys {
   }
 
   isModifierKeyPressed() {
-    return this.keysDown.includes("Control") || this.keysDown.includes("Alt");
+    return this.keysDown.includes("Control") || this.keysDown.includes("Alt") || this.keysDown.includes("Meta");
   }
 
   keyDown(key) {
