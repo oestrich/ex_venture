@@ -77,9 +77,21 @@ channel.on("echo", payload => {
   appendMessage(payload);
 });
 channel.on("disconnect", payload => {
-  document.getElementById("terminal").append("\nDisconnected.")
-  socket.disconnect()
-  scrollToBottom(".panel")
+  document.getElementById("terminal").append("\nDisconnected.");
+  socket.disconnect();
+
+  let html = document.createElement("div");
+  html.innerHTML = "<a class='white' href='#'>Reconnect</a>";
+  let reconnectButton = html.children[0];
+  reconnectButton.addEventListener("click", e => {
+    e.preventDefault();
+    window.location.reload();
+  });
+
+  document.getElementById("terminal").append("\n\n");
+  document.getElementById("terminal").append(reconnectButton);
+
+  scrollToBottom(".panel");
 });
 
 let commandHistory = new CommandHistory()
