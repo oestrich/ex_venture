@@ -5,7 +5,7 @@
     <%= form_tag public_session_path(@conn, :create), [method: :post] do %>
       <div class="form-group has-feedback">
         <%= label :user, :name %>
-        <%= text_input :user, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus" %>
+        <%= text_input :user, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus", autocorrect: "off", autocapitalize: "off", spellcheck: false %>
       </div>
 
       <div class="form-group has-feedback">
