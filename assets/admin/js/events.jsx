@@ -351,6 +351,17 @@ class StatsBoostEffect extends BaseEffect {
     };
   }
 
+  castField(field, value) {
+    switch (field) {
+      case "duration":
+      case "amount":
+        return parseInt(value);
+
+      default:
+        return value;
+    }
+  }
+
   render() {
     let field = this.state.field;
     let amount = this.state.amount;
