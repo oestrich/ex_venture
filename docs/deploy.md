@@ -1,5 +1,48 @@
 ## Deployment
 
+### Configuration
+
+Before you generate a production release, you need to set up your `config/prod.secret.exs` file
+
+```elixir
+use Mix.Config
+
+config :ex_venture, Data.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  database: "fill me in",
+  hostname: "fill me in",
+  port: "5432",
+  ssl: true,
+  username: "fill me in",
+  password: "fill me in",
+  pool_size: 20
+
+config :gossip, :client_id, "fill me in"
+config :gossip, :client_secret, "fill me in"
+
+config :pid_file, file: "/home/user/ex_venture.pid"
+```
+
+Other configuration you may want to include in this file is cluster configuration (if you're clustering) and Sentry configuration to get error reporting.
+
+You also need several environment variables to be present when the server is running. A simple way of doing this is adding the following to `/etc/profile.d/game.sh`, so they are sourced when logging in.
+
+```bash
+export HOST="fill me in"
+
+export HTTP_PORT="443"
+export HTTP_SCHEME="https"
+
+export SMTP_SERVER="fill me in"
+export SMTP_PORT="fill me in"
+export SMTP_USERNAME="fill me in"
+export SMTP_PASSWORD="fill me in"
+
+export EXVENTURE_MAILER_FROM="fill me in"
+```
+
+### Generating a release
+
 Distillery is used to generate releases. Once a release is generated you can copy the tar file to the server and start it up.
 
 ```bash
