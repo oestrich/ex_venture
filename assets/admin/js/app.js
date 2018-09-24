@@ -1,7 +1,7 @@
 import "./socket"
 import "./npcs"
 
-import Effects from "./events"
+import Effects from "./effects"
 import Script from "./scripts"
 import WorldMap from "./world_map"
 import WorldMapExits from "./world_map_exits"
