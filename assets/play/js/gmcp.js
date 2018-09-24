@@ -45,7 +45,7 @@ let characterInfo = (channel, data) => {
 let characterSkill = (channel, data) => {
   Logger.log("Skill", data);
   let skills = context.skills.filter(skill => {
-    return skill.id != data.id;
+    return skill.key != data.key;
   });
 
   skills.push(data);

@@ -229,14 +229,27 @@ defmodule Game.Session.GMCP do
   def config_actions(state) do
     actions =
       state.user.save.actions
-      |> Enum.map(fn action ->
-        Map.delete(action, :__struct__)
-      end)
+      |> Enum.map(&Map.delete(&1, :__struct__))
+      |> Enum.map(&config_action_transform/1)
 
     data = %{actions: actions}
 
     state.socket |> @socket.push_gmcp("Config.Actions", Poison.encode!(data))
   end
+
+  def config_action_transform(action = %{type: "skill"}) do
+    case Skills.skill(action.id) do
+      nil ->
+        nil
+
+      skill ->
+        action
+        |> Map.delete(:id)
+        |> Map.put(:key, skill.api_id)
+    end
+  end
+
+  def config_action_transform(action), do: action
 
   @doc """
   Push Core.Heartbeat
@@ -252,7 +265,7 @@ defmodule Game.Session.GMCP do
   @spec skill_state(State.t(), Skill.t(), Keyword.t()) :: :ok
   def skill_state(%{socket: socket}, skill, opts) do
     data = %{
-      id: skill.id,
+      key: skill.api_id,
       name: skill.name,
       command: skill.command,
       active: opts[:active]
@@ -271,7 +284,7 @@ defmodule Game.Session.GMCP do
       |> Skills.skills()
       |> Enum.map(fn skill ->
         %{
-          id: skill.id,
+          key: skill.api_id,
           name: skill.name,
           command: skill.command,
           points: skill.points,

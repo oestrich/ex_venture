@@ -44,7 +44,7 @@ Fired when a skill's active state changes.
 
 ```
 Character.Skill {
-  "id": 10,
+  "key": "2b557868-1b1d-4ba0-8306-e7a2ebf6f965",
   "name": "Magic Missile",
   "command": "magic missile",
   "active": true
@@ -58,8 +58,8 @@ Sent on login and can be requested from the player.
 ```
 Character.Skills {
   "skills": [
-    {"id": 10, "name": "Magic Missile", "command": "magic missile", "points": 2, "cooldown": 3000},
-    {"id": 11, "name": "Frosy Ray", "command": "frost ray", "points": 3, "cooldown": 5000}
+    {"key": "2b557868-1b1d-4ba0-8306-e7a2ebf6f965", "name": "Magic Missile", "command": "magic missile", "points": 2, "cooldown": 3000},
+    {"key": "0fdfe622-ed6b-4448-8882-35abefb5e7dc", "name": "Frosy Ray", "command": "frost ray", "points": 3, "cooldown": 5000}
   ]
 }
 ```
@@ -101,8 +101,8 @@ This will contain the full set of actions the player has configured for their ac
 ```
 Config.Actions {
   "actions": [
-    {"type": "skill", "id": 1},
-    {"type": "skill", "id": 2}
+    {"type": "skill", "key": "2b557868-1b1d-4ba0-8306-e7a2ebf6f965"},
+    {"type": "skill", "key": "0fdfe622-ed6b-4448-8882-35abefb5e7dc"}
   ]
 }
 ```

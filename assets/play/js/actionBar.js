@@ -35,7 +35,7 @@ export default class ActionBar {
       if (action != null) {
         if (action.type == "skill") {
           let skill = this.context.skills.find(skill => {
-            return skill.id == action.id;
+            return skill.key == action.key;
           });
 
           if (skill == undefined) {
