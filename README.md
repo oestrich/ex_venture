@@ -6,7 +6,7 @@
 
 <img src="https://exventure.org/images/exventure.png" alt="ExVenture Logo" width="200" />
 
-A [MUD](https://en.wikipedia.org/wiki/MUD) (Multi-User Dungeon) written in Elixir.
+A text based MMO server written in Elixir.
 
 - [Documentation for Admins](https://exventure.org/)
 - [Support ExVenture on Patreon](https://www.patreon.com/exventure)
