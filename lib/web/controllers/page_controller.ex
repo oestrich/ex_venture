@@ -12,7 +12,7 @@ defmodule Web.PageController do
   end
 
   def who(conn, _params) do
-    render(conn, "who.html", players: User.connected_players())
+    render(conn, :who, players: User.connected_players())
   end
 
   def version(conn, _params) do
