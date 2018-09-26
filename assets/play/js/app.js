@@ -4,35 +4,20 @@ import {Socket} from "phoenix"
 import Sizzle from "sizzle"
 import _ from "underscore"
 
+import ChannelWrapper from "./channelWrapper"
 import CommandHistory from "./command-history"
-import {appendMessage, scrollToBottom} from "./panel"
 import {gmcpMessage} from "./gmcp"
-import {guid} from "./utils"
 import Logger from "./logger"
+import Keys from "./keys"
+import {appendMessage, scrollToBottom} from "./panel"
+import {guid} from "./utils"
 
 window.gameConfig = {};
-
-class ChannelWrapper {
-  constructor(channel) {
-    this.channel = channel;
-  }
-
-  join() {
-    this.channel.join();
-  }
-
-  send(message) {
-    this.channel.push("recv", {message: message});
-  }
-
-  sendGMCP(module, data) {
-    this.channel.push("gmcp", {module, data});
-  }
-}
 
 var body = document.getElementById("body");
 var userToken = body.getAttribute("data-user-token");
 
+let keys = new Keys();
 let socket = new Socket("/socket", {params: {token: userToken}});
 socket.connect();
 
@@ -154,36 +139,10 @@ document.addEventListener("mouseover", e => {
   }
 }, false);
 
-class Keys {
-  constructor() {
-    this.keysDown = [];
-  }
-
-  isModifierKeyPressed() {
-    return this.keysDown.includes("Control") || this.keysDown.includes("Alt") || this.keysDown.includes("Meta");
-  }
-
-  keyDown(key) {
-    this.keysDown.push(key);
-  }
-
-  keyUp(keyDown) {
-    this.keysDown = this.keysDown.filter(key => {
-      return key != keyDown;
-    });
-  }
-}
-
-let keys = new Keys();
 document.addEventListener("keydown", e => {
-  keys.keyDown(e.key);
   if (!keys.isModifierKeyPressed()) {
     document.getElementById("prompt").focus();
   }
-});
-
-document.addEventListener("keyup", e => {
-  keys.keyUp(e.key);
 });
 
 channelWrapper.join();
