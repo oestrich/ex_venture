@@ -20,8 +20,8 @@
     <div class="wrapper">
       <header class="main-header">
         <a href="/admin" class="logo">
-          <span class="logo-mini">ExV</span>
-          <span class="logo-lg">ExVenture</span>
+          <span class="logo-mini"><%= Config.game_name() |> String.slice(0..2) %></span>
+          <span class="logo-lg"><%= Config.game_name() %></span>
         </a>
 
         <nav class="navbar navbar-static-top">
