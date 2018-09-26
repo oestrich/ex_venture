@@ -29,4 +29,28 @@ defmodule Game.Command.DebugTest do
       assert Regex.match?(~r(must be an admin)i, echo)
     end
   end
+
+  describe "list player information for admins" do
+    setup do
+      user = %{flags: ["admin"]}
+
+      %{state: %{user: user, socket: :socket}}
+    end
+
+    test "displays debug information", %{state: state} do
+      :ok = Debug.run({:players}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(Players)i, echo)
+    end
+
+    test "must be an admin", %{state: state} do
+      state = %{state | user: %{state.user | flags: []}}
+
+      :ok = Debug.run({:players}, state)
+
+      [{_, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(must be an admin)i, echo)
+    end
+  end
 end
