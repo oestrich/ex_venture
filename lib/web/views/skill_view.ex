@@ -19,6 +19,12 @@ defmodule Web.SkillView do
     }
   end
 
+  def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["hal", "siren"] do
+    skills
+    |> index(pagination)
+    |> Representer.transform(extension)
+  end
+
   def render("show.json", %{skill: skill, extended: true}) do
     %{
       key: skill.api_id,
@@ -52,6 +58,35 @@ defmodule Web.SkillView do
       name: skill.name,
       links: [
         %{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id)}
+      ]
+    }
+  end
+
+  def render("show." <> extension, %{skill: skill}) when extension in ["hal", "siren"] do
+    skill
+    |> show()
+    |> Representer.transform(extension)
+  end
+
+  defp show(skill) do
+    %Representer.Item{
+      item: Map.delete(render("show.json", %{skill: skill}), :links),
+      links: [
+        %Representer.Link{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id)}
+      ]
+    }
+  end
+
+  defp index(skills, pagination) do
+    skills = Enum.map(skills, &show/1)
+
+    %Representer.Collection{
+      name: "skills",
+      items: skills,
+      pagination: pagination,
+      links: [
+        %Representer.Link{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :index)},
+        %Representer.Link{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
       ]
     }
   end

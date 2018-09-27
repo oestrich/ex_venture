@@ -1,6 +1,6 @@
 defmodule Representer do
   defmodule Collection do
-    defstruct [:name, :items, :links]
+    defstruct [:name, :items, :links, :pagination]
   end
 
   defmodule Item do
@@ -37,7 +37,7 @@ defmodule Representer do
         "_embedded" => %{
           collection.name => Enum.map(collection.items, &transform/1),
         },
-        "_links" => transform_links(collection.links)
+        "_links" => collection.links |> transform_links()
       }
     end
 
