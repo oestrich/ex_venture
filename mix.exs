@@ -51,6 +51,7 @@ defmodule ExVenture.Mixfile do
       {:bcrypt_elixir, "~> 1.0"},
       {:cachex, "~> 3.0"},
       {:comeonin, "~> 4.0"},
+      {:cors_plug, "~> 1.5"},
       {:cowboy, "~> 1.0"},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
