@@ -3,7 +3,13 @@ defmodule Representer do
   Implementation of the Representer pattern for the API
   """
 
-  defguard known_extension?(extension) when extension in ["json", "collection", "hal", "siren"]
+  defguard known_extension?(extension) when extension in [
+    "json",
+    "collection",
+    "hal",
+    "mason",
+    "siren"
+  ]
 
   defmodule Collection do
     @moduledoc """
@@ -105,6 +111,9 @@ defmodule Representer do
 
       "siren" ->
         Representer.Siren.transform(struct)
+
+      "mason" ->
+        Representer.Mason.transform(struct)
     end
   end
 
@@ -309,6 +318,59 @@ defmodule Representer do
       Enum.map(links, fn link ->
         %{"rel" => [link.rel], "href" => link.href}
       end)
+    end
+  end
+
+  defmodule Mason do
+    @moduledoc """
+    The Siren hypermedia format
+
+    https://github.com/JornWildt/Mason
+    """
+
+    @behaviour Representer.Adapter
+
+    @impl true
+    def transform(collection = %Representer.Collection{}) do
+      links =
+        collection.links
+        |> Enum.filter(fn link -> link.rel != "curies" end)
+        |> Representer.Pagination.maybe_paginate(collection.pagination)
+        |> transform_links()
+
+      %{
+        "name" => collection.name,
+        "items" => Enum.map(collection.items, &transform/1),
+        "@controls" => links,
+      }
+    end
+
+    def transform(item = %Representer.Item{}) do
+      Map.put(item.item, "@controls", transform_links(item.links))
+    end
+
+    defp maybe_put(map, _key, nil), do: map
+
+    defp maybe_put(map, key, value) do
+      Map.put(map, key, value)
+    end
+
+    defp transform_links(links) do
+      links
+        |> Enum.filter(fn link -> link.rel != "curies" end)
+        |> Enum.reduce(%{}, fn link, links ->
+          json =
+            %{"href" => link.href}
+            |> maybe_put(:title, link.title)
+
+          case Map.get(links, link.rel) do
+            nil ->
+              Map.put(links, link.rel, json)
+
+            existing_links ->
+              Map.put(links, link.rel, [json | List.wrap(existing_links)])
+          end
+        end)
     end
   end
 end
