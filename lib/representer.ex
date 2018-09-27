@@ -1,17 +1,42 @@
 defmodule Representer do
+  @moduledoc """
+  Implementation of the Representer pattern for the API
+  """
+
   defmodule Collection do
-    defstruct [:name, :items, :links, :pagination]
+    @moduledoc """
+    Struct for a collection of `Representer.Item`s
+
+    Contains the list of `:items`, `:pagination`, and a list of `:links`
+    """
+
+    defstruct [:name, :items, :pagination, links: []]
   end
 
   defmodule Item do
-    defstruct [:item, :links]
+    @moduledoc """
+    Struct for an item that can be rendered in various formats
+
+    Consists of an `:item` that contains a map of properties and a list
+    of `:links` that may be associated with the item.
+    """
+
+    defstruct [:item, links: []]
   end
 
   defmodule Link do
+    @moduledoc """
+    Struct for a hypermedia link
+    """
+
     defstruct [:rel, :href, :title, :template]
   end
 
   defmodule Pagination do
+    @moduledoc """
+    Pagination struct and link generators
+    """
+
     defstruct [:base_url, :current_page, :total_pages, :total_count]
 
     @doc """
@@ -91,8 +116,15 @@ defmodule Representer do
   end
 
   defmodule HAL do
+    @moduledoc """
+    The HAL JSON hypermedia format
+
+    http://stateless.co/hal_specification.html
+    """
+
     @behaviour Representer.Adapter
 
+    @impl true
     def transform(collection = %Representer.Collection{}) do
       %{
         "_embedded" => %{
@@ -131,8 +163,15 @@ defmodule Representer do
   end
 
   defmodule Siren do
+    @moduledoc """
+    The Siren hypermedia format
+
+    https://github.com/kevinswiber/siren
+    """
+
     @behaviour Representer.Adapter
 
+    @impl true
     def transform(collection = %Representer.Collection{}) do
       links =
         collection.links
