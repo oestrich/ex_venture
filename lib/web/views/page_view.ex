@@ -1,6 +1,8 @@
 defmodule Web.PageView do
   use Web, :view
 
+  require Representer
+
   alias Game.Config
   alias Web.Color
   alias Web.Endpoint
@@ -24,7 +26,7 @@ defmodule Web.PageView do
     }
   end
 
-  def render("who." <> extension, %{players: players}) when extension in ["hal", "siren"] do
+  def render("who." <> extension, %{players: players}) when Representer.known_extension?(extension) do
     players
     |> index()
     |> Representer.transform(extension)
@@ -54,7 +56,7 @@ defmodule Web.PageView do
     }
   end
 
-  def render("index." <> extension, _) when extension in ["collection", "hal", "siren"] do
+  def render("index." <> extension, _) when Representer.known_extension?(extension) do
     Representer.transform(%Representer.Collection{
       href: RouteHelpers.public_page_url(Endpoint, :index),
       name: "root",

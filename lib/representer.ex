@@ -354,17 +354,9 @@ defmodule Representer do
 
     @impl true
     def transform(collection = %Representer.Collection{}) do
-      links =
-        collection.links
-        |> Enum.filter(fn link -> link.rel != "curies" end)
-        |> Representer.Pagination.maybe_paginate(collection.pagination)
-        |> transform_links()
-
-      %{
-        "name" => collection.name,
-        "items" => Enum.map(collection.items, &transform/1),
-        "@controls" => links,
-      }
+      %{"name" => collection.name}
+      |> maybe_put("entities", render_collection(collection))
+      |> maybe_put("@controls", render_links(collection))
     end
 
     def transform(item = %Representer.Item{}) do
@@ -375,6 +367,26 @@ defmodule Representer do
 
     defp maybe_put(map, key, value) do
       Map.put(map, key, value)
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          Enum.map(items, &transform/1)
+      end
+    end
+
+    defp render_links(collection) do
+      collection.links
+      |> Enum.filter(fn link -> link.rel != "curies" end)
+      |> Representer.Pagination.maybe_paginate(collection.pagination)
+      |> transform_links()
     end
 
     defp transform_links(links) do
