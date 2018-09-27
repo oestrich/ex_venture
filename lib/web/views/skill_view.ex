@@ -83,7 +83,12 @@ defmodule Web.SkillView do
     %Representer.Collection{
       name: "skills",
       items: skills,
-      pagination: pagination,
+      pagination: %Representer.Pagination{
+        base_url: RouteHelpers.public_skill_url(Endpoint, :index),
+        current_page: pagination.current,
+        total_pages: pagination.total,
+        total_count: pagination.total_count,
+      },
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :index)},
         %Representer.Link{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
