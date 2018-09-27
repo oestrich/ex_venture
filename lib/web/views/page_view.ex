@@ -24,6 +24,12 @@ defmodule Web.PageView do
     }
   end
 
+  def render("who." <> extension, %{players: players}) when extension in ["hal", "siren"] do
+    players
+    |> index()
+    |> Representer.transform(extension)
+  end
+
   def render("index.json", _) do
     %{
       links: [
@@ -44,6 +50,28 @@ defmodule Web.PageView do
           rel: "https://exventure.org/rel/races",
           href: RouteHelpers.public_race_url(Endpoint, :index)
         }
+      ]
+    }
+  end
+
+  defp show(player) do
+    %Representer.Item{
+      item: render("player.json", %{player: player}),
+      links: [
+        %Representer.Link{rel: "curies", href: "https://exventure.org/rels/{exventure}", title: "exventure", template: true}
+      ],
+    }
+  end
+
+  defp index(who) do
+    who = Enum.map(who, &show/1)
+
+    %Representer.Collection{
+      name: "who",
+      items: who,
+      links: [
+        %Representer.Link{rel: "self", href: RouteHelpers.public_page_url(Endpoint, :index)},
+        %Representer.Link{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
       ]
     }
   end
