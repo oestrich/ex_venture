@@ -3,6 +3,8 @@ defmodule Representer do
   Implementation of the Representer pattern for the API
   """
 
+  defguard known_extension?(extension) when extension in ["json", "collection", "hal", "siren"]
+
   defmodule Collection do
     @moduledoc """
     Struct for a collection of `Representer.Item`s
