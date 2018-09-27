@@ -15,7 +15,7 @@ defmodule Web.ClassView do
     }
   end
 
-  def render("index." <> extension, %{classes: classes}) when extension in ["hal", "siren"] do
+  def render("index." <> extension, %{classes: classes}) when extension in ["collection", "hal", "siren"] do
     classes
     |> index()
     |> Representer.transform(extension)
@@ -47,7 +47,7 @@ defmodule Web.ClassView do
     }
   end
 
-  def render("show." <> extension, %{class: class}) when extension in ["hal", "siren"] do
+  def render("show." <> extension, %{class: class}) when extension in ["collection", "hal", "siren"] do
     class
     |> show()
     |> add_up_link()
@@ -57,6 +57,7 @@ defmodule Web.ClassView do
   defp show(class) do
     %Representer.Item{
       rel: "https://exventure.org/rels/class",
+      href: RouteHelpers.public_class_url(Endpoint, :show, class.id),
       item: Map.delete(render("show.json", %{class: class, extended: false}), :links),
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)},

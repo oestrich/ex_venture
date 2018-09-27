@@ -19,7 +19,7 @@ defmodule Web.SkillView do
     }
   end
 
-  def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["hal", "siren"] do
+  def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["collection", "hal", "siren"] do
     skills
     |> index(pagination)
     |> Representer.transform(extension)
@@ -62,7 +62,7 @@ defmodule Web.SkillView do
     }
   end
 
-  def render("show." <> extension, %{skill: skill}) when extension in ["hal", "siren"] do
+  def render("show." <> extension, %{skill: skill}) when extension in ["collection", "hal", "siren"] do
     skill
     |> show()
     |> Representer.transform(extension)
@@ -70,6 +70,7 @@ defmodule Web.SkillView do
 
   defp show(skill) do
     %Representer.Item{
+      href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id),
       rel: "https://exventure.org/rels/skill",
       item: Map.delete(render("show.json", %{skill: skill}), :links),
       links: [

@@ -9,7 +9,7 @@ defmodule Web.Router do
   end
 
   pipeline :browser do
-    plug(:accepts, ["html", "json", "hal", "siren"])
+    plug(:accepts, ["html", "json", "hal", "siren", "collection"])
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:protect_from_forgery)

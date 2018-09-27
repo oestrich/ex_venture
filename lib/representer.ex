@@ -21,7 +21,7 @@ defmodule Representer do
     of `:links` that may be associated with the item.
     """
 
-    defstruct [:rel, :item, :type, links: []]
+    defstruct [:rel, :href, :item, :type, links: []]
   end
 
   defmodule Link do
@@ -95,6 +95,9 @@ defmodule Representer do
   """
   def transform(struct, extension) do
     case extension do
+      "collection" ->
+        Representer.CollectionJSON.transform(struct)
+
       "hal" ->
         Representer.HAL.transform(struct)
 
@@ -113,6 +116,52 @@ defmodule Representer do
     @callback transform(collection :: %Representer.Collection{}) :: json()
 
     @callback transform(item :: %Representer.Item{}) :: json()
+  end
+
+  defmodule CollectionJSON do
+    @behaviour Representer.Adapter
+
+    @impl true
+    def transform(collection = %Representer.Collection{}) do
+      %{
+        "collection" => %{
+          "version" => "1.0",
+          "items" => Enum.map(collection.items, &render_item/1)
+        }
+      }
+    end
+
+    def transform(item = %Representer.Item{}) do
+      %{
+        "version" => "1.0",
+        "items" => Enum.map([item], &render_item/1)
+      }
+    end
+
+    defp render_item(item) do
+      %{
+        "href" => item.href,
+        "data" => render_data(item.item),
+        "links" => transform_links(item.links),
+      }
+    end
+
+    defp render_data(properties) do
+      Enum.map(properties, fn {key, value} ->
+        %{"name" => key, "value" => value}
+      end)
+    end
+
+    defp transform_links(links) do
+      links
+      |> Enum.reject(&(&1.rel == "self"))
+      |> Enum.map(fn link ->
+        %{
+          "rel" => link.rel,
+          "href" => link.href,
+        }
+      end)
+    end
   end
 
   defmodule HAL do

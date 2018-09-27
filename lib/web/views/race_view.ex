@@ -21,7 +21,7 @@ defmodule Web.RaceView do
     }
   end
 
-  def render("index." <> extension, %{races: races}) when extension in ["hal", "siren"] do
+  def render("index." <> extension, %{races: races}) when extension in ["collection", "hal", "siren"] do
     races
     |> index()
     |> Representer.transform(extension)
@@ -59,7 +59,7 @@ defmodule Web.RaceView do
     }
   end
 
-  def render("show." <> extension, %{race: race}) when extension in ["hal", "siren"] do
+  def render("show." <> extension, %{race: race}) when extension in ["collection", "hal", "siren"] do
     race
     |> show(true)
     |> add_up_link()
@@ -68,6 +68,7 @@ defmodule Web.RaceView do
 
   defp show(race, extended \\ false) do
     %Representer.Item{
+      href: RouteHelpers.public_race_url(Endpoint, :show, race.id),
       rel: "https://exventure.org/rels/race",
       item: Map.delete(render("show.json", %{race: race, extended: extended}), :links),
       links: [
