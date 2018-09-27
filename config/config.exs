@@ -56,4 +56,13 @@ config :gossip, :callback_module, Game.Gossip
 
 config :ex_venture, Game.Gettext, default_locale: "en"
 
+config :mime, :types, %{
+  "application/hal+json" => ["hal"],
+  "application/vnd.siren+json" => ["siren"],
+  "application/vnd.collection+json" => ["collection"],
+  "application/vnd.mason+json" => ["mason"],
+}
+
+config :phoenix, :format_encoders, [collection: Poison, hal: Poison, mason: Poison, siren: Poison]
+
 import_config "#{Mix.env()}.exs"
