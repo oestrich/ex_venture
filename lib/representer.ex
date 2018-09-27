@@ -130,6 +130,10 @@ defmodule Representer do
   end
 
   defmodule CollectionJSON do
+    @moduledoc """
+    Adapter for collection+json
+    """
+
     @behaviour Representer.Adapter
 
     @impl true
