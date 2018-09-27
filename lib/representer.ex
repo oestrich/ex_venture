@@ -1,17 +1,42 @@
 defmodule Representer do
+  @moduledoc """
+  Implementation of the Representer pattern for the API
+  """
+
   defmodule Collection do
-    defstruct [:name, :items, :links, :pagination]
+    @moduledoc """
+    Struct for a collection of `Representer.Item`s
+
+    Contains the list of `:items`, `:pagination`, and a list of `:links`
+    """
+
+    defstruct [:name, :items, :pagination, links: []]
   end
 
   defmodule Item do
-    defstruct [:item, :links]
+    @moduledoc """
+    Struct for an item that can be rendered in various formats
+
+    Consists of an `:item` that contains a map of properties and a list
+    of `:links` that may be associated with the item.
+    """
+
+    defstruct [:item, links: []]
   end
 
   defmodule Link do
+    @moduledoc """
+    Struct for a hypermedia link
+    """
+
     defstruct [:rel, :href, :title, :template]
   end
 
   defmodule Pagination do
+    @moduledoc """
+    Pagination struct and link generators
+    """
+
     defstruct [:base_url, :current_page, :total_pages, :total_count]
 
     @doc """
@@ -91,19 +116,42 @@ defmodule Representer do
   end
 
   defmodule HAL do
+    @moduledoc """
+    The HAL JSON hypermedia format
+
+    http://stateless.co/hal_specification.html
+    """
+
     @behaviour Representer.Adapter
 
+    @impl true
     def transform(collection = %Representer.Collection{}) do
-      %{
-        "_embedded" => %{
-          collection.name => Enum.map(collection.items, &transform/1),
-        },
-        "_links" => collection.links |> Representer.Pagination.maybe_paginate(collection.pagination) |> transform_links()
-      }
+      %{}
+      |> maybe_put("_links", render_links(collection))
+      |> maybe_put("_embedded", render_collection(collection))
     end
 
     def transform(item = %Representer.Item{}) do
       Map.put(item.item, "_links", transform_links(item.links))
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          %{collection.name => Enum.map(items, &transform/1)}
+      end
+    end
+
+    defp render_links(collection) do
+      collection.links
+      |> Representer.Pagination.maybe_paginate(collection.pagination)
+      |> transform_links()
     end
 
     defp maybe_put(map, _key, nil), do: map
@@ -131,18 +179,19 @@ defmodule Representer do
   end
 
   defmodule Siren do
+    @moduledoc """
+    The Siren hypermedia format
+
+    https://github.com/kevinswiber/siren
+    """
+
     @behaviour Representer.Adapter
 
+    @impl true
     def transform(collection = %Representer.Collection{}) do
-      links =
-        collection.links
-        |> Representer.Pagination.maybe_paginate(collection.pagination)
-        |> transform_links()
-
-      %{
-        "entities" => Enum.map(collection.items, &transform/1),
-        "links" => links
-      }
+      %{}
+      |> maybe_put("links", render_links(collection))
+      |> maybe_put("entities", render_collection(collection))
     end
 
     def transform(item = %Representer.Item{}) do
@@ -150,6 +199,31 @@ defmodule Representer do
         "properties" => item.item,
         "links" => transform_links(item.links),
       }
+    end
+
+    defp maybe_put(map, _key, nil), do: map
+
+    defp maybe_put(map, key, value) do
+      Map.put(map, key, value)
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          Enum.map(items, &transform/1)
+      end
+    end
+
+    defp render_links(collection) do
+      collection.links
+      |> Representer.Pagination.maybe_paginate(collection.pagination)
+      |> transform_links()
     end
 
     defp transform_links(links) do
