@@ -114,6 +114,9 @@ defmodule Representer do
 
       "mason" ->
         Representer.Mason.transform(struct)
+
+      "json" ->
+        Representer.JSON.transform(struct)
     end
   end
 
@@ -127,6 +130,53 @@ defmodule Representer do
     @callback transform(collection :: %Representer.Collection{}) :: json()
 
     @callback transform(item :: %Representer.Item{}) :: json()
+  end
+
+  defmodule JSON do
+    @moduledoc """
+    Adapter for plain JSON
+
+    Renders the representation almost directly
+    """
+
+    @behaviour Representer.Adapter
+
+    @impl true
+    def transform(collection = %Representer.Collection{}) do
+      %{}
+      |> maybe_put("items", render_collection(collection))
+      |> maybe_put("links", transform_links(collection.links))
+    end
+
+    def transform(item = %Representer.Item{}) do
+      item.item
+      |> maybe_put("links", transform_links(item.links))
+    end
+
+    defp maybe_put(map, _key, nil), do: map
+
+    defp maybe_put(map, key, value) do
+      Map.put(map, key, value)
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          Enum.map(items, &transform/1)
+      end
+    end
+
+    defp transform_links(links) do
+      Enum.map(links, fn link ->
+        %{"rel" => link.rel, "href" => link.href}
+      end)
+    end
   end
 
   defmodule CollectionJSON do
