@@ -15,6 +15,12 @@ defmodule Web.ClassView do
     }
   end
 
+  def render("index." <> extension, %{classes: classes}) when extension in ["hal", "siren"] do
+    classes
+    |> index()
+    |> Representer.transform(extension)
+  end
+
   def render("show.json", %{class: class, extended: true}) do
     skills = Enum.map(class.class_skills, & &1.skill)
 
@@ -37,6 +43,36 @@ defmodule Web.ClassView do
       description: class.description,
       links: [
         %{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)}
+      ]
+    }
+  end
+
+  def render("show." <> extension, %{class: class}) when extension in ["hal", "siren"] do
+    class
+    |> show()
+    |> Representer.transform(extension)
+  end
+
+  defp show(class) do
+    %Representer.Item{
+      item: Map.delete(render("show.json", %{class: class, extended: false}), :links),
+      links: [
+        %Representer.Link{rel: "curies", href: "https://exventure.org/rels/{exventure}", title: "exventure", template: true},
+        %Representer.Link{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)},
+        %Representer.Link{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)},
+      ],
+    }
+  end
+
+  defp index(classes) do
+    classes = Enum.map(classes, &show/1)
+
+    %Representer.Collection{
+      name: "classes",
+      items: classes,
+      links: [
+        %Representer.Link{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :index)},
+        %Representer.Link{rel: "up", href: RouteHelpers.public_page_url(Endpoint, :index)}
       ]
     }
   end
