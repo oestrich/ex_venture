@@ -48,6 +48,20 @@ defmodule Web.PageView do
     }
   end
 
+  def render("index." <> extension, _) when extension in ["hal", "siren"] do
+    Representer.transform(%Representer.Collection{
+      name: "root",
+      links: [
+        %Representer.Link{rel: "self", href: RouteHelpers.public_page_url(Endpoint, :index)},
+        %Representer.Link{rel: "curies", href: "https://exventure.org/rels/{exventure}", title: "exventure", template: true},
+        %Representer.Link{rel: "exventure:who", href: RouteHelpers.public_page_url(Endpoint, :who)},
+        %Representer.Link{rel: "exventure:classes", href: RouteHelpers.public_class_url(Endpoint, :index)},
+        %Representer.Link{rel: "exventure:skills", href: RouteHelpers.public_skill_url(Endpoint, :index)},
+        %Representer.Link{rel: "exventure:races", href: RouteHelpers.public_race_url(Endpoint, :index)}
+      ]
+    }, extension)
+  end
+
   def xml_escape(string) do
     string
     |> String.replace("&", "&amp;")

@@ -126,16 +126,32 @@ defmodule Representer do
 
     @impl true
     def transform(collection = %Representer.Collection{}) do
-      %{
-        "_embedded" => %{
-          collection.name => Enum.map(collection.items, &transform/1),
-        },
-        "_links" => collection.links |> Representer.Pagination.maybe_paginate(collection.pagination) |> transform_links()
-      }
+      %{}
+      |> maybe_put("_links", render_links(collection))
+      |> maybe_put("_embedded", render_collection(collection))
     end
 
     def transform(item = %Representer.Item{}) do
       Map.put(item.item, "_links", transform_links(item.links))
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          %{collection.name => Enum.map(items, &transform/1)}
+      end
+    end
+
+    defp render_links(collection) do
+      collection.links
+      |> Representer.Pagination.maybe_paginate(collection.pagination)
+      |> transform_links()
     end
 
     defp maybe_put(map, _key, nil), do: map
@@ -173,15 +189,9 @@ defmodule Representer do
 
     @impl true
     def transform(collection = %Representer.Collection{}) do
-      links =
-        collection.links
-        |> Representer.Pagination.maybe_paginate(collection.pagination)
-        |> transform_links()
-
-      %{
-        "entities" => Enum.map(collection.items, &transform/1),
-        "links" => links
-      }
+      %{}
+      |> maybe_put("links", render_links(collection))
+      |> maybe_put("entities", render_collection(collection))
     end
 
     def transform(item = %Representer.Item{}) do
@@ -189,6 +199,31 @@ defmodule Representer do
         "properties" => item.item,
         "links" => transform_links(item.links),
       }
+    end
+
+    defp maybe_put(map, _key, nil), do: map
+
+    defp maybe_put(map, key, value) do
+      Map.put(map, key, value)
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          Enum.map(items, &transform/1)
+      end
+    end
+
+    defp render_links(collection) do
+      collection.links
+      |> Representer.Pagination.maybe_paginate(collection.pagination)
+      |> transform_links()
     end
 
     defp transform_links(links) do
