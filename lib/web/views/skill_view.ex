@@ -1,6 +1,8 @@
 defmodule Web.SkillView do
   use Web, :view
 
+  require Representer
+
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
   alias Web.SharedView
@@ -19,7 +21,7 @@ defmodule Web.SkillView do
     }
   end
 
-  def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["collection", "hal", "siren"] do
+  def render("index." <> extension, %{skills: skills, pagination: pagination}) when Representer.known_extension?(extension) do
     skills
     |> index(pagination)
     |> Representer.transform(extension)
@@ -62,7 +64,7 @@ defmodule Web.SkillView do
     }
   end
 
-  def render("show." <> extension, %{skill: skill}) when extension in ["collection", "hal", "siren"] do
+  def render("show." <> extension, %{skill: skill}) when Representer.known_extension?(extension) do
     skill
     |> show()
     |> Representer.transform(extension)

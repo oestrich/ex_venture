@@ -1,6 +1,8 @@
 defmodule Web.RaceView do
   use Web, :view
 
+  require Representer
+
   alias Data.Stats
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
@@ -21,7 +23,7 @@ defmodule Web.RaceView do
     }
   end
 
-  def render("index." <> extension, %{races: races}) when extension in ["collection", "hal", "siren"] do
+  def render("index." <> extension, %{races: races}) when Representer.known_extension?(extension) do
     races
     |> index()
     |> Representer.transform(extension)
@@ -59,7 +61,7 @@ defmodule Web.RaceView do
     }
   end
 
-  def render("show." <> extension, %{race: race}) when extension in ["collection", "hal", "siren"] do
+  def render("show." <> extension, %{race: race}) when Representer.known_extension?(extension) do
     race
     |> show(true)
     |> add_up_link()

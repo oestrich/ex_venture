@@ -1,6 +1,8 @@
 defmodule Web.ClassView do
   use Web, :view
 
+  require Representer
+
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
   alias Web.SkillView
@@ -15,7 +17,7 @@ defmodule Web.ClassView do
     }
   end
 
-  def render("index." <> extension, %{classes: classes}) when extension in ["collection", "hal", "siren"] do
+  def render("index." <> extension, %{classes: classes}) when Representer.known_extension?(extension) do
     classes
     |> index()
     |> Representer.transform(extension)
@@ -47,7 +49,7 @@ defmodule Web.ClassView do
     }
   end
 
-  def render("show." <> extension, %{class: class}) when extension in ["collection", "hal", "siren"] do
+  def render("show." <> extension, %{class: class}) when Representer.known_extension?(extension) do
     class
     |> show()
     |> add_up_link()
