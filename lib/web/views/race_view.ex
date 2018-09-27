@@ -68,6 +68,7 @@ defmodule Web.RaceView do
 
   defp show(race, extended \\ false) do
     %Representer.Item{
+      rel: "https://exventure.org/rels/race",
       item: Map.delete(render("show.json", %{race: race, extended: extended}), :links),
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_race_url(Endpoint, :show, race.id)},

@@ -56,6 +56,7 @@ defmodule Web.ClassView do
 
   defp show(class) do
     %Representer.Item{
+      rel: "https://exventure.org/rels/class",
       item: Map.delete(render("show.json", %{class: class, extended: false}), :links),
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)},

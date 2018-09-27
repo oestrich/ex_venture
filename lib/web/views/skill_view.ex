@@ -70,6 +70,7 @@ defmodule Web.SkillView do
 
   defp show(skill) do
     %Representer.Item{
+      rel: "https://exventure.org/rels/skill",
       item: Map.delete(render("show.json", %{skill: skill}), :links),
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id)}

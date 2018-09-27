@@ -21,7 +21,7 @@ defmodule Representer do
     of `:links` that may be associated with the item.
     """
 
-    defstruct [:item, links: []]
+    defstruct [:rel, :item, :type, links: []]
   end
 
   defmodule Link do
@@ -190,12 +190,14 @@ defmodule Representer do
     @impl true
     def transform(collection = %Representer.Collection{}) do
       %{}
+      |> maybe_put("title", collection.name)
       |> maybe_put("links", render_links(collection))
       |> maybe_put("entities", render_collection(collection))
     end
 
     def transform(item = %Representer.Item{}) do
       %{
+        "rel" => item.rel,
         "properties" => item.item,
         "links" => transform_links(item.links),
       }
