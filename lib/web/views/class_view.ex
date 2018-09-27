@@ -74,6 +74,7 @@ defmodule Web.ClassView do
     classes = Enum.map(classes, &show/1)
 
     %Representer.Collection{
+      href: RouteHelpers.public_class_url(Endpoint, :index),
       name: "classes",
       items: classes,
       links: [

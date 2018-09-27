@@ -86,6 +86,7 @@ defmodule Web.RaceView do
     races = Enum.map(races, &show/1)
 
     %Representer.Collection{
+      href: RouteHelpers.public_race_url(Endpoint, :index),
       name: "races",
       items: races,
       links: [

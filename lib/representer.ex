@@ -10,7 +10,7 @@ defmodule Representer do
     Contains the list of `:items`, `:pagination`, and a list of `:links`
     """
 
-    defstruct [:name, :items, :pagination, links: []]
+    defstruct [:href, :name, :items, :pagination, links: []]
   end
 
   defmodule Item do
@@ -123,12 +123,13 @@ defmodule Representer do
 
     @impl true
     def transform(collection = %Representer.Collection{}) do
-      %{
-        "collection" => %{
-          "version" => "1.0",
-          "items" => Enum.map(collection.items, &render_item/1)
-        }
-      }
+      collection =
+        %{"version" => "1.0"}
+        |> maybe_put("items", render_collection(collection))
+        |> maybe_put("links", render_links(collection))
+        |> maybe_put("href", collection.href)
+
+      %{"collection" => collection}
     end
 
     def transform(item = %Representer.Item{}) do
@@ -136,6 +137,31 @@ defmodule Representer do
         "version" => "1.0",
         "items" => Enum.map([item], &render_item/1)
       }
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          Enum.map(items, &render_item/1)
+      end
+    end
+
+    defp maybe_put(map, _key, nil), do: map
+
+    defp maybe_put(map, key, value) do
+      Map.put(map, key, value)
+    end
+
+    defp render_links(collection) do
+      collection.links
+      |> Representer.Pagination.maybe_paginate(collection.pagination)
+      |> transform_links()
     end
 
     defp render_item(item) do
