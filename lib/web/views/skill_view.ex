@@ -70,7 +70,7 @@ defmodule Web.SkillView do
     |> Representer.transform(extension)
   end
 
-  defp show(skill) do
+  def show(skill) do
     %Representer.Item{
       href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id),
       rel: "https://exventure.org/rels/skill",
