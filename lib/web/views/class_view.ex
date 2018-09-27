@@ -50,6 +50,7 @@ defmodule Web.ClassView do
   def render("show." <> extension, %{class: class}) when extension in ["hal", "siren"] do
     class
     |> show()
+    |> add_up_link()
     |> Representer.transform(extension)
   end
 
@@ -57,11 +58,14 @@ defmodule Web.ClassView do
     %Representer.Item{
       item: Map.delete(render("show.json", %{class: class, extended: false}), :links),
       links: [
-        %Representer.Link{rel: "curies", href: "https://exventure.org/rels/{exventure}", title: "exventure", template: true},
         %Representer.Link{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)},
-        %Representer.Link{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)},
       ],
     }
+  end
+
+  defp add_up_link(item) do
+    link = %Representer.Link{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)}
+    %{item | links: [link | item.links]}
   end
 
   defp index(classes) do
