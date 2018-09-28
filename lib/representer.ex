@@ -31,7 +31,7 @@ defmodule Representer do
     of `:links` that may be associated with the item.
     """
 
-    defstruct [:rel, :href, :item, :type, embedded: [], links: []]
+    defstruct [:rel, :href, :item, :type, embedded: %{}, links: []]
 
     @doc """
     Add a link to an item
@@ -208,8 +208,10 @@ defmodule Representer do
 
     def transform(item = %Representer.Item{}) do
       %{
-        "version" => "1.0",
-        "items" => Enum.map([item], &render_item/1)
+        "collection" => %{
+          "version" => "1.0",
+          "items" => Enum.map([item], &render_item/1)
+        }
       }
     end
 
@@ -239,11 +241,9 @@ defmodule Representer do
     end
 
     defp render_item(item) do
-      %{
-        "href" => item.href,
-        "data" => render_data(item.item),
-        "links" => transform_links(item.links),
-      }
+      %{"href" => item.href}
+      |> maybe_put("data", render_data(item.item))
+      |> maybe_put("links", transform_links(item.links))
     end
 
     defp render_data(properties) do
@@ -252,15 +252,23 @@ defmodule Representer do
       end)
     end
 
+    defp transform_links([]), do: nil
+
     defp transform_links(links) do
-      links
-      |> Enum.reject(&(&1.rel == "self"))
-      |> Enum.map(fn link ->
-        %{
-          "rel" => link.rel,
-          "href" => link.href,
-        }
-      end)
+      links = links |> Enum.reject(&(&1.rel == "self"))
+
+      case links do
+        [] ->
+          nil
+
+        links ->
+          Enum.map(links, fn link ->
+            %{
+              "rel" => link.rel,
+              "href" => link.href,
+            }
+          end)
+      end
     end
   end
 
@@ -282,9 +290,11 @@ defmodule Representer do
 
     def transform(item = %Representer.Item{}) do
       item.item
-      |> Map.put("_links", transform_links(item.links))
-      |> Map.put("_embedded", render_embedded(item.embedded))
+      |> maybe_put("_links", transform_links(item.links))
+      |> maybe_put("_embedded", render_embedded(item.embedded))
     end
+
+    defp render_embedded(%{}), do: nil
 
     defp render_embedded(embedded) do
       Enum.reduce(embedded, %{}, fn {name, list}, embedded ->
@@ -379,7 +389,7 @@ defmodule Representer do
       end
     end
 
-    defp render_embedded([]), do: nil
+    defp render_embedded(%{}), do: nil
 
     defp render_embedded(embedded) do
       Enum.reduce(embedded, [], fn {_name, list}, embedded ->
