@@ -3,13 +3,15 @@ defmodule Representer do
   Implementation of the Representer pattern for the API
   """
 
-  defguard known_extension?(extension) when extension in [
+  @extensions [
     "json",
     "collection",
     "hal",
     "mason",
     "siren"
   ]
+
+  defguard known_extension?(extension) when extension in @extensions
 
   defmodule Collection do
     @moduledoc """
@@ -30,6 +32,13 @@ defmodule Representer do
     """
 
     defstruct [:rel, :href, :item, :type, embedded: [], links: []]
+
+    @doc """
+    Add a link to an item
+    """
+    def add_link(item, link) do
+      %{item | links: [link | item.links]}
+    end
   end
 
   defmodule Link do

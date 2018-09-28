@@ -24,7 +24,6 @@ defmodule Web.SkillController do
       skill ->
         conn
         |> assign(:skill, skill)
-        |> assign(:extended, true)
         |> render(:show)
     end
   end
