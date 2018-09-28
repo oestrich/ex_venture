@@ -33,21 +33,19 @@ defmodule Web.RaceView do
       key: race.api_id,
       name: race.name,
       description: race.description,
-      stats: %{
-        health_points: stat(race, :health_points),
-        max_health_points: stat(race, :health_points),
-        skill_points: stat(race, :skill_points),
-        max_skill_points: stat(race, :skill_points),
-        endurance_points: stat(race, :endurance_points),
-        max_endurance_points: stat(race, :max_endurance_points),
-        strength: stat(race, :strength),
-        agility: stat(race, :agility),
-        intelligence: stat(race, :intelligence),
-        awareness: stat(race, :awareness),
-        vitality: stat(race, :vitality),
-        willpower: stat(race, :willpower),
-      },
-    }
+      health_points: stat(race, :health_points),
+      max_health_points: stat(race, :health_points),
+      skill_points: stat(race, :skill_points),
+      max_skill_points: stat(race, :skill_points),
+      endurance_points: stat(race, :endurance_points),
+      max_endurance_points: stat(race, :max_endurance_points),
+      strength: stat(race, :strength),
+      agility: stat(race, :agility),
+      intelligence: stat(race, :intelligence),
+      awareness: stat(race, :awareness),
+      vitality: stat(race, :vitality),
+      willpower: stat(race, :willpower),
+  }
   end
 
   def render("race.json", %{race: race}) do
