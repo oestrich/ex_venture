@@ -80,11 +80,17 @@ defmodule Representer do
     end
 
     defp next_link(pagination) do
-      %Representer.Link{rel: "next", href: page_path(pagination.base_url, pagination.current_page + 1)}
+      %Representer.Link{
+        rel: "next",
+        href: page_path(pagination.base_url, pagination.current_page + 1)
+      }
     end
 
     defp prev_link(pagination) do
-      %Representer.Link{rel: "prev", href: page_path(pagination.base_url, pagination.current_page - 1)}
+      %Representer.Link{
+        rel: "prev",
+        href: page_path(pagination.base_url, pagination.current_page - 1)
+      }
     end
 
     defp page_path(path, page) do
@@ -265,7 +271,7 @@ defmodule Representer do
           Enum.map(links, fn link ->
             %{
               "rel" => link.rel,
-              "href" => link.href,
+              "href" => link.href
             }
           end)
       end
@@ -460,20 +466,20 @@ defmodule Representer do
 
     defp transform_links(links) do
       links
-        |> Enum.filter(fn link -> link.rel != "curies" end)
-        |> Enum.reduce(%{}, fn link, links ->
-          json =
-            %{"href" => link.href}
-            |> maybe_put(:title, link.title)
+      |> Enum.filter(fn link -> link.rel != "curies" end)
+      |> Enum.reduce(%{}, fn link, links ->
+        json =
+          %{"href" => link.href}
+          |> maybe_put(:title, link.title)
 
-          case Map.get(links, link.rel) do
-            nil ->
-              Map.put(links, link.rel, json)
+        case Map.get(links, link.rel) do
+          nil ->
+            Map.put(links, link.rel, json)
 
-            existing_links ->
-              Map.put(links, link.rel, [json | List.wrap(existing_links)])
-          end
-        end)
+          existing_links ->
+            Map.put(links, link.rel, [json | List.wrap(existing_links)])
+        end
+      end)
     end
   end
 end
