@@ -14,10 +14,12 @@ defmodule Web.ClassView do
   end
 
   def render("show." <> extension, %{class: class}) when Representer.known_extension?(extension) do
+    up = %Representer.Link{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)}
+
     class
     |> show()
     |> embed_skills(class)
-    |> add_up_link()
+    |> Representer.Item.add_link(up)
     |> Representer.transform(extension)
   end
 
@@ -61,10 +63,5 @@ defmodule Web.ClassView do
       |> Enum.map(&SkillView.show/1)
 
     %{item | embedded: %{skills: skills}}
-  end
-
-  defp add_up_link(item) do
-    link = %Representer.Link{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)}
-    %{item | links: [link | item.links]}
   end
 end

@@ -14,8 +14,11 @@ defmodule Web.SkillView do
   end
 
   def render("show." <> extension, %{skill: skill}) when Representer.known_extension?(extension) do
+    up = %Representer.Link{rel: "up", href: RouteHelpers.public_skill_url(Endpoint, :index)}
+
     skill
     |> show(extended: true)
+    |> Representer.Item.add_link(up)
     |> Representer.transform(extension)
   end
 
