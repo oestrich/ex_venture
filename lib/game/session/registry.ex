@@ -109,11 +109,18 @@ defmodule Game.Session.Registry do
   end
 
   @doc """
-  Get the current player count
+  Get the current player counts.
 
-  Cached in ETS. Updated when players come and go
+  Splits admins from players. Cached in ETS. Updated when players come and go.
   """
-  def player_count() do
+  def player_counts() do
+    %{
+      player_count: player_count(),
+      admin_count: admin_count()
+    }
+  end
+
+  defp player_count() do
     case :ets.lookup(@metadata_ets_key, :player_count) do
       [{_id, count}] ->
         count
@@ -123,12 +130,7 @@ defmodule Game.Session.Registry do
     end
   end
 
-  @doc """
-  Get the current admin count
-
-  Cached in ETS. Updated when admins come and go
-  """
-  def admin_count() do
+  defp admin_count() do
     case :ets.lookup(@metadata_ets_key, :admin_count) do
       [{_id, count}] ->
         count

@@ -77,10 +77,10 @@ defmodule Metrics.PlayerInstrumenter do
   @doc """
   Set the player count gauge, will return the player list
   """
-  @spec set_player_count(integer(), integer()) :: :ok
-  def set_player_count(player_count, admin_count) do
-    Gauge.set([name: :exventure_player_count, labels: [:players]], player_count)
-    Gauge.set([name: :exventure_player_count, labels: [:admins]], admin_count)
+  @spec set_player_count(map()) :: :ok
+  def set_player_count(counts) do
+    Gauge.set([name: :exventure_player_count, labels: [:players]], counts.player_count)
+    Gauge.set([name: :exventure_player_count, labels: [:admins]], counts.admin_count)
   end
 
   @doc """
