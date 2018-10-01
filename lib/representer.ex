@@ -253,9 +253,45 @@ defmodule Representer do
     end
 
     defp render_data(properties) do
-      Enum.map(properties, fn {key, value} ->
+      properties
+      |> flatten_properties()
+      |> Enum.map(fn {key, value} ->
         %{"name" => key, "value" => value}
       end)
+    end
+
+    defp flatten_key(keys) do
+      keys
+      |> Enum.reject(&(&1 == ""))
+      |> Enum.join(".")
+    end
+
+    defp flatten_properties(properties, base_properties \\ %{}, base_key \\ "")
+
+    defp flatten_properties(properties, base_properties, base_key) when is_map(properties) do
+      Enum.reduce(properties, base_properties, fn {key, value}, base_properties ->
+        key = flatten_key([base_key, key])
+
+        case value do
+          %{} ->
+            flatten_properties(value, base_properties, key)
+
+          list when is_list(value) ->
+            list
+            |> Enum.with_index()
+            |> Enum.reduce(base_properties, fn {value, index}, base_properties ->
+              key = flatten_key([base_key, key, index])
+              flatten_properties(value, base_properties, key)
+            end)
+
+          value ->
+            Map.put(base_properties, key, value)
+        end
+      end)
+    end
+
+    defp flatten_properties(value, base_properties, key)  do
+      Map.put(base_properties, key, value)
     end
 
     defp transform_links([]), do: nil

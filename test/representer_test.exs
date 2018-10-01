@@ -30,7 +30,33 @@ defmodule RepresenterTest do
             %{
               "href" => "/item",
               "data" => [
-                %{"name" => :key, "value" => :value}
+                %{"name" => "key", "value" => :value}
+              ],
+            }
+          ]
+        }
+      }
+    end
+
+    test "keeps data flat", %{links: links} do
+      item = %Item{
+        href: "/item",
+        item: %{
+          sub: %{
+            map: "keys",
+          },
+        },
+        links: links,
+      }
+
+      assert CollectionJSON.transform(item) == %{
+        "collection" => %{
+          "version" => "1.0",
+          "items" => [
+            %{
+              "href" => "/item",
+              "data" => [
+                %{"name" => "sub.map", "value" => "keys"}
               ],
             }
           ]
