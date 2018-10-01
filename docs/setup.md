@@ -50,9 +50,9 @@ config :ex_venture, Data.Repo,
   pool_size: 10
 ```
 
-### Elixir / Erlang
+### Elixir / Erlang / Node.js
 
-The easiest way to get Erlang/Elixir going is to install [asdf][asdf]. asdf is a tool that manages programming language versions. It will simply getting and staying on the correct versions required for running ExVenture.
+The easiest way to get Erlang/Elixir and Node.js going is to install [asdf][asdf]. asdf is a tool that manages programming language versions. It will simply getting and staying on the correct versions required for running ExVenture.
 
 You can follow their install guide on the [README][asdf-install]. Below is the Ubuntu bash set up for reference.
 
@@ -64,52 +64,35 @@ echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
 
 After installing asdf make sure to reload your terminal by opening a new tab or sourcing your bashrc file again, `source ~/.bashrc`.
 
-Before installing Elixir you need to install Erlang. It may also require development headers to be in place depending on your system.
+Before installing Erlang you may also require development headers to be in place depending on your system. Node also requires python for `node-sass`.
 
 Ubuntu ([taken from asdf-erlang][asdf-erlang]):
 
 ```bash
-sudo apt install build-essential autoconf m4 libncurses5-dev libwxgtk3.0-dev libgl1-mesa-dev libglu1-mesa-dev libpng3 libssh-dev unixodbc-dev
+sudo apt install build-essential autoconf m4 libncurses5-dev libwxgtk3.0-dev libgl1-mesa-dev libglu1-mesa-dev libpng3 libssh-dev unixodbc-dev python
 ```
 
-Install Erlang via [asdf][asdf-erlang].
+Install the nodejs plugin first to source their keyring.
 
 ```bash
-asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
-asdf install erlang 21.0.5
-asdf global erlang 21.0.5
+asdf plugin-add nodejs
+bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 ```
 
-Install Elixir via [asdf][asdf-elixir].
+Install all three languages. This will take a while.
 
 ```bash
-asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
-asdf install elixir 1.7.2
-asdf global elixir 1.7.2
+asdf install
+```
+
+Get local versions of hex and rebar.
+
+```bash
 mix local.hex
 mix local.rebar
 ```
 
-Note that you *must* install these versions or higher. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
-
-### node.js
-
-Install node.js via [asdf][asdf-nodejs]. Node is required for compiling the game's web assets, CSS and javascript.
-
-```bash
-asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-asdf install nodejs 8.6.0
-asdf global nodejs 8.6.0
-```
-
-`node-sass` required python to run. Make sure it is installed and available.
-
-Ubuntu:
-
-```bash
-sudo apt install python
-```
+Note that you *must* install the versions in the `.tool-versions` file. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
 
 ## ExVenture
 
