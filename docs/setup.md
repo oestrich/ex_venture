@@ -57,7 +57,7 @@ The easiest way to get Erlang/Elixir and Node.js going is to install [asdf][asdf
 You can follow their install guide on the [README][asdf-install]. Below is the Ubuntu bash set up for reference.
 
 ```bash
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.4.0
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.5.1
 echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc
 echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
 ```
