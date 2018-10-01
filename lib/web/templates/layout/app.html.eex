@@ -30,7 +30,7 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@user))) %>
         <div class="collapse navbar-collapse" id="navbarsExample09">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item <%= tab_selected(@conn, "who") %>">
-              <%= link("Who's Online", to: public_page_path(@conn, :who), class: "nav-link") %>
+              <%= link("Who's Online", to: public_who_path(@conn, :index), class: "nav-link") %>
             </li>
             <li class="nav-item <%= tab_selected(@conn, "classes") %>">
               <%= link("Classes", to: public_class_path(@conn, :index), class: "nav-link") %>

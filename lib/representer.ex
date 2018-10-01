@@ -334,6 +334,18 @@ defmodule Representer do
     end
 
     defp transform_links(links) do
+      links = _transform_links(links)
+
+      case Enum.empty?(links) do
+        true ->
+          nil
+
+        false ->
+          links
+      end
+    end
+
+    defp _transform_links(links) do
       Enum.reduce(links, %{}, fn link, links ->
         json =
           %{"href" => link.href}

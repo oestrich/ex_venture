@@ -39,7 +39,7 @@ defmodule Web.Router do
   end
 
   scope "/", Web, as: :public do
-    pipe_through([:accepts_api, :browser])
+    pipe_through([:accepts_api, :browser, :public])
 
     get("/", PageController, :index)
 
@@ -49,7 +49,7 @@ defmodule Web.Router do
 
     resources("/skills", SkillController, only: [:index, :show])
 
-    get("/who", PageController, :who)
+    resources("/who", WhoController, only: [:index])
   end
 
   scope "/", Web, as: :public do
