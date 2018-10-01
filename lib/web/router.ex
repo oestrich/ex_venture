@@ -8,8 +8,15 @@ defmodule Web.Router do
     use Sentry.Plug
   end
 
-  pipeline :browser do
+  pipeline :accepts_browser do
+    plug(:accepts, ["html"])
+  end
+
+  pipeline :accepts_api do
     plug(:accepts, ["html", "json", "hal", "siren", "collection", "mason"])
+  end
+
+  pipeline :browser do
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:protect_from_forgery)
@@ -25,20 +32,33 @@ defmodule Web.Router do
   end
 
   scope "/", Web, as: :public do
-    pipe_through([:browser, :public_2fa])
+    pipe_through([:accepts_browser, :browser, :public_2fa])
 
     get("/account/twofactor/verify", AccountTwoFactorController, :verify)
     post("/account/twofactor/verify", AccountTwoFactorController, :verify_token)
   end
 
   scope "/", Web, as: :public do
-    pipe_through([:browser, :public])
+    pipe_through([:accepts_api, :browser])
+
+    get("/", PageController, :index)
+
+    resources("/classes", ClassController, only: [:index, :show])
+
+    resources("/races", RaceController, only: [:index, :show])
+
+    resources("/skills", SkillController, only: [:index, :show])
+
+    get("/who", PageController, :who)
+  end
+
+  scope "/", Web, as: :public do
+    pipe_through([:accepts_browser, :browser, :public])
 
     get("/css/colors.css", ColorController, :index)
     get("/clients/mudlet/ex_venture.xml", PageController, :mudlet_package)
     get("/clients/map.xml", PageController, :map)
 
-    get("/", PageController, :index)
     get("/version", PageController, :version)
 
     get("/account", AccountController, :show)
@@ -56,8 +76,6 @@ defmodule Web.Router do
 
     get("/chat", ChatController, :show)
 
-    resources("/classes", ClassController, only: [:index, :show])
-
     get("/connection/authorize", ConnectionController, :authorize)
     post("/connection/authorize", ConnectionController, :connect)
 
@@ -67,8 +85,6 @@ defmodule Web.Router do
     get("/help/builtin/:id", HelpController, :built_in)
 
     get("/play", PlayController, :show)
-
-    resources("/races", RaceController, only: [:index, :show])
 
     get("/register/reset", RegistrationResetController, :new)
     post("/register/reset", RegistrationResetController, :create)
@@ -80,14 +96,10 @@ defmodule Web.Router do
 
     delete("/sessions", SessionController, :delete)
     resources("/sessions", SessionController, only: [:new, :create])
-
-    resources("/skills", SkillController, only: [:index, :show])
-
-    get("/who", PageController, :who)
   end
 
   scope "/admin", Web.Admin do
-    pipe_through(:browser)
+    pipe_through([:accepts_browser, :browser])
 
     get("/", DashboardController, :index)
 
