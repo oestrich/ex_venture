@@ -277,16 +277,21 @@ defmodule Representer do
             flatten_properties(value, base_properties, key)
 
           list when is_list(value) ->
-            list
-            |> Enum.with_index()
-            |> Enum.reduce(base_properties, fn {value, index}, base_properties ->
-              key = flatten_key([base_key, key, index])
-              flatten_properties(value, base_properties, key)
-            end)
+            key = flatten_key([base_key, key])
+            flatten_properties(list, base_properties, key)
 
           value ->
             Map.put(base_properties, key, value)
         end
+      end)
+    end
+
+    defp flatten_properties(list, base_properties, base_key) when is_list(list) do
+      list
+      |> Enum.with_index()
+      |> Enum.reduce(base_properties, fn {value, index}, base_properties ->
+        key = flatten_key([base_key, index])
+        flatten_properties(value, base_properties, key)
       end)
     end
 
