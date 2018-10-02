@@ -346,8 +346,8 @@ defmodule Web.User do
     url = "otpauth://totp/#{issuer}:#{user.name}?secret=#{secret}&issuer=#{issuer}"
 
     url
-    |> :qrcode.encode()
-    |> :qrcode_png.simple_png_encode()
+    |> EQRCode.encode()
+    |> EQRCode.png()
   end
 
   @doc """
