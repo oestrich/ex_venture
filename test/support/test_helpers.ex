@@ -33,6 +33,16 @@ defmodule TestHelpers do
   alias Data.User
   alias Data.Zone
 
+  def session_state(attributes) do
+    attributes = Map.merge(%{
+      socket: :socket,
+      state: "active",
+      mode: "commands",
+    }, attributes)
+
+    struct(Game.Session.State, attributes)
+  end
+
   def base_user() do
     %User{
       id: 10,

@@ -5,6 +5,8 @@ defmodule Game.Command.Hone do
 
   use Game.Command
 
+  alias Game.Player
+
   @hone_cost 300
 
   @hone_points_boost 5
@@ -185,14 +187,13 @@ defmodule Game.Command.Hone do
 
   def hone_stat(:ok, _stat), do: :ok
 
-  def hone_stat(state = %{user: user, save: save}, stat) do
+  def hone_stat(state = %{save: save}, stat) do
     spent_experience_points = save.spent_experience_points + @hone_cost
 
     stats = raise_stat(save, stat)
 
     save = %{save | stats: stats, spent_experience_points: spent_experience_points}
-    user = %{user | save: save}
-    state = %{state | user: user, save: save}
+    state = Player.update_save(state, save)
 
     message = gettext("You honed your %{stat}. It is now at %{stat_value}!", stat: stat, stat_value: stat_at(save, stat))
     state.socket |> @socket.echo(message)

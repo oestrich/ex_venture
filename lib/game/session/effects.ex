@@ -12,6 +12,7 @@ defmodule Game.Session.Effects do
   alias Game.Character
   alias Game.Effect
   alias Game.Format
+  alias Game.Player
   alias Game.Session.Process
 
   import Game.Session, only: [echo: 2]
@@ -23,18 +24,14 @@ defmodule Game.Session.Effects do
   Used from the character callback `{:apply_effects, effects, from, description}`.
   """
   @spec apply([Data.Effect.t()], tuple, String.t(), Map) :: map
-  def apply(effects, from, description, state) do
-    %{user: user, save: save} = state
-
+  def apply(effects, from, description, state = %{save: save}) do
     {stats, effects, continuous_effects} =
-      Character.Effects.apply_effects({:player, user}, save.stats, state, effects, from)
+      Character.Effects.apply_effects({:player, state.user}, save.stats, state, effects, from)
 
-    save = Map.put(save, :stats, stats)
-    user = Map.put(user, :save, save)
-    state = %{state | user: user, save: save}
+    state = Player.update_save(state, %{save | stats: stats})
 
-    user |> echo_effects(from, description, effects)
-    user |> maybe_died(state, from)
+    state.user |> echo_effects(from, description, effects)
+    state.user |> maybe_died(state, from)
 
     case is_alive?(state.save) do
       true ->
@@ -113,26 +110,22 @@ defmodule Game.Session.Effects do
   Apply a continuous effect to the player
   """
   @spec apply_continuous_effect(State.t(), Effect.t()) :: State.t()
-  def apply_continuous_effect(state, {from, effect}) do
-    %{socket: socket, user: user, save: save} = state
-
+  def apply_continuous_effect(state = %{save: save}, {from, effect}) do
     {stats, effects} = Character.Effects.apply_continuous_effect(save.stats, state, effect)
 
-    save = Map.put(save, :stats, stats)
-    user = Map.put(user, :save, save)
-    state = %{state | user: user, save: save}
+    state = Player.update_save(state, %{save | stats: stats})
 
     effects_message =
       effects
-      |> Format.effects({:player, user})
+      |> Format.effects({:player, state.user})
       |> Enum.join("\n")
 
-    socket |> @socket.echo(effects_message)
+    state.socket |> @socket.echo(effects_message)
 
-    user |> maybe_died(state, from)
+    state.user |> maybe_died(state, from)
     state |> Process.prompt()
 
-    case is_alive?(save) do
+    case is_alive?(state.save) do
       true ->
         state |> update_effect_count({from, effect})
 

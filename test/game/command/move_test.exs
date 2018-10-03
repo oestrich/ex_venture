@@ -8,7 +8,6 @@ defmodule Game.Command.MoveTest do
   alias Game.Command.Move
   alias Game.Door
   alias Game.Session.Registry
-  alias Game.Session.State
 
   @basic_room %Game.Environment.State.Room{
     id: 1,
@@ -23,17 +22,10 @@ defmodule Game.Command.MoveTest do
     @socket.clear_messages
     start_and_clear_doors()
 
-    socket = :socket
     user = base_user()
-    state = %State{
-      state: "active",
-      mode: "command",
-      socket: socket,
-      user: user,
-      skills: %{}
-    }
+    state = session_state(%{user: user, skills: %{}})
 
-    %{socket: socket, user: user, state: state}
+    %{socket: :socket, user: user, state: state}
   end
 
   describe "moving in a direction" do

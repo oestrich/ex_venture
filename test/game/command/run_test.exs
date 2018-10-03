@@ -3,7 +3,6 @@ defmodule Game.Command.RunTest do
   doctest Game.Command.Run
 
   alias Game.Command
-  alias Game.Session
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -22,16 +21,8 @@ defmodule Game.Command.RunTest do
     }
     @room.set_room(room)
 
-    state = %Session.State{
-      state: "active",
-      mode: "command",
-      socket: :socket,
-      user: user,
-      save: user.save,
-      skills: %{}
-    }
-
-    {:ok, %{socket: :socket, state: state}}
+    state = session_state(%{user: user, save: user.save, skills: %{}})
+    %{state: state}
   end
 
   test "run in a set of directions", %{state: state} do

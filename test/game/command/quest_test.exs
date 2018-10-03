@@ -14,7 +14,7 @@ defmodule Game.Command.QuestTest do
     user = create_user(%{name: "user", password: "password"})
     user = %{user | class: %{name: "Fighter"}}
 
-    %{state: %{socket: :socket, user: user, save: %{user.save | items: []}}}
+    %{state: session_state(%{user: user, save: %{user.save | items: []}})}
   end
 
   describe "listing out quests" do

@@ -9,6 +9,7 @@ defmodule Game.Command.Colors do
   alias Data.Save.Config
   alias Game.ColorCodes
   alias Game.Command.Config, as: CommandConfig
+  alias Game.Player
 
   commands([{"colors", ["color"]}], parse: false)
 
@@ -92,9 +93,7 @@ defmodule Game.Command.Colors do
       end)
       |> Enum.into(%{})
 
-    save = %{save | config: config}
-    user = %{state.user | save: save}
-    state = %{state | user: user, save: save}
+    state = Player.update_save(state, %{save | config: config})
 
     state |> CommandConfig.push_config(config)
     state.socket |> @socket.echo(gettext("Your colors have been reset."))

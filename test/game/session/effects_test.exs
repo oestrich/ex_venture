@@ -5,13 +5,11 @@ defmodule Game.Session.EffectsTest do
   import Test.DamageTypesHelper
 
   alias Game.Session.Effects
-  alias Game.Session.State
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
   setup do
-    socket = :socket
     @socket.clear_messages
     @room.clear_update_characters()
 
@@ -25,17 +23,14 @@ defmodule Game.Session.EffectsTest do
       reverse_boost: 20,
     })
 
-    user = %{id: 2, name: "user", class: class_attributes(%{})}
-    stats = %{health_points: 25, agility: 10}
+    user = %{id: 2, name: "user", save: base_save(), class: class_attributes(%{})}
+    stats = %{user.save.stats | health_points: 25, agility: 10}
 
-    state = %State{
-      socket: socket,
-      state: "active",
-      mode: "commands",
+    state = session_state(%{
       user: user,
-      save: %{room_id: 1, experience_points: 10, stats: stats},
+      save: %{user.save | room_id: 1, experience_points: 10, stats: stats},
       is_targeting: MapSet.new(),
-    }
+    })
 
     %{state: state}
   end

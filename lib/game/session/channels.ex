@@ -6,6 +6,7 @@ defmodule Game.Session.Channels do
   use Networking.Socket
 
   alias Game.Hint
+  alias Game.Player
   alias Game.Session.GMCP
   alias Game.Session.State
 
@@ -19,9 +20,7 @@ defmodule Game.Session.Channels do
       |> Enum.into(MapSet.new())
       |> Enum.into([])
 
-    save = %{save | channels: channels}
-    user = %{state.user | save: save}
-    %{state | user: user, save: save}
+    Player.update_save(state, %{save | channels: channels})
   end
 
   @doc """
@@ -30,9 +29,7 @@ defmodule Game.Session.Channels do
   @spec left(State.t(), String.t()) :: State.t()
   def left(state = %{save: save}, channel) do
     channels = Enum.reject(save.channels, &(&1 == channel))
-    save = %{save | channels: channels}
-    user = %{state.user | save: save}
-    %{state | user: user, save: save}
+    Player.update_save(state, %{save | channels: channels})
   end
 
   @doc """

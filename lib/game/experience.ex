@@ -11,6 +11,7 @@ defmodule Game.Experience do
   alias Data.Save
   alias Game.DamageTypes
   alias Game.Format
+  alias Game.Player
   alias Game.Skills
 
   @doc """
@@ -27,17 +28,11 @@ defmodule Game.Experience do
       true ->
         save = level_up(save)
 
-        {:ok, :level_up, exp, update_state_save(state, save)}
+        {:ok, :level_up, exp, Player.update_save(state, save)}
 
       false ->
-        {:ok, exp, update_state_save(state, save)}
+        {:ok, exp, Player.update_save(state, save)}
     end
-  end
-
-  defp update_state_save(state, save) do
-    state
-    |> Map.put(:user, %{state.user | save: save})
-    |> Map.put(:save, save)
   end
 
   @doc """
@@ -56,8 +51,7 @@ defmodule Game.Experience do
         ActionBar.maybe_add_action(save, %ActionBar.SkillAction{id: skill.id})
       end)
 
-    user = %{state.user | save: save}
-    %{state | user: user, save: save}
+    Player.update_save(state, save)
   end
 
   @doc """

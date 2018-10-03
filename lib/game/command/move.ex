@@ -9,6 +9,7 @@ defmodule Game.Command.Move do
   alias Data.Exit
   alias Game.Command.AFK
   alias Game.Door
+  alias Game.Player
   alias Game.Quest
   alias Game.Session.GMCP
   alias Metrics.CharacterInstrumenter
@@ -228,7 +229,7 @@ defmodule Game.Command.Move do
 
       state =
         state
-        |> Map.put(:save, save)
+        |> Player.update_save(save)
         |> Map.put(:target, nil)
         |> Map.put(:is_targeting, MapSet.new())
         |> Map.put(:is_afk, false)

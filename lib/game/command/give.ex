@@ -13,6 +13,7 @@ defmodule Game.Command.Give do
   alias Game.Format
   alias Game.Item
   alias Game.Items
+  alias Game.Player
 
   commands(["give"], parse: false)
 
@@ -140,9 +141,7 @@ defmodule Game.Command.Give do
 
         Character.notify(character, {"currency/receive", {:player, state.user}, currency})
 
-        save = %{save | currency: save.currency - currency}
-        user = %{state.user | save: save}
-        state = %{state | user: user, save: save}
+        state = Player.update_save(state, %{save | currency: save.currency - currency})
 
         {:update, state}
     end
@@ -155,9 +154,7 @@ defmodule Game.Command.Give do
     Character.notify(character, {"item/receive", {:player, state.user}, instance})
 
     items = List.delete(save.items, instance)
-    save = %{save | items: items}
-    user = %{state.user | save: save}
-    state = %{state | user: user, save: save}
+    state = Player.update_save(state, %{save | items: items})
 
     {:update, state}
   end

@@ -10,7 +10,7 @@ defmodule Game.Command.ColorsTest do
   setup do
     @socket.clear_messages()
     save = base_save()
-    %{state: %{socket: :socket, user: %{save: save}, save: save}}
+    %{state: session_state(%{user: %{save: save}, save: save})}
   end
 
   describe "viewing a list of colors" do

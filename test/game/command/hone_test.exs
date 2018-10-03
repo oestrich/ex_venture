@@ -3,7 +3,6 @@ defmodule Game.Command.HoneTest do
   doctest Game.Command.Hone
 
   alias Game.Command.Hone
-  alias Game.Session.State
 
   @socket Test.Networking.Socket
 
@@ -15,15 +14,7 @@ defmodule Game.Command.HoneTest do
       |> Map.put(:experience_points, 1200)
       |> Map.put(:spent_experience_points, 100)
 
-    state = %State{
-      state: "active",
-      mode: "commands",
-      socket: :socket,
-      user: %{save: save},
-      save: save,
-    }
-
-    %{state: state}
+    %{state: session_state(%{user: %{save: save}, save: save})}
   end
 
   describe "help" do

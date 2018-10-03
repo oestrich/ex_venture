@@ -6,6 +6,7 @@ defmodule Game.Command.Train do
   use Game.Command
 
   alias Data.ActionBar
+  alias Game.Player
   alias Game.Session.GMCP
   alias Game.Skill
   alias Game.Skills
@@ -227,7 +228,7 @@ defmodule Game.Command.Train do
 
   defp train_skill(:ok, _state), do: :ok
 
-  defp train_skill(skill, state = %{user: user, save: save}) do
+  defp train_skill(skill, state = %{save: save}) do
     skill_cost = Skill.skill_train_cost(skill, save)
     message = gettext("%{name} trained successfully! %{cost} XP spent.", name: skill.name, cost: skill_cost)
     state.socket |> @socket.echo(message)
@@ -237,9 +238,7 @@ defmodule Game.Command.Train do
 
     save = %{save | skill_ids: skill_ids, spent_experience_points: spent_experience_points}
     save = ActionBar.maybe_add_action(save, %ActionBar.SkillAction{id: skill.id})
-
-    user = %{user | save: save}
-    state = %{state | user: user, save: save}
+    state = Player.update_save(state, save)
 
     state |> GMCP.character_skills()
     state |> GMCP.config_actions()

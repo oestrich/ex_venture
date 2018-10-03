@@ -6,6 +6,8 @@ defmodule Game.Command.Recall do
   use Game.Command
   use Game.Zone
 
+  alias Game.Player
+
   commands(["recall"], parse: false)
 
   @impl Game.Command
@@ -75,9 +77,7 @@ defmodule Game.Command.Recall do
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->
         save = %{save | stats: %{save.stats | endurance_points: 0}}
-
-        user = %{state.user | save: save}
-        state = %{state | user: user, save: save}
+        state = Player.update_save(state, save)
 
         Session.teleport(self(), graveyard_id)
 

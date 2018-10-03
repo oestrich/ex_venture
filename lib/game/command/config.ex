@@ -7,6 +7,7 @@ defmodule Game.Command.Config do
 
   alias Data.Save.Config, as: PlayerConfig
   alias Game.Format
+  alias Game.Player
   alias Game.Session.GMCP
 
   commands(["config"], parse: false)
@@ -189,9 +190,7 @@ defmodule Game.Command.Config do
       save.config
       |> Map.put(config_atom, value)
 
-    save = %{save | config: config}
-    user = %{state.user | save: save}
-    state = %{state | user: user, save: save}
+    state = Player.update_save(state, %{save | config: config})
 
     case value do
       true ->

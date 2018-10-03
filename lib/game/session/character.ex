@@ -10,6 +10,7 @@ defmodule Game.Session.Character do
   alias Game.Format
   alias Game.Hint
   alias Game.Items
+  alias Game.Player
   alias Game.Quest
   alias Game.Session
   alias Game.Session.Effects
@@ -105,8 +106,7 @@ defmodule Game.Session.Character do
     |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}.")
 
     save = %{save | currency: save.currency + currency}
-    user = %{state.user | save: save}
-    %{state | user: user, save: save}
+    Player.update_save(state, save)
   end
 
   def notify(state, {"item/dropped", character, item}) do
@@ -129,8 +129,7 @@ defmodule Game.Session.Character do
     |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}.")
 
     save = %{save | items: [instance | save.items]}
-    user = %{state.user | save: save}
-    %{state | user: user, save: save}
+    Player.update_save(state, save)
   end
 
   def notify(state, {"mail/new", mail}) do

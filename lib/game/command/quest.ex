@@ -7,8 +7,9 @@ defmodule Game.Command.Quest do
   use Game.Currency
   use Game.NPC
 
-  alias Game.Session.Character
+  alias Game.Player
   alias Game.Quest
+  alias Game.Session.Character
 
   commands([{"quest", ["quests"]}], parse: false)
 
@@ -247,8 +248,7 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo("Quest completed!\n\nYou gain #{quest.currency} #{currency()}.")
 
         save = %{save | currency: save.currency + quest.currency}
-        user = %{user | save: save}
-        state = %{state | user: user, save: save}
+        state = Player.update_save(state, save)
 
         state = Character.apply_experience(state, {:quest, quest})
 

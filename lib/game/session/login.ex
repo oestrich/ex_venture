@@ -20,6 +20,7 @@ defmodule Game.Session.Login do
   alias Game.Channel
   alias Game.Mail
   alias Game.MOTD
+  alias Game.Player
   alias Game.Session
   alias Game.Session.Process
   alias Game.Session.GMCP
@@ -92,11 +93,8 @@ defmodule Game.Session.Login do
 
         starting_save = Game.Config.starting_save()
 
-        %{user: player, save: save} = state
-
-        save = Map.put(save, :room_id, starting_save.room_id)
-        player = %{player | save: save}
-        state = %{state | user: player, save: save}
+        save = Map.put(state.save, :room_id, starting_save.room_id)
+        state = Player.update_save(state, save)
         finish_login(state, session)
     end
   end

@@ -7,7 +7,6 @@ defmodule Game.SessionTest do
   alias Game.Message
   alias Game.Session
   alias Game.Session.Process
-  alias Game.Session.State
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -16,24 +15,20 @@ defmodule Game.SessionTest do
   @basic_room %Game.Environment.State.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
 
   setup do
-    socket = :socket
     @socket.clear_messages()
     @room.clear_notifies()
 
     user = base_user()
-    state = %State{
-      state: "active",
-      mode: "commands",
+    state = session_state(%{
       session_started_at: Timex.now(),
       idle: Session.Help.init_idle(Timex.now()),
-      socket: socket,
       user: user,
       save: user.save,
       skills: %{},
       regen: %{is_regenerating: false},
-    }
+    })
 
-    {:ok, %{state: state}}
+    %{state: state}
   end
 
   test "echoing messages", %{state: state} do

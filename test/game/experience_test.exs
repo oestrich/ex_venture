@@ -11,10 +11,10 @@ defmodule Game.ExperienceTest do
   setup do
     @socket.clear_messages()
     save = base_save()
-    %{socket: :socket, user: %{save: save}, save: save}
+    %{state: session_state(%{user: %{base_user() | save: save}, save: save})}
   end
 
-  test "receive experience and level up", state do
+  test "receive experience and level up", %{state: state} do
     {:ok, :level_up, experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
     assert state.save.level == 2
     assert state.save.experience_points == 1200
@@ -23,7 +23,7 @@ defmodule Game.ExperienceTest do
   end
 
   describe "leveling up" do
-    test "on level up, boost stats by your level", state do
+    test "on level up, boost stats by your level", %{state: state} do
       state = %{state | save: %{state.save | level_stats: %{strength: 10, intelligence: 9, awareness: 5, vitality: 3}}}
 
       {:ok, :level_up, _experience, state} = Experience.apply(state, level: 2, experience_points: 1000)
@@ -48,7 +48,7 @@ defmodule Game.ExperienceTest do
       }
     end
 
-    test "notifies of new skills that you to use", state do
+    test "notifies of new skills that you to use", %{state: state} do
       start_and_clear_skills()
 
       insert_skill(%{id: 1, level: 1, is_enabled: true, command: "slash", name: "Slash"})
@@ -63,7 +63,7 @@ defmodule Game.ExperienceTest do
     end
   end
 
-  test "receive experience and no level up", state do
+  test "receive experience and no level up", %{state: state} do
     {:ok, _experience, state} = Experience.apply(state, level: 1, experience_points: 901)
 
     assert state.save.level == 1
