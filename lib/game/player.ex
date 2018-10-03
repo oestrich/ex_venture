@@ -8,6 +8,7 @@ defmodule Game.Player do
   """
   def update_save(state, save) do
     player = %{state.user | save: save}
-    %{state | user: player, save: save}
+    character = %{state.character | save: save}
+    %{state | user: player, character: character, save: save}
   end
 end

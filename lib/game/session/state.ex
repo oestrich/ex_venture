@@ -16,6 +16,7 @@ defmodule Game.Session.State do
   - `:mode` - Mode that the session is in, `commands`, `editor`
   - `:session_started_at` - Timestamp of when the session started
   - `:user` - User struct
+  - `:character` - Character struct for the user
   - `:save` - Save struct from the user
   - `:last_recv` - Timestamp of when the session last received a message
   - `:idle` - Map of data required for idle checking and hinting
@@ -35,6 +36,7 @@ defmodule Game.Session.State do
     :state,
     :session_started_at,
     :user,
+    :character,
     :save,
     :last_recv,
     :idle,

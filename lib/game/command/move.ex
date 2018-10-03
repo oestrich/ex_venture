@@ -215,11 +215,11 @@ defmodule Game.Command.Move do
   end
 
   defp move_to_instrumented(state, room_id, leave_reason, enter_reason) do
-    %{save: save, user: user} = state
+    %{save: save, character: character} = state
 
     CharacterInstrumenter.movement(:player, fn ->
       @environment.unlink(save.room_id)
-      @environment.leave(save.room_id, {:player, user}, leave_reason)
+      @environment.leave(save.room_id, {:player, character}, leave_reason)
 
       clear_target(state)
 
@@ -234,10 +234,10 @@ defmodule Game.Command.Move do
         |> Map.put(:is_targeting, MapSet.new())
         |> Map.put(:is_afk, false)
 
-      @environment.enter(room_id, {:player, user}, enter_reason)
+      @environment.enter(room_id, {:player, character}, enter_reason)
       @environment.link(room_id)
 
-      Quest.track_progress(user, {:room, room_id})
+      Quest.track_progress(state.user, {:room, room_id})
 
       state
     end)

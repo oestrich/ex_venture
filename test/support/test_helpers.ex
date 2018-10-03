@@ -2,6 +2,7 @@ defmodule TestHelpers do
   alias Data.Announcement
   alias Data.Bug
   alias Data.Channel
+  alias Data.Character
   alias Data.Class
   alias Data.ClassSkill
   alias Data.Config
@@ -40,8 +41,14 @@ defmodule TestHelpers do
       mode: "commands",
     }, attributes)
 
-    struct(Game.Session.State, attributes)
+    struct(Game.Session.State, maybe_characterize(attributes))
   end
+
+  defp maybe_characterize(attributes = %{user: user}) do
+    Map.put(attributes, :character, Character.from_user(user))
+  end
+
+  defp maybe_characterize(attributes), do: attributes
 
   def base_user() do
     %User{

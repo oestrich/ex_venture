@@ -13,6 +13,7 @@ defmodule Game.Session.Login do
 
   require Logger
 
+  alias Data.Character
   alias Data.Repo
   alias Data.Room
   alias Game.Authentication
@@ -52,9 +53,12 @@ defmodule Game.Session.Login do
 
     PlayerInstrumenter.login(player)
 
+    character = Character.from_user(player)
+
     state =
       state
       |> Map.put(:user, player)
+      |> Map.put(:character, character)
       |> Map.put(:save, player.save)
       |> Map.put(:state, "after_sign_in")
 
@@ -63,7 +67,7 @@ defmodule Game.Session.Login do
     state |> GMCP.config_actions()
 
     message = """
-    Welcome, #{player.name}!
+    Welcome, #{character.name}!
 
     #{MOTD.random_asim()}
     """
@@ -99,19 +103,19 @@ defmodule Game.Session.Login do
     end
   end
 
-  defp finish_login(state = %{user: player}, session) do
+  defp finish_login(state = %{user: player, character: character}, session) do
     Session.Registry.register(player)
     Session.Registry.player_online(player)
 
-    @environment.link(player.save.room_id)
-    @environment.enter(player.save.room_id, {:player, player}, :login)
+    @environment.link(character.save.room_id)
+    @environment.enter(character.save.room_id, {:player, character}, :login)
     session |> Session.recv("look")
     state |> GMCP.character()
     state |> GMCP.character_skills()
     state |> GMCP.discord_status()
 
-    Enum.each(player.save.channels, &Channel.join/1)
-    Channel.join_tell({:player, player})
+    Enum.each(character.save.channels, &Channel.join/1)
+    Channel.join_tell({:player, character})
 
     state
     |> Regen.maybe_trigger_regen()
