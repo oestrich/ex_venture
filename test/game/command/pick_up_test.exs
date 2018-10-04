@@ -6,9 +6,7 @@ defmodule Game.Command.PickUpTest do
   @room Test.Game.Room
 
   alias Data.Item
-  alias Data.Save
   alias Game.Command.PickUp
-  alias Game.Session.State
 
   setup do
     start_and_clear_items()
@@ -18,18 +16,10 @@ defmodule Game.Command.PickUpTest do
     @room.set_room(Map.merge(@room._room(), %{items: [Item.instantiate(item)]}))
     @socket.clear_messages()
 
-    state = %State{
-      socket: :socket,
-      state: "active",
-      mode: "commands",
-      save: %Save{
-        room_id: 1,
-        items: [],
-        currency: 1,
-      }
-    }
+    user = base_user()
+    state = session_state(%{user: user, save: %{user.save | room_id: 1, items: [], currency: 1}})
 
-    {:ok, %{state: state}}
+    %{state: state}
   end
 
   test "pick up an item from a room", %{state: state} do
