@@ -137,31 +137,31 @@ defmodule Game.Command.Say do
     :ok
   end
 
-  def say(state = %{user: user, save: save}, parsed_message) do
+  def say(state = %{character: character, save: save}, parsed_message) do
     parsed_message = Message.format(parsed_message)
     state.socket |> @socket.echo(Format.say(:you, parsed_message))
-    save.room_id |> @environment.say({:player, user}, Message.new(user, parsed_message))
+    save.room_id |> @environment.say({:player, character}, Message.new(character, parsed_message))
   end
 
-  def say_directed(state = %{user: user, save: save}, parsed_message) do
+  def say_directed(state = %{character: character, save: save}, parsed_message) do
     {:ok, room} = @environment.look(save.room_id)
 
     case find_character(room, parsed_message.message, message: true) do
       {:error, :not_found} ->
         state.socket |> @socket.echo(gettext("No character could be found matching your text."))
 
-      character ->
-        message = Utility.strip_name(elem(character, 1), parsed_message.message)
+      directed_character ->
+        message = Utility.strip_name(elem(directed_character, 1), parsed_message.message)
 
         parsed_message =
           parsed_message
           |> Map.put(:message, message)
           |> Message.format()
 
-        state.socket |> @socket.echo(Format.say_to(:you, character, parsed_message))
+        state.socket |> @socket.echo(Format.say_to(:you, directed_character, parsed_message))
 
         room.id
-        |> @environment.say({:player, user}, Message.say_to(user, character, parsed_message))
+        |> @environment.say({:player, character}, Message.say_to(character, directed_character, parsed_message))
     end
   end
 

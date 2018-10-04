@@ -54,9 +54,9 @@ defmodule Game.Command.Emote do
   """
   def run(command, state)
 
-  def run({emote}, %{socket: socket, user: user, save: %{room_id: room_id}}) do
-    socket |> @socket.echo(Format.emote({:player, user}, emote))
-    room_id |> @environment.emote({:player, user}, Message.emote(user, emote))
+  def run({emote}, state = %{character: character, save: save}) do
+    state.socket |> @socket.echo(Format.emote({:player, character}, emote))
+    save.room_id |> @environment.emote({:player, character}, Message.emote(character, emote))
     :ok
   end
 end

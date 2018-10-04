@@ -2,7 +2,6 @@ defmodule TestHelpers do
   alias Data.Announcement
   alias Data.Bug
   alias Data.Channel
-  alias Data.Character
   alias Data.Class
   alias Data.ClassSkill
   alias Data.Config
@@ -34,21 +33,7 @@ defmodule TestHelpers do
   alias Data.User
   alias Data.Zone
 
-  def session_state(attributes) do
-    attributes = Map.merge(%{
-      socket: :socket,
-      state: "active",
-      mode: "commands",
-    }, attributes)
-
-    struct(Game.Session.State, maybe_characterize(attributes))
-  end
-
-  defp maybe_characterize(attributes = %{user: user}) do
-    Map.put(attributes, :character, Character.from_user(user))
-  end
-
-  defp maybe_characterize(attributes), do: attributes
+  def session_state(attributes), do: Test.Session.session_state(attributes)
 
   def base_user() do
     %User{
