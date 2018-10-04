@@ -145,11 +145,13 @@ External.Discord.Hello {}
 
 ### External.Discord.Info
 
-A response to `External.Discord.Hello`. Will contain the discord server invite url if present.
+A response to `External.Discord.Hello`. Will contain the discord server invite url if present, and
+the Discord Application ID if present.
 
 ```
 External.Discord.Info {
-  inviteurl: "discord.gg"
+  inviteurl: "discord.gg",
+  applicationid: "..."
 }
 ```
 
