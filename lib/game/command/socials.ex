@@ -107,7 +107,7 @@ defmodule Game.Command.Socials do
         state |> social_not_found(social)
 
       social ->
-        state.socket |> @socket.echo(Format.social_without_target(social, state.user))
+        state.socket |> @socket.echo(Format.social_without_target(social, state.character))
     end
 
     :ok
@@ -127,7 +127,7 @@ defmodule Game.Command.Socials do
             state.socket |> @socket.echo(message)
 
           character ->
-            state.socket |> @socket.echo(Format.social_with_target(social, state.user, character))
+            state.socket |> @socket.echo(Format.social_with_target(social, state.character, character))
         end
     end
 
