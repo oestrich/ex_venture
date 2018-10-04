@@ -219,7 +219,7 @@ defmodule Game.Command.Skills do
   defp maybe_replace_target_with_self(state, skill, target) do
     case skill.require_target do
       true ->
-        {:ok, {:player, state.user.id}}
+        {:ok, {:player, state.character.id}}
 
       false ->
         {:ok, target}
@@ -256,7 +256,7 @@ defmodule Game.Command.Skills do
   end
 
   defp use_skill(skill, target, state) do
-    %{socket: socket, user: user, save: save = %{stats: stats}} = state
+    %{socket: socket, save: save = %{stats: stats}} = state
 
     {state, target} = maybe_change_target(state, skill, target)
 
@@ -276,11 +276,11 @@ defmodule Game.Command.Skills do
         Character.apply_effects(
           target,
           effects,
-          {:player, user},
-          Format.skill_usee(skill, user: {:player, user}, target: target)
+          {:player, state.character},
+          Format.skill_usee(skill, user: {:player, state.character}, target: target)
         )
 
-        socket |> @socket.echo(Format.skill_user(skill, {:player, user}, target))
+        socket |> @socket.echo(Format.skill_user(skill, {:player, state.character}, target))
         state |> GMCP.skill_state(skill, active: false)
 
         state =
@@ -324,8 +324,8 @@ defmodule Game.Command.Skills do
             {:update, state} = Target.target_npc(npc, state.socket, state)
             {state, target}
 
-          {:player, user} ->
-            {:update, state} = Target.target_player(user, state.socket, state)
+          {:player, character} ->
+            {:update, state} = Target.target_player(character, state.socket, state)
             {state, target}
         end
     end

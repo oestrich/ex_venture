@@ -13,90 +13,95 @@ defmodule Game.Command.TargetTest do
     |> Map.put(:players, [%{id: 2, name: "Player", save: %{stats: %{health_points: 1}}}])
 
     @room.set_room(room)
-    @socket.clear_messages
+    @socket.clear_messages()
 
-    {:ok, %{socket: :socket, user: %{id: 1, name: "Player"}}}
+    %{state: session_state(%{user: base_user()})}
   end
 
-  test "set your target from someone in the room", %{socket: socket, user: user} do
-    {:update, state} = Game.Command.Target.run({:set, "bandit"}, %{socket: socket, user: user, save: %{room_id: 1}})
+  test "set your target from someone in the room", %{state: state} do
+    {:update, state} = Game.Command.Target.run({:set, "bandit"}, state)
 
     assert state.target == {:npc, 1}
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look)
-    assert [{^socket, "Target.Character", _}] = @socket.get_push_gmcps()
+    assert [{_socket, "Target.Character", _}] = @socket.get_push_gmcps()
   end
 
-  test "targeting another player", %{socket: socket, user: user} do
-    {:update, state} = Game.Command.Target.run({:set, "player"}, %{socket: socket, user: user, save: %{room_id: 1}})
+  test "targeting another player", %{state: state} do
+    {:update, state} = Game.Command.Target.run({:set, "player"}, state)
 
     assert state.target == {:player, 2}
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look)
-    assert [{^socket, "Target.Character", _}] = @socket.get_push_gmcps()
+    assert [{_socket, "Target.Character", _}] = @socket.get_push_gmcps()
   end
 
-  test "targeting yourself", %{socket: socket, user: user} do
-    {:update, state} = Game.Command.Target.run({:set, "self"}, %{socket: socket, user: user, save: %{room_id: 1}})
+  test "targeting yourself", %{state: state} do
+    {:update, state} = Game.Command.Target.run({:set, "self"}, state)
 
-    assert state.target == {:player, user.id}
+    assert state.target == {:player, state.character.id}
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(now targeting), look)
-    assert [{^socket, "Target.Character", _}] = @socket.get_push_gmcps()
+    assert [{_socket, "Target.Character", _}] = @socket.get_push_gmcps()
   end
 
-  test "cannot target another player if health is < 1", %{socket: socket, user: user} do
+  test "cannot target another player if health is < 1", %{state: state} do
     room = @room._room()
     |> Map.put(:npcs, [])
     |> Map.put(:players, [%{id: 2, name: "Player", save: %{stats: %{health_points: -1}}}])
     @room.set_room(room)
 
-    :ok = Game.Command.Target.run({:set, "player"}, %{socket: socket, user: user, save: %{room_id: 1}})
+    :ok = Game.Command.Target.run({:set, "player"}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(could not be targeted), look)
   end
 
-  test "target not found", %{socket: socket, user: user} do
-    :ok = Game.Command.Target.run({:set, "unknown"}, %{socket: socket, user: user, save: %{room_id: 1}})
+  test "target not found", %{state: state} do
+    :ok = Game.Command.Target.run({:set, "unknown"}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(not find), look)
   end
 
-  test "viewing your target - npc", %{socket: socket} do
-    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:npc, 1}})
+  test "viewing your target - npc", %{state: state} do
+    state = %{state | target: {:npc, 1}}
+    :ok = Game.Command.Target.run({}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Your target is), look)
   end
 
-  test "viewing your target - npc no longer there", %{socket: socket} do
-    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:npc, 2}})
+  test "viewing your target - npc no longer there", %{state: state} do
+    state = %{state | target: {:npc, 2}}
+    :ok = Game.Command.Target.run({}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Your target could not be found), look)
   end
 
-  test "viewing your target - user", %{socket: socket} do
-    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:player, 2}})
+  test "viewing your target - palyer", %{state: state} do
+    state = %{state | target: {:player, 2}}
+    :ok = Game.Command.Target.run({}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Your target is), look)
   end
 
-  test "viewing your target - user no longer there", %{socket: socket} do
-    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: {:player, 3}})
+  test "viewing your target - user no longer there", %{state: state} do
+    state = %{state | target: {:player, 3}}
+    :ok = Game.Command.Target.run({}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Your target could not be found), look)
   end
 
-  test "viewing your target - missing", %{socket: socket} do
-    :ok = Game.Command.Target.run({}, %{socket: socket, save: %{room_id: 1}, target: nil})
+  test "viewing your target - missing", %{state: state} do
+    state = %{state | target: nil}
+    :ok = Game.Command.Target.run({}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You don't have a target), look)
   end
 end
