@@ -1,7 +1,7 @@
 defmodule Game.Overworld.SectorTest do
   use Data.ModelCase
 
-  alias Data.User
+  alias Data.Character
   alias Game.Overworld.Sector
   alias Game.Session
 
@@ -14,9 +14,10 @@ defmodule Game.Overworld.SectorTest do
     }
 
     user = base_user()
+    character = Character.from_user(user)
     npc = %{id: 11, name: "Bandit"}
 
-    %{state: state, user: user, npc: npc, overworld_id: "1:1,1"}
+    %{state: state, user: user, character: character, npc: npc, overworld_id: "1:1,1"}
   end
 
   describe "looking" do
@@ -32,10 +33,10 @@ defmodule Game.Overworld.SectorTest do
   end
 
   describe "entering an overworld id" do
-    test "player entering", %{state: state, user: user, overworld_id: overworld_id} do
-      {:noreply, state} = Sector.handle_cast({:enter, overworld_id, {:player, user}, :enter}, state)
+    test "player entering", %{state: state, character: character, overworld_id: overworld_id} do
+      {:noreply, state} = Sector.handle_cast({:enter, overworld_id, {:player, character}, :enter}, state)
 
-      assert state.players == [{%{x: 1, y: 1}, user}]
+      assert state.players == [{%{x: 1, y: 1}, character}]
     end
 
     test "npc entering", %{state: state, npc: npc, overworld_id: overworld_id} do
@@ -44,38 +45,40 @@ defmodule Game.Overworld.SectorTest do
       assert state.npcs == [{%{x: 1, y: 1}, npc}]
     end
 
-    test "sends a notification to users in the same cell", %{state: state, user: user, overworld_id: overworld_id} do
+    test "sends a notification to users in the same cell", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 1}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, {:player, user}, :enter}, state)
+      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, {:player, character}, :enter}, state)
 
-      assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:player, ^user}, :enter}}}}
+      assert_receive {:"$gen_cast", {:notify, {"room/entered", {{:player, ^character}, :enter}}}}
     end
 
-    test "does not send notifications to users in different cells", %{state: state, user: user, overworld_id: overworld_id} do
+    test "does not send notifications to users in different cells", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 2}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 2}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, {:player, user}, :enter}, state)
+      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, {:player, character}, :enter}, state)
 
-      refute_receive {:"$gen_cast", {:notify, {"room/entered", {{:player, ^user}, :enter}}}}, 50
+      refute_receive {:"$gen_cast", {:notify, {"room/entered", {{:player, ^character}, :enter}}}}, 50
     end
   end
 
   describe "leaving an overworld id" do
-    test "player entering", %{state: state, user: user, overworld_id: overworld_id} do
-      state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, %User{id: 2, name: "Guard"}}]}
+    test "player entering", %{state: state, character: character, overworld_id: overworld_id} do
+      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, %Character{id: 2, name: "Guard"}}]}
 
-      {:noreply, state} = Sector.handle_cast({:leave, overworld_id, {:player, user}, :leave}, state)
+      {:noreply, state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
 
-      assert state.players == [{%{x: 1, y: 1}, %User{id: 2, name: "Guard"}}]
+      assert state.players == [{%{x: 1, y: 1}, %Character{id: 2, name: "Guard"}}]
     end
 
     test "npc entering", %{state: state, npc: npc, overworld_id: overworld_id} do
@@ -86,90 +89,96 @@ defmodule Game.Overworld.SectorTest do
       assert state.npcs == [{%{x: 1, y: 1}, %{id: 2, name: "Guard"}}]
     end
 
-    test "sends a notification to users in the same cell", %{state: state, user: user, overworld_id: overworld_id} do
+    test "sends a notification to users in the same cell", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, user}, :leave}, state)
+      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
 
-      assert_receive {:"$gen_cast", {:notify, {"room/leave", {{:player, ^user}, :leave}}}}
+      assert_receive {:"$gen_cast", {:notify, {"room/leave", {{:player, ^character}, :leave}}}}
     end
 
-    test "does not send notifications to users in different cells", %{state: state, user: user, overworld_id: overworld_id} do
+    test "does not send notifications to users in different cells", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 2}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 2}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, user}, :leave}, state)
+      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
 
-      refute_receive {:"$gen_cast", {:notify, {"room/leave", {{:player, ^user}, :leave}}}}, 50
+      refute_receive {:"$gen_cast", {:notify, {"room/leave", {{:player, ^character}, :leave}}}}, 50
     end
   end
 
   describe "notify" do
-    test "sends notifications to players in the same cell", %{state: state, user: user, overworld_id: overworld_id} do
+    test "sends notifications to players in the same cell", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, {:player, user}, {:hi}}, state)
+      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, {:player, character}, {:hi}}, state)
 
       assert_receive {:"$gen_cast", {:notify, {:hi}}}
     end
 
-    test "does not send notifications to users in different cells", %{state: state, user: user, overworld_id: overworld_id} do
+    test "does not send notifications to users in different cells", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 2}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 2}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, {:player, user}, {:hi}}, state)
+      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, {:player, character}, {:hi}}, state)
 
       refute_receive {:"$gen_cast", {:notify, {:hi}}}, 50
     end
   end
 
   describe "say" do
-    test "sends a say message", %{state: state, user: user, overworld_id: overworld_id} do
+    test "sends a say message", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:say, overworld_id, {:player, user}, "hi"}, state)
+      {:noreply, _state} = Sector.handle_cast({:say, overworld_id, {:player, character}, "hi"}, state)
 
       assert_receive {:"$gen_cast", {:notify, {"room/heard", "hi"}}}
     end
   end
 
   describe "emote" do
-    test "sends an emote message", %{state: state, user: user, overworld_id: overworld_id} do
+    test "sends an emote message", %{state: state, character: character, overworld_id: overworld_id} do
       notify_user = %{base_user() | id: 11}
+      notify_character = Character.from_user(notify_user)
       Session.Registry.register(notify_user)
       Session.Registry.catch_up()
 
-      state = %{state | players: [{%{x: 1, y: 1}, user}, {%{x: 1, y: 1}, notify_user}]}
+      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:emote, overworld_id, {:player, user}, "hi"}, state)
+      {:noreply, _state} = Sector.handle_cast({:emote, overworld_id, {:player, character}, "hi"}, state)
 
       assert_receive {:"$gen_cast", {:notify, {"room/heard", "hi"}}}
     end
   end
 
   describe "update character" do
-    test "stores the new information", %{state: state, user: user, overworld_id: overworld_id} do
-      user = %{user | name: "Player2"}
+    test "stores the new information", %{state: state, character: character, overworld_id: overworld_id} do
+      character = %{character | name: "Player2"}
 
-      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, {:player, user}}, state)
+      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, {:player, character}}, state)
 
       assert [{_cell, %{name: "Player2"}}] = state.players
     end

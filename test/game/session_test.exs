@@ -232,7 +232,7 @@ defmodule Game.SessionTest do
       user = %{base_user() | seconds_online: 0}
       Session.Registry.register(user)
 
-      state = %{state: "active", user: user, save: %{room_id: 1}, session_started_at: Timex.now(), stats: %{}}
+      state = session_state(%{user: user, session_started_at: Timex.now(), stats: %{}})
       {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
       assert Session.Registry.connected_players() == []
     after
@@ -241,7 +241,7 @@ defmodule Game.SessionTest do
 
     test "adds the time played" do
       user = create_user(%{name: "user", password: "password"})
-      state = %{state: "active", user: user, save: user.save, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}}
+      state = session_state(%{user: user, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}})
 
       {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
 
@@ -507,7 +507,7 @@ defmodule Game.SessionTest do
     end
 
     test "room overheard - does not echo if user is in the list of characters", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [{:player, state.user}], "hi"}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [{:player, state.character}], "hi"}}, state)
 
       assert [] = @socket.get_echos()
     end

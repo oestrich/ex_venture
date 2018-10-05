@@ -5,6 +5,7 @@ defmodule Game.Quest do
 
   import Ecto.Query
 
+  alias Data.Character
   alias Data.Quest
   alias Data.QuestProgress
   alias Data.QuestStep
@@ -94,6 +95,7 @@ defmodule Game.Quest do
 
     case changeset |> Repo.insert() do
       {:ok, _} ->
+        player = Character.from_user(player)
         Session.notify(player, {"quest/new", quest})
         :ok
 

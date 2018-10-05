@@ -5,8 +5,9 @@ defmodule Game.Session do
 
   @type t :: pid
 
+  alias Data.Character
   alias Data.User
-  alias Game.Character
+  alias Game.Character.Simple, as: SimpleCharacter
   alias Game.Session
   alias Game.Session.Supervisor
   alias Game.World.Master, as: WorldMaster
@@ -69,7 +70,7 @@ defmodule Game.Session do
   Echo to the socket
   """
   @spec echo(pid, String.t()) :: :ok
-  def echo(player = %User{}, message) do
+  def echo(player = %Character{}, message) do
     case find_connected_player(player) do
       nil ->
         :ok
@@ -79,7 +80,7 @@ defmodule Game.Session do
     end
   end
 
-  def echo(player = %Character.Simple{type: :player}, message) do
+  def echo(player = %SimpleCharacter{type: :player}, message) do
     case find_connected_player(player) do
       nil ->
         :ok
@@ -105,7 +106,7 @@ defmodule Game.Session do
   Notify the session of an event, e.g. someone left the room
   """
   @spec notify(pid, tuple()) :: :ok
-  def notify(player = %User{}, action) do
+  def notify(player = %Character{}, action) do
     case find_connected_player(player) do
       nil ->
         :ok
@@ -115,7 +116,7 @@ defmodule Game.Session do
     end
   end
 
-  def notify(player = %Character.Simple{type: :player}, action) do
+  def notify(player = %SimpleCharacter{type: :player}, action) do
     case find_connected_player(player) do
       nil ->
         :ok

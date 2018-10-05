@@ -43,7 +43,7 @@ defmodule Game.Session.Character do
   Callback for after a player sent effects to another character
   """
   def effects_applied(state, effects, target) do
-    case Character.who(target) == {:player, state.user.id} do
+    case Character.who(target) == {:player, state.character.id} do
       true ->
         state
 
@@ -65,7 +65,7 @@ defmodule Game.Session.Character do
     state |> GMCP.character_leave(character)
 
     # see if who is you
-    case Character.who(who) == Character.who({:player, state.user}) do
+    case Character.who(who) == Character.who({:player, state.character}) do
       true ->
         state =
           state
@@ -89,7 +89,7 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"currency/dropped", character, currency}) do
-    case Character.who(character) == {:player, state.user.id} do
+    case Character.who(character) == {:player, state.character.id} do
       true ->
         state
 
@@ -110,7 +110,7 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, {"item/dropped", character, item}) do
-    case Character.who(character) == {:player, state.user.id} do
+    case Character.who(character) == {:player, state.character.id} do
       true ->
         state
 
@@ -225,7 +225,7 @@ defmodule Game.Session.Character do
   def notify(state, {"room/overheard", characters, message}) do
     skip_echo? =
       Enum.any?(characters, fn character ->
-        character == {:player, state.user}
+        character == {:player, state.character}
       end)
 
     case skip_echo? do
@@ -295,7 +295,7 @@ defmodule Game.Session.Character do
     state |> GMCP.target(player)
 
     player = Character.who(player)
-    Character.being_targeted(player, {:player, state.user})
+    Character.being_targeted(player, {:player, state.character})
 
     %{state | target: player}
   end
@@ -307,7 +307,7 @@ defmodule Game.Session.Character do
   def possible_new_target(state) do
     state.is_targeting
     |> MapSet.to_list()
-    |> Enum.reject(&(&1 == {:player, state.user.id}))
+    |> Enum.reject(&(&1 == {:player, state.character.id}))
     |> List.first()
     |> character_info()
   end

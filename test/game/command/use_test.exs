@@ -40,7 +40,7 @@ defmodule Game.Command.UseTest do
 
     user = %{base_user() | id: 1, save: save}
 
-    %{state: %{socket: :socket, user: user, save: user.save}}
+    %{state: session_state(%{user: user})}
   end
 
   describe "parsing a custom command" do
