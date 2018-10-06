@@ -5,7 +5,6 @@ defmodule Game.Command.SkillsTest do
   alias Game.Command.ParseContext
   alias Game.Command.Skills
   alias Game.Session
-  alias Game.Session.State
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -38,14 +37,11 @@ defmodule Game.Command.SkillsTest do
 
     @room.set_room(room)
 
-    state = %State{
-      socket: :socket,
-      state: "active",
-      mode: "commands",
+    state = session_state(%{
       skills: %{},
       user: user,
       save: save
-    }
+    })
 
     %{state: state, user: user, save: save, slash: slash}
   end

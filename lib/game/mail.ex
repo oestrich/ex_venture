@@ -5,6 +5,7 @@ defmodule Game.Mail do
 
   import Ecto.Query
 
+  alias Data.Character
   alias Data.Mail
   alias Data.Repo
   alias Data.User
@@ -59,6 +60,7 @@ defmodule Game.Mail do
     case changeset |> Repo.insert() do
       {:ok, mail} ->
         mail = Repo.preload(mail, [:sender, :receiver])
+        player = Character.from_user(player)
         Session.notify(player, {"mail/new", mail})
 
         mail |> maybe_email_notify()

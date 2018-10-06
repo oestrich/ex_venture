@@ -10,6 +10,7 @@ defmodule Game.Command.PickUp do
 
   alias Game.Environment.State.Overworld
   alias Game.Items
+  alias Game.Player
 
   @must_be_alive true
 
@@ -198,7 +199,7 @@ defmodule Game.Command.PickUp do
         )
 
         save = %{save | items: [instance | save.items]}
-        {:ok, item, Map.put(state, :save, save)}
+        {:ok, item, Player.update_save(state, save)}
 
       _ ->
         {:error, :could_not_pickup, item}
@@ -216,7 +217,7 @@ defmodule Game.Command.PickUp do
         )
 
         save = %{save | currency: save.currency + currency}
-        {:ok, currency, Map.put(state, :save, save)}
+        {:ok, currency, Player.update_save(state, save)}
 
       {:error, :no_currency} ->
         {:error, :no_currency, state}

@@ -4,58 +4,64 @@ defmodule Game.Command.DropTest do
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
-  alias Data.Save
+  alias Game.Command.Drop
 
   setup do
     start_and_clear_items()
     insert_item(%{id: 1, name: "Sword", keywords: []})
 
-    @socket.clear_messages
-    {:ok, %{socket: :socket}}
+    @socket.clear_messages()
+
+    user = base_user()
+    state = session_state(%{user: user})
+
+    %{state: state}
   end
 
-  test "drop an item in a room", %{socket: socket} do
+  test "drop an item in a room", %{state: state} do
     @room.clear_drops()
 
-    state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, items: [item_instance(1)]}}
-    {:update, state} = Game.Command.Drop.run({"sword"}, state)
+    state = %{state | save: %{state.save | room_id: 1, items: [item_instance(1)]}}
+
+    {:update, state} = Drop.run({"sword"}, state)
 
     assert state.save.items |> length == 0
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You dropped), look)
 
     assert [{1, {:player, _}, %{id: 1}}] = @room.get_drops()
   end
 
-  test "drop currency in a room", %{socket: socket} do
+  test "drop currency in a room", %{state: state} do
     @room.clear_drop_currencies()
 
-    state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, currency: 101}}
-    {:update, state} = Game.Command.Drop.run({"100 gold"}, state)
+    state = %{state | save: %{state.save | room_id: 1, currency: 101}}
+    {:update, state} = Drop.run({"100 gold"}, state)
 
     assert state.save.currency == 1
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You dropped), look)
 
     assert [{1, {:player, _}, 100}] = @room.get_drop_currencies()
   end
 
-  test "drop currency in a room - not enough to do so", %{socket: socket} do
+  test "drop currency in a room - not enough to do so", %{state: state} do
     @room.clear_drop_currencies()
 
-    state = %{socket: socket, user: %{name: "user"}, save: %Save{room_id: 1, currency: 101}}
-    :ok = Game.Command.Drop.run({"110 gold"}, state)
+    state = %{state | save: %{state.save | room_id: 1, currency: 101}}
+    :ok = Drop.run({"110 gold"}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(You do not have enough), look)
   end
 
-  test "item not found in your inventory", %{socket: socket} do
-    :ok = Game.Command.Drop.run({"sword"}, %{socket: socket, save: %Save{room_id: 1, items: [item_instance(2)]}})
+  test "item not found in your inventory", %{state: state} do
+    state = %{state | save: %{state.save | room_id: 1, items: [item_instance(2)]}}
+    :ok = Drop.run({"sword"}, state)
 
-    [{^socket, look}] = @socket.get_echos()
+    [{_socket, look}] = @socket.get_echos()
     assert Regex.match?(~r(Could not find), look)
   end
 end

@@ -9,6 +9,7 @@ defmodule Game.Command.Drop do
   alias Game.Environment
   alias Game.Item
   alias Game.Items
+  alias Game.Player
 
   @must_be_alive true
 
@@ -81,13 +82,14 @@ defmodule Game.Command.Drop do
 
   defp _drop_currency(amount, state = %{socket: socket, save: %{currency: currency}}) do
     save = %{state.save | currency: currency - amount}
+    state = Player.update_save(state, save)
 
     message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency)
     socket |> @socket.echo(message)
 
-    @environment.drop_currency(save.room_id, {:player, state.user}, amount)
+    @environment.drop_currency(save.room_id, {:player, state.character}, amount)
 
-    {:update, Map.put(state, :save, save)}
+    {:update, state}
   end
 
   defp drop_item(item_name, state = %{socket: socket, save: %{items: items}}) do
@@ -103,14 +105,15 @@ defmodule Game.Command.Drop do
     end
   end
 
-  defp _drop_item(item, state = %{socket: socket, user: user, save: save}) do
+  defp _drop_item(item, state = %{save: save}) do
     {instance, items} = Item.remove(save.items, item)
-    save = %{save | items: items}
-    @environment.drop(save.room_id, {:player, user}, instance)
+    state = Player.update_save(state, %{save | items: items})
+
+    @environment.drop(save.room_id, {:player, state.character}, instance)
 
     message = gettext("You dropped %{name}.", name: Format.item_name(item))
-    socket |> @socket.echo(message)
+    state.socket |> @socket.echo(message)
 
-    {:update, Map.put(state, :save, save)}
+    {:update, state}
   end
 end

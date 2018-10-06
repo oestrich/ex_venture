@@ -1,27 +1,30 @@
 defmodule Game.RoomTest do
   use Data.ModelCase
 
+  alias Data.Character
   alias Data.User
   alias Game.Room
 
   setup do
-    {:ok, user: %{id: 10, name: "user"}, room: %{id: 11}}
+    user = %{base_user() | id: 10, name: "user"}
+    character = Character.from_user(user)
+    %{user: user, character: character, room: %{id: 11}}
   end
 
   describe "entering a room" do
-    test "entering a room", %{user: user, room: room} do
+    test "entering a room", %{character: character, room: room} do
       state = %{room: room, players: [], npcs: []}
 
-      {:noreply, state} = Room.handle_cast({:enter, {:player, user}, :enter}, state)
+      {:noreply, state} = Room.handle_cast({:enter, {:player, character}, :enter}, state)
 
-      assert state.players == [user]
+      assert state.players == [character]
     end
   end
 
-  test "leaving a room - user", %{user: user, room: room} do
-    state = %{room: room, players: [user], npcs: []}
+  test "leaving a room - user", %{character: character, room: room} do
+    state = %{room: room, players: [character], npcs: []}
 
-    {:noreply, state} = Room.handle_cast({:leave, {:player, user}, :leave}, state)
+    {:noreply, state} = Room.handle_cast({:leave, {:player, character}, :leave}, state)
 
     assert state.players == []
   end

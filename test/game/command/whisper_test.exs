@@ -10,7 +10,7 @@ defmodule Game.Command.WhisperTest do
   setup do
     @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
-    %{state: %{socket: :socket, user: user, save: user.save}}
+    %{state: session_state(%{user: user})}
   end
 
   describe "whisper to someone" do

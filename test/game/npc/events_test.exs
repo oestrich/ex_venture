@@ -29,6 +29,7 @@ defmodule Game.NPC.EventsTest do
     setup do
       npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
       user = %{base_user() | id: 2}
+      character = Data.Character.from_user(user)
 
       state = %State{room_id: 1, npc: npc, target: nil}
 
@@ -37,7 +38,7 @@ defmodule Game.NPC.EventsTest do
       |> Map.put(:players, [%{id: 1, name: "Player"}])
       |> @room.set_room()
 
-      event = {"character/died", {:player, user}, :character, {:npc, npc}}
+      event = {"character/died", {:player, character}, :character, {:npc, npc}}
 
       %{state: state, event: event}
     end
@@ -617,12 +618,13 @@ defmodule Game.NPC.EventsTest do
   describe "quest/completed" do
     setup do
       user = create_user()
+      character = Data.Character.from_user(user)
       quest = %{id: 1, completed_message: "Hello"}
       npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
       event = {"quest/completed", user, quest}
 
-      Channel.join_tell({:player, user})
+      Channel.join_tell({:player, character})
 
       %{state: state, event: event}
     end

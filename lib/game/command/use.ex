@@ -96,7 +96,7 @@ defmodule Game.Command.Use do
     socket |> @socket.echo(message)
   end
 
-  defp use_item(state = %{socket: socket, user: user, save: save}, {instance, item}) do
+  defp use_item(state = %{socket: socket, save: save}, {instance, item}) do
     player_effects = save |> Item.effects_on_player()
 
     effects =
@@ -105,16 +105,12 @@ defmodule Game.Command.Use do
 
     effects = save.stats |> Effect.calculate(effects)
 
-    Character.apply_effects(
-      {:player, user},
-      effects,
-      {:player, user},
-      Format.usee_item(item, target: {:player, user}, user: {:player, user})
-    )
+    usee_text = Format.usee_item(item, target: {:player, state.character}, user: {:player, state.character})
+    Character.apply_effects({:player, state.character}, effects, {:player, state.character}, usee_text)
 
-    description = Format.user_item(item, target: {:player, user}, user: {:player, user})
+    description = Format.user_item(item, target: {:player, state.character}, user: {:player, state.character})
 
-    effects_message = Enum.join([description | Format.effects(effects, {:player, user})], "\n")
+    effects_message = Enum.join([description | Format.effects(effects, {:player, state.character})], "\n")
     socket |> @socket.echo(effects_message)
 
     spend_item(state, instance)
