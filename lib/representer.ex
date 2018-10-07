@@ -317,11 +317,7 @@ defmodule Representer do
     defp render_collection(collection) do
       case collection.items do
         nil ->
-          nil
-
-        [] ->
-          nil
-
+          []
         items ->
           Enum.map(items, fn item -> transform(item, collection.name)end)
       end
