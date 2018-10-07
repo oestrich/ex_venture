@@ -59,9 +59,11 @@ config :ex_venture, Game.Gettext, default_locale: "en"
 config :mime, :types, %{
   "application/hal+json" => ["hal"],
   "application/vnd.siren+json" => ["siren"],
+  "application/vnd.collection+json" => ["collection"],
+  "application/vnd.mason+json" => ["mason"],
   "application/vnd.api+json" => ["jsonapi"]
 }
 
-config :phoenix, :format_encoders, [hal: Poison, jsonapi: Poison, siren: Poison]
+config :phoenix, :format_encoders, [collection: Poison, hal: Poison, mason: Poison, siren: Poison, jsonapi: Poison]
 
 import_config "#{Mix.env()}.exs"

@@ -1,6 +1,8 @@
 defmodule Web.SkillView do
   use Web, :view
 
+  require Representer
+
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
   alias Web.SharedView
@@ -19,6 +21,7 @@ defmodule Web.SkillView do
     }
   end
 
+<<<<<<< HEAD
   def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["hal", "siren", "jsonapi"] do
     skills
     |> index(pagination)
@@ -26,6 +29,9 @@ defmodule Web.SkillView do
   end
 
   def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["jsonapi"] do
+=======
+  def render("index." <> extension, %{skills: skills, pagination: pagination}) when Representer.known_extension?(extension) do
+>>>>>>> representers
     skills
     |> index(pagination)
     |> Representer.transform(extension)
@@ -68,14 +74,16 @@ defmodule Web.SkillView do
     }
   end
 
-  def render("show." <> extension, %{skill: skill}) when extension in ["hal", "siren", "jsonapi"] do
+  def render("show." <> extension, %{skill: skill}) when Representer.known_extension?(extension) do
     skill
     |> show()
     |> Representer.transform(extension)
   end
 
-  defp show(skill) do
+  def show(skill) do
     %Representer.Item{
+      href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id),
+      rel: "https://exventure.org/rels/skill",
       item: Map.delete(render("show.json", %{skill: skill}), :links),
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id)}

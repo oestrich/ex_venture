@@ -54,8 +54,9 @@ defmodule Web.PageView do
     }
   end
 
-  def render("index." <> extension, _) when extension in ["hal", "siren"] do
+  def render("index." <> extension, _) when extension in ["collection", "hal", "siren"] do
     Representer.transform(%Representer.Collection{
+      href: RouteHelpers.public_page_url(Endpoint, :index),
       name: "root",
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_page_url(Endpoint, :index)},

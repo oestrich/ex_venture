@@ -1,6 +1,8 @@
 defmodule Web.RaceView do
   use Web, :view
 
+  require Representer
+
   alias Data.Stats
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
@@ -21,7 +23,7 @@ defmodule Web.RaceView do
     }
   end
 
-  def render("index." <> extension, %{races: races}) when extension in ["hal", "siren", "jsonapi"] do
+  def render("index." <> extension, %{races: races}) when Representer.known_extension?(extension) do
     races
     |> index()
     |> Representer.transform(extension)
@@ -59,31 +61,34 @@ defmodule Web.RaceView do
     }
   end
 
-  def render("show." <> extension, %{race: race}) when extension in ["hal", "siren"] do
+  def render("show." <> extension, %{race: race}) when Representer.known_extension?(extension) do
     race
     |> show(true)
+    |> add_up_link()
     |> Representer.transform(extension)
   end
 
-  defp show(race) do
-    show(race, false)
-  end
-
-  defp show(race, extended \\ true) do
+  defp show(race, extended \\ false) do
     %Representer.Item{
+      href: RouteHelpers.public_race_url(Endpoint, :show, race.id),
+      rel: "https://exventure.org/rels/race",
       item: Map.delete(render("show.json", %{race: race, extended: extended}), :links),
       links: [
-        %Representer.Link{rel: "curies", href: "https://exventure.org/rels/{exventure}", title: "exventure", template: true},
         %Representer.Link{rel: "self", href: RouteHelpers.public_race_url(Endpoint, :show, race.id)},
-        %Representer.Link{rel: "up", href: RouteHelpers.public_race_url(Endpoint, :index)},
       ],
     }
+  end
+
+  defp add_up_link(item) do
+    link = %Representer.Link{rel: "up", href: RouteHelpers.public_race_url(Endpoint, :index)}
+    %{item | links: [link | item.links]}
   end
 
   defp index(races) do
     races = Enum.map(races, &show/1)
 
     %Representer.Collection{
+      href: RouteHelpers.public_race_url(Endpoint, :index),
       name: "races",
       items: races,
       links: [
