@@ -21,7 +21,7 @@ defmodule Web.RaceView do
     }
   end
 
-  def render("index." <> extension, %{races: races}) when extension in ["hal", "siren"] do
+  def render("index." <> extension, %{races: races}) when extension in ["hal", "siren", "jsonapi"] do
     races
     |> index()
     |> Representer.transform(extension)

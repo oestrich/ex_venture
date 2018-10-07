@@ -19,7 +19,13 @@ defmodule Web.SkillView do
     }
   end
 
-  def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["hal", "siren"] do
+  def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["hal", "siren", "jsonapi"] do
+    skills
+    |> index(pagination)
+    |> Representer.transform(extension)
+  end
+
+  def render("index." <> extension, %{skills: skills, pagination: pagination}) when extension in ["jsonapi"] do
     skills
     |> index(pagination)
     |> Representer.transform(extension)
@@ -62,7 +68,7 @@ defmodule Web.SkillView do
     }
   end
 
-  def render("show." <> extension, %{skill: skill}) when extension in ["hal", "siren"] do
+  def render("show." <> extension, %{skill: skill}) when extension in ["hal", "siren", "jsonapi"] do
     skill
     |> show()
     |> Representer.transform(extension)

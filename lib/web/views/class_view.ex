@@ -15,7 +15,7 @@ defmodule Web.ClassView do
     }
   end
 
-  def render("index." <> extension, %{classes: classes}) when extension in ["hal", "siren"] do
+  def render("index." <> extension, %{classes: classes}) when extension in ["hal", "siren", "jsonapi"] do
     classes
     |> index()
     |> Representer.transform(extension)

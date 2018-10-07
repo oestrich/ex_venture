@@ -100,6 +100,8 @@ defmodule Representer do
 
       "siren" ->
         Representer.Siren.transform(struct)
+      "jsonapi" ->
+        Representer.JsonApi.transform(struct)
     end
   end
 
@@ -173,6 +175,88 @@ defmodule Representer do
 
           existing_links ->
             Map.put(links, link.rel, [json | List.wrap(existing_links)])
+        end
+      end)
+    end
+  end
+
+  defmodule JsonApi do
+    @moduledoc """
+    The Json-Api JSON hypermedia format
+
+    http://jsonapi.org/format/
+
+    online json-api validator
+    https://jsonapi-validator.herokuapp.com/
+    """
+
+    @behaviour Representer.Adapter
+
+    @impl true
+    def transform(collection = %Representer.Collection{}) do
+      %{}
+      |> maybe_put("data", render_collection(collection))
+      |> maybe_put("jsonapi", Map.new([{"version", "1.0"}]))
+      |> maybe_put("links", render_links(collection))
+    end
+
+    def transform(item = %Representer.Item{}, name) do
+      item_attributes = Map.delete(item.item, :key) |> Map.new()
+      item = update_map_with_id_field(item)
+
+      item.item
+      |> maybe_put("type", name)
+      |> maybe_put("attributes", item_attributes)
+    end
+
+    defp update_map_with_id_field(item = %Representer.Item{}) do
+     key_value = Map.get(item, :item) |> Map.get(:key)
+
+      new_item_map =
+        Map.new()
+        |> Map.put(:id, key_value)
+        |> Map.delete(:key)
+
+      Map.put(item, :item, new_item_map)
+    end
+
+    defp render_collection(collection) do
+      case collection.items do
+        nil ->
+          nil
+
+        [] ->
+          nil
+
+        items ->
+          Enum.map(items, fn item -> transform(item, collection.name)end)
+      end
+    end
+
+    defp render_links(collection) do
+      collection.links
+      |> get_self_links
+      |> Representer.Pagination.maybe_paginate(collection.pagination)
+      |> transform_links()
+    end
+
+    defp get_self_links(links) do
+      Enum.filter(links, fn(event) ->
+        Map.get(event, :rel)  == "self"
+      end)
+    end
+
+    defp maybe_put(map, _key, nil), do: map
+
+    defp maybe_put(map, key, value) do
+      Map.put(map, key, value)
+    end
+
+    defp transform_links(links) do
+      Enum.reduce(links, %{}, fn link, links ->
+        case Map.get(links, link.rel) do
+          nil ->
+            Map.put(links, link.rel, link.href)
         end
       end)
     end

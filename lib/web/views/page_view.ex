@@ -24,7 +24,7 @@ defmodule Web.PageView do
     }
   end
 
-  def render("who." <> extension, %{players: players}) when extension in ["hal", "siren"] do
+  def render("who." <> extension, %{players: players}) when extension in ["hal", "siren", "jsonapi"] do
     players
     |> index()
     |> Representer.transform(extension)
