@@ -296,14 +296,14 @@ defmodule Representer do
 
     def transform(item = %Representer.Item{}, name) do
       item_attributes = Map.delete(item.item, :key) |> Map.new()
-      item = update_map_with_id_field(item)
+      item = replace_key_with_id(item)
 
       item.item
       |> maybe_put("type", name)
       |> maybe_put("attributes", item_attributes)
     end
 
-    defp update_map_with_id_field(item = %Representer.Item{}) do
+    defp replace_key_with_id(item = %Representer.Item{}) do
      key_value = Map.get(item, :item) |> Map.get(:key)
 
       new_item_map =
