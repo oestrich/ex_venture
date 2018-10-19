@@ -9,7 +9,7 @@
   </author>
   <%= Enum.map(@announcements, fn announcement -> %>
     <entry>
-      <title><%= announcement.title %></title>
+      <title><%= announcement.title |> html_escape() |> elem(1) %></title>
       <link href="<%= public_announcement_url(@conn, :show, announcement.uuid) %>" />
       <id><%= public_announcement_url(@conn, :show, announcement.uuid) %></id>
       <updated><%= announcement.published_at |> Timex.format!("{ISO:Extended}") %></updated>
