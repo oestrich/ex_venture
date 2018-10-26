@@ -109,4 +109,7 @@ defmodule Game.Gossip do
         :ok
     end
   end
+
+  @impl true
+  def games_status(_game), do: :ok
 end
