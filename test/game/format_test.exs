@@ -67,75 +67,6 @@ defmodule Game.FormatTest do
     end
   end
 
-  describe "room formatting" do
-    setup do
-      room = %{
-        id: 1,
-        name: "Hallway",
-        zone: %{name: "Cave"},
-        description: "A hallway",
-        currency: 100,
-        players: [%{name: "Player"}],
-        npcs: [%{name: "Bandit", extra: %{status_line: "[name] is here."}}],
-        exits: [%{direction: "north"}, %{direction: "east"}],
-        shops: [%{name: "Hole in the Wall"}],
-        features: [%{key: "log", short_description: "A log"}],
-      }
-
-      items = [%{name: "Sword"}]
-
-      %{room: room, items: items, map: "[ ]"}
-    end
-
-    test "includes the room name", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/Hallway/, Format.room(room, items, map))
-    end
-
-    test "includes the room description", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/A hallway/, Format.room(room, items, map))
-    end
-
-    test "includes the mini map", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/[ ]/, Format.room(room, items, map))
-    end
-
-    test "includes the room exits", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/north/, Format.room(room, items, map))
-      assert Regex.match?(~r/east/, Format.room(room, items, map))
-    end
-
-    test "includes currency", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/100 gold/, Format.room(room, items, map))
-    end
-
-    test "includes the room items", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/Sword/, Format.room(room, items, map))
-    end
-
-    test "includes the players", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/Player/, Format.room(room, items, map))
-    end
-
-    test "includes the npcs", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/Bandit/, Format.room(room, items, map))
-    end
-
-    test "includes the shops", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/Hole in the Wall/, Format.room(room, items, map))
-    end
-
-    test "includes features", %{room: room, items: items, map: map} do
-      assert Regex.match?(~r/log/, Format.room(room, items, map))
-    end
-
-    test "includes features if added to the description", %{room: room, items: items, map: map} do
-      room = Map.put(room, :description, "[log]")
-
-      refute Regex.match?(~r/\[log\]/, Format.room(room, items, map))
-      assert Regex.match?(~r/log/, Format.room(room, items, map))
-    end
-  end
-
   describe "info formatting" do
     setup do
       stats = %{
@@ -250,55 +181,6 @@ defmodule Game.FormatTest do
 
     test "-1 quantity is unlimited", %{shop: shop, items: items} do
       assert Regex.match?(~r/unlimited/, Format.list_shop(shop, items))
-    end
-  end
-
-  describe "quest details" do
-    setup do
-      guard = %{name: "Guard"}
-      goblin = %{name: "Goblin"}
-      potion = %{id: 5, name: "Potion"}
-
-      step1 = %{id: 1, type: "npc/kill", count: 3, npc: goblin}
-      step2 = %{id: 2, type: "item/collect", count: 4, item: potion, item_id: potion.id}
-      step3 = %{id: 2, type: "item/have", count: 5, item: potion, item_id: potion.id}
-
-      quest = %{
-        id: 1,
-        name: "Into the Dungeon",
-        description: "Dungeon delving",
-        giver: guard,
-        quest_steps: [step1, step2, step3],
-      }
-
-      progress = %{status: "active", progress: %{step1.id => 2}, quest: quest}
-      save = %{items: [%{id: potion.id}, %{id: potion.id}], wearing: %{}, wielding: %{}}
-
-      %{quest: quest, progress: progress, save: save}
-    end
-
-    test "includes quest name", %{progress: progress, save: save} do
-      assert Regex.match?(~r/Into the Dungeon/, Format.quest_detail(progress, save))
-    end
-
-    test "includes quest description", %{progress: progress, save: save} do
-      assert Regex.match?(~r/Dungeon delving/, Format.quest_detail(progress, save))
-    end
-
-    test "includes quest status", %{progress: progress, save: save} do
-      assert Regex.match?(~r/active/, Format.quest_detail(progress, save))
-    end
-
-    test "includes item collect step", %{progress: progress, save: save} do
-      assert Regex.match?(~r(Collect {item}Potion{/item} - 2/4), Format.quest_detail(progress, save))
-    end
-
-    test "includes item have step", %{progress: progress, save: save} do
-      assert Regex.match?(~r(Have {item}Potion{/item} - 2/5), Format.quest_detail(progress, save))
-    end
-
-    test "includes npc step", %{progress: progress, save: save} do
-      assert Regex.match?(~r(Kill {npc}Goblin{/npc} - 2/3), Format.quest_detail(progress, save))
     end
   end
 

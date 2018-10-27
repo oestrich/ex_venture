@@ -9,6 +9,7 @@ defmodule Game.Command.Shops do
 
   alias Game.Environment
   alias Game.Environment.State.Overworld
+  alias Game.Format.Rooms, as: FormatRooms
   alias Game.Items
   alias Game.Utility
 
@@ -130,7 +131,7 @@ defmodule Game.Command.Shops do
             socket |> @socket.echo(gettext("There are no shops here."))
 
           false ->
-            socket |> @socket.echo(Format.shops(room, label: false))
+            socket |> @socket.echo(FormatRooms.shops(room, label: false))
         end
 
       :overworld ->

@@ -6,6 +6,7 @@ defmodule Web.Admin.RoomView do
   alias Data.Room
   alias Game.Features
   alias Game.Format
+  alias Game.Format.Rooms, as: FormatRooms
   alias Game.Items
   alias Web.Color
   alias Web.Help
@@ -104,7 +105,7 @@ defmodule Web.Admin.RoomView do
     room = Map.put(room, :features, features)
 
     room
-    |> Format.room_description()
+    |> FormatRooms.room_description()
     |> Format.wrap()
     |> Color.format()
     |> raw()

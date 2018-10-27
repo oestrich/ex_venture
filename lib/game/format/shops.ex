@@ -1,4 +1,4 @@
-defmodule Game.Format.Shop do
+defmodule Game.Format.Shops do
   @moduledoc """
   Formatting for a shop
   """
@@ -8,6 +8,9 @@ defmodule Game.Format.Shop do
   alias Game.Format
   alias Game.Format.Table
 
+  @doc """
+  Display the wares available for a shop
+  """
   def list(shop, items)
 
   def list(shop, items) do

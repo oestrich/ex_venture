@@ -246,7 +246,7 @@ defmodule Game.Session.Character do
 
   def notify(state, {"quest/new", quest}) do
     state.socket
-    |> @socket.echo("You received a new quest, #{Format.quest_name(quest)} (#{quest.id}).")
+    |> @socket.echo("You received a new quest, #{Format.Quests.quest_name(quest)} (#{quest.id}).")
 
     Hint.gate(state, "quests.new", id: quest.id)
 

@@ -1,7 +1,7 @@
 defmodule Web.Admin.FeatureView do
   use Web, :view
 
-  alias Game.Format
+  alias Game.Format.Rooms, as: FormatRooms
   alias Web.Admin.SharedView
   alias Web.Color
 
