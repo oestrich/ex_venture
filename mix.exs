@@ -62,7 +62,7 @@ defmodule ExVenture.Mixfile do
       {:eqrcode, "~> 0.1.5"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:gettext, "~> 0.16.0"},
-      {:gossip, git: "https://github.com/oestrich/gossip-elixir.git"},
+      {:gossip, "~> 1.0"},
       {:libcluster, "~> 3.0", only: [:dev, :prod]},
       {:logger_file_backend, "~> 0.0.10"},
       {:logster, "~> 0.4"},
