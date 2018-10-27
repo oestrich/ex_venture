@@ -53,13 +53,9 @@ defmodule Game.Session.Login do
 
     PlayerInstrumenter.login(player)
 
-    character = Character.from_user(player)
-
     state =
       state
-      |> Map.put(:user, player)
-      |> Map.put(:character, character)
-      |> Map.put(:save, player.save)
+      |> setup_state_after_login(player)
       |> Map.put(:state, "after_sign_in")
 
     socket |> @socket.set_user_id(player.id)
@@ -67,7 +63,7 @@ defmodule Game.Session.Login do
     state |> GMCP.config_actions()
 
     message = """
-    Welcome, #{character.name}!
+    Welcome, #{state.character.name}!
 
     #{MOTD.random_asim()}
     """
@@ -214,11 +210,7 @@ defmodule Game.Session.Login do
   defp _recover_session(player, state) do
     Session.Registry.register(player)
 
-    state =
-      state
-      |> Map.put(:user, player)
-      |> Map.put(:save, player.save)
-
+    state = setup_state_after_login(state, player)
     state = after_sign_in(state, self())
 
     state.socket |> @socket.echo(dgettext("login", "Session recovering..."))
@@ -226,6 +218,15 @@ defmodule Game.Session.Login do
     state |> Regen.maybe_trigger_regen()
 
     state
+  end
+
+  defp setup_state_after_login(state, player) do
+    character = Character.from_user(player)
+
+    state
+    |> Map.put(:user, player)
+    |> Map.put(:character, character)
+    |> Map.put(:save, player.save)
   end
 
   defp check_already_signed_in(player) do
