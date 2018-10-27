@@ -9,12 +9,20 @@ defmodule Game.Format.Rooms do
   alias Data.Room
   alias Game.Door
   alias Game.Format
+  alias Game.Format.NPCs, as: FormatNPCs
 
   @doc """
   Display a room's name
   """
   def room_name(room) do
     "{room}#{room.name}{/room}"
+  end
+
+  @doc """
+  Display a zone's name
+  """
+  def zone_name(zone) do
+    "{zone}#{zone.name}{/zone}"
   end
 
   @doc """
@@ -182,7 +190,7 @@ defmodule Game.Format.Rooms do
   @spec npcs(Room.t()) :: String.t()
   def npcs(%{npcs: npcs}) do
     npcs
-    |> Enum.map(&Format.npc_status/1)
+    |> Enum.map(&FormatNPCs.npc_status/1)
     |> Enum.join("\n")
   end
 

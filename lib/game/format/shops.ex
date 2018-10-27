@@ -9,6 +9,16 @@ defmodule Game.Format.Shops do
   alias Game.Format.Table
 
   @doc """
+  Format a shop name, magenta
+
+     iex> Shops.shop_name(%{name: "Shop"})
+     "{shop}Shop{/shop}"
+  """
+  def shop_name(shop) do
+    "{shop}#{shop.name}{/shop}"
+  end
+
+  @doc """
   Display the wares available for a shop
   """
   def list(shop, items)

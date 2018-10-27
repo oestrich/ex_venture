@@ -7,6 +7,7 @@ defmodule Game.Command.Listen do
 
   alias Data.Exit
   alias Game.Environment.State.Overworld
+  alias Game.Format.Listen, as: FormatListen
   alias Game.Room.Helpers, as: RoomHelpers
 
   commands(["listen"], parse: false)
@@ -70,7 +71,7 @@ defmodule Game.Command.Listen do
 
     case room_has_noises?(room) do
       true ->
-        state.socket |> @socket.echo(Format.listen_room(room))
+        state.socket |> @socket.echo(FormatListen.to_room(room))
 
       false ->
         state.socket |> @socket.echo(gettext("Nothing can be heard."))
@@ -82,7 +83,7 @@ defmodule Game.Command.Listen do
 
     with {:ok, room} <- room |> RoomHelpers.get_exit(direction),
          true <- room_has_noises?(room) do
-      state.socket |> @socket.echo(Format.listen_room(room))
+      state.socket |> @socket.echo(FormatListen.to_room(room))
     else
       {:error, :not_found} ->
         state.socket |> @socket.echo(gettext("There is no exit that direction to listen to."))

@@ -8,6 +8,7 @@ defmodule Game.Session.Character do
   alias Game.Character
   alias Game.Experience
   alias Game.Format
+  alias Game.Format.Effects, as: FormatEffects
   alias Game.Hint
   alias Game.Items
   alias Game.Player
@@ -48,7 +49,7 @@ defmodule Game.Session.Character do
         state
 
       false ->
-        message = Enum.join(Format.effects(effects, target), "\n")
+        message = Enum.join(FormatEffects.effects(effects, target), "\n")
         state.socket |> @socket.echo(message)
         state |> Session.Process.prompt()
         state

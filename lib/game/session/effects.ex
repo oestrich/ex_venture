@@ -11,7 +11,7 @@ defmodule Game.Session.Effects do
 
   alias Game.Character
   alias Game.Effect
-  alias Game.Format
+  alias Game.Format.Effects, as: FormatEffects
   alias Game.Player
   alias Game.Session.Process
 
@@ -87,7 +87,7 @@ defmodule Game.Session.Effects do
         :ok
 
       false ->
-        description = [description | Format.effects(effects, {:player, player})]
+        description = [description | FormatEffects.effects(effects, {:player, player})]
         echo(self(), description |> Enum.join("\n"))
     end
   end
@@ -117,7 +117,7 @@ defmodule Game.Session.Effects do
 
     effects_message =
       effects
-      |> Format.effects({:player, state.user})
+      |> FormatEffects.effects({:player, state.user})
       |> Enum.join("\n")
 
     state.socket |> @socket.echo(effects_message)

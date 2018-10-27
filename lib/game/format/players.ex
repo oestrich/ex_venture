@@ -5,7 +5,9 @@ defmodule Game.Format.Players do
 
   import Game.Format.Context
 
+  alias Data.Save
   alias Data.User
+  alias Game.Color
   alias Game.Format
   alias Game.Format.Table
 
@@ -134,5 +136,32 @@ defmodule Game.Format.Players do
     seconds = seconds |> rem(60) |> to_string |> String.pad_leading(2, "0")
 
     "#{hours}h #{minutes}m #{seconds}s"
+  end
+
+  @doc """
+  Format the player's config
+  """
+  @spec config(Save.t()) :: String.t()
+  def config(save) do
+    rows =
+      save.config
+      |> Enum.map(fn {key, value} ->
+        [to_string(key), value]
+      end)
+
+    rows = [["Name", "Value"] | rows]
+
+    max_size =
+      rows
+      |> Enum.map(fn row ->
+        row
+        |> Enum.at(1)
+        |> to_string()
+        |> Color.strip_color()
+        |> String.length()
+      end)
+      |> Enum.max()
+
+    Table.format("Config", rows, [20, max_size])
   end
 end

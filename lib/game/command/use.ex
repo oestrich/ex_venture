@@ -7,6 +7,7 @@ defmodule Game.Command.Use do
 
   alias Game.Character
   alias Game.Effect
+  alias Game.Format.Effects, as: FormatEffects
   alias Game.Format.Items, as: FormatItems
   alias Game.Item
   alias Game.Items
@@ -111,7 +112,7 @@ defmodule Game.Command.Use do
 
     description = FormatItems.user_item(item, target: {:player, state.character}, user: {:player, state.character})
 
-    effects_message = Enum.join([description | Format.effects(effects, {:player, state.character})], "\n")
+    effects_message = Enum.join([description | FormatEffects.effects(effects, {:player, state.character})], "\n")
     socket |> @socket.echo(effects_message)
 
     spend_item(state, instance)

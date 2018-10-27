@@ -7,7 +7,7 @@ defmodule Game.Command.Mail do
   use Game.Command.Editor
 
   alias Game.Account
-  alias Game.Format
+  alias Game.Format.Mail, as: FormatMail
   alias Game.Hint
   alias Game.Mail
 
@@ -78,7 +78,7 @@ defmodule Game.Command.Mail do
         socket |> @socket.echo(gettext("You have no unread mail."))
 
       mail ->
-        {:paginate, Format.list_mail(mail), state}
+        {:paginate, FormatMail.list_mail(mail), state}
     end
   end
 
@@ -89,7 +89,7 @@ defmodule Game.Command.Mail do
 
       mail ->
         Mail.mark_read!(mail)
-        {:paginate, Format.display_mail(mail), state}
+        {:paginate, FormatMail.display_mail(mail), state}
     end
   end
 

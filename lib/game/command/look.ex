@@ -12,6 +12,7 @@ defmodule Game.Command.Look do
   alias Game.Environment.State.Room
   alias Game.Format.Items, as: FormatItems
   alias Game.Format.Players, as: FormatPlayers
+  alias Game.Format.NPCs, as: FormatNPCs
   alias Game.Format.Rooms, as: FormatRooms
   alias Game.Hint
   alias Game.Item
@@ -207,7 +208,7 @@ defmodule Game.Command.Look do
         room
 
       npc ->
-        socket |> @socket.echo(Format.npc_full(npc))
+        socket |> @socket.echo(FormatNPCs.npc_full(npc))
     end
   end
 
