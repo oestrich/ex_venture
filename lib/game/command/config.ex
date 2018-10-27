@@ -6,7 +6,7 @@ defmodule Game.Command.Config do
   use Game.Command
 
   alias Data.Save.Config, as: PlayerConfig
-  alias Game.Format
+  alias Game.Format.Players, as: FormatPlayers
   alias Game.Player
   alias Game.Session.GMCP
 
@@ -90,7 +90,7 @@ defmodule Game.Command.Config do
   def run(command, state)
 
   def run({:list}, state = %{save: save}) do
-    {:paginate, Format.config(save), state}
+    {:paginate, FormatPlayers.config(save), state}
   end
 
   def run({:on, config_name}, state) do

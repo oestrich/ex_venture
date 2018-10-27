@@ -7,6 +7,7 @@ defmodule Game.Command.Quest do
   use Game.Currency
   use Game.NPC
 
+  alias Game.Format.Quests, as: FormatQuests
   alias Game.Player
   alias Game.Quest
   alias Game.Session.Character
@@ -103,7 +104,7 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo(gettext("You have no active quests."))
 
       quests ->
-        socket |> @socket.echo(Format.quest_progress(quests))
+        socket |> @socket.echo(FormatQuests.quest_progress(quests))
     end
 
     :ok
@@ -115,7 +116,7 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo(gettext("You do not have have a tracked quest."))
 
       progress ->
-        socket |> @socket.echo(Format.quest_detail(progress, save))
+        socket |> @socket.echo(FormatQuests.quest_detail(progress, save))
     end
 
     :ok
@@ -124,7 +125,7 @@ defmodule Game.Command.Quest do
   def run({:show, quest_id}, %{socket: socket, user: user, save: save}) do
     case Quest.progress_for(user, quest_id) do
       {:ok, progress} ->
-        socket |> @socket.echo(Format.quest_detail(progress, save))
+        socket |> @socket.echo(FormatQuests.quest_detail(progress, save))
 
       {:error, :not_found} ->
         socket |> @socket.echo(gettext("You have not started this quest."))
@@ -169,7 +170,7 @@ defmodule Game.Command.Quest do
         socket |> @socket.echo(gettext("You have not started this quest to start tracking it."))
 
       {:ok, progress} ->
-        message = gettext("You are tracking %{name}.", name: Format.quest_name(progress.quest))
+        message = gettext("You are tracking %{name}.", name: FormatQuests.quest_name(progress.quest))
         socket |> @socket.echo(message)
     end
   end

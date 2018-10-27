@@ -10,6 +10,7 @@ defmodule Game.Command.Skills do
   alias Game.Command.Target
   alias Game.Effect
   alias Game.Experience
+  alias Game.Format.Skills, as: FormatSkills
   alias Game.Hint
   alias Game.Item
   alias Game.Session.GMCP
@@ -161,7 +162,7 @@ defmodule Game.Command.Skills do
       |> Enum.filter(&(&1.is_enabled))
       |> Enum.sort_by(& &1.level)
 
-    socket |> @socket.echo(Format.skills(skills))
+    socket |> @socket.echo(FormatSkills.skills(skills))
   end
 
   def run({:all}, %{socket: socket, save: save}) do
@@ -170,7 +171,7 @@ defmodule Game.Command.Skills do
       |> Skills.skills()
       |> Enum.sort_by(& &1.level)
 
-    socket |> @socket.echo(Format.skills(skills))
+    socket |> @socket.echo(FormatSkills.skills(skills))
   end
 
   def run({%{command: command}, command}, %{socket: socket, target: target})
@@ -179,12 +180,12 @@ defmodule Game.Command.Skills do
   end
 
   def run({skill, :level_too_low}, state) do
-    message = gettext("You are too low of a level to use %{skill}.", skill: Format.skill_name(skill))
+    message = gettext("You are too low of a level to use %{skill}.", skill: FormatSkills.skill_name(skill))
     state.socket |> @socket.echo(message)
   end
 
   def run({skill, :not_known}, state) do
-    message = gettext("You do not know %{skill}.", skill: Format.skill_name(skill))
+    message = gettext("You do not know %{skill}.", skill: FormatSkills.skill_name(skill))
     state.socket |> @socket.echo(message)
   end
 
@@ -209,7 +210,7 @@ defmodule Game.Command.Skills do
         state.socket |> @socket.echo(gettext("You are not high enough level to use this skill."))
 
       {:error, :skill_not_ready, remaining_seconds} ->
-        message = gettext("%{skill} is not ready yet.", skill: Format.skill_name(skill))
+        message = gettext("%{skill} is not ready yet.", skill: FormatSkills.skill_name(skill))
         state.socket |> @socket.echo(message)
         Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
         :ok
@@ -277,10 +278,10 @@ defmodule Game.Command.Skills do
           target,
           effects,
           {:player, state.character},
-          Format.skill_usee(skill, user: {:player, state.character}, target: target)
+          FormatSkills.skill_usee(skill, user: {:player, state.character}, target: target)
         )
 
-        socket |> @socket.echo(Format.skill_user(skill, {:player, state.character}, target))
+        socket |> @socket.echo(FormatSkills.skill_user(skill, {:player, state.character}, target))
         state |> GMCP.skill_state(skill, active: false)
 
         state =

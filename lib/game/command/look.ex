@@ -10,6 +10,10 @@ defmodule Game.Command.Look do
   alias Game.Environment
   alias Game.Environment.State.Overworld
   alias Game.Environment.State.Room
+  alias Game.Format.Items, as: FormatItems
+  alias Game.Format.Players, as: FormatPlayers
+  alias Game.Format.NPCs, as: FormatNPCs
+  alias Game.Format.Rooms, as: FormatRooms
   alias Game.Hint
   alias Game.Item
   alias Game.Items
@@ -97,7 +101,7 @@ defmodule Game.Command.Look do
          {:ok, room} <- @environment.look(save.room_id),
          %{finish_id: room_id} <- Exit.exit_to(room, direction),
          {:ok, room} <- @environment.look(room_id) do
-      state.socket |> @socket.echo(Format.peak_room(room, direction))
+      state.socket |> @socket.echo(FormatRooms.peak_room(room, direction))
     else
       :overworld ->
         :ok
@@ -137,7 +141,7 @@ defmodule Game.Command.Look do
     state |> GMCP.room(room, items)
     state |> GMCP.map(mini_map)
 
-    state.socket |> @socket.echo(Format.room(room, items, room_map))
+    state.socket |> @socket.echo(FormatRooms.room(room, items, room_map))
 
     maybe_hint_quest(state, room)
   end
@@ -148,7 +152,7 @@ defmodule Game.Command.Look do
     state |> GMCP.map(mini_map)
 
     room = remove_yourself(room, state)
-    state.socket |> @socket.echo(Format.overworld_room(room, mini_map))
+    state.socket |> @socket.echo(FormatRooms.overworld_room(room, mini_map))
   end
 
   defp maybe_hint_quest(state, room) do
@@ -190,7 +194,7 @@ defmodule Game.Command.Look do
         room
 
       {:ok, {_instance, item}} ->
-        socket |> @socket.echo(Format.item(item))
+        socket |> @socket.echo(FormatItems.item(item))
     end
   end
 
@@ -204,7 +208,7 @@ defmodule Game.Command.Look do
         room
 
       npc ->
-        socket |> @socket.echo(Format.npc_full(npc))
+        socket |> @socket.echo(FormatNPCs.npc_full(npc))
     end
   end
 
@@ -218,7 +222,7 @@ defmodule Game.Command.Look do
         room
 
       player ->
-        socket |> @socket.echo(Format.player_full(player))
+        socket |> @socket.echo(FormatPlayers.player_full(player))
     end
   end
 

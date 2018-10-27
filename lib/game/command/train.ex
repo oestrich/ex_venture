@@ -6,6 +6,7 @@ defmodule Game.Command.Train do
   use Game.Command
 
   alias Data.ActionBar
+  alias Game.Format.Skills, as: FormatSkills
   alias Game.Player
   alias Game.Session.GMCP
   alias Game.Skill
@@ -98,7 +99,7 @@ defmodule Game.Command.Train do
           |> filter_skills_by_level(save)
           |> add_skill_cost(save)
 
-        skill_table = Format.trainable_skills(trainer, skills)
+        skill_table = FormatSkills.trainable_skills(trainer, skills)
         spent_experience_points = save.experience_points - save.spent_experience_points
 
         message = gettext("You have %{xp} XP to spend.", xp: spent_experience_points)
@@ -121,7 +122,7 @@ defmodule Game.Command.Train do
     case find_trainer(room.npcs, name) do
       {:ok, trainer} ->
         skills = Skills.skills(trainer.extra.trainable_skills)
-        state.socket |> @socket.echo(Format.trainable_skills(trainer, skills))
+        state.socket |> @socket.echo(FormatSkills.trainable_skills(trainer, skills))
 
       {:error, :not_found} ->
         message = gettext("There are no trainers by that name in this room. Go find them!")

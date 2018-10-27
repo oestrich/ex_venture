@@ -3,7 +3,7 @@ defmodule Web.Admin.UserView do
 
   import Web.TimeView
 
-  alias Game.Format
+  alias Game.Format.Players, as: FormatPlayers
   alias Game.Items
   alias Web.Admin.SharedView
   alias Web.Class

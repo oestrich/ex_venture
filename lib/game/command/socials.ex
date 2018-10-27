@@ -8,6 +8,7 @@ defmodule Game.Command.Socials do
   import Game.Room.Helpers, only: [find_character: 2]
 
   alias Game.Format
+  alias Game.Format.Socials, as: FormatSocials
   alias Game.Socials
 
   commands(["socials"], parse: false)
@@ -86,7 +87,7 @@ defmodule Game.Command.Socials do
 
   def run({:list}, state) do
     socials = Socials.all()
-    {:paginate, Format.socials(socials), state}
+    {:paginate, FormatSocials.socials(socials), state}
   end
 
   def run({:help, social}, state) do
@@ -95,7 +96,7 @@ defmodule Game.Command.Socials do
         state |> social_not_found(social)
 
       social ->
-        state.socket |> @socket.echo(Format.social(social))
+        state.socket |> @socket.echo(FormatSocials.social(social))
     end
 
     :ok
@@ -107,7 +108,7 @@ defmodule Game.Command.Socials do
         state |> social_not_found(social)
 
       social ->
-        state.socket |> @socket.echo(Format.social_without_target(social, state.character))
+        state.socket |> @socket.echo(FormatSocials.social_without_target(social, state.character))
     end
 
     :ok
@@ -127,7 +128,7 @@ defmodule Game.Command.Socials do
             state.socket |> @socket.echo(message)
 
           character ->
-            state.socket |> @socket.echo(Format.social_with_target(social, state.character, character))
+            state.socket |> @socket.echo(FormatSocials.social_with_target(social, state.character, character))
         end
     end
 

@@ -6,6 +6,7 @@ defmodule Game.Format.Resources do
   """
 
   alias Game.Format
+  alias Game.Format.Rooms
   alias Game.Items
   alias Game.NPC
   alias Game.Room
@@ -60,7 +61,7 @@ defmodule Game.Format.Resources do
 
     case Room.name(id) do
       {:ok, room} ->
-        Format.room_name(room)
+        Rooms.room_name(room)
 
       {:error, :unknown} ->
         "{error}unknown{/error}"

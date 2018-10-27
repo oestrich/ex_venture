@@ -38,7 +38,7 @@
               </tr>
               <tr>
                 <th>Short Description</th>
-                <td><pre class="console"><%= raw(Color.format(Format.feature(@feature))) %></pre></td>
+                <td><pre class="console"><%= raw(Color.format(FormatRooms.feature(@feature))) %></pre></td>
               </tr>
               <tr>
                 <th>Description</th>

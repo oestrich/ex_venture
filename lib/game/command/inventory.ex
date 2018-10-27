@@ -5,6 +5,7 @@ defmodule Game.Command.Inventory do
 
   use Game.Command
 
+  alias Game.Format.Items, as: FormatItems
   alias Game.Items
 
   commands([{"inventory", ["inv", "i"]}], parse: false)
@@ -79,6 +80,6 @@ defmodule Game.Command.Inventory do
       end)
       |> Map.values()
 
-    {:paginate, Format.inventory(currency, wearing, wielding, items), state}
+    {:paginate, FormatItems.inventory(currency, wearing, wielding, items), state}
   end
 end

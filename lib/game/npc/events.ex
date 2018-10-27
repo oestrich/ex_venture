@@ -13,6 +13,7 @@ defmodule Game.NPC.Events do
   alias Game.Character
   alias Game.Door
   alias Game.Format
+  alias Game.Format.Skills, as: FormatSkills
   alias Game.Effect
   alias Game.Message
   alias Game.NPC
@@ -239,12 +240,12 @@ defmodule Game.NPC.Events do
       target,
       effects,
       npc(state),
-      Format.skill_usee(action.text, user: npc(state), target: target)
+      FormatSkills.skill_usee(action.text, user: npc(state), target: target)
     )
 
     broadcast(npc, "combat/action", %{
       target: who(target),
-      text: Format.skill_usee(action.text, user: npc(state), target: target),
+      text: FormatSkills.skill_usee(action.text, user: npc(state), target: target),
       effects: effects
     })
 

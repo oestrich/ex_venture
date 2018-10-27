@@ -7,6 +7,8 @@ defmodule Game.Command.Use do
 
   alias Game.Character
   alias Game.Effect
+  alias Game.Format.Effects, as: FormatEffects
+  alias Game.Format.Items, as: FormatItems
   alias Game.Item
   alias Game.Items
   alias Game.Utility
@@ -92,7 +94,7 @@ defmodule Game.Command.Use do
   end
 
   defp use_item(%{socket: socket}, {_, item = %{is_usable: false}}) do
-    message = gettext("%{name} could not be used", name: Format.item_name(item))
+    message = gettext("%{name} could not be used", name: FormatItems.item_name(item))
     socket |> @socket.echo(message)
   end
 
@@ -105,12 +107,12 @@ defmodule Game.Command.Use do
 
     effects = save.stats |> Effect.calculate(effects)
 
-    usee_text = Format.usee_item(item, target: {:player, state.character}, user: {:player, state.character})
+    usee_text = FormatItems.usee_item(item, target: {:player, state.character}, user: {:player, state.character})
     Character.apply_effects({:player, state.character}, effects, {:player, state.character}, usee_text)
 
-    description = Format.user_item(item, target: {:player, state.character}, user: {:player, state.character})
+    description = FormatItems.user_item(item, target: {:player, state.character}, user: {:player, state.character})
 
-    effects_message = Enum.join([description | Format.effects(effects, {:player, state.character})], "\n")
+    effects_message = Enum.join([description | FormatEffects.effects(effects, {:player, state.character})], "\n")
     socket |> @socket.echo(effects_message)
 
     spend_item(state, instance)

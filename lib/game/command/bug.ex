@@ -9,6 +9,7 @@ defmodule Game.Command.Bug do
   alias Data.Bug
   alias Data.Repo
   alias Game.Bugs
+  alias Game.Format.Bugs, as: Format
 
   commands(["bugs", "bug"], parse: false)
 

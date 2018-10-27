@@ -51,7 +51,7 @@
               </tr>
               <tr>
                 <th>Play Time</th>
-                <td><%= @user.seconds_online |> Format.play_time() %></td>
+                <td><%= @user.seconds_online |> FormatPlayers.play_time() %></td>
               </tr>
             </tbody>
           </table>

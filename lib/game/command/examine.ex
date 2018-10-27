@@ -5,6 +5,7 @@ defmodule Game.Command.Examine do
 
   use Game.Command
 
+  alias Game.Format.Items, as: FormatItems
   alias Game.Item
   alias Game.Items
 
@@ -43,7 +44,7 @@ defmodule Game.Command.Examine do
         state.socket |> @socket.echo(message)
 
       {:ok, item} ->
-        state.socket |> @socket.echo(Format.item(item))
+        state.socket |> @socket.echo(FormatItems.item(item))
     end
   end
 

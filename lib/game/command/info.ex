@@ -7,6 +7,7 @@ defmodule Game.Command.Info do
 
   alias Game.Account
   alias Game.Effect
+  alias Game.Format.Players, as: FormatPlayers
   alias Game.Item
 
   commands([{"info", ["score"]}], parse: false)
@@ -58,13 +59,13 @@ defmodule Game.Command.Info do
 
   def run({}, state = %{socket: socket, user: user, save: save}) do
     user = %{user | save: cacluate_save(save), seconds_online: seconds_online(user, state)}
-    socket |> @socket.echo(Format.info(user))
+    socket |> @socket.echo(FormatPlayers.info(user))
   end
 
   def run({name}, %{socket: socket}) do
     case Account.get_player(name) do
       {:ok, player} ->
-        socket |> @socket.echo(Format.short_info(player))
+        socket |> @socket.echo(FormatPlayers.short_info(player))
 
       {:error, :not_found} ->
         message = gettext("Could not find a player with the name \"%{name}\".", name: name)

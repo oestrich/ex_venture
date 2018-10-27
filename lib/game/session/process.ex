@@ -16,6 +16,7 @@ defmodule Game.Session.Process do
   alias Game.Command.Move
   alias Game.Command.Pager
   alias Game.Format
+  alias Game.Format.Players, as: FormatPlayers
   alias Game.Hint
   alias Game.Player
   alias Game.Session
@@ -387,7 +388,7 @@ defmodule Game.Session.Process do
   """
   def prompt(state = %{socket: socket, user: user, save: save}) do
     state |> GMCP.vitals()
-    socket |> @socket.prompt(Format.prompt(user, save))
+    socket |> @socket.prompt(FormatPlayers.prompt(user, save))
     state
   end
 
