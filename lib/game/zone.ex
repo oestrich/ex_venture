@@ -213,7 +213,8 @@ defmodule Game.Zone do
   def handle_continue(:load_zone, state) do
     zone = ZoneRepo.get(state.zone_id)
 
-    WorldMaster.update_cache(@key, Map.take(zone, [:id, :name]))
+    # Keep this the full zone for sector access
+    WorldMaster.update_cache(@key, zone)
 
     {:noreply, %{state | zone: zone}}
   end

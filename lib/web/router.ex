@@ -9,7 +9,7 @@ defmodule Web.Router do
   end
 
   pipeline :accepts_browser do
-    plug(:accepts, ["html"])
+    plug(:accepts, ["html", "json"])
   end
 
   pipeline :accepts_api do
