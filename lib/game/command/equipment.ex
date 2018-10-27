@@ -5,6 +5,7 @@ defmodule Game.Command.Equipment do
 
   use Game.Command
 
+  alias Game.Format.Items, as: FormatItems
   alias Game.Items
 
   commands([{"equipment", ["eq"]}], parse: false)
@@ -64,7 +65,7 @@ defmodule Game.Command.Equipment do
         Map.put(wielding, hand, Items.item(instance))
       end)
 
-    socket |> @socket.echo(Format.equipment(wearing, wielding))
+    socket |> @socket.echo(FormatItems.equipment(wearing, wielding))
     :ok
   end
 end

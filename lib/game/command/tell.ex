@@ -6,6 +6,7 @@ defmodule Game.Command.Tell do
   use Game.Command
 
   alias Game.Channel
+  alias Game.Format.Channels, as: FormatChannels
   alias Game.Session
   alias Game.Utility
 
@@ -90,7 +91,7 @@ defmodule Game.Command.Tell do
 
       %{player: player} ->
         message = Message.format(message)
-        socket |> @socket.echo(Format.send_tell({:player, player}, message))
+        socket |> @socket.echo(FormatChannels.send_tell({:player, player}, message))
         Channel.tell({:player, player}, {:player, from}, Message.tell(from, message))
         {:update, %{state | reply_to: {:player, player}}}
     end
@@ -116,7 +117,7 @@ defmodule Game.Command.Tell do
       _ ->
         message = Utility.strip_name(npc, message)
         message = Message.format(message)
-        socket |> @socket.echo(Format.send_tell({:npc, npc}, message))
+        socket |> @socket.echo(FormatChannels.send_tell({:npc, npc}, message))
         Channel.tell({:npc, npc}, {:player, from}, Message.tell(from, message))
         {:update, %{state | reply_to: {:npc, npc}}}
     end
@@ -154,7 +155,7 @@ defmodule Game.Command.Tell do
 
     case Gossip.send_tell(state.user.name, game, name, message) do
       :ok ->
-        state.socket |> @socket.echo(Format.send_tell({:player, %{name: player_name}}, message))
+        state.socket |> @socket.echo(FormatChannels.send_tell({:player, %{name: player_name}}, message))
         {:update, %{state | reply_to: {:gossip, player_name}}}
 
       {:error, :offline} ->
@@ -183,7 +184,7 @@ defmodule Game.Command.Tell do
 
       _ ->
         message = Message.format(message)
-        socket |> @socket.echo(Format.send_tell({:player, reply_to}, message))
+        socket |> @socket.echo(FormatChannels.send_tell({:player, reply_to}, message))
         Channel.tell({:player, reply_to}, {:player, from}, Message.tell(from, message))
     end
   end
@@ -203,7 +204,7 @@ defmodule Game.Command.Tell do
 
       _ ->
         message = Message.format(message)
-        socket |> @socket.echo(Format.send_tell({:npc, reply_to}, message))
+        socket |> @socket.echo(FormatChannels.send_tell({:npc, reply_to}, message))
         Channel.tell({:npc, reply_to}, {:player, from}, Message.tell(from, message))
     end
   end

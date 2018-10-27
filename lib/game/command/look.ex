@@ -10,6 +10,8 @@ defmodule Game.Command.Look do
   alias Game.Environment
   alias Game.Environment.State.Overworld
   alias Game.Environment.State.Room
+  alias Game.Format.Items, as: FormatItems
+  alias Game.Format.Players, as: FormatPlayers
   alias Game.Format.Rooms, as: FormatRooms
   alias Game.Hint
   alias Game.Item
@@ -191,7 +193,7 @@ defmodule Game.Command.Look do
         room
 
       {:ok, {_instance, item}} ->
-        socket |> @socket.echo(Format.item(item))
+        socket |> @socket.echo(FormatItems.item(item))
     end
   end
 
@@ -219,7 +221,7 @@ defmodule Game.Command.Look do
         room
 
       player ->
-        socket |> @socket.echo(Format.player_full(player))
+        socket |> @socket.echo(FormatPlayers.player_full(player))
     end
   end
 

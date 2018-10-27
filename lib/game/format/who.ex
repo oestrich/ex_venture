@@ -3,7 +3,7 @@ defmodule Game.Format.Who do
   Format the who list
   """
 
-  alias Game.Format
+  alias Game.Format.Players, as: FormatPlayers
 
   @doc """
   Format the player line in the who list
@@ -11,8 +11,8 @@ defmodule Game.Format.Who do
   def player_line(player, metadata) do
     [
       player_stats(player),
-      Format.player_name(player),
-      Format.player_flags(player.extra, none: false),
+      FormatPlayers.player_name(player),
+      FormatPlayers.player_flags(player.extra, none: false),
       afk(metadata)
     ]
     |> Enum.join(" ")
@@ -24,7 +24,7 @@ defmodule Game.Format.Who do
   def remote_player_line(game_name, player_name) do
     player = %{name: "#{player_name}@#{game_name}"}
 
-    " - #{Format.player_name(player)}"
+    " - #{FormatPlayers.player_name(player)}"
   end
 
   defp player_stats(player) do

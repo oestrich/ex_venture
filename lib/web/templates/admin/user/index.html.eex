@@ -35,7 +35,7 @@
                     <td><%= user.save.level %></td>
                     <td><%= link(user.race.name, to: race_path(@conn, :show, user.race_id)) %></td>
                     <td><%= link(user.class.name, to: class_path(@conn, :show, user.class_id)) %></td>
-                    <td><%= user.seconds_online |> Format.play_time() %></td>
+                    <td><%= user.seconds_online |> FormatPlayers.play_time() %></td>
                     <td><%= user.flags |> Enum.join(", ") %></td>
                     <td>
                       <%= link("View", to: user_path(@conn, :show, user.id), class: "btn btn-default btn-xs") %>
