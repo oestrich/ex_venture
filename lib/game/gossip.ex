@@ -11,7 +11,10 @@ defmodule Game.Gossip do
   alias Game.Message
   alias Game.Session
 
-  @behaviour Gossip.Client
+  @behaviour Gossip.Client.Core
+  @behaviour Gossip.Client.Players
+  @behaviour Gossip.Client.Tells
+  @behaviour Gossip.Client.Games
 
   @impl true
   def user_agent() do
@@ -80,14 +83,14 @@ defmodule Game.Gossip do
   end
 
   @impl true
-  def players_status(game_name, player_names) do
+  def player_update(game_name, player_names) do
     Logger.debug(fn ->
       "Received update for game #{game_name} - #{inspect(player_names)}"
     end)
   end
 
   @impl true
-  def tell_received(from_game, from_player, to_player, message) do
+  def tell_receive(from_game, from_player, to_player, message) do
     Logger.info(fn ->
       "Received a new tell from #{from_player}@#{from_game} to #{to_player} - #{message}"
     end)
@@ -111,5 +114,11 @@ defmodule Game.Gossip do
   end
 
   @impl true
-  def games_status(_game), do: :ok
+  def game_update(_game), do: :ok
+
+  @impl true
+  def game_connect(_game), do: :ok
+
+  @impl true
+  def game_disconnect(_game), do: :ok
 end

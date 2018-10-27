@@ -52,7 +52,11 @@ config :prometheus, Metrics.PipelineInstrumenter,
   registry: :default,
   duration_unit: :microseconds
 
-config :gossip, :callback_module, Game.Gossip
+config :gossip, :callback_modules,
+  core: Game.Gossip,
+  players: Game.Gossip,
+  tells: Game.Gossip,
+  games: Game.Gossip
 
 config :ex_venture, Game.Gettext, default_locale: "en"
 
