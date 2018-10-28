@@ -424,12 +424,12 @@ defmodule Representer do
     def transform(collection = %Representer.Collection{}) do
       %{}
       |> maybe_put("data", render_collection(collection))
-      |> maybe_put("jsonapi", Map.new([{"version", "1.0"}]))
+      |> maybe_put("jsonapi", %{version: "1.0"})
       |> maybe_put("links", render_links(collection))
     end
 
     def transform(item = %Representer.Item{}, name) do
-      item_attributes = Map.delete(item.item, :key) |> Map.new()
+      item_attributes = Map.delete(item.item, :key)
       item = replace_key_with_id(item)
 
       item.item
@@ -438,7 +438,10 @@ defmodule Representer do
     end
 
     defp replace_key_with_id(item = %Representer.Item{}) do
-     key_value = Map.get(item, :item) |> Map.get(:key)
+      key_value =
+        item
+        |> Map.get(item, :item)
+        |> Map.get(:key)
 
       new_item_map =
         Map.new()
@@ -452,6 +455,7 @@ defmodule Representer do
       case collection.items do
         nil ->
           []
+
         items ->
           Enum.map(items, fn item -> transform(item, collection.name)end)
       end
