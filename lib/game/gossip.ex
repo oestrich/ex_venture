@@ -92,23 +92,17 @@ defmodule Game.Gossip do
   @impl true
   def tell_receive(from_game, from_player, to_player, message) do
     Logger.info(fn ->
-      "Received a new tell from #{from_player}@#{from_game} to #{to_player} - #{message}"
+      "Received a new tell from #{from_player}@#{from_game} to #{to_player}"
     end)
 
-    case Squabble.node_is_leader?() do
-      true ->
-        case Session.Registry.find_player(to_player) do
-          {:ok, player} ->
-            player_name = "#{from_player}@#{from_game}"
-            Channel.tell({:player, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
+    with true <- Squabble.node_is_leader?,
+         {:ok, player} <- Session.Registry.find_player(to_player) do
+      player_name = "#{from_player}@#{from_game}"
+      Channel.tell({:player, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
 
-            :ok
-
-          {:error, :not_found} ->
-            :ok
-        end
-
-      false ->
+      :ok
+    else
+      _ ->
         :ok
     end
   end
