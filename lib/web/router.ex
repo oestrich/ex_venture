@@ -13,7 +13,7 @@ defmodule Web.Router do
   end
 
   pipeline :accepts_api do
-    plug(:accepts, ["html", "json", "hal", "siren", "collection", "mason"])
+    plug(:accepts, ["html", "json", "hal", "siren", "collection", "mason", "jsonapi"])
   end
 
   pipeline :browser do
