@@ -5,6 +5,7 @@ defmodule Data.User do
 
   use Data.Schema
 
+  alias Data.Character
   alias Data.Class
   alias Data.QuestProgress
   alias Data.Race
@@ -32,6 +33,7 @@ defmodule Data.User do
     belongs_to(:class, Class)
     belongs_to(:race, Race)
 
+    has_many(:characters, Character)
     has_many(:sessions, Session)
     has_many(:quest_progress, QuestProgress)
 

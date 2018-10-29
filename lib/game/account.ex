@@ -4,6 +4,7 @@ defmodule Game.Account do
   """
 
   alias Data.ActionBar
+  alias Data.Character
   alias Data.ClassSkill
   alias Data.RaceSkill
   alias Data.Repo
@@ -36,22 +37,19 @@ defmodule Game.Account do
       |> Map.put(:class_id, class.id)
       |> Map.put(:save, save)
 
-    case create_account(attributes) do
-      {:ok, player} ->
-        player |> maybe_email_welcome()
+    with {:ok, user} <- create_account(attributes),
+         {:ok, character} <- create_character(user, attributes) do
+      user |> maybe_email_welcome()
 
-        Config.claim_character_name(player.name)
+      Config.claim_character_name(character.name)
 
-        player =
-          player
-          |> Repo.preload([:race])
-          |> Repo.preload(class: :skills)
-          |> migrate()
+      character =
+        character
+        |> Repo.preload([:race])
+        |> Repo.preload(class: :skills)
+        |> migrate()
 
-        {:ok, player}
-
-      anything ->
-        anything
+      {:ok, user, character}
     end
   end
 
@@ -71,6 +69,13 @@ defmodule Game.Account do
     |> Repo.insert()
   end
 
+  defp create_character(user, attributes) do
+    user
+    |> Ecto.build_assoc(:characters)
+    |> Character.changeset(attributes)
+    |> Repo.insert()
+  end
+
   def maybe_email_welcome(player) do
     case player.email do
       nil ->
@@ -86,29 +91,25 @@ defmodule Game.Account do
   @doc """
   Save the final session data for a play
   """
-  @spec save_session(User.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
-  def save_session(player, save, session_started_at, now, stats) do
-    case player |> save(save) do
-      {:ok, player} ->
-        player |> update_time_online(session_started_at, now)
-        player |> create_session(session_started_at, now, stats)
+  @spec save_session(User.t(), Character.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
+  def save_session(player, character, save, session_started_at, now, stats) do
+    with {:ok, _character} <- save(character, save),
+         {:ok, player} <- player |> update_time_online(session_started_at, now) do
+      player |> create_session(session_started_at, now, stats)
 
-        {:ok, player}
-
-      {:error, changeset} ->
-        {:error, changeset}
+      {:ok, player}
     end
   end
 
   @doc """
   Update the player's save data.
   """
-  @spec save(User.t(), Save.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def save(player, save) do
-    player = %{player | save: %{}}
+  @spec save(Character.t(), Save.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
+  def save(character, save) do
+    character = %{character | save: %{}}
 
-    player
-    |> User.changeset(%{save: save})
+    character
+    |> Character.changeset(%{save: save})
     |> Repo.update()
   end
 
@@ -248,8 +249,11 @@ defmodule Game.Account do
       |> Repo.one()
 
     case player do
-      nil -> {:error, :not_found}
-      _ -> {:ok, player}
+      nil ->
+        {:error, :not_found}
+
+      _ ->
+        {:ok, player}
     end
   end
 end

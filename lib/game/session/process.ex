@@ -98,15 +98,15 @@ defmodule Game.Session.Process do
 
   def handle_cast(:disconnect, state = %{state: "active"}) do
     Logger.info(fn -> "Disconnecting the session" end, type: :session)
-    %{user: user, save: save, session_started_at: session_started_at, stats: stats} = state
+    %{save: save, session_started_at: session_started_at, stats: stats} = state
 
     Session.Registry.unregister()
-    Session.Registry.player_offline(state.user)
+    Session.Registry.player_offline(state.character)
 
     @environment.leave(save.room_id, {:player, state.character}, :signout)
     @environment.unlink(save.room_id)
 
-    user |> Account.save_session(save, session_started_at, Timex.now(), stats)
+    Account.save_session(state.user, state.character, save, session_started_at, Timex.now(), stats)
 
     {:stop, :normal, state}
   end
@@ -302,7 +302,7 @@ defmodule Game.Session.Process do
 
   def handle_info(:save, state = %{state: "active"}) do
     %{save: save, session_started_at: session_started_at} = state
-    state.user |> Account.save(save)
+    state.character |> Account.save(save)
     state.user |> Account.update_time_online(session_started_at, Timex.now())
     self() |> schedule_save()
     {:noreply, state}
@@ -424,7 +424,7 @@ defmodule Game.Session.Process do
         Logger.info("Idle player #{inspect(self())} - setting afk", type: :session)
 
         state = %{state | is_afk: true}
-        Session.Registry.update(%{state.user | save: state.save}, state)
+        Session.Registry.update(%{state.character | save: state.save}, state)
 
         state.socket |> @socket.echo("You seem to be idle, setting you to {command}AFK{/command}.")
         Hint.gate(state, "afk.started")

@@ -201,14 +201,16 @@ defmodule Game.SessionTest do
     assert {:noreply, %{}} = Process.handle_info(:save, %{})
   end
 
-  test "save the user's save" do
+  test "save the user's save", %{state: state} do
     user = create_user(%{name: "player", password: "password"})
-    save = %{user.save | stats: %{user.save.stats | health_points: 10}}
+    character = create_character(user, %{name: "player"})
 
-    {:noreply, _state} = Process.handle_info(:save, %{state: "active", user: user, save: save, session_started_at: Timex.now()})
+    save = %{character.save | stats: %{user.save.stats | health_points: 10}}
 
-    user = Data.User |> Data.Repo.get(user.id)
-    assert user.save.stats.health_points == 10
+    {:noreply, _state} = Process.handle_info(:save, %{state | user: user, character: character, save: save})
+
+    character = Data.Character |> Data.Repo.get(character.id)
+    assert character.save.stats.health_points == 10
   end
 
   test "checking for inactive players - not inactive", %{state: state} do
@@ -241,7 +243,8 @@ defmodule Game.SessionTest do
 
     test "adds the time played" do
       user = create_user(%{name: "user", password: "password"})
-      state = session_state(%{user: user, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}})
+      character = create_character(user, %{name: "player"})
+      state = session_state(%{user: user, character: character, session_started_at: Timex.now() |> Timex.shift(hours: -3), stats: %{}})
 
       {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
 
@@ -435,7 +438,7 @@ defmodule Game.SessionTest do
       {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
 
       assert state.save.stats.health_points == 1
-      assert state.user.save.stats.health_points == 1
+      assert state.character.save.stats.health_points == 1
     end
 
     test "leaves old room, enters new room", %{state: state} do

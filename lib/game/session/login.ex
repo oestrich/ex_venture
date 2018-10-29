@@ -13,7 +13,6 @@ defmodule Game.Session.Login do
 
   require Logger
 
-  alias Data.Character
   alias Data.Repo
   alias Data.Room
   alias Game.Authentication
@@ -45,8 +44,7 @@ defmodule Game.Session.Login do
 
   Edit the state to be signed in and active
   """
-  @spec login(map, pid, map) :: map
-  def login(player, socket, state) do
+  def login(player, character, socket, state) do
     self() |> Process.schedule_save()
     self() |> Process.schedule_inactive_check()
     self() |> Process.schedule_heartbeat()
@@ -55,7 +53,7 @@ defmodule Game.Session.Login do
 
     state =
       state
-      |> setup_state_after_login(player)
+      |> setup_state_after_login(player, character)
       |> Map.put(:state, "after_sign_in")
 
     socket |> @socket.set_user_id(player.id)
@@ -166,7 +164,8 @@ defmodule Game.Session.Login do
   defp process_login(player, state) do
     with :ok <- check_already_signed_in(player),
          :ok <- check_disabled(player) do
-      player |> login(state.socket, state |> Map.delete(:login))
+      character = get_character_from_user(player)
+      player |> login(character, state.socket, state |> Map.delete(:login))
     else
       {:error, :signed_in} ->
         state.socket |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
@@ -207,10 +206,12 @@ defmodule Game.Session.Login do
     end
   end
 
-  defp _recover_session(player, state) do
-    Session.Registry.register(player)
+  defp _recover_session(user, state) do
+    Session.Registry.register(user)
 
-    state = setup_state_after_login(state, player)
+    character = get_character_from_user(user)
+
+    state = setup_state_after_login(state, user, character)
     state = after_sign_in(state, self())
 
     state.socket |> @socket.echo(dgettext("login", "Session recovering..."))
@@ -220,13 +221,16 @@ defmodule Game.Session.Login do
     state
   end
 
-  defp setup_state_after_login(state, player) do
-    character = Character.from_user(player)
+  defp get_character_from_user(user) do
+    user = Repo.preload(user, [characters: [:race, :class]])
+    List.first(user.characters)
+  end
 
+  defp setup_state_after_login(state, user, character) do
     state
-    |> Map.put(:user, player)
+    |> Map.put(:user, user)
     |> Map.put(:character, character)
-    |> Map.put(:save, player.save)
+    |> Map.put(:save, character.save)
   end
 
   defp check_already_signed_in(player) do

@@ -6,6 +6,7 @@ defmodule Game.Session.Regen do
   import Game.Session, only: [echo: 2]
 
   alias Game.Config
+  alias Game.Player
   alias Game.Session.GMCP
   alias Game.Session.State
   alias Game.Stats
@@ -85,15 +86,10 @@ defmodule Game.Session.Regen do
   Regenerate endurance points, 1 per tick
   """
   @spec regen_endurance(map) :: map
-  def regen_endurance(state = %{user: player, save: save = %{stats: stats}}) do
+  def regen_endurance(state = %{save: save = %{stats: stats}}) do
     stats = Stats.regen(stats, :endurance_points, @endurance_regen)
-
     save = Map.put(save, :stats, stats)
-    player = Map.put(player, :save, save)
-
-    state
-    |> Map.put(:user, player)
-    |> Map.put(:save, save)
+    Player.update_save(state, save)
   end
 
   @doc """
@@ -103,7 +99,7 @@ defmodule Game.Session.Regen do
   """
   @spec handle_regen(map, integer) :: map
   def handle_regen(state = %{regen: %{count: count}}, count) do
-    %{user: player, save: save} = state
+    %{save: save} = state
     %{stats: stats} = save
 
     stats =
@@ -114,11 +110,9 @@ defmodule Game.Session.Regen do
     echo_health(save, stats)
 
     save = Map.put(save, :stats, stats)
-    player = Map.put(player, :save, save)
 
     state
-    |> Map.put(:user, player)
-    |> Map.put(:save, save)
+    |> Player.update_save(save)
     |> Map.put(:regen, %{state.regen | count: 0})
   end
 

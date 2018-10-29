@@ -2,6 +2,7 @@ defmodule TestHelpers do
   alias Data.Announcement
   alias Data.Bug
   alias Data.Channel
+  alias Data.Character
   alias Data.Class
   alias Data.ClassSkill
   alias Data.Config
@@ -99,6 +100,22 @@ defmodule TestHelpers do
   def create_user(attributes \\ %{name: "player", password: "password"}) do
     %User{}
     |> User.changeset(user_attributes(attributes))
+    |> Repo.insert!
+    |> Repo.preload([:race, :class])
+  end
+
+  def character_attributes(attributes) do
+    Map.merge(%{
+      save: base_save(),
+      race_id: create_race().id,
+      class_id: create_class().id,
+    }, attributes)
+  end
+
+  def create_character(user, attributes \\ %{}) do
+    user
+    |> Ecto.build_assoc(:characters)
+    |> Character.changeset(character_attributes(attributes))
     |> Repo.insert!
     |> Repo.preload([:race, :class])
   end
