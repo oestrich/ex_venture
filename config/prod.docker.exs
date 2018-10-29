@@ -1,12 +1,6 @@
 use Mix.Config
 
-version =
-  case System.cmd("git", ["rev-parse", "HEAD"]) do
-    {version, 0} -> version
-    _ -> System.get_env("APP_VERSION")
-  end
-
-config :ex_venture, version: String.trim(version)
+config :ex_venture, version: "Docker"
 
 config :ex_venture, Data.Repo,
   adapter: Ecto.Adapters.Postgres,
@@ -50,7 +44,3 @@ config :ex_venture, ExVenture.Mailer,
   password: {:system, "SMTP_PASSWORD"}
 
 config :ex_venture, :mailer, from: {:system, "EXVENTURE_MAILER_FROM"}
-
-if File.exists?("config/prod.secret.exs") do
-  import_config("prod.secret.exs")
-end
