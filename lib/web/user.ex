@@ -7,6 +7,7 @@ defmodule Web.User do
 
   require Logger
 
+  alias Data.Character
   alias Data.QuestProgress
   alias Data.Repo
   alias Data.Stats
@@ -143,28 +144,54 @@ defmodule Web.User do
   Create a new user
   """
   @spec create(params :: map) :: {:ok, User.t()} | {:error, changeset :: map}
-  def create(params = %{"race_id" => race_id}) do
-    save = starting_save(race_id)
-    params = Map.put(params, "save", save)
+  def create(params = %{"race_id" => _race_id}) do
+    result = Repo.transaction(fn -> _create(params) end)
 
-    changeset = %User{} |> User.changeset(params)
+    case result do
+      {:ok, result} ->
+        result
 
-    case changeset |> Repo.insert() do
-      {:ok, user} ->
-        Account.maybe_email_welcome(user)
-
-        Config.claim_character_name(user.name)
-
-        {:ok, user}
-
-      {:error, changeset} ->
-        {:error, changeset}
+      {:error, result} ->
+        result
     end
   end
 
   def create(params) do
     %User{}
     |> User.changeset(params)
+    |> Repo.insert()
+  end
+
+  def _create(params = %{"race_id" => race_id}) do
+    with {:ok, user} <- create_user(race_id, params),
+         {:ok, character} <- create_character(user, race_id, params) do
+      Account.maybe_email_welcome(user)
+
+      Config.claim_character_name(character.name)
+
+      {:ok, user, character}
+    else
+      {:error, changeset} ->
+        Repo.rollback(changeset)
+    end
+  end
+
+  defp create_user(race_id, params) do
+    save = starting_save(race_id)
+    params = Map.put(params, "save", save)
+
+    %User{}
+    |> User.changeset(params)
+    |> Repo.insert()
+  end
+
+  defp create_character(user, race_id, params) do
+    save = starting_save(race_id)
+    params = Map.put(params, "save", save)
+
+    user
+    |> Ecto.build_assoc(:characters)
+    |> Character.changeset(params)
     |> Repo.insert()
   end
 

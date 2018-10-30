@@ -58,7 +58,7 @@ defmodule Web.UserTest do
     class = create_class()
     race = create_race()
 
-    {:ok, user} = User.create(%{
+    {:ok, user, character} = User.create(%{
       "name" => "player",
       "email" => "",
       "password" => "password",
@@ -68,6 +68,11 @@ defmodule Web.UserTest do
     })
 
     assert user.name == "player"
+
+    assert character.save
+    assert character.name == "player"
+    assert character.race_id
+    assert character.class_id
   end
 
   test "update a player", %{user: user} do
