@@ -55,12 +55,12 @@ defmodule Game.Command.Bug do
   def run(command, state)
 
   def run({:list}, state) do
-    bugs = Bugs.reported_by(state.user)
+    bugs = Bugs.reported_by(state.character)
     state.socket |> @socket.echo(Format.list_bugs(bugs))
   end
 
   def run({:read, id}, state) do
-    case Bugs.get(state.user, id) do
+    case Bugs.get(state.character, id) do
       {:error, :not_found} ->
         state.socket |> @socket.echo(gettext("Bug #%{id} not found.", id: id))
 
@@ -105,7 +105,7 @@ defmodule Game.Command.Bug do
     params = %{
       title: bug.title,
       body: bug.lines |> Enum.join("\n"),
-      reporter_id: state.user.id
+      reporter_id: state.character.id
     }
 
     params |> create_bug(socket)

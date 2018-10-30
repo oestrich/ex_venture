@@ -19,9 +19,60 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
     insert into characters (user_id, name, flags, save, class_id, race_id, inserted_at, updated_at)
     select id as user_id, name, flags, save, class_id, race_id, inserted_at, updated_at from users;
     """
+
+    migrate_bugs()
+    migrate_channel_messages()
+  end
+
+  defp migrate_bugs() do
+    rename table(:bugs), :reporter_id, to: :user_id
+
+    execute "ALTER TABLE bugs RENAME CONSTRAINT bugs_reporter_id_fkey TO bugs_user_id_fkey;"
+
+    alter table(:bugs) do
+      add(:reporter_id, references(:characters))
+    end
+
+    execute """
+    update bugs set reporter_id = characters.id from characters where characters.user_id = bugs.user_id;
+    """
+
+    alter table(:bugs) do
+      modify(:user_id, :integer, null: true)
+      modify(:reporter_id, :integer, null: false)
+    end
+  end
+
+  defp migrate_channel_messages() do
+    alter table(:channel_messages) do
+      add(:character_id, references(:characters))
+    end
+
+    execute """
+    update channel_messages set character_id = characters.id from characters where characters.user_id = channel_messages.user_id;
+    """
+
+    alter table(:channel_messages) do
+      modify(:user_id, :integer, null: true)
+      modify(:character_id, :integer, null: false)
+    end
   end
 
   def down do
+    alter table(:bugs) do
+      modify(:user_id, :integer, null: false)
+      remove(:reporter_id)
+    end
+
+    rename table(:bugs), :user_id, to: :reporter_id
+
+    execute "ALTER TABLE bugs RENAME CONSTRAINT bugs_user_id_fkey TO bugs_reporter_id_fkey;"
+
+    alter table(:channel_messages) do
+      modify(:user_id, :integer, null: false)
+      remove(:character_id)
+    end
+
     drop table(:characters)
   end
 end

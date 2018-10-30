@@ -5,14 +5,14 @@ defmodule Data.Bug do
 
   use Data.Schema
 
-  alias Data.User
+  alias Data.Character
 
   schema "bugs" do
     field(:title, :string)
     field(:body, :string)
     field(:is_completed, :boolean, default: false)
 
-    belongs_to(:reporter, User)
+    belongs_to(:reporter, Character)
 
     timestamps()
   end

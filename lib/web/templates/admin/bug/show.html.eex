@@ -37,7 +37,7 @@
             </tr>
             <tr>
               <th>Reporter</th>
-              <td><%= link(@bug.reporter.name, to: user_path(@conn, :show, @bug.reporter.id)) %></td>
+              <td><%= link(@bug.reporter.name, to: user_path(@conn, :show, @bug.reporter.user_id)) %></td>
             </tr>
           </table>
         </div>

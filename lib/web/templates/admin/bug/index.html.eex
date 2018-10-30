@@ -34,7 +34,7 @@
                   <tr>
                     <td><%= bug.id %></td>
                     <td><%= bug.title %></td>
-                    <td><%= link(bug.reporter.name, to: user_path(@conn, :show, bug.reporter.id)) %></td>
+                    <td><%= link(bug.reporter.name, to: user_path(@conn, :show, bug.reporter.user_id)) %></td>
                     <td><%= bug.is_completed %></td>
                     <td>
                       <%= link("View", to: bug_path(@conn, :show, bug.id), class: "btn btn-default btn-xs") %>
