@@ -10,8 +10,8 @@ defmodule Web.MailController do
   plug(:ensure_your_mail! when action in [:show])
 
   def index(conn, _params) do
-    %{user: user, page: page, per: per} = conn.assigns
-    %{page: mail, pagination: pagination} = Mail.all(user, page: page, per: per)
+    %{current_character: character, page: page, per: per} = conn.assigns
+    %{page: mail, pagination: pagination} = Mail.all(character, page: page, per: per)
 
     conn
     |> assign(:mail_pieces, mail)

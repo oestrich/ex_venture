@@ -13,13 +13,12 @@ defmodule Web.Mail do
   @doc """
   Get all mail for a character
   """
-  @spec all(User.t(), opts :: Keyword.t()) :: [Zone.t()]
-  def all(user, opts \\ []) do
+  @spec all(Character.t(), opts :: Keyword.t()) :: [Zone.t()]
+  def all(character, opts \\ []) do
     opts = Enum.into(opts, %{})
 
     Mail
-    |> join(:left, [m], c in assoc(m, :receiver))
-    |> where([m, c], c.user_id == ^user.id)
+    |> where([m], m.receiver_id == ^character.id)
     |> preload([:sender])
     |> order_by([z], desc: z.id)
     |> Pagination.paginate(opts)
