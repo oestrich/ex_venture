@@ -22,6 +22,7 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
 
     migrate_bugs()
     migrate_channel_messages()
+    migrate_typos()
   end
 
   defp migrate_bugs() do
@@ -58,7 +59,35 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
     end
   end
 
+  defp migrate_typos() do
+    rename table(:typos), :reporter_id, to: :user_id
+
+    execute "ALTER TABLE typos RENAME CONSTRAINT typos_reporter_id_fkey TO typos_user_id_fkey;"
+
+    alter table(:typos) do
+      add(:reporter_id, references(:characters))
+    end
+
+    execute """
+    update typos set reporter_id = characters.id from characters where characters.user_id = typos.user_id;
+    """
+
+    alter table(:typos) do
+      modify(:user_id, :integer, null: true)
+      modify(:reporter_id, :integer, null: false)
+    end
+  end
+
   def down do
+    alter table(:typos) do
+      modify(:user_id, :integer, null: false)
+      remove(:reporter_id)
+    end
+
+    rename table(:typos), :user_id, to: :reporter_id
+
+    execute "ALTER TABLE typos RENAME CONSTRAINT typos_user_id_fkey TO typos_reporter_id_fkey;"
+
     alter table(:bugs) do
       modify(:user_id, :integer, null: false)
       remove(:reporter_id)

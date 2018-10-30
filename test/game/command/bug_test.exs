@@ -10,7 +10,7 @@ defmodule Game.Command.BugTest do
 
   setup do
     @socket.clear_messages()
-    %{socket: :socket}
+    :ok
   end
 
   describe "viewing a list of your bugs" do

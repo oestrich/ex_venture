@@ -5,14 +5,14 @@ defmodule Data.Typo do
 
   use Data.Schema
 
+  alias Data.Character
   alias Data.Room
-  alias Data.User
 
   schema "typos" do
     field(:title, :string)
     field(:body, :string)
 
-    belongs_to(:reporter, User)
+    belongs_to(:reporter, Character)
     belongs_to(:room, Room)
 
     timestamps()
