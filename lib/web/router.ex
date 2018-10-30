@@ -25,6 +25,7 @@ defmodule Web.Router do
 
   pipeline :public do
     plug(Web.Plug.LoadUser)
+    plug(Web.Plug.LoadCharacter)
   end
 
   pipeline :public_2fa do

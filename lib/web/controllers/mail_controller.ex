@@ -34,11 +34,7 @@ defmodule Web.MailController do
   end
 
   def create(conn, %{"mail" => params}) do
-    %{user: user} = conn.assigns
-
-    # TODO remove this for the web interface dropdown
-    user = Data.Repo.preload(user, [:characters])
-    sender = List.first(user.characters)
+    %{current_character: sender} = conn.assigns
 
     case Mail.send(sender, params) do
       {:ok, _mail} ->

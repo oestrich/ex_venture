@@ -53,7 +53,15 @@ defmodule Web.LayoutView do
     end
   end
 
-  def game_config(user) do
-    user.save.config
+  def game_config(character) do
+    character.save.config
+  end
+
+  def character_active(conn, character) do
+    with %{current_character: current_character} <- conn.assigns do
+      if current_character.id == character.id do
+        "active"
+      end
+    end
   end
 end

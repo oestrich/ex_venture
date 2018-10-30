@@ -138,6 +138,19 @@ defmodule Web.User do
   end
 
   @doc """
+  Get a user's character
+  """
+  def get_character(user, character_id) do
+    case Repo.get_by(Character, user_id: user.id, id: character_id) do
+      nil ->
+        {:error, :not_found}
+
+      character ->
+        {:ok, character}
+    end
+  end
+
+  @doc """
   Get a changeset for a new page
   """
   @spec new() :: changeset :: map

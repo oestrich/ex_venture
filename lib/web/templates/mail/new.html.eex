@@ -6,6 +6,11 @@
 
     <%= form_for(@changeset, public_mail_path(@conn, :create), [class: "form"], fn f -> %>
       <div class="form-group has-feedback">
+        <%= label f, :sender %>
+        <div class="form-control"><%= @current_character.name %></div>
+      </div>
+
+      <div class="form-group has-feedback">
         <%= label f, :receiver_name %>
         <%= text_input f, :receiver_name, class: "form-control", autofocus: "autofocus" %>
       </div>
