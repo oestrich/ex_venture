@@ -19,7 +19,7 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@current_character))) %>
     </script>
   </head>
 
-  <body id="body" data-user-token="<%= @conn |> user_token() %>">
+  <body id="body" data-character-token="<%= @conn |> character_token() %>">
     <nav class="site-header navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <%= link(Config.game_name(), to: public_page_path(@conn, :index), class: "navbar-brand") %>

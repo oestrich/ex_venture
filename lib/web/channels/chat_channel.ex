@@ -13,26 +13,26 @@ defmodule Web.ChatChannel do
   alias Web.User
 
   def join("chat:" <> channel, _message, socket) do
-    case Map.has_key?(socket.assigns, :user_id) do
+    case Map.has_key?(socket.assigns, :character_id) do
       true ->
-        assign_user(socket, channel)
+        assign_character(socket, channel)
 
       false ->
-        {:error, %{reason: "user required"}}
+        {:error, %{reason: "character required"}}
     end
   end
 
-  defp assign_user(socket, channel) do
-    %{user_id: user_id} = socket.assigns
+  defp assign_character(socket, channel) do
+    %{character_id: character_id} = socket.assigns
 
-    case User.get(user_id) do
-      nil ->
-        {:error, %{reason: "not found"}}
-
-      user ->
+    case User.get_character(character_id) do
+      {:ok, character} ->
         socket
-        |> assign(:user, user)
+        |> assign(:character, character)
         |> assign_channel(channel)
+
+      {:error, :not_found} ->
+        {:error, %{reason: "not found"}}
     end
   end
 
@@ -49,10 +49,10 @@ defmodule Web.ChatChannel do
   end
 
   def handle_in("send", %{"message" => message}, socket) do
-    %{channel: channel, user: user} = socket.assigns
+    %{channel: channel, character: character} = socket.assigns
 
     parsed_message = Say.parse_message(message)
-    Channel.broadcast(channel.name, Message.broadcast(user, channel, parsed_message))
+    Channel.broadcast(channel.name, Message.broadcast(character, channel, parsed_message))
 
     {:noreply, socket}
   end

@@ -151,6 +151,21 @@ defmodule Web.User do
   end
 
   @doc """
+  Get a character
+
+  Used from the socket and channels
+  """
+  def get_character(character_id) do
+    case Repo.get_by(Character, id: character_id) do
+      nil ->
+        {:error, :not_found}
+
+      character ->
+        {:ok, character}
+    end
+  end
+
+  @doc """
   Get a changeset for a new page
   """
   @spec new() :: changeset :: map

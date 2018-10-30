@@ -40,6 +40,9 @@ defmodule Web.LayoutView do
   def user_token(%{assigns: %{user_token: token}}), do: token
   def user_token(_), do: ""
 
+  def character_token(%{assigns: %{character_token: token}}), do: token
+  def character_token(_), do: ""
+
   def is_admin?(%{assigns: %{user: user}}), do: User.is_admin?(user)
   def is_admin?(_), do: false
 
