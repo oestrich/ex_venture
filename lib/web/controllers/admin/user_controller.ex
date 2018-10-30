@@ -117,12 +117,8 @@ defmodule Web.Admin.UserController do
   end
 
   def reset(conn, %{"user_id" => id}) do
-    case User.reset(id) do
-      {:ok, user} ->
-        conn |> redirect(to: user_path(conn, :show, user.id))
+    User.reset(id)
 
-      {:error, _} ->
-        conn |> redirect(to: user_path(conn, :show, id))
-    end
+    conn |> redirect(to: user_path(conn, :show, id))
   end
 end

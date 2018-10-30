@@ -159,17 +159,21 @@
         <div class="box-body">
           <table class="table">
             <thead>
+              <th>Character</th>
               <th>Quest</th>
               <th>Status</th>
               <th>Progress</th>
             </thead>
             <tbody>
-              <%= Enum.map(@user.quest_progress, fn (progress) -> %>
-                <tr>
-                  <td><%= link(progress.quest.name, to: quest_path(@conn, :show, progress.quest_id)) %></td>
-                  <td><%= progress.status %></td>
-                  <td><%= progress.progress |> Poison.encode!(pretty: true) %></td>
-                </tr>
+              <%= Enum.map(@user.characters, fn character -> %>
+                <%= Enum.map(character.quest_progress, fn (progress) -> %>
+                  <tr>
+                    <td><%= character.name %></td>
+                    <td><%= link(progress.quest.name, to: quest_path(@conn, :show, progress.quest_id)) %></td>
+                    <td><%= progress.status %></td>
+                    <td><%= progress.progress |> Poison.encode!(pretty: true) %></td>
+                  </tr>
+                <% end) %>
               <% end) %>
             </tbody>
           </table>

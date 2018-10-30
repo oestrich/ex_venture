@@ -8,6 +8,7 @@ defmodule Data.Character do
   use Data.Schema
 
   alias Data.Class
+  alias Data.QuestProgress
   alias Data.Race
   alias Data.Save
   alias Data.User
@@ -20,6 +21,8 @@ defmodule Data.Character do
     belongs_to(:user, User)
     belongs_to(:class, Class)
     belongs_to(:race, Race)
+
+    has_many(:quest_progress, QuestProgress)
 
     timestamps()
   end

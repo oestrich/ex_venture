@@ -237,7 +237,7 @@ defmodule Game.Command.Move do
       @environment.enter(room_id, {:player, character}, enter_reason)
       @environment.link(room_id)
 
-      Quest.track_progress(state.user, {:room, room_id})
+      Quest.track_progress(state.character, {:room, room_id})
 
       state
     end)

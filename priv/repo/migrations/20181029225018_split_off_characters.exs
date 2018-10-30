@@ -22,6 +22,7 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
 
     migrate_bugs()
     migrate_channel_messages()
+    migrate_quest_progress()
     migrate_typos()
   end
 
@@ -59,6 +60,24 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
     end
   end
 
+  defp migrate_quest_progress() do
+    alter table(:quest_progress) do
+      add(:character_id, references(:characters))
+    end
+
+    execute """
+    update channel_messages set character_id = characters.id from characters where characters.user_id = channel_messages.user_id;
+    """
+
+    drop index(:quest_progress, [:user_id, :quest_id])
+    create index(:quest_progress, [:character_id, :quest_id], unique: true)
+
+    alter table(:quest_progress) do
+      modify(:user_id, :integer, null: true)
+      modify(:character_id, :integer, null: false)
+    end
+  end
+
   defp migrate_typos() do
     rename table(:typos), :reporter_id, to: :user_id
 
@@ -83,24 +102,28 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
       modify(:user_id, :integer, null: false)
       remove(:reporter_id)
     end
-
     rename table(:typos), :user_id, to: :reporter_id
-
     execute "ALTER TABLE typos RENAME CONSTRAINT typos_user_id_fkey TO typos_reporter_id_fkey;"
 
-    alter table(:bugs) do
+    create index(:quest_progress, [:user_id, :quest_id], unique: true)
+    drop index(:quest_progress, [:character_id, :quest_id])
+
+    alter table(:quest_progress) do
       modify(:user_id, :integer, null: false)
-      remove(:reporter_id)
+      remove(:character_id)
     end
-
-    rename table(:bugs), :user_id, to: :reporter_id
-
-    execute "ALTER TABLE bugs RENAME CONSTRAINT bugs_user_id_fkey TO bugs_reporter_id_fkey;"
 
     alter table(:channel_messages) do
       modify(:user_id, :integer, null: false)
       remove(:character_id)
     end
+
+    alter table(:bugs) do
+      modify(:user_id, :integer, null: false)
+      remove(:reporter_id)
+    end
+    rename table(:bugs), :user_id, to: :reporter_id
+    execute "ALTER TABLE bugs RENAME CONSTRAINT bugs_user_id_fkey TO bugs_reporter_id_fkey;"
 
     drop table(:characters)
   end

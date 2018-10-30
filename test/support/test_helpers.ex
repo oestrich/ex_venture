@@ -106,6 +106,7 @@ defmodule TestHelpers do
 
   def character_attributes(attributes) do
     Map.merge(%{
+      name: "player",
       save: base_save(),
       race_id: create_race().id,
       class_id: create_class().id,
@@ -440,15 +441,15 @@ defmodule TestHelpers do
     }
   end
 
-  def create_quest_progress(user, quest, params \\ %{}) do
+  def create_quest_progress(character, quest, params \\ %{}) do
     %QuestProgress{}
-    |> QuestProgress.changeset(quest_progress_attributes(user, quest, params))
+    |> QuestProgress.changeset(quest_progress_attributes(character, quest, params))
     |> Repo.insert!
   end
 
-  def quest_progress_attributes(user, quest, params) do
+  def quest_progress_attributes(character, quest, params) do
     Map.merge(%{
-      user_id: user.id,
+      character_id: character.id,
       quest_id: quest.id,
       status: "active",
       progress: %{},

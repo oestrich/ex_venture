@@ -88,20 +88,25 @@ defmodule Web.UserTest do
     end
 
     test "resets the save", %{user: user} do
-      save = %{user.save | level: 2}
-      {:ok, user} = Account.save(user, save)
+      character = create_character(user)
 
-      {:ok, user} = User.reset(user.id)
+      save = %{character.save | level: 2}
+      {:ok, character} = Account.save(character, save)
 
-      assert user.save.level == 1
+      :ok = User.reset(user.id)
+
+      character = Data.Repo.get(Data.Character, character.id)
+      assert character.save.level == 1
     end
 
     test "resets quests", %{user: user} do
       guard = create_npc(%{is_quest_giver: true})
       quest = create_quest(guard)
-      create_quest_progress(user, quest)
 
-      {:ok, _user} = User.reset(user.id)
+      character = create_character(user)
+      create_quest_progress(character, quest)
+
+      :ok = User.reset(user.id)
 
       assert Data.Repo.all(QuestProgress) == []
     end

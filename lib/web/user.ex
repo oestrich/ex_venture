@@ -104,7 +104,7 @@ defmodule Web.User do
       :race,
       sessions: ^from(s in User.Session, order_by: [desc: s.started_at], limit: 10)
     ])
-    |> preload(quest_progress: [:quest])
+    |> preload(characters: [quest_progress: [:quest]])
     |> Repo.one()
   end
 
@@ -278,13 +278,20 @@ defmodule Web.User do
   Reset a player's save file, and quest progress
   """
   def reset(user_id) do
-    user = Repo.get(User, user_id)
+    user =
+      User
+      |> Repo.get(user_id)
+      |> Repo.preload([:characters])
 
-    QuestProgress
-    |> where([qp], qp.user_id == ^user.id)
-    |> Repo.delete_all()
+    Enum.map(user.characters, fn character ->
+      QuestProgress
+      |> where([qp], qp.character_id == ^character.id)
+      |> Repo.delete_all()
 
-    Account.save(user, starting_save(user.race_id))
+      Account.save(character, starting_save(character.race_id))
+    end)
+
+    :ok
   end
 
   @doc """

@@ -27,7 +27,7 @@ defmodule Game.Quest do
   @spec for(User.t()) :: [QuestProgress.t()]
   def for(player) do
     QuestProgress
-    |> where([qp], qp.user_id == ^player.id)
+    |> where([qp], qp.character_id == ^player.id)
     |> where([qp], qp.status == "active")
     |> preloads()
     |> Repo.all()
@@ -42,7 +42,7 @@ defmodule Game.Quest do
       {:ok, quest_id} ->
         quest =
           QuestProgress
-          |> where([qp], qp.user_id == ^player.id and qp.quest_id == ^quest_id)
+          |> where([qp], qp.character_id == ^player.id and qp.quest_id == ^quest_id)
           |> preloads()
           |> Repo.one()
 
@@ -65,7 +65,7 @@ defmodule Game.Quest do
   @spec current_tracked_quest(User.t()) :: QuestProgress.t() | nil
   def current_tracked_quest(player) do
     QuestProgress
-    |> where([qp], qp.user_id == ^player.id and qp.is_tracking == true and qp.status != "complete")
+    |> where([qp], qp.character_id == ^player.id and qp.is_tracking == true and qp.status != "complete")
     |> preloads()
     |> limit(1)
     |> Repo.one()
@@ -88,7 +88,7 @@ defmodule Game.Quest do
     changeset =
       %QuestProgress{}
       |> QuestProgress.changeset(%{
-        user_id: player.id,
+        character_id: player.id,
         quest_id: quest.id,
         status: "active"
       })
@@ -250,7 +250,7 @@ defmodule Game.Quest do
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
       [qp, q, qs],
-      qp.user_id == ^player.id and qs.type == "item/give" and qs.npc_id == ^npc.id and
+      qp.character_id == ^player.id and qs.type == "item/give" and qs.npc_id == ^npc.id and
         qs.item_id == ^item_instance.id
     )
     |> select([qp, q, qs], [qp.id, qs.id])
@@ -267,7 +267,7 @@ defmodule Game.Quest do
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
       [qp, q, qs],
-      qp.user_id == ^player.id and qs.type == "npc/kill" and qs.npc_id == ^npc.id
+      qp.character_id == ^player.id and qs.type == "npc/kill" and qs.npc_id == ^npc.id
     )
     |> select([qp, q, qs], [qp.id, qs.id])
     |> Repo.all()
@@ -288,7 +288,7 @@ defmodule Game.Quest do
     |> join(:left, [qp, q], qs in assoc(q, :quest_steps))
     |> where(
       [qp, q, qs],
-      qp.user_id == ^player.id and qs.type == "room/explore" and qs.room_id == ^room_id
+      qp.character_id == ^player.id and qs.type == "room/explore" and qs.room_id == ^room_id
     )
     |> select([qp, q, qs], [qp.id, qs.id])
     |> Repo.all()
@@ -404,7 +404,7 @@ defmodule Game.Quest do
   end
 
   defp _track_quest(player, quest_progress) do
-    reset_query = QuestProgress |> where([qp], qp.user_id == ^player.id)
+    reset_query = QuestProgress |> where([qp], qp.character_id == ^player.id)
 
     track_changeset =
       quest_progress
