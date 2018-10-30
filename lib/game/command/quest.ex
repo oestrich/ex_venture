@@ -249,7 +249,7 @@ defmodule Game.Command.Quest do
 
         state = Character.apply_experience(state, {:quest, quest})
 
-        npc.id |> @npc.notify({"quest/completed", state.user, quest})
+        npc.id |> @npc.notify({"quest/completed", state.character, quest})
 
         {:update, state}
 
