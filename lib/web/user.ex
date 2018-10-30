@@ -47,6 +47,7 @@ defmodule Web.User do
   def from_token(token) do
     User
     |> where([u], u.token == ^token)
+    |> preload([:characters])
     |> Repo.one()
   end
 
@@ -114,6 +115,20 @@ defmodule Web.User do
   @spec get_by(Keyword.t()) :: {:ok, User.t()} | {:error, :not_found}
   def get_by(name: name) do
     case Repo.get_by(User, name: name) do
+      nil ->
+        {:error, :not_found}
+
+      user ->
+        {:ok, user}
+    end
+  end
+
+  @doc """
+  Get a character by their name
+  """
+  @spec get_character_by(Keyword.t()) :: {:ok, User.t()} | {:error, :not_found}
+  def get_character_by(name: name) do
+    case Repo.get_by(Character, name: name) do
       nil ->
         {:error, :not_found}
 
@@ -283,7 +298,7 @@ defmodule Web.User do
       |> Repo.get(user_id)
       |> Repo.preload([:characters])
 
-    Enum.map(user.characters, fn character ->
+    Enum.each(user.characters, fn character ->
       QuestProgress
       |> where([qp], qp.character_id == ^character.id)
       |> Repo.delete_all()

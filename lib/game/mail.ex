@@ -8,27 +8,26 @@ defmodule Game.Mail do
   alias Data.Character
   alias Data.Mail
   alias Data.Repo
-  alias Data.User
   alias ExVenture.Mailer
   alias Game.Emails
   alias Game.Session
 
   @doc """
-  Get mail for a user
+  Get mail for a character
   """
-  @spec unread_mail_for(User.t()) :: [Mail.t()]
-  def unread_mail_for(user) do
+  @spec unread_mail_for(Character.t()) :: [Mail.t()]
+  def unread_mail_for(character) do
     Mail
     |> where([m], m.is_read == false)
-    |> where([m], m.receiver_id == ^user.id)
+    |> where([m], m.receiver_id == ^character.id)
     |> preload([:sender])
     |> Repo.all()
   end
 
   @doc """
-  Get mail for a user
+  Get mail for a character
   """
-  @spec get(User.t(), integer()) :: Mail.t() | nil
+  @spec get(Character.t(), integer()) :: Mail.t() | nil
   def get(receiver, id) do
     Mail
     |> Repo.get_by(receiver_id: receiver.id, id: id)
@@ -59,8 +58,7 @@ defmodule Game.Mail do
 
     case changeset |> Repo.insert() do
       {:ok, mail} ->
-        mail = Repo.preload(mail, [:sender, :receiver])
-        player = Character.from_user(player)
+        mail = Repo.preload(mail, [:sender, receiver: [:user]])
         Session.notify(player, {"mail/new", mail})
 
         mail |> maybe_email_notify()
@@ -73,7 +71,7 @@ defmodule Game.Mail do
   end
 
   defp maybe_email_notify(mail) do
-    case mail.receiver.email do
+    case mail.receiver.user.email do
       nil ->
         :ok
 

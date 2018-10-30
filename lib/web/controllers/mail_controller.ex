@@ -36,7 +36,11 @@ defmodule Web.MailController do
   def create(conn, %{"mail" => params}) do
     %{user: user} = conn.assigns
 
-    case Mail.send(user, params) do
+    # TODO remove this for the web interface dropdown
+    user = Data.Repo.preload(user, [:characters])
+    sender = List.first(user.characters)
+
+    case Mail.send(sender, params) do
       {:ok, _mail} ->
         conn
         |> put_flash(:info, "Mail sent!")

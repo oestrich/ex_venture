@@ -5,8 +5,11 @@ defmodule Web.MailTest do
 
   describe "sending new mail" do
     setup do
-      sender = create_user(%{name: "sender", password: "password"})
-      receiver = create_user(%{name: "receiver", password: "password"})
+      sender_user = create_user(%{name: "sender", password: "password"})
+      sender = create_character(sender_user, %{name: "sender"})
+
+      receiver_user = create_user(%{name: "receiver", password: "password"})
+      receiver = create_character(receiver_user, %{name: "receiver"})
 
       %{sender: sender, receiver: receiver}
     end

@@ -18,7 +18,7 @@ defmodule Game.Emails do
 
   def new_mail(mail) do
     base_email()
-    |> to(mail.receiver.email)
+    |> to(mail.receiver.user.email)
     |> subject("You have new mail in #{Config.game_name()}")
     |> render("mail.html", mail: mail)
     |> render("mail.text", mail: mail)

@@ -22,6 +22,7 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
 
     migrate_bugs()
     migrate_channel_messages()
+    migrate_mail()
     migrate_quest_progress()
     migrate_typos()
   end
@@ -57,6 +58,35 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
     alter table(:channel_messages) do
       modify(:user_id, :integer, null: true)
       modify(:character_id, :integer, null: false)
+    end
+  end
+
+  defp migrate_mail() do
+    rename table(:mail), :sender_id, to: :sender_user_id
+    rename table(:mail), :receiver_id, to: :receiver_user_id
+
+    execute "ALTER TABLE mail RENAME CONSTRAINT mail_sender_id_fkey TO mail_sender_user_id_fkey;"
+    execute "ALTER TABLE mail RENAME CONSTRAINT mail_receiver_id_fkey TO mail_receiver_user_id_fkey;"
+
+    alter table(:mail) do
+      add(:sender_id, references(:characters))
+      add(:receiver_id, references(:characters))
+    end
+
+    execute """
+    update mail set sender_id = characters.id from characters where characters.user_id = mail.sender_user_id;
+    """
+
+    execute """
+    update mail set receiver_id = characters.id from characters where characters.user_id = mail.receiver_user_id;
+    """
+
+    alter table(:mail) do
+      modify(:sender_user_id, :integer, null: true)
+      modify(:receiver_user_id, :integer, null: true)
+
+      modify(:sender_id, :integer, null: false)
+      modify(:receiver_id, :integer, null: false)
     end
   end
 
@@ -112,6 +142,17 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
       modify(:user_id, :integer, null: false)
       remove(:character_id)
     end
+
+    alter table(:mail) do
+      modify(:sender_user_id, :integer, null: false)
+      modify(:receiver_user_id, :integer, null: false)
+      remove(:sender_id)
+      remove(:receiver_id)
+    end
+    rename table(:mail), :sender_user_id, to: :sender_id
+    rename table(:mail), :receiver_user_id, to: :receiver_id
+    execute "ALTER TABLE mail RENAME CONSTRAINT mail_sender_user_id_fkey TO mail_sender_id_fkey;"
+    execute "ALTER TABLE mail RENAME CONSTRAINT mail_receiver_user_id_fkey TO mail_receiver_id_fkey;"
 
     alter table(:channel_messages) do
       modify(:user_id, :integer, null: false)

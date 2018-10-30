@@ -242,9 +242,9 @@ defmodule Game.Account do
   @spec get_player(String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def get_player(name) do
     player =
-      User
+      Character
       |> where([u], fragment("lower(?) = ?", u.name, ^String.downcase(name)))
-      |> preload([:race, :class])
+      |> preload([:class, :race, :user])
       |> limit(1)
       |> Repo.one()
 
