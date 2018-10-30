@@ -41,9 +41,9 @@ defmodule Game.Session.Registry do
   @doc """
   Load all connected players
   """
-  @spec authorize_connection(User.t(), String.t()) :: :ok
-  def authorize_connection(player, id) do
-    GenServer.cast(__MODULE__, {:authorize, player, id})
+  @spec authorize_connection(Character.t(), String.t()) :: :ok
+  def authorize_connection(character, id) do
+    GenServer.cast(__MODULE__, {:authorize, character, id})
   end
 
   @doc """
@@ -267,7 +267,7 @@ defmodule Game.Session.Registry do
     {:noreply, %{state | connections: connections}}
   end
 
-  def handle_cast({:authorize, player, id}, state) do
+  def handle_cast({:authorize, character, id}, state) do
     connection =
       state.connections
       |> Enum.find(fn connection ->
@@ -281,7 +281,7 @@ defmodule Game.Session.Registry do
       connection ->
         remove_connection(id)
 
-        send(connection.pid, {:authorize, player})
+        send(connection.pid, {:authorize, character})
 
         {:noreply, state}
     end

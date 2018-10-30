@@ -71,7 +71,7 @@ defmodule Test.Networking.Socket do
   end
 
   @impl Networking.Socket
-  def set_user_id(_socket, _user_id), do: :ok
+  def set_character_id(_socket, _character_id), do: :ok
 
   @impl Networking.Socket
   def set_config(_socket, _config), do: :ok

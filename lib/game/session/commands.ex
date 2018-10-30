@@ -37,7 +37,7 @@ defmodule Game.Session.Commands do
 
     case command |> Command.run(state) do
       {:update, state} ->
-        Session.Registry.update(%{state.user | save: state.save}, state)
+        Session.Registry.update(%{state.character | save: state.save}, state)
 
         state =
           state
@@ -48,7 +48,7 @@ defmodule Game.Session.Commands do
         {:noreply, state}
 
       {:update, state, {command = %Command{}, send_in}} ->
-        Session.Registry.update(%{state.user | save: state.save}, state)
+        Session.Registry.update(%{state.character | save: state.save}, state)
 
         state =
           state

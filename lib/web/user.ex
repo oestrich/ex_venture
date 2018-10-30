@@ -559,8 +559,8 @@ defmodule Web.User do
   @doc """
   Authorize a connection
   """
-  @spec authorize_connection(User.t(), String.t()) :: :ok
-  def authorize_connection(user, id) do
-    SessionRegistry.authorize_connection(user, id)
+  @spec authorize_connection(Character.t(), String.t()) :: :ok
+  def authorize_connection(character, id) do
+    SessionRegistry.authorize_connection(character, id)
   end
 end

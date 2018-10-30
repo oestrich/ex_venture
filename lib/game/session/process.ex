@@ -207,8 +207,8 @@ defmodule Game.Session.Process do
   end
 
   # Handle logging in from the web client
-  def handle_cast({:sign_in, user_id}, state = %{state: "login"}) do
-    state = Session.Login.sign_in(user_id, state)
+  def handle_cast({:sign_in, character_id}, state = %{state: "login"}) do
+    state = Session.Login.sign_in(character_id, state)
     {:noreply, state}
   end
 
@@ -273,8 +273,8 @@ defmodule Game.Session.Process do
     {:noreply, state}
   end
 
-  def handle_info({:authorize, user}, state) do
-    state = Session.Login.sign_in(user.id, state)
+  def handle_info({:authorize, character}, state) do
+    state = Session.Login.sign_in(character.id, state)
     {:noreply, state}
   end
 

@@ -15,10 +15,10 @@ import {guid} from "./utils"
 window.gameConfig = {};
 
 var body = document.getElementById("body");
-var userToken = body.getAttribute("data-user-token");
+var characterToken = body.getAttribute("data-character-token");
 
 let keys = new Keys();
-let socket = new Socket("/socket", {params: {token: userToken}});
+let socket = new Socket("/socket", {params: {token: characterToken}});
 socket.connect();
 
 let options = {

@@ -113,12 +113,12 @@ defmodule Networking.Protocol do
   end
 
   @doc """
-  Set the user id of the socket
+  Set the character id of the socket
   """
-  @spec set_user_id(pid, integer()) :: :ok
+  @spec set_character_id(pid, integer()) :: :ok
   @impl Networking.Socket
-  def set_user_id(socket, user_id) do
-    GenServer.cast(socket, {:user_id, user_id})
+  def set_character_id(socket, character_id) do
+    GenServer.cast(socket, {:character_id, character_id})
   end
 
   @impl Networking.Socket
@@ -142,7 +142,7 @@ defmodule Networking.Protocol do
       gmcp: false,
       gmcp_supports: [],
       mxp: false,
-      user_id: nil,
+      character_id: nil,
       restart_count: 0,
       config: %{}
     })
@@ -174,8 +174,8 @@ defmodule Networking.Protocol do
     {:noreply, state}
   end
 
-  def handle_cast({:user_id, user_id}, state) do
-    {:noreply, Map.put(state, :user_id, user_id)}
+  def handle_cast({:character_id, character_id}, state) do
+    {:noreply, Map.put(state, :character_id, character_id)}
   end
 
   def handle_cast({:config, config}, state) do
@@ -309,7 +309,7 @@ defmodule Networking.Protocol do
   end
 
   def handle_info(:restart_session, state) do
-    {:ok, pid} = Game.Session.start_with_player(self(), state.user_id)
+    {:ok, pid} = Game.Session.start_with_player(self(), state.character_id)
     Process.link(pid)
 
     state =
@@ -531,13 +531,13 @@ defmodule Networking.Protocol do
     transport.send(socket, data)
   end
 
-  def broadcast(%{user_id: user_id}, data) when is_integer(user_id) do
+  def broadcast(%{character_id: character_id}, data) when is_integer(character_id) do
     case data do
       <<@iac, _data::binary()>> ->
         :ok
 
       _ ->
-        Web.Endpoint.broadcast("user:#{user_id}", "echo", %{data: data})
+        Web.Endpoint.broadcast("character:#{character_id}", "echo", %{data: data})
     end
   end
 

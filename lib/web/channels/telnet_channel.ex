@@ -133,7 +133,7 @@ defmodule Web.TelnetChannel do
 
       state = %{
         socket: socket,
-        user_id: nil,
+        character_id: nil,
         config: %{},
         restart_count: 0
       }
@@ -181,8 +181,8 @@ defmodule Web.TelnetChannel do
 
     def handle_cast(:attempt_sign_in, state) do
       case state.socket.assigns do
-        %{user: user} ->
-          Game.Session.sign_in(state.session, user)
+        %{character: character} ->
+          Game.Session.sign_in(state.session, character)
 
         _ ->
           nil
@@ -227,9 +227,9 @@ defmodule Web.TelnetChannel do
       end
     end
 
-    def handle_cast({:user_id, user_id}, state) do
-      send(state.socket.channel_pid, {:user_id, user_id})
-      {:noreply, %{state | user_id: user_id}}
+    def handle_cast({:character_id, character_id}, state) do
+      send(state.socket.channel_pid, {:character_id, character_id})
+      {:noreply, %{state | character_id: character_id}}
     end
 
     def handle_cast({:config, config}, state) do
@@ -269,7 +269,7 @@ defmodule Web.TelnetChannel do
         type: :session
       )
 
-      {:ok, pid} = Game.Session.start_with_player(self(), state.user_id)
+      {:ok, pid} = Game.Session.start_with_player(self(), state.character_id)
 
       Monitor.demonitor(self())
       Monitor.monitor(self(), pid)
@@ -298,9 +298,9 @@ defmodule Web.TelnetChannel do
   def join("telnet:" <> _, _message, socket) do
     socket =
       case socket.assigns do
-        %{user_id: user_id} ->
-          user = User.get(user_id)
-          socket |> assign(:user, user)
+        %{character_id: character_id} ->
+          {:ok, character} = User.get_character(character_id)
+          socket |> assign(:character, character)
 
         _ ->
           socket
@@ -334,8 +334,8 @@ defmodule Web.TelnetChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:user_id, user_id}, state) do
-    {:noreply, Map.put(state, :user_id, user_id)}
+  def handle_info({:character_id, character_id}, state) do
+    {:noreply, Map.put(state, :character_id, character_id)}
   end
 
   def handle_info({:config, config}, state) do
@@ -369,8 +369,8 @@ defmodule Web.TelnetChannel do
     {:noreply, socket}
   end
 
-  def broadcast(%{user_id: user_id}, data) when is_integer(user_id) do
-    Web.Endpoint.broadcast("user:#{user_id}", "echo", %{data: data})
+  def broadcast(%{character_id: character_id}, data) when is_integer(character_id) do
+    Web.Endpoint.broadcast("character:#{character_id}", "echo", %{data: data})
   end
 
   def broadcast(_, _), do: :ok

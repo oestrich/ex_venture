@@ -53,12 +53,12 @@ defmodule Game.Session.GMCP do
   Push Character data (save stats)
   """
   @spec character(map) :: :ok
-  def character(%{socket: socket, user: player}) do
+  def character(%{socket: socket, character: character}) do
     data = %{
-      name: player.name,
-      level: player.save.level,
+      name: character.name,
+      level: character.save.level,
       class: %{
-        name: player.class.name
+        name: character.class.name
       }
     }
 
@@ -228,7 +228,7 @@ defmodule Game.Session.GMCP do
   @spec config_actions(State.t()) :: :ok
   def config_actions(state) do
     actions =
-      state.user.save.actions
+      state.character.save.actions
       |> Enum.map(&Map.delete(&1, :__struct__))
       |> Enum.map(&config_action_transform/1)
 
@@ -280,7 +280,7 @@ defmodule Game.Session.GMCP do
   @spec character_skills(State.t()) :: :ok
   def character_skills(state) do
     skills =
-      state.user.save.skill_ids
+      state.character.save.skill_ids
       |> Skills.skills()
       |> Enum.map(fn skill ->
         %{
