@@ -128,6 +128,7 @@ defmodule Web.Router do
     resources("/characters", CharacterController, only: [:show]) do
       delete("/disconnect", CharacterController, :disconnect, as: :disconnect)
       get("/watch", CharacterController, :watch, as: :watch)
+      post("/reset", CharacterController, :reset, as: :reset)
     end
 
     post("/characters/teleport", CharacterController, :teleport)
@@ -241,7 +242,6 @@ defmodule Web.Router do
     resources "/users", UserController, only: [:index, :show, :edit, :update] do
       get("/cheat", UserController, :cheat, as: :cheat)
       post("/cheat/activate", UserController, :cheating, as: :cheating)
-      post("/reset", UserController, :reset, as: :reset)
     end
 
     resources "/zones", ZoneController, only: [:index, :show, :new, :create, :edit, :update] do

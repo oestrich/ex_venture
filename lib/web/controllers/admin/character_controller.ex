@@ -19,6 +19,12 @@ defmodule Web.Admin.CharacterController do
     |> render("watch.html")
   end
 
+  def reset(conn, %{"character_id" => id}) do
+    Character.reset(id)
+
+    redirect(conn, to: character_path(conn, :show, id))
+  end
+
   def teleport(conn, %{"room_id" => room_id}) do
     %{current_character: character} = conn.assigns
 

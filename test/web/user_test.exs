@@ -2,8 +2,6 @@ defmodule Web.UserTest do
   use Data.ModelCase
   use Bamboo.Test
 
-  alias Data.QuestProgress
-  alias Game.Account
   alias Game.Emails
   alias Web.User
 
@@ -58,37 +56,6 @@ defmodule Web.UserTest do
     {:ok, user} = User.update(user.id, %{"email" => "new@example.com"})
 
     assert user.email == "new@example.com"
-  end
-
-  describe "reset a user" do
-    setup do
-      create_config(:starting_save, base_save() |> Poison.encode!)
-      :ok
-    end
-
-    test "resets the save", %{user: user} do
-      character = create_character(user)
-
-      save = %{character.save | level: 2}
-      {:ok, character} = Account.save(character, save)
-
-      :ok = User.reset(user.id)
-
-      character = Data.Repo.get(Data.Character, character.id)
-      assert character.save.level == 1
-    end
-
-    test "resets quests", %{user: user} do
-      guard = create_npc(%{is_quest_giver: true})
-      quest = create_quest(guard)
-
-      character = create_character(user)
-      create_quest_progress(character, quest)
-
-      :ok = User.reset(user.id)
-
-      assert Data.Repo.all(QuestProgress) == []
-    end
   end
 
   describe "check totp token" do

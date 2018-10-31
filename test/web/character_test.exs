@@ -1,8 +1,10 @@
 defmodule Web.CharacterTest do
   use Data.ModelCase
 
-  alias Web.Character
+  alias Data.QuestProgress
+  alias Game.Account
   alias Game.Session
+  alias Web.Character
 
   setup [:with_user]
 
@@ -51,11 +53,41 @@ defmodule Web.CharacterTest do
     end
   end
 
+  describe "reset a user" do
+    setup [:with_character, :with_config]
+
+    test "resets the save", %{character: character} do
+      save = %{character.save | level: 2}
+      {:ok, character} = Account.save(character, save)
+
+      :ok = Character.reset(character.id)
+
+      character = Data.Repo.get(Data.Character, character.id)
+      assert character.save.level == 1
+    end
+
+    test "resets quests", %{character: character} do
+      guard = create_npc(%{is_quest_giver: true})
+      quest = create_quest(guard)
+
+      create_quest_progress(character, quest)
+
+      :ok = Character.reset(character.id)
+
+      assert Data.Repo.all(QuestProgress) == []
+    end
+  end
+
   def with_user(_) do
     %{user: create_user(%{name: "user", password: "password"})}
   end
 
   def with_character(%{user: user}) do
     %{character: create_character(user, %{name: "user"})}
+  end
+
+  def with_config(_) do
+    create_config(:starting_save, base_save() |> Poison.encode!)
+    :ok
   end
 end

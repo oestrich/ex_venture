@@ -8,7 +8,6 @@ defmodule Web.User do
   require Logger
 
   alias Data.Character
-  alias Data.QuestProgress
   alias Data.Repo
   alias Data.User
   alias Data.User.OneTimePassword
@@ -207,26 +206,6 @@ defmodule Web.User do
   def connected_players() do
     SessionRegistry.connected_players()
     |> Enum.map(& &1.player)
-  end
-
-  @doc """
-  Reset a player's save file, and quest progress
-  """
-  def reset(user_id) do
-    user =
-      User
-      |> Repo.get(user_id)
-      |> Repo.preload([:characters])
-
-    Enum.each(user.characters, fn character ->
-      QuestProgress
-      |> where([qp], qp.character_id == ^character.id)
-      |> Repo.delete_all()
-
-      Account.save(character, Web.Character.starting_save(%{"race_id" => character.race_id}))
-    end)
-
-    :ok
   end
 
   @doc """

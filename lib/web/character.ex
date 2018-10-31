@@ -3,7 +3,10 @@ defmodule Web.Character do
   Web context for characters
   """
 
+  import Ecto.Query
+
   alias Data.Character
+  alias Data.QuestProgress
   alias Data.Repo
   alias Data.Stats
   alias Game.Account
@@ -143,5 +146,20 @@ defmodule Web.Character do
       %{pid: pid} ->
         pid |> Session.teleport(room_id)
     end
+  end
+
+  @doc """
+  Reset a player's save file, and quest progress
+  """
+  def reset(character_id) do
+    with {:ok, character} <- get(character_id) do
+      QuestProgress
+      |> where([qp], qp.character_id == ^character.id)
+      |> Repo.delete_all()
+
+      Account.save(character, starting_save(%{"race_id" => character.race_id}))
+    end
+
+    :ok
   end
 end

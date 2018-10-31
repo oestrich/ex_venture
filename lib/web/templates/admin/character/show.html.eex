@@ -34,6 +34,11 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Basic Stats</h3>
+          <div class="box-tools">
+            <%= if !live(@character) do %>
+              <%= link("Reset Save", to: character_reset_path(@conn, :reset, @character.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
+            <% end %>
+          </div>
         </div>
         <div class="box-body">
           <table class="table">

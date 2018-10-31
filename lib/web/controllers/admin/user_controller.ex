@@ -52,10 +52,4 @@ defmodule Web.Admin.UserController do
         |> render("edit.html")
     end
   end
-
-  def reset(conn, %{"user_id" => id}) do
-    User.reset(id)
-
-    conn |> redirect(to: user_path(conn, :show, id))
-  end
 end
