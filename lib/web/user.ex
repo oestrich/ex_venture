@@ -143,10 +143,8 @@ defmodule Web.User do
   Create a new user
   """
   @spec create(params :: map) :: {:ok, User.t()} | {:error, changeset :: map}
-  def create(params = %{"race_id" => _race_id}) do
-    result = Repo.transaction(fn -> _create(params) end)
-
-    case result do
+  def create(params) do
+    case Repo.transaction(fn -> _create(params) end) do
       {:ok, result} ->
         result
 
@@ -155,15 +153,9 @@ defmodule Web.User do
     end
   end
 
-  def create(params) do
-    %User{}
-    |> User.changeset(params)
-    |> Repo.insert()
-  end
-
   def _create(params) do
     with {:ok, user} <- create_user(params),
-         {:ok, character} <- create_character(user, params) do
+         {:ok, character} <- Web.Character.create(user, params) do
       Account.maybe_email_welcome(user)
 
       Config.claim_character_name(character.name)
@@ -171,7 +163,7 @@ defmodule Web.User do
       {:ok, user, character}
     else
       {:error, changeset} ->
-        Repo.rollback(changeset)
+        Repo.rollback({:error, changeset})
     end
   end
 
@@ -181,16 +173,6 @@ defmodule Web.User do
 
     %User{}
     |> User.changeset(params)
-    |> Repo.insert()
-  end
-
-  defp create_character(user, params) do
-    save = Web.Character.starting_save(params)
-    params = Map.put(params, "save", save)
-
-    user
-    |> Ecto.build_assoc(:characters)
-    |> Character.changeset(params)
     |> Repo.insert()
   end
 
