@@ -7,8 +7,8 @@ defmodule Web.Mail do
 
   alias Data.Mail
   alias Data.Repo
+  alias Web.Character
   alias Web.Pagination
-  alias Web.User
 
   @doc """
   Get all mail for a character
@@ -53,7 +53,7 @@ defmodule Web.Mail do
   def send(sender, params) do
     receiver_name = Map.get(params, "receiver_name")
 
-    case User.get_character_by(name: receiver_name) do
+    case Character.get_character_by(name: receiver_name) do
       {:ok, receiver} ->
         params =
           params

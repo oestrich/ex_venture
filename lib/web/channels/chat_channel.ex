@@ -10,7 +10,7 @@ defmodule Web.ChatChannel do
   alias Game.Channels
   alias Game.Message
   alias Web.Channel, as: WebChannel
-  alias Web.User
+  alias Web.Character
 
   def join("chat:" <> channel, _message, socket) do
     case Map.has_key?(socket.assigns, :character_id) do
@@ -25,7 +25,7 @@ defmodule Web.ChatChannel do
   defp assign_character(socket, channel) do
     %{character_id: character_id} = socket.assigns
 
-    case User.get_character(character_id) do
+    case Character.get_character(character_id) do
       {:ok, character} ->
         socket
         |> assign(:character, character)

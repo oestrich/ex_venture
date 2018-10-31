@@ -73,10 +73,10 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@current_character))) %>
                 <%= link(@current_character.name, to: "#", class: "nav-link dropdown-toggle", data: [toggle: "dropdown"]) %>
                 <div class="dropdown-menu">
                   <%= Enum.map(@user.characters, fn character -> %>
-                    <%= link(character.name, to: "#", class: "dropdown-item #{character_active(@conn, character)}") %>
+                    <%= link(character.name, to: public_character_path(@conn, :swap, to: character.id), method: :post, class: "dropdown-item #{character_active(@conn, character)}") %>
                   <% end) %>
                   <div class="dropdown-divider"></div>
-                  <%= link(to: "#", class: "dropdown-item") do %>
+                  <%= link(to: public_character_path(@conn, :new), class: "dropdown-item") do %>
                     <i class="fa fa-plus"></i>
                     New Character
                   <% end %>

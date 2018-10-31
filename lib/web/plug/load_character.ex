@@ -5,7 +5,7 @@ defmodule Web.Plug.LoadCharacter do
 
   import Plug.Conn
 
-  alias Web.User
+  alias Web.Character
 
   def init(default), do: default
 
@@ -27,7 +27,7 @@ defmodule Web.Plug.LoadCharacter do
         |> assign_token()
 
       character_id ->
-        case User.get_character(user, character_id) do
+        case Character.get_character(user, character_id) do
           {:error, :not_found} ->
             conn
             |> load_any_character(user)

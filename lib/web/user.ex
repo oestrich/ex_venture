@@ -10,7 +10,6 @@ defmodule Web.User do
   alias Data.Character
   alias Data.QuestProgress
   alias Data.Repo
-  alias Data.Stats
   alias Data.User
   alias Data.User.OneTimePassword
   alias ExVenture.Mailer
@@ -23,7 +22,6 @@ defmodule Web.User do
   alias Metrics.PlayerInstrumenter
   alias Web.Filter
   alias Web.Pagination
-  alias Web.Race
 
   @behaviour Filter
 
@@ -124,48 +122,6 @@ defmodule Web.User do
   end
 
   @doc """
-  Get a character by their name
-  """
-  @spec get_character_by(Keyword.t()) :: {:ok, User.t()} | {:error, :not_found}
-  def get_character_by(name: name) do
-    case Repo.get_by(Character, name: name) do
-      nil ->
-        {:error, :not_found}
-
-      user ->
-        {:ok, user}
-    end
-  end
-
-  @doc """
-  Get a user's character
-  """
-  def get_character(user, character_id) do
-    case Repo.get_by(Character, user_id: user.id, id: character_id) do
-      nil ->
-        {:error, :not_found}
-
-      character ->
-        {:ok, character}
-    end
-  end
-
-  @doc """
-  Get a character
-
-  Used from the socket and channels
-  """
-  def get_character(character_id) do
-    case Repo.get_by(Character, id: character_id) do
-      nil ->
-        {:error, :not_found}
-
-      character ->
-        {:ok, character}
-    end
-  end
-
-  @doc """
   Get a changeset for a new page
   """
   @spec new() :: changeset :: map
@@ -205,9 +161,9 @@ defmodule Web.User do
     |> Repo.insert()
   end
 
-  def _create(params = %{"race_id" => race_id}) do
-    with {:ok, user} <- create_user(race_id, params),
-         {:ok, character} <- create_character(user, race_id, params) do
+  def _create(params) do
+    with {:ok, user} <- create_user(params),
+         {:ok, character} <- create_character(user, params) do
       Account.maybe_email_welcome(user)
 
       Config.claim_character_name(character.name)
@@ -219,8 +175,8 @@ defmodule Web.User do
     end
   end
 
-  defp create_user(race_id, params) do
-    save = starting_save(race_id)
+  defp create_user(params) do
+    save = Web.Character.starting_save(params)
     params = Map.put(params, "save", save)
 
     %User{}
@@ -228,8 +184,8 @@ defmodule Web.User do
     |> Repo.insert()
   end
 
-  defp create_character(user, race_id, params) do
-    save = starting_save(race_id)
+  defp create_character(user, params) do
+    save = Web.Character.starting_save(params)
     params = Map.put(params, "save", save)
 
     user
@@ -262,18 +218,6 @@ defmodule Web.User do
       false ->
         params
     end
-  end
-
-  @doc """
-  Get a starting save for a user
-  """
-  @spec starting_save(race_id :: integer()) :: Save.t()
-  def starting_save(race_id) do
-    race = Race.get(race_id)
-
-    Config.starting_save()
-    |> Map.put(:stats, race.starting_stats() |> Stats.default())
-    |> Account.maybe_change_starting_room()
   end
 
   @doc """
@@ -331,7 +275,7 @@ defmodule Web.User do
       |> where([qp], qp.character_id == ^character.id)
       |> Repo.delete_all()
 
-      Account.save(character, starting_save(character.race_id))
+      Account.save(character, Web.Character.starting_save(%{"race_id" => character.race_id}))
     end)
 
     :ok

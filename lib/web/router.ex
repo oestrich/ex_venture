@@ -65,6 +65,9 @@ defmodule Web.Router do
     get("/account", AccountController, :show)
     put("/account", AccountController, :update)
 
+    resources("/account/characters", CharacterController, only: [:new, :create])
+    post("/account/characters/swap", CharacterController, :swap)
+
     get("/account/twofactor/start", AccountTwoFactorController, :start)
     get("/account/twofactor/qr.png", AccountTwoFactorController, :qr)
     post("/account/twofactor", AccountTwoFactorController, :validate)

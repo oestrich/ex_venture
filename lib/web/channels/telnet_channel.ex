@@ -9,7 +9,7 @@ defmodule Web.TelnetChannel do
 
   alias Metrics.PlayerInstrumenter
   alias Networking.Protocol
-  alias Web.User
+  alias Web.Character
 
   defmodule Monitor do
     @moduledoc """
@@ -299,7 +299,7 @@ defmodule Web.TelnetChannel do
     socket =
       case socket.assigns do
         %{character_id: character_id} ->
-          {:ok, character} = User.get_character(character_id)
+          {:ok, character} = Character.get_character(character_id)
           socket |> assign(:character, character)
 
         _ ->
