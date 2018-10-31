@@ -11,10 +11,8 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
-            <%= if !online?(@user) do %>
-              <%= link("Edit", to: user_path(@conn, :edit, @user.id), class: "btn btn-primary") %>
-              <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
-            <% end %>
+            <%= link("Edit", to: user_path(@conn, :edit, @user.id), class: "btn btn-primary") %>
+            <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
           </div>
         </div>
         <div class="box-body">

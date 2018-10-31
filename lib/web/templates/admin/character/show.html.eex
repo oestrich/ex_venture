@@ -12,8 +12,10 @@
           <div class="box-header">
             <h3 class="box-title">Live Stats</h3>
             <div class="box-tools">
-              <%= link("Watch", to: character_watch_path(@conn, :watch, @character.id), class: "btn btn-warning") %>
-              <%= link("Disconnect", to: character_disconnect_path(@conn, :disconnect, @character.id), method: "delete", class: "btn btn-warning") %>
+              <%= link("Watch", to: character_watch_path(@conn, :watch, character.id), class: "btn btn-warning") %>
+              <%= link("Teleport", to: character_path(@conn, :teleport, room_id: character.extra.room_id), method: "post", class: "btn btn-primary") %>
+
+              <%= link("Disconnect", to: character_disconnect_path(@conn, :disconnect, character.id), method: "delete", class: "btn btn-warning") %>
             </div>
           </div>
           <div class="box-body">

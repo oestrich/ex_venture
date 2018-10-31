@@ -10,7 +10,7 @@ defmodule Web.AuthConnCase do
 
         conn = conn |> assign(:user, user)
 
-        %{conn: conn, user: user}
+        %{conn: conn, user: user, character: character}
       end
     end
   end

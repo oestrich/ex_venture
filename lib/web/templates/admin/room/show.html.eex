@@ -23,6 +23,7 @@
           <h3 class="box-title">Room View</h3>
           <div class="box-tools">
             <%= link("Delete", to: "#", data: [toggle: "modal", target: "#delete-confirm"], class: "btn btn-danger") %>
+            <%= link("Teleport", to: character_path(@conn, :teleport, room_id: @room.id), method: "post", class: "btn btn-primary") %>
             <%= link("Edit", to: room_path(@conn, :edit, @room.id), class: "btn btn-primary") %>
           </div>
         </div>

@@ -130,6 +130,9 @@ defmodule Web.Router do
       get("/watch", CharacterController, :watch, as: :watch)
     end
 
+    post("/characters/teleport", CharacterController, :teleport)
+    post("/characters/disconnect", CharacterController, :disconnect)
+
     get("/colors", ColorController, :index)
     post("/colors", ColorController, :update)
     delete("/colors", ColorController, :delete)
@@ -234,8 +237,6 @@ defmodule Web.Router do
     resources("/socials", SocialController, only: [:index, :show, :new, :create, :edit, :update])
 
     resources("/typos", TypoController, only: [:index, :show])
-
-    post("/characters/disconnect", CharacterController, :disconnect)
 
     resources "/users", UserController, only: [:index, :show, :edit, :update] do
       get("/cheat", UserController, :cheat, as: :cheat)

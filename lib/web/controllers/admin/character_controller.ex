@@ -19,6 +19,18 @@ defmodule Web.Admin.CharacterController do
     |> render("watch.html")
   end
 
+  def teleport(conn, %{"room_id" => room_id}) do
+    %{current_character: character} = conn.assigns
+
+    case Character.teleport(character, room_id) do
+      {:ok, _character} ->
+        conn |> redirect(to: room_path(conn, :show, room_id))
+
+      _ ->
+        conn |> redirect(to: room_path(conn, :show, room_id))
+    end
+  end
+
   def disconnect(conn, %{"character_id" => id}) do
     with {:ok, id} <- Ecto.Type.cast(:integer, id),
          :ok <- Character.disconnect(id) do

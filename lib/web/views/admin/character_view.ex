@@ -6,12 +6,12 @@ defmodule Web.Admin.CharacterView do
   alias Game.Items
   alias Web.User
 
-  def online?(user) do
-    Enum.any?(User.connected_players(), &(&1.id == user.id))
+  def online?(character) do
+    Enum.any?(User.connected_players(), &(&1.id == character.id))
   end
 
-  def live(user) do
-    Enum.find(User.connected_players(), &(&1.id == user.id))
+  def live(character) do
+    Enum.find(User.connected_players(), &(&1.id == character.id))
   end
 
   def stat_display_name(stat) do

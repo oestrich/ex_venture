@@ -8,6 +8,8 @@ defmodule Web.Admin.DashboardControllerTest do
 
   test "user token and an admin allows in", %{conn: conn} do
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
+    character = create_character(user, %{name: "user"})
+    user = %{user | characters: [character]}
     conn = conn |> assign(:user, user)
 
     conn = get conn, dashboard_path(conn, :index)
@@ -16,6 +18,8 @@ defmodule Web.Admin.DashboardControllerTest do
 
   test "user token and not an admin", %{conn: conn} do
     user = create_user(%{name: "user", password: "password", flags: []})
+    character = create_character(user, %{name: "user"})
+    user = %{user | characters: [character]}
     conn = conn |> assign(:user, user)
 
     conn = get conn, dashboard_path(conn, :index)
