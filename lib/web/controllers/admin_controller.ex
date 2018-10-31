@@ -5,6 +5,7 @@ defmodule Web.AdminController do
 
       plug(:put_layout, "admin.html")
       plug(Web.Plug.LoadUser)
+      plug(Web.Plug.LoadCharacter)
       plug(:ensure_user!)
       plug(:ensure_admin!)
 

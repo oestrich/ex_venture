@@ -31,6 +31,31 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
+
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <li class="dropdown notifications-menu">
+                <%= link(@current_character.name, to: "#", class: "dropdown-toggle", data: [toggle: "dropdown"]) %>
+                <ul class="dropdown-menu">
+                  <li>
+                    <ul class="menu">
+                      <%= Enum.map(@user.characters, fn character -> %>
+                        <li>
+                          <%= link(character.name, to: public_character_path(@conn, :swap, to: character.id), method: :post, class: "dropdown-item #{character_active(@conn, character)}") %>
+                        </li>
+                      <% end) %>
+                      <li class="footer">
+                        <%= link(to: public_character_path(@conn, :new), class: "dropdown-item") do %>
+                          <i class="fa fa-plus"></i>
+                          New Character
+                        <% end %>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </nav>
       </header>
 
