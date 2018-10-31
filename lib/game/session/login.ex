@@ -57,7 +57,7 @@ defmodule Game.Session.Login do
       |> Map.put(:state, "after_sign_in")
 
     socket |> @socket.set_character_id(character.id)
-    state |> CommandConfig.push_config(player.save.config)
+    state |> CommandConfig.push_config(character.save.config)
     state |> GMCP.config_actions()
 
     message = """

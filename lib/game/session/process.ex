@@ -386,9 +386,9 @@ defmodule Game.Session.Process do
   @doc """
   Send the prompt to the user's socket
   """
-  def prompt(state = %{socket: socket, user: user, save: save}) do
+  def prompt(state = %{socket: socket, save: save}) do
     state |> GMCP.vitals()
-    socket |> @socket.prompt(FormatPlayers.prompt(user, save))
+    socket |> @socket.prompt(FormatPlayers.prompt(save))
     state
   end
 

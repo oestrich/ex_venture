@@ -159,7 +159,7 @@ defmodule Game.Command.Look do
     npc_ids = Enum.map(room.npcs, & &1.extra.original_id)
 
     quest =
-      state.user
+      state.character
       |> Quest.for()
       |> Quest.filter_active_quests_for_room(npc_ids)
       |> Quest.find_quest_for_ready_to_complete(state.save)
@@ -174,7 +174,7 @@ defmodule Game.Command.Look do
   end
 
   defp remove_yourself(room, state) do
-    players = Enum.reject(room.players, &(&1.id == state.user.id))
+    players = Enum.reject(room.players, &(&1.id == state.character.id))
     %{room | players: players}
   end
 

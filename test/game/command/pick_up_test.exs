@@ -17,9 +17,9 @@ defmodule Game.Command.PickUpTest do
     @socket.clear_messages()
 
     user = base_user()
-    state = session_state(%{user: user, save: %{user.save | room_id: 1, items: [], currency: 1}})
-
-    %{state: state}
+    character = base_character(user)
+    save = %{character.save | room_id: 1, items: [], currency: 1}
+    %{state: session_state(%{user: user, character: character, save: save})}
   end
 
   test "pick up an item from a room", %{state: state} do

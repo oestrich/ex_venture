@@ -28,7 +28,7 @@ defmodule Game.AccountTest do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user, %{name: "player"})
 
-    character = %{character | save: %{user.save | stats: %{user.save.stats | endurance_points: 3}}}
+    character = %{character | save: %{character.save | stats: %{character.save.stats | endurance_points: 3}}}
     assert character.save.stats.endurance_points == 3
 
     {:ok, character} = Account.save(character, character.save)
@@ -52,7 +52,7 @@ defmodule Game.AccountTest do
       character = create_character(user, %{name: "player"})
 
       started_at = Timex.now() |> Timex.shift(minutes: -5)
-      Account.save_session(user, character, user.save, started_at, Timex.now(), %{commands: %{Game.Command.Look => 1}})
+      Account.save_session(user, character, character.save, started_at, Timex.now(), %{commands: %{Game.Command.Look => 1}})
 
       user =
         User
@@ -70,62 +70,65 @@ defmodule Game.AccountTest do
     setup do
       user = create_user(%{name: "user", password: "password"})
 
+      character = create_character(user)
+
       start_and_clear_items()
       potion = create_item(%{name: "Potion", is_usable: true, amount: 3})
       insert_item(potion)
 
-      %{user: user, potion: potion}
+      start_and_clear_skills()
+
+      %{user: user, character: character, potion: potion}
     end
 
-    test "add amount to the instance if the item is usable", %{user: user, potion: potion} do
-      user = %{user | save: %{user.save | items: [%Item.Instance{id: potion.id, created_at: Timex.now()}]}}
+    test "add amount to the instance if the item is usable", %{character: character, potion: potion} do
+      character = %{character | save: %{character.save | items: [%Item.Instance{id: potion.id, created_at: Timex.now()}]}}
 
-      user = Account.migrate_items(user)
+      character = Account.migrate_items(character)
 
-      assert [%Item.Instance{id: _, amount: 3} | _] = user.save.items
+      assert [%Item.Instance{id: _, amount: 3} | _] = character.save.items
     end
   end
 
   describe "migrating known skills on load" do
     setup do
-      user =
-        create_user(%{name: "user", password: "password"})
-        |> Repo.preload([:class, :race])
+      user = create_user()
+      character = create_character(user)
 
       start_and_clear_skills()
 
-      %{user: user}
+      %{user: user, character: character}
     end
 
-    test "ensure class skills are present", %{user: user} do
+    test "ensure class skills are present", %{character: character} do
       skill = create_skill()
       insert_skill(skill)
 
-      create_class_skill(user.class, skill)
+      create_class_skill(character.class, skill)
 
-      user = Account.migrate_skills(user)
+      character = Account.migrate_skills(character)
 
-      assert user.save.skill_ids == [skill.id]
+      assert character.save.skill_ids == [skill.id]
     end
 
-    test "ensure global skills are present", %{user: user} do
+    test "ensure global skills are present", %{character: character} do
       skill = create_skill(%{is_global: true})
       insert_skill(skill)
 
-      user = Account.migrate_skills(user)
+      character = Account.migrate_skills(character)
 
-      assert user.save.skill_ids == [skill.id]
+      assert character.save.skill_ids == [skill.id]
     end
 
-    test "ensure race skills are present", %{user: user} do
+    test "ensure race skills are present", %{character: character} do
       skill = create_skill()
       insert_skill(skill)
 
-      create_race_skill(user.race, skill)
+      create_race_skill(character.race, skill)
 
-      user = Account.migrate_skills(user)
+      character = Account.migrate_skills(character)
 
-      assert user.save.skill_ids == [skill.id]
+      assert character.save.skill_ids == [skill.id]
     end
   end
 end

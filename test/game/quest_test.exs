@@ -194,7 +194,7 @@ defmodule Game.QuestTest do
       user = create_user()
       character = create_character(user)
       items = [item_instance(potion.id), item_instance(potion.id), item_instance(potion), item_instance(3)]
-      character = %{character | save: %{user.save | items: items}}
+      character = %{character | save: %{character.save | items: items}}
       create_quest_progress(character, quest, %{progress: %{npc_step.id => 3}})
       {:ok, progress} = Quest.progress_for(character, quest.id) # get preloads
 

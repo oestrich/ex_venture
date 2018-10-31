@@ -41,9 +41,18 @@ defmodule TestHelpers do
       id: 10,
       name: "Player",
       flags: [],
+    }
+  end
+
+  def base_character(user) do
+    %Character{
+      id: 10,
+      user: user,
+      name: "Player",
+      flags: [],
       save: base_save(),
-      class: %{name: "Fighter"},
-      race: %{name: "Dwarf"},
+      class: %Class{name: "Fighter"},
+      race: %Race{name: "Human"},
     }
   end
 
@@ -91,17 +100,15 @@ defmodule TestHelpers do
 
   def user_attributes(attributes) do
     Map.merge(%{
-      save: base_save(),
-      race_id: create_race().id,
-      class_id: create_class().id,
+      name: "user",
+      password: "password",
     }, attributes)
   end
 
   def create_user(attributes \\ %{name: "player", password: "password"}) do
     %User{}
     |> User.changeset(user_attributes(attributes))
-    |> Repo.insert!
-    |> Repo.preload([:race, :class])
+    |> Repo.insert!()
   end
 
   def character_attributes(attributes) do

@@ -27,8 +27,9 @@ defmodule Game.Command.SkillsTest do
 
     npc = %{id: 1, name: "Bandit"}
 
+    user = base_user()
     save = %{base_save() | level: 1, stats: %{health_points: 20, strength: 10, skill_points: 10}, wearing: %{}, skill_ids: [slash.id]}
-    user = %{base_user() | save: save}
+    character = %{base_character(user) | save: save}
 
     room =
       @room._room()
@@ -40,6 +41,7 @@ defmodule Game.Command.SkillsTest do
     state = session_state(%{
       skills: %{},
       user: user,
+      character: character,
       save: save
     })
 
@@ -48,7 +50,7 @@ defmodule Game.Command.SkillsTest do
 
   describe "parsing skills" do
     setup %{state: state} do
-      context = %ParseContext{player: state.user}
+      context = %ParseContext{player: state.character}
       %{context: context}
     end
 
@@ -70,9 +72,9 @@ defmodule Game.Command.SkillsTest do
       })
       insert_skill(kick)
 
-      user = state.user
-      user = %{user | save: %{user.save | skill_ids: [kick.id | user.save.skill_ids]}}
-      context = %ParseContext{player: user}
+      character = state.character
+      character = %{character | save: %{character.save | skill_ids: [kick.id | character.save.skill_ids]}}
+      context = %ParseContext{player: character}
 
       assert %{text: "kick", module: Skills, args: {^kick, :level_too_low}} = Skills.parse_skill("kick", context)
     end
@@ -135,7 +137,7 @@ defmodule Game.Command.SkillsTest do
     end
 
     test "required target - targets self", %{state: state, save: save, slash: slash} do
-      Session.Registry.register(state.user)
+      Session.Registry.register(state.character)
 
       state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
       slash = %{slash | require_target: true}
@@ -153,7 +155,7 @@ defmodule Game.Command.SkillsTest do
     end
 
     test "required target - target added", %{state: state, save: save, slash: slash} do
-      Session.Registry.register(state.user)
+      Session.Registry.register(state.character)
 
       state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
       slash = %{slash | require_target: true}

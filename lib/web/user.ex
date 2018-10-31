@@ -96,8 +96,6 @@ defmodule Web.User do
     User
     |> where([u], u.id == ^id)
     |> preload([
-      :class,
-      :race,
       sessions: ^from(s in User.Session, order_by: [desc: s.started_at], limit: 10)
     ])
     |> preload(characters: [quest_progress: [:quest]])
@@ -165,9 +163,6 @@ defmodule Web.User do
   end
 
   defp create_user(params) do
-    save = Web.Character.starting_save(params)
-    params = Map.put(params, "save", save)
-
     %User{}
     |> User.changeset(params)
     |> Repo.insert()

@@ -72,7 +72,7 @@ defmodule Game.Command.Greet do
     :ok
   end
 
-  defp maybe_greet_npc(room, npc_name, %{socket: socket, user: user}) do
+  defp maybe_greet_npc(room, npc_name, state) do
     npc = room.npcs |> Enum.find(&Utility.matches?(&1, npc_name))
 
     case npc do
@@ -80,8 +80,8 @@ defmodule Game.Command.Greet do
         room
 
       npc ->
-        @npc.greet(npc.id, user)
-        socket |> @socket.echo(gettext("You greet %{name}.", name: Format.npc_name(npc)))
+        @npc.greet(npc.id, state.character)
+        state.socket |> @socket.echo(gettext("You greet %{name}.", name: Format.npc_name(npc)))
     end
   end
 

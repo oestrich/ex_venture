@@ -7,6 +7,7 @@ defmodule Web.UserTest do
 
   setup do
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
+
     %{user: user}
   end
 

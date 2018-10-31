@@ -10,7 +10,8 @@ defmodule Game.Command.MailTest do
     @socket.clear_messages
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user, %{name: "user"})
-    %{state: session_state(%{user: user, character: character})}
+
+    %{state: session_state(%{user: user, character: character, save: character.save})}
   end
 
   describe "list out messages" do

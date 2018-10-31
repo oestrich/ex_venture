@@ -25,78 +25,81 @@ defmodule Game.Format.PlayersTest do
       save = %Data.Save{level: 1, experience_points: 0, spent_experience_points: 0, stats: stats}
 
       user = %{
+        seconds_online: 61,
+      }
+
+      character = %{
         name: "hero",
         save: save,
         race: %{name: "Human"},
         class: %{name: "Fighter"},
-        seconds_online: 61,
       }
 
-      %{user: user}
+      %{user: user, character: character}
     end
 
-    test "includes player name", %{user: user} do
-      assert Regex.match?(~r/hero/, Players.info(user))
+    test "includes player name", %{user: user, character: character} do
+      assert Regex.match?(~r/hero/, Players.info(user, character))
     end
 
-    test "includes player race", %{user: user} do
-      assert Regex.match?(~r/Human/, Players.info(user))
+    test "includes player race", %{user: user, character: character} do
+      assert Regex.match?(~r/Human/, Players.info(user, character))
     end
 
-    test "includes player class", %{user: user} do
-      assert Regex.match?(~r/Fighter/, Players.info(user))
+    test "includes player class", %{user: user, character: character} do
+      assert Regex.match?(~r/Fighter/, Players.info(user, character))
     end
 
-    test "includes player level", %{user: user} do
-      assert Regex.match?(~r/Level.+|.+1/, Players.info(user))
+    test "includes player level", %{user: user, character: character} do
+      assert Regex.match?(~r/Level.+|.+1/, Players.info(user, character))
     end
 
-    test "includes player xp", %{user: user} do
-      assert Regex.match?(~r/XP.+|.+0/, Players.info(user))
+    test "includes player xp", %{user: user, character: character} do
+      assert Regex.match?(~r/XP.+|.+0/, Players.info(user, character))
     end
 
-    test "includes player spent xp", %{user: user} do
-      assert Regex.match?(~r/Spent XP.+|.+0/, Players.info(user))
+    test "includes player spent xp", %{user: user, character: character} do
+      assert Regex.match?(~r/Spent XP.+|.+0/, Players.info(user, character))
     end
 
-    test "includes player health", %{user: user} do
-      assert Regex.match?(~r/Health.+|.+50\/55/, Players.info(user))
+    test "includes player health", %{user: user, character: character} do
+      assert Regex.match?(~r/Health.+|.+50\/55/, Players.info(user, character))
     end
 
-    test "includes player skill points", %{user: user} do
-      assert Regex.match?(~r/Skill Points.+|.+10\/10/, Players.info(user))
+    test "includes player skill points", %{user: user, character: character} do
+      assert Regex.match?(~r/Skill Points.+|.+10\/10/, Players.info(user, character))
     end
 
-    test "includes player endurance points", %{user: user} do
-      assert Regex.match?(~r/Stamina.+|.+10\/10/, Players.info(user))
+    test "includes player endurance points", %{user: user, character: character} do
+      assert Regex.match?(~r/Stamina.+|.+10\/10/, Players.info(user, character))
     end
 
-    test "includes player strength", %{user: user} do
-      assert Regex.match?(~r/Strength.+|.+10/, Players.info(user))
+    test "includes player strength", %{user: user, character: character} do
+      assert Regex.match?(~r/Strength.+|.+10/, Players.info(user, character))
     end
 
-    test "includes player agility", %{user: user} do
-      assert Regex.match?(~r/Agility.+|.+10/, Players.info(user))
+    test "includes player agility", %{user: user, character: character} do
+      assert Regex.match?(~r/Agility.+|.+10/, Players.info(user, character))
     end
 
-    test "includes player intelligence", %{user: user} do
-      assert Regex.match?(~r/Intelligence.+|.+10/, Players.info(user))
+    test "includes player intelligence", %{user: user, character: character} do
+      assert Regex.match?(~r/Intelligence.+|.+10/, Players.info(user, character))
     end
 
-    test "includes player awareness", %{user: user} do
-      assert Regex.match?(~r/Awareness.+|.+10/, Players.info(user))
+    test "includes player awareness", %{user: user, character: character} do
+      assert Regex.match?(~r/Awareness.+|.+10/, Players.info(user, character))
     end
 
-    test "includes player vitality", %{user: user} do
-      assert Regex.match?(~r/Vitality.+|.+10/, Players.info(user))
+    test "includes player vitality", %{user: user, character: character} do
+      assert Regex.match?(~r/Vitality.+|.+10/, Players.info(user, character))
     end
 
-    test "includes player willpower", %{user: user} do
-      assert Regex.match?(~r/Willpower.+|.+10/, Players.info(user))
+    test "includes player willpower", %{user: user, character: character} do
+      assert Regex.match?(~r/Willpower.+|.+10/, Players.info(user, character))
     end
 
-    test "includes player play time", %{user: user} do
-      assert Regex.match?(~r/Play Time.+|.+00h 01m 01s/, Players.info(user))
+    test "includes player play time", %{user: user, character: character} do
+      assert Regex.match?(~r/Play Time.+|.+00h 01m 01s/, Players.info(user, character))
     end
   end
 end

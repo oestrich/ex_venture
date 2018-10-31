@@ -29,7 +29,7 @@ defmodule Game.NPC.EventsTest do
     setup do
       npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
       user = %{base_user() | id: 2}
-      character = Data.Character.from_user(user)
+      character = %{base_character(user) | id: 2}
 
       state = %State{room_id: 1, npc: npc, target: nil}
 
@@ -110,7 +110,8 @@ defmodule Game.NPC.EventsTest do
 
     test "calculates the effects and then applies them to the target", %{state: state, event: event} do
       notify_user = %{base_user() | id: 1}
-      Registry.register(notify_user)
+      notify_character = %{base_character(notify_user) | id: 1}
+      Registry.register(notify_character)
       Registry.catch_up()
       state = %State{state | target: {:player, 1}}
 
@@ -153,7 +154,8 @@ defmodule Game.NPC.EventsTest do
 
     test "target the player when they entered" do
       notify_user = %{base_user() | id: 2}
-      Registry.register(notify_user)
+      notify_character = %{base_character(notify_user) | id: 2}
+      Registry.register(notify_character)
       Registry.catch_up()
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
@@ -167,7 +169,8 @@ defmodule Game.NPC.EventsTest do
 
     test "target the player when they entered - target if target is nil and in combat" do
       notify_user = %{base_user() | id: 2}
-      Registry.register(notify_user)
+      notify_character = %{base_character(notify_user) | id: 2}
+      Registry.register(notify_character)
       Registry.catch_up()
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}
@@ -181,7 +184,8 @@ defmodule Game.NPC.EventsTest do
 
     test "target the player when they entered - do nothing if already in combat" do
       notify_user = %{base_user() | id: 2}
-      Registry.register(notify_user)
+      notify_character = %{base_character(notify_user) | id: 2}
+      Registry.register(notify_character)
       Registry.catch_up()
 
       npc = %{id: 1, name: "Mayor", events: [%{type: "room/entered", action: %{type: "target"}}]}

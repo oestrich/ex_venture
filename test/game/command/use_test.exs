@@ -34,25 +34,28 @@ defmodule Game.Command.UseTest do
 
     @socket.clear_messages
 
+    user = base_user()
+    character = base_character(user)
+
     save =
-      base_save()
+      character.save
       |> Map.put(:items, [%Item.Instance{id: 1, created_at: Timex.now(), amount: 1}])
 
-    user = %{base_user() | id: 1, save: save}
+    character = %{character | save: save}
 
-    %{state: session_state(%{user: user})}
+    %{state: session_state(%{user: user, character: character, save: save})}
   end
 
   describe "parsing a custom command" do
     test "pick up an item's custom command", %{state: state} do
-      context = %ParseContext{player: state.user}
+      context = %ParseContext{player: state.character}
       assert {:use, "potion"} = Use.parse("drink potion", context)
     end
   end
 
   describe "using a normal item" do
     test "use an item - removes if amount ends up as 0", %{state: state} do
-      Registry.register(state.user)
+      Registry.register(state.character)
       Registry.catch_up()
 
       {:skip, :prompt, state} = Use.run({:use, "potion"}, state)
@@ -61,11 +64,11 @@ defmodule Game.Command.UseTest do
 
       [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Used a potion), look)
-      assert_receive {:"$gen_cast", {:apply_effects, [], {:player, %{id: 1}}, _}}
+      assert_receive {:"$gen_cast", {:apply_effects, [], {:player, %{id: 10}}, _}}
     end
 
     test "use an item with an amount - decrements amount", %{state: state} do
-      Registry.register(state.user)
+      Registry.register(state.character)
       Registry.catch_up()
 
       save =
@@ -78,7 +81,7 @@ defmodule Game.Command.UseTest do
     end
 
     test "use an item with an amount - -1 is unlimited", %{state: state} do
-      Registry.register(state.user)
+      Registry.register(state.character)
       Registry.catch_up()
 
       save =

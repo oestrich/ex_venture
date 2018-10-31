@@ -6,10 +6,6 @@ defmodule Data.User do
   use Data.Schema
 
   alias Data.Character
-  alias Data.Class
-  alias Data.QuestProgress
-  alias Data.Race
-  alias Data.Save
   alias Data.User.Session
 
   schema "users" do
@@ -18,7 +14,6 @@ defmodule Data.User do
     field(:password, :string, virtual: true)
     field(:password_confirmation, :string, virtual: true)
     field(:password_hash, :string)
-    field(:save, Data.Save)
     field(:flags, {:array, :string})
     field(:token, Ecto.UUID)
     field(:seconds_online, :integer)
@@ -30,12 +25,8 @@ defmodule Data.User do
     field(:password_reset_token, Ecto.UUID)
     field(:password_reset_expires_at, Timex.Ecto.DateTime)
 
-    belongs_to(:class, Class)
-    belongs_to(:race, Race)
-
     has_many(:characters, Character)
     has_many(:sessions, Session)
-    has_many(:quest_progress, QuestProgress)
 
     timestamps()
   end
@@ -54,27 +45,21 @@ defmodule Data.User do
       :email,
       :password,
       :password_confirmation,
-      :save,
       :flags,
-      :race_id,
-      :class_id,
       :seconds_online,
       :notes
     ])
-    |> validate_required([:name, :save, :race_id, :class_id])
+    |> validate_required([:name])
     |> validate_name()
     |> validate_format(:email, ~r/.+@.+\..+/)
     |> ensure(:flags, [])
     |> ensure(:token, UUID.uuid4())
     |> ensure(:seconds_online, 0)
-    |> hash_password
+    |> hash_password()
     |> validate_required([:password_hash])
     |> validate_confirmation(:password)
-    |> validate_save()
     |> unique_constraint(:name)
     |> unique_constraint(:email)
-    |> foreign_key_constraint(:race_id)
-    |> foreign_key_constraint(:class_id)
   end
 
   def email_changeset(struct, params) do
@@ -129,23 +114,6 @@ defmodule Data.User do
 
       _ ->
         changeset
-    end
-  end
-
-  defp validate_save(changeset) do
-    case changeset do
-      %{changes: %{save: save}} when save != nil ->
-        _validate_save(changeset)
-
-      _ ->
-        changeset
-    end
-  end
-
-  defp _validate_save(changeset = %{changes: %{save: save}}) do
-    case Save.valid?(save) do
-      true -> changeset
-      false -> add_error(changeset, :save, "is invalid")
     end
   end
 

@@ -17,10 +17,10 @@ defmodule Game.Session.Commands do
   Parse and run a command from the user
   """
   @spec process_command(State.t(), String.t()) :: tuple()
-  def process_command(state = %{user: user}, message) do
+  def process_command(state = %{character: character}, message) do
     state = Map.merge(state, %{last_recv: Timex.now()})
 
-    context = %ParseContext{player: user}
+    context = %ParseContext{player: character}
 
     message
     |> Color.delink_commands()

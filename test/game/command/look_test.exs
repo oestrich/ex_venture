@@ -34,15 +34,17 @@ defmodule Game.Command.LookTest do
       }
       @room.set_room(Map.merge(@room._room(), room))
 
-      @socket.clear_messages
+      @socket.clear_messages()
 
-      {:ok, %{socket: :socket}}
+      user = create_user(%{name: "hero", password: "password"})
+      character = create_character(user, %{name: "hero"})
+      %{state: session_state(%{user: user, character: character})}
     end
 
-    test "view room information", %{socket: socket} do
-      :ok = Look.run({}, %{socket: socket, user: %{id: 10}, save: %{room_id: 1}})
+    test "view room information", %{state: state} do
+      :ok = Look.run({}, state)
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Hallway), look)
       assert Regex.match?(~r(Exits), look)
       assert Regex.match?(~r(Items), look)
@@ -50,71 +52,69 @@ defmodule Game.Command.LookTest do
       assert Enum.any?(@socket.get_push_gmcps(), fn ({_socket, module, _}) -> module == "Zone.Map" end)
     end
 
-    test "view room information - the room is offline", %{socket: socket} do
+    test "view room information - the room is offline", %{state: state} do
       @room.set_room(:offline)
 
-      {:error, :room_offline} = Look.run({}, %{socket: socket, user: %{id: 10}, save: %{room_id: 1}})
+      {:error, :room_offline} = Look.run({}, state)
 
       assert @socket.get_echos() == []
     end
 
-    test "looking at an item", %{socket: socket} do
-      :ok = Look.run({:other, "short sword"}, %{socket: socket, save: %{room_id: 1}})
+    test "looking at an item", %{state: state} do
+      :ok = Look.run({:other, "short sword"}, state)
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(A simple blade), look)
     end
 
-    test "looking at an npc", %{socket: socket} do
-      :ok = Look.run({:other, "bandit"}, %{socket: socket, save: %{room_id: 1}})
+    test "looking at an npc", %{state: state} do
+      :ok = Look.run({:other, "bandit"}, state)
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(bandit description), look)
     end
 
-    test "looking at a player", %{socket: socket} do
-      :ok = Look.run({:other, "player"}, %{socket: socket, save: %{room_id: 1}})
+    test "looking at a player", %{state: state} do
+      :ok = Look.run({:other, "player"}, state)
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Player), look)
     end
 
-    test "looking in a direction", %{socket: socket} do
-      :ok = Look.run({:direction, "north"}, %{socket: socket, save: %{room_id: 1}})
+    test "looking in a direction", %{state: state} do
+      :ok = Look.run({:direction, "north"}, state)
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Hallway), look)
     end
 
-    test "looking at a room feature", %{socket: socket} do
-      :ok = Look.run({:other, "log"}, %{socket: socket, save: %{room_id: 1}})
+    test "looking at a room feature", %{state: state} do
+      :ok = Look.run({:other, "log"}, state)
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(a log), look)
     end
 
-    test "could not find the name", %{socket: socket} do
-      :ok = Look.run({:other, "unknown"}, %{socket: socket, save: %{room_id: 1}})
+    test "could not find the name", %{state: state} do
+      :ok = Look.run({:other, "unknown"}, state)
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(Could not find), look)
     end
   end
 
   describe "overworld" do
     setup do
-      state = %{
-        socket: :socket,
-        save: %{room_id: "overworld:1:1,1"},
-      }
-
       room = %Environment.State.Overworld{
         id: "overworld:1:1,1",
         exits: [%{direction: "west"}],
       }
       @room.set_room(room)
 
-      %{state: state}
+      user = create_user(%{name: "hero", password: "password"})
+      character = create_character(user, %{name: "hero"})
+      save = %{character.save | room_id: "overworld:1:1,1"}
+      %{state: session_state(%{user: user, character: character, save: save})}
     end
 
     test "looking in the overworld", %{state: state} do
