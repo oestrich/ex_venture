@@ -5,7 +5,6 @@ defmodule Web.UserTest do
   alias Data.QuestProgress
   alias Game.Account
   alias Game.Emails
-  alias Game.Session
   alias Web.User
 
   setup do
@@ -31,26 +30,6 @@ defmodule Web.UserTest do
 
   test "changing password - bad current password", %{user: user} do
     assert {:error, :invalid} = User.change_password(user, "p@ssword", %{password: "apassword", password_confirmation: "apassword"})
-  end
-
-  describe "disconnecting players" do
-    test "disconnecting connected players", %{user: user} do
-      Session.Registry.register(user)
-      Session.Registry.catch_up()
-
-      User.disconnect()
-
-      assert_receive {:"$gen_cast", {:disconnect, [reason: "server shutdown", force: true]}}
-    end
-
-    test "disconnecting a single player", %{user: user} do
-      Session.Registry.register(user)
-      Session.Registry.catch_up()
-
-      User.disconnect(user.id)
-
-      assert_receive {:"$gen_cast", {:disconnect, [reason: "disconnect", force: true]}}
-    end
   end
 
   test "create a new player" do
@@ -204,15 +183,6 @@ defmodule Web.UserTest do
 
       params = %{password: "new password", password_confirmation: "new password"}
       assert :error = User.reset_password(user.password_reset_token, params)
-    end
-  end
-
-  describe "activating cheats" do
-    test "adding experience points", %{user: user} do
-      {:ok, user} = User.activate_cheat(user, %{"name" => "experience", "value" => "1000"})
-
-      assert user.save.level == 2
-      assert user.save.experience_points == 1000
     end
   end
 end

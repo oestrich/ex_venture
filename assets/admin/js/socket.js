@@ -93,9 +93,9 @@ export class NPCSocket {
   }
 }
 
-export class UserSocket {
-  constructor(userId) {
-    this.userId = userId
+export class CharacterSocket {
+  constructor(characterId) {
+    this.characterId = characterId
   }
 
   connect() {
@@ -105,7 +105,7 @@ export class UserSocket {
     this.socket = new Socket("/admin/socket", {params: {token: userToken}})
     this.socket.connect()
 
-    this.channel = this.socket.channel("user:" + this.userId, {})
+    this.channel = this.socket.channel("character:" + this.characterId, {})
 
     this.channel.on("echo", msg => {
       this.append(msg.data)
@@ -125,4 +125,4 @@ export class UserSocket {
 }
 
 window.NPCSocket = NPCSocket;
-window.UserSocket = UserSocket;
+window.CharacterSocket = CharacterSocket;

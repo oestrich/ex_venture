@@ -16,8 +16,6 @@ defmodule Web.User do
   alias Game.Account
   alias Game.Config
   alias Game.Emails
-  alias Game.Experience
-  alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
   alias Metrics.PlayerInstrumenter
   alias Web.Filter
@@ -212,38 +210,6 @@ defmodule Web.User do
   end
 
   @doc """
-  Teleport a user to the room
-
-  Updates the save and sends a message to their session
-  """
-  @spec teleport(user :: User.t(), room_id :: integer) :: {:ok, User.t()} | {:error, map}
-  def teleport(user, room_id) do
-    room_id = String.to_integer(room_id)
-    save = %{user.save | room_id: room_id}
-    changeset = user |> User.changeset(%{save: save})
-
-    case changeset |> Repo.update() do
-      {:ok, user} ->
-        teleport_player_in_game(user, room_id)
-
-        {:ok, user}
-
-      anything ->
-        anything
-    end
-  end
-
-  def teleport_player_in_game(user, room_id) do
-    case SessionRegistry.find_connected_player(user.id) do
-      nil ->
-        nil
-
-      %{pid: pid} ->
-        pid |> Session.teleport(room_id)
-    end
-  end
-
-  @doc """
   Reset a player's save file, and quest progress
   """
   def reset(user_id) do
@@ -277,33 +243,6 @@ defmodule Web.User do
         user
         |> User.password_changeset(params)
         |> Repo.update()
-    end
-  end
-
-  @doc """
-  Disconnect players
-
-  The server will shutdown shortly.
-  """
-  @spec disconnect() :: :ok
-  def disconnect() do
-    SessionRegistry.connected_players()
-    |> Enum.each(fn %{pid: pid} ->
-      Session.disconnect(pid, reason: "server shutdown", force: true)
-    end)
-
-    :ok
-  end
-
-  @spec disconnect(integer()) :: :ok
-  def disconnect(user_id) do
-    case Session.find_connected_player(user_id) do
-      nil ->
-        :ok
-
-      %{pid: pid} ->
-        Session.disconnect(pid, reason: "disconnect", force: true)
-        :ok
     end
   end
 
@@ -470,16 +409,6 @@ defmodule Web.User do
     user
     |> User.email_changeset(params)
     |> Repo.update()
-  end
-
-  def activate_cheat(user, params) do
-    case Map.get(params, "name") do
-      "experience" ->
-        experience_points = String.to_integer(Map.get(params, "value"))
-        save = Experience.add_experience(user.save, experience_points)
-        save = Experience.maybe_level_up(user.save, save)
-        Account.save(user, save)
-    end
   end
 
   @doc """

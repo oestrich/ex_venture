@@ -53,69 +53,6 @@ defmodule Web.Admin.UserController do
     end
   end
 
-  def watch(conn, %{"user_id" => id}) do
-    user = User.get(id)
-
-    conn
-    |> assign(:user, user)
-    |> render("watch.html")
-  end
-
-  def cheat(conn, %{"user_id" => id}) do
-    user = User.get(id)
-
-    conn
-    |> assign(:user, user)
-    |> render("cheat.html")
-  end
-
-  def cheating(conn, %{"user_id" => id, "cheat" => params}) do
-    user = User.get(id)
-
-    case User.activate_cheat(user, params) do
-      {:ok, user} ->
-        conn
-        |> assign(:user, user)
-        |> put_flash(:info, "Cheat activated")
-        |> redirect(to: user_path(conn, :show, user.id))
-
-      _ ->
-        conn
-        |> assign(:user, user)
-        |> put_flash(:error, "There was an issue activating the cheat. Please try again.")
-        |> render("cheat.html")
-    end
-  end
-
-  def teleport(conn, %{"room_id" => room_id}) do
-    %{user: user} = conn.assigns
-
-    case User.teleport(user, room_id) do
-      {:ok, _user} ->
-        conn |> redirect(to: room_path(conn, :show, room_id))
-
-      _ ->
-        conn |> redirect(to: room_path(conn, :show, room_id))
-    end
-  end
-
-  def disconnect(conn, %{"user_id" => id}) do
-    with {:ok, id} <- Ecto.Type.cast(:integer, id),
-         :ok <- User.disconnect(id) do
-      conn |> redirect(to: user_path(conn, :show, id))
-    else
-      _ ->
-        conn |> redirect(to: user_path(conn, :show, id))
-    end
-  end
-
-  def disconnect(conn, _params) do
-    case User.disconnect() do
-      :ok ->
-        conn |> redirect(to: dashboard_path(conn, :index))
-    end
-  end
-
   def reset(conn, %{"user_id" => id}) do
     User.reset(id)
 

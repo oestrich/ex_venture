@@ -75,14 +75,14 @@
         <div class="box-header">
           <h3 class="box-title">Currently Connected Players</h3>
           <div class="box-tools">
-            <%= link("Disconnect Players", to: user_path(@conn, :disconnect), method: "post", class: "btn btn-warning") %>
+            <%= link("Disconnect Players", to: character_path(@conn, :disconnect), method: "post", class: "btn btn-warning") %>
           </div>
         </div>
         <div class="box-body">
           <ul class="list-group">
             <%= Enum.map(@players, fn (player) -> %>
               <li class="list-group-item">
-                <%= link(player.name, to: user_path(@conn, :show, player.id)) %>
+                <%= link(player.name, to: character_path(@conn, :show, player.id)) %>
               </li>
             <% end) %>
           </ul>

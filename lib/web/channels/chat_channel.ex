@@ -25,7 +25,7 @@ defmodule Web.ChatChannel do
   defp assign_character(socket, channel) do
     %{character_id: character_id} = socket.assigns
 
-    case Character.get_character(character_id) do
+    case Character.get(character_id) do
       {:ok, character} ->
         socket
         |> assign(:character, character)

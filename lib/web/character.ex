@@ -8,6 +8,8 @@ defmodule Web.Character do
   alias Data.Stats
   alias Game.Account
   alias Game.Config
+  alias Game.Session
+  alias Game.Session.Registry, as: SessionRegistry
   alias Web.Race
   alias Web.User
 
@@ -43,13 +45,13 @@ defmodule Web.Character do
 
   Used from the socket and channels
   """
-  def get_character(character_id) do
+  def get(character_id) do
     case Repo.get_by(Character, id: character_id) do
       nil ->
         {:error, :not_found}
 
       character ->
-        {:ok, character}
+        {:ok, Repo.preload(character, [:class, :race, :user, quest_progress: [:quest]])}
     end
   end
 
@@ -82,6 +84,64 @@ defmodule Web.Character do
     else 
       _ ->
         nil
+    end
+  end
+
+  @doc """
+  Disconnect players
+
+  The server will shutdown shortly.
+  """
+  @spec disconnect() :: :ok
+  def disconnect() do
+    SessionRegistry.connected_players()
+    |> Enum.each(fn %{pid: pid} ->
+      Session.disconnect(pid, reason: "server shutdown", force: true)
+    end)
+
+    :ok
+  end
+
+  @spec disconnect(integer()) :: :ok
+  def disconnect(user_id) do
+    case Session.find_connected_player(user_id) do
+      nil ->
+        :ok
+
+      %{pid: pid} ->
+        Session.disconnect(pid, reason: "disconnect", force: true)
+        :ok
+    end
+  end
+
+  @doc """
+  Teleport a user to the room
+
+  Updates the save and sends a message to their session
+  """
+  def teleport(character, room_id) do
+    room_id = String.to_integer(room_id)
+    save = %{character.save | room_id: room_id}
+    changeset = character |> Character.changeset(%{save: save})
+
+    case changeset |> Repo.update() do
+      {:ok, character} ->
+        teleport_player_in_game(character, room_id)
+
+        {:ok, character}
+
+      anything ->
+        anything
+    end
+  end
+
+  def teleport_player_in_game(character, room_id) do
+    case SessionRegistry.find_connected_player(character.id) do
+      nil ->
+        nil
+
+      %{pid: pid} ->
+        pid |> Session.teleport(room_id)
     end
   end
 end

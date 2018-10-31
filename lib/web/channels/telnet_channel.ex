@@ -299,7 +299,7 @@ defmodule Web.TelnetChannel do
     socket =
       case socket.assigns do
         %{character_id: character_id} ->
-          {:ok, character} = Character.get_character(character_id)
+          {:ok, character} = Character.get(character_id)
           socket |> assign(:character, character)
 
         _ ->

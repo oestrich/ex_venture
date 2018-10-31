@@ -1,10 +1,9 @@
-defmodule Web.Admin.UserView do
+defmodule Web.Admin.CharacterView do
   use Web, :view
 
   import Web.TimeView
 
-  alias Game.Format.Players, as: FormatPlayers
-  alias Web.Admin.SharedView
+  alias Game.Items
   alias Web.User
 
   def online?(user) do
@@ -21,15 +20,5 @@ defmodule Web.Admin.UserView do
     |> String.split("_")
     |> Enum.map(&String.capitalize/1)
     |> Enum.join(" ")
-  end
-
-  def command_name(command) do
-    command
-    |> String.split(".")
-    |> List.last()
-  end
-
-  def checked_flag?(user, flag) do
-    flag in user.flags
   end
 end
