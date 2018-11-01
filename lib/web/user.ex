@@ -7,7 +7,6 @@ defmodule Web.User do
 
   require Logger
 
-  alias Data.Character
   alias Data.Repo
   alias Data.User
   alias Data.User.OneTimePassword
@@ -17,6 +16,7 @@ defmodule Web.User do
   alias Game.Emails
   alias Game.Session.Registry, as: SessionRegistry
   alias Metrics.PlayerInstrumenter
+  alias Web.Character
   alias Web.Filter
   alias Web.Pagination
 
@@ -149,13 +149,24 @@ defmodule Web.User do
   end
 
   def _create(params) do
-    with {:ok, user} <- create_user(params),
-         {:ok, character} <- Web.Character.create(user, params) do
-      Account.maybe_email_welcome(user)
+    with {:ok, user} <- create_user(params) do
+      case Character.create(user, params) do
+        {:ok, character} ->
+          Account.maybe_email_welcome(user)
 
-      Config.claim_character_name(character.name)
+          Config.claim_character_name(character.name)
 
-      {:ok, user, character}
+          {:ok, user, character}
+
+        {:error, changeset} ->
+          user_changeset =
+            user
+            |> Ecto.Changeset.change()
+            |> Map.put(:action, :insert)
+            |> Map.put(:errors, changeset.errors)
+
+          Repo.rollback({:error, user_changeset})
+      end
     else
       {:error, changeset} ->
         Repo.rollback({:error, changeset})
@@ -388,7 +399,7 @@ defmodule Web.User do
   @doc """
   Authorize a connection
   """
-  @spec authorize_connection(Character.t(), String.t()) :: :ok
+  @spec authorize_connection(Data.Character.t(), String.t()) :: :ok
   def authorize_connection(character, id) do
     SessionRegistry.authorize_connection(character, id)
   end
