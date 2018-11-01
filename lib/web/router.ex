@@ -30,6 +30,7 @@ defmodule Web.Router do
 
   pipeline :public_2fa do
     plug(Web.Plug.LoadUser, verify: false)
+    plug(Web.Plug.LoadCharacter)
   end
 
   scope "/", Web, as: :public do

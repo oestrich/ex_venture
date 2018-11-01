@@ -17,8 +17,8 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
     create index(:characters, ["lower(name)"], unique: true)
 
     execute """
-    insert into characters (user_id, name, flags, save, class_id, race_id, inserted_at, updated_at)
-    select id as user_id, name, flags, save, class_id, race_id, inserted_at, updated_at from users;
+    insert into characters (user_id, name, flags, save, class_id, race_id, seconds_online, inserted_at, updated_at)
+    select id as user_id, name, flags, save, class_id, race_id, seconds_online, inserted_at, updated_at from users;
     """
 
     migrate_bugs()
@@ -97,7 +97,7 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
     end
 
     execute """
-    update channel_messages set character_id = characters.id from characters where characters.user_id = channel_messages.user_id;
+    update quest_progress set character_id = characters.id from characters where characters.user_id = quest_progress.user_id;
     """
 
     drop index(:quest_progress, [:user_id, :quest_id])
