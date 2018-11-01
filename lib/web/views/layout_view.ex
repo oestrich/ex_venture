@@ -40,6 +40,9 @@ defmodule Web.LayoutView do
   def user_token(%{assigns: %{user_token: token}}), do: token
   def user_token(_), do: ""
 
+  def character_token(%{assigns: %{character_token: token}}), do: token
+  def character_token(_), do: ""
+
   def is_admin?(%{assigns: %{user: user}}), do: User.is_admin?(user)
   def is_admin?(_), do: false
 
@@ -53,7 +56,15 @@ defmodule Web.LayoutView do
     end
   end
 
-  def game_config(user) do
-    user.save.config
+  def game_config(character) do
+    character.save.config
+  end
+
+  def character_active(conn, character) do
+    with %{current_character: current_character} <- conn.assigns do
+      if current_character.id == character.id do
+        "active"
+      end
+    end
   end
 end

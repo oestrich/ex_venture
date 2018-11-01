@@ -72,20 +72,20 @@ defmodule Game.Command.Mail do
   """
   def run(command, state)
 
-  def run({:unread}, state = %{socket: socket, user: user}) do
-    case Mail.unread_mail_for(user) do
+  def run({:unread}, state) do
+    case Mail.unread_mail_for(state.character) do
       [] ->
-        socket |> @socket.echo(gettext("You have no unread mail."))
+        state.socket |> @socket.echo(gettext("You have no unread mail."))
 
       mail ->
         {:paginate, FormatMail.list_mail(mail), state}
     end
   end
 
-  def run({:read, id}, state = %{socket: socket, user: user}) do
-    case Mail.get(user, id) do
+  def run({:read, id}, state) do
+    case Mail.get(state.character, id) do
       nil ->
-        socket |> @socket.echo(gettext("The mail requested could not be found. Please try again."))
+        state.socket |> @socket.echo(gettext("The mail requested could not be found. Please try again."))
 
       mail ->
         Mail.mark_read!(mail)
@@ -93,7 +93,7 @@ defmodule Game.Command.Mail do
     end
   end
 
-  def run({:new, player}, state = %{socket: socket}) do
+  def run({:new, player}, state) do
     case Account.get_player(player) do
       {:ok, player} ->
         commands =
@@ -102,12 +102,12 @@ defmodule Game.Command.Mail do
 
         state = %{state | commands: commands}
 
-        socket |> @socket.prompt("Title: ")
+        state.socket |> @socket.prompt("Title: ")
 
         {:editor, __MODULE__, state}
 
       {:error, :not_found} ->
-        socket |> @socket.echo(gettext("Could not find \"%{player}\".", player: player))
+        state.socket |> @socket.echo(gettext("Could not find \"%{player}\".", player: player))
     end
   end
 
@@ -135,7 +135,7 @@ defmodule Game.Command.Mail do
   def editor(:complete, state) do
     %{commands: %{mail: mail}} = state
 
-    Mail.create(state.user, mail)
+    Mail.create(state.character, mail)
 
     commands =
       state

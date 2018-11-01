@@ -13,13 +13,13 @@
     <link rel="alternate" type="application/rss+xml" title="<%= Config.game_name %> » Announcements" href="<%= public_announcement_url(@conn, :feed) %>">
 
     <script type="application/javascript">
-<%= if Map.has_key?(assigns, :user) do %>
-window.gameConfig = <%= raw(Poison.encode!(game_config(@user))) %>
+<%= if Map.has_key?(assigns, :current_character) do %>
+window.gameConfig = <%= raw(Poison.encode!(game_config(@current_character))) %>
 <% end %>
     </script>
   </head>
 
-  <body id="body" data-user-token="<%= @conn |> user_token() %>">
+  <body id="body" data-character-token="<%= @conn |> character_token() %>">
     <nav class="site-header navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <%= link(Config.game_name(), to: public_page_path(@conn, :index), class: "navbar-brand") %>
@@ -68,6 +68,21 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@user))) %>
             <% end %>
           </ul>
           <%= if Map.has_key?(@conn.assigns, :user) do %>
+            <ul class="navbar-nav">
+              <li class="nav-item dropdown">
+                <%= link(@current_character.name, to: "#", class: "nav-link dropdown-toggle", data: [toggle: "dropdown"]) %>
+                <div class="dropdown-menu">
+                  <%= Enum.map(@user.characters, fn character -> %>
+                    <%= link(character.name, to: public_character_path(@conn, :swap, to: character.id), method: :post, class: "dropdown-item #{character_active(@conn, character)}") %>
+                  <% end) %>
+                  <div class="dropdown-divider"></div>
+                  <%= link(to: public_character_path(@conn, :new), class: "dropdown-item") do %>
+                    <i class="fa fa-plus"></i>
+                    New Character
+                  <% end %>
+                </div>
+              </li>
+            </ul>
             <%= link("Play Now", to: public_play_path(@conn, :show), class: "btn btn-secondary") %>
           <% else %>
             <%= link("Sign in", to: public_session_path(@conn, :new), class: "btn btn-secondary") %>

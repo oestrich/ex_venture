@@ -8,8 +8,6 @@ defmodule Game.Command.RunTest do
   @room Test.Game.Room
 
   setup do
-    user = %{id: 10, save: %{room_id: 1, experience_points: 10, stats: %{endurance_points: 10}}}
-
     room = %Game.Environment.State.Room{
       id: 1,
       name: "",
@@ -21,8 +19,11 @@ defmodule Game.Command.RunTest do
     }
     @room.set_room(room)
 
-    state = session_state(%{user: user, save: user.save, skills: %{}})
-    %{state: state}
+    user = base_user()
+    character = base_character(user)
+    save = %{character.save | room_id: 1, experience_points: 10, stats: %{endurance_points: 10}}
+
+    %{state: session_state(%{user: user, character: character, save: save, skills: %{}})}
   end
 
   test "run in a set of directions", %{state: state} do

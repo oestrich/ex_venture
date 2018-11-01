@@ -15,10 +15,10 @@ defmodule Game.CommandTest do
 
   describe "parsing commands" do
     setup do
-      user = %{save: %{skill_ids: [], items: []}}
+      character = %{save: %{skill_ids: [], items: []}}
 
       context = %ParseContext{
-        player: user
+        player: character
       }
 
       %{context: context}
@@ -328,10 +328,11 @@ defmodule Game.CommandTest do
   describe "quitting" do
     test "quit command", %{socket: socket} do
       user = create_user(%{name: "user", password: "password", class_id: create_class().id})
-      save = %{user.save | room_id: 5}
+      character = create_character(user)
+      save = %{character.save | room_id: 5}
 
       command = %Command{module: Command.Quit}
-      :ok = Command.run(command, %{socket: socket, user: user, save: save})
+      :ok = Command.run(command, %{socket: socket, character: character, save: save})
 
       assert @socket.get_echos() == [{socket, "Good bye."}]
       assert @socket.get_disconnects() == [socket]

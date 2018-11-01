@@ -12,24 +12,20 @@ defmodule Game.Command.InfoTest do
       start_and_clear_items()
       insert_item(armor)
 
-      @socket.clear_messages
-      {:ok, %{socket: :socket, armor: armor}}
+      @socket.clear_messages()
+
+      user = create_user(%{name: "hero", password: "password"})
+      character = create_character(user, %{name: "hero"})
+      %{state: session_state(%{user: user, character: character}), armor: armor}
     end
 
-    test "view room information", %{socket: socket, armor: armor} do
-      user = %{
-        name: "hero",
-        save: base_save(),
-        race: %{name: "Human"},
-        class: %{name: "Fighter"},
-        seconds_online: 15,
-      }
-      save = %{user.save | wearing: %{chest: armor.id}, stats: base_stats()}
+    test "view room information", %{state: state, armor: armor} do
+      save = %{state.character.save | wearing: %{chest: armor.id}, stats: base_stats()}
       ten_min_ago = Timex.now() |> Timex.shift(minutes: -10)
 
-      Info.run({}, %{socket: socket, user: user, save: save, session_started_at: ten_min_ago})
+      Info.run({}, %{state | save: save, session_started_at: ten_min_ago})
 
-      [{^socket, look}] = @socket.get_echos()
+      [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(hero), look)
       assert Regex.match?(~r(Strength.+|.+20), look)
       assert Regex.match?(~r(Skill Points.+|.+10), look)
@@ -39,9 +35,11 @@ defmodule Game.Command.InfoTest do
 
   describe "viewing another player" do
     setup do
-      @socket.clear_messages
-      state = %{socket: :socket}
-      %{state: state}
+      @socket.clear_messages()
+
+      user = base_user()
+      character = base_character(user)
+      %{state: session_state(%{user: user, character: character})}
     end
 
     test "can see basic information", %{state: state} do

@@ -5,8 +5,8 @@ defmodule Data.QuestProgress do
 
   use Data.Schema
 
+  alias Data.Character
   alias Data.Quest
-  alias Data.User
 
   @statuses ["active", "complete"]
 
@@ -52,18 +52,18 @@ defmodule Data.QuestProgress do
     field(:is_tracking, :boolean, default: false)
 
     belongs_to(:quest, Quest)
-    belongs_to(:user, User)
+    belongs_to(:character, Character)
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:status, :progress, :is_tracking, :user_id, :quest_id])
-    |> validate_required([:status, :progress, :is_tracking, :user_id, :quest_id])
+    |> cast(params, [:status, :progress, :is_tracking, :character_id, :quest_id])
+    |> validate_required([:status, :progress, :is_tracking, :character_id, :quest_id])
     |> validate_inclusion(:status, @statuses)
-    |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:character_id)
     |> foreign_key_constraint(:quest_id)
-    |> unique_constraint(:quest_id, name: :quest_progress_user_id_quest_id_index)
+    |> unique_constraint(:quest_id, name: :quest_progress_character_id_quest_id_index)
   end
 end

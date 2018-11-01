@@ -25,10 +25,12 @@ defmodule Web.Router do
 
   pipeline :public do
     plug(Web.Plug.LoadUser)
+    plug(Web.Plug.LoadCharacter)
   end
 
   pipeline :public_2fa do
     plug(Web.Plug.LoadUser, verify: false)
+    plug(Web.Plug.LoadCharacter)
   end
 
   scope "/", Web, as: :public do
@@ -63,6 +65,9 @@ defmodule Web.Router do
 
     get("/account", AccountController, :show)
     put("/account", AccountController, :update)
+
+    resources("/account/characters", CharacterController, only: [:new, :create])
+    post("/account/characters/swap", CharacterController, :swap)
 
     get("/account/twofactor/start", AccountTwoFactorController, :start)
     get("/account/twofactor/qr.png", AccountTwoFactorController, :qr)
@@ -120,6 +125,15 @@ defmodule Web.Router do
     end
 
     resources("/class_skills", ClassSkillController, only: [:delete])
+
+    resources("/characters", CharacterController, only: [:show]) do
+      delete("/disconnect", CharacterController, :disconnect, as: :disconnect)
+      get("/watch", CharacterController, :watch, as: :watch)
+      post("/reset", CharacterController, :reset, as: :reset)
+    end
+
+    post("/characters/teleport", CharacterController, :teleport)
+    post("/characters/disconnect", CharacterController, :disconnect)
 
     get("/colors", ColorController, :index)
     post("/colors", ColorController, :update)
@@ -226,15 +240,9 @@ defmodule Web.Router do
 
     resources("/typos", TypoController, only: [:index, :show])
 
-    post("/users/teleport", UserController, :teleport)
-    post("/users/disconnect", UserController, :disconnect)
-
     resources "/users", UserController, only: [:index, :show, :edit, :update] do
       get("/cheat", UserController, :cheat, as: :cheat)
       post("/cheat/activate", UserController, :cheating, as: :cheating)
-      delete("/disconnect", UserController, :disconnect, as: :disconnect)
-      post("/reset", UserController, :reset, as: :reset)
-      get("/watch", UserController, :watch, as: :watch)
     end
 
     resources "/zones", ZoneController, only: [:index, :show, :new, :create, :edit, :update] do

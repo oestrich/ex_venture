@@ -1,37 +1,59 @@
 defmodule Game.AccountTest do
   use Data.ModelCase
 
+  alias Data.Character
   alias Data.Item
   alias Data.User
   alias Game.Account
 
+  describe "creating an account" do
+    test "successfully" do
+      create_config(:starting_save, base_save() |> Poison.encode!)
+      human = create_race()
+      fighter = create_class()
+
+      {:ok, user, character} = Account.create(%{name: "user", email: "user@example.com", password: "password"}, %{race: human, class: fighter})
+
+      assert user.name == "user"
+      assert user.email == "user@example.com"
+      assert user.password_hash
+
+      assert character.save
+      assert character.race_id == human.id
+      assert character.class_id == fighter.id
+    end
+  end
+
   test "updating the save force saves it" do
     user = create_user(%{name: "user", password: "password"})
+    character = create_character(user, %{name: "player"})
 
-    user = %{user | save: %{user.save | stats: %{user.save.stats | endurance_points: 3}}}
-    assert user.save.stats.endurance_points == 3
+    character = %{character | save: %{character.save | stats: %{character.save.stats | endurance_points: 3}}}
+    assert character.save.stats.endurance_points == 3
 
-    {:ok, user} = Account.save(user, user.save)
+    {:ok, character} = Account.save(character, character.save)
 
-    user = Repo.get(User, user.id)
-    assert user.save.stats.endurance_points == 3
+    character = Repo.get(Character, character.id)
+    assert character.save.stats.endurance_points == 3
   end
 
   describe "online playing time" do
     test "updating the global time" do
       user = create_user(%{name: "user", password: "password"})
+      character = create_character(user, %{name: "player"})
 
-      Account.update_time_online(user, Timex.now() |> Timex.shift(minutes: -5), Timex.now())
+      Account.update_time_online(character, Timex.now() |> Timex.shift(minutes: -5), Timex.now())
 
-      user = Repo.get(User, user.id)
-      assert user.seconds_online == 300
+      character = Repo.get(Character, character.id)
+      assert character.seconds_online == 300
     end
 
     test "records a full session separately" do
       user = create_user(%{name: "user", password: "password"})
+      character = create_character(user, %{name: "player"})
 
       started_at = Timex.now() |> Timex.shift(minutes: -5)
-      Account.save_session(user, user.save, started_at, Timex.now(), %{commands: %{Game.Command.Look => 1}})
+      Account.save_session(user, character, character.save, started_at, Timex.now(), %{commands: %{Game.Command.Look => 1}})
 
       user =
         User
@@ -49,62 +71,65 @@ defmodule Game.AccountTest do
     setup do
       user = create_user(%{name: "user", password: "password"})
 
+      character = create_character(user)
+
       start_and_clear_items()
       potion = create_item(%{name: "Potion", is_usable: true, amount: 3})
       insert_item(potion)
 
-      %{user: user, potion: potion}
+      start_and_clear_skills()
+
+      %{user: user, character: character, potion: potion}
     end
 
-    test "add amount to the instance if the item is usable", %{user: user, potion: potion} do
-      user = %{user | save: %{user.save | items: [%Item.Instance{id: potion.id, created_at: Timex.now()}]}}
+    test "add amount to the instance if the item is usable", %{character: character, potion: potion} do
+      character = %{character | save: %{character.save | items: [%Item.Instance{id: potion.id, created_at: Timex.now()}]}}
 
-      user = Account.migrate_items(user)
+      character = Account.migrate_items(character)
 
-      assert [%Item.Instance{id: _, amount: 3} | _] = user.save.items
+      assert [%Item.Instance{id: _, amount: 3} | _] = character.save.items
     end
   end
 
   describe "migrating known skills on load" do
     setup do
-      user =
-        create_user(%{name: "user", password: "password"})
-        |> Repo.preload([:class, :race])
+      user = create_user()
+      character = create_character(user)
 
       start_and_clear_skills()
 
-      %{user: user}
+      %{user: user, character: character}
     end
 
-    test "ensure class skills are present", %{user: user} do
+    test "ensure class skills are present", %{character: character} do
       skill = create_skill()
       insert_skill(skill)
 
-      create_class_skill(user.class, skill)
+      create_class_skill(character.class, skill)
 
-      user = Account.migrate_skills(user)
+      character = Account.migrate_skills(character)
 
-      assert user.save.skill_ids == [skill.id]
+      assert character.save.skill_ids == [skill.id]
     end
 
-    test "ensure global skills are present", %{user: user} do
+    test "ensure global skills are present", %{character: character} do
       skill = create_skill(%{is_global: true})
       insert_skill(skill)
 
-      user = Account.migrate_skills(user)
+      character = Account.migrate_skills(character)
 
-      assert user.save.skill_ids == [skill.id]
+      assert character.save.skill_ids == [skill.id]
     end
 
-    test "ensure race skills are present", %{user: user} do
+    test "ensure race skills are present", %{character: character} do
       skill = create_skill()
       insert_skill(skill)
 
-      create_race_skill(user.race, skill)
+      create_race_skill(character.race, skill)
 
-      user = Account.migrate_skills(user)
+      character = Account.migrate_skills(character)
 
-      assert user.save.skill_ids == [skill.id]
+      assert character.save.skill_ids == [skill.id]
     end
   end
 end

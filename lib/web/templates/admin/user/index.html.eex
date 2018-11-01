@@ -18,9 +18,6 @@
                   <th>ID</th>
                   <th>Name</th>
                   <th>Last Saved</th>
-                  <th>Level</th>
-                  <th>Race</th>
-                  <th>Class</th>
                   <th>Play Time</th>
                   <th>Flags</th>
                   <th>Actions</th>
@@ -32,9 +29,6 @@
                     <td><%= user.id %></td>
                     <td><%= link(user.name, to: user_path(@conn, :show, user.id)) %></td>
                     <td><%= user.updated_at |> time() %></td>
-                    <td><%= user.save.level %></td>
-                    <td><%= link(user.race.name, to: race_path(@conn, :show, user.race_id)) %></td>
-                    <td><%= link(user.class.name, to: class_path(@conn, :show, user.class_id)) %></td>
                     <td><%= user.seconds_online |> FormatPlayers.play_time() %></td>
                     <td><%= user.flags |> Enum.join(", ") %></td>
                     <td>
@@ -59,30 +53,8 @@
         <%= form_tag user_path(@conn, :index), method: :get do %>
           <div class="box-body">
             <div class="form-group">
-              <%= label :user, :level %>
-              <div class="row">
-                <div class="col-md-6">
-                  <%= number_input :user, :level_from, value: @filter["level_from"], placeholder: "From", class: "form-control" %>
-                </div>
-                <div class="col-md-6">
-                  <%= number_input :user, :level_to, value: @filter["level_to"], placeholder: "To", class: "form-control" %>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group">
               <%= label :user, :name %>
               <%= text_input :user, :name, value: @filter["name"], class: "form-control" %>
-            </div>
-
-            <div class="form-group">
-              <%= label :user, :race_id %>
-              <%= select :user, :race_id, Race.race_select(), prompt: "Select Race", value: @filter["race_id"], class: "form-control" %>
-            </div>
-
-            <div class="form-group">
-              <%= label :user, :class_id %>
-              <%= select :user, :class_id, Class.class_select(), prompt: "Select Class", value: @filter["class_id"], class: "form-control" %>
             </div>
           </div>
           <div class="box-footer">

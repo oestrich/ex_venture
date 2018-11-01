@@ -45,9 +45,9 @@ defmodule Game.Session.CreateAccount do
            race: race,
            class: class
          }) do
-      {:ok, user} ->
+      {:ok, user, character} ->
         PlayerInstrumenter.new_character()
-        user |> Login.login(socket, state |> Map.delete(:create))
+        user |> Login.login(character, socket, state |> Map.delete(:create))
 
       {:error, changeset} ->
         socket

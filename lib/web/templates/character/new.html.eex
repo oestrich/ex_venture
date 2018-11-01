@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h3>Create a New Character</h3>
+
+    <%= form_for @changeset, public_character_path(@conn, :create), [method: :post], fn (f) -> %>
+      <%= if @changeset.action && @changeset.errors[:save] do %>
+        <div class="alert alert-danger">
+          There was a problem creating your account. Please contact the administrator.
+        </div>
+      <% end %>
+
+      <div class="form-group has-feedback">
+        <%= label f, :name %>
+        <%= text_input f, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus" %>
+        <%= error_tag f, :name %>
+
+        <%= unless Enum.empty?(@names) do %>
+          <div class="form-text text-muted">Need help chosing a name? Here are a few to pick from: </div>
+          <div class="form-text text-muted">
+            <%= Enum.map(@names, fn name -> %>
+              <span class="starter-name"><%= name %></span>&nbsp;
+            <% end) %>
+          </div>
+        <% end %>
+      </div>
+
+      <h5 class="mt-3">Race</h5>
+      <%= error_tag f, :race_id %>
+      <%= Enum.map(Race.races(), fn (race) -> %>
+        <div class="form-check">
+          <label class="form-check-label">
+            <%= radio_button f, :race_id, to_string(race.id), class: "form-check-input" %>
+            <%= race.name %>
+          </label>
+        </div>
+      <% end) %>
+
+      <h5 class="mt-3">Class</h5>
+      <%= error_tag f, :class_id %>
+      <%= Enum.map(Class.classes(), fn (class) -> %>
+        <div class="form-check">
+          <label class="form-check-label">
+            <%= radio_button f, :class_id, to_string(class.id), class: "form-check-input" %>
+            <%= class.name %>
+          </label>
+        </div>
+      <% end) %>
+
+      <div class="actions">
+        <%= submit "Create Your Account", class: "btn btn-primary btn-block btn-flat" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script type="application/javascript">
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("starter-name")){
+    document.getElementById("user_name").value = e.target.innerHTML;
+  }
+});
+</script>

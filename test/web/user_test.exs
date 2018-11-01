@@ -2,14 +2,12 @@ defmodule Web.UserTest do
   use Data.ModelCase
   use Bamboo.Test
 
-  alias Data.QuestProgress
-  alias Game.Account
   alias Game.Emails
-  alias Game.Session
   alias Web.User
 
   setup do
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
+
     %{user: user}
   end
 
@@ -33,32 +31,12 @@ defmodule Web.UserTest do
     assert {:error, :invalid} = User.change_password(user, "p@ssword", %{password: "apassword", password_confirmation: "apassword"})
   end
 
-  describe "disconnecting players" do
-    test "disconnecting connected players", %{user: user} do
-      Session.Registry.register(user)
-      Session.Registry.catch_up()
-
-      User.disconnect()
-
-      assert_receive {:"$gen_cast", {:disconnect, [reason: "server shutdown", force: true]}}
-    end
-
-    test "disconnecting a single player", %{user: user} do
-      Session.Registry.register(user)
-      Session.Registry.catch_up()
-
-      User.disconnect(user.id)
-
-      assert_receive {:"$gen_cast", {:disconnect, [reason: "disconnect", force: true]}}
-    end
-  end
-
   test "create a new player" do
     create_config(:starting_save, base_save() |> Poison.encode!)
     class = create_class()
     race = create_race()
 
-    {:ok, user} = User.create(%{
+    {:ok, user, character} = User.create(%{
       "name" => "player",
       "email" => "",
       "password" => "password",
@@ -68,38 +46,17 @@ defmodule Web.UserTest do
     })
 
     assert user.name == "player"
+
+    assert character.save
+    assert character.name == "player"
+    assert character.race_id
+    assert character.class_id
   end
 
   test "update a player", %{user: user} do
     {:ok, user} = User.update(user.id, %{"email" => "new@example.com"})
 
     assert user.email == "new@example.com"
-  end
-
-  describe "reset a user" do
-    setup do
-      create_config(:starting_save, base_save() |> Poison.encode!)
-      :ok
-    end
-
-    test "resets the save", %{user: user} do
-      save = %{user.save | level: 2}
-      {:ok, user} = Account.save(user, save)
-
-      {:ok, user} = User.reset(user.id)
-
-      assert user.save.level == 1
-    end
-
-    test "resets quests", %{user: user} do
-      guard = create_npc(%{is_quest_giver: true})
-      quest = create_quest(guard)
-      create_quest_progress(user, quest)
-
-      {:ok, _user} = User.reset(user.id)
-
-      assert Data.Repo.all(QuestProgress) == []
-    end
   end
 
   describe "check totp token" do
@@ -194,15 +151,6 @@ defmodule Web.UserTest do
 
       params = %{password: "new password", password_confirmation: "new password"}
       assert :error = User.reset_password(user.password_reset_token, params)
-    end
-  end
-
-  describe "activating cheats" do
-    test "adding experience points", %{user: user} do
-      {:ok, user} = User.activate_cheat(user, %{"name" => "experience", "value" => "1000"})
-
-      assert user.save.level == 2
-      assert user.save.experience_points == 1000
     end
   end
 end

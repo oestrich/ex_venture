@@ -26,12 +26,12 @@ defmodule Game.Session.Effects do
   @spec apply([Data.Effect.t()], tuple, String.t(), Map) :: map
   def apply(effects, from, description, state = %{save: save}) do
     {stats, effects, continuous_effects} =
-      Character.Effects.apply_effects({:player, state.user}, save.stats, state, effects, from)
+      Character.Effects.apply_effects({:player, state.character}, save.stats, state, effects, from)
 
     state = Player.update_save(state, %{save | stats: stats})
 
-    state.user |> echo_effects(from, description, effects)
-    state.user |> maybe_died(state, from)
+    state.character |> echo_effects(from, description, effects)
+    state.character |> maybe_died(state, from)
 
     case is_alive?(state.save) do
       true ->
@@ -117,12 +117,12 @@ defmodule Game.Session.Effects do
 
     effects_message =
       effects
-      |> FormatEffects.effects({:player, state.user})
+      |> FormatEffects.effects({:player, state.character})
       |> Enum.join("\n")
 
     state.socket |> @socket.echo(effects_message)
 
-    state.user |> maybe_died(state, from)
+    state.character |> maybe_died(state, from)
     state |> Process.prompt()
 
     case is_alive?(state.save) do

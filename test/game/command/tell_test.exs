@@ -6,23 +6,24 @@ defmodule Game.Command.TellTest do
   alias Game.Command.Tell
   alias Game.Message
   alias Game.Session
-  alias Game.Session.State
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages
+    @socket.clear_messages()
     @room.set_room(Map.merge(@room._room(), %{npcs: []}))
+
     user = base_user()
-    state = %State{socket: :socket, state: "active", mode: "commands", user: user, save: %{room_id: 1}}
-    %{state: state}
+    character = base_character(user)
+    save = %{character.save | room_id: 1}
+    %{state: session_state(%{user: user, character: character, save: save})}
   end
 
   describe "send a tell - user" do
     test "send a tell", %{state: state} do
-      Channel.join_tell({:player, state.user})
-      Session.Registry.register(state.user)
+      Channel.join_tell({:player, state.character})
+      Session.Registry.register(state.character)
       Session.Registry.catch_up()
 
       {:update, %{reply_to: {:player, _}}} = Tell.run({"tell", "player hello"}, state)
@@ -69,17 +70,17 @@ defmodule Game.Command.TellTest do
 
   describe "send a reply - user" do
     test "send a reply", %{state: state} do
-      Channel.join_tell({:player, state.user})
-      Session.Registry.register(state.user)
+      Channel.join_tell({:player, state.character})
+      Session.Registry.register(state.character)
       Session.Registry.catch_up()
 
-      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.user}})
+      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.character}})
 
       assert_receive {:channel, {:tell, {:player, _}, %Message{message: "Howdy."}}}
     end
 
     test "send a reply - player not online", %{state: state} do
-      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.user}})
+      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.character}})
 
       [{_, echo}] = @socket.get_echos()
       assert Regex.match?(~r(not online), echo)

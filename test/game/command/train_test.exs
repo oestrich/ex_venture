@@ -12,8 +12,9 @@ defmodule Game.Command.TrainTest do
   setup do
     @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
-
-    %{state: session_state(%{user: user, save: %{user.save | level: 2, experience_points: 1100}})}
+    character = create_character(user)
+    save = %{character.save | level: 2, experience_points: 1100}
+    %{state: session_state(%{user: user, character: character, save: save})}
   end
 
   describe "list out trainable skills" do

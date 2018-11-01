@@ -34,7 +34,7 @@
                   <tr>
                     <td><%= typo.id %></td>
                     <td><%= typo.title %></td>
-                    <td><%= link(typo.reporter.name, to: user_path(@conn, :show, typo.reporter.id)) %></td>
+                    <td><%= link(typo.reporter.name, to: user_path(@conn, :show, typo.reporter.user_id)) %></td>
                     <td><%= link(typo.room.name, to: room_path(@conn, :show, typo.room.id)) %></td>
                     <td>
                       <%= link("View", to: typo_path(@conn, :show, typo.id), class: "btn btn-default btn-xs") %>

@@ -8,17 +8,13 @@ defmodule Game.Command.PagerTest do
   setup do
     @socket.clear_messages
 
-    # for the prompt
     user = create_user(%{name: "user", password: "password"})
+
+    # for the prompt
+    character = create_character(user)
     |> Repo.preload([class: [:skills]])
 
-    state = %{
-      socket: :socket,
-      user: user,
-      save: base_save(),
-    }
-
-    %{state: state}
+    %{state: session_state(%{user: user, character: character, save: character.save})}
   end
 
   test "paginate text", %{state: state} do

@@ -86,9 +86,9 @@ defmodule Game.Command.Channels do
     socket |> @socket.echo("#{message}\n#{channels}")
   end
 
-  def run({:join, channel}, state = %{user: user}) do
+  def run({:join, channel}, state) do
     with {:ok, channel} <- get_channel(channel),
-         false <- in_channel?(channel.name, user) do
+         false <- in_channel?(channel.name, state.save) do
       Channel.join(channel.name)
     else
       _ ->
@@ -109,7 +109,7 @@ defmodule Game.Command.Channels do
 
   def run({channel_name, ""}, state) do
     with {:ok, channel} <- get_channel(channel_name) do
-      case in_channel?(channel.name, state.user) do
+      case in_channel?(channel.name, state.save) do
         true ->
           state.socket |> @socket.echo(gettext("You are part of %{channel_name}.", channel_name: Format.channel_name(channel)))
 
@@ -125,7 +125,7 @@ defmodule Game.Command.Channels do
   def run({channel, message}, state) do
     with {:ok, channel} <- get_joined_channel(channel, state) do
       parsed_message = Say.parse_message(message)
-      Channel.broadcast(channel.name, Message.broadcast(state.user, channel, parsed_message))
+      Channel.broadcast(channel.name, Message.broadcast(state.character, channel, parsed_message))
       :ok
     else
       {:error, :not_found} ->
@@ -134,7 +134,7 @@ defmodule Game.Command.Channels do
   end
 
   defp get_joined_channel(channel, state) do
-    case in_channel?(channel, state.user) do
+    case in_channel?(channel, state.save) do
       true ->
         get_channel(channel)
 
@@ -153,7 +153,7 @@ defmodule Game.Command.Channels do
     end
   end
 
-  defp in_channel?(channel, %{save: %{channels: channels}}) do
+  defp in_channel?(channel, %{channels: channels}) do
     channel in channels
   end
 end

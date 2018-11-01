@@ -35,7 +35,7 @@
             </tr>
             <tr>
               <th>Reporter</th>
-              <td><%= link(@typo.reporter.name, to: user_path(@conn, :show, @typo.reporter.id)) %></td>
+              <td><%= link(@typo.reporter.name, to: user_path(@conn, :show, @typo.reporter.user_id)) %></td>
             </tr>
             <tr>
               <th>Room</th>

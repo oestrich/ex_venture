@@ -1,0 +1,132 @@
+<section class="content-header">
+  <h1>
+    <%= @character.name %>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-6">
+      <%= if character = live(@character) do %>
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Live Stats</h3>
+            <div class="box-tools">
+              <%= link("Watch", to: character_watch_path(@conn, :watch, character.id), class: "btn btn-warning") %>
+              <%= link("Teleport", to: character_path(@conn, :teleport, room_id: character.extra.room_id), method: "post", class: "btn btn-primary") %>
+
+              <%= link("Disconnect", to: character_disconnect_path(@conn, :disconnect, character.id), method: "delete", class: "btn btn-warning") %>
+            </div>
+          </div>
+          <div class="box-body">
+            <table class="table">
+              <tr>
+                <th>Room</th>
+                <td>
+                  <%= link(character.extra.room_id, to: room_path(@conn, :show, character.extra.room_id)) %>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Basic Stats</h3>
+          <div class="box-tools">
+            <%= if !live(@character) do %>
+              <%= link("Reset Save", to: character_reset_path(@conn, :reset, @character.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
+            <% end %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tr>
+              <th>Level</th>
+              <td><%= @character.save.level %></td>
+            </tr>
+
+            <tr>
+              <th>Experience</th>
+              <td><%= @character.save.experience_points %></td>
+            </tr>
+
+            <%= Enum.map(@character.save.stats, fn ({stat, val}) -> %>
+              <tr>
+                <th><%= stat |> stat_display_name() %></th>
+                <td><%= val %></td>
+              </tr>
+            <% end) %>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Items</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <th>Item</th>
+              <th>Created</th>
+            </thead>
+            <tbody>
+              <%= Enum.map(@character.save.items, fn (instance) -> %>
+                <tr>
+                  <td><%= link(Items.item(instance).name, to: item_path(@conn, :show, instance.id)) %></td>
+                  <td><%= time(instance.created_at) %></td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Quests</h3>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <th>Character</th>
+              <th>Quest</th>
+              <th>Status</th>
+              <th>Progress</th>
+            </thead>
+            <tbody>
+              <%= Enum.map(@character.quest_progress, fn (progress) -> %>
+                <tr>
+                  <td><%= link(progress.quest.name, to: quest_path(@conn, :show, progress.quest_id)) %></td>
+                  <td><%= progress.status %></td>
+                  <td><%= progress.progress |> Poison.encode!(pretty: true) %></td>
+                </tr>
+              <% end) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Save</h3>
+        </div>
+        <div class="box-body">
+          <pre><%= @character.save |> Poison.encode!(pretty: true) %></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -2,6 +2,7 @@ defmodule TestHelpers do
   alias Data.Announcement
   alias Data.Bug
   alias Data.Channel
+  alias Data.Character
   alias Data.Class
   alias Data.ClassSkill
   alias Data.Config
@@ -40,9 +41,18 @@ defmodule TestHelpers do
       id: 10,
       name: "Player",
       flags: [],
+    }
+  end
+
+  def base_character(user) do
+    %Character{
+      id: 10,
+      user: user,
+      name: "Player",
+      flags: [],
       save: base_save(),
-      class: %{name: "Fighter"},
-      race: %{name: "Dwarf"},
+      class: %Class{name: "Fighter"},
+      race: %Race{name: "Human"},
     }
   end
 
@@ -90,15 +100,30 @@ defmodule TestHelpers do
 
   def user_attributes(attributes) do
     Map.merge(%{
-      save: base_save(),
-      race_id: create_race().id,
-      class_id: create_class().id,
+      name: "user",
+      password: "password",
     }, attributes)
   end
 
   def create_user(attributes \\ %{name: "player", password: "password"}) do
     %User{}
     |> User.changeset(user_attributes(attributes))
+    |> Repo.insert!()
+  end
+
+  def character_attributes(attributes) do
+    Map.merge(%{
+      name: "player",
+      save: base_save(),
+      race_id: create_race().id,
+      class_id: create_class().id,
+    }, attributes)
+  end
+
+  def create_character(user, attributes \\ %{}) do
+    user
+    |> Ecto.build_assoc(:characters)
+    |> Character.changeset(character_attributes(attributes))
     |> Repo.insert!
     |> Repo.preload([:race, :class])
   end
@@ -423,15 +448,15 @@ defmodule TestHelpers do
     }
   end
 
-  def create_quest_progress(user, quest, params \\ %{}) do
+  def create_quest_progress(character, quest, params \\ %{}) do
     %QuestProgress{}
-    |> QuestProgress.changeset(quest_progress_attributes(user, quest, params))
+    |> QuestProgress.changeset(quest_progress_attributes(character, quest, params))
     |> Repo.insert!
   end
 
-  def quest_progress_attributes(user, quest, params) do
+  def quest_progress_attributes(character, quest, params) do
     Map.merge(%{
-      user_id: user.id,
+      character_id: character.id,
       quest_id: quest.id,
       status: "active",
       progress: %{},

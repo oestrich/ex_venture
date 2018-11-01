@@ -9,7 +9,9 @@ defmodule Game.Command.MailTest do
   setup do
     @socket.clear_messages
     user = create_user(%{name: "user", password: "password"})
-    %{state: session_state(%{user: user})}
+    character = create_character(user, %{name: "user"})
+
+    %{state: session_state(%{user: user, character: character, save: character.save})}
   end
 
   describe "list out messages" do
@@ -21,9 +23,10 @@ defmodule Game.Command.MailTest do
     end
 
     test "includes messages", %{state: state} do
-      sender = create_user(%{name: "sender", password: "password"})
+      sender_user = create_user(%{name: "sender", password: "password"})
+      sender = create_character(sender_user, %{name: "sender"})
 
-      create_mail(sender, state.user, %{title: "hello"})
+      create_mail(sender, state.character, %{title: "hello"})
 
       {:paginate, mail, _state} = Mail.run({:unread}, state)
 
@@ -33,17 +36,18 @@ defmodule Game.Command.MailTest do
 
   describe "reading single mail items" do
     setup do
-      sender = create_user(%{name: "sender", password: "password"})
+      sender_user = create_user(%{name: "sender", password: "password"})
+      sender = create_character(sender_user, %{name: "sender"})
       %{sender: sender}
     end
 
     test "displays it and marks as read", %{sender: sender, state: state} do
-      mail = create_mail(sender, state.user, %{title: "hello"})
+      mail = create_mail(sender, state.character, %{title: "hello"})
 
       {:paginate, mail_text, _state} = Mail.run({:read, mail.id}, state)
 
       assert Regex.match?(~r(hello), mail_text)
-      mail = Data.Repo.get(Data.Mail, mail.id)
+      mail = Repo.get(Data.Mail, mail.id)
       assert mail.is_read
     end
 
@@ -56,7 +60,8 @@ defmodule Game.Command.MailTest do
 
     test "trying to read someone else's mail", %{sender: sender, state: state} do
       other_user = create_user(%{name: "other", password: "password"})
-      mail = create_mail(sender, other_user, %{title: "hello"})
+      other_character = create_character(other_user, %{name: "other"})
+      mail = create_mail(sender, other_character, %{title: "hello"})
 
       :ok = Mail.run({:read, mail.id}, state)
 
@@ -67,7 +72,8 @@ defmodule Game.Command.MailTest do
 
   describe "create new mail" do
     setup %{state: state} do
-      receiver = create_user(%{name: "player", password: "password"})
+      receiver_user = create_user(%{name: "player", password: "password"})
+      receiver = create_character(receiver_user, %{name: "player"})
       state = Map.put(state, :commands, %{})
       %{receiver: receiver, state: state}
     end

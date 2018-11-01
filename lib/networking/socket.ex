@@ -5,7 +5,10 @@ defmodule Networking.Socket do
   Expected functions for a socket to use.
   """
 
-  @callback set_user_id(socket :: pid(), user_id :: integer()) :: :ok
+  @doc """
+  For session recovery, set the character id of the socket
+  """
+  @callback set_character_id(socket :: pid(), character_id :: integer()) :: :ok
 
   @callback set_config(socket :: pid(), config :: map()) :: :ok
 

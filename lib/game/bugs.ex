@@ -11,10 +11,10 @@ defmodule Game.Bugs do
   @doc """
   Get a list of bugs that a player submitted
   """
-  @spec reported_by(User.t()) :: [Bug.t()]
-  def reported_by(player) do
+  @spec reported_by(Character.t()) :: [Bug.t()]
+  def reported_by(character) do
     Bug
-    |> where([b], b.reporter_id == ^player.id)
+    |> where([b], b.reporter_id == ^character.id)
     |> order_by([b], asc: b.is_completed)
     |> Repo.all()
   end
@@ -22,17 +22,20 @@ defmodule Game.Bugs do
   @doc """
   Get a bug scoped by the player
   """
-  @spec get(User.t(), integer()) :: {:ok, Bug.t()} | {:error, :not_found}
-  def get(player, id) do
+  @spec get(Character.t(), integer()) :: {:ok, Bug.t()} | {:error, :not_found}
+  def get(character, id) do
     bug =
       Bug
-      |> where([b], b.reporter_id == ^player.id)
+      |> where([b], b.reporter_id == ^character.id)
       |> where([b], b.id == ^id)
       |> Repo.one()
 
     case bug do
-      nil -> {:error, :not_found}
-      bug -> {:ok, bug}
+      nil ->
+        {:error, :not_found}
+
+      bug ->
+        {:ok, bug}
     end
   end
 end

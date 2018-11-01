@@ -11,7 +11,8 @@ defmodule Game.Command.SayTest do
   setup do
     @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
-    %{state: session_state(%{user: user, save: user.save})}
+    character = create_character(user)
+    %{state: session_state(%{user: user, character: character, save: character.save})}
   end
 
   describe "say" do

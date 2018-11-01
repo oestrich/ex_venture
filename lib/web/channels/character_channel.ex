@@ -1,6 +1,6 @@
-defmodule Web.UserChannel do
+defmodule Web.CharacterChannel do
   @moduledoc """
-  User Channel for admins
+  CharacterChannel for admins
   """
 
   use Phoenix.Channel
@@ -9,15 +9,15 @@ defmodule Web.UserChannel do
 
   alias Metrics.AdminInstrumenter
 
-  def join("user:" <> id, _message, socket) do
+  def join("character:" <> id, _message, socket) do
     %{user: user} = socket.assigns
     {id, _} = Integer.parse(id)
 
     socket =
       socket
-      |> assign(:user_id, id)
+      |> assign(:character_id, id)
 
-    Logger.info("Admin (#{user.id}) is watching user (#{id})")
+    Logger.info("Admin (#{user.id}) is watching character (#{id})")
     AdminInstrumenter.watching_player()
 
     {:ok, socket}

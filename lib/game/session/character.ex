@@ -251,7 +251,7 @@ defmodule Game.Session.Character do
 
     Hint.gate(state, "quests.new", id: quest.id)
 
-    Quest.track_quest(state.user, quest.id)
+    Quest.track_quest(state.character, quest.id)
 
     state
   end
@@ -363,7 +363,7 @@ defmodule Game.Session.Character do
   def track_quest_progress(state, {:player, _player}), do: state
 
   def track_quest_progress(state, {:npc, npc}) do
-    Quest.track_progress(state.user, {:npc, %{npc | id: npc.original_id}})
+    Quest.track_progress(state.character, {:npc, %{npc | id: npc.original_id}})
     state
   end
 end

@@ -1,6 +1,7 @@
 alias Data.Repo
 
 alias Data.Channel
+alias Data.Character
 alias Data.Class
 alias Data.ClassSkill
 alias Data.Config
@@ -100,6 +101,13 @@ defmodule Helpers do
   def create_user(attributes) do
     %User{}
     |> User.changeset(attributes)
+    |> Repo.insert!()
+  end
+
+  def create_character(user, attributes) do
+    user
+    |> Ecto.build_assoc(:characters)
+    |> Character.changeset(attributes)
     |> Repo.insert!()
   end
 
@@ -566,13 +574,17 @@ defmodule Seeds do
       })
       |> Map.put(:version, 11)
 
-    create_user(%{
+    user = create_user(%{
       name: "admin",
       password: "password",
-      save: save,
       flags: ["admin"],
+    })
+
+    create_character(user, %{
+      name: "admin",
       race_id: dwarf.id,
       class_id: mage.id,
+      save: save,
     })
   end
 end

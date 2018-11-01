@@ -12,9 +12,9 @@ defmodule Game.Command.QuestTest do
   setup do
     @socket.clear_messages
     user = create_user(%{name: "user", password: "password"})
-    user = %{user | class: %{name: "Fighter"}}
+    character = create_character(user)
 
-    %{state: session_state(%{user: user, save: %{user.save | items: []}})}
+    %{state: session_state(%{user: user, character: character, save: %{character.save | items: []}})}
   end
 
   describe "listing out quests" do
@@ -33,7 +33,7 @@ defmodule Game.Command.QuestTest do
     end
 
     test "a quest is in progress", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest)
+      create_quest_progress(state.character, quest)
 
       :ok = Quest.run({:list, :active}, state)
 
@@ -57,7 +57,7 @@ defmodule Game.Command.QuestTest do
     end
 
     test "a quest is in progress", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest)
+      create_quest_progress(state.character, quest)
 
       :ok = Quest.run({:show, to_string(quest.id)}, state)
 
@@ -68,8 +68,8 @@ defmodule Game.Command.QuestTest do
     end
 
     test "viewing your tracked quest", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest)
-      Game.Quest.track_quest(state.user, quest.id)
+      create_quest_progress(state.character, quest)
+      Game.Quest.track_quest(state.character, quest.id)
 
       :ok = Quest.run({:show, :tracked}, state)
 
@@ -80,7 +80,7 @@ defmodule Game.Command.QuestTest do
     end
 
     test "viewing your tracked quest - no tracked quest", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest)
+      create_quest_progress(state.character, quest)
 
       :ok = Quest.run({:show, :tracked}, state)
 
@@ -123,7 +123,7 @@ defmodule Game.Command.QuestTest do
     test "completing a quest", %{state: state, quest: quest} do
       goblin = create_npc(%{name: "Goblin"})
       npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
-      create_quest_progress(state.user, quest, %{progress: %{npc_step.id => 3}})
+      create_quest_progress(state.character, quest, %{progress: %{npc_step.id => 3}})
 
       {:update, state} = Quest.run({:complete, to_string(quest.id)}, state)
 
@@ -137,7 +137,7 @@ defmodule Game.Command.QuestTest do
     test "completing a quest - notifies the npc", %{state: state, quest: quest} do
       goblin = create_npc(%{name: "Goblin"})
       npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
-      create_quest_progress(state.user, quest, %{progress: %{npc_step.id => 3}})
+      create_quest_progress(state.character, quest, %{progress: %{npc_step.id => 3}})
 
       {:update, _state} = Quest.run({:complete, to_string(quest.id)}, state)
 
@@ -149,7 +149,7 @@ defmodule Game.Command.QuestTest do
     test "giver is not in your room", %{state: state, quest: quest} do
       goblin = create_npc(%{name: "Goblin"})
       npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
-      create_quest_progress(state.user, quest, %{progress: %{npc_step.id => 3}})
+      create_quest_progress(state.character, quest, %{progress: %{npc_step.id => 3}})
       @room.set_room(Map.merge(@room._room(), %{npcs: []}))
 
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
@@ -161,7 +161,7 @@ defmodule Game.Command.QuestTest do
     test "have not completed the steps", %{state: state, quest: quest} do
       goblin = create_npc(%{name: "Goblin"})
       create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
-      create_quest_progress(state.user, quest, %{progress: %{}})
+      create_quest_progress(state.character, quest, %{progress: %{}})
 
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
 
@@ -170,7 +170,7 @@ defmodule Game.Command.QuestTest do
     end
 
     test "quest is already complete", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest, %{status: "complete"})
+      create_quest_progress(state.character, quest, %{status: "complete"})
 
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
 
@@ -186,7 +186,7 @@ defmodule Game.Command.QuestTest do
     end
 
     test "completing a quest with a shortcut command", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest)
+      create_quest_progress(state.character, quest)
 
       {:update, _state} = Quest.run({:complete, :any}, state)
 
@@ -205,7 +205,7 @@ defmodule Game.Command.QuestTest do
     end
 
     test "tracking a quest", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest)
+      create_quest_progress(state.character, quest)
 
       :ok = Quest.run({:track, to_string(quest.id)}, state)
 
@@ -244,8 +244,8 @@ defmodule Game.Command.QuestTest do
       goblin = create_npc(%{name: "Goblin"})
       create_quest_step(second_quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
 
-      create_quest_progress(state.user, quest)
-      create_quest_progress(state.user, second_quest)
+      create_quest_progress(state.character, quest)
+      create_quest_progress(state.character, second_quest)
 
       {:update, _state} = Quest.run({:complete, :any}, state)
 
@@ -262,7 +262,7 @@ defmodule Game.Command.QuestTest do
     end
 
     test "handles no npc in the room to hand in to", %{state: state, quest: quest} do
-      create_quest_progress(state.user, quest)
+      create_quest_progress(state.character, quest)
       @room.set_room(Map.merge(@room._room(), %{npcs: []}))
 
       :ok = Quest.run({:complete, :any}, state)

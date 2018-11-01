@@ -4,6 +4,7 @@ defmodule Game.Authentication do
   """
   import Ecto.Query
 
+  alias Data.Character
   alias Data.Repo
   alias Data.Skill
   alias Data.Stats
@@ -13,10 +14,10 @@ defmodule Game.Authentication do
   @doc """
   Find a player by an id and preload properly
   """
-  @spec find_user(integer()) :: nil | User.t()
-  def find_user(player) do
-    User
-    |> where([u], u.id == ^player)
+  @spec find_character(integer()) :: nil | User.t()
+  def find_character(character_id) do
+    Character
+    |> where([c], c.id == ^character_id)
     |> preloads()
     |> Repo.one()
     |> set_defaults()
@@ -25,7 +26,7 @@ defmodule Game.Authentication do
 
   defp preloads(query) do
     query
-    |> preload([:race])
+    |> preload([:race, :user])
     |> preload(class: [skills: ^from(s in Skill, order_by: [s.level, s.id])])
   end
 
@@ -34,6 +35,7 @@ defmodule Game.Authentication do
   """
   @spec set_defaults(nil | User.t()) :: nil | User.t()
   def set_defaults(player)
+
   def set_defaults(nil), do: nil
 
   def set_defaults(player) do

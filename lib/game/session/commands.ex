@@ -17,10 +17,10 @@ defmodule Game.Session.Commands do
   Parse and run a command from the user
   """
   @spec process_command(State.t(), String.t()) :: tuple()
-  def process_command(state = %{user: user}, message) do
+  def process_command(state = %{character: character}, message) do
     state = Map.merge(state, %{last_recv: Timex.now()})
 
-    context = %ParseContext{player: user}
+    context = %ParseContext{player: character}
 
     message
     |> Color.delink_commands()
@@ -37,7 +37,7 @@ defmodule Game.Session.Commands do
 
     case command |> Command.run(state) do
       {:update, state} ->
-        Session.Registry.update(%{state.user | save: state.save}, state)
+        Session.Registry.update(%{state.character | save: state.save}, state)
 
         state =
           state
@@ -48,7 +48,7 @@ defmodule Game.Session.Commands do
         {:noreply, state}
 
       {:update, state, {command = %Command{}, send_in}} ->
-        Session.Registry.update(%{state.user | save: state.save}, state)
+        Session.Registry.update(%{state.character | save: state.save}, state)
 
         state =
           state

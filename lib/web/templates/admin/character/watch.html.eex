@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    Watching <%= @user.name %>
+    Watching <%= @character.name %>
   </h1>
 
   <ol class="breadcrumb">
@@ -10,7 +10,8 @@
       <% end %>
     </li>
     <li><%= link("Users", to: user_path(@conn, :index)) %></li>
-    <li><%= link(@user.name, to: user_path(@conn, :show, @user.id)) %></li>
+    <li><%= link(@character.user.name, to: user_path(@conn, :show, @character.user_id)) %></li>
+    <li><%= link(@character.name, to: character_path(@conn, :show, @character.id)) %></li>
     <li class="active">Watch</li>
   </ol>
 </section>
@@ -32,6 +33,6 @@
 
 <script type="application/javascript">
 $(function () {
-  new UserSocket(<%= @user.id %>).connect();
+  new CharacterSocket(<%= @character.id %>).connect();
 });
 </script>

@@ -4,7 +4,6 @@ defmodule Game.Command.ScanTest do
 
   alias Game.Command.Scan
   alias Game.Door
-  alias Game.Session.State
 
   @socket Test.Networking.Socket
   @room Test.Game.Room
@@ -19,14 +18,13 @@ defmodule Game.Command.ScanTest do
     @socket.clear_messages()
 
     user = create_user(%{name: "user", password: "password"})
+    character = create_character(user)
 
-    state = %State{
-      socket: :socket,
-      state: "active",
-      mode: "commands",
+    state = session_state(%{
       user: user,
-      save: user.save
-    }
+      character: character,
+      save: character.save
+    })
 
     %{state: state}
   end

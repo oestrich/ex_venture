@@ -13,7 +13,6 @@ defmodule Game.Session.Login do
 
   require Logger
 
-  alias Data.Character
   alias Data.Repo
   alias Data.Room
   alias Game.Authentication
@@ -45,8 +44,7 @@ defmodule Game.Session.Login do
 
   Edit the state to be signed in and active
   """
-  @spec login(map, pid, map) :: map
-  def login(player, socket, state) do
+  def login(player, character, socket, state) do
     self() |> Process.schedule_save()
     self() |> Process.schedule_inactive_check()
     self() |> Process.schedule_heartbeat()
@@ -55,11 +53,11 @@ defmodule Game.Session.Login do
 
     state =
       state
-      |> setup_state_after_login(player)
+      |> setup_state_after_login(player, character)
       |> Map.put(:state, "after_sign_in")
 
-    socket |> @socket.set_user_id(player.id)
-    state |> CommandConfig.push_config(player.save.config)
+    socket |> @socket.set_character_id(character.id)
+    state |> CommandConfig.push_config(character.save.config)
     state |> GMCP.config_actions()
 
     message = """
@@ -99,9 +97,9 @@ defmodule Game.Session.Login do
     end
   end
 
-  defp finish_login(state = %{user: player, character: character}, session) do
-    Session.Registry.register(player)
-    Session.Registry.player_online(player)
+  defp finish_login(state = %{character: character}, session) do
+    Session.Registry.register(character)
+    Session.Registry.player_online(character)
 
     @environment.link(character.save.room_id)
     @environment.enter(character.save.room_id, {:player, character}, :login)
@@ -134,14 +132,14 @@ defmodule Game.Session.Login do
     end
   end
 
-  def sign_in(user_id, state = %{socket: socket}) do
-    case Authentication.find_user(user_id) do
+  def sign_in(character_id, state = %{socket: socket}) do
+    case Authentication.find_character(character_id) do
       nil ->
         socket |> @socket.disconnect()
         state
 
-      player ->
-        player |> process_login(state)
+      character ->
+        character |> process_login(state)
     end
   end
 
@@ -163,10 +161,10 @@ defmodule Game.Session.Login do
     Map.merge(state, %{login: %{name: message}})
   end
 
-  defp process_login(player, state) do
-    with :ok <- check_already_signed_in(player),
-         :ok <- check_disabled(player) do
-      player |> login(state.socket, state |> Map.delete(:login))
+  defp process_login(character, state) do
+    with :ok <- check_already_signed_in(character),
+         :ok <- check_disabled(character.user) do
+      character.user |> login(character, state.socket, state |> Map.delete(:login))
     else
       {:error, :signed_in} ->
         state.socket |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
@@ -185,20 +183,20 @@ defmodule Game.Session.Login do
   Recover a session after crashing
   """
   @spec recover_session(integer(), State.t()) :: State.t()
-  def recover_session(user_id, state) do
-    case Authentication.find_user(user_id) do
+  def recover_session(character_id, state) do
+    case Authentication.find_character(character_id) do
       nil ->
         state.socket |> @socket.disconnect()
         state
 
-      player ->
-        player |> process_recovery(state)
+      character ->
+        character |> process_recovery(state)
     end
   end
 
-  defp process_recovery(player, state = %{socket: socket}) do
-    with :ok <- check_already_signed_in(player) do
-      player |> _recover_session(state)
+  defp process_recovery(character, state = %{socket: socket}) do
+    with :ok <- check_already_signed_in(character) do
+      character |> _recover_session(state)
     else
       {:error, :signed_in} ->
         socket |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
@@ -207,10 +205,10 @@ defmodule Game.Session.Login do
     end
   end
 
-  defp _recover_session(player, state) do
-    Session.Registry.register(player)
+  defp _recover_session(character, state) do
+    Session.Registry.register(character)
 
-    state = setup_state_after_login(state, player)
+    state = setup_state_after_login(state, character.user, character)
     state = after_sign_in(state, self())
 
     state.socket |> @socket.echo(dgettext("login", "Session recovering..."))
@@ -220,17 +218,15 @@ defmodule Game.Session.Login do
     state
   end
 
-  defp setup_state_after_login(state, player) do
-    character = Character.from_user(player)
-
+  defp setup_state_after_login(state, user, character) do
     state
-    |> Map.put(:user, player)
+    |> Map.put(:user, user)
     |> Map.put(:character, character)
-    |> Map.put(:save, player.save)
+    |> Map.put(:save, character.save)
   end
 
-  defp check_already_signed_in(player) do
-    case Session.Registry.player_online?(player) do
+  defp check_already_signed_in(character) do
+    case Session.Registry.player_online?(character) do
       true ->
         {:error, :signed_in}
 

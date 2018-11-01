@@ -81,7 +81,7 @@ defmodule Game.Command.Tell do
     :ok
   end
 
-  defp maybe_tell_player(state = %{socket: socket, user: from}, message) do
+  defp maybe_tell_player(state = %{socket: socket, character: from}, message) do
     [player_name | message] = String.split(message, " ")
     message = Enum.join(message, " ")
 
@@ -101,7 +101,7 @@ defmodule Game.Command.Tell do
 
   defp maybe_tell_npc({:update, state}, _message), do: {:update, state}
 
-  defp maybe_tell_npc(state = %{socket: socket, save: %{room_id: room_id}, user: from}, message) do
+  defp maybe_tell_npc(state = %{socket: socket, save: %{room_id: room_id}, character: from}, message) do
     {:ok, room} = @environment.look(room_id)
 
     npc =
@@ -153,7 +153,7 @@ defmodule Game.Command.Tell do
   defp tell_gossip(state, player_name, message) do
     [name, game] = String.split(player_name, "@")
 
-    case Gossip.send_tell(state.user.name, game, name, message) do
+    case Gossip.send_tell(state.character.name, game, name, message) do
       :ok ->
         state.socket |> @socket.echo(FormatChannels.send_tell({:player, %{name: player_name}}, message))
         {:update, %{state | reply_to: {:gossip, player_name}}}
@@ -176,7 +176,7 @@ defmodule Game.Command.Tell do
     end
   end
 
-  defp reply_to_player(message, reply_to, %{socket: socket, user: from}) do
+  defp reply_to_player(message, reply_to, %{socket: socket, character: from}) do
     case Session.Registry.find_connected_player(reply_to.id) do
       nil ->
         message = gettext(~s("%{name}" is not online.), name: reply_to.name)
@@ -193,7 +193,7 @@ defmodule Game.Command.Tell do
     tell_gossip(state, player_name, message)
   end
 
-  defp reply_to_npc(message, reply_to, %{socket: socket, user: from, save: %{room_id: room_id}}) do
+  defp reply_to_npc(message, reply_to, %{socket: socket, character: from, save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
     npc = room.npcs |> Enum.find(&Utility.matches?(&1, reply_to.name))
 

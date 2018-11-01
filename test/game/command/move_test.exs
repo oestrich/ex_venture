@@ -23,7 +23,8 @@ defmodule Game.Command.MoveTest do
     start_and_clear_doors()
 
     user = base_user()
-    state = session_state(%{user: user, skills: %{}})
+    character = base_character(user)
+    state = session_state(%{user: user, character: character, skills: %{}})
 
     %{socket: :socket, user: user, state: state}
   end
@@ -74,11 +75,11 @@ defmodule Game.Command.MoveTest do
     end
   end
 
-  test "clears the target after moving", %{socket: socket, state: state, user: user} do
+  test "clears the target after moving", %{socket: socket, state: state} do
     @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
-    Registry.register(user)
+    Registry.register(state.character)
 
-    state = Map.merge(state, %{user: user, save: %{room_id: 1}, target: {:player, 10}})
+    state = Map.merge(state, %{save: %{room_id: 1}, target: {:player, 10}})
     command = %Command{module: Command.Move, args: {:move, "north"}}
     {:update, state} = Command.run(command, state)
 

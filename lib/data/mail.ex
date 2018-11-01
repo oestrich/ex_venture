@@ -5,15 +5,15 @@ defmodule Data.Mail do
 
   use Data.Schema
 
-  alias Data.User
+  alias Data.Character
 
   schema "mail" do
     field(:title, :string)
     field(:body, :string)
     field(:is_read, :boolean, default: false)
 
-    belongs_to(:sender, User)
-    belongs_to(:receiver, User)
+    belongs_to(:sender, Character)
+    belongs_to(:receiver, Character)
 
     timestamps()
   end

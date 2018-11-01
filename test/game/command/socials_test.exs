@@ -24,7 +24,8 @@ defmodule Game.Command.SocialsTest do
     %Social{id: 2, name: "Laugh", command: "laugh"} |> insert_social()
 
     user = create_user(%{name: "user", password: "password"})
-    %{state: session_state(%{user: user, save: user.save})}
+    character = create_character(user)
+    %{state: session_state(%{user: user, character: character, save: character.save})}
   end
 
   describe "list out all socials" do

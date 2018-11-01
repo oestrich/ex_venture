@@ -99,7 +99,7 @@ defmodule Game.Channel.Server do
       false ->
         params = %{
           channel_id: channel.id,
-          user_id: message.sender.id,
+          character_id: message.sender.id,
           message: message.message,
           formatted: message.formatted
         }

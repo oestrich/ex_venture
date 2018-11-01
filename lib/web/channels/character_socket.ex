@@ -1,4 +1,4 @@
-defmodule Web.UserSocket do
+defmodule Web.CharacterSocket do
   use Phoenix.Socket
 
   channel("chat:*", Web.ChatChannel)
@@ -7,9 +7,9 @@ defmodule Web.UserSocket do
   transport(:websocket, Phoenix.Transports.WebSocket)
 
   def connect(%{"token" => token}, socket) do
-    case Phoenix.Token.verify(socket, "user socket", token, max_age: 86_400) do
-      {:ok, user_id} ->
-        {:ok, assign(socket, :user_id, user_id)}
+    case Phoenix.Token.verify(socket, "character socket", token, max_age: 86_400) do
+      {:ok, character_id} ->
+        {:ok, assign(socket, :character_id, character_id)}
 
       {:error, _reason} ->
         {:ok, socket}

@@ -8,9 +8,8 @@ defmodule Game.Session.LoginTest do
   @socket Test.Networking.Socket
 
   setup do
-    socket = :socket
-    @socket.clear_messages
-    {:ok, %{socket: socket}}
+    @socket.clear_messages()
+    %{socket: :socket}
   end
 
   test "start signing in", %{socket: socket} do
@@ -28,11 +27,12 @@ defmodule Game.Session.LoginTest do
   end
 
   test "a session already exists", %{socket: socket} do
-    user = create_user(%{name: "user", password: "password", class_id: create_class().id})
-    user = Repo.preload(user, [:race, :class])
-    Registry.register(user)
+    user = create_user(%{name: "user", password: "password"})
+    character = create_character(user, %{name: "user"})
+    character = Repo.preload(character, [:race, :class])
+    Registry.register(character)
 
-    state = Login.sign_in(user.id, %{socket: socket, login: %{name: "user"}})
+    state = Login.sign_in(character.id, %{socket: socket, login: %{name: "user"}})
 
     assert Map.has_key?(state, :user) == false
     assert @socket.get_echos() == [{socket, "Sorry, this player is already logged in."}]
@@ -42,9 +42,10 @@ defmodule Game.Session.LoginTest do
   end
 
   test "user has been disabled", %{socket: socket} do
-    user = create_user(%{name: "user", password: "password", class_id: create_class().id, flags: ["disabled"]})
+    user = create_user(%{name: "user", password: "password", flags: ["disabled"]})
+    character = create_character(user, %{name: "user"})
 
-    state = Login.sign_in(user.id, %{socket: socket, login: %{name: "user"}})
+    state = Login.sign_in(character.id, %{socket: socket, login: %{name: "user"}})
 
     assert Map.has_key?(state, :user) == false
     assert @socket.get_echos() == [{socket, "Sorry, your account has been disabled. Please contact the admins."}]

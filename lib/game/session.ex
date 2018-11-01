@@ -6,7 +6,6 @@ defmodule Game.Session do
   @type t :: pid
 
   alias Data.Character
-  alias Data.User
   alias Game.Character.Simple, as: SimpleCharacter
   alias Game.Session
   alias Game.Session.Supervisor
@@ -139,13 +138,13 @@ defmodule Game.Session do
   end
 
   @doc """
-  Sign in a player to a session, from the web client
+  Sign in a character to a session, from the web client
   """
-  @spec sign_in(pid(), User.t()) :: :ok
-  def sign_in(pid, player) do
+  @spec sign_in(pid(), Character.t()) :: :ok
+  def sign_in(pid, character) do
     case WorldMaster.is_world_online?() do
       true ->
-        GenServer.cast(pid, {:sign_in, player.id})
+        GenServer.cast(pid, {:sign_in, character.id})
 
       false ->
         :ok

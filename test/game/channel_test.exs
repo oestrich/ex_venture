@@ -41,10 +41,11 @@ defmodule Game.ChannelTest do
 
   test "broadcasting a message records it", %{channel: channel} do
     user = create_user(%{name: "player", password: "password"})
+    character = create_character(user, %{name: "player"})
 
     message = %{
       channel_id: channel.id,
-      sender: user,
+      sender: character,
       message: "sending a message",
       formatted: "sending a message",
     }

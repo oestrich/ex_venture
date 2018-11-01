@@ -5,11 +5,11 @@ import _ from "underscore"
 import {format} from "./color"
 
 var body = document.getElementById("body")
-var userToken = body.getAttribute("data-user-token")
+var characterToken = body.getAttribute("data-character-token")
 
 class Channels {
   join() {
-    this.socket = new Socket("/socket", {params: {token: userToken}})
+    this.socket = new Socket("/socket", {params: {token: characterToken}})
     this.socket.connect()
 
     this.channels = {};

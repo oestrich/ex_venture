@@ -15,7 +15,9 @@ defmodule Game.Command.TargetTest do
     @room.set_room(room)
     @socket.clear_messages()
 
-    %{state: session_state(%{user: base_user()})}
+    user = base_user()
+    character = base_character(user)
+    %{state: session_state(%{user: user, character: character})}
   end
 
   test "set your target from someone in the room", %{state: state} do

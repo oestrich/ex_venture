@@ -63,7 +63,7 @@ defmodule Game.Command.Typo do
     params = %{
       title: typo.title,
       body: typo.lines |> Enum.join("\n"),
-      reporter_id: state.user.id,
+      reporter_id: state.character.id,
       room_id: state.save.room_id
     }
 

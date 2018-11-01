@@ -7,18 +7,18 @@ defmodule Web.Mail do
 
   alias Data.Mail
   alias Data.Repo
+  alias Web.Character
   alias Web.Pagination
-  alias Web.User
 
   @doc """
-  Get all mail for a user
+  Get all mail for a character
   """
-  @spec all(User.t(), opts :: Keyword.t()) :: [Zone.t()]
-  def all(user, opts \\ []) do
+  @spec all(Character.t(), opts :: Keyword.t()) :: [Zone.t()]
+  def all(character, opts \\ []) do
     opts = Enum.into(opts, %{})
 
     Mail
-    |> where([m], m.receiver_id == ^user.id)
+    |> where([m], m.receiver_id == ^character.id)
     |> preload([:sender])
     |> order_by([z], desc: z.id)
     |> Pagination.paginate(opts)
@@ -38,7 +38,8 @@ defmodule Web.Mail do
 
   def unread_count(user) do
     Mail
-    |> where([m], m.receiver_id == ^user.id)
+    |> join(:left, [m], c in assoc(m, :receiver))
+    |> where([m, c], c.user_id == ^user.id)
     |> where([m], m.is_read == false)
     |> select([m], count(m.id))
     |> Repo.one()
@@ -52,7 +53,7 @@ defmodule Web.Mail do
   def send(sender, params) do
     receiver_name = Map.get(params, "receiver_name")
 
-    case User.get_by(name: receiver_name) do
+    case Character.get_character_by(name: receiver_name) do
       {:ok, receiver} ->
         params =
           params

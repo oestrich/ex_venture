@@ -7,22 +7,18 @@ defmodule Web.User do
 
   require Logger
 
-  alias Data.QuestProgress
   alias Data.Repo
-  alias Data.Stats
   alias Data.User
   alias Data.User.OneTimePassword
   alias ExVenture.Mailer
   alias Game.Account
   alias Game.Config
   alias Game.Emails
-  alias Game.Experience
-  alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
   alias Metrics.PlayerInstrumenter
+  alias Web.Character
   alias Web.Filter
   alias Web.Pagination
-  alias Web.Race
 
   @behaviour Filter
 
@@ -46,6 +42,7 @@ defmodule Web.User do
   def from_token(token) do
     User
     |> where([u], u.token == ^token)
+    |> preload([:characters])
     |> Repo.one()
   end
 
@@ -99,11 +96,9 @@ defmodule Web.User do
     User
     |> where([u], u.id == ^id)
     |> preload([
-      :class,
-      :race,
       sessions: ^from(s in User.Session, order_by: [desc: s.started_at], limit: 10)
     ])
-    |> preload(quest_progress: [:quest])
+    |> preload(characters: [quest_progress: [:quest]])
     |> Repo.one()
   end
 
@@ -143,26 +138,42 @@ defmodule Web.User do
   Create a new user
   """
   @spec create(params :: map) :: {:ok, User.t()} | {:error, changeset :: map}
-  def create(params = %{"race_id" => race_id}) do
-    save = starting_save(race_id)
-    params = Map.put(params, "save", save)
+  def create(params) do
+    case Repo.transaction(fn -> _create(params) end) do
+      {:ok, result} ->
+        result
 
-    changeset = %User{} |> User.changeset(params)
-
-    case changeset |> Repo.insert() do
-      {:ok, user} ->
-        Account.maybe_email_welcome(user)
-
-        Config.claim_character_name(user.name)
-
-        {:ok, user}
-
-      {:error, changeset} ->
-        {:error, changeset}
+      {:error, result} ->
+        result
     end
   end
 
-  def create(params) do
+  def _create(params) do
+    with {:ok, user} <- create_user(params) do
+      case Character.create(user, params) do
+        {:ok, character} ->
+          Account.maybe_email_welcome(user)
+
+          Config.claim_character_name(character.name)
+
+          {:ok, user, character}
+
+        {:error, changeset} ->
+          user_changeset =
+            user
+            |> Ecto.Changeset.change()
+            |> Map.put(:action, :insert)
+            |> Map.put(:errors, changeset.errors)
+
+          Repo.rollback({:error, user_changeset})
+      end
+    else
+      {:error, changeset} ->
+        Repo.rollback({:error, changeset})
+    end
+  end
+
+  defp create_user(params) do
     %User{}
     |> User.changeset(params)
     |> Repo.insert()
@@ -195,69 +206,12 @@ defmodule Web.User do
   end
 
   @doc """
-  Get a starting save for a user
-  """
-  @spec starting_save(race_id :: integer()) :: Save.t()
-  def starting_save(race_id) do
-    race = Race.get(race_id)
-
-    Config.starting_save()
-    |> Map.put(:stats, race.starting_stats() |> Stats.default())
-    |> Account.maybe_change_starting_room()
-  end
-
-  @doc """
   List out connected players
   """
   @spec connected_players() :: [User.t()]
   def connected_players() do
     SessionRegistry.connected_players()
     |> Enum.map(& &1.player)
-  end
-
-  @doc """
-  Teleport a user to the room
-
-  Updates the save and sends a message to their session
-  """
-  @spec teleport(user :: User.t(), room_id :: integer) :: {:ok, User.t()} | {:error, map}
-  def teleport(user, room_id) do
-    room_id = String.to_integer(room_id)
-    save = %{user.save | room_id: room_id}
-    changeset = user |> User.changeset(%{save: save})
-
-    case changeset |> Repo.update() do
-      {:ok, user} ->
-        teleport_player_in_game(user, room_id)
-
-        {:ok, user}
-
-      anything ->
-        anything
-    end
-  end
-
-  def teleport_player_in_game(user, room_id) do
-    case SessionRegistry.find_connected_player(user.id) do
-      nil ->
-        nil
-
-      %{pid: pid} ->
-        pid |> Session.teleport(room_id)
-    end
-  end
-
-  @doc """
-  Reset a player's save file, and quest progress
-  """
-  def reset(user_id) do
-    user = Repo.get(User, user_id)
-
-    QuestProgress
-    |> where([qp], qp.user_id == ^user.id)
-    |> Repo.delete_all()
-
-    Account.save(user, starting_save(user.race_id))
   end
 
   @doc """
@@ -274,33 +228,6 @@ defmodule Web.User do
         user
         |> User.password_changeset(params)
         |> Repo.update()
-    end
-  end
-
-  @doc """
-  Disconnect players
-
-  The server will shutdown shortly.
-  """
-  @spec disconnect() :: :ok
-  def disconnect() do
-    SessionRegistry.connected_players()
-    |> Enum.each(fn %{pid: pid} ->
-      Session.disconnect(pid, reason: "server shutdown", force: true)
-    end)
-
-    :ok
-  end
-
-  @spec disconnect(integer()) :: :ok
-  def disconnect(user_id) do
-    case Session.find_connected_player(user_id) do
-      nil ->
-        :ok
-
-      %{pid: pid} ->
-        Session.disconnect(pid, reason: "disconnect", force: true)
-        :ok
     end
   end
 
@@ -469,21 +396,11 @@ defmodule Web.User do
     |> Repo.update()
   end
 
-  def activate_cheat(user, params) do
-    case Map.get(params, "name") do
-      "experience" ->
-        experience_points = String.to_integer(Map.get(params, "value"))
-        save = Experience.add_experience(user.save, experience_points)
-        save = Experience.maybe_level_up(user.save, save)
-        Account.save(user, save)
-    end
-  end
-
   @doc """
   Authorize a connection
   """
-  @spec authorize_connection(User.t(), String.t()) :: :ok
-  def authorize_connection(user, id) do
-    SessionRegistry.authorize_connection(user, id)
+  @spec authorize_connection(Data.Character.t(), String.t()) :: :ok
+  def authorize_connection(character, id) do
+    SessionRegistry.authorize_connection(character, id)
   end
 end

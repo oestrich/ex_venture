@@ -50,13 +50,13 @@ defmodule Web.Plug.LoadUser do
   end
 
   defp _assign_user(conn, user) do
-    token = Phoenix.Token.sign(conn, "user socket", user.id)
-
     case User.disabled?(user) do
       true ->
         conn
 
       false ->
+        token = Phoenix.Token.sign(conn, "user socket", user.id)
+
         conn
         |> assign(:user, user)
         |> assign(:user_token, token)

@@ -11,10 +11,11 @@ defmodule Game.QuestTest do
       quest = create_quest(guard, %{name: "Into the Dungeon"})
 
       user = create_user()
+      character = create_character(user)
 
-      assert :ok = Quest.start_quest(user, quest)
+      assert :ok = Quest.start_quest(character, quest)
 
-      assert Quest.progress_for(user, quest.id)
+      assert Quest.progress_for(character, quest.id)
     end
   end
 
@@ -24,12 +25,13 @@ defmodule Game.QuestTest do
       quest = create_quest(guard, %{name: "Into the Dungeon"})
 
       user = create_user()
+      character = create_character(user)
 
-      Quest.start_quest(user, quest)
+      Quest.start_quest(character, quest)
 
-      {:ok, _qp} = Quest.track_quest(user, quest.id)
+      {:ok, _qp} = Quest.track_quest(character, quest.id)
 
-      {:ok, progress} = Quest.progress_for(user, quest.id)
+      {:ok, progress} = Quest.progress_for(character, quest.id)
       assert progress.is_tracking
     end
 
@@ -39,13 +41,14 @@ defmodule Game.QuestTest do
       quest2 = create_quest(guard, %{name: "Into the Dungeon Again"})
 
       user = create_user()
+      character = create_character(user)
 
-      Quest.start_quest(user, quest1)
-      {:ok, _} = Quest.track_quest(user, quest1.id)
+      Quest.start_quest(character, quest1)
+      {:ok, _} = Quest.track_quest(character, quest1.id)
 
-      {:error, :not_started} = Quest.track_quest(user, quest2.id)
+      {:error, :not_started} = Quest.track_quest(character, quest2.id)
 
-      {:ok, progress} = Quest.progress_for(user, quest1.id)
+      {:ok, progress} = Quest.progress_for(character, quest1.id)
       assert progress.is_tracking
     end
   end
@@ -189,12 +192,13 @@ defmodule Game.QuestTest do
       create_quest_step(quest, %{type: "item/collect", count: 1, item_id: potion.id})
 
       user = create_user()
+      character = create_character(user)
       items = [item_instance(potion.id), item_instance(potion.id), item_instance(potion), item_instance(3)]
-      user = %{user | save: %{user.save | items: items}}
-      create_quest_progress(user, quest, %{progress: %{npc_step.id => 3}})
-      {:ok, progress} = Quest.progress_for(user, quest.id) # get preloads
+      character = %{character | save: %{character.save | items: items}}
+      create_quest_progress(character, quest, %{progress: %{npc_step.id => 3}})
+      {:ok, progress} = Quest.progress_for(character, quest.id) # get preloads
 
-      {:ok, save} = Quest.complete(progress, user.save)
+      {:ok, save} = Quest.complete(progress, character.save)
 
       assert Data.Repo.get(QuestProgress, progress.id).status == "complete"
       assert save.items |> length() == 3
@@ -204,33 +208,34 @@ defmodule Game.QuestTest do
   describe "track progress - npc kill" do
     setup do
       user = create_user()
+      character = create_character(user)
       goblin = create_npc(%{name: "Goblin"})
-      %{user: user, goblin: goblin}
+      %{character: character, goblin: goblin}
     end
 
-    test "no current quest that matches", %{user: user, goblin: goblin} do
-      assert :ok = Quest.track_progress(user, {:npc, goblin})
+    test "no current quest that matches", %{character: character, goblin: goblin} do
+      assert :ok = Quest.track_progress(character, {:npc, goblin})
     end
 
-    test "updates any quest progresses that match the user and the npc", %{user: user, goblin: goblin} do
+    test "updates any quest progresses that match the user and the npc", %{character: character, goblin: goblin} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
       npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
-      quest_progress = create_quest_progress(user, quest)
+      quest_progress = create_quest_progress(character, quest)
 
-      assert :ok = Quest.track_progress(user, {:npc, goblin})
+      assert :ok = Quest.track_progress(character, {:npc, goblin})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{npc_step.id => 1}
     end
 
-    test "ignores steps if they do not match the npc being passed in", %{user: user, goblin: goblin} do
+    test "ignores steps if they do not match the npc being passed in", %{character: character, goblin: goblin} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
       create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
-      quest_progress = create_quest_progress(user, quest)
+      quest_progress = create_quest_progress(character, quest)
 
-      assert :ok = Quest.track_progress(user, {:npc, guard})
+      assert :ok = Quest.track_progress(character, {:npc, guard})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{}
@@ -240,39 +245,40 @@ defmodule Game.QuestTest do
   describe "track progress - exploring a room" do
     setup do
       user = create_user()
+      character = create_character(user)
       zone = create_zone()
       room = create_room(zone, %{name: "Goblin Hideout"})
 
-      %{user: user, room: room}
+      %{character: character, room: room}
     end
 
-    test "no current quest that matches", %{user: user, room: room} do
-      assert :ok = Quest.track_progress(user, {:room, room.id})
+    test "no current quest that matches", %{character: character, room: room} do
+      assert :ok = Quest.track_progress(character, {:room, room.id})
     end
 
-    test "moving in the overworld", %{user: user} do
-      assert :ok = Quest.track_progress(user, {:room, "overworld:1:1,1,"})
+    test "moving in the overworld", %{character: character} do
+      assert :ok = Quest.track_progress(character, {:room, "overworld:1:1,1,"})
     end
 
-    test "updates any quest progresses that match the user and the room", %{user: user, room: room} do
+    test "updates any quest progresses that match the character and the room", %{character: character, room: room} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
       npc_step = create_quest_step(quest, %{type: "room/explore", room_id: room.id})
-      quest_progress = create_quest_progress(user, quest)
+      quest_progress = create_quest_progress(character, quest)
 
-      assert :ok = Quest.track_progress(user, {:room, room.id})
+      assert :ok = Quest.track_progress(character, {:room, room.id})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{npc_step.id => %{explored: true}}
     end
 
-    test "ignores steps if they do not match the room being passed in", %{user: user, room: room} do
+    test "ignores steps if they do not match the room being passed in", %{character: character, room: room} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
       create_quest_step(quest, %{type: "room/explore", room_id: room.id})
-      quest_progress = create_quest_progress(user, quest)
+      quest_progress = create_quest_progress(character, quest)
 
-      assert :ok = Quest.track_progress(user, {:room, -1})
+      assert :ok = Quest.track_progress(character, {:room, -1})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{}
@@ -282,48 +288,49 @@ defmodule Game.QuestTest do
   describe "track progress - give an item to an npc" do
     setup do
       user = create_user()
+      character = create_character(user)
       baker = create_npc(%{name: "Baker"})
       flour = create_item(%{name: "Flour"})
       flour_instance = item_instance(flour.id)
 
-      %{user: user, baker: baker, flour: flour_instance}
+      %{character: character, baker: baker, flour: flour_instance}
     end
 
-    test "no current quest that matches", %{user: user, baker: baker, flour: flour} do
-      assert :ok = Quest.track_progress(user, {:item, flour, baker})
+    test "no current quest that matches", %{character: character, baker: baker, flour: flour} do
+      assert :ok = Quest.track_progress(character, {:item, flour, baker})
     end
 
-    test "updates any quest progresses that match the user, the npc, and the item", %{user: user, baker: baker, flour: flour} do
+    test "updates any quest progresses that match the character, the npc, and the item", %{character: character, baker: baker, flour: flour} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
       npc_step = create_quest_step(quest, %{type: "item/give", count: 3, item_id: flour.id, npc_id: baker.id})
-      quest_progress = create_quest_progress(user, quest)
+      quest_progress = create_quest_progress(character, quest)
 
-      assert :ok = Quest.track_progress(user, {:item, flour, baker})
+      assert :ok = Quest.track_progress(character, {:item, flour, baker})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{npc_step.id => 1}
     end
 
-    test "ignores steps if they do not match the npc being passed in", %{user: user, baker: baker, flour: flour} do
+    test "ignores steps if they do not match the npc being passed in", %{character: character, baker: baker, flour: flour} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
       create_quest_step(quest, %{type: "item/give", count: 3, item_id: flour.id, npc_id: baker.id})
-      quest_progress = create_quest_progress(user, quest)
+      quest_progress = create_quest_progress(character, quest)
 
-      assert :ok = Quest.track_progress(user, {:item, flour, guard})
+      assert :ok = Quest.track_progress(character, {:item, flour, guard})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{}
     end
 
-    test "ignores steps if they do not match the item being passed in", %{user: user, baker: baker, flour: flour} do
+    test "ignores steps if they do not match the item being passed in", %{character: character, baker: baker, flour: flour} do
       guard = create_npc(%{name: "Guard", is_quest_giver: true})
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200})
       create_quest_step(quest, %{type: "item/give", count: 3, item_id: flour.id, npc_id: baker.id})
-      quest_progress = create_quest_progress(user, quest)
+      quest_progress = create_quest_progress(character, quest)
 
-      assert :ok = Quest.track_progress(user, {:item, item_instance(0), baker})
+      assert :ok = Quest.track_progress(character, {:item, item_instance(0), baker})
 
       quest_progress = Data.Repo.get(QuestProgress, quest_progress.id)
       assert quest_progress.progress == %{}
@@ -344,28 +351,29 @@ defmodule Game.QuestTest do
       create_quest_relation(quest5, quest3)
 
       user = create_user()
+      character = create_character(user)
 
-      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest1.id
 
-      create_quest_progress(user, quest1, %{status: "complete"})
-      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      create_quest_progress(character, quest1, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest2.id
 
-      create_quest_progress(user, quest2, %{status: "complete"})
-      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      create_quest_progress(character, quest2, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest3.id
 
-      create_quest_progress(user, quest3, %{status: "complete"})
-      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      create_quest_progress(character, quest3, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest4.id
 
-      create_quest_progress(user, quest4, %{status: "complete"})
-      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      create_quest_progress(character, quest4, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest5.id
 
-      create_quest_progress(user, quest5, %{status: "complete"})
-      assert {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+      create_quest_progress(character, quest5, %{status: "complete"})
+      assert {:error, :no_quests} = Quest.next_available_quest_from(guard, character)
     end
 
     test "stops if a parent quest is not complete" do
@@ -378,16 +386,17 @@ defmodule Game.QuestTest do
       create_quest_relation(quest3, quest2)
 
       user = create_user()
+      character = create_character(user)
 
-      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest1.id
 
-      create_quest_progress(user, quest1, %{status: "complete"})
-      {:ok, next_quest} = Quest.next_available_quest_from(guard, user)
+      create_quest_progress(character, quest1, %{status: "complete"})
+      {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest2.id
 
-      create_quest_progress(user, quest2, %{status: "active"})
-      assert {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+      create_quest_progress(character, quest2, %{status: "active"})
+      assert {:error, :no_quests} = Quest.next_available_quest_from(guard, character)
     end
 
     test "can find a quest that is in the middle of a quest chain" do
@@ -400,13 +409,14 @@ defmodule Game.QuestTest do
       create_quest_relation(quest3, quest1)
 
       user = create_user()
+      character = create_character(user)
 
-      create_quest_progress(user, quest1, %{status: "complete"})
-      create_quest_progress(user, quest2, %{status: "complete"})
+      create_quest_progress(character, quest1, %{status: "complete"})
+      create_quest_progress(character, quest2, %{status: "complete"})
 
-      {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+      {:error, :no_quests} = Quest.next_available_quest_from(guard, character)
 
-      {:ok, next_quest} = Quest.next_available_quest_from(captain, user)
+      {:ok, next_quest} = Quest.next_available_quest_from(captain, character)
       assert next_quest.id == quest3.id
     end
 
@@ -416,8 +426,9 @@ defmodule Game.QuestTest do
       create_quest(guard, %{level: 2})
 
       user = create_user()
+      character = create_character(user)
 
-      {:error, :no_quests} = Quest.next_available_quest_from(guard, user)
+      {:error, :no_quests} = Quest.next_available_quest_from(guard, character)
     end
   end
 end

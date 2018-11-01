@@ -15,7 +15,7 @@ defmodule Web.RegistrationController do
 
   def create(conn, %{"user" => params}) do
     case User.create(params) do
-      {:ok, user} ->
+      {:ok, user, _character} ->
         conn
         |> put_session(:user_token, user.token)
         |> redirect(to: public_play_path(conn, :show))

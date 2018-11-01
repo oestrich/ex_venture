@@ -10,8 +10,9 @@ defmodule Game.ExperienceTest do
 
   setup do
     @socket.clear_messages()
-    save = base_save()
-    %{state: session_state(%{user: %{base_user() | save: save}, save: save})}
+    user = base_user()
+    character = base_character(user)
+    %{state: session_state(%{user: user, character: character, save: character.save})}
   end
 
   test "receive experience and level up", %{state: state} do

@@ -4,6 +4,7 @@ defmodule Game.Account do
   """
 
   alias Data.ActionBar
+  alias Data.Character
   alias Data.ClassSkill
   alias Data.RaceSkill
   alias Data.Repo
@@ -36,22 +37,19 @@ defmodule Game.Account do
       |> Map.put(:class_id, class.id)
       |> Map.put(:save, save)
 
-    case create_account(attributes) do
-      {:ok, player} ->
-        player |> maybe_email_welcome()
+    with {:ok, user} <- create_account(attributes),
+         {:ok, character} <- create_character(user, attributes) do
+      user |> maybe_email_welcome()
 
-        Config.claim_character_name(player.name)
+      Config.claim_character_name(character.name)
 
-        player =
-          player
-          |> Repo.preload([:race])
-          |> Repo.preload(class: :skills)
-          |> migrate()
+      character =
+        character
+        |> Repo.preload([:race])
+        |> Repo.preload(class: :skills)
+        |> migrate()
 
-        {:ok, player}
-
-      anything ->
-        anything
+      {:ok, user, character}
     end
   end
 
@@ -71,6 +69,13 @@ defmodule Game.Account do
     |> Repo.insert()
   end
 
+  defp create_character(user, attributes) do
+    user
+    |> Ecto.build_assoc(:characters)
+    |> Character.changeset(attributes)
+    |> Repo.insert()
+  end
+
   def maybe_email_welcome(player) do
     case player.email do
       nil ->
@@ -86,29 +91,25 @@ defmodule Game.Account do
   @doc """
   Save the final session data for a play
   """
-  @spec save_session(User.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
-  def save_session(player, save, session_started_at, now, stats) do
-    case player |> save(save) do
-      {:ok, player} ->
-        player |> update_time_online(session_started_at, now)
-        player |> create_session(session_started_at, now, stats)
+  @spec save_session(User.t(), Character.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
+  def save_session(player, character, save, session_started_at, now, stats) do
+    with {:ok, character} <- save(character, save),
+         {:ok, _character} <- update_time_online(character, session_started_at, now) do
+      player |> create_session(session_started_at, now, stats)
 
-        {:ok, player}
-
-      {:error, changeset} ->
-        {:error, changeset}
+      {:ok, player}
     end
   end
 
   @doc """
   Update the player's save data.
   """
-  @spec save(User.t(), Save.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def save(player, save) do
-    player = %{player | save: %{}}
+  @spec save(Character.t(), Save.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
+  def save(character, save) do
+    character = %{character | save: %{}}
 
-    player
-    |> User.changeset(%{save: save})
+    character
+    |> Character.changeset(%{save: save})
     |> Repo.update()
   end
 
@@ -117,9 +118,9 @@ defmodule Game.Account do
   """
   @spec update_time_online(User.t(), Timex.t(), Timex.t()) ::
           {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def update_time_online(player, session_started_at, now) do
-    player
-    |> User.changeset(%{seconds_online: current_play_time(player, session_started_at, now)})
+  def update_time_online(character, session_started_at, now) do
+    character
+    |> Character.changeset(%{seconds_online: current_play_time(character, session_started_at, now)})
     |> Repo.update()
   end
 
@@ -127,9 +128,9 @@ defmodule Game.Account do
   Calculate the current play time, old + current session.
   """
   @spec current_play_time(User.t(), DateTime.t(), DateTime.t()) :: integer()
-  def current_play_time(player, session_started_at, now) do
+  def current_play_time(character, session_started_at, now) do
     play_time = Timex.diff(now, session_started_at, :seconds)
-    player.seconds_online + play_time
+    character.seconds_online + play_time
   end
 
   @doc """
@@ -241,15 +242,18 @@ defmodule Game.Account do
   @spec get_player(String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def get_player(name) do
     player =
-      User
+      Character
       |> where([u], fragment("lower(?) = ?", u.name, ^String.downcase(name)))
-      |> preload([:race, :class])
+      |> preload([:class, :race, :user])
       |> limit(1)
       |> Repo.one()
 
     case player do
-      nil -> {:error, :not_found}
-      _ -> {:ok, player}
+      nil ->
+        {:error, :not_found}
+
+      _ ->
+        {:ok, player}
     end
   end
 end

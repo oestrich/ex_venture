@@ -11,11 +11,7 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <div class="box-tools">
-            <%= if !online?(@user) do %>
-              <%= link("Cheat", to: user_cheat_path(@conn, :cheat, @user.id), class: "btn btn-warning") %>
-              <%= link("Edit", to: user_path(@conn, :edit, @user.id), class: "btn btn-primary") %>
-              <%= link("Reset Save", to: user_reset_path(@conn, :reset, @user.id), method: :post, data: [confirm: "Are you sure?"], class: "btn btn-warning") %>
-            <% end %>
+            <%= link("Edit", to: user_path(@conn, :edit, @user.id), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
@@ -28,14 +24,6 @@
               <tr>
                 <th>Email</th>
                 <td><%= @user.email %></td>
-              </tr>
-              <tr>
-                <th>Race</th>
-                <td><%= link(@user.race.name, to: race_path(@conn, :show, @user.race_id)) %></td>
-              </tr>
-              <tr>
-                <th>Class</th>
-                <td><%= link(@user.class.name, to: class_path(@conn, :show, @user.class_id)) %></td>
               </tr>
               <tr>
                 <th>Flags</th>
@@ -57,54 +45,29 @@
           </table>
         </div>
       </div>
-
-      <%= if user = live(@user) do %>
-        <div class="box">
-          <div class="box-header">
-            <h3 class="box-title">Live Stats</h3>
-            <div class="box-tools">
-              <%= link("Watch", to: user_watch_path(@conn, :watch, @user.id), class: "btn btn-warning") %>
-              <%= link("Teleport", to: user_path(@conn, :teleport, room_id: user.extra.room_id), method: "post", class: "btn btn-primary") %>
-              <%= link("Disconnect", to: user_disconnect_path(@conn, :disconnect, @user.id), method: "delete", class: "btn btn-warning") %>
-            </div>
-          </div>
-          <div class="box-body">
-            <table class="table">
-              <tr>
-                <th>Room</th>
-                <td>
-                  <%= link(user.extra.room_id, to: room_path(@conn, :show, user.extra.room_id)) %>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      <% end %>
     </div>
 
     <div class="col-md-6">
-      <div class="box">
+      <div class="box box-primary">
         <div class="box-header">
-          <h3 class="box-title">Basic Stats</h3>
+          <h3 class="box-title">Characters</h3>
         </div>
         <div class="box-body">
           <table class="table">
-            <tr>
-              <th>Level</th>
-              <td><%= @user.save.level %></td>
-            </tr>
-
-            <tr>
-              <th>Experience</th>
-              <td><%= @user.save.experience_points %></td>
-            </tr>
-
-            <%= Enum.map(@user.save.stats, fn ({stat, val}) -> %>
+            <thead>
               <tr>
-                <th><%= stat |> stat_display_name() %></th>
-                <td><%= val %></td>
+                <th>Name</th>
+                <th>Actions</th>
               </tr>
-            <% end) %>
+            </thead>
+            <tbody>
+              <%= Enum.map(@user.characters, fn character -> %>
+                <tr>
+                  <td><%= character.name %></td>
+                  <td><%= link("View", to: character_path(@conn, :show, character.id)) %></td>
+                </tr>
+              <% end) %>
+            </tbody>
           </table>
         </div>
       </div>
@@ -125,58 +88,6 @@
       </div>
     </div>
   <% end %>
-
-  <div class="row">
-    <div class="col-md-6">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Items</h3>
-        </div>
-        <div class="box-body">
-          <table class="table">
-            <thead>
-              <th>Item</th>
-              <th>Created</th>
-            </thead>
-            <tbody>
-              <%= Enum.map(@user.save.items, fn (instance) -> %>
-                <tr>
-                  <td><%= link(Items.item(instance).name, to: item_path(@conn, :show, instance.id)) %></td>
-                  <td><%= time(instance.created_at) %></td>
-                </tr>
-              <% end) %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Quests</h3>
-        </div>
-        <div class="box-body">
-          <table class="table">
-            <thead>
-              <th>Quest</th>
-              <th>Status</th>
-              <th>Progress</th>
-            </thead>
-            <tbody>
-              <%= Enum.map(@user.quest_progress, fn (progress) -> %>
-                <tr>
-                  <td><%= link(progress.quest.name, to: quest_path(@conn, :show, progress.quest_id)) %></td>
-                  <td><%= progress.status %></td>
-                  <td><%= progress.progress |> Poison.encode!(pretty: true) %></td>
-                </tr>
-              <% end) %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div class="row">
     <div class="col-md-12">
@@ -207,19 +118,6 @@
               <% end) %>
             </tbody>
           </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Save</h3>
-        </div>
-        <div class="box-body">
-          <pre><%= @user.save |> Poison.encode!(pretty: true) %></pre>
         </div>
       </div>
     </div>

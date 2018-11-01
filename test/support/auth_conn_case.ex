@@ -5,9 +5,12 @@ defmodule Web.AuthConnCase do
 
       setup %{conn: conn} do
         user = create_user(%{name: "user", password: "password", flags: ["admin"]})
+        character = create_character(user, %{name: "user"})
+        user = %{user | characters: [character]}
+
         conn = conn |> assign(:user, user)
 
-        %{conn: conn, user: user}
+        %{conn: conn, user: user, character: character}
       end
     end
   end

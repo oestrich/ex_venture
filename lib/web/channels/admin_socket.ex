@@ -4,8 +4,8 @@ defmodule Web.AdminSocket do
 
   alias Web.User
 
+  channel("character:*", Web.CharacterChannel)
   channel("npc:*", Web.NPCChannel)
-  channel("user:*", Web.UserChannel)
 
   transport(:websocket, Phoenix.Transports.WebSocket)
 
