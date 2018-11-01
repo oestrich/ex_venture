@@ -6,6 +6,7 @@ defmodule Data.Repo.Migrations.DeleteCharacterDataFromUsers do
       remove(:class_id)
       remove(:race_id)
       remove(:save)
+      remove(:seconds_online)
     end
 
     alter table(:bugs) do

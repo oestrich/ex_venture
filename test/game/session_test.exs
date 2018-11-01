@@ -230,8 +230,8 @@ defmodule Game.SessionTest do
 
   describe "disconnects" do
     test "unregisters the pid when disconnected" do
-      user = %{base_user() | seconds_online: 0}
-      character = base_character(user)
+      user = base_user()
+      character = %{base_character(user) | seconds_online: 0}
       Session.Registry.register(character)
 
       state = session_state(%{user: user, character: character, session_started_at: Timex.now(), stats: %{}})
@@ -248,8 +248,8 @@ defmodule Game.SessionTest do
 
       {:stop, :normal, _state} = Process.handle_cast(:disconnect, state)
 
-      user = Repo.get(Data.User, user.id)
-      assert user.seconds_online == 10800
+      character = Repo.get(Data.Character, character.id)
+      assert character.seconds_online == 10800
     end
   end
 

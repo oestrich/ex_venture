@@ -58,8 +58,8 @@ defmodule Game.Format.Players do
   @doc """
   Format your info sheet
   """
-  @spec info(User.t(), Character.t()) :: String.t()
-  def info(user, character = %{save: save}) do
+  @spec info(Character.t()) :: String.t()
+  def info(character = %{save: save}) do
     %{stats: stats} = save
 
     rows = [
@@ -75,7 +75,7 @@ defmodule Game.Format.Players do
       ["Awareness", stats.awareness],
       ["Vitality", stats.vitality],
       ["Willpower", stats.willpower],
-      ["Play Time", play_time(user.seconds_online)]
+      ["Play Time", play_time(character.seconds_online)]
     ]
 
     Table.format("#{player_name(character)} - #{character.race.name} - #{character.class.name}", rows, [16, 15])

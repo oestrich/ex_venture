@@ -58,9 +58,12 @@ defmodule Game.Command.Info do
   def run(command, state)
 
   def run({}, state = %{socket: socket, character: character, save: save}) do
-    user = %{state.user | seconds_online: seconds_online(state.user, state)}
-    character = %{character | save: cacluate_save(save)}
-    socket |> @socket.echo(FormatPlayers.info(user, character))
+    character =
+      character
+      |> Map.put(:save, cacluate_save(save))
+      |> Map.put(:seconds_online, seconds_online(state.character, state))
+
+    socket |> @socket.echo(FormatPlayers.info(character))
   end
 
   def run({name}, %{socket: socket}) do

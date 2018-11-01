@@ -303,7 +303,7 @@ defmodule Game.Session.Process do
   def handle_info(:save, state = %{state: "active"}) do
     %{save: save, session_started_at: session_started_at} = state
     state.character |> Account.save(save)
-    state.user |> Account.update_time_online(session_started_at, Timex.now())
+    state.character |> Account.update_time_online(session_started_at, Timex.now())
     self() |> schedule_save()
     {:noreply, state}
   end

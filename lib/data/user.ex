@@ -16,7 +16,6 @@ defmodule Data.User do
     field(:password_hash, :string)
     field(:flags, {:array, :string})
     field(:token, Ecto.UUID)
-    field(:seconds_online, :integer)
     field(:notes, :string)
 
     field(:totp_secret, :string)
@@ -46,7 +45,6 @@ defmodule Data.User do
       :password,
       :password_confirmation,
       :flags,
-      :seconds_online,
       :notes
     ])
     |> validate_required([:name])
@@ -54,7 +52,6 @@ defmodule Data.User do
     |> validate_format(:email, ~r/.+@.+\..+/)
     |> ensure(:flags, [])
     |> ensure(:token, UUID.uuid4())
-    |> ensure(:seconds_online, 0)
     |> hash_password()
     |> validate_required([:password_hash])
     |> validate_confirmation(:password)

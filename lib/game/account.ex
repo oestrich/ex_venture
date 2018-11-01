@@ -93,8 +93,8 @@ defmodule Game.Account do
   """
   @spec save_session(User.t(), Character.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
   def save_session(player, character, save, session_started_at, now, stats) do
-    with {:ok, _character} <- save(character, save),
-         {:ok, player} <- player |> update_time_online(session_started_at, now) do
+    with {:ok, character} <- save(character, save),
+         {:ok, _character} <- update_time_online(character, session_started_at, now) do
       player |> create_session(session_started_at, now, stats)
 
       {:ok, player}
@@ -118,9 +118,9 @@ defmodule Game.Account do
   """
   @spec update_time_online(User.t(), Timex.t(), Timex.t()) ::
           {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def update_time_online(player, session_started_at, now) do
-    player
-    |> User.changeset(%{seconds_online: current_play_time(player, session_started_at, now)})
+  def update_time_online(character, session_started_at, now) do
+    character
+    |> Character.changeset(%{seconds_online: current_play_time(character, session_started_at, now)})
     |> Repo.update()
   end
 
@@ -128,9 +128,9 @@ defmodule Game.Account do
   Calculate the current play time, old + current session.
   """
   @spec current_play_time(User.t(), DateTime.t(), DateTime.t()) :: integer()
-  def current_play_time(player, session_started_at, now) do
+  def current_play_time(character, session_started_at, now) do
     play_time = Timex.diff(now, session_started_at, :seconds)
-    player.seconds_online + play_time
+    character.seconds_online + play_time
   end
 
   @doc """

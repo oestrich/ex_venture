@@ -17,6 +17,7 @@ defmodule Data.Character do
     field(:name, :string)
     field(:save, Save)
     field(:flags, {:array, :string})
+    field(:seconds_online, :integer, default: 0)
 
     belongs_to(:user, User)
     belongs_to(:class, Class)
@@ -37,8 +38,8 @@ defmodule Data.Character do
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :save, :flags, :race_id, :class_id])
-    |> validate_required([:name, :save, :race_id, :class_id])
+    |> cast(params, [:name, :save, :flags, :race_id, :class_id, :seconds_online])
+    |> validate_required([:name, :save, :race_id, :class_id, :seconds_online])
     |> validate_name()
     |> ensure(:flags, [])
     |> validate_save()

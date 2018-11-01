@@ -9,6 +9,7 @@ defmodule Data.Repo.Migrations.SplitOffCharacters do
       add(:save, :jsonb, null: false)
       add(:class_id, references(:classes), null: false)
       add(:race_id, references(:races), null: false)
+      add(:seconds_online, :integer, default: 0, null: false)
 
       timestamps()
     end

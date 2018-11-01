@@ -40,11 +40,12 @@ defmodule Game.AccountTest do
   describe "online playing time" do
     test "updating the global time" do
       user = create_user(%{name: "user", password: "password"})
+      character = create_character(user, %{name: "player"})
 
-      Account.update_time_online(user, Timex.now() |> Timex.shift(minutes: -5), Timex.now())
+      Account.update_time_online(character, Timex.now() |> Timex.shift(minutes: -5), Timex.now())
 
-      user = Repo.get(User, user.id)
-      assert user.seconds_online == 300
+      character = Repo.get(Character, character.id)
+      assert character.seconds_online == 300
     end
 
     test "records a full session separately" do
