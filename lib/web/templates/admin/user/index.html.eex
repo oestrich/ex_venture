@@ -18,7 +18,6 @@
                   <th>ID</th>
                   <th>Name</th>
                   <th>Last Saved</th>
-                  <th>Play Time</th>
                   <th>Flags</th>
                   <th>Actions</th>
                 </tr>
@@ -29,7 +28,6 @@
                     <td><%= user.id %></td>
                     <td><%= link(user.name, to: user_path(@conn, :show, user.id)) %></td>
                     <td><%= user.updated_at |> time() %></td>
-                    <td><%= user.seconds_online |> FormatPlayers.play_time() %></td>
                     <td><%= user.flags |> Enum.join(", ") %></td>
                     <td>
                       <%= link("View", to: user_path(@conn, :show, user.id), class: "btn btn-default btn-xs") %>

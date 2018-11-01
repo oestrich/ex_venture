@@ -43,6 +43,11 @@
         <div class="box-body">
           <table class="table">
             <tr>
+              <th>Play Time</th>
+              <td><%= @character.seconds_online |> FormatPlayers.play_time() %></td>
+            </tr>
+
+            <tr>
               <th>Level</th>
               <td><%= @character.save.level %></td>
             </tr>

@@ -37,10 +37,6 @@
                 <th>Last Saved</th>
                 <td><%= @user.updated_at |> time() %></td>
               </tr>
-              <tr>
-                <th>Play Time</th>
-                <td><%= @user.seconds_online |> FormatPlayers.play_time() %></td>
-              </tr>
             </tbody>
           </table>
         </div>
