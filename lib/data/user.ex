@@ -55,7 +55,7 @@ defmodule Data.User do
     |> hash_password()
     |> validate_required([:password_hash])
     |> validate_confirmation(:password)
-    |> unique_constraint(:name)
+    |> unique_constraint(:name, name: :users_lower_name_index)
     |> unique_constraint(:email)
   end
 
