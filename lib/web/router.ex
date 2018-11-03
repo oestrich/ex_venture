@@ -101,6 +101,10 @@ defmodule Web.Router do
 
     delete("/sessions", SessionController, :delete)
     resources("/sessions", SessionController, only: [:new, :create])
+
+    get "/auth/:provider", AuthController, :request
+    get "/auth/:provider/callback", AuthController, :callback
+    post "/auth/:provider/callback", AuthController, :callback
   end
 
   scope "/admin", Web.Admin do
