@@ -7,6 +7,10 @@ defmodule Web.LayoutView do
   alias Web.Color
   alias Web.Mail
 
+  def current_character?(conn) do
+    Map.has_key?(conn.assigns, :current_character)
+  end
+
   def color_css_path(conn, opts \\ []) do
     opts = Keyword.put(opts, :version, Color.latest_version())
     public_color_path(conn, :index, opts)

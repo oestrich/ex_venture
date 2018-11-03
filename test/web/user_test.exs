@@ -153,4 +153,100 @@ defmodule Web.UserTest do
       assert :error = User.reset_password(user.password_reset_token, params)
     end
   end
+
+  describe "checking for a grapevine user" do
+    test "user does not exist" do
+      auth = %{
+        uid: "a uid",
+        provider: :grapevine,
+        info: %{
+          name: "newuser",
+          email: "newuser@example.com"
+        }
+      }
+
+      {:ok, user} = User.from_grapevine(auth)
+
+      assert user.provider == "grapevine"
+      assert user.provider_uid == "a uid"
+      assert user.name == "newuser"
+      assert user.email == "newuser@example.com"
+    end
+
+    test "a user without a provider exists with the same name" do
+      auth = %{
+        uid: "a uid",
+        provider: :grapevine,
+        info: %{
+          name: "user",
+          email: "newuser@example.com"
+        }
+      }
+
+      {:ok, :finalize_registration, user} = User.from_grapevine(auth)
+
+      assert user.provider == "grapevine"
+      assert user.provider_uid == "a uid"
+      refute user.name
+      refute user.email
+    end
+
+    test "a user without a provider exists with the same email" do
+      create_user(%{name: "withemail", email: "user@example.com"})
+
+      auth = %{
+        uid: "a uid",
+        provider: :grapevine,
+        info: %{
+          name: "newuser",
+          email: "user@example.com"
+        }
+      }
+
+      {:ok, :finalize_registration, user} = User.from_grapevine(auth)
+
+      assert user.provider == "grapevine"
+      assert user.provider_uid == "a uid"
+      refute user.name
+      refute user.email
+    end
+
+    test "user exists and has not completed registration" do
+      auth = %{
+        uid: "a uid",
+        provider: :grapevine,
+        info: %{
+          name: "user",
+          email: "user@example.com"
+        }
+      }
+
+      {:ok, :finalize_registration, _user} = User.from_grapevine(auth)
+      {:ok, :finalize_registration, user} = User.from_grapevine(auth)
+
+      assert user.provider == "grapevine"
+      assert user.provider_uid == "a uid"
+      refute user.name
+      refute user.email
+    end
+
+    test "user exists and has completed registration" do
+      auth = %{
+        uid: "a uid",
+        provider: :grapevine,
+        info: %{
+          name: "newuser",
+          email: "newuser@example.com"
+        }
+      }
+
+      {:ok, _user} = User.from_grapevine(auth)
+      {:ok, user} = User.from_grapevine(auth)
+
+      assert user.provider == "grapevine"
+      assert user.provider_uid == "a uid"
+      assert user.name
+      assert user.email
+    end
+  end
 end

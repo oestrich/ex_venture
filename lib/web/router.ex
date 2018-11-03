@@ -98,6 +98,8 @@ defmodule Web.Router do
     post("/register/reset/verify", RegistrationResetController, :update)
 
     resources("/register", RegistrationController, only: [:new, :create])
+    get("/register/finalize", RegistrationController, :finalize)
+    post("/register/finalize", RegistrationController, :update)
 
     delete("/sessions", SessionController, :delete)
     resources("/sessions", SessionController, only: [:new, :create])

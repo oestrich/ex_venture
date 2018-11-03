@@ -43,15 +43,25 @@ defmodule Web.Plug.LoadCharacter do
   end
 
   defp load_any_character(conn, user) do
-    character = List.first(user.characters)
+    case List.first(user.characters) do
+      nil ->
+        conn
 
-    conn
-    |> assign(:current_character, character)
-    |> put_session(:current_character_id, character.id)
+      character ->
+        conn
+        |> assign(:current_character, character)
+        |> put_session(:current_character_id, character.id)
+    end
   end
 
   defp assign_token(conn) do
-    token = Phoenix.Token.sign(conn, "character socket", conn.assigns.current_character.id)
-    assign(conn, :character_token, token)
+    case Map.fetch(conn.assigns, :current_character) do
+      {:ok, current_character} ->
+        token = Phoenix.Token.sign(conn, "character socket", current_character.id)
+        assign(conn, :character_token, token)
+
+      :error ->
+        conn
+    end
   end
 end
