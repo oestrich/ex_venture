@@ -18,6 +18,9 @@ defmodule Data.User do
     field(:token, Ecto.UUID)
     field(:notes, :string)
 
+    field(:provider, :string)
+    field(:provider_uid, :string)
+
     field(:totp_secret, :string)
     field(:totp_verified_at, Timex.Ecto.DateTime)
 
@@ -55,6 +58,29 @@ defmodule Data.User do
     |> hash_password()
     |> validate_required([:password_hash])
     |> validate_confirmation(:password)
+    |> unique_constraint(:name, name: :users_lower_name_index)
+    |> unique_constraint(:email)
+  end
+
+  def grapevine_changeset(struct, params) do
+    struct
+    |> cast(params, [:name, :email, :provider, :provider_uid])
+    |> validate_required([:provider, :provider_uid])
+    |> validate_name()
+    |> validate_format(:email, ~r/.+@.+\..+/)
+    |> ensure(:flags, [])
+    |> ensure(:token, UUID.uuid4())
+    |> unique_constraint(:name, name: :users_lower_name_index)
+    |> unique_constraint(:email)
+    |> unique_constraint(:provider_uid, name: :users_provider_provider_uid_index)
+  end
+
+  def finalize_changeset(struct, params) do
+    struct
+    |> cast(params, [:name, :email])
+    |> validate_required([:name])
+    |> validate_name()
+    |> validate_format(:email, ~r/.+@.+\..+/)
     |> unique_constraint(:name, name: :users_lower_name_index)
     |> unique_constraint(:email)
   end
@@ -118,8 +144,11 @@ defmodule Data.User do
     case changeset do
       %{changes: %{name: name}} ->
         case Regex.match?(~r/ /, name) do
-          true -> add_error(changeset, :name, "cannot contain spaces")
-          false -> changeset
+          true ->
+            add_error(changeset, :name, "cannot contain spaces")
+
+          false ->
+            changeset
         end
 
       _ ->

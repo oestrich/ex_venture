@@ -3,4 +3,8 @@ defmodule Web.AccountView do
 
   alias Web.Mail
   alias Web.User
+
+  def provider_login?(user) do
+    user.provider != nil
+  end
 end

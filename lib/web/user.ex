@@ -134,6 +134,11 @@ defmodule Web.User do
   def email_changeset(user), do: user |> User.email_changeset(%{})
 
   @doc """
+  Get a changeset for finalizing registration
+  """
+  def finalize(user), do: user |> User.finalize_changeset(%{})
+
+  @doc """
   Create a new user
   """
   @spec create(params :: map) :: {:ok, User.t()} | {:error, changeset :: map}
@@ -202,6 +207,16 @@ defmodule Web.User do
       false ->
         params
     end
+  end
+
+  @doc """
+  Finalize a user
+  """
+  @spec finalize_user(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
+  def finalize_user(user, params) do
+    user
+    |> User.finalize_changeset(params)
+    |> Repo.update()
   end
 
   @doc """
@@ -309,6 +324,11 @@ defmodule Web.User do
     {:error, :invalid}
   end
 
+  defp _find_and_validate(%{password_hash: nil}, _password) do
+    Comeonin.Bcrypt.dummy_checkpw()
+    {:error, :invalid}
+  end
+
   defp _find_and_validate(user, password) do
     case Comeonin.Bcrypt.checkpw(password, user.password_hash) do
       true ->
@@ -401,5 +421,78 @@ defmodule Web.User do
   @spec authorize_connection(Data.Character.t(), String.t()) :: :ok
   def authorize_connection(character, id) do
     SessionRegistry.authorize_connection(character, id)
+  end
+
+  @doc """
+  True if the user needs to be finalized and finish registration
+  """
+  def finalize_registration?(user) do
+    is_nil(user.name)
+  end
+
+  @doc """
+  Find or create a user who signed in from Grapevine
+  """
+  def from_grapevine(auth) do
+    params = %{
+      provider: to_string(auth.provider),
+      provider_uid: auth.uid,
+      name: auth.info.name,
+      email: auth.info.email,
+    }
+
+    auth
+    |> maybe_find_user()
+    |> maybe_fully_register(params)
+    |> maybe_partially_register(params)
+  end
+
+  defp maybe_find_user(auth) do
+    provider = to_string(auth.provider)
+
+    case Repo.get_by(User, provider: provider, provider_uid: auth.uid) do
+      nil ->
+        {:error, :not_found}
+
+      user ->
+        case is_nil(user.name) do
+          true ->
+            {:ok, :finalize_registration, user}
+
+          false ->
+            {:ok, user}
+        end
+    end
+  end
+
+  defp maybe_fully_register({:ok, user}, _params), do: {:ok, user}
+
+  defp maybe_fully_register({:ok, :finalize_registration, user}, _params), do: {:ok, :finalize_registration, user}
+
+  defp maybe_fully_register({:error, :not_found}, params) do
+    %User{}
+    |> User.grapevine_changeset(params)
+    |> Repo.insert()
+  end
+
+  defp maybe_partially_register({:ok, user}, _params), do: {:ok, user}
+
+  defp maybe_partially_register({:ok, :finalize_registration, user}, _params), do: {:ok, :finalize_registration, user}
+
+  defp maybe_partially_register({:error, _changeset}, params) do
+    params =
+      params
+      |> Map.delete(:email)
+      |> Map.delete(:name)
+
+    changeset = %User{} |> User.grapevine_changeset(params)
+
+    case Repo.insert(changeset) do
+      {:ok, user} ->
+        {:ok, :finalize_registration, user}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 end

@@ -75,11 +75,13 @@ defmodule ExVenture.Mixfile do
       {:poison, "~> 3.1"},
       {:pot, git: "https://github.com/yuce/pot.git"},
       {:postgrex, ">= 0.0.0"},
+      {:oauth2, "~> 0.9"},
       {:ranch, "~> 1.5.0"},
       {:sentry, "~> 6.2"},
       {:squabble, git: "https://github.com/oestrich/squabble.git"},
       {:timex, "~> 3.1"},
       {:timex_ecto, "~> 3.1"},
+      {:ueberauth, "~> 0.4"},
       {:yaml_elixir, "~> 2.0"}
     ]
   end
