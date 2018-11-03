@@ -72,7 +72,7 @@ config :phoenix, :format_encoders, [collection: Poison, hal: Poison, mason: Pois
 
 config :ueberauth, Ueberauth,
   providers: [
-    grapevine: { Grapevine.Ueberauth.Strategy, [scope: "profile"] }
+    grapevine: { Grapevine.Ueberauth.Strategy, [scope: "profile email"] }
   ]
 
 import_config "#{Mix.env()}.exs"
