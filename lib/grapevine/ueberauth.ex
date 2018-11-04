@@ -100,6 +100,14 @@ defmodule Grapevine.Ueberauth.Strategy do
     end
   end
 
+  def handle_callback!(conn = %Plug.Conn{params: %{"error" => "access_denied"}}) do
+    set_errors!(conn, [error("OAuth2", "Access was denied")])
+  end
+
+  def handle_callback!(conn) do
+    set_errors!(conn, [error("OAuth2", "Failure to authenticate")])
+  end
+
   @impl true
   def credentials(conn) do
     token = conn.private.grapevine_token

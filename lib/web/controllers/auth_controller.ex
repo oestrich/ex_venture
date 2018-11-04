@@ -11,9 +11,14 @@ defmodule Web.AuthController do
     |> redirect(to: public_page_path(conn, :index))
   end
 
-  def callback(conn = %{assigns: %{ueberauth_failure: _fails}}, _params) do
+  def callback(conn = %{assigns: %{ueberauth_failure: failure}}, _params) do
+    message =
+      failure.errors
+      |> Enum.map(&(&1.message))
+      |> Enum.join(", ")
+
     conn
-    |> put_flash(:error, "Failed to authenticate.")
+    |> put_flash(:error, message)
     |> redirect(to: public_page_path(conn, :index))
   end
 
