@@ -12,7 +12,7 @@ defmodule Data.Announcement do
     field(:tags, {:array, :string}, default: [])
     field(:uuid, Ecto.UUID, read_on_write: true)
     field(:is_sticky, :boolean, default: false)
-    field(:published_at, Timex.Ecto.DateTime)
+    field(:published_at, :utc_datetime)
 
     timestamps()
   end
