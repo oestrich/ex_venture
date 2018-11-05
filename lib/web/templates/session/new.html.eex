@@ -16,7 +16,9 @@
       <div class="actions">
         <%= submit "Sign In", class: "btn btn-primary btn-block btn-flat" %>
         <%= if grapevine_enabled?() do %>
-          <%= link("Sign In with Grapevine", to: public_auth_path(@conn, :request, "grapevine"), class: "btn btn-info btn-block btn-flat") %>
+          <%= link(to: public_auth_path(@conn, :request, "grapevine"), class: "btn btn-block btn-flat btn-grapevine") do %>
+             <%= img_tag("/images/grapevine-icon.png", height: 32) %> Sign in with Grapevine
+          <% end %>
         <% end %>
         <%= link("Create an account", to: public_registration_path(@conn, :new), class: "btn btn-secondary btn-block btn-flat") %>
         <%= link("Forgot your password?", to: public_registration_reset_path(@conn, :new), class: "btn btn-block btn-flat") %>
