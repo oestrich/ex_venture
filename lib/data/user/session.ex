@@ -8,7 +8,7 @@ defmodule Data.User.Session do
   alias Data.User
 
   schema "sessions" do
-    field(:started_at, Timex.Ecto.DateTime)
+    field(:started_at, :utc_datetime)
     field(:seconds_online, :integer)
     field(:commands, :map, default: %{})
 

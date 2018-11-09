@@ -80,7 +80,6 @@ defmodule ExVenture.Mixfile do
       {:sentry, "~> 6.2"},
       {:squabble, git: "https://github.com/oestrich/squabble.git"},
       {:timex, "~> 3.1"},
-      {:timex_ecto, "~> 3.1"},
       {:ueberauth, "~> 0.4"},
       {:yaml_elixir, "~> 2.0"}
     ]
