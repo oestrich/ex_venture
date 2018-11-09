@@ -4,8 +4,6 @@ defmodule Web.CharacterSocket do
   channel("chat:*", Web.ChatChannel)
   channel("telnet:*", Web.TelnetChannel)
 
-  transport(:websocket, Phoenix.Transports.WebSocket)
-
   def connect(%{"token" => token}, socket) do
     case Phoenix.Token.verify(socket, "character socket", token, max_age: 86_400) do
       {:ok, character_id} ->

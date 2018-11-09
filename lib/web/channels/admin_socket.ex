@@ -7,8 +7,6 @@ defmodule Web.AdminSocket do
   channel("character:*", Web.CharacterChannel)
   channel("npc:*", Web.NPCChannel)
 
-  transport(:websocket, Phoenix.Transports.WebSocket)
-
   def connect(%{"token" => token}, socket) do
     case Phoenix.Token.verify(socket, "user socket", token, max_age: 86_400) do
       {:ok, user_id} ->
