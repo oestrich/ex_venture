@@ -78,7 +78,7 @@ defmodule ExVenture.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:oauth2, "~> 0.9"},
       {:ranch, "~> 1.6"},
-      {:sentry, "~> 6.2"},
+      {:sentry, "~> 7.0"},
       {:squabble, git: "https://github.com/oestrich/squabble.git"},
       {:timex, "~> 3.1"},
       {:ueberauth, "~> 0.4"},
