@@ -6,7 +6,8 @@ defmodule ExVenture.ReleaseTasks do
     :crypto,
     :ssl,
     :postgrex,
-    :ecto
+    :ecto,
+    :ecto_sql
   ]
 
   @apps [
@@ -58,7 +59,7 @@ defmodule ExVenture.ReleaseTasks do
 
     # Start the Repo(s) for ex_venture
     IO.puts("Starting repos..")
-    Enum.each(@repos, & &1.start_link(pool_size: 1))
+    Enum.each(@repos, & &1.start_link(pool_size: 2))
   end
 
   defp priv_dir(app), do: "#{:code.priv_dir(app)}"
