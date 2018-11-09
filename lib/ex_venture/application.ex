@@ -31,7 +31,7 @@ defmodule ExVenture.Application do
     opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]
 
     if @report_errors do
-      :ok = :error_logger.add_report_handler(Sentry.Logger)
+      {:ok, _} = Logger.add_backend(Sentry.LoggerBackend)
     end
 
     Supervisor.start_link(children, opts)

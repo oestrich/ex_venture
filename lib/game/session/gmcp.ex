@@ -47,7 +47,7 @@ defmodule Game.Session.GMCP do
     Game.Command.Target.run({:clear}, state)
   end
 
-  def handle_gmcp(state, _module, _data), do: state
+  def handle_gmcp(_state, _module, _data), do: :ok
 
   @doc """
   Push Character data (save stats)

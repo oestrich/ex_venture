@@ -29,8 +29,6 @@ config :ex_venture, Web.Endpoint,
   render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]
 
-config :ex_venture, Data.Repo, loggers: [Ecto.LogEntry]
-
 config :distillery, no_warn_missing: [:elixir_make]
 
 config :prometheus, Metrics.PipelineInstrumenter,

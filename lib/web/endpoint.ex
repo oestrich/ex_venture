@@ -1,8 +1,8 @@
 defmodule Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :ex_venture
 
-  socket("/socket", Web.CharacterSocket)
-  socket("/admin/socket", Web.AdminSocket)
+  socket("/socket", Web.CharacterSocket, websocket: true)
+  socket("/admin/socket", Web.AdminSocket, websocket: true)
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -19,9 +19,6 @@ defmodule Web.Endpoint do
   if code_reloading? do
     plug(Phoenix.CodeReloader)
   end
-
-  # Add some CORS
-  plug CORSPlug, origin: ["*"]
 
   plug(Plug.RequestId)
   plug(Logster.Plugs.Logger)
