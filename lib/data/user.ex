@@ -22,10 +22,10 @@ defmodule Data.User do
     field(:provider_uid, :string)
 
     field(:totp_secret, :string)
-    field(:totp_verified_at, :utc_datetime)
+    field(:totp_verified_at, :utc_datetime_usec)
 
     field(:password_reset_token, Ecto.UUID)
-    field(:password_reset_expires_at, :utc_datetime)
+    field(:password_reset_expires_at, :utc_datetime_usec)
 
     has_many(:characters, Character)
     has_many(:sessions, Session)

@@ -3,7 +3,6 @@ use Mix.Config
 config :logger, level: :error
 
 config :ex_venture, Data.Repo,
-  adapter: Ecto.Adapters.Postgres,
   database: "ex_venture_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
