@@ -36,7 +36,7 @@ defmodule Data.Stats do
   @impl Ecto.Type
   def load(stats) do
     stats = for {key, val} <- stats, into: %{}, do: {String.to_atom(key), val}
-    stats = stats |> Enum.map(&cast_val/1) |> Enum.into(%{})
+    stats = Enum.into(stats, %{}, &cast_val/1)
     {:ok, stats}
   end
 

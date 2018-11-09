@@ -25,8 +25,7 @@ defmodule Game.Format.Template do
     context =
       context
       |> Map.get(:assigns, %{})
-      |> Enum.map(fn {key, val} -> {to_string(key), val} end)
-      |> Enum.into(%{})
+      |> Enum.into(%{}, fn {key, val} -> {to_string(key), val} end)
 
     string
     |> String.split(@variable_regex, include_captures: true)
