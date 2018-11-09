@@ -69,7 +69,7 @@ defmodule ExVenture.Mixfile do
       {:phoenix, "~> 1.3"},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 2.10"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.0", override: true},
       {:pid_file, "~> 0.1.0"},
       {:prometheus_ex, git: "https://github.com/deadtrickster/prometheus.ex.git", override: true},
       {:prometheus_plugs, "~> 1.1"},
