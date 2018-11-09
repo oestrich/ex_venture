@@ -20,9 +20,6 @@ defmodule Web.Endpoint do
     plug(Phoenix.CodeReloader)
   end
 
-  # Add some CORS
-  plug CORSPlug, origin: ["*"]
-
   plug(Plug.RequestId)
   plug(Logster.Plugs.Logger)
   plug(:set_logger_metadata)
