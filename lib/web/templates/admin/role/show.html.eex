@@ -1,0 +1,48 @@
+<section class="content-header">
+  <h1>
+    <%= @role.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Roles", to: role_path(@conn, :index)) %></li>
+    <li class="active"><%= @role.name %></li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="box box-primary">
+        <div class="box-header">
+          <h3 class="box-title">Role</h3>
+          <div class="box-tools">
+            <%= link("Edit", to: role_path(@conn, :edit, @role.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <tr>
+              <th>Name</th>
+              <td><%= @role.name %></td>
+            </tr>
+            <tr>
+              <th>Permissions</th>
+              <td>
+                <ul>
+                  <%= Enum.map(@role.permissions, fn permission -> %>
+                    <li><%= permission %></li>
+                  <% end) %>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

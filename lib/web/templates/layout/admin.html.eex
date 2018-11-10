@@ -208,6 +208,12 @@
                 <span>Notes</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "roles") %>">
+              <%= link(to: role_path(@conn, :index)) do %>
+                <i class="fa fa-user-secret"></i>
+                <span>Roles</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "typos") %>">
               <%= link(to: typo_path(@conn, :index)) do %>
                 <i class="fa fa-font"></i>

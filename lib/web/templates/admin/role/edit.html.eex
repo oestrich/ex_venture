@@ -1,0 +1,24 @@
+<section class="content-header">
+  <h1>
+    <%= @role.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Roles", to: role_path(@conn, :index)) %></li>
+    <li><%= link(@role.name, to: role_path(@conn, :show, @role.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <%= render "_form.html", path: role_path(@conn, :update, @role.id), changeset: @changeset, title: "Edit", submit: "Update" %>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,26 @@
+<div class="box box-primary">
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
+    <div class="box-body">
+      <h4>Basics</h4>
+      <hr />
+
+      <%= FormView.text_field(f, :name) %>
+
+      <h4>Permissions</h4>
+      <hr />
+
+      <%= Enum.map(Role.resources(), fn resource -> %>
+        <div class="form-group">
+          <%= content_tag(:label, String.capitalize(resource), for: "role-permissions-#{resource}", class: "col-md-4") %>
+          <div class="col-md-8">
+            <%= permission_field(@changeset, resource) %>
+          </div>
+        </div>
+      <% end) %>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
+    </div>
+  <% end %>
+</div>

@@ -213,6 +213,8 @@ defmodule Web.Router do
 
     resources("/race_skills", RaceSkillController, only: [:delete])
 
+    resources("/roles", RoleController, except: [:delete])
+
     resources("/room_items", RoomItemController, only: [:delete])
 
     resources "/rooms", RoomController, only: [:show, :edit, :update, :delete] do

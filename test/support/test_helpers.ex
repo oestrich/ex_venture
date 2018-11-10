@@ -24,6 +24,7 @@ defmodule TestHelpers do
   alias Data.Race
   alias Data.RaceSkill
   alias Data.Repo
+  alias Data.Role
   alias Data.Room
   alias Data.RoomItem
   alias Data.Script
@@ -519,5 +520,17 @@ defmodule TestHelpers do
       description: "A fall log rots alongside the road.",
       listen: "You can hear small bugs crawling around the log."
     }, params)
+  end
+
+  def create_role(attributes \\ %{}) do
+    %Role{}
+    |> Role.changeset(role_attributes(attributes))
+    |> Repo.insert!()
+  end
+
+  defp role_attributes(attributes) do
+    Map.merge(%{
+      name: "Admin",
+    }, attributes)
   end
 end
