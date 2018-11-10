@@ -39,8 +39,8 @@ defmodule Networking.Protocol do
   @gmcp 201
 
   @impl :ranch_protocol
-  def start_link(ref, socket, transport, _opts) do
-    pid = :proc_lib.spawn_link(__MODULE__, :init, [ref, socket, transport])
+  def start_link(ref, _socket, transport, opts) do
+    pid = :proc_lib.spawn_link(__MODULE__, :init, [ref, transport, opts])
     {:ok, pid}
   end
 
@@ -126,11 +126,11 @@ defmodule Networking.Protocol do
     GenServer.cast(socket, {:config, config})
   end
 
-  def init(ref, socket, transport) do
+  def init(ref, transport, _opts) do
     Logger.info("Player connecting", type: :socket)
     PlayerInstrumenter.session_started(:telnet)
 
-    :ok = :ranch.accept_ack(ref)
+    {:ok, socket} = :ranch.handshake(ref)
     :ok = transport.setopts(socket, [{:active, true}])
     GenServer.cast(self(), :start_session)
 
