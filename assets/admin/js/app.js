@@ -1,3 +1,10 @@
+import '../css/app.scss'
+import '../css/vendor/font-awesome.css'
+import '../css/vendor/AdminLTE.css'
+import '../css/vendor/bootstrap.css'
+import '../css/vendor/skin-black-light.css'
+import '../css/vendor/skin-black.css'
+
 import "./socket.js"
 import "./npcs.js"
 

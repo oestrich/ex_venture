@@ -1,3 +1,6 @@
+import '../css/app.scss'
+import '../css/colors.scss'
+
 import "phoenix_html"
 
 import {Socket} from "phoenix"

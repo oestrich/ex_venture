@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "jquery": "^3.3.1",
-    "node-sass": "^4.9.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "popper.js": "^1.14.3",
@@ -25,7 +24,10 @@
     "copy-webpack-plugin": "^4.5.0",
     "css-loader": "^0.28.10",
     "mini-css-extract-plugin": "^0.4.0",
+    "node-sass": "^4.10.0",
     "optimize-css-assets-webpack-plugin": "^4.0.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "webpack": "4.4.0",
     "webpack-cli": "^2.0.10"
