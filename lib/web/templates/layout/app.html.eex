@@ -58,7 +58,7 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@current_character))) %>
           <%= if Gossip.configured?() do %>
           |
             Part of <%= link(to: "https://gossip.haus", target: "_blank") do %>
-              <%= img_tag("https://gossip.haus/images/gossip.png", height: 18) %>
+              <%= img_tag("https://gossip.haus/images/gossip.png", height: 18, alt: "Gossip Logo") %>
             <% end %>
           <% end %>
         </p>
