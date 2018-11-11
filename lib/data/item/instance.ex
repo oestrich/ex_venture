@@ -6,6 +6,7 @@ defmodule Data.Item.Instance do
   @behaviour Ecto.Type
 
   @enforce_keys [:id, :created_at]
+  @derive {Jason.Encoder, only: [:id, :created_at, :amount]}
   defstruct [:id, :created_at, :amount]
 
   @impl Ecto.Type
