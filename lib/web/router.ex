@@ -57,6 +57,7 @@ defmodule Web.Router do
   scope "/", Web, as: :public do
     pipe_through([:accepts_browser, :browser, :public])
 
+    get("/manifest.json", PageController, :manifest)
     get("/css/colors.css", ColorController, :index)
     get("/clients/mudlet/ex_venture.xml", PageController, :mudlet_package)
     get("/clients/map.xml", PageController, :map)

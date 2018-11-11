@@ -7,6 +7,9 @@
     <meta name="description" content="<%= Config.game_name() %>">
     <meta name="author" content="">
 
+    <meta name="theme-color" content="<%= Config.color_home_header() %>"/>
+    <link rel="manifest" href="/manifest.json">
+
     <title><%= page_title(@conn, assigns) %></title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/home.css") %>">
     <link rel="stylesheet" href="<%= color_css_path(@conn, home: true) %>">
