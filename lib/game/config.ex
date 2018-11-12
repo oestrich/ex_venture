@@ -140,6 +140,22 @@ defmodule Game.Config do
   end
 
   @doc """
+  The Game's short name
+
+  Used in the web manifest file
+  """
+  @spec game_short_name(String.t()) :: String.t()
+  def game_short_name(default \\ "ExVenture") do
+    case find_config("game_short_name") do
+      nil ->
+        default
+
+      game_short_name ->
+        game_short_name
+    end
+  end
+
+  @doc """
   Message of the Day
 
   Used during sign in

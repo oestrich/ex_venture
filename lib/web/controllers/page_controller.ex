@@ -23,4 +23,10 @@ defmodule Web.PageController do
     |> assign(:zones, Zone.all())
     |> render("map.xml")
   end
+
+  def manifest(conn, _params) do
+    conn
+    |> put_resp_header("content-type", "application/manifest+json")
+    |> render("manifest.json")
+  end
 end

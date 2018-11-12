@@ -10,6 +10,7 @@ defmodule Web.Admin.ConfigView do
   def name("discord_client_id"), do: "Discord Client ID"
   def name("discord_invite_url"), do: "Discord Invite URL"
   def name("game_name"), do: "Game Name"
+  def name("game_short_name"), do: "Game Short Name"
   def name("motd"), do: "Message of the Day"
   def name("starting_room_ids"), do: "Starting Room IDs"
   def name("starting_save"), do: "Starting Save"

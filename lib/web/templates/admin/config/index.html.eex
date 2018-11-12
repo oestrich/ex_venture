@@ -35,6 +35,13 @@
                 </td>
               </tr>
               <tr>
+                <th>Game Short Name</th>
+                <td><%= Config.game_short_name() %></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "game_short_name"), class: "btn btn-default btn-xs") %>
+                </td>
+              </tr>
+              <tr>
                 <th>Message of the day</th>
                 <td><pre><%= Config.motd("Not set") %></pre></td>
                 <td>

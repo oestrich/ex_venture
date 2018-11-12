@@ -10,6 +10,17 @@ defmodule Web.PageView do
   alias Web.TimeView
   alias Web.Router.Helpers, as: RouteHelpers
 
+  def render("manifest.json", _assigns) do
+    %{
+      "name" => Config.game_name(),
+      "short_name" => Config.game_short_name(),
+      "display" => "fullscreen",
+      "orientation" => "portrait-primary",
+      "theme_color" => Config.color_home_header(),
+      "background_color" => Config.color_home_header(),
+    }
+  end
+
   def render("index." <> extension, _) when Representer.known_extension?(extension) do
     Representer.transform(%Representer.Collection{
       href: RouteHelpers.public_page_url(Endpoint, :index),
