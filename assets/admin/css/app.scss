@@ -1,15 +1,15 @@
 
-@import "/vendor/bootstrap.css"; 
-@import "/vendor/AdminLTE";
-@import "/vendor/skin-black.css";
-@import "/vendor/skin-black-light.css";
-@import "/vendor/font-awesome.css";
+$fa-font-path: '~font-awesome/fonts';
+$bootstrap-sass-asset-helper: "~bootstrap-sass/assets/fonts/bootstrap/";
+
+@import "~font-awesome/scss/font-awesome";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import '~admin-lte/dist/css/AdminLTE';
+@import '~admin-lte/dist/css/skins/skin-black';
+
 
 @import "npcs";
 @import "world_map";
-
-
-
 
 .map span.empty {
   display: block;
@@ -19,7 +19,7 @@
 .map span.btn {
   cursor: default;
 }
-
+ 
 .announcement pre,
 .console {
   margin: 0;
