@@ -38,6 +38,40 @@ module.exports = (env, options) => ({
         }
       },
       {
+          test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+          loader: 'url-loader',
+          options: {
+              limit: 10000,
+              name: '../css/[name].[ext]',
+              mimetype: 'application/font-woff',
+              fallback: 'file-loader'
+          }
+      }, {
+          test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+          loader: 'url-loader',
+          options: {
+              limit: 10000,
+              name: '../css/[name].[ext]',
+              mimetype: 'application/octet-stream',
+              fallback: 'file-loader'
+          }
+      }, {
+          test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+          loader: 'file-loader',
+          options: {
+            name: '../css/[name].[ext]'
+          }
+      }, {
+          test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+          loader: 'url-loader',
+          options: {
+              limit: 10000,
+              name: '../css/[name].[ext]',
+              mimetype: 'application/image/svg+xml',
+              fallback: 'file-loader'
+          }
+      },
+      {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
@@ -45,6 +79,7 @@ module.exports = (env, options) => ({
         test: /\.scss$/,
         use: [
           "style-loader", // creates style nodes from JS strings
+          MiniCssExtractPlugin.loader,
           "css-loader", // translates CSS into CommonJS
           "sass-loader" // compiles Sass to CSS, using Node Sass by default
         ]
