@@ -1,4 +1,7 @@
 import '../css/app.scss'
+import 'admin-lte'
+import 'bootstrap'
+
 
 import "./socket.js"
 import "./npcs.js"
