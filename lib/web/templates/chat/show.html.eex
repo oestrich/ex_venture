@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-12">
       <ul class="nav nav-tabs">
-        <%= Enum.map(Enum.with_index(Chat.channels(@user)), fn {channel, i} -> %>
+        <%= Enum.map(Enum.with_index(Chat.channels(@current_character)), fn {channel, i} -> %>
           <li class="channel-tab" data-channel="<%= channel %>">
             <%= link(to: "#channel-#{channel}", class: "nav-link #{active(i)}", data: [toggle: "tab"]) do %>
               <%= channel %> <i class="bell hidden fa fa-bell"></i>
@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col-md-12">
       <div class="tab-content">
-        <%= Enum.map(Enum.with_index(Chat.channels(@user)), fn {channel, i} -> %>
+        <%= Enum.map(Enum.with_index(Chat.channels(@current_character)), fn {channel, i} -> %>
           <div id="channel-<%= channel %>" data-channel="<%= channel %>" class="terminal channel chat-pane tab-pane <%= active(i) %> ">
           </div>
         <% end) %>
