@@ -1,3 +1,13 @@
+
+$fa-font-path: '~font-awesome/fonts';
+$bootstrap-sass-asset-helper: "~bootstrap-sass/assets/fonts/bootstrap/";
+
+@import "~font-awesome/scss/font-awesome";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import '~admin-lte/dist/css/AdminLTE';
+@import '~admin-lte/dist/css/skins/skin-black';
+
+
 @import "npcs";
 @import "world_map";
 
@@ -9,7 +19,7 @@
 .map span.btn {
   cursor: default;
 }
-
+ 
 .announcement pre,
 .console {
   margin: 0;

@@ -1,10 +1,16 @@
-import "./socket"
-import "./npcs"
+import "../css/app.scss"
+import "admin-lte"
+import "bootstrap"
+import "phoenix_html"
 
-import Effects from "./effects"
-import Script from "./scripts"
-import WorldMap from "./world_map"
-import WorldMapExits from "./world_map_exits"
+
+import "./socket.js"
+import "./npcs.js"
+
+import Effects from "./effects.jsx"
+import Script from "./scripts.jsx"
+import WorldMap from "./world_map.jsx"
+import WorldMapExits from "./world_map_exits.jsx"
 
 window.Components = {
   Effects,

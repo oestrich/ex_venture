@@ -13,11 +13,12 @@ config :ex_venture, Web.Endpoint,
   server: true,
   watchers: [
     node: [
-      "node_modules/brunch/bin/brunch",
-      "watch",
-      "--stdin",
-      cd: Path.expand("../assets", __DIR__)
-    ]
+      "node_modules/webpack/bin/webpack.js",
+      "--mode",
+      "development",
+      "--watch-stdin",
+        cd: Path.expand("../assets", __DIR__)
+       ]
   ]
 
 config :ex_venture, :networking,
