@@ -1,6 +1,7 @@
-import '../css/app.scss'
-import 'admin-lte'
-import 'bootstrap'
+import "../css/app.scss"
+import "admin-lte"
+import "bootstrap"
+import "phoenix_html"
 
 
 import "./socket.js"
