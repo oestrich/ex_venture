@@ -18,6 +18,10 @@ window.Components = {
   WorldMap,
   WorldMapExits,
 }
+// Enable tooltips
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+})
 
 import React from "react"
 import ReactDOM from "react-dom"

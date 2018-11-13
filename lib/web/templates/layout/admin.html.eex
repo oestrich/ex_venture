@@ -241,11 +241,5 @@
         Built with <%= link(ExVenture.version(), to: "https://exventure.org", target: "_blank") %>.
       </footer>
     </div>
-
-    <script type="application/javascript">
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip();
-});
-    </script>
   </body>
 </html>
