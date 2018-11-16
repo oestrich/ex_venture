@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
+import GameContainer from './GameContainer.jsx';
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -17,7 +18,7 @@ const GlobalStyle = createGlobalStyle`
 
 class App extends Component {
   render() {
-    return <div>REACT HELLO WORLD!!!</div>;
+    return <GameContainer />;
   }
 }
 
