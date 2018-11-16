@@ -10,7 +10,7 @@ defmodule Web.PlayController do
   end
 
   def show_react(conn, _params) do
-    conn = put_layout conn, false
+    conn = put_layout conn, "play_react.html"
     render(conn, "show_react.html")
   end
 end
