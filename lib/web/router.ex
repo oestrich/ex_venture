@@ -91,6 +91,7 @@ defmodule Web.Router do
     get("/help/builtin/:id", HelpController, :built_in)
 
     get("/play", PlayController, :show)
+    get("/play-react", PlayController, :show_react)
 
     get("/register/reset", RegistrationResetController, :new)
     post("/register/reset", RegistrationResetController, :create)
