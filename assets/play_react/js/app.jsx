@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
-import GameContainer from './GameContainer.jsx';
+import GameContainer from './GameContainer/index.jsx';
 
 const GlobalStyle = createGlobalStyle`
   html, body {

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
-import LeftPane from './LeftPane.jsx';
-import MiddlePane from './MiddlePane.jsx';
-import RightPane from './RightPane.jsx';
+import LeftPane from './LeftPane/index.jsx';
+import MiddlePane from './MiddlePane/index.jsx';
+import RightPane from './RightPane/index.jsx';
 
 const FlexRow = styled.div`
   display: flex;
