@@ -17,6 +17,7 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "sizzle": "^2.3.3",
+    "styled-components": "^4.1.1",
     "underscore": "^1.9.0",
     "webpack-cli": "^3.1.2",
     "why-did-you-update": "^0.1.1"

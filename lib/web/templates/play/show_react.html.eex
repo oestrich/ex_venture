@@ -1,1 +1,1 @@
-<div>Hello React UI Sanity Check!!!</div>
+<div id="react-root"></div>
