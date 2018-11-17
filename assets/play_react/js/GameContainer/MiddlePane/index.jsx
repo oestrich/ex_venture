@@ -4,13 +4,27 @@ import RoomInfo from './RoomInfo.jsx';
 import RoomEvents from './RoomEvents.jsx';
 import PlayerHud from './PlayerHud/index.jsx';
 
+const FlexColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 800px;
+`;
+
+const RoomContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 90%;
+`;
+
 const MiddlePane = ({ className }) => {
   return (
-    <div className={className}>
-      <RoomInfo />
-      <RoomEvents />
+    <FlexColumn className={className}>
+      <RoomContainer>
+        <RoomInfo />
+        <RoomEvents />
+      </RoomContainer>
       <PlayerHud />
-    </div>
+    </FlexColumn>
   );
 };
 

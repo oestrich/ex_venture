@@ -1,5 +1,11 @@
 import React from 'react';
+import styled, { css } from 'styled-components';
 
-const RoomEvents = () => <div> RoomEvents </div>;
+const RoomEvents = ({ className }) => (
+  <div className={className}> RoomEvents </div>
+);
 
-export default RoomEvents;
+export default styled(RoomEvents)`
+  flex: 0 0;
+  align-self: stretch;
+`;

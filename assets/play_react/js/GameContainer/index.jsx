@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import LeftPane from './LeftPane/index.jsx';
 import MiddlePane from './MiddlePane/index.jsx';
 import RightPane from './RightPane/index.jsx';
