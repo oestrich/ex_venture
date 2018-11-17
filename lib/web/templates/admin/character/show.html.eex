@@ -2,6 +2,18 @@
   <h1>
     <%= @character.name %>
   </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Users", to: user_path(@conn, :index)) %></li>
+    <li><%= link(@character.user.name, to: user_path(@conn, :show, @character.user_id)) %></li>
+    <li>Characters</li>
+    <li class="active"><%= @character.name %></li>
+  </ol>
 </section>
 
 <section class="content">
@@ -42,6 +54,11 @@
         </div>
         <div class="box-body">
           <table class="table">
+            <tr>
+              <th>User</th>
+              <td><%= link(@character.user.name, to: user_path(@conn, :show, @character.user_id)) %></td>
+            </tr>
+
             <tr>
               <th>Play Time</th>
               <td><%= @character.seconds_online |> FormatPlayers.play_time() %></td>
