@@ -3,6 +3,7 @@ defmodule Data.Save.Loader do
   Functions for loading a save struct
   """
 
+  alias Data.ActionBar
   alias Data.Item
   alias Data.Save
   alias Data.Save.Migrations
