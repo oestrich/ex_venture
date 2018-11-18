@@ -10,7 +10,6 @@ import { channel } from './socket.js';
 channel.on('gmcp', data => {
   console.log('[Channel: GMCP]', data);
 });
-
 channel.on('option', data => {
   console.log('[Channel: OPTION]', data);
 });
@@ -23,6 +22,12 @@ channel.on('echo', data => {
 channel.on('disconnect', data => {
   console.log('[Channel: DISCONNECT]', data);
 });
+
+const send = message => {
+  channel.push('recv', { message: message });
+};
+
+window.send = send;
 window.channel = channel;
 
 const reactRootElement = document.getElementById('react-root');
