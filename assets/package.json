@@ -17,6 +17,7 @@
     "react": "^16.6.3",
     "react-dom": "^16.4.0",
     "react-redux": "^5.1.1",
+    "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "sizzle": "^2.3.3",
     "styled-components": "^4.1.1",

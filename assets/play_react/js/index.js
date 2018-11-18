@@ -2,4 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.jsx';
 
-ReactDOM.render(<App />, document.getElementById('react-root'));
+import { Provider } from 'react-redux';
+import ReduxStore from './redux/store.js';
+
+const reactRootElement = document.getElementById('react-root');
+ReactDOM.render(
+  <Provider store={ReduxStore}>
+    <App />
+  </Provider>,
+  reactRootElement
+);
