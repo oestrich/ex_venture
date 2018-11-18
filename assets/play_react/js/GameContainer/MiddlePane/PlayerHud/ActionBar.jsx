@@ -1,5 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-const ActionBar = () => <div> ActionBar </div>;
+const ActionBar = ({ characterSkills }) => (
+  <div> ActionBar {characterSkills}</div>
+);
 
-export default ActionBar;
+const mapStateToProps = state => {
+  return {
+    characterSkills: state.characterSkills
+  };
+};
+
+export default connect(mapStateToProps)(ActionBar);
