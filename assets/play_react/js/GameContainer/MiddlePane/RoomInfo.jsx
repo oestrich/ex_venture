@@ -1,9 +1,16 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { connect } from 'react-redux';
 
-const RoomInfo = ({ className }) => <div className={className}> RoomInfo </div>;
+const RoomInfo = ({ className, roomInfo }) => (
+  <div className={className}> RoomInfo {roomInfo} </div>
+);
 
-export default styled(RoomInfo)`
+const mapStateToProps = state => {
+  return { roomInfo: state.roomInfo };
+};
+
+export default connect(mapStateToProps)(styled(RoomInfo)`
   flex: 0 0;
   align-self: stretch;
-`;
+`);
