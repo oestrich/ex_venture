@@ -6,9 +6,11 @@ const RoomEvents = ({ className, eventStream }) => {
   return (
     <div className={className}>
       RoomEvents
-      {eventStream.map(event => {
-        return <div>{event}</div>;
-      })}
+      <div>
+        {eventStream.map(event => {
+          return <div>{event}</div>;
+        })}
+      </div>
     </div>
   );
 };
