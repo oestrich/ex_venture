@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import styled, { css } from 'styled-components';
 
-const LeftPane = ({ className }) => {
-  return <div className={className}>LeftPane</div>;
+const LeftPane = ({ className, characterInfo, characterVitals }) => {
+  return (
+    <div className={className}>
+      LeftPane{characterInfo} * {characterVitals}
+    </div>
+  );
 };
 
-export default styled(LeftPane)`
+const mapStateToProps = state => {
+  return {
+    characterInfo: state.characterInfo,
+    characterVitals: state.characterVitals
+  };
+};
+
+export default connect(mapStateToProps)(styled(LeftPane)`
   flex: 1;
-`;
+`);
