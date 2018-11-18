@@ -2,10 +2,26 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled, { css } from 'styled-components';
 
+// TODO: Long string will not create newlines, it will increase container size
 const LeftPane = ({ className, characterInfo, characterVitals }) => {
+  const vitals = characterVitals ? JSON.parse(characterVitals) : {};
+  const charInfo = characterInfo ? JSON.parse(characterInfo) : {};
   return (
     <div className={className}>
-      LeftPane{characterInfo} * {characterVitals}
+      LeftPane
+      {Object.keys(charInfo).map(key => {
+        <div>
+          {key}: {vitals[key]}
+        </div>;
+      })}{' '}
+      *{' '}
+      {Object.keys(vitals).map(key => {
+        return (
+          <div>
+            {key}: {vitals[key]}
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -16,6 +32,8 @@ const mapStateToProps = state => {
     characterVitals: state.characterVitals
   };
 };
+
+LeftPane.defaultProps = { characterVitals: '{}', characterInfo: '{}' };
 
 export default connect(mapStateToProps)(styled(LeftPane)`
   flex: 1;
