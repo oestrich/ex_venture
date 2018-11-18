@@ -20,19 +20,34 @@ export const initSubscriptions = () => {
       console.log('[Channel: GMCP]', response);
       switch (response.module) {
         case GMCP_ROOM_INFO: {
-          dispatch({ type: UPDATE_ROOM_INFO, payload: response.data });
+          return dispatch({
+            type: UPDATE_ROOM_INFO,
+            payload: response.data
+          });
         }
         case GMCP_ZONE_MAP: {
-          dispatch({ type: UPDATE_ZONE_MAP, payload: response.data });
+          return dispatch({
+            type: UPDATE_ZONE_MAP,
+            payload: response.data
+          });
         }
         case GMCP_CHARACTER_INFO: {
-          dispatch({ type: UPDATE_CHARACTER_INFO, payload: response.data });
+          return dispatch({
+            type: UPDATE_CHARACTER_INFO,
+            payload: response.data
+          });
         }
         case GMCP_CHARACTER_VITALS: {
-          dispatch({ type: UPDATE_CHARACTER_VITALS, payload: response.data });
+          return dispatch({
+            type: UPDATE_CHARACTER_VITALS,
+            payload: response.data
+          });
         }
         case GMCP_CHARACTER_SKILLS: {
-          dispatch({ type: UPDATE_CHARACTER_SKILLS, payload: response.data });
+          return dispatch({
+            type: UPDATE_CHARACTER_SKILLS,
+            payload: response.data
+          });
         }
       }
     });
