@@ -11,5 +11,6 @@ const socket = new Socket('/socket', {
 socket.connect();
 let channel = socket.channel('telnet:' + 'webclient:' + guid(), {});
 channel.join();
+console.log('channel joined');
 
-export { channel, socket };
+export { channel };

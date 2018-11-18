@@ -1,5 +1,5 @@
 import React from 'react';
 
-const StatusBar = () => <div> StatusBar </div>;
+const VitalsBar = () => <div> VitalsBar </div>;
 
-export default StatusBar;
+export default VitalsBar;

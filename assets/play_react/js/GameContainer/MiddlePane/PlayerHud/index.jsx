@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import ActionBar from './ActionBar.jsx';
-import StatusBar from './StatusBar.jsx';
+import VitalsBar from './StatusBar.jsx';
 import InputBar from './InputBar.jsx';
 
 const HudContainer = styled.div`
@@ -13,7 +13,7 @@ const PlayerHud = () => {
   return (
     <HudContainer>
       <ActionBar />
-      <StatusBar />
+      <VitalsBar />
       <InputBar />
     </HudContainer>
   );
