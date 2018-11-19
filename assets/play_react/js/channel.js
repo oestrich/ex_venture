@@ -20,4 +20,16 @@ let channel = socket.channel('telnet:' + 'webclient:' + guid(), {});
 channel.join();
 console.log('channel joined');
 
+// Expose the channel object and a send function to browser window for development purposes.
+if (process.env.NODE_ENV === 'development') {
+  const send = message => {
+    channel.push('recv', { message: message });
+  };
+  window.send = send;
+  window.channel = channel;
+  console.log(
+    '[DEVELOPMENT MODE]: You can send messages to the server with window.send function'
+  );
+}
+
 export { channel };
