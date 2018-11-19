@@ -10,14 +10,14 @@ const LeftPane = ({ className, characterInfo, characterVitals }) => {
     <div className={className}>
       LeftPane
       {Object.keys(charInfo).map(key => {
-        <div>
+        <div key={key}>
           {key}: {vitals[key]}
         </div>;
       })}{' '}
       *{' '}
       {Object.keys(vitals).map(key => {
         return (
-          <div>
+          <div key={key}>
             {key}: {vitals[key]}
           </div>
         );

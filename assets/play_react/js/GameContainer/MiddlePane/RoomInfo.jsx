@@ -12,14 +12,22 @@ const RoomInfo = ({ className, roomInfo }) => {
       <div>{description}</div>
       <br />
       <div>
-        {players ? players.map(player => <span>{player.name} </span>) : null}
-        {npcs ? npcs.map(npc => <span>{npc.name} </span>) : null}
-        {shops ? shops.map(shop => <span>{shop.name} </span>) : null}
-        {items ? items.map(item => <span>{item.name} </span>) : null}
+        {players
+          ? players.map(player => <span key={player.id}>{player.name} </span>)
+          : null}
+        {npcs ? npcs.map(npc => <span key={npc.id}>{npc.name} </span>) : null}
+        {shops
+          ? shops.map(shop => <span key={shop.id}>{shop.name} </span>)
+          : null}
+        {items
+          ? items.map(item => <span key={item.id}>{item.name} </span>)
+          : null}
       </div>
       <br />
       <div>
-        {exits ? exits.map(exit => <span>{exit.direction} </span>) : null}
+        {exits
+          ? exits.map(exit => <span key={exit.room_id}>{exit.direction} </span>)
+          : null}
       </div>
       <br />
     </div>

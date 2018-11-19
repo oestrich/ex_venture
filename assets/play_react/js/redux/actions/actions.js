@@ -56,11 +56,11 @@ export const initSubscriptions = () => {
     });
     channel.on('prompt', response => {
       console.log('[Channel: PROMPT]', response);
-      dispatch({ type: UPDATE_EVENT_STREAM, payload: response.message });
+      dispatch({ type: UPDATE_EVENT_STREAM, payload: response });
     });
     channel.on('echo', response => {
       console.log('[Channel: ECHO]', response);
-      dispatch({ type: UPDATE_EVENT_STREAM, payload: response.message });
+      dispatch({ type: UPDATE_EVENT_STREAM, payload: response });
     });
     channel.on('disconnect', response => {
       console.log('[Channel: DISCONNECT]', response);

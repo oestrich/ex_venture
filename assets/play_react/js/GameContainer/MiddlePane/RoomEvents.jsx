@@ -48,8 +48,8 @@ class RoomEvents extends Component {
         <div>
           {this.props.eventStream.map(event => {
             return (
-              <div>
-                <div>{event}</div>
+              <div key={event.sent_at}>
+                <div>{event.message}</div>
                 <br />
               </div>
             );
