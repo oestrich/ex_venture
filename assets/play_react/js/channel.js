@@ -1,7 +1,14 @@
-// Initialize phoenix websocket connection
+// Ex_Venture uses a single Phoenix channel for websocket communication.
+// The single channel is split into different sub events
+// such as GMCP, OPTION, DISCONNECT, PROMPT, ECHO.
+// GMCP is further split into sub channels or 'modules'.
+// Ex_Venture's GMCP protocol can be found here: https://exventure.org/game/gmcp/
+// All the channel listener's are set up in the action creators at ./redux/actions/actions.js
+
 import { Socket } from 'phoenix';
 import { guid } from './utils.js';
 
+// Character token is injected into markup by server on initial /play-react route render
 const characterToken = body.getAttribute('data-character-token');
 const socket = new Socket('/socket', {
   params: {
