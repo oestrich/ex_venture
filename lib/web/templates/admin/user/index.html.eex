@@ -2,6 +2,15 @@
   <h1>
     Users
   </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active"><%= link("Users", to: user_path(@conn, :index)) %></li>
+  </ol>
 </section>
 
 <section class="content">
