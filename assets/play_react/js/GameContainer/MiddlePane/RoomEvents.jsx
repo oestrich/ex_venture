@@ -8,7 +8,12 @@ const RoomEvents = ({ className, eventStream }) => {
       RoomEvents
       <div>
         {eventStream.map(event => {
-          return <div>{event}</div>;
+          return (
+            <div>
+              <div>{event}</div>
+              <br />
+            </div>
+          );
         })}
       </div>
     </div>
