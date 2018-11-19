@@ -10,7 +10,4 @@ const mapStateToProps = state => {
   return { roomInfo: state.roomInfo };
 };
 
-export default connect(mapStateToProps)(styled(RoomInfo)`
-  flex: 0 0;
-  align-self: stretch;
-`);
+export default connect(mapStateToProps)(styled(RoomInfo)``);

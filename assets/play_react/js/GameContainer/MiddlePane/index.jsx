@@ -10,19 +10,11 @@ const FlexColumn = styled.div`
   height: 800px;
 `;
 
-const RoomContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 90%;
-`;
-
 const MiddlePane = ({ className }) => {
   return (
     <FlexColumn className={className}>
-      <RoomContainer>
-        <RoomInfo />
-        <RoomEvents />
-      </RoomContainer>
+      <RoomInfo />
+      <RoomEvents />
       <PlayerHud />
     </FlexColumn>
   );

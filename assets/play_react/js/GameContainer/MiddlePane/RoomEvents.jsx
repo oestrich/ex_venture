@@ -24,6 +24,6 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(styled(RoomEvents)`
-  flex: 0 0;
-  align-self: stretch;
+  height: 100%;
+  overflow: scroll;
 `);
