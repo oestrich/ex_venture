@@ -17,7 +17,7 @@ export const initSubscriptions = () => {
   return dispatch => {
     console.log('Initializing subscriptions...');
     channel.on('gmcp', response => {
-      console.log('[Channel: GMCP]', response);
+      console.log(`[Channel: GMCP - ${response.module}]`, response);
       switch (response.module) {
         case GMCP_ROOM_INFO: {
           return dispatch({
@@ -64,6 +64,15 @@ export const initSubscriptions = () => {
     });
     channel.on('disconnect', response => {
       console.log('[Channel: DISCONNECT]', response);
+    });
+    channel.on('phx_close', response => {
+      console.log('[Channel: PHX_CLOSE]', response);
+    });
+    channel.on('phx_error', response => {
+      console.log('[Channel: PHX_ERROR]', response);
+    });
+    channel.on('phx_reply', response => {
+      console.log('[Channel: PHX_REPLY]', response);
     });
   };
 };
