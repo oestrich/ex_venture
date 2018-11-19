@@ -22,7 +22,7 @@ export const initSubscriptions = () => {
         case GMCP_ROOM_INFO: {
           return dispatch({
             type: UPDATE_ROOM_INFO,
-            payload: response.data
+            payload: JSON.parse(response.data)
           });
         }
         case GMCP_ZONE_MAP: {
