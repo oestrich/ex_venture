@@ -8,6 +8,9 @@ const FlexRow = styled.div`
   display: flex;
   flex-direction: row;
   height: 800px;
+  color: #c4e9e9;
+  font-family: Lucida Grande, Lucida Sans Unicode, Lucida Sans, Geneva, Verdana,
+    sans-serif;
 `;
 
 const GameContainer = props => {
