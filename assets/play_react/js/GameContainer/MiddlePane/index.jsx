@@ -8,6 +8,7 @@ const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
   height: 800px;
+  background-color: #6177c8;
 `;
 
 const MiddlePane = ({ className }) => {

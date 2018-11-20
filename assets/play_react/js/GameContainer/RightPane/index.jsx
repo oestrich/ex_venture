@@ -14,4 +14,5 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps)(styled(RightPane)`
   flex: 1;
+  background-color: #435aaf;
 `);

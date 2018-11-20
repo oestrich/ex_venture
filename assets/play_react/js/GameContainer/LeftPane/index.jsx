@@ -37,4 +37,5 @@ LeftPane.defaultProps = { characterVitals: '{}', characterInfo: '{}' };
 
 export default connect(mapStateToProps)(styled(LeftPane)`
   flex: 1;
+  background-color: #435aaf;
 `);
