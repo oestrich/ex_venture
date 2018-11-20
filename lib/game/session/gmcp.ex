@@ -9,6 +9,7 @@ defmodule Game.Session.GMCP do
   alias Data.Room
   alias Game.Config
   alias Game.Skills
+  alias Game.Format.Rooms, as: FormatRooms
 
   @doc """
   Handle a GMCP request from the client
@@ -311,6 +312,8 @@ defmodule Game.Session.GMCP do
   end
 
   defp room_info(room, items) do
+    IO.inspect(room)
+    IO.inspect(items)
     room
     |> Map.take([:id, :name, :description, :ecology, :x, :y, :map_layer])
     |> Map.merge(%{
@@ -319,7 +322,8 @@ defmodule Game.Session.GMCP do
       players: render_many(room, :players),
       npcs: render_many(room, :npcs),
       shops: render_many(room, :shops),
-      exits: render_many(room, :exits)
+      exits: render_many(room, :exits),
+      room_full_text: FormatRooms.room(room, items)
     })
   end
 

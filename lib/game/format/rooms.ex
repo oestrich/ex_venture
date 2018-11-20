@@ -42,6 +42,18 @@ defmodule Game.Format.Rooms do
     """
     |> String.trim()
   end
+  @doc """
+  Format full text for a room
+  """
+  def room(room, items) do
+   %{
+     name: "#{room_name(room)}",
+     description: "#{room_description(room)}",
+     items: "#{maybe_items(room, items)}",
+     shops: "#{shops(room)}",
+     who_is_here: "#{who_is_here(room)}"
+   }
+  end
 
   @doc """
   Template a room's description
