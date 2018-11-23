@@ -8,6 +8,7 @@ const FlexRow = styled.div`
   display: flex;
   flex-direction: row;
   height: 800px;
+  widht: 100%;
   color: #c4e9e9;
   font-family: Lucida Grande, Lucida Sans Unicode, Lucida Sans, Geneva, Verdana,
     sans-serif;
