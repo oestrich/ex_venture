@@ -12,7 +12,7 @@ const initialState = {
   zoneMap: '',
   characterInfo: '',
   characterVitals: '',
-  characterSkills: '',
+  characterSkills: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
   eventStream: []
 };
 
