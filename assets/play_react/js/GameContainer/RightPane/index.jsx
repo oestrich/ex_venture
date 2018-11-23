@@ -13,6 +13,7 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(styled(RightPane)`
+  padding: 1em 1em 1em 1em;
   flex: 1;
   background-color: #435aaf;
 `);

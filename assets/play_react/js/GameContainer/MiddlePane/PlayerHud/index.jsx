@@ -5,8 +5,7 @@ import StatusBar from './StatusBar.jsx';
 import InputBar from './InputBar.jsx';
 
 const HudContainer = styled.div`
-  ${'' /* flex: initial;
-  align-self: end; */}
+  padding: 1em 1em 1em 1em;
 `;
 
 const PlayerHud = () => {

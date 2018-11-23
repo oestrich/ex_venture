@@ -74,6 +74,7 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(styled(RoomEvents)`
+  padding: 1em 1em 1em 1em;
   height: 100%;
   overflow-y: scroll;
 `);

@@ -2,12 +2,17 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { connect } from 'react-redux';
 
+const Centered = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const RoomInfo = ({ className, roomInfo }) => {
   console.log('roomInfo', roomInfo);
   const { name, description, players, npcs, shops, items, exits } = roomInfo;
   return (
     <div className={className}>
-      <div>{name}</div>
+      <Centered>{name}</Centered>
       <br />
       <div>{description}</div>
       <br />
@@ -50,4 +55,6 @@ const mapStateToProps = state => {
   return { roomInfo: state.roomInfo };
 };
 
-export default connect(mapStateToProps)(styled(RoomInfo)``);
+export default connect(mapStateToProps)(styled(RoomInfo)`
+  padding: 1em 1em 1em 1em;
+`);
