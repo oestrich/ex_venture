@@ -54,12 +54,15 @@ export const initSubscriptions = () => {
     channel.on('option', response => {
       console.log('[Channel: OPTION]', response);
     });
-    channel.on('prompt', response => {
-      console.log('[Channel: PROMPT]', response);
-      dispatch({ type: UPDATE_EVENT_STREAM, payload: response });
-    });
+    // channel.on('prompt', response => {
+    //   console.log('[Channel: PROMPT]', response);
+    //   dispatch({ type: UPDATE_EVENT_STREAM, payload: response });
+    // });
     channel.on('echo', response => {
-      console.log('[Channel: ECHO]', response);
+      // squelch room updates
+      if (response.message.match(/{room}/g)) {
+        return;
+      }
       dispatch({ type: UPDATE_EVENT_STREAM, payload: response });
     });
     channel.on('disconnect', response => {

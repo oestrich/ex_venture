@@ -29,11 +29,12 @@ const RoomInfo = ({ className, roomInfo }) => {
           : null}
       </div>
       <br />
-      <div>
+      <Centered>
+        You can leave:{' '}
         {exits
-          ? exits.map(exit => <span key={exit.room_id}>{exit.direction} </span>)
+          ? exits.map(exit => <span key={exit.room_id}>{exit.direction}</span>)
           : null}
-      </div>
+      </Centered>
       <br />
     </div>
   );
