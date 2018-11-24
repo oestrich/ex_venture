@@ -44,9 +44,12 @@ export const initSubscriptions = () => {
           });
         }
         case GMCP_CHARACTER_SKILLS: {
+          let skills = JSON.parse(response.data).skills;
+          let emptySkills = new Array(13 - skills.length).fill({});
+          skills = skills.concat(emptySkills);
           return dispatch({
             type: UPDATE_CHARACTER_SKILLS,
-            payload: JSON.parse(response.data).skills
+            payload: skills
           });
         }
       }
