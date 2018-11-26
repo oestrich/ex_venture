@@ -392,6 +392,8 @@ defmodule Seeds do
     save = %Data.Save{
       version: 1,
       room_id: entrance.id,
+      config: %{},
+      stats: %{},
       channels: ["global", "newbie"],
       level: 1,
       level_stats: %{},
