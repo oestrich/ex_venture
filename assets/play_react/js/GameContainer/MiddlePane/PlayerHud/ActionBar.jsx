@@ -28,7 +28,7 @@ const ActionBar = ({ characterSkills }) => (
   <FlexColumn>
     {' '}
     {characterSkills.map(skill => (
-      <ActionButton>{skill.name}</ActionButton>
+      <ActionButton key={skill.key}>{skill.name}</ActionButton>
     ))}
   </FlexColumn>
 );

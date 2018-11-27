@@ -13,7 +13,9 @@ const initialState = {
   zoneMap: '',
   characterInfo: '',
   characterVitals: '',
-  characterSkills: new Array(13).fill({}),
+  characterSkills: new Array(13).fill('').map((item, idx) => {
+    return { key: `placeholder-${idx}` };
+  }),
   characterPrompt: {
     hp: { current: 0, max: 0 },
     sp: { current: 0, max: 0 },
@@ -38,7 +40,16 @@ export default function(state = initialState, action) {
       return { ...state, characterVitals: action.payload };
     }
     case UPDATE_CHARACTER_SKILLS: {
-      return { ...state, characterSkills: action.payload };
+      // add placeholder keys for empty action buttons
+      console.log('ACTION.PAYLOAD', action.payload);
+      const skills = action.payload.map((item, idx) => {
+        if (!item.key) {
+          return { key: `placeholder-${idx}` };
+        } else {
+          return item;
+        }
+      });
+      return { ...state, characterSkills: skills };
     }
     case UPDATE_CHARACTER_PROMPT: {
       return { ...state, characterPrompt: action.payload };
