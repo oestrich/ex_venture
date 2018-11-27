@@ -21,6 +21,7 @@ const Bar = styled.div`
   height: 5px;
   padding: 5px;
   text-align: center;
+  line-height: 5px;
 `;
 
 const StatusBar = props => {
