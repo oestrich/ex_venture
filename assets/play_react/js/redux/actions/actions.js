@@ -62,8 +62,9 @@ export const initSubscriptions = () => {
       console.log('[Channel: PROMPT]', response);
       const prompt = parsePrompt(response.message);
       console.log('parsedPrompt', prompt);
-
-      dispatch({ type: UPDATE_CHARACTER_PROMPT, payload: prompt });
+      if (prompt) {
+        dispatch({ type: UPDATE_CHARACTER_PROMPT, payload: prompt });
+      }
     });
     channel.on('echo', response => {
       // squelch room updates
@@ -123,6 +124,10 @@ const parsePrompt = msg => {
     ['i']
   );
   const m = p.exec(msg);
+  if (!m) {
+    return null;
+  }
+
   return {
     hp: { current: m[1], max: m[2] },
     sp: { current: m[3], max: m[4] },
