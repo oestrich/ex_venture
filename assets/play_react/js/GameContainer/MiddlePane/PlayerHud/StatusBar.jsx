@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
 
 const FlexColumn = styled.div`
   display: flex;
@@ -25,11 +26,33 @@ const Bar = styled.div`
 const StatusBar = props => {
   return (
     <FlexColumn>
-      <Bar />
-      <Bar />
-      <Bar />
+      <Bar>
+        {props.prompt.hp.current}/{props.prompt.hp.max}
+      </Bar>
+      <Bar>
+        {props.prompt.sp.current}/{props.prompt.sp.max}
+      </Bar>
+      <Bar>
+        {props.prompt.ep.current}/{props.prompt.ep.max}
+      </Bar>
     </FlexColumn>
   );
 };
 
-export default StatusBar;
+StatusBar.defaultProps = {
+  prompt: {
+    hp: { current: 0, max: 0 },
+    sp: { current: 0, max: 0 },
+    ep: { current: 0, max: 0 },
+    xp: 0
+  }
+};
+
+const mapStateToProps = state => {
+  console.log('state', state);
+  return {
+    prompt: state.characterPrompt
+  };
+};
+
+export default connect(mapStateToProps)(StatusBar);

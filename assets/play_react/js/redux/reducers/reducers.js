@@ -14,7 +14,12 @@ const initialState = {
   characterInfo: '',
   characterVitals: '',
   characterSkills: new Array(13).fill({}),
-  characterPrompt: {},
+  characterPrompt: {
+    hp: { current: 0, max: 0 },
+    sp: { current: 0, max: 0 },
+    ep: { current: 0, max: 0 },
+    xp: 0
+  },
   eventStream: []
 };
 
