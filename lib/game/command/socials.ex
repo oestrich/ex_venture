@@ -102,13 +102,15 @@ defmodule Game.Command.Socials do
     :ok
   end
 
-  def run({social}, state) do
+  def run({social}, state = %{save: save}) do
     case Socials.social(social) do
       nil ->
         state |> social_not_found(social)
 
       social ->
-        state.socket |> @socket.echo(FormatSocials.social_without_target(social, state.character))
+        emote = FormatSocials.social_without_target(social, state.character)
+        save.room_id |> @environment.emote({:player, state.character}, Message.social(state.character, emote))
+        state.socket |> @socket.echo(emote)
     end
 
     :ok
@@ -128,7 +130,9 @@ defmodule Game.Command.Socials do
             state.socket |> @socket.echo(message)
 
           character ->
-            state.socket |> @socket.echo(FormatSocials.social_with_target(social, state.character, character))
+            emote = FormatSocials.social_with_target(social, state.character, character)
+            save.room_id |> @environment.emote({:player, character}, Message.social(state.character, emote))
+            state.socket |> @socket.echo(emote)
         end
     end
 
