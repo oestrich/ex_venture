@@ -4,6 +4,7 @@ import {
   UPDATE_CHARACTER_INFO,
   UPDATE_CHARACTER_VITALS,
   UPDATE_CHARACTER_SKILLS,
+  UPDATE_CHARACTER_PROMPT,
   UPDATE_EVENT_STREAM
 } from '../actions/actions.js';
 
@@ -13,6 +14,7 @@ const initialState = {
   characterInfo: '',
   characterVitals: '',
   characterSkills: new Array(13).fill({}),
+  characterPrompt: {},
   eventStream: []
 };
 
@@ -32,6 +34,9 @@ export default function(state = initialState, action) {
     }
     case UPDATE_CHARACTER_SKILLS: {
       return { ...state, characterSkills: action.payload };
+    }
+    case UPDATE_CHARACTER_PROMPT: {
+      return { ...state, characterPrompt: action.payload };
     }
     case UPDATE_EVENT_STREAM: {
       return { ...state, eventStream: [...state.eventStream, action.payload] };
