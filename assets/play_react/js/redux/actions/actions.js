@@ -45,6 +45,8 @@ export const initSubscriptions = () => {
           });
         }
         case GMCP_CHARACTER_SKILLS: {
+          // append unique keys to empty skill slots
+          // so react can stop barking about unique keys on lists
           let skills = JSON.parse(response.data).skills;
           let emptySkills = new Array(13 - skills.length).fill({});
           skills = skills.concat(emptySkills);
