@@ -48,6 +48,18 @@ defmodule Game.Message do
     }
   end
 
+  @doc """
+  Pre-formatted
+  """
+  def social(player, emote) do
+    %__MODULE__{
+      type: :player,
+      sender: player,
+      message: emote,
+      formatted: emote
+    }
+  end
+
   def broadcast(player, channel, parsed_message) do
     parsed_message = format(parsed_message)
 

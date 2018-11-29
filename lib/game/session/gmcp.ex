@@ -9,6 +9,7 @@ defmodule Game.Session.GMCP do
   alias Data.Room
   alias Game.Config
   alias Game.Skills
+  alias Game.Format
 
   @doc """
   Handle a GMCP request from the client
@@ -312,9 +313,10 @@ defmodule Game.Session.GMCP do
 
   defp room_info(room, items) do
     room
-    |> Map.take([:id, :name, :description, :ecology, :x, :y, :map_layer])
+    |> Map.take([:id, :name, :ecology, :x, :y, :map_layer])
     |> Map.merge(%{
       zone: zone_info(room),
+      description: Format.Rooms.room_description(room),
       items: render_many(items),
       players: render_many(room, :players),
       npcs: render_many(room, :npcs),
@@ -386,6 +388,18 @@ defmodule Game.Session.GMCP do
     |> Enum.map(fn direction ->
       room_exit = Exit.exit_to(room, direction)
       %{room_id: room_exit.finish_id, direction: direction}
+    end)
+  end
+
+  defp render_many(room, :npcs) do
+    Enum.map(room.npcs, fn npc ->
+      %{id: npc.id, name: npc.name, status_line: Format.NPCs.npc_status(npc)}
+    end)
+  end
+
+  defp render_many(room, :players) do
+    Enum.map(room.players, fn player ->
+      %{id: player.id, name: player.name, status_line: Format.Players.player_full(player)}
     end)
   end
 
