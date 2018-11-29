@@ -40,7 +40,8 @@ export default function(state = initialState, action) {
       return { ...state, characterVitals: action.payload };
     }
     case UPDATE_CHARACTER_SKILLS: {
-      // add placeholder keys for empty action buttons
+      // append unique keys to empty skill slots
+      // so react can stop barking about unique keys on lists
       console.log('ACTION.PAYLOAD', action.payload);
       const skills = action.payload.map((item, idx) => {
         if (!item.key) {

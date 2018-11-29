@@ -14,6 +14,8 @@ const GMCP_CHARACTER_INFO = 'Character.Info';
 const GMCP_CHARACTER_VITALS = 'Character.Vitals';
 const GMCP_CHARACTER_SKILLS = 'Character.Skills';
 
+const ACTIONBAR_LENGTH = 13;
+
 export const initSubscriptions = () => {
   return dispatch => {
     console.log('Initializing subscriptions...');
@@ -45,10 +47,10 @@ export const initSubscriptions = () => {
           });
         }
         case GMCP_CHARACTER_SKILLS: {
-          // append unique keys to empty skill slots
-          // so react can stop barking about unique keys on lists
           let skills = JSON.parse(response.data).skills;
-          let emptySkills = new Array(13 - skills.length).fill({});
+          let emptySkills = new Array(ACTIONBAR_LENGTH - skills.length).fill(
+            {}
+          );
           skills = skills.concat(emptySkills);
           return dispatch({
             type: UPDATE_CHARACTER_SKILLS,
