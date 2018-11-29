@@ -7,20 +7,33 @@ const Centered = styled.div`
   justify-content: center;
 `;
 
+const RoomName = styled.div`
+  display: flex;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+`;
+
 const RoomInfo = ({ className, roomInfo }) => {
   console.log('roomInfo', roomInfo);
   const { name, description, players, npcs, shops, items, exits } = roomInfo;
   return (
     <div className={className}>
-      <Centered>{name}</Centered>
+      <br />
+      <RoomName>{name}</RoomName>
+      <br />
       <br />
       <div>{description}</div>
       <br />
       <div>
         {players
-          ? players.map(player => <span key={player.id}>{player.name} </span>)
+          ? players.map(player => (
+              <span key={player.id}>{player.status_line} </span>
+            ))
           : null}
-        {npcs ? npcs.map(npc => <span key={npc.id}>{npc.name} </span>) : null}
+        {npcs
+          ? npcs.map(npc => <span key={npc.id}>{npc.status_line} </span>)
+          : null}
         {shops
           ? shops.map(shop => <span key={shop.id}>{shop.name} </span>)
           : null}
