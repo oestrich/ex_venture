@@ -392,11 +392,15 @@ defmodule Game.Session.GMCP do
   end
 
   defp render_many(room, :npcs) do
-    Enum.map(room.npcs, &%{id: &1.id, name: &1.name, status_line: Game.Format.NPCs.npc_status(&1)})
+    Enum.map(room.npcs, fn npc ->
+      %{id: npc.id, name: npc.name, status_line: Format.NPCs.npc_status(npc)}
+    end)
   end
 
   defp render_many(room, :players) do
-    Enum.map(room.players, &%{id: &1.id, name: &1.name, status_line: Game.Format.Players.player_full(&1)})
+    Enum.map(room.players, fn player ->
+      %{id: player.id, name: player.name, status_line: Format.Players.player_full(player)}
+    end)
   end
 
   defp render_many(struct, key) do
