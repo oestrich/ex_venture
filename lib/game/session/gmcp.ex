@@ -382,8 +382,6 @@ defmodule Game.Session.GMCP do
     Enum.map(data, &%{id: &1.id, name: &1.name})
   end
 
-
-
   defp render_many(room, :exits) do
     room
     |> Room.exits()
@@ -393,16 +391,18 @@ defmodule Game.Session.GMCP do
     end)
   end
 
+  defp render_many(room, :npcs) do
+    Enum.map(room.npcs, &%{id: &1.id, name: &1.name, status_line: Game.Format.NPCs.npc_status(&1)})
+  end
+
+  defp render_many(room, :players) do
+    Enum.map(room.players, &%{id: &1.id, name: &1.name, status_line: Game.Format.Players.player_full(&1)})
+  end
+
   defp render_many(struct, key) do
     case struct do
       %{^key => data} when data != nil ->
         render_many(data)
-
-      %{:npcs => npcs} when npcs != nil ->
-        Enum.map(npcs, &%{id: &1.id, name: &1.name, status_line: Game.Format.NPCs.npc_status(&1)})
-
-      %{:players => players} when players != nil ->
-        Enum.map(players, &%{id: &1.id, name: &1.name, status_line: Game.Format.Players.player_full(&1)})
 
       _ ->
         []
