@@ -258,7 +258,7 @@ const vmlToJsx = markup => {
   // with current AST parser, all text need to be wrapped in a node
   markup = '{vml}' + markup + '{/vml}';
   const ast = parse(markup);
-  console.log('AST', ast);
+  // console.log('AST', ast);
   return astToJsx(ast);
 };
 

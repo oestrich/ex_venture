@@ -7,6 +7,7 @@ export const UPDATE_CHARACTER_VITALS = 'UPDATE_CHARACTER_VITALS';
 export const UPDATE_CHARACTER_SKILLS = 'UPDATE_CHARACTER_SKILLS';
 export const UPDATE_CHARACTER_PROMPT = 'UPDATE_CHARACTER_PROMPT';
 export const UPDATE_EVENT_STREAM = 'UPDATE_EVENT_STREAM';
+export const ARCHIVE_AND_CLEAR_EVENT_STREAM = 'ARCHIVE_AND_CLEAR_EVENT_STREAM';
 
 const GMCP_ROOM_INFO = 'Room.Info';
 const GMCP_ZONE_MAP = 'Zone.Map';
@@ -17,15 +18,23 @@ const GMCP_CHARACTER_SKILLS = 'Character.Skills';
 const ACTIONBAR_LENGTH = 13;
 
 export const initSubscriptions = () => {
-  return dispatch => {
+  return (dispatch, getState) => {
     console.log('Initializing subscriptions...');
     channel.on('gmcp', response => {
       console.log(`[Channel: GMCP - ${response.module}]`, response);
       switch (response.module) {
         case GMCP_ROOM_INFO: {
+          const roomInfo = JSON.parse(response.data);
+          // upon new room, archive current event stream and clear ui
+          if (getState().roomInfo.name !== roomInfo.name) {
+            dispatch({
+              type: ARCHIVE_AND_CLEAR_EVENT_STREAM
+            });
+          }
+
           return dispatch({
             type: UPDATE_ROOM_INFO,
-            payload: JSON.parse(response.data)
+            payload: roomInfo
           });
         }
         case GMCP_ZONE_MAP: {

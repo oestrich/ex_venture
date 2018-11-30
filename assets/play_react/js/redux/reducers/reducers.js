@@ -5,7 +5,8 @@ import {
   UPDATE_CHARACTER_VITALS,
   UPDATE_CHARACTER_SKILLS,
   UPDATE_CHARACTER_PROMPT,
-  UPDATE_EVENT_STREAM
+  UPDATE_EVENT_STREAM,
+  ARCHIVE_AND_CLEAR_EVENT_STREAM
 } from '../actions/actions.js';
 
 const initialState = {
@@ -22,7 +23,8 @@ const initialState = {
     ep: { current: 0, max: 0 },
     xp: 0
   },
-  eventStream: []
+  eventStream: [],
+  eventStreamArchive: []
 };
 
 export default function(state = initialState, action) {
@@ -57,6 +59,10 @@ export default function(state = initialState, action) {
     }
     case UPDATE_EVENT_STREAM: {
       return { ...state, eventStream: [...state.eventStream, action.payload] };
+    }
+    case ARCHIVE_AND_CLEAR_EVENT_STREAM: {
+      const oldEventStream = state.eventStream.slice();
+      return { ...state, eventStreamArchive: oldEventStream, eventStream: [] };
     }
     default: {
       return state;
