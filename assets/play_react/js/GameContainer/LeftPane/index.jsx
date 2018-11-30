@@ -36,7 +36,7 @@ const mapStateToProps = state => {
 LeftPane.defaultProps = { characterVitals: '{}', characterInfo: '{}' };
 
 export default connect(mapStateToProps)(styled(LeftPane)`
-  padding: 1em 1em 1em 1em;
+  padding: 2em 2em 2em 2em;
   flex: 1;
   background-color: #435aaf;
 `);

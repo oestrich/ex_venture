@@ -81,5 +81,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(styled(RoomInfo)`
-  padding: 1em 1em 1em 1em;
+  padding: 1em 2em 1em 2em;
 `);
