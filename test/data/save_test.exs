@@ -3,9 +3,11 @@ defmodule Data.SaveTest do
   import TestHelpers
 
   alias Data.Save
+  alias Data.Save.Loader
   alias Data.Save.Validations
 
   doctest Data.Save
+  doctest Data.Save.Loader
   doctest Data.Save.Validations
 
   describe "loading" do
