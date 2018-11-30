@@ -15,6 +15,11 @@ const RoomName = styled.div`
   font-weight: bold;
 `;
 
+const Exit = styled.span`
+  color: white;
+  cursor: pointer;
+`;
+
 const RoomInfo = ({ className, roomInfo }) => {
   console.log('roomInfo', roomInfo);
   const { name, description, players, npcs, shops, items, exits } = roomInfo;
@@ -44,7 +49,18 @@ const RoomInfo = ({ className, roomInfo }) => {
       <Centered>
         {exits ? 'You can leave: ' : null}
         {exits
-          ? exits.map(exit => <span key={exit.room_id}>{exit.direction}</span>)
+          ? exits.map(exit => (
+              <Exit
+                onClick={() => {
+                  send(exit.direction);
+                }}
+                style={{ color: 'white' }}
+                key={exit.room_id}
+              >
+                {exit.direction}
+                {}
+              </Exit>
+            ))
           : null}
       </Centered>
       <br />
