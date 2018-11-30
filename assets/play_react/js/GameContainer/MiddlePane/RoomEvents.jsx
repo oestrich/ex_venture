@@ -49,7 +49,7 @@ class RoomEvents extends Component {
           {this.props.eventStream.map(event => {
             return (
               <>
-                {vmlToJsx(event.message)}
+                <div>{vmlToJsx(event.message)}</div>
                 <br />
               </>
             );
