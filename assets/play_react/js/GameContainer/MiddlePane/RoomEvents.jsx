@@ -45,7 +45,6 @@ class RoomEvents extends Component {
   render() {
     return (
       <div className={this.props.className}>
-        RoomEvents
         <div>
           {this.props.eventStream.map(event => {
             return (
