@@ -42,7 +42,7 @@ const RoomInfo = ({ className, roomInfo }) => {
       </div>
       <br />
       <Centered>
-        You can leave:{' '}
+        {exits ? 'You can leave: ' : null}
         {exits
           ? exits.map(exit => <span key={exit.room_id}>{exit.direction}</span>)
           : null}
