@@ -202,7 +202,7 @@ function astToJsx(arr) {
           break;
         case 'say':
           newArray.push(
-            <span style={{ color: 'green' }}>{astToJsx(node.children)}</span>
+            <span style={{ color: '#84E1E1' }}>{astToJsx(node.children)}</span>
           );
           break;
         case 'shop':
