@@ -44,6 +44,8 @@ defmodule Data.Events do
 
   @callback options :: options_mapping()
 
+  alias Data.Events.Actions
+  alias Data.Events.Options
   alias Data.Events.RoomEntered
   alias Data.Events.RoomHeard
 
@@ -56,8 +58,9 @@ defmodule Data.Events do
 
   def parse(event) do
     with {:ok, event_type} <- find_type(event),
-         {:ok, options} <- parse_options(event_type, event) do
-      {:ok, struct(event_type, %{options: options, actions: []})}
+         {:ok, options} <- parse_options(event_type, event),
+         {:ok, actions} <- parse_actions(event_type, event) do
+      {:ok, struct(event_type, %{options: options, actions: actions})}
     end
   end
 
@@ -73,7 +76,7 @@ defmodule Data.Events do
 
   defp parse_options(event_type, event) do
     with {:ok, options} <- Map.fetch(event, "options"),
-         {:ok, options} <- validate_options(event_type, options) do
+         {:ok, options} <- Options.validate_options(event_type, options) do
       {:ok, options}
     else
       :error ->
@@ -84,82 +87,26 @@ defmodule Data.Events do
     end
   end
 
-  @doc """
-  Validate a set of event options coming in
-  """
-  def validate_options(event_type, options) do
-    options = Enum.map(event_type.options(), &parse_option(&1, options))
+  defp parse_actions(event_type, event) do
+    with {:ok, actions} <- Map.fetch(event, "actions") do
+      actions =
+        actions
+        |> Enum.map(&Actions.parse/1)
+        |> Enum.filter(&elem(&1, 0) == :ok)
+        |> Enum.map(&elem(&1, 1))
+        |> Enum.filter(&action_allowed?(event_type, &1.type))
 
-    case Enum.any?(options, &elem(&1, 0) == :error) do
-      true ->
-        errors =
-          options
-          |> Enum.filter(&elem(&1, 0) == :error)
-          |> Enum.map(&elem(&1, 1))
-          |> Enum.into(%{})
-
-        {:error, errors}
-
-      false ->
-        options =
-          options
-          |> Enum.filter(&elem(&1, 0) == :ok)
-          |> Enum.map(&elem(&1, 1))
-          |> Enum.reject(&is_nil/1)
-          |> Enum.into(%{})
-
-        {:ok, options}
-    end
-  end
-
-  defp parse_option({key, type}, options) do
-    with {:ok, value} <- Map.fetch(options, to_string(key)) do
-      case valid_option_value?(type, value) do
-        true ->
-          {:ok, {key, value}}
-
-        false ->
-          {:error, {key, "invalid"}}
-      end
+      {:ok, actions}
     else
       :error ->
-        {:ok, nil}
+        {:ok, []}
     end
   end
 
   @doc """
-  Validate option value
-
-      iex> Events.valid_option_value?(:integer, 10)
-      true
-      iex> Events.valid_option_value?(:integer, "string")
-      false
-
-      iex> Events.valid_option_value?(:string, "string")
-      true
-      iex> Events.valid_option_value?(:string, 10)
-      false
-
-      iex> Events.valid_option_value?({:array, :string}, ["string"])
-      true
-      iex> Events.valid_option_value?({:array, :string}, ["string", 10])
-      false
-      iex> Events.valid_option_value?({:array, :string}, 10)
-      false
+  Check if an action type is allowed in an event
   """
-  def valid_option_value?(type, value) do
-    case type do
-      :integer ->
-        is_integer(value)
-
-      :string ->
-        is_binary(value)
-
-      {:array, :string} ->
-        is_list(value) && Enum.all?(value, &is_binary/1)
-
-      _ ->
-        false
-    end
+  def action_allowed?(event_type, action_type) do
+    Enum.member?(event_type.allowed_actions(), action_type)
   end
 end

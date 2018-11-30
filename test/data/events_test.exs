@@ -27,23 +27,37 @@ defmodule Data.EventsTest do
 
       assert event.options == %{regex: "hello"}
     end
+
+    test "with actions" do
+      {:ok, event} = Events.parse(%{
+        "type" => "room/heard",
+        "actions" => [
+          %{
+            "type" => "channels/say",
+            "delay" => 0,
+            "options" => %{}
+          }
+        ]
+      })
+
+      assert event.__struct__ == Events.RoomHeard
+      assert event.actions == [
+        %Events.Actions.ChannelsSay{
+          type: "channels/say",
+          delay: 0,
+          options: %{}
+        }
+      ]
+    end
   end
 
-  describe "validating options" do
-    test "empty options" do
-      {:ok, %{}} = Events.validate_options(Events.RoomHeard, %{})
+  describe "action is allowed in the event" do
+    test "allowed" do
+      assert Events.action_allowed?(Events.RoomHeard, "channels/say")
     end
 
-    test "verifying type is correct" do
-      {:ok, %{regex: "string"}} = Events.validate_options(Events.RoomHeard, %{"regex" => "string"})
-    end
-
-    test "extra keys are ignored" do
-      {:ok, %{}} = Events.validate_options(Events.RoomHeard, %{"extra" => "string"})
-    end
-
-    test "wrong type options returns an error" do
-      {:error, %{regex: "invalid"}} = Events.validate_options(Events.RoomHeard, %{"regex" => 10})
+    test "not allowed" do
+      refute Events.action_allowed?(Events.RoomHeard, "combat/target")
     end
   end
 end
