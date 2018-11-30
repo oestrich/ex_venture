@@ -28,7 +28,14 @@ const ActionBar = ({ characterSkills }) => (
   <FlexColumn>
     {' '}
     {characterSkills.map(skill => (
-      <ActionButton key={skill.key}>{skill.name}</ActionButton>
+      <ActionButton
+        onClick={() => {
+          send(skill.name.toLowerCase());
+        }}
+        key={skill.key}
+      >
+        {skill.name}
+      </ActionButton>
     ))}
   </FlexColumn>
 );
