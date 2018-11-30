@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { connect } from 'react-redux';
+import vmlToJsx from '../../utils/vmlToJsx.js';
 
 const Centered = styled.div`
   display: flex;
@@ -23,7 +24,7 @@ const RoomInfo = ({ className, roomInfo }) => {
       <RoomName>{name}</RoomName>
       <br />
       <br />
-      <div>{description}</div>
+      <div>{vmlToJsx(description)}</div>
       <br />
       <div>
         {players
@@ -31,9 +32,7 @@ const RoomInfo = ({ className, roomInfo }) => {
               <span key={player.id}>{player.status_line} </span>
             ))
           : null}
-        {npcs
-          ? npcs.map(npc => <span key={npc.id}>{npc.status_line} </span>)
-          : null}
+        {npcs ? npcs.map(npc => vmlToJsx(npc.status_line)) : null}
         {shops
           ? shops.map(shop => <span key={shop.id}>{shop.name} </span>)
           : null}

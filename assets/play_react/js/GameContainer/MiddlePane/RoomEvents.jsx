@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled, { css } from 'styled-components';
+import vmlToJsx from '../../utils/vmlToJsx.js';
 
 // const RoomEvents = ({ className, eventStream }) => {
 //   return (
@@ -48,10 +49,10 @@ class RoomEvents extends Component {
         <div>
           {this.props.eventStream.map(event => {
             return (
-              <div key={event.sent_at}>
-                <div>{event.message}</div>
+              <>
+                {vmlToJsx(event.message)}
                 <br />
-              </div>
+              </>
             );
           })}
           <div
