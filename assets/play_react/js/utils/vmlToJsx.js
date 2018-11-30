@@ -163,11 +163,11 @@ function astToJsx(arr) {
       // }
       switch (node.name) {
         case 'vml':
-          newArray.push(<div>{astToJsx(node.children)}</div>);
+          newArray.push(<span>{astToJsx(node.children)}</span>);
           break;
         case 'npc':
           newArray.push(
-            <span style={{ color: 'yellow' }}>{astToJsx(node.children)}</span>
+            <span style={{ color: '#F2BD78' }}>{astToJsx(node.children)}</span>
           );
           break;
         case 'item':
@@ -177,7 +177,7 @@ function astToJsx(arr) {
           break;
         case 'player':
           newArray.push(
-            <span style={{ color: 'blue' }}>{astToJsx(node.children)}</span>
+            <span style={{ color: '#4DFFFF' }}>{astToJsx(node.children)}</span>
           );
           break;
         case 'skill':
@@ -258,7 +258,7 @@ const vmlToJsx = markup => {
   // with current AST parser, all text need to be wrapped in a node
   markup = '{vml}' + markup + '{/vml}';
   const ast = parse(markup);
-  // console.log('AST', ast);
+  console.log('AST', ast);
   return astToJsx(ast);
 };
 
