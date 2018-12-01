@@ -12,5 +12,5 @@ defmodule Data.Events.StateTicked do
   def allowed_actions(), do: ["commands/emote", "commands/move", "commands/say"]
 
   @impl true
-  def options(), do: []
+  def options(), do: [minimum_delay: :float, random_delay: :float]
 end

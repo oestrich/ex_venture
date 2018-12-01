@@ -1,181 +1,258 @@
 # NPC Events
 
-## room/entered
+## Events
 
-When a character enters a room, this event will be triggered.
+### character/targeted
 
-### action: say
+Fired when the character is targetted by another character.
 
-```
-{
-  "type": "room/entered",
-  "action": {
-    "type": "say",
-    "message": "Welcome!",
-    "delay": 0.25
-  }
-}
-```
+Allowed actions:
 
-The message is a string that the NPC will say to the room. `delay` is optional, the say will be delayed that many seconds before showing.
+- `commands/target`
 
-### action: target
+Example:
 
-```
-{
-  "type": "room/entered",
-  "action": {
-    "type": "target",
-  }
-}
-```
-
-When a player enters the room they will be targeted by the NPC.
-
-## room/heard
-
-```
-{
-  "type": "room/heard",
-  "condition": {
-    "regex": "hello",
-  },
-  "action": {
-    "type": "say",
-    "message": "Welcome!",
-    "delay": 0.25
-  }
-}
-```
-
-When a character hears something in the room, this event will be triggered. The condition is a string that is converted to a regex (case insensitive), that if matches the NPC will run the action. The action at the moment is only `say`.
-
-## combat/tick
-
-```
-{
-  "type": "combat/tick",
-  "action": {
-    "type": "target/effects",
-    "text": "{user} slashes at you.",
-    "weight": 10,
-    "effects": [
-      {
-        "kind": "damage",
-        "type": "slashing",
-        "amount": 10
-      }
-    ],
-    "delay": 0.5
-  }
-}
-```
-
-When a combat tick occurs, this event will be triggered. Combat ticks will start after the NPC targets something. They will continue until they lose their target. The `combat/tick` event needs to have a delay for how long before it's next combat tick will trigger. If there are more than one, a random weighted action will be chosen.
-
-### target/effects
-
-This action will apply the effects to the target.
-
-## tick
-
-When the NPC is started or updated, all `tick` events will receive a UUID. Each `tick` event will then calculate a delay based on `wait` + `:random.uniform(chance)`. This allows for variability as well as ensuring each event happens only so often.
-
-### move
-
-```
-{
-  "type": "tick",
-  "action": {
-    "type": "move",
-    "max_distance": 3,
-    "chance": 50,
-    "wait": 10
-  }
-}
-```
-
-The move action takes a `max_distance` that the NPC will stray from their original spawn point. `chance` is the percent chance that the NPC will move to a random exit.
-
-### emote
-
-```
-{
-  "type": "tick",
-  "action": {
-    "type": "emote",
-    "message": "moves about the store",
-    "chance": 50,
-    "wait": 15
-  }
-}
-```
-
-The emote action takes a `message` that the NPC will emote into the room. `chance` is the percent chance that the NPC will do this action on each tick. `wait` is optional and will enforce a delay of `wait` seconds since the last emote. Multiple emote ticks update the same timestamp of when an emote occured.
-
-#### Status change
-
-You can also include a `status` key to change the status of the NPC during the emote.
-
-```
-{
-  "type": "tick",
-  "action": {
-    "type": "emote",
-    "message": "moves about the store",
-    "chance": 50,
-    "wait": 15,
-    "status": {
-      "key": "moving",
-      "line": "[name] is moving around the store",
-      "listen": "[name] is whistling"
-    }
-  }
-}
-```
-
-You can also reset the status to the NPC's default:
-
-```
-{
-  "type": "tick",
-  "action": {
-    "type": "emote",
-    "message": "pauses for a second",
-    "chance": 50,
-    "wait": 15
-    "status": {
-      "reset": true
-    }
-  }
-}
-```
-
-### say
-
-```
-{
-  "type": "tick",
-  "action": {
-    "type": "say",
-    "message": "Can I help you?",
-    "chance": 50,
-    "wait": 10
-  }
-}
-```
-
-The say action takes a `message` that the NPC will say into the room. `chance` is the percent chance that the NPC will do this action on each tick. `wait` is optional and will enforce a delay of `wait` seconds since the last say. Multiple say ticks update the same timestamp of when a say tick occured.
-
-## character/targeted
-
-```
+```json
 {
   "type": "character/targeted",
-  "action": {
-    "type": "target"
+  "actions": [
+    {
+      "type": "commands/target",
+      "delay": 0,
+      "options": {}
+    }
+  ]
+}
+```
+
+### combat/ticked
+
+Fired when the character is in combat and the previous `combat/ticked` completed and the delay is over.
+
+Options:
+
+- `weight`: When a character has multiple `combat/ticked` events, the weight will be used when randomizing which event triggers
+
+Allowed actions:
+
+- `commands/skills`
+
+Example:
+
+```json
+{
+  "type": "combat/ticked",
+  "options": {
+    "weight": 10,
+  },
+  "actions": [
+    {
+      "type": "commands/skills",
+      "delay": 0,
+      "options": {
+        "skill": "bash"
+      }
+    }
+  ]
+}
+```
+
+### room/entered
+
+Fired when a character enters the room the NPC is in.
+
+Allowed actions:
+
+- `commands/emote`
+- `commands/say`
+
+Example:
+
+```json
+{
+  "type": "room/entered",
+  "actions": [
+    {
+      "type": "commands/say",
+      "delay": 0,
+      "options": {
+        "message": "Hello!"
+      }
+    }
+  ]
+}
+```
+
+### room/heard
+
+Fired whenever a character hears local room chat.
+
+Options:
+
+- `regex`: if provided the regex must match to fire the actions
+
+Allowed actions:
+
+- `commands/emote`
+- `commands/say`
+
+Example:
+
+```json
+{
+  "type": "room/heard",
+  "options": {
+    "regex": "hello"
+  },
+  "actions": [
+    {
+      "type": "commands/say",
+      "delay": 0,
+      "options": {
+        "message": "How are you?"
+      }
+    }
+  ]
+}
+```
+
+### state/ticked
+
+Fired on start of the NPC process and will continue to run until the game is shut down. Each event is delayed a provided amount of time between triggers.
+
+Options:
+
+- `minimum_delay`: The minimum amount of time to wait before triggering this event again, default of `30` if none is provided
+- `random_delay`: A random extra delay to add to the minimum wait, from 0 to the delay provided extra
+
+Allowed actions:
+
+- `commands/emote`
+- `commands/move`
+- `commands/say`
+
+Example:
+
+```json
+{
+  "type": "state/ticked",
+  "options": {
+    "minimum_delay": 30,
+    "random_delay": 10
+  },
+  "actions": [
+    {
+      "type": "commands/say",
+      "delay": 0,
+      "options": {
+        "message": "Hello!"
+      }
+    }
+  ]
+}
+```
+
+## Actions
+
+### commands/emote
+
+Sends an emote to the room the character is in. Can also change the internal status of the character.
+
+Options:
+
+- `message`: The emote to send, template param of `[name]` is available
+- `status_key`: If provided, changes the status key
+- `status_line`: If provided, changes the status line for the character, template param of `[name]` is available
+- `status_listen`: If provided, changes the status listen text for the character, template param of `[name]` is available
+
+All status options must be provided if any of them are provided.
+
+```json
+{
+  "type": "commands/emote",
+  "delay": 0,
+  "options": {
+    "message": "[name] claps his hands",
+    "status_key": "claps",
+    "status_line": "[name] is clapping",
+    "status_listen": "[name] is clapping"
   }
 }
 ```
 
-This event triggers whenever it is targeted, this allows the NPC to target whoever targeted them.
+### commands/move
+
+Moves the character a random direction from the room the character is currently in.
+
+Options:
+
+- `max_distance`: The max distance the character will move away from the spawn point
+
+```json
+{
+  "type": "commands/move",
+  "delay": 0,
+  "options": {
+    "max_distance": 2
+  }
+}
+```
+
+### commands/say
+
+Sends local chat to the room the character is in.
+
+Options:
+
+- `message`: The message being sent
+- `messages`: A list of messages that will be randomly selected from before sending
+
+```json
+{
+  "type": "commands/say",
+  "delay": 0,
+  "options": {
+    "message": "Hello everyone!"
+  }
+}
+```
+
+```json
+{
+  "type": "commands/say",
+  "delay": 0,
+  "options": {
+    "messages": ["Hello everyone!"]
+  }
+}
+```
+
+### commands/skill
+
+Selects a skill to use for combat.
+
+Options:
+
+- `skill`: Which skill the character will use on their target, the next `combat/ticked` will trigger after the skill's cooldown time
+
+```json
+{
+  "type": "commands/skills",
+  "delay": 0,
+  "options": {
+    "skill": "bash"
+  }
+}
+```
+
+### commands/target
+
+Sets the characters target to the character that sent the event.
+
+```json
+{
+  "type": "commands/target",
+  "delay": 0,
+  "options": {}
+}
+```

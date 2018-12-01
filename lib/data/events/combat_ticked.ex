@@ -12,5 +12,5 @@ defmodule Data.Events.CombatTicked do
   def allowed_actions(), do: ["commands/skills"]
 
   @impl true
-  def options(), do: []
+  def options(), do: [weight: :integer]
 end

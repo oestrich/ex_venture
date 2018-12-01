@@ -9,5 +9,5 @@ defmodule Data.Events.Actions.CommandsSkill do
   def type(), do: @event_type
 
   @impl true
-  def options(), do: [text: :string, weight: :integer, skill: :string]
+  def options(), do: [skill: :string]
 end
