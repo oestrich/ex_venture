@@ -34,9 +34,7 @@ const RoomInfo = ({ className, roomInfo }) => {
       <div>
         {players ? players.map(player => vmlToJsx(player.status_line)) : null}
         {npcs ? npcs.map(npc => vmlToJsx(npc.status_line)) : null}
-        {shops
-          ? shops.map(shop => <span key={shop.id}>{shop.name} </span>)
-          : null}
+        {shops ? shops.map(shop => vmlToJsx(shop.name)) : null}
         {items
           ? items.map(item => <span key={item.id}>{item.name} </span>)
           : null}
