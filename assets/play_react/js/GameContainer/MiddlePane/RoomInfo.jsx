@@ -54,7 +54,7 @@ const RoomInfo = ({ className, roomInfo }) => {
       <Centered>
         {exits ? 'You can leave: ' : null}
         {exits
-          ? exits.map(exit => (
+          ? exits.map((exit, idx, exitsArr) => (
               <Exit
                 onClick={() => {
                   send(exit.direction);
@@ -63,7 +63,11 @@ const RoomInfo = ({ className, roomInfo }) => {
                 key={exit.room_id}
               >
                 {exit.direction}
-                {}
+                {idx === exitsArr.length - 1 ? (
+                  <span style={{ color: '#c4e9e9' }}>. </span>
+                ) : (
+                  <span style={{ color: '#c4e9e9' }}>, </span>
+                )}
               </Exit>
             ))
           : null}
