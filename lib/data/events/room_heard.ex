@@ -1,6 +1,7 @@
 defmodule Data.Events.RoomHeard do
   @event_type "room/heard"
 
+  @derive Jason.Encoder
   defstruct [:id, :options, :actions, type: @event_type]
 
   @behaviour Data.Events

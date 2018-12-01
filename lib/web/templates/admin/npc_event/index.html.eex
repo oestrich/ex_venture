@@ -22,18 +22,14 @@
         <div class="box-header">
           <h3 class="box-title">Events</h3>
           <div class="box-tools">
-            <%= link(to: npc_npc_event_path(@conn, :reload, @npc.id), method: :post, class: "btn btn-primary") do %>
-              Reload Events
-              <%= SharedView.help_tooltip("npc_events.reload") %>
-            <% end %>
             <%= link("New Event", to: npc_event_path(@conn, :new, @npc.id), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
           <%= Enum.map(@npc.events, fn event -> %>
-            <pre><%= Poison.encode!(event, pretty: true) %></pre>
-            <%= link("Edit", to: npc_event_path(@conn, :edit, @npc.id, event.id), class: "btn btn-default") %>
-            <%= link("Delete", to: npc_event_path(@conn, :delete, @npc.id, event.id), method: :delete, class: "btn btn-danger") %>
+            <%= parse(event) %>
+            <%= link("Edit", to: npc_event_path(@conn, :edit, @npc.id, event["id"]), class: "btn btn-default") %>
+            <%= link("Delete", to: npc_event_path(@conn, :delete, @npc.id, event["id"]), method: :delete, class: "btn btn-danger") %>
             <hr />
           <% end) %>
         </div>

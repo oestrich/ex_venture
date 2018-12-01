@@ -1,6 +1,7 @@
 defmodule Data.Events.StateTicked do
   @event_type "state/ticked"
 
+  @derive Jason.Encoder
   defstruct [:id, :options, :actions, type: @event_type]
 
   @behaviour Data.Events

@@ -45,22 +45,29 @@ defmodule Data.Events do
   @callback options :: options_mapping()
 
   alias Data.Events.Actions
+  alias Data.Events.CharacterTargeted
+  alias Data.Events.CombatTicked
   alias Data.Events.Options
   alias Data.Events.RoomEntered
   alias Data.Events.RoomHeard
+  alias Data.Events.StateTicked
 
   @mapping %{
+    "character/target" => CharacterTargeted,
+    "combat/ticked" => CombatTicked,
     "room/entered" => RoomEntered,
     "room/heard" => RoomHeard,
+    "state/ticked" => StateTicked
   }
 
   def mapping(), do: @mapping
 
   def parse(event) do
     with {:ok, event_type} <- find_type(event),
+         {:ok, id} <- parse_id(event),
          {:ok, options} <- parse_options(event_type, event),
          {:ok, actions} <- parse_actions(event_type, event) do
-      {:ok, struct(event_type, %{options: options, actions: actions})}
+      {:ok, struct(event_type, %{id: id, options: options, actions: actions})}
     end
   end
 
@@ -71,6 +78,15 @@ defmodule Data.Events do
 
       event_type ->
         {:ok, event_type}
+    end
+  end
+
+  def parse_id(event) do
+    with {:ok, id} <- Map.fetch(event, "id") do
+      {:ok, id}
+    else
+      :error ->
+        {:ok, UUID.uuid4()}
     end
   end
 

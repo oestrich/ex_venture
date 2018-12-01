@@ -1,6 +1,7 @@
 defmodule Data.Events.Actions.CommandsEmote do
   @event_type "commands/emote"
 
+  @derive Jason.Encoder
   defstruct [:delay, :options, type: @event_type]
 
   @behaviour Data.Events.Actions

@@ -1,6 +1,7 @@
 defmodule Data.Events.CharacterTargeted do
   @event_type "character/targeted"
 
+  @derive Jason.Encoder
   defstruct [:id, :options, :actions, type: @event_type]
 
   @behaviour Data.Events

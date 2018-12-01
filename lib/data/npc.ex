@@ -6,7 +6,6 @@ defmodule Data.NPC do
   use Data.Schema
 
   alias Data.Script
-  alias Data.Event
   alias Data.Stats
   alias Data.NPCItem
   alias Data.NPCSpawner
@@ -35,7 +34,7 @@ defmodule Data.NPC do
     # given after defeat
     field(:experience_points, :integer, default: 0)
     field(:stats, Data.Stats)
-    field(:events, {:array, Event}, default: [])
+    field(:events, {:array, :map}, default: [])
     field(:script, {:array, Script.Line})
     field(:notes, :string)
     field(:tags, {:array, :string}, default: [])
@@ -93,7 +92,6 @@ defmodule Data.NPC do
       :is_trainer
     ])
     |> validate_stats()
-    |> Event.validate_events()
     |> Script.validate_script()
     |> validate_script()
     |> validate_status_line()

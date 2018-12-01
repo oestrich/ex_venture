@@ -48,7 +48,7 @@ defmodule Web.Admin.NPCEventController do
   def edit(conn, %{"npc_id" => npc_id, "id" => id}) do
     npc = NPC.get(npc_id)
 
-    case Enum.find(npc.events, &(&1.id == id)) do
+    case Enum.find(npc.events, &(&1["id"] == id)) do
       nil ->
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
 
@@ -64,7 +64,7 @@ defmodule Web.Admin.NPCEventController do
   def update(conn, %{"npc_id" => npc_id, "id" => id, "event" => %{"body" => body}}) do
     npc = NPC.get(npc_id)
 
-    case Enum.find(npc.events, &(&1.id == id)) do
+    case Enum.find(npc.events, &(&1["id"] == id)) do
       nil ->
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
 
@@ -106,22 +106,6 @@ defmodule Web.Admin.NPCEventController do
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "There was a problem removing the event")
-        |> redirect(to: npc_event_path(conn, :index, npc.id))
-    end
-  end
-
-  def reload(conn, %{"npc_id" => npc_id}) do
-    npc = NPC.get(npc_id)
-
-    case NPC.force_save_events(npc) do
-      {:ok, _npc} ->
-        conn
-        |> put_flash(:info, "Events reloaded!")
-        |> redirect(to: npc_event_path(conn, :index, npc.id))
-
-      {:error, _changeset} ->
-        conn
-        |> put_flash(:error, "There was a problem reloading.")
         |> redirect(to: npc_event_path(conn, :index, npc.id))
     end
   end
