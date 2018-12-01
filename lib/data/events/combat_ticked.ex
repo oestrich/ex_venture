@@ -1,5 +1,5 @@
-defmodule Data.Events.RoomEntered do
-  @event_type "room/entered"
+defmodule Data.Events.CombatTicked do
+  @event_type "combat/ticked"
 
   defstruct [:id, :options, :actions, type: @event_type]
 
@@ -9,7 +9,7 @@ defmodule Data.Events.RoomEntered do
   def type(), do: @event_type
 
   @impl true
-  def allowed_actions(), do: ["commands/emote", "commands/say"]
+  def allowed_actions(), do: ["commands/skills"]
 
   @impl true
   def options(), do: []

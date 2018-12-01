@@ -1,7 +1,7 @@
 defmodule Data.Events.RoomHeard do
   @event_type "room/heard"
 
-  defstruct [:options, :actions, type: @event_type]
+  defstruct [:id, :options, :actions, type: @event_type]
 
   @behaviour Data.Events
 
@@ -9,12 +9,7 @@ defmodule Data.Events.RoomHeard do
   def type(), do: @event_type
 
   @impl true
-  def allowed_actions() do
-    [
-      "commands/say",
-      "commands/emote"
-    ]
-  end
+  def allowed_actions(), do: ["commands/say", "commands/emote"]
 
   @impl true
   def options(), do: [regex: :string]
