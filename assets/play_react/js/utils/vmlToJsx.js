@@ -172,7 +172,7 @@ function astToJsx(arr) {
           break;
         case 'item':
           newArray.push(
-            <span style={{ color: 'cyan' }}>{astToJsx(node.children)}</span>
+            <span style={{ color: '#4DFFFF' }}>{astToJsx(node.children)}</span>
           );
           break;
         case 'player':

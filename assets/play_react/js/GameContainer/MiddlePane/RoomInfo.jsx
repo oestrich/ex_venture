@@ -33,10 +33,21 @@ const RoomInfo = ({ className, roomInfo }) => {
       <br />
       <div>
         {players ? players.map(player => vmlToJsx(player.status_line)) : null}
-        {npcs ? npcs.map(npc => vmlToJsx(npc.status_line)) : null}
+        {'  '}
+        {npcs ? npcs.map(npc => vmlToJsx(npc.status_line)) : null} {'  '}
         {shops ? shops.map(shop => vmlToJsx(shop.name)) : null}
+        {'  '}
         {items
-          ? items.map(item => <span key={item.id}>{item.name} </span>)
+          ? items.map((item, idx, itemsArr) => (
+              <span style={{ color: '#4DFFFF' }} key={item.id}>
+                {item.name}
+                {idx === itemsArr.length - 1 ? (
+                  <span style={{ color: '#c4e9e9' }}>. </span>
+                ) : (
+                  <span style={{ color: '#c4e9e9' }}>, </span>
+                )}
+              </span>
+            ))
           : null}
       </div>
       <br />
