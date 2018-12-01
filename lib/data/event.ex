@@ -1,12 +1,6 @@
 defmodule Data.Event do
   @moduledoc """
   In game events that NPCs will be listening for
-
-  Valid kinds of events:
-
-  - "room/entered": When a character enters a room
-  - "room/heard": When a character hears something in a room
-  - "combat/tick": What the character will do during combat
   """
 
   import Data.Type
@@ -107,37 +101,6 @@ defmodule Data.Event do
   @impl Ecto.Type
   def dump(stats) when is_map(stats), do: {:ok, Map.delete(stats, :__struct__)}
   def dump(_), do: :error
-
-  @doc """
-  Get a starting event, to fill out in the web interface. Just the structure,
-  the values won't mean anyhting.
-  """
-  @spec starting_event(String.t()) :: t()
-  def starting_event("combat/tick") do
-    %{
-      type: "combat/tick",
-      action: %{type: "target/effects", effects: [], delay: 1.5, weight: 10, text: ""}
-    }
-  end
-
-  def starting_event("room/entered") do
-    %{type: "room/entered", action: %{type: "say", message: "Welcome!"}}
-  end
-
-  def starting_event("room/heard") do
-    %{
-      type: "room/heard",
-      condition: %{regex: "hello"},
-      action: %{type: "say", message: "Welcome!"}
-    }
-  end
-
-  def starting_event("tick") do
-    %{
-      type: "tick",
-      action: %{type: "move", max_distance: 3, chance: 25, wait: 10}
-    }
-  end
 
   @doc """
   Validate an event to get errors out of the validation

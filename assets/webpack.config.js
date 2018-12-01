@@ -14,9 +14,9 @@ module.exports = (env, options) => ({
     ]
   },
   entry: {
-      'home': ['./home/js/app.js'].concat(glob.sync('./home/js/vendor/**/*.js')),
-      'admin': ['./admin/js/app.js'].concat(glob.sync('./admin/js/vendor/**/*.js')),
-      'play': ['./play/js/app.js'].concat(glob.sync('./play/js/vendor/**/*.js'))
+    'home': ['./home/js/app.js'].concat(glob.sync('./home/js/vendor/**/*.js')),
+    'admin': ['./admin/js/app.js'].concat(glob.sync('./admin/js/vendor/**/*.js')),
+    'play': ['./play/js/app.js'].concat(glob.sync('./play/js/vendor/**/*.js'))
   },
   output: {
     filename: '[name].js',
@@ -39,38 +39,38 @@ module.exports = (env, options) => ({
         }
       },
       {
-          test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
-          loader: 'url-loader',
-          options: {
-              limit: 10000,
-              name: '../css/[name].[ext]',
-              mimetype: 'application/font-woff',
-              fallback: 'file-loader'
-          }
+        test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: '../css/[name].[ext]',
+          mimetype: 'application/font-woff',
+          fallback: 'file-loader'
+        }
       }, {
-          test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-          loader: 'url-loader',
-          options: {
-              limit: 10000,
-              name: '../css/[name].[ext]',
-              mimetype: 'application/octet-stream',
-              fallback: 'file-loader'
-          }
+        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: '../css/[name].[ext]',
+          mimetype: 'application/octet-stream',
+          fallback: 'file-loader'
+        }
       }, {
-          test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-          loader: 'file-loader',
-          options: {
-            name: '../css/[name].[ext]'
-          }
+        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'file-loader',
+        options: {
+          name: '../css/[name].[ext]'
+        }
       }, {
-          test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-          loader: 'url-loader',
-          options: {
-              limit: 10000,
-              name: '../css/[name].[ext]',
-              mimetype: 'application/image/svg+xml',
-              fallback: 'file-loader'
-          }
+        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: '../css/[name].[ext]',
+          mimetype: 'application/image/svg+xml',
+          fallback: 'file-loader'
+        }
       },
       {
         test: /\.css$/,
@@ -91,11 +91,11 @@ module.exports = (env, options) => ({
     new MiniCssExtractPlugin({ filename: '../css/[name].css' }),
     new CopyWebpackPlugin([{ from: 'static/', to: '../' }]),
     new webpack.ProvidePlugin({
-            '$': 'jquery',
-            'jQuery': 'jquery',
-            'window.jQuery': 'jquery',
-            'window.$': 'jquery',
-            //  Popper: ['popper.js', 'default'] 
-      })
+      '$': 'jquery',
+      'jQuery': 'jquery',
+      'window.jQuery': 'jquery',
+      'window.$': 'jquery',
+      //  Popper: ['popper.js', 'default']
+    })
   ]
 });
