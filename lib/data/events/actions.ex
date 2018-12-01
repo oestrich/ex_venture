@@ -1,15 +1,34 @@
 defmodule Data.Events.Actions do
+  @moduledoc """
+  Actions that can be triggered when an event fires
+
+  Possible actions:
+  - `commands/emote`
+  - `commands/move`
+  - `commands/say`
+  - `commands/skill`
+  - `commands/target`
+  """
+
   @type options_mapping :: map()
 
   @callback type() :: String.t()
 
   @callback options :: options_mapping()
 
-  alias Data.Events.Actions.ChannelsSay
+  alias Data.Events.Actions.CommandsEmote
+  alias Data.Events.Actions.CommandsMove
+  alias Data.Events.Actions.CommandsSay
+  alias Data.Events.Actions.CommandsSkill
+  alias Data.Events.Actions.CommandsTarget
   alias Data.Events.Options
 
   @mapping %{
-    "channels/say" => ChannelsSay
+    "commands/emote" => CommandsEmote,
+    "commands/move" => CommandsMove,
+    "commands/say" => CommandsSay,
+    "commands/skill" => CommandsSkill,
+    "commands/target" => CommandsTarget
   }
 
   def mapping(), do: @mapping

@@ -8,7 +8,7 @@ defmodule Data.Events.ActionsTest do
   describe "parsing actions" do
     test "parsing delay" do
       {:ok, action} = Actions.parse(%{
-        "type" => "channels/say",
+        "type" => "commands/say",
         "delay" => 1
       })
 
@@ -17,7 +17,7 @@ defmodule Data.Events.ActionsTest do
 
     test "parsing bad delay" do
       {:ok, action} = Actions.parse(%{
-        "type" => "channels/say",
+        "type" => "commands/say",
         "delay" => nil
       })
 
@@ -26,7 +26,7 @@ defmodule Data.Events.ActionsTest do
 
     test "parsing options" do
       {:ok, action} = Actions.parse(%{
-        "type" => "channels/say",
+        "type" => "commands/say",
         "options" => %{
           "message" => "hello",
         },

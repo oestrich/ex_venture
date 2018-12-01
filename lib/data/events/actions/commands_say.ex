@@ -1,5 +1,5 @@
-defmodule Data.Events.Actions.ChannelsSay do
-  @event_type "channels/say"
+defmodule Data.Events.Actions.CommandsSay do
+  @event_type "commands/say"
 
   defstruct [:delay, :options, type: @event_type]
 

@@ -18,11 +18,11 @@ defmodule Data.Events.RoomHeardTest do
 
   describe "allowed actions" do
     test "say" do
-      assert Enum.member?(RoomHeard.allowed_actions(), "channels/say")
+      assert Enum.member?(RoomHeard.allowed_actions(), "commands/say")
     end
 
     test "emote" do
-      assert Enum.member?(RoomHeard.allowed_actions(), "channels/emote")
+      assert Enum.member?(RoomHeard.allowed_actions(), "commands/emote")
     end
   end
 end

@@ -33,7 +33,7 @@ defmodule Data.EventsTest do
         "type" => "room/heard",
         "actions" => [
           %{
-            "type" => "channels/say",
+            "type" => "commands/say",
             "delay" => 0,
             "options" => %{}
           }
@@ -42,8 +42,7 @@ defmodule Data.EventsTest do
 
       assert event.__struct__ == Events.RoomHeard
       assert event.actions == [
-        %Events.Actions.ChannelsSay{
-          type: "channels/say",
+        %Events.Actions.CommandsSay{
           delay: 0,
           options: %{}
         }
@@ -53,11 +52,11 @@ defmodule Data.EventsTest do
 
   describe "action is allowed in the event" do
     test "allowed" do
-      assert Events.action_allowed?(Events.RoomHeard, "channels/say")
+      assert Events.action_allowed?(Events.RoomHeard, "commands/say")
     end
 
     test "not allowed" do
-      refute Events.action_allowed?(Events.RoomHeard, "combat/target")
+      refute Events.action_allowed?(Events.RoomHeard, "commands/target")
     end
   end
 end

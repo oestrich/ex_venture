@@ -11,8 +11,8 @@ defmodule Data.Events.RoomEntered do
   @impl true
   def allowed_actions() do
     [
-      "channels/emote",
-      "channels/say"
+      "commands/emote",
+      "commands/say"
     ]
   end
 
