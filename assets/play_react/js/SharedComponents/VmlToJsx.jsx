@@ -32,7 +32,6 @@ const _astToJsx = ast => {
       switch (node.name) {
         case 'vml':
           return <span>{_astToJsx(node.children)}</span>;
-
         case 'command':
           // strip away any vml tags from command
           const commandString = node.attrs.send
@@ -49,6 +48,9 @@ const _astToJsx = ast => {
             </Command>
           );
         // Available VML tags for color parsing are found in theme.js
+        // If vml tag doesn't do anything else other than color text, it will be handled
+        // by the following case statement.  Any other special cases such as the 'command'
+        // case should be put in case statements above this one.
         case Object.keys(vmlTags).includes(node.name) && node.name:
           return (
             <ColoredSpan color={theme.vml[node.name]}>
