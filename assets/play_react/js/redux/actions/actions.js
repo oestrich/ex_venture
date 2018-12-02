@@ -26,7 +26,7 @@ export const initSubscriptions = () => {
         case GMCP_ROOM_INFO: {
           const roomInfo = JSON.parse(response.data);
           // upon new room, archive current event stream and clear ui
-          if (getState().roomInfo.name !== roomInfo.name) {
+          if (getState().roomInfo.id !== roomInfo.id) {
             dispatch({
               type: ARCHIVE_AND_CLEAR_EVENT_STREAM
             });
@@ -50,9 +50,10 @@ export const initSubscriptions = () => {
           });
         }
         case GMCP_CHARACTER_VITALS: {
+          const vitals = JSON.parse(response.data);
           return dispatch({
             type: UPDATE_CHARACTER_VITALS,
-            payload: response.data
+            payload: vitals
           });
         }
         case GMCP_CHARACTER_SKILLS: {
@@ -71,13 +72,17 @@ export const initSubscriptions = () => {
     channel.on('option', response => {
       console.log('[Channel: OPTION]', response);
     });
+
+    // Future deprecation: Status prompt updates will come from Character.Vitals GMCP module
+    // However there may be other none character vitals prompt updates that are sent over
+    // the prompt channel
     channel.on('prompt', response => {
       console.log('[Channel: PROMPT]', response);
-      const prompt = parsePrompt(response.message);
-      console.log('parsedPrompt', prompt);
-      if (prompt) {
-        dispatch({ type: UPDATE_CHARACTER_PROMPT, payload: prompt });
-      }
+      // const prompt = parsePrompt(response.message);
+      // console.log('parsedPrompt', prompt);
+      // if (prompt) {
+      //   dispatch({ type: UPDATE_CHARACTER_PROMPT, payload: prompt });
+      // }
     });
     channel.on('echo', response => {
       // squelch room updates
@@ -101,50 +106,50 @@ export const initSubscriptions = () => {
   };
 };
 
-const parsePrompt = msg => {
-  const re1 = '.*?'; // Non-greedy match on filler
-  const re2 = '(\\d+)'; // Integer Number 1
-  const re3 = '.*?'; // Non-greedy match on filler
-  const re4 = '(\\d+)'; // Integer Number 2
-  const re5 = '.*?'; // Non-greedy match on filler
-  const re6 = '(\\d+)'; // Integer Number 3
-  const re7 = '.*?'; // Non-greedy match on filler
-  const re8 = '(\\d+)'; // Integer Number 4
-  const re9 = '.*?'; // Non-greedy match on filler
-  const re10 = '(\\d+)'; // Integer Number 5
-  const re11 = '.*?'; // Non-greedy match on filler
-  const re12 = '(\\d+)'; // Integer Number 6
-  const re13 = '.*?'; // Non-greedy match on filler
-  const re14 = '(\\d+)'; // Integer Number 7
+// const parsePrompt = msg => {
+//   const re1 = '.*?'; // Non-greedy match on filler
+//   const re2 = '(\\d+)'; // Integer Number 1
+//   const re3 = '.*?'; // Non-greedy match on filler
+//   const re4 = '(\\d+)'; // Integer Number 2
+//   const re5 = '.*?'; // Non-greedy match on filler
+//   const re6 = '(\\d+)'; // Integer Number 3
+//   const re7 = '.*?'; // Non-greedy match on filler
+//   const re8 = '(\\d+)'; // Integer Number 4
+//   const re9 = '.*?'; // Non-greedy match on filler
+//   const re10 = '(\\d+)'; // Integer Number 5
+//   const re11 = '.*?'; // Non-greedy match on filler
+//   const re12 = '(\\d+)'; // Integer Number 6
+//   const re13 = '.*?'; // Non-greedy match on filler
+//   const re14 = '(\\d+)'; // Integer Number 7
 
-  const regex =
-    '.*?\\d+.*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+)';
-  const p = new RegExp(
-    re1 +
-      re2 +
-      re3 +
-      re4 +
-      re5 +
-      re6 +
-      re7 +
-      re8 +
-      re9 +
-      re10 +
-      re11 +
-      re12 +
-      re13 +
-      re14,
-    ['i']
-  );
-  const m = p.exec(msg);
-  if (!m) {
-    return null;
-  }
+//   const regex =
+//     '.*?\\d+.*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+)';
+//   const p = new RegExp(
+//     re1 +
+//       re2 +
+//       re3 +
+//       re4 +
+//       re5 +
+//       re6 +
+//       re7 +
+//       re8 +
+//       re9 +
+//       re10 +
+//       re11 +
+//       re12 +
+//       re13 +
+//       re14,
+//     ['i']
+//   );
+//   const m = p.exec(msg);
+//   if (!m) {
+//     return null;
+//   }
 
-  return {
-    hp: { current: m[1], max: m[2] },
-    sp: { current: m[3], max: m[4] },
-    ep: { current: m[5], max: m[6] },
-    xp: m[7]
-  };
-};
+//   return {
+//     hp: { current: m[1], max: m[2] },
+//     sp: { current: m[3], max: m[4] },
+//     ep: { current: m[5], max: m[6] },
+//     xp: m[7]
+//   };
+// };

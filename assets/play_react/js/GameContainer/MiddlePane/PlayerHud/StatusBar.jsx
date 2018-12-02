@@ -28,7 +28,7 @@ const BarContainer = styled.div`
 const Bar = styled(BarContainer)`
   color: ${theme.text}
   background: ${props => props.color};
-  width: 100%;
+  width: ${props => props.width};
   height: 5px;
   opacity: 0.5;
   box-shadow: 0 0 0 0;
@@ -37,22 +37,32 @@ const Bar = styled(BarContainer)`
   top: -6px;
 `;
 
-const StatusBar = props => {
+const StatusBar = ({
+  currentHp,
+  currentSp,
+  currentEp,
+  maxHp,
+  maxSp,
+  maxEp,
+  hpWidth,
+  spWidth,
+  epWidth
+}) => {
   return (
     <FlexColumn>
       <BarContainer>
-        <Bar color={theme.statusBar.hp}>
-          {props.prompt.hp.current}/{props.prompt.hp.max}
+        <Bar color={theme.statusBar.hp} width={hpWidth}>
+          {currentHp}/{maxHp}
         </Bar>
       </BarContainer>
       <BarContainer>
-        <Bar color={theme.statusBar.sp}>
-          {props.prompt.sp.current}/{props.prompt.sp.max}
+        <Bar color={theme.statusBar.sp} width={spWidth}>
+          {currentSp}/{maxSp}
         </Bar>
       </BarContainer>
       <BarContainer>
-        <Bar color={theme.statusBar.ep}>
-          {props.prompt.ep.current}/{props.prompt.ep.max}
+        <Bar color={theme.statusBar.ep} width={epWidth}>
+          {currentEp}/{maxEp}
         </Bar>
       </BarContainer>
     </FlexColumn>
@@ -68,10 +78,17 @@ StatusBar.defaultProps = {
   }
 };
 
-const mapStateToProps = state => {
-  console.log('state', state);
+const mapStateToProps = ({ characterVitals: cv }) => {
   return {
-    prompt: state.characterPrompt
+    currentHp: cv.health_points,
+    currentSp: cv.skill_points,
+    currentEp: cv.endurance_points,
+    maxHp: cv.max_health_points,
+    maxSp: cv.max_skill_points,
+    maxEp: cv.max_endurance_points,
+    hpWidth: (cv.health_points / cv.max_health_points) * 100 + '%',
+    spWidth: (cv.skill_points / cv.max_skill_points) * 100 + '%',
+    epWidth: (cv.endurance_points / cv.endurance_points) * 100 + '%'
   };
 };
 

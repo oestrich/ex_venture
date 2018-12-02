@@ -5,12 +5,12 @@ import { theme } from '../../theme.js';
 
 // TODO: Long string will not create newlines, it will increase container size
 const LeftPane = ({ className, characterInfo, characterVitals }) => {
-  const vitals = characterVitals ? JSON.parse(characterVitals) : {};
-  const charInfo = characterInfo ? JSON.parse(characterInfo) : {};
+  // const vitals = characterVitals ? JSON.parse(characterVitals) : {};
+  // const charInfo = characterInfo ? JSON.parse(characterInfo) : {};
   return (
     <div className={className}>
       LeftPane
-      {Object.keys(charInfo).map(key => {
+      {/* {Object.keys(charInfo).map(key => {
         <div key={key}>
           {key}: {vitals[key]}
         </div>;
@@ -22,7 +22,7 @@ const LeftPane = ({ className, characterInfo, characterVitals }) => {
             {key}: {vitals[key]}
           </div>
         );
-      })}
+      })} */}
     </div>
   );
 };
