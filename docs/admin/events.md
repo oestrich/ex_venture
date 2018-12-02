@@ -124,6 +124,7 @@ Options:
 
 - `minimum_delay`: The minimum amount of time to wait before triggering this event again, default of `30` if none is provided
 - `random_delay`: A random extra delay to add to the minimum wait, from 0 to the delay provided extra
+- `room_id`: Optional, the character must be in this room to trigger the speech
 
 Allowed actions:
 
@@ -161,6 +162,7 @@ Sends an emote to the room the character is in. Can also change the internal sta
 Options:
 
 - `message`: The emote to send, template param of `[name]` is available
+- `status_reset`: If provided, it resets the internal status of the NPC back to the default, boolean
 - `status_key`: If provided, changes the status key
 - `status_line`: If provided, changes the status line for the character, template param of `[name]` is available
 - `status_listen`: If provided, changes the status listen text for the character, template param of `[name]` is available
@@ -200,11 +202,11 @@ Options:
 
 ### commands/say
 
-Sends local chat to the room the character is in.
+Sends local chat to the room the character is in. Either `message` or `messages` is required, but not both.
 
 Options:
 
-- `message`: The message being sent
+- `message`: The message being sent, takes precedence over `messages` if both are present
 - `messages`: A list of messages that will be randomly selected from before sending
 
 ```json

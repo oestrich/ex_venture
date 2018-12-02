@@ -1,10 +1,7 @@
 defmodule Web.Admin.NPCEventView do
   use Web, :view
 
-  alias Data.Event
   alias Data.Events
-
-  import Web.JSONHelper
 
   def parse(event) do
     case Events.parse(event) do

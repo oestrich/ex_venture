@@ -595,11 +595,11 @@ defmodule Game.NPC.Events do
   def who({:npc, npc}), do: %{type: :npc, name: npc.name}
   def who({:player, player}), do: %{type: :player, name: player.name}
 
-  defp npc(%{npc: npc, status: status}) when status != nil do
+  def npc(%{npc: npc, status: status}) when status != nil do
     {:npc, %{npc | status_line: status.line, status_listen: status.listen}}
   end
 
-  defp npc(%{npc: npc}), do: {:npc, npc}
+  def npc(%{npc: npc}), do: {:npc, npc}
 
   defp notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})

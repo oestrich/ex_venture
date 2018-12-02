@@ -10,5 +10,13 @@ defmodule Data.Events.Actions.CommandsEmote do
   def type(), do: @event_type
 
   @impl true
-  def options(), do: [message: :string, status_key: :string, status_line: :string, status_listen: :string]
+  def options() do
+    [
+      message: :string,
+      status_reset: :boolean,
+      status_key: :string,
+      status_line: :string,
+      status_listen: :string
+    ]
+  end
 end

@@ -61,6 +61,13 @@ defmodule Data.Events.Options do
       iex> Options.valid_option_value?(:float, "string")
       false
 
+      iex> Options.valid_option_value?(:boolean, true)
+      true
+      iex> Options.valid_option_value?(:boolean, false)
+      true
+      iex> Options.valid_option_value?(:boolean, "string")
+      false
+
       iex> Options.valid_option_value?(:string, "string")
       true
       iex> Options.valid_option_value?(:string, 10)
@@ -75,6 +82,9 @@ defmodule Data.Events.Options do
   """
   def valid_option_value?(type, value) do
     case type do
+      :boolean ->
+        is_boolean(value)
+
       :float ->
         is_integer(value) || is_float(value)
 

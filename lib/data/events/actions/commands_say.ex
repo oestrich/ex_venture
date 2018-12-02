@@ -10,5 +10,5 @@ defmodule Data.Events.Actions.CommandsSay do
   def type(), do: @event_type
 
   @impl true
-  def options(), do: [message: :string, messages: {:array, :string}]
+  def options(), do: [room_id: :integer, message: :string, messages: {:array, :string}]
 end
