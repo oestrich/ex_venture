@@ -11,6 +11,7 @@ const FlexColumn = styled.div`
 
 const BarContainer = styled.div`
   color: black;
+  font-weight: bold;
   font-family: ${theme.font};
   flex: 1;
   display: inline-block;
