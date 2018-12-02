@@ -17,9 +17,18 @@ const CharacterInfo = styled.div`
 `;
 
 // TODO: Long string will not create newlines, it will increase container size
-const LeftPane = ({ className, name, level, charClass }) => {
-  // const vitals = characterVitals ? JSON.parse(characterVitals) : {};
-  // const charInfo = characterInfo ? JSON.parse(characterInfo) : {};
+const LeftPane = ({
+  className,
+  name,
+  level,
+  charClass,
+  willpower,
+  vitality,
+  strength,
+  intelligence,
+  endurance,
+  awareness
+}) => {
   return (
     <div className={className}>
       <CharacterName>{name ? `${name}  -  ${level}` : null}</CharacterName>
