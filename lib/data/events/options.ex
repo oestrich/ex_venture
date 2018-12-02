@@ -14,8 +14,7 @@ defmodule Data.Events.Options do
         errors =
           options
           |> Enum.filter(&elem(&1, 0) == :error)
-          |> Enum.map(&elem(&1, 1))
-          |> Enum.into(%{})
+          |> Enum.into(%{}, &elem(&1, 1))
 
         {:error, errors}
 

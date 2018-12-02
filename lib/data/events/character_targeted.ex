@@ -1,4 +1,8 @@
 defmodule Data.Events.CharacterTargeted do
+  @moduledoc """
+  `character/targeted` event
+  """
+
   @event_type "character/targeted"
 
   @derive Jason.Encoder

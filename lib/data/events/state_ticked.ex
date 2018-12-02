@@ -1,4 +1,8 @@
 defmodule Data.Events.StateTicked do
+  @moduledoc """
+  `state/ticked` event
+  """
+
   @event_type "state/ticked"
 
   @derive Jason.Encoder

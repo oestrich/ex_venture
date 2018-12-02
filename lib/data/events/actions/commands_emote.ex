@@ -1,4 +1,8 @@
 defmodule Data.Events.Actions.CommandsEmote do
+  @moduledoc """
+  `commands/emote` action
+  """
+
   @event_type "commands/emote"
 
   @derive Jason.Encoder

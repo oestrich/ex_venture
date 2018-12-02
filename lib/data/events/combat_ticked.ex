@@ -1,4 +1,8 @@
 defmodule Data.Events.CombatTicked do
+  @moduledoc """
+  `combat/ticked` event
+  """
+
   @event_type "combat/ticked"
 
   @derive Jason.Encoder

@@ -1,4 +1,8 @@
 defmodule Data.Events.Actions.CommandsTarget do
+  @moduledoc """
+  `commands/target` action
+  """
+
   @event_type "commands/target"
 
   @derive Jason.Encoder

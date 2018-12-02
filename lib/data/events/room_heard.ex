@@ -1,4 +1,8 @@
 defmodule Data.Events.RoomHeard do
+  @moduledoc """
+  `room/heard` event
+  """
+
   @event_type "room/heard"
 
   @derive Jason.Encoder
