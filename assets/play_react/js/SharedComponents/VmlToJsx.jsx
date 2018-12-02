@@ -33,7 +33,7 @@ const _astToJsx = ast => {
         case 'vml':
           return <span>{_astToJsx(node.children)}</span>;
         case 'command':
-          // strip away any vml tags from command
+          // strip away any vml tags from command being sent to server
           const commandString = node.attrs.send
             ? node.attrs.send.replace(/{.*?}/g, '')
             : '';

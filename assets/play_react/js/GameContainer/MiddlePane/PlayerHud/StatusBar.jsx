@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { theme } from '../../../theme.js';
 
 const FlexColumn = styled.div`
   display: flex;
@@ -8,7 +9,7 @@ const FlexColumn = styled.div`
   padding-top: 5px;
 `;
 
-const Bar = styled.div`
+const BarContainer = styled.div`
   flex: 1;
   display: inline-block;
   color: #444;
@@ -24,18 +25,36 @@ const Bar = styled.div`
   line-height: 5px;
 `;
 
+const Bar = styled(BarContainer)`
+  color: ${theme.text}
+  background: ${props => props.color};
+  width: 100%;
+  height: 5px;
+  opacity: 0.5;
+  box-shadow: 0 0 0 0;
+  position: relative;
+  left: -6px;
+  top: -6px;
+`;
+
 const StatusBar = props => {
   return (
     <FlexColumn>
-      <Bar>
-        {props.prompt.hp.current}/{props.prompt.hp.max}
-      </Bar>
-      <Bar>
-        {props.prompt.sp.current}/{props.prompt.sp.max}
-      </Bar>
-      <Bar>
-        {props.prompt.ep.current}/{props.prompt.ep.max}
-      </Bar>
+      <BarContainer>
+        <Bar color={theme.statusBar.hp}>
+          {props.prompt.hp.current}/{props.prompt.hp.max}
+        </Bar>
+      </BarContainer>
+      <BarContainer>
+        <Bar color={theme.statusBar.sp}>
+          {props.prompt.sp.current}/{props.prompt.sp.max}
+        </Bar>
+      </BarContainer>
+      <BarContainer>
+        <Bar color={theme.statusBar.ep}>
+          {props.prompt.ep.current}/{props.prompt.ep.max}
+        </Bar>
+      </BarContainer>
     </FlexColumn>
   );
 };

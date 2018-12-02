@@ -19,5 +19,10 @@ export const theme = {
   vml: vmlTags,
   text: '#C4E9E9',
   bgPrimary: '#6177C8',
-  bgSecondary: '#435AAF'
+  bgSecondary: '#435AAF',
+  statusBar: {
+    hp: '#FA8F8F',
+    sp: '#3845FF',
+    ep: '#B6FFAD'
+  }
 };
