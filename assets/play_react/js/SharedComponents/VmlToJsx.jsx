@@ -32,18 +32,23 @@ const _astToJsx = ast => {
       switch (node.name) {
         case 'vml':
           return <span>{_astToJsx(node.children)}</span>;
-        // Available VML tags for color parsing are found in theme.js
+
         case 'command':
+          // strip away any vml tags from command
+          const commandString = node.attrs.send
+            ? node.attrs.send.replace(/{.*?}/g, '')
+            : '';
           return (
             <Command
               color={theme.vml.command}
               onClick={() => {
-                send(node.command);
+                send(commandString);
               }}
             >
               {_astToJsx(node.children)}
             </Command>
           );
+        // Available VML tags for color parsing are found in theme.js
         case Object.keys(vmlTags).includes(node.name) && node.name:
           return (
             <ColoredSpan color={theme.vml[node.name]}>
