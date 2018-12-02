@@ -7,6 +7,10 @@ const ColoredSpan = styled.span`
   color: ${props => props.color};
 `;
 
+const Command = styled(ColoredSpan)`
+  cursor: pointer;
+`;
+
 const VmlToJsx = ({ vmlString }) => {
   if (!vmlString) {
     return null;
@@ -29,20 +33,20 @@ const _astToJsx = ast => {
         case 'vml':
           return <span>{_astToJsx(node.children)}</span>;
         // Available VML tags for color parsing are found in theme.js
-        case Object.keys(vmlTags).includes(node.name) && node.name:
-          return (
-            <ColoredSpan color={theme.vml[node.name]}>
-              {_astToJsx(node.children)}
-            </ColoredSpan>
-          );
         case 'command':
           return (
-            <ColoredSpan
-              color={theme.vml[node.name]}
+            <Command
+              color={theme.vml.command}
               onClick={() => {
                 send(node.command);
               }}
             >
+              {_astToJsx(node.children)}
+            </Command>
+          );
+        case Object.keys(vmlTags).includes(node.name) && node.name:
+          return (
+            <ColoredSpan color={theme.vml[node.name]}>
               {_astToJsx(node.children)}
             </ColoredSpan>
           );
