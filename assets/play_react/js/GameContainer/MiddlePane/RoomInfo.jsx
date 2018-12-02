@@ -2,6 +2,7 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { connect } from 'react-redux';
 import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
+import { theme } from '../../theme.js';
 
 const Centered = styled.div`
   display: flex;
@@ -18,6 +19,10 @@ const RoomName = styled.div`
 const Exit = styled.span`
   color: white;
   cursor: pointer;
+`;
+
+const ColoredSpan = styled.span`
+  color: ${props => props.color};
 `;
 
 const RoomInfo = ({ className, roomInfo }) => {
@@ -46,15 +51,16 @@ const RoomInfo = ({ className, roomInfo }) => {
           <VmlToJsx vmlString={shop.name} />
         ))}
         {'  '}
+        {/* Items in the Room.Info GMCP module are not VML tagged so we need to manually color them here. */}
         {items.map((item, idx, itemsArr) => (
-          <span style={{ color: '#4DFFFF' }} key={item.id}>
+          <ColoredSpan color={theme.vml.item} key={item.id}>
             {item.name}
             {idx === itemsArr.length - 1 ? (
-              <span style={{ color: '#c4e9e9' }}>. </span>
+              <ColoredSpan color={theme.text}>. </ColoredSpan>
             ) : (
-              <span style={{ color: '#c4e9e9' }}>, </span>
+              <ColoredSpan color={theme.text}>, </ColoredSpan>
             )}
-          </span>
+          </ColoredSpan>
         ))}{' '}
       </div>
       <br />

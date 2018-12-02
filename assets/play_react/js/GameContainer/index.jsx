@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import LeftPane from './LeftPane/index.jsx';
 import MiddlePane from './MiddlePane/index.jsx';
 import RightPane from './RightPane/index.jsx';
+import { theme } from '../theme.js';
 
 const FlexRow = styled.div`
   display: flex;

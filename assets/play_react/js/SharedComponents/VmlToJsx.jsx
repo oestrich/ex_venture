@@ -1,5 +1,11 @@
 import React from 'react';
 import { vmlToAst } from '../utils/vmlToJsx.js';
+import { vmlTags, theme } from '../theme.js';
+import styled from 'styled-components';
+
+const ColoredSpan = styled.span`
+  color: ${props => props.color};
+`;
 
 const VmlToJsx = ({ vmlString }) => {
   if (!vmlString) {
@@ -22,34 +28,23 @@ const _astToJsx = ast => {
       switch (node.name) {
         case 'vml':
           return <span>{_astToJsx(node.children)}</span>;
-        case [
-          'npc',
-          'item',
-          'player',
-          'skill',
-          'quest',
-          'room',
-          'zone',
-          'say',
-          'shop',
-          'hint',
-          'error',
-          'white',
-          'red'
-        ].includes(node.name) && node.name:
+        // Available VML tags for color parsing are found in theme.js
+        case Object.keys(vmlTags).includes(node.name) && node.name:
           return (
-            <span style={{ color: 'white' }}>{_astToJsx(node.children)}</span>
+            <ColoredSpan color={theme.vml[node.name]}>
+              {_astToJsx(node.children)}
+            </ColoredSpan>
           );
         case 'command':
           return (
-            <span
+            <ColoredSpan
+              color={theme.vml[node.name]}
               onClick={() => {
                 send(node.command);
               }}
-              style={{ color: 'white' }}
             >
               {_astToJsx(node.children)}
-            </span>
+            </ColoredSpan>
           );
         default:
           console.log('Unparsed VML tag: ', node.name);
