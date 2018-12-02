@@ -46,7 +46,7 @@ export const initSubscriptions = () => {
         case GMCP_CHARACTER_INFO: {
           return dispatch({
             type: UPDATE_CHARACTER_INFO,
-            payload: response.data
+            payload: JSON.parse(response.data)
           });
         }
         case GMCP_CHARACTER_VITALS: {

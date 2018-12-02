@@ -31,7 +31,6 @@ const RoomInfo = ({ className, roomInfo }) => {
   console.log('players', players);
   return (
     <div className={className}>
-      <br />
       <RoomName>{name}</RoomName>
       <br />
       <br />
@@ -104,5 +103,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(styled(RoomInfo)`
-  padding: 1em 2em 1em 2em;
+  padding: 2em 2em 1em 2em;
 `);

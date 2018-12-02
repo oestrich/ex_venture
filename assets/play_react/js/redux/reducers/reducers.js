@@ -20,7 +20,11 @@ const initialState = {
     exits: []
   },
   zoneMap: '',
-  characterInfo: '',
+  characterInfo: {
+    name: null,
+    class: { name: null },
+    level: null
+  },
   characterVitals: '',
   characterSkills: new Array(13).fill('').map((item, idx) => {
     return { key: `placeholder-${idx}` };
