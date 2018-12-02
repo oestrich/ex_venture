@@ -13,6 +13,9 @@ defmodule Game.NPC.Actions.CommandsMove do
 
   @npc_reaction_time_ms Application.get_env(:ex_venture, :npc)[:reaction_time_ms]
 
+  @doc """
+  Move to a new room
+  """
   def act(state, action) do
     spawner = state.npc_spawner
 
