@@ -1,5 +1,7 @@
 # NPC Events
 
+**Note** This is going under heavy refactor and events will need to be rewritten when it is merged.
+
 ## room/entered
 
 When a character enters a room, this event will be triggered.
