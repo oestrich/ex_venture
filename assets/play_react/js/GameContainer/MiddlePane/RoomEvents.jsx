@@ -1,30 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled, { css } from 'styled-components';
-import vmlToJsx from '../../utils/vmlToJsx.js';
-
-// const RoomEvents = ({ className, eventStream }) => {
-//   return (
-//     <div className={className}>
-//       RoomEvents
-//       <div>
-//         {eventStream.map(event => {
-//           return (
-//             <div>
-//               <div>{event}</div>
-//               <br />
-//             </div>
-//           );
-//         })}
-//         <div
-//           ref={el => {
-//             this.messagseEnd = el;
-//           }}
-//         />
-//       </div>
-//     </div>
-//   );
-// };
+import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
 
 class RoomEvents extends Component {
   constructor(props) {
@@ -48,10 +25,11 @@ class RoomEvents extends Component {
         <div>
           {this.props.eventStream.map(event => {
             return (
-              <>
-                <div>{vmlToJsx(event.message)}</div>
+              <div key={event.sent_at}>
+                <VmlToJsx vmlString={event.message} />
                 <br />
-              </>
+                <br />
+              </div>
             );
           })}
           <div
@@ -64,10 +42,6 @@ class RoomEvents extends Component {
     );
   }
 }
-
-RoomEvents.defaultProps = {
-  eventStream: []
-};
 
 const mapStateToProps = state => {
   return { eventStream: state.eventStream };
