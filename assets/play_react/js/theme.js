@@ -12,7 +12,7 @@ export const vmlTags = {
   hint: 'cyan',
   command: 'white',
   error: 'red',
-  red: 'red',
+  red: '#FA8F8F',
   white: 'white'
 };
 export const theme = {
