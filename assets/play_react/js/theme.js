@@ -1,4 +1,5 @@
 export const vmlTags = {
+  exit: 'white',
   npc: '#F2BD78',
   item: '#4DFFFF',
   player: '#4DFFFF',
@@ -16,5 +17,7 @@ export const vmlTags = {
 };
 export const theme = {
   vml: vmlTags,
-  text: '#C4E9E9'
+  text: '#C4E9E9',
+  bgPrimary: '#6177C8',
+  bgSecondary: '#435AAF'
 };

@@ -17,7 +17,7 @@ const RoomName = styled.div`
 `;
 
 const Exit = styled.span`
-  color: white;
+  color: ${theme.vml.exit}
   cursor: pointer;
 `;
 
@@ -65,25 +65,22 @@ const RoomInfo = ({ className, roomInfo }) => {
       </div>
       <br />
       <Centered>
-        {exits ? 'You can leave: ' : null}
-        {exits
-          ? exits.map((exit, idx, exitsArr) => (
-              <Exit
-                onClick={() => {
-                  send(exit.direction);
-                }}
-                style={{ color: 'white' }}
-                key={exit.room_id}
-              >
-                {exit.direction}
-                {idx === exitsArr.length - 1 ? (
-                  <span style={{ color: '#c4e9e9' }}>. </span>
-                ) : (
-                  <span style={{ color: '#c4e9e9' }}>, </span>
-                )}
-              </Exit>
-            ))
-          : null}
+        {exits.length > 0 ? 'You can leave: ' : null}
+        {exits.map((exit, idx, exitsArr) => (
+          <Exit
+            onClick={() => {
+              send(exit.direction);
+            }}
+            key={exit.room_id}
+          >
+            {exit.direction}
+            {idx === exitsArr.length - 1 ? (
+              <ColoredSpan color={theme.text}>. </ColoredSpan>
+            ) : (
+              <ColoredSpan color={theme.text}>, </ColoredSpan>
+            )}
+          </Exit>
+        ))}
       </Centered>
       <br />
     </div>

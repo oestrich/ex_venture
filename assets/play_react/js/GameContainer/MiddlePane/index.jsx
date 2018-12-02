@@ -3,12 +3,13 @@ import styled, { css } from 'styled-components';
 import RoomInfo from './RoomInfo.jsx';
 import RoomEvents from './RoomEvents.jsx';
 import PlayerHud from './PlayerHud/index.jsx';
+import { theme } from '../../theme.js';
 
 const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
   height: 800px;
-  background-color: #6177c8;
+  background-color: ${theme.bgPrimary};
 `;
 
 const MiddlePane = ({ className }) => {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled, { css } from 'styled-components';
+import { theme } from '../../theme.js';
 
 // TODO: Long string will not create newlines, it will increase container size
 const LeftPane = ({ className, characterInfo, characterVitals }) => {
@@ -38,5 +39,5 @@ LeftPane.defaultProps = { characterVitals: '{}', characterInfo: '{}' };
 export default connect(mapStateToProps)(styled(LeftPane)`
   padding: 2em 2em 2em 2em;
   flex: 1;
-  background-color: #435aaf;
+  background-color: ${theme.bgSecondary};
 `);
