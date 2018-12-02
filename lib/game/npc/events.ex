@@ -601,7 +601,7 @@ defmodule Game.NPC.Events do
 
   def npc(%{npc: npc}), do: {:npc, npc}
 
-  defp notify_delayed(action, delayed) do
+  def notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})
   end
 
