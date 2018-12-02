@@ -11,7 +11,7 @@ const Bar = styled.input`
   vertical-align: middle;
   max-height: 35px;
   height: 5px;
-  width: 100%;
+  width: 98.3%;
   padding: 5px;
   line-height: 5px;
 `;
