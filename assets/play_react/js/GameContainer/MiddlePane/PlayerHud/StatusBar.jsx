@@ -10,9 +10,10 @@ const FlexColumn = styled.div`
 `;
 
 const BarContainer = styled.div`
+  color: black;
+  font-family: ${theme.font};
   flex: 1;
   display: inline-block;
-  color: #444;
   border: 1px solid #6177c8;
   background: #879ade;
   box-shadow: 0 2px 5px 0px #000000;
@@ -26,13 +27,13 @@ const BarContainer = styled.div`
 `;
 
 const Bar = styled(BarContainer)`
-  color: ${theme.text}
   background: ${props => props.color};
   width: ${props => props.width};
   height: 5px;
   opacity: 0.5;
   box-shadow: 0 0 0 0;
   position: relative;
+  float: left;
   left: -6px;
   top: -6px;
 `;
@@ -52,7 +53,9 @@ const StatusBar = ({
     <FlexColumn>
       <BarContainer>
         <Bar color={theme.statusBar.hp} width={hpWidth}>
-          {currentHp}/{maxHp}
+          <div>
+            {currentHp}/{maxHp}
+          </div>
         </Bar>
       </BarContainer>
       <BarContainer>
@@ -69,26 +72,26 @@ const StatusBar = ({
   );
 };
 
-StatusBar.defaultProps = {
-  prompt: {
-    hp: { current: 0, max: 0 },
-    sp: { current: 0, max: 0 },
-    ep: { current: 0, max: 0 },
-    xp: 0
-  }
-};
+// StatusBar.defaultProps = {
+//   prompt: {
+//     hp: { current: 0, max: 0 },
+//     sp: { current: 0, max: 0 },
+//     ep: { current: 0, max: 0 },
+//     xp: 0
+//   }
+// };
 
-const mapStateToProps = ({ characterVitals: cv }) => {
+const mapStateToProps = ({ characterVitals: vitals }) => {
   return {
-    currentHp: cv.health_points,
-    currentSp: cv.skill_points,
-    currentEp: cv.endurance_points,
-    maxHp: cv.max_health_points,
-    maxSp: cv.max_skill_points,
-    maxEp: cv.max_endurance_points,
-    hpWidth: (cv.health_points / cv.max_health_points) * 100 + '%',
-    spWidth: (cv.skill_points / cv.max_skill_points) * 100 + '%',
-    epWidth: (cv.endurance_points / cv.endurance_points) * 100 + '%'
+    currentHp: vitals.health_points,
+    currentSp: vitals.skill_points,
+    currentEp: vitals.endurance_points,
+    maxHp: vitals.max_health_points,
+    maxSp: vitals.max_skill_points,
+    maxEp: vitals.max_endurance_points,
+    hpWidth: (vitals.health_points / vitals.max_health_points) * 100 + '%',
+    spWidth: (vitals.skill_points / vitals.max_skill_points) * 100 + '%',
+    epWidth: (vitals.endurance_points / vitals.endurance_points) * 100 + '%'
   };
 };
 

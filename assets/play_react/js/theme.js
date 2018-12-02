@@ -18,6 +18,7 @@ export const vmlTags = {
 export const theme = {
   vml: vmlTags,
   text: '#C4E9E9',
+  font: 'Lucida Grande, Lucida Sans Unicode, Lucida Sans, Geneva, Verdana',
   bgPrimary: '#6177C8',
   bgSecondary: '#435AAF',
   statusBar: {
