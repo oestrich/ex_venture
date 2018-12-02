@@ -60,9 +60,8 @@ function parseTag(tag) {
 // re-used obj for quick lookups of components
 var empty = Object.create ? Object.create(null) : {};
 
-function parse(html, options) {
+export function vmlToAst(html, options) {
   var tagRE = /\{(?:"[^"]*"['"]*|'[^']*'['"]*|[^'"\}])+\}/g;
-  // var tagRE = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g;
   options || (options = {});
   options.components || (options.components = empty);
   var result = [];
@@ -151,77 +150,34 @@ function parse(html, options) {
 // Recursive function to create multidimensional JSX arrays for rendering
 
 function astToJsx(arr) {
-  let newArray = [];
-  arr.forEach(node => {
+  return arr.map(node => {
     if (node.type === 'text') {
-      newArray.push(node.content);
+      return node.content;
     }
-
     if (node.type === 'tag') {
-      // if (node.name === 'npc' || node.name === 'quest' || node.name === 'red') {
-      //   newArray.push(<div>{astToJsx(node.children)}</div>);
-      // }
       switch (node.name) {
         case 'vml':
-          newArray.push(<span>{astToJsx(node.children)}</span>);
-          break;
-        case 'npc':
-          newArray.push(
-            <span style={{ color: '#F2BD78' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'item':
-          newArray.push(
-            <span style={{ color: '#4DFFFF' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'player':
-          newArray.push(
-            <span style={{ color: '#4DFFFF' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'skill':
-          newArray.push(
+          console.log('vml block');
+          return <span>{astToJsx(node.children)}</span>;
+        case [
+          'npc',
+          'item',
+          'player',
+          'skill',
+          'quest',
+          'room',
+          'zone',
+          'say',
+          'shop',
+          'hint',
+          'error'
+        ].includes(node.name) && node.name:
+          console.log('includes block');
+          return (
             <span style={{ color: 'white' }}>{astToJsx(node.children)}</span>
           );
-          break;
-        case 'quest':
-          newArray.push(
-            <span style={{ color: 'yellow' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'room':
-          newArray.push(
-            <span style={{ color: 'green' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'zone':
-          newArray.push(
-            <span style={{ color: 'white' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'say':
-          newArray.push(
-            <span style={{ color: '#84E1E1' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'shop':
-          newArray.push(
-            <span style={{ color: '#FFEE66' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'hint':
-          newArray.push(
-            <span style={{ color: 'cyan' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'error':
-          newArray.push(
-            <span style={{ color: 'red' }}>{astToJsx(node.children)}</span>
-          );
-          break;
         case 'command':
-          newArray.push(
+          return (
             <span
               onClick={() => {
                 send(node.command);
@@ -231,33 +187,21 @@ function astToJsx(arr) {
               {astToJsx(node.children)}
             </span>
           );
-          break;
-        case 'red':
-          newArray.push(
-            <span style={{ color: 'red' }}>{astToJsx(node.children)}</span>
-          );
-          break;
-        case 'white':
-          newArray.push(
-            <span style={{ color: 'white' }}>{astToJsx(node.children)}</span>
-          );
-          break;
         default:
-          console.log("ZOMG DEFAULT CASE IN MARKUPTOJSX HIT'");
+          console.log('Unparsed VML tag: ', node.name);
           break;
       }
     }
   });
-  return newArray;
 }
 
-const vmlToJsx = markup => {
+export const vmlToJsx = markup => {
   if (!markup) {
     return null;
   }
   // with current AST parser, all text need to be wrapped in a node
   markup = '{vml}' + markup + '{/vml}';
-  const ast = parse(markup);
+  const ast = vmlToAst(markup);
   console.log('AST', ast);
   return astToJsx(ast);
 };

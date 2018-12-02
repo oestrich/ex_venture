@@ -10,7 +10,15 @@ import {
 } from '../actions/actions.js';
 
 const initialState = {
-  roomInfo: '',
+  roomInfo: {
+    name: '',
+    description: '',
+    players: [],
+    npcs: [],
+    shops: [],
+    items: [],
+    exits: []
+  },
   zoneMap: '',
   characterInfo: '',
   characterVitals: '',

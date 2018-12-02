@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { connect } from 'react-redux';
-import vmlToJsx from '../../utils/vmlToJsx.js';
+import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
 
 const Centered = styled.div`
   display: flex;
@@ -23,32 +23,39 @@ const Exit = styled.span`
 const RoomInfo = ({ className, roomInfo }) => {
   console.log('roomInfo', roomInfo);
   const { name, description, players, npcs, shops, items, exits } = roomInfo;
+  console.log('players', players);
   return (
     <div className={className}>
       <br />
       <RoomName>{name}</RoomName>
       <br />
       <br />
-      <div>{vmlToJsx(description)}</div>
+      <VmlToJsx vmlString={description} />
+      <br />
       <br />
       <div>
-        {players ? players.map(player => vmlToJsx(player.status_line)) : null}
+        {players.map(player => (
+          <VmlToJsx vmlString={player.status_line} />
+        ))}
         {'  '}
-        {npcs ? npcs.map(npc => vmlToJsx(npc.status_line)) : null} {'  '}
-        {shops ? shops.map(shop => vmlToJsx(shop.name)) : null}
+        {npcs.map(npc => (
+          <VmlToJsx vmlString={npc.status_line} />
+        ))}{' '}
         {'  '}
-        {items
-          ? items.map((item, idx, itemsArr) => (
-              <span style={{ color: '#4DFFFF' }} key={item.id}>
-                {item.name}
-                {idx === itemsArr.length - 1 ? (
-                  <span style={{ color: '#c4e9e9' }}>. </span>
-                ) : (
-                  <span style={{ color: '#c4e9e9' }}>, </span>
-                )}
-              </span>
-            ))
-          : null}
+        {shops.map(shop => (
+          <VmlToJsx vmlString={shop.name} />
+        ))}
+        {'  '}
+        {items.map((item, idx, itemsArr) => (
+          <span style={{ color: '#4DFFFF' }} key={item.id}>
+            {item.name}
+            {idx === itemsArr.length - 1 ? (
+              <span style={{ color: '#c4e9e9' }}>. </span>
+            ) : (
+              <span style={{ color: '#c4e9e9' }}>, </span>
+            )}
+          </span>
+        ))}{' '}
       </div>
       <br />
       <Centered>
