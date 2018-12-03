@@ -92,4 +92,4 @@ const mapStateToProps = ({ roomInfo }) => {
   return { roomInfo };
 };
 
-export default connect(mapStateToProps)(styled(RoomInfo)``);
+export default connect(mapStateToProps)(RoomInfo);
