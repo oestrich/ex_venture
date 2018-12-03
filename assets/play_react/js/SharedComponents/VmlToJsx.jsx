@@ -1,6 +1,7 @@
 import React from 'react';
 import { vmlToAst } from '../utils/vmlToJsx.js';
 import { vmlTags, theme } from '../theme.js';
+import { guid } from '../utils/utils.js';
 import styled from 'styled-components';
 
 const ColoredSpan = styled.span`
@@ -31,7 +32,7 @@ const _astToJsx = ast => {
     if (node.type === 'tag') {
       switch (node.name) {
         case 'vml':
-          return <span>{_astToJsx(node.children)}</span>;
+          return <span key={guid()}>{_astToJsx(node.children)}</span>;
         case 'command':
           // strip away any vml tags from command being sent to server
           const commandString = node.attrs.send
@@ -39,6 +40,7 @@ const _astToJsx = ast => {
             : '';
           return (
             <Command
+              key={guid()}
               color={theme.vml.command}
               onClick={() => {
                 send(commandString);
@@ -53,7 +55,7 @@ const _astToJsx = ast => {
         // case should be put in case statements above this one.
         case Object.keys(vmlTags).includes(node.name) && node.name:
           return (
-            <ColoredSpan color={theme.vml[node.name]}>
+            <ColoredSpan key={guid()} color={theme.vml[node.name]}>
               {_astToJsx(node.children)}
             </ColoredSpan>
           );
