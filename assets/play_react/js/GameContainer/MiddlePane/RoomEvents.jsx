@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
+
+const RoomEventsContainer = styled.div`
+  padding: 1em 2em 1em 2em;
+  height: 100%;
+  overflow-y: scroll;
+`;
 
 class RoomEvents extends Component {
   constructor(props) {
@@ -21,7 +27,7 @@ class RoomEvents extends Component {
   }
   render() {
     return (
-      <div className={this.props.className}>
+      <RoomEventsContainer>
         <div>
           {this.props.eventStream.map(event => {
             return (
@@ -38,7 +44,7 @@ class RoomEvents extends Component {
             }}
           />
         </div>
-      </div>
+      </RoomEventsContainer>
     );
   }
 }
@@ -47,8 +53,4 @@ const mapStateToProps = ({ eventStream }) => {
   return { eventStream };
 };
 
-export default connect(mapStateToProps)(styled(RoomEvents)`
-  padding: 1em 2em 1em 2em;
-  height: 100%;
-  overflow-y: scroll;
-`);
+export default connect(mapStateToProps)(RoomEvents);

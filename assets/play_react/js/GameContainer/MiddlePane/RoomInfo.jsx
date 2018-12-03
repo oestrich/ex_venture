@@ -4,6 +4,10 @@ import { connect } from 'react-redux';
 import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
 import { theme } from '../../theme.js';
 
+const RoomInfoContainer = styled.div`
+  padding: 2em 2em 1em 2em;
+`;
+
 const Centered = styled.div`
   display: flex;
   justify-content: center;
@@ -26,12 +30,9 @@ const ColoredSpan = styled.span`
 `;
 
 const RoomInfo = ({ className, roomInfo }) => {
-  console.log('roomInfo', roomInfo);
   const { name, description, players, npcs, shops, items, exits } = roomInfo;
-  console.log('ITEMS', items);
-  console.log('players', players);
   return (
-    <div className={className}>
+    <RoomInfoContainer>
       <RoomName>{name}</RoomName>
       <br />
       <br />
@@ -83,26 +84,12 @@ const RoomInfo = ({ className, roomInfo }) => {
         ))}
       </Centered>
       <br />
-    </div>
+    </RoomInfoContainer>
   );
-};
-
-RoomInfo.defaultProps = {
-  roomInfo: {
-    name: '',
-    description: '',
-    players: [],
-    npcs: [],
-    shops: [],
-    items: [],
-    exits: []
-  }
 };
 
 const mapStateToProps = ({ roomInfo }) => {
   return { roomInfo };
 };
 
-export default connect(mapStateToProps)(styled(RoomInfo)`
-  padding: 2em 2em 1em 2em;
-`);
+export default connect(mapStateToProps)(styled(RoomInfo)``);

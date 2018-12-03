@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { theme } from '../../theme.js';
 
+const RightPaneContainer = styled.div`
+  padding: 2em 2em 2em 2em;
+  flex: 1;
+  background-color: ${theme.bgSecondary};
+`;
+
 const RightPane = ({ className, zoneMap }) => {
-  return <div className={className}>RightPane{zoneMap}</div>;
+  return (
+    <RightPaneContainer className={className}>{zoneMap}</RightPaneContainer>
+  );
 };
 
 const mapStateToProps = state => {
@@ -13,8 +21,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(styled(RightPane)`
-  padding: 2em 2em 2em 2em;
-  flex: 1;
-  background-color: ${theme.bgSecondary};
-`);
+export default connect(mapStateToProps)(RightPane);

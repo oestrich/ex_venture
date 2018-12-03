@@ -7,6 +7,7 @@ import { theme } from '../../theme.js';
 
 const FlexColumn = styled.div`
   display: flex;
+  flex: 0 0 768px;
   flex-direction: column;
   height: 800px;
   background-color: ${theme.bgPrimary};
@@ -22,6 +23,4 @@ const MiddlePane = ({ className }) => {
   );
 };
 
-export default styled(MiddlePane)`
-  flex: 0 0 768px;
-`;
+export default MiddlePane;
