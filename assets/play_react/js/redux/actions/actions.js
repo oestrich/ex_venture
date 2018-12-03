@@ -19,9 +19,7 @@ const ACTIONBAR_LENGTH = 13;
 
 export const initSubscriptions = () => {
   return (dispatch, getState) => {
-    console.log('Initializing phoenix websocket subscriptions...');
     channel.on('gmcp', response => {
-      console.log(`[Channel: GMCP - ${response.module}]`, response);
       switch (response.module) {
         case GMCP_ROOM_INFO: {
           const roomInfo = JSON.parse(response.data);
@@ -69,23 +67,18 @@ export const initSubscriptions = () => {
         }
       }
     });
-    channel.on('option', response => {
-      console.log('[Channel: OPTION]', response);
-    });
+    channel.on('option', response => {});
 
-    // TODO: Future deprecation: Status prompt updates will come from Character.Vitals GMCP module
-    // However there may be other non character vitals prompt updates that are sent over
-    // the prompt channel
     channel.on('prompt', response => {
-      console.log('[Channel: PROMPT]', response);
-      // const prompt = parsePrompt(response.message);
-      // console.log('parsedPrompt', prompt);
+      // TODO: Future deprecation: Status prompt updates will come from Character.Vitals GMCP module
+      // However there may be other non character vitals prompt updates that are sent over
+      // the prompt channel// console.log('parsedPrompt', prompt);
       // if (prompt) {
       //   dispatch({ type: UPDATE_CHARACTER_PROMPT, payload: prompt });
       // }
     });
     channel.on('echo', response => {
-      // squelch room updates
+      // squelch room updates in main event log since using GMCP:Room.Info for room data
       if (response.message.match(/{room}/g)) {
         return;
       }
