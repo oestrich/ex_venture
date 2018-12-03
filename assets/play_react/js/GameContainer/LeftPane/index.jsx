@@ -16,7 +16,6 @@ const CharacterInfo = styled.div`
   justify-content: center;
 `;
 
-// TODO: Long string will not create newlines, it will increase container size
 const LeftPane = ({
   className,
   name,
@@ -39,26 +38,24 @@ const LeftPane = ({
           ? `You are a 33 year old ${charClass} hailing from Elwynn Forest`
           : null}
       </CharacterInfo>
+      <br />
     </div>
   );
 };
 
-const mapStateToProps = ({ characterInfo: info, characterVitals: vitals }) => {
-  console.log('characterInfo', info);
+const mapStateToProps = ({ characterInfo: i, characterVitals: v }) => {
   return {
-    name: capitalize(info.name),
-    level: info.level,
-    charClass: info.class.name,
-    willpower: vitals.willpower,
-    vitality: vitals.vitality,
-    strength: vitals.strength,
-    intelligence: vitals.intelligence,
-    endurance: vitals.endurance,
-    awareness: vitals.awareness
+    name: capitalize(i.name),
+    level: i.level,
+    charClass: i.class.name,
+    willpower: v.willpower,
+    vitality: v.vitality,
+    strength: v.strength,
+    intelligence: v.intelligence,
+    endurance: v.endurance,
+    awareness: v.awareness
   };
 };
-
-LeftPane.defaultProps = { characterVitals: '{}', characterInfo: '{}' };
 
 export default connect(mapStateToProps)(styled(LeftPane)`
   padding: 2em 2em 2em 2em;

@@ -99,8 +99,8 @@ RoomInfo.defaultProps = {
   }
 };
 
-const mapStateToProps = state => {
-  return { roomInfo: state.roomInfo };
+const mapStateToProps = ({ roomInfo }) => {
+  return { roomInfo };
 };
 
 export default connect(mapStateToProps)(styled(RoomInfo)`

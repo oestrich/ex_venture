@@ -43,8 +43,8 @@ class RoomEvents extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return { eventStream: state.eventStream };
+const mapStateToProps = ({ eventStream }) => {
+  return { eventStream };
 };
 
 export default connect(mapStateToProps)(styled(RoomEvents)`

@@ -73,26 +73,17 @@ const StatusBar = ({
   );
 };
 
-// StatusBar.defaultProps = {
-//   prompt: {
-//     hp: { current: 0, max: 0 },
-//     sp: { current: 0, max: 0 },
-//     ep: { current: 0, max: 0 },
-//     xp: 0
-//   }
-// };
-
-const mapStateToProps = ({ characterVitals: vitals }) => {
+const mapStateToProps = ({ characterVitals: v }) => {
   return {
-    currentHp: vitals.health_points,
-    currentSp: vitals.skill_points,
-    currentEp: vitals.endurance_points,
-    maxHp: vitals.max_health_points,
-    maxSp: vitals.max_skill_points,
-    maxEp: vitals.max_endurance_points,
-    hpWidth: (vitals.health_points / vitals.max_health_points) * 100 + '%',
-    spWidth: (vitals.skill_points / vitals.max_skill_points) * 100 + '%',
-    epWidth: (vitals.endurance_points / vitals.endurance_points) * 100 + '%'
+    currentHp: v.health_points,
+    currentSp: v.skill_points,
+    currentEp: v.endurance_points,
+    maxHp: v.max_health_points,
+    maxSp: v.max_skill_points,
+    maxEp: v.max_endurance_points,
+    hpWidth: (v.health_points / v.max_health_points) * 100 + '%',
+    spWidth: (v.skill_points / v.max_skill_points) * 100 + '%',
+    epWidth: (v.endurance_points / v.endurance_points) * 100 + '%'
   };
 };
 

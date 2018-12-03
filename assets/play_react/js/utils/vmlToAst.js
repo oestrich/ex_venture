@@ -1,6 +1,6 @@
 // This was originally an html parser written by @HenrikJoreteg and @Philip_Roberts.
 // The original repo this was taken from: https://github.com/HenrikJoreteg/html-parse-stringify
-/*jshint -W030 */
+
 // re-used obj for quick lookups of components
 var empty = Object.create ? Object.create(null) : {};
 

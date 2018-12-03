@@ -29,10 +29,10 @@ const ActionBar = ({ characterSkills }) => (
     {' '}
     {characterSkills.map(skill => (
       <ActionButton
+        key={skill.key}
         onClick={() => {
           send(skill.name.toLowerCase());
         }}
-        key={skill.key}
       >
         {skill.name}
       </ActionButton>
@@ -40,10 +40,8 @@ const ActionBar = ({ characterSkills }) => (
   </FlexColumn>
 );
 
-const mapStateToProps = state => {
-  return {
-    characterSkills: state.characterSkills
-  };
+const mapStateToProps = ({ characterSkills }) => {
+  return { characterSkills };
 };
 
 export default connect(mapStateToProps)(ActionBar);

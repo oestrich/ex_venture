@@ -19,7 +19,7 @@ const ACTIONBAR_LENGTH = 13;
 
 export const initSubscriptions = () => {
   return (dispatch, getState) => {
-    console.log('Initializing subscriptions...');
+    console.log('Initializing phoenix websocket subscriptions...');
     channel.on('gmcp', response => {
       console.log(`[Channel: GMCP - ${response.module}]`, response);
       switch (response.module) {
@@ -73,8 +73,8 @@ export const initSubscriptions = () => {
       console.log('[Channel: OPTION]', response);
     });
 
-    // Future deprecation: Status prompt updates will come from Character.Vitals GMCP module
-    // However there may be other none character vitals prompt updates that are sent over
+    // TODO: Future deprecation: Status prompt updates will come from Character.Vitals GMCP module
+    // However there may be other non character vitals prompt updates that are sent over
     // the prompt channel
     channel.on('prompt', response => {
       console.log('[Channel: PROMPT]', response);
@@ -105,51 +105,3 @@ export const initSubscriptions = () => {
     });
   };
 };
-
-// const parsePrompt = msg => {
-//   const re1 = '.*?'; // Non-greedy match on filler
-//   const re2 = '(\\d+)'; // Integer Number 1
-//   const re3 = '.*?'; // Non-greedy match on filler
-//   const re4 = '(\\d+)'; // Integer Number 2
-//   const re5 = '.*?'; // Non-greedy match on filler
-//   const re6 = '(\\d+)'; // Integer Number 3
-//   const re7 = '.*?'; // Non-greedy match on filler
-//   const re8 = '(\\d+)'; // Integer Number 4
-//   const re9 = '.*?'; // Non-greedy match on filler
-//   const re10 = '(\\d+)'; // Integer Number 5
-//   const re11 = '.*?'; // Non-greedy match on filler
-//   const re12 = '(\\d+)'; // Integer Number 6
-//   const re13 = '.*?'; // Non-greedy match on filler
-//   const re14 = '(\\d+)'; // Integer Number 7
-
-//   const regex =
-//     '.*?\\d+.*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+)';
-//   const p = new RegExp(
-//     re1 +
-//       re2 +
-//       re3 +
-//       re4 +
-//       re5 +
-//       re6 +
-//       re7 +
-//       re8 +
-//       re9 +
-//       re10 +
-//       re11 +
-//       re12 +
-//       re13 +
-//       re14,
-//     ['i']
-//   );
-//   const m = p.exec(msg);
-//   if (!m) {
-//     return null;
-//   }
-
-//   return {
-//     hp: { current: m[1], max: m[2] },
-//     sp: { current: m[3], max: m[4] },
-//     ep: { current: m[5], max: m[6] },
-//     xp: m[7]
-//   };
-// };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { vmlToAst } from '../utils/vmlToJsx.js';
+import { vmlToAst } from '../utils/vmlToAst.js';
 import { vmlTags, theme } from '../theme.js';
 import { guid } from '../utils/utils.js';
 import styled from 'styled-components';
@@ -52,7 +52,7 @@ const _astToJsx = ast => {
         // Available VML tags for color parsing are found in theme.js
         // If vml tag doesn't do anything else other than color text, it will be handled
         // by the following case statement.  Any other special cases such as the 'command'
-        // case should be put in case statements above this one.
+        // case should be put in case statements above this one
         case Object.keys(vmlTags).includes(node.name) && node.name:
           return (
             <ColoredSpan key={guid()} color={theme.vml[node.name]}>
