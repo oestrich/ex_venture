@@ -17,7 +17,7 @@ const GMCP_CHARACTER_SKILLS = 'Character.Skills';
 
 const ACTIONBAR_LENGTH = 13;
 
-export const initSubscriptions = () => {
+export const initPhxChannelSubscriptions = () => {
   return (dispatch, getState) => {
     channel.on('gmcp', response => {
       switch (response.module) {
@@ -29,7 +29,6 @@ export const initSubscriptions = () => {
               type: ARCHIVE_AND_CLEAR_EVENT_STREAM
             });
           }
-
           return dispatch({
             type: UPDATE_ROOM_INFO,
             payload: roomInfo
@@ -56,7 +55,7 @@ export const initSubscriptions = () => {
         }
         case GMCP_CHARACTER_SKILLS: {
           let skills = JSON.parse(response.data).skills;
-          let emptySkills = new Array(ACTIONBAR_LENGTH - skills.length).fill(
+          const emptySkills = new Array(ACTIONBAR_LENGTH - skills.length).fill(
             {}
           );
           skills = skills.concat(emptySkills);
@@ -72,7 +71,7 @@ export const initSubscriptions = () => {
     channel.on('prompt', response => {
       // TODO: Future deprecation: Status prompt updates will come from Character.Vitals GMCP module
       // However there may be other non character vitals prompt updates that are sent over
-      // the prompt channel// console.log('parsedPrompt', prompt);
+      // the prompt channel
       // if (prompt) {
       //   dispatch({ type: UPDATE_CHARACTER_PROMPT, payload: prompt });
       // }

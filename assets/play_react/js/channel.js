@@ -19,7 +19,6 @@ const socket = new Socket('/socket', {
 socket.connect();
 let channel = socket.channel('telnet:' + 'webclient:' + guid(), {});
 channel.join();
-console.log('channel joined');
 
 // Expose the channel object and a send function to browser window for development purposes.
 // TODO: All messages sent to server should go through redux actions instead of this temporary

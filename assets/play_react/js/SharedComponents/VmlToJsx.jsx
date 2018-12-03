@@ -46,7 +46,13 @@ const _astToJsx = ast => {
         case Object.keys(vmlTags).includes(node.name) && node.name:
           return _createAllOtherVmlElements(node.children, node.name);
         default:
-          console.log('Unparsed VML tag: ', node.name);
+          console.log(
+            `[WARNING] Unparsed VML tag: ${node.name}`,
+            'Node:',
+            node,
+            'Full Ast: ',
+            ast
+          );
           break;
       }
     }

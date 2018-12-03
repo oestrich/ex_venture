@@ -11,8 +11,7 @@ const FlexRow = styled.div`
   height: 800px;
   widht: 100%;
   color: ${theme.text};
-  font-family: Lucida Grande, Lucida Sans Unicode, Lucida Sans, Geneva, Verdana,
-    sans-serif;
+  font-family: ${theme.font};
 `;
 
 const GameContainer = props => {
