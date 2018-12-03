@@ -1,3 +1,7 @@
+// vmlTags object serves two purposes:
+// 1. To map colors to vml tags
+// 2. Serve as a list of available tags that can be parsed.
+//    If a tag is not in the object, the VmlToJsx component will not parse it.
 export const vmlTags = {
   exit: 'white',
   npc: '#F2BD78',

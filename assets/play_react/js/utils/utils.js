@@ -24,3 +24,5 @@ export const guid = () => {
     s4()
   );
 };
+
+export const stripVmlTags = str => (str ? str.replace(/{.*?}/g, '') : '');
