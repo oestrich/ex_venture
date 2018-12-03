@@ -35,7 +35,7 @@ Built in tags:
 `map:grey`
 `map:light-grey`
 
-### Example
+Example:
 
 ```
 You {red}shout{/red}
@@ -60,7 +60,7 @@ Semantic tags:
 `skill`
 `zone`
 
-### Example
+Example:
 
 ```
 {player}Rand{/player} says, {say}"Hello everyone."{/say}
@@ -73,7 +73,7 @@ You can use a shorthand to template in the names of resources as well. This appl
 
 Some examples: `{{item:1}`, `{{npc:2}}`, `{{room:3}}`, `{{zone:4}}`
 
-### Example
+Example:
 
 ```
 You see across the street {{npc:2}}.
@@ -83,7 +83,7 @@ You see across the street {{npc:2}}.
 
 Certain fields may have variables that can be templated in before displaying to the user. The admin panel will mention underneath the field if a variable is available for template. Variables use regular brackets as tags, e.g. `[name]`. There is no closing tag for variables.
 
-### Example
+Example:
 
 ```
 [name] is running around.
@@ -98,6 +98,20 @@ Attributes:
 - `send`: change the command being sent, to allow for a different display text
 - `click`: if set to `false` then the command is not clickable but is otherwise displayed the same as a command
 
+Example:
+
+```
+{command}get item{/command}
+{command send="get item"}pick up the item{/command}
+{command click=false}get item{/command}
+```
+
 ## Links
 
 The `link` tag will generate a clickable link for clients that will open a new tab in their browser.
+
+Example:
+
+```
+{link}https://exventure.org/{/link}
+```
