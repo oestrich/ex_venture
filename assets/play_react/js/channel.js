@@ -6,7 +6,7 @@
 // All the channel listener's are set up in the action creators at ./redux/actions/actions.js
 
 import { Socket } from 'phoenix';
-import { guid } from './utils/guid.js';
+import { guid } from './utils/utils.js';
 
 // Character token is injected into markup by server on initial /play-react route render
 const characterToken = body.getAttribute('data-character-token');

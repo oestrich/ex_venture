@@ -28,6 +28,7 @@ const ColoredSpan = styled.span`
 const RoomInfo = ({ className, roomInfo }) => {
   console.log('roomInfo', roomInfo);
   const { name, description, players, npcs, shops, items, exits } = roomInfo;
+  console.log('ITEMS', items);
   console.log('players', players);
   return (
     <div className={className}>
