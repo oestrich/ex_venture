@@ -14,12 +14,40 @@ const FlexRow = styled.div`
   font-family: ${theme.font};
 `;
 
+const LeftPaneContainer = styled.div`
+  padding: 2em 2em 2em 2em;
+  flex: 1;
+  background-color: ${theme.bgSecondary};
+`;
+
+const MiddlePaneContainer = styled.div`
+  display: flex;
+  flex: 0 0 768px;
+  flex-direction: column;
+  height: 800px;
+  background-color: ${theme.bgPrimary};
+`;
+
+const RightPaneContainer = styled.div`
+  padding: 2em 2em 2em 2em;
+  flex: 1;
+  background-color: ${theme.bgSecondary};
+`;
+
 const GameContainer = props => {
   return (
     <FlexRow>
-      <LeftPane />
-      <MiddlePane />
-      <RightPane />
+      <LeftPaneContainer>
+        <LeftPane />
+      </LeftPaneContainer>
+
+      <MiddlePaneContainer>
+        <MiddlePane />
+      </MiddlePaneContainer>
+
+      <RightPaneContainer>
+        <RightPane />
+      </RightPaneContainer>
     </FlexRow>
   );
 };

@@ -4,12 +4,6 @@ import styled, { css } from 'styled-components';
 import { theme } from '../../theme.js';
 import { capitalize } from '../../utils/utils.js';
 
-const LeftPaneContainer = styled.div`
-  padding: 2em 2em 2em 2em;
-  flex: 1;
-  background-color: ${theme.bgSecondary};
-`;
-
 const CharacterName = styled.div`
   display: flex;
   justify-content: center;
@@ -35,7 +29,7 @@ const LeftPane = ({
   awareness
 }) => {
   return (
-    <LeftPaneContainer>
+    <>
       <CharacterName>{name ? `${name}  -  ${level}` : null}</CharacterName>
       <br />
       <br />
@@ -45,7 +39,7 @@ const LeftPane = ({
           : null}
       </CharacterInfo>
       <br />
-    </LeftPaneContainer>
+    </>
   );
 };
 
