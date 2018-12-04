@@ -41,3 +41,9 @@ defmodule Game.NPC.Events.CombatTicked do
     end)
   end
 end
+
+#   broadcast(npc, "combat/action", %{
+#     target: who(target),
+#     text: FormatSkills.skill_usee(action.text, user: npc(state), target: target),
+#     effects: effects
+#   })

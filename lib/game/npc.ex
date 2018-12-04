@@ -8,10 +8,13 @@ defmodule Game.NPC do
 
   require Logger
 
+  alias Data.Events.Actions.CommandsEmote
+  alias Data.Events.Actions.CommandsSay
   alias Data.NPCSpawner
   alias Data.Stats
   alias Game.Channel
   alias Game.Character.Effects
+  alias Game.NPC.Actions
   alias Game.NPC.Character
   alias Game.NPC.Conversation
   alias Game.NPC.Events
@@ -19,7 +22,6 @@ defmodule Game.NPC do
   alias Game.NPC.Status
   alias Game.World.Master, as: WorldMaster
   alias Game.Zone
-  alias Metrics.NPCInstrumenter
 
   @key :npcs
 
@@ -269,26 +271,6 @@ defmodule Game.NPC do
     end
   end
 
-  def handle_cast({:act, action}, state) do
-    case Events.act(state, action) do
-      :ok ->
-        {:noreply, state}
-
-      {:update, state} ->
-        {:noreply, state}
-    end
-  end
-
-  def handle_cast({:act, action, actions}, state) do
-    case Events.act(state, action, actions) do
-      :ok ->
-        {:noreply, state}
-
-      {:update, state} ->
-        {:noreply, state}
-    end
-  end
-
   def handle_cast({:update, npc_spawner}, state = %{room_id: room_id}) do
     WorldMaster.update_cache(@key, npc_spawner.npc)
 
@@ -304,12 +286,14 @@ defmodule Game.NPC do
   end
 
   def handle_cast({:say, message}, state) do
-    state |> Events.say_to_room(message)
+    action = %CommandsSay{options: %{message: message}}
+    {:ok, state} = Actions.CommandsSay.act(state, action)
     {:noreply, state}
   end
 
   def handle_cast({:emote, message}, state) do
-    state |> Events.emote_to_room(message)
+    action = %CommandsEmote{options: %{message: message}}
+    {:ok, state} = Actions.CommandsEmote.act(state, action)
     {:noreply, state}
   end
 
@@ -356,11 +340,8 @@ defmodule Game.NPC do
       nil ->
         {:noreply, state}
 
-      tick_event ->
-        NPCInstrumenter.tick_event_acted_on(tick_event.action.type)
-
-        state = Events.act_on_tick(state, tick_event)
-        tick_event |> Events.delay_event()
+      event ->
+        Events.StateTicked.process(state, event)
         {:noreply, state}
     end
   end

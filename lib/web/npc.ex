@@ -6,7 +6,6 @@ defmodule Web.NPC do
   import Ecto.Query
 
   alias Data.Script.Line
-  alias Data.Event
   alias Data.NPC
   alias Data.NPCItem
   alias Data.NPCSpawner
@@ -443,16 +442,6 @@ defmodule Web.NPC do
         {:error, changeset} ->
           {:error, changeset}
       end
-    end
-  end
-
-  def validate_event(event) do
-    case Event.validate_event(event) do
-      %{valid?: true} ->
-        {:ok, event}
-
-      changeset ->
-        {:error, :invalid, changeset}
     end
   end
 

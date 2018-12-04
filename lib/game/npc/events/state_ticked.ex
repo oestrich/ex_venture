@@ -7,6 +7,7 @@ defmodule Game.NPC.Events.StateTicked do
 
   def process(state, event) do
     Actions.delay(event.actions)
+    #TODO delay the event
 
     {:ok, state}
   end

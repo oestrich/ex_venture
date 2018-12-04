@@ -12,6 +12,8 @@ defmodule Game.NPC.Events.CharacterTargeted do
     |> Events.filter(CharacterTargeted)
     |> Enum.map(&process_event(&1, sent_event))
 
+    #TODO delay the event
+
     {:ok, state}
   end
 
