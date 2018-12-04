@@ -42,6 +42,7 @@ defmodule Game.NPC do
       :last_controlled_at,
       :status,
       combat: false,
+      events: [],
       tick_events: [],
       conversations: %{},
       continuous_effects: []

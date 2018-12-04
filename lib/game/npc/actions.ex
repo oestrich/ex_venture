@@ -40,6 +40,29 @@ defmodule Game.NPC.Actions do
   defp get_module(%{__struct__: Events.Actions.CommandsTarget}), do: Actions.CommandsTarget
 
   @doc """
+  Add a character to the options of any action that requires it
+
+  This is the character that prompted the action to be sent to the NPC
+  """
+  def add_character(actions, character) do
+    Enum.map(actions, &maybe_add_character_option(&1, character))
+  end
+
+  defp maybe_add_character_option(action = %Events.Actions.CommandsSkill{}, character) do
+    options = Map.get(action, :options) || %{}
+    options = Map.put(options, :character, character)
+    %{action | options: options}
+  end
+
+  defp maybe_add_character_option(action = %Events.Actions.CommandsTarget{}, character) do
+    options = Map.get(action, :options) || %{}
+    options = Map.put(options, :character, character)
+    %{action | options: options}
+  end
+
+  defp maybe_add_character_option(action, _character), do: action
+
+  @doc """
   Calculate a delay for an action
 
       iex> Actions.calculate_delay(%{delay: 0.01})

@@ -23,7 +23,9 @@ defmodule Game.NPC.Combat do
   """
   @spec total_weights([Event.t()]) :: integer()
   def total_weights(events) do
-    Enum.reduce(events, 0, &(&1.action.weight + &2))
+    Enum.reduce(events, 0, fn event, sum ->
+      event.action.weight + sum
+    end)
   end
 
   @doc """
@@ -31,12 +33,16 @@ defmodule Game.NPC.Combat do
   """
   @spec select_action(integer(), [Event.t()]) :: Event.t()
   def select_action(weight, events, count \\ 0)
+
   def select_action(_weight, [event], _count), do: event
 
   def select_action(weight, [event | events], count) do
     case weight <= event.action.weight + count do
-      true -> event
-      false -> select_action(weight, events, event.action.weight + count)
+      true ->
+        event
+
+      false ->
+        select_action(weight, events, event.action.weight + count)
     end
   end
 end

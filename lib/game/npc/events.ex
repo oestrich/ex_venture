@@ -26,6 +26,15 @@ defmodule Game.NPC.Events do
   @npc_reaction_time_ms Application.get_env(:ex_venture, :npc)[:reaction_time_ms]
 
   @doc """
+  Filter a list of events down to a single event type
+  """
+  def filter(events, event_type) do
+    Enum.filter(events, fn event ->
+      event.__struct__ == event_type
+    end)
+  end
+
+  @doc """
   Instantiate events and start their ticking
   """
   @spec start_tick_events(State.t(), NPC.t()) :: State.t()
