@@ -5,6 +5,9 @@ defmodule Game.NPC.EventsTest do
 
   @room Test.Game.Room
 
+  alias Data.Events.Actions.CommandsSay
+  alias Data.Events.RoomHeard
+  alias Data.Events.StateTicked
   alias Game.Channel
   alias Game.Door
   alias Game.Message
@@ -23,6 +26,34 @@ defmodule Game.NPC.EventsTest do
     |> insert_damage_type()
 
     :ok
+  end
+
+  describe "calculating total delay for an event" do
+    test "sums up all of the actions" do
+      event = %RoomHeard{
+        actions: [
+          %CommandsSay{delay: 0.5},
+          %CommandsSay{delay: 1.5}
+        ]
+      }
+
+      assert Events.calculate_total_delay(event) == 2000
+    end
+
+    test "includes a random delay from the event itself" do
+      event = %StateTicked{
+        options: %{
+          minimum_delay: 2.25,
+          random_delay: 2,
+        },
+        actions: [
+          %CommandsSay{delay: 0.5},
+          %CommandsSay{delay: 1.5}
+        ]
+      }
+
+      assert Events.calculate_total_delay(event) > 4250
+    end
   end
 
   describe "character/died" do

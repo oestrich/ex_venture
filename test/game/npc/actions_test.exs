@@ -49,4 +49,29 @@ defmodule Game.NPC.ActionsTest do
       refute_receive {:delayed_actions, []}
     end
   end
+
+  describe "calculating total delay" do
+    test "say action" do
+      action = %CommandsSay{delay: 0.5}
+
+      assert Actions.calculate_total_delay(action) == 500
+    end
+
+    test "skill action - skill found" do
+      start_and_clear_skills()
+      insert_skill(create_skill(%{command: "slash", cooldown_time: 750}))
+
+      action = %CommandsSkill{delay: 0.5, options: %{skill: "slash"}}
+
+      assert Actions.calculate_total_delay(action) == 1250
+    end
+
+    test "skill action - skill not found" do
+      start_and_clear_skills()
+
+      action = %CommandsSkill{delay: 0.5, options: %{skill: "bash"}}
+
+      assert Actions.calculate_total_delay(action) == 500
+    end
+  end
 end

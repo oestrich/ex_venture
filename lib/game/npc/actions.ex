@@ -5,6 +5,7 @@ defmodule Game.NPC.Actions do
 
   alias Data.Events
   alias Game.NPC.Actions
+  alias Game.Skills
 
   @doc """
   Delay a batch of actions from an event
@@ -77,5 +78,24 @@ defmodule Game.NPC.Actions do
   def calculate_delay(action) do
     delay = Map.get(action, :delay, 0) || 0
     round(delay * 1000)
+  end
+
+  @doc """
+  Calculates the total delay for an action
+
+  Includes any cooldown for skills, etc
+  """
+  def calculate_total_delay(action = %Events.Actions.CommandsSkill{}) do
+    case Skills.skill(action.options.skill) do
+      nil ->
+        calculate_delay(action)
+
+      skill ->
+        skill.cooldown_time + calculate_delay(action)
+    end
+  end
+
+  def calculate_total_delay(action) do
+    calculate_delay(action)
   end
 end

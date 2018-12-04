@@ -8,6 +8,7 @@ defmodule Game.NPC.Events do
   import Game.Command.Skills, only: [find_target: 2]
 
   alias Data.Event
+  alias Data.Events.StateTicked
   alias Data.Exit
   alias Game.Channel
   alias Game.Character
@@ -17,6 +18,7 @@ defmodule Game.NPC.Events do
   alias Game.Effect
   alias Game.Message
   alias Game.NPC
+  alias Game.NPC.Actions
   alias Game.NPC.Combat
   alias Game.NPC.Status
   alias Game.Quest
@@ -32,6 +34,31 @@ defmodule Game.NPC.Events do
     Enum.filter(events, fn event ->
       event.__struct__ == event_type
     end)
+  end
+
+  @doc """
+  Calculate the total delay for an event
+  """
+  def calculate_total_delay(event) do
+    event_delay(event) + actions_delay(event)
+  end
+
+  defp event_delay(event = %StateTicked{}) do
+    minimum_delay = Map.get(event.options, :minimum_delay, 0)
+    random_delay = Map.get(event.options, :random_delay, 0)
+
+    minimum_delay = round(minimum_delay * 1000)
+    random_delay = round(random_delay * 1000)
+
+    minimum_delay + :rand.uniform(random_delay)
+  end
+
+  defp event_delay(_event), do: 0
+
+  defp actions_delay(event) do
+    event.actions
+    |> Enum.map(&Actions.calculate_total_delay/1)
+    |> Enum.sum()
   end
 
   @doc """
