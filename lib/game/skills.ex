@@ -24,15 +24,21 @@ defmodule Game.Skills do
 
   def skill(id) when is_integer(id) do
     case Cachex.get(@key, id) do
-      {:ok, skill} when skill != nil -> skill
-      _ -> nil
+      {:ok, skill} when skill != nil ->
+        skill
+
+      _ ->
+        nil
     end
   end
 
   def skill(command) when is_binary(command) do
     case Cachex.get(@key, command) do
-      {:ok, skill} when skill != nil -> skill
-      _ -> nil
+      {:ok, skill} when skill != nil ->
+        skill
+
+      _ ->
+        nil
     end
   end
 
