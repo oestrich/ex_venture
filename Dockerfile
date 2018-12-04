@@ -28,7 +28,7 @@ COPY --from=builder /app/deps/phoenix_html /deps/phoenix_html
 RUN npm install
 
 COPY assets /app
-RUN node node_modules/brunch/bin/brunch build --production
+RUN npm run deploy
 
 FROM builder as releaser
 COPY --from=frontend /priv/static /app/priv/static

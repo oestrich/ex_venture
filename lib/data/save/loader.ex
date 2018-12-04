@@ -38,10 +38,25 @@ defmodule Data.Save.Loader do
 
   @doc """
   Take an internal map and atomize the keys
+
+      iex> Loader.atomize_map(%{config: %{"key" => "value"}}, :config)
+      %{config: %{key: "value"}}
+
+      iex> Loader.atomize_map(%{config: nil}, :config)
+      %{config: %{}}
+
+      iex> Loader.atomize_map(%{}, :config)
+      %{}
   """
   def atomize_map(save, key) do
     with {:ok, map} <- Map.fetch(save, key) do
-      Map.put(save, key, atomize(map))
+      case is_nil(map) do
+        true ->
+          Map.put(save, key, %{})
+
+        false ->
+          Map.put(save, key, atomize(map))
+      end
     else
       _ ->
         save

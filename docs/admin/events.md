@@ -1,5 +1,3 @@
-# NPC Events
-
 ## Events
 
 ### character/targeted
