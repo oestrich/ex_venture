@@ -1,6 +1,6 @@
-defmodule Game.NPC.Actions do
+defmodule Game.NPC.Character do
   @moduledoc """
-  NPC Actions
+  NPC Character functions
   """
 
   @rand Application.get_env(:ex_venture, :game)[:rand]

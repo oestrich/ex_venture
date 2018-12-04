@@ -1,11 +1,11 @@
-defmodule Game.NPC.ActionsTest do
+defmodule Game.NPC.CharacterTest do
   use ExUnit.Case
-  doctest Game.NPC.Actions
+  doctest Game.NPC.Character
 
   import Test.ItemsHelper
   import Test.DamageTypesHelper
 
-  alias Game.NPC.Actions
+  alias Game.NPC.Character
   alias Game.NPC.State
 
   @room Test.Game.Room
@@ -44,7 +44,7 @@ defmodule Game.NPC.ActionsTest do
     test "respawns the npc", %{state: state, npc: npc} do
       state = %{state | npc: put_in(npc, [:stats, :health_points], 0)}
 
-      state = Actions.handle_respawn(state)
+      state = Character.handle_respawn(state)
 
       assert state.npc.stats.health_points == 15
       assert state.room_id == 1
@@ -70,7 +70,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "cleans out conversations after 5 minutes", %{state: state, time: time} do
-      state = Actions.clean_conversations(state, time)
+      state = Character.clean_conversations(state, time)
 
       assert Map.keys(state.conversations) == [11]
     end
@@ -97,40 +97,40 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "triggers respawn", state do
-      _state = Actions.died(state, {:npc, state.npc})
+      _state = Character.died(state, {:npc, state.npc})
 
       assert_receive :respawn
     end
 
     test "drops currency in the room", state do
-      _state = Actions.died(state, {:npc, state.npc})
+      _state = Character.died(state, {:npc, state.npc})
 
       assert [{1, {:npc, _}, 51}] = @room.get_drop_currencies()
     end
 
     test "does not drop 0 currency", state do
       npc = %{state.npc | currency: 0}
-      _state = Actions.died(%{state | npc: npc}, {:npc, state.npc})
+      _state = Character.died(%{state | npc: npc}, {:npc, state.npc})
 
       assert [] = @room.get_drop_currencies()
     end
 
     test "will drop an amount 50-100% of the total currency" do
-      assert Actions.currency_amount_to_drop(100, Test.DropCurrency) == 80
+      assert Character.currency_amount_to_drop(100, Test.DropCurrency) == 80
     end
 
     test "drops items in the room", state do
-      _state = Actions.died(state, {:npc, state.npc})
+      _state = Character.died(state, {:npc, state.npc})
 
       assert [{1, {:npc, _}, %{id: 1}}, {1, {:npc, _}, %{id: 2}}] = @room.get_drops()
     end
 
     test "will drop an item if the chance is below the item's drop rate" do
-      assert Actions.drop_item?(%{drop_rate: 50}, Test.ChanceSuccess)
+      assert Character.drop_item?(%{drop_rate: 50}, Test.ChanceSuccess)
     end
 
     test "will not drop an item if the chance is above the item's drop rate" do
-      refute Actions.drop_item?(%{drop_rate: 50}, Test.ChanceFail)
+      refute Character.drop_item?(%{drop_rate: 50}, Test.ChanceFail)
     end
   end
 
@@ -154,7 +154,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "finds the matching effect and applies it as damage, then decrements the counter", %{state: state, effect: effect, from: from} do
-      state = Actions.handle_continuous_effect(state, :id)
+      state = Character.handle_continuous_effect(state, :id)
 
       effect_id = effect.id
       assert [{^from, %{id: :id, count: 2}}] = state.continuous_effects
@@ -166,7 +166,7 @@ defmodule Game.NPC.ActionsTest do
       effect = %{effect | amount: 38}
       state = %{state | continuous_effects: [{from, effect}]}
 
-      state = Actions.handle_continuous_effect(state, :id)
+      state = Character.handle_continuous_effect(state, :id)
 
       assert [{1, {:npc, _}, :death}] = @room.get_leaves()
       assert state.continuous_effects == []
@@ -176,7 +176,7 @@ defmodule Game.NPC.ActionsTest do
       effect = %{effect | count: 1}
       state = %{state | continuous_effects: [{from, effect}]}
 
-      state = Actions.handle_continuous_effect(state, :id)
+      state = Character.handle_continuous_effect(state, :id)
 
       effect_id = effect.id
       assert [] = state.continuous_effects
@@ -184,7 +184,7 @@ defmodule Game.NPC.ActionsTest do
     end
 
     test "does nothing if effect is not found", %{state: state} do
-      ^state = Actions.handle_continuous_effect(state, :notfound)
+      ^state = Character.handle_continuous_effect(state, :notfound)
     end
   end
 end

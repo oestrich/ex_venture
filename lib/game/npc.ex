@@ -12,7 +12,7 @@ defmodule Game.NPC do
   alias Data.Stats
   alias Game.Channel
   alias Game.Character.Effects
-  alias Game.NPC.Actions
+  alias Game.NPC.Character
   alias Game.NPC.Conversation
   alias Game.NPC.Events
   alias Game.NPC.Repo, as: NPCRepo
@@ -333,7 +333,7 @@ defmodule Game.NPC do
       effects: effects
     })
 
-    state = Actions.apply_effects(state, effects, from)
+    state = Character.apply_effects(state, effects, from)
     {:noreply, state}
   end
 
@@ -365,15 +365,15 @@ defmodule Game.NPC do
   end
 
   def handle_info(:respawn, state) do
-    {:noreply, Actions.handle_respawn(state)}
+    {:noreply, Character.handle_respawn(state)}
   end
 
   def handle_info(:clean_conversations, state) do
-    {:noreply, Actions.clean_conversations(state, Timex.now())}
+    {:noreply, Character.clean_conversations(state, Timex.now())}
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
-    state = Actions.handle_continuous_effect(state, effect_id)
+    state = Character.handle_continuous_effect(state, effect_id)
     {:noreply, state}
   end
 
