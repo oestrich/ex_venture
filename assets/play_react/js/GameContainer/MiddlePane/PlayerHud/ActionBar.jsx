@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { send } from '../../../redux/actions/actions.js';
 
 const FlexColumn = styled.div`
   display: flex;
@@ -24,14 +25,14 @@ const ActionButton = styled.div`
   text-align: center;
 `;
 
-const ActionBar = ({ characterSkills }) => (
+const ActionBar = ({ dispatch, characterSkills }) => (
   <FlexColumn>
     {' '}
     {characterSkills.map(skill => (
       <ActionButton
         key={skill.key}
         onClick={() => {
-          send(skill.name.toLowerCase());
+          dispatch(send(skill.name.toLowerCase()));
         }}
       >
         {skill.name}

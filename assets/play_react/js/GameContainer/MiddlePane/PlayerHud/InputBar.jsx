@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import { send } from '../../../redux/actions/actions.js';
 
 const Bar = styled.input`
   display: inline-block;
@@ -16,12 +18,13 @@ const Bar = styled.input`
   line-height: 5px;
 `;
 
-const InputBar = () => {
+const InputBar = ({ dispatch }) => {
+  console.log('inputBar SEND', send);
   let state = {};
   const handleSubmit = e => {
     e.preventDefault();
     e.target.reset();
-    window.send(state);
+    dispatch(send(state));
   };
   const handleChange = e => {
     state = e.target.value;
@@ -35,4 +38,4 @@ const InputBar = () => {
   );
 };
 
-export default InputBar;
+export default connect()(InputBar);

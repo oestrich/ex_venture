@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import { connect } from 'react-redux';
 import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
 import { theme } from '../../theme.js';
+import { send } from '../../redux/actions/actions.js';
 
 const RoomInfoContainer = styled.div`
   padding: 2em 2em 1em 2em;
@@ -29,7 +30,7 @@ const ColoredSpan = styled.span`
   color: ${props => props.color};
 `;
 
-const RoomInfo = ({ className, roomInfo }) => {
+const RoomInfo = ({ dispatch, className, roomInfo }) => {
   const { name, description, players, npcs, shops, items, exits } = roomInfo;
   return (
     <RoomInfoContainer>
@@ -70,7 +71,7 @@ const RoomInfo = ({ className, roomInfo }) => {
         {exits.map((exit, idx, exitsArr) => (
           <Exit
             onClick={() => {
-              send(exit.direction);
+              dispatch(send(exit.direction));
             }}
             key={exit.room_id}
           >

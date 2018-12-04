@@ -8,6 +8,7 @@ export const UPDATE_CHARACTER_SKILLS = 'UPDATE_CHARACTER_SKILLS';
 export const UPDATE_CHARACTER_PROMPT = 'UPDATE_CHARACTER_PROMPT';
 export const UPDATE_EVENT_STREAM = 'UPDATE_EVENT_STREAM';
 export const ARCHIVE_AND_CLEAR_EVENT_STREAM = 'ARCHIVE_AND_CLEAR_EVENT_STREAM';
+export const ADD_TO_COMMAND_HISTORY = 'SEND_MSG_TO_SERVER";';
 
 const GMCP_ROOM_INFO = 'Room.Info';
 const GMCP_ZONE_MAP = 'Zone.Map';
@@ -16,6 +17,11 @@ const GMCP_CHARACTER_VITALS = 'Character.Vitals';
 const GMCP_CHARACTER_SKILLS = 'Character.Skills';
 
 const ACTIONBAR_LENGTH = 13;
+
+export const send = message => {
+  channel.push('recv', { message });
+  return { type: ADD_TO_COMMAND_HISTORY, payload: message };
+};
 
 export const initPhxChannelSubscriptions = () => {
   return (dispatch, getState) => {

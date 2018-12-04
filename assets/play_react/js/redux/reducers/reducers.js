@@ -6,7 +6,8 @@ import {
   UPDATE_CHARACTER_SKILLS,
   UPDATE_CHARACTER_PROMPT,
   UPDATE_EVENT_STREAM,
-  ARCHIVE_AND_CLEAR_EVENT_STREAM
+  ARCHIVE_AND_CLEAR_EVENT_STREAM,
+  ADD_TO_COMMAND_HISTORY
 } from '../actions/actions.js';
 
 const initialState = {
@@ -36,7 +37,8 @@ const initialState = {
     xp: 0
   },
   eventStream: [],
-  eventStreamArchive: []
+  eventStreamArchive: [],
+  cmdHistory: []
 };
 
 export default function(state = initialState, action) {
@@ -74,6 +76,9 @@ export default function(state = initialState, action) {
     case ARCHIVE_AND_CLEAR_EVENT_STREAM: {
       const oldEventStream = state.eventStream.slice();
       return { ...state, eventStreamArchive: oldEventStream, eventStream: [] };
+    }
+    case ADD_TO_COMMAND_HISTORY: {
+      return { ...state, cmdHistory: [...state.cmdHistory, action.payload] };
     }
     default: {
       return state;
