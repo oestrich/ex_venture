@@ -9,13 +9,13 @@ defmodule Game.NPC.Actions.CommandsTarget do
   @doc """
   Start combat if not already in combat
   """
-  def act(state, _action, character) do
+  def act(state, action) do
     case in_combat?(state) do
       true ->
         {:ok, state}
 
       false ->
-        start_combat(state, character)
+        start_combat(state, action.options)
     end
   end
 
@@ -31,13 +31,13 @@ defmodule Game.NPC.Actions.CommandsTarget do
 
   Sends a notification and sets the target and marks combat
   """
-  def start_combat(state, character) do
-    Character.being_targeted(character, Events.npc(state))
+  def start_combat(state, options) do
+    Character.being_targeted(options.character, Events.npc(state))
 
     state =
       state
       |> Map.put(:combat, true)
-      |> Map.put(:target, character)
+      |> Map.put(:target, options.character)
 
     Events.notify_delayed({"combat/ticked"}, 1500)
 

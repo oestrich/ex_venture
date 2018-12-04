@@ -14,10 +14,12 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
 
   describe "acting" do
     test "targets the player", %{state: state} do
-      action = %Actions.CommandsTarget{}
       player = %Character.Simple{id: 1}
+      action = %Actions.CommandsTarget{
+        options: %{character: {:player, player}}
+      }
 
-      {:ok, state} = CommandsTarget.act(state, action, {:player, player})
+      {:ok, state} = CommandsTarget.act(state, action)
 
       assert state.combat
       assert state.target
@@ -26,22 +28,26 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
     test "already in combat", %{state: state} do
       state = %{state | combat: true}
 
-      action = %Actions.CommandsTarget{}
       player = %Character.Simple{id: 1}
+      action = %Actions.CommandsTarget{
+        options: %{character: {:player, player}}
+      }
 
-      {:ok, state} = CommandsTarget.act(state, action, {:player, player})
+      {:ok, state} = CommandsTarget.act(state, action)
 
       assert state.combat
       refute state.target
     end
 
     test "already has a target", %{state: state} do
-      action = %Actions.CommandsTarget{}
       player = %Character.Simple{id: 1}
+      action = %Actions.CommandsTarget{
+        options: %{character: {:player, player}}
+      }
 
       state = %{state | target: {:player, player}}
 
-      {:ok, state} = CommandsTarget.act(state, action, {:player, player})
+      {:ok, state} = CommandsTarget.act(state, action)
 
       refute state.combat
       assert state.target
