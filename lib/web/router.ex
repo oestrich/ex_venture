@@ -179,6 +179,8 @@ defmodule Web.Router do
     resources("/notes", NoteController, only: [:index, :show, :new, :create, :edit, :update])
 
     resources "/npcs", NPCController, only: [:index, :show, :edit, :update, :new, :create] do
+      post("/events/reload", NPCEventController, :reload)
+
       resources("/events", NPCEventController, except: [:show], as: :event)
 
       resources("/items", NPCItemController, only: [:new, :create], as: :item)

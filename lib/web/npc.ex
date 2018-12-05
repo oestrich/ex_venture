@@ -467,6 +467,30 @@ defmodule Web.NPC do
     end
   end
 
+  @doc """
+  Force an update for an NPCs events
+  """
+  def force_save_events(npc) do
+    events = Enum.map(npc.events, fn event ->
+      {:ok, event} = ensure_id(event)
+      event
+    end)
+
+    # to force an update, set this to blank so something changed
+    npc = %{npc | events: []}
+
+    changeset = npc |> NPC.changeset(%{events: events})
+
+    case changeset |> Repo.update() do
+      {:ok, npc} ->
+        push_update(npc)
+        {:ok, npc}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
   defp parse_event(event) do
     with {:ok, event} <- Jason.decode(event),
          {:ok, event} <- ensure_id(event) do

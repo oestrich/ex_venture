@@ -177,6 +177,12 @@ defmodule Web.NPCTest do
       %{npc: npc, event: List.first(npc.events)}
     end
 
+    test "force save of loaded events", %{npc: npc} do
+      {:ok, npc} = NPC.force_save_events(npc)
+
+      assert length(npc.events) == 1
+    end
+
     test "add an event", %{npc: npc} do
       event = %{
         "type" => "room/entered",
