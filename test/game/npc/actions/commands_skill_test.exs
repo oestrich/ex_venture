@@ -34,8 +34,9 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
     test "with no target", %{state: state, action: action} do
       state = %{state | combat: true, target: nil}
 
-      {:ok, ^state} = CommandsSkill.act(state, action)
+      {:ok, state} = CommandsSkill.act(state, action)
 
+      refute state.combat
       refute_receive {:"$gen_cast", {:apply_effects, _, _, _}}, 50
     end
 
@@ -46,8 +47,9 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
 
       state = %{state | combat: true, target: {:player, player}}
 
-      {:ok, ^state} = CommandsSkill.act(state, action)
+      {:ok, state} = CommandsSkill.act(state, action)
 
+      refute state.combat
       refute_receive {:"$gen_cast", {:apply_effects, _, _, _}}, 50
     end
   end

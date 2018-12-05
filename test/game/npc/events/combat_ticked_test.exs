@@ -25,8 +25,8 @@ defmodule Game.NPC.Events.CombatTickedTest do
           weight: 10
         },
         actions: [
-          %Events.Actions.CommandsSkill{},
-          %Events.Actions.CommandsSkill{},
+          %Events.Actions.CommandsSkill{options: %{skill: "bash"}},
+          %Events.Actions.CommandsSkill{options: %{skill: "bash"}},
         ]
       }
 
@@ -45,7 +45,9 @@ defmodule Game.NPC.Events.CombatTickedTest do
         weight: 10
       },
       actions: [
-        %Events.Actions.CommandsSkill{}
+        %Events.Actions.CommandsSkill{
+          options: %{skill: "bash"}
+        }
       ]
     }
     state = %State{

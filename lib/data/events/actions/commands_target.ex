@@ -6,7 +6,7 @@ defmodule Data.Events.Actions.CommandsTarget do
   @event_type "commands/target"
 
   @derive Jason.Encoder
-  defstruct [:delay, :options, type: @event_type]
+  defstruct [:delay, options: %{}, type: @event_type]
 
   @behaviour Data.Events.Actions
 

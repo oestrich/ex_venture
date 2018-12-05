@@ -17,6 +17,19 @@ defmodule Game.NPC.Events do
   alias Metrics.NPCInstrumenter
 
   @doc """
+  Parse the events for an NPC and update the struct
+  """
+  def parse_events(npc) do
+    events =
+      npc.events
+      |> Enum.map(&Data.Events.parse/1)
+      |> Enum.filter(&elem(&1, 0) == :ok)
+      |> Enum.map(&elem(&1, 1))
+
+     %{npc | events: events}
+  end
+
+  @doc """
   Filter a list of events down to a single event type
   """
   def filter(events, event_type) do
@@ -39,7 +52,13 @@ defmodule Game.NPC.Events do
     minimum_delay = round(minimum_delay * 1000)
     random_delay = round(random_delay * 1000)
 
-    minimum_delay + :rand.uniform(random_delay)
+    case random_delay == 0 do
+      true ->
+        minimum_delay
+
+      false ->
+        minimum_delay + :rand.uniform(random_delay)
+    end
   end
 
   defp event_delay(_event), do: 0
@@ -53,12 +72,17 @@ defmodule Game.NPC.Events do
   @doc """
   Instantiate events and start their ticking
   """
-  @spec start_tick_events(State.t(), NPC.t()) :: State.t()
-  def start_tick_events(state, npc) do
-    tick_events = filter(npc.events, Events.StateTicked)
-    tick_events |> Enum.each(&delay_event/1)
+  def start_tick_events(state) do
+    already_ticking_ids = Enum.map(state.tick_events, &(&1.id))
+    events = filter(state.events, StateTicked)
 
-    %{state | tick_events: tick_events}
+    events
+    |> Enum.reject(fn event ->
+      event.id in already_ticking_ids
+    end)
+    |> Enum.each(&delay_event/1)
+
+    %{state | tick_events: events}
   end
 
   @doc """
@@ -67,7 +91,8 @@ defmodule Game.NPC.Events do
   `{:tick, id}` is the message.
   """
   def delay_event(tick_event) do
-    :erlang.send_after(calculate_total_delay(tick_event) * 1000, self(), {:tick, tick_event.id})
+    delay = calculate_total_delay(tick_event)
+    Process.send_after(self(), {:tick, tick_event.id}, delay)
   end
 
   #
@@ -86,7 +111,7 @@ defmodule Game.NPC.Events do
   end
 
   def act_on(state, {"combat/ticked"}) do
-    broadcast(state.npc, "combat/tick")
+    broadcast(state.npc, "combat/ticked")
     Events.CombatTicked.process(state)
     :ok
   end

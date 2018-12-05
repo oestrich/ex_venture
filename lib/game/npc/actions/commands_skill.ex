@@ -5,9 +5,8 @@ defmodule Game.NPC.Actions.CommandsSkill do
 
   use Game.Environment
 
-  import Game.Command.Skills, only: [find_target: 2]
-
   alias Game.Character
+  alias Game.Command.Skills, as: CommandSkills
   alias Game.Effect
   alias Game.Format.Skills, as: FormatSkills
   alias Game.Skill
@@ -24,6 +23,9 @@ defmodule Game.NPC.Actions.CommandsSkill do
 
       {:ok, state}
     else
+      {:error, :no_target} ->
+        {:ok, %{state | combat: false}}
+
       _ ->
         {:ok, state}
     end
@@ -40,6 +42,16 @@ defmodule Game.NPC.Actions.CommandsSkill do
 
       target ->
         find_target(room, Character.who(target))
+    end
+  end
+
+  defp find_target(room, target) do
+    case CommandSkills.find_target(room, Character.who(target)) do
+      {:ok, target} ->
+        {:ok, target}
+
+      {:error, :not_found} ->
+        {:error, :no_target}
     end
   end
 

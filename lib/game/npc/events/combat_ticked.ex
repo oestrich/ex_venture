@@ -20,6 +20,9 @@ defmodule Game.NPC.Events.CombatTicked do
     event.actions
     |> Actions.add_character(state.target)
     |> Actions.delay()
+
+    delay = Events.calculate_total_delay(event)
+    Events.notify_delayed({"combat/ticked"}, delay)
   end
 
   def select_weighted_event(events) do
@@ -29,16 +32,19 @@ defmodule Game.NPC.Events.CombatTicked do
   end
 
   def expand_events(events) do
-    Enum.flat_map(events, fn event ->
-      options = Map.get(event, :options, %{})
-      case Map.get(options, :weight, 10) do
-        0 ->
-          []
+    Enum.flat_map(events, &expand_event/1)
+  end
 
-        weight ->
-          Enum.map(1..weight, fn _ -> event end)
-      end
-    end)
+  defp expand_event(event) do
+    options = Map.get(event, :options, %{})
+
+    case Map.get(options, :weight, 10) do
+      0 ->
+        []
+
+      weight ->
+        Enum.map(1..weight, fn _ -> event end)
+    end
   end
 end
 

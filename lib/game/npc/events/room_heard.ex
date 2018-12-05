@@ -10,7 +10,7 @@ defmodule Game.NPC.Events.RoomHeard do
   def process(state, sent_event) do
     state.events
     |> Events.filter(RoomHeard)
-    |> Enum.map(&process_event(&1, sent_event))
+    |> Enum.each(&process_event(&1, sent_event))
 
     {:ok, state}
   end

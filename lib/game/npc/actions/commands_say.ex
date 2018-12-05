@@ -13,13 +13,34 @@ defmodule Game.NPC.Actions.CommandsSay do
   Speak to the room
   """
   def act(state, action) do
-    message = select_message(action)
-    message = Message.npc_say(state.npc, Format.resources(message))
+    with {:ok, :match} <- matches_room(state, action) do
+      message = select_message(action)
+      message = Message.npc_say(state.npc, Format.resources(message))
 
-    state.room_id |> @environment.say(Events.npc(state), message)
-    Events.broadcast(state.npc, "room/heard", message)
+      state.room_id |> @environment.say(Events.npc(state), message)
+      Events.broadcast(state.npc, "room/heard", message)
 
-    {:ok, state}
+      {:ok, state}
+    else
+      _ ->
+        {:ok, state}
+    end
+  end
+
+  defp matches_room(state, action) do
+    case Map.get(action.options, :room_id) do
+      nil ->
+        {:ok, :match}
+
+      room_id ->
+        case state.room_id == room_id do
+          true ->
+            {:ok, :match}
+
+          false ->
+            {:error, :no_match}
+        end
+    end
   end
 
   @doc """

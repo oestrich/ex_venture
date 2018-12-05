@@ -37,4 +37,33 @@ defmodule Game.NPC.Actions.CommandsSayTest do
       assert message.message == "Hello"
     end
   end
+
+  describe "matching against the room id" do
+    test "when matches", %{state: state} do
+      action = %Actions.CommandsSay{
+        options: %{
+          room_id: 1,
+          message: "Hello"
+        }
+      }
+
+      {:ok, ^state} = CommandsSay.act(state, action)
+
+      [{_, message}] = @room.get_says()
+      assert message.message == "Hello"
+    end
+
+    test "when does not matches", %{state: state} do
+      action = %Actions.CommandsSay{
+        options: %{
+          room_id: 2,
+          message: "Hello"
+        }
+      }
+
+      {:ok, ^state} = CommandsSay.act(state, action)
+
+      assert @room.get_says() == []
+    end
+  end
 end

@@ -4,10 +4,11 @@ defmodule Game.NPC.Events.StateTicked do
   """
 
   alias Game.NPC.Actions
+  alias Game.NPC.Events
 
   def process(state, event) do
     Actions.delay(event.actions)
-    #TODO delay the event
+    Events.delay_event(event)
 
     {:ok, state}
   end

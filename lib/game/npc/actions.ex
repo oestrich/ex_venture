@@ -86,7 +86,7 @@ defmodule Game.NPC.Actions do
   Includes any cooldown for skills, etc
   """
   def calculate_total_delay(action = %Events.Actions.CommandsSkill{}) do
-    case Skills.skill(action.options.skill) do
+    case Skills.skill(Map.get(action.options, :skill)) do
       nil ->
         calculate_delay(action)
 

@@ -210,6 +210,8 @@ defmodule Game.NPC do
     npc = %{npc | stats: Stats.default(npc.stats)}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
 
+    npc = Events.parse_events(npc)
+
     npc_spawner.zone_id |> Zone.npc_online(npc)
 
     Logger.info("Starting NPC #{npc.id}", type: :npc)
@@ -220,6 +222,7 @@ defmodule Game.NPC do
       |> Map.put(:npc, npc)
       |> Map.put(:status, status)
       |> Map.put(:room_id, npc_spawner.room_id)
+      |> Map.put(:events, npc.events)
 
     GenServer.cast(self(), :enter)
 
@@ -248,7 +251,7 @@ defmodule Game.NPC do
   end
 
   def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
-    state = state |> Events.start_tick_events(npc)
+    state = Events.start_tick_events(state)
     Channel.join_tell({:npc, npc})
     @environment.enter(room_id, {:npc, npc}, :respawn)
     @environment.link(room_id)
@@ -274,11 +277,17 @@ defmodule Game.NPC do
   def handle_cast({:update, npc_spawner}, state = %{room_id: room_id}) do
     WorldMaster.update_cache(@key, npc_spawner.npc)
 
+    npc =
+      npc_spawner
+      |> customize_npc(npc_spawner.npc)
+      |> Events.parse_events()
+
     state =
       state
       |> Map.put(:npc_spawner, npc_spawner)
-      |> Map.put(:npc, customize_npc(npc_spawner, npc_spawner.npc))
-      |> Events.start_tick_events(npc_spawner.npc)
+      |> Map.put(:npc, npc)
+      |> Map.put(:events, npc.events)
+      |> Events.start_tick_events()
 
     @environment.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
@@ -333,6 +342,16 @@ defmodule Game.NPC do
 
   def handle_info({:notify, action}, state) do
     handle_cast({:notify, action}, state)
+  end
+
+  def handle_info({:delayed_actions, actions}, state) do
+    case Actions.process(state, actions) do
+      {:ok, state} ->
+        {:noreply, state}
+
+      _error ->
+        {:noreply, state}
+    end
   end
 
   def handle_info({:tick, event_id}, state) do

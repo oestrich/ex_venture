@@ -37,7 +37,7 @@ defmodule Game.NPC.Actions.CommandsTarget do
     state =
       state
       |> Map.put(:combat, true)
-      |> Map.put(:target, options.character)
+      |> Map.put(:target, Character.who(options.character))
 
     Events.notify_delayed({"combat/ticked"}, 1500)
 

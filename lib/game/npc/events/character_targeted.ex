@@ -10,9 +10,7 @@ defmodule Game.NPC.Events.CharacterTargeted do
   def process(state, sent_event) do
     state.events
     |> Events.filter(CharacterTargeted)
-    |> Enum.map(&process_event(&1, sent_event))
-
-    #TODO delay the event
+    |> Enum.each(&process_event(&1, sent_event))
 
     {:ok, state}
   end
