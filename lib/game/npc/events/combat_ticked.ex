@@ -16,7 +16,7 @@ defmodule Game.NPC.Events.CombatTicked do
     {:ok, state}
   end
 
-  def process_event(event, state) do
+  def process_event(event, state = %{combat: true}) do
     event.actions
     |> Actions.add_character(state.target)
     |> Actions.delay()
@@ -24,6 +24,8 @@ defmodule Game.NPC.Events.CombatTicked do
     delay = Events.calculate_total_delay(event)
     Events.notify_delayed({"combat/ticked"}, delay)
   end
+
+  def process_event(_event, _state), do: :ok
 
   def select_weighted_event(events) do
     events
@@ -47,9 +49,3 @@ defmodule Game.NPC.Events.CombatTicked do
     end
   end
 end
-
-#   broadcast(npc, "combat/action", %{
-#     target: who(target),
-#     text: FormatSkills.skill_usee(action.text, user: npc(state), target: target),
-#     effects: effects
-#   })

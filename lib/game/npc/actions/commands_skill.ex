@@ -56,7 +56,9 @@ defmodule Game.NPC.Actions.CommandsSkill do
   end
 
   defp get_skill(options) do
-    case Skills.skill(options.skill) do
+    skill = Map.get(options, :skill) || ""
+
+    case Skills.skill(skill) do
       nil ->
         {:error, :not_found}
 

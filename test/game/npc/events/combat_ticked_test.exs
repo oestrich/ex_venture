@@ -52,6 +52,7 @@ defmodule Game.NPC.Events.CombatTickedTest do
     }
     state = %State{
       target: {:player, %{}},
+      combat: true,
       events: [event]
     }
 
