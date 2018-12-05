@@ -8,18 +8,20 @@ defmodule Game.NPC do
 
   require Logger
 
+  alias Data.Events.Actions.CommandsEmote
+  alias Data.Events.Actions.CommandsSay
   alias Data.NPCSpawner
   alias Data.Stats
   alias Game.Channel
   alias Game.Character.Effects
   alias Game.NPC.Actions
+  alias Game.NPC.Character
   alias Game.NPC.Conversation
   alias Game.NPC.Events
   alias Game.NPC.Repo, as: NPCRepo
   alias Game.NPC.Status
   alias Game.World.Master, as: WorldMaster
   alias Game.Zone
-  alias Metrics.NPCInstrumenter
 
   @key :npcs
 
@@ -42,6 +44,7 @@ defmodule Game.NPC do
       :last_controlled_at,
       :status,
       combat: false,
+      events: [],
       tick_events: [],
       conversations: %{},
       continuous_effects: []
@@ -207,6 +210,8 @@ defmodule Game.NPC do
     npc = %{npc | stats: Stats.default(npc.stats)}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
 
+    npc = Events.parse_events(npc)
+
     npc_spawner.zone_id |> Zone.npc_online(npc)
 
     Logger.info("Starting NPC #{npc.id}", type: :npc)
@@ -217,6 +222,7 @@ defmodule Game.NPC do
       |> Map.put(:npc, npc)
       |> Map.put(:status, status)
       |> Map.put(:room_id, npc_spawner.room_id)
+      |> Map.put(:events, npc.events)
 
     GenServer.cast(self(), :enter)
 
@@ -245,7 +251,7 @@ defmodule Game.NPC do
   end
 
   def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
-    state = state |> Events.start_tick_events(npc)
+    state = Events.start_tick_events(state)
     Channel.join_tell({:npc, npc})
     @environment.enter(room_id, {:npc, npc}, :respawn)
     @environment.link(room_id)
@@ -268,34 +274,20 @@ defmodule Game.NPC do
     end
   end
 
-  def handle_cast({:act, action}, state) do
-    case Events.act(state, action) do
-      :ok ->
-        {:noreply, state}
-
-      {:update, state} ->
-        {:noreply, state}
-    end
-  end
-
-  def handle_cast({:act, action, actions}, state) do
-    case Events.act(state, action, actions) do
-      :ok ->
-        {:noreply, state}
-
-      {:update, state} ->
-        {:noreply, state}
-    end
-  end
-
   def handle_cast({:update, npc_spawner}, state = %{room_id: room_id}) do
     WorldMaster.update_cache(@key, npc_spawner.npc)
+
+    npc =
+      npc_spawner
+      |> customize_npc(npc_spawner.npc)
+      |> Events.parse_events()
 
     state =
       state
       |> Map.put(:npc_spawner, npc_spawner)
-      |> Map.put(:npc, customize_npc(npc_spawner, npc_spawner.npc))
-      |> Events.start_tick_events(npc_spawner.npc)
+      |> Map.put(:npc, npc)
+      |> Map.put(:events, npc.events)
+      |> Events.start_tick_events()
 
     @environment.update_character(room_id, {:npc, state.npc})
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
@@ -303,12 +295,14 @@ defmodule Game.NPC do
   end
 
   def handle_cast({:say, message}, state) do
-    state |> Events.say_to_room(message)
+    action = %CommandsSay{options: %{message: message}}
+    {:ok, state} = Actions.CommandsSay.act(state, action)
     {:noreply, state}
   end
 
   def handle_cast({:emote, message}, state) do
-    state |> Events.emote_to_room(message)
+    action = %CommandsEmote{options: %{message: message}}
+    {:ok, state} = Actions.CommandsEmote.act(state, action)
     {:noreply, state}
   end
 
@@ -333,7 +327,7 @@ defmodule Game.NPC do
       effects: effects
     })
 
-    state = Actions.apply_effects(state, effects, from)
+    state = Character.apply_effects(state, effects, from)
     {:noreply, state}
   end
 
@@ -350,30 +344,37 @@ defmodule Game.NPC do
     handle_cast({:notify, action}, state)
   end
 
+  def handle_info({:delayed_actions, actions}, state) do
+    case Actions.process(state, actions) do
+      {:ok, state} ->
+        {:noreply, state}
+
+      _error ->
+        {:noreply, state}
+    end
+  end
+
   def handle_info({:tick, event_id}, state) do
     case state.tick_events |> Enum.find(&(&1.id == event_id)) do
       nil ->
         {:noreply, state}
 
-      tick_event ->
-        NPCInstrumenter.tick_event_acted_on(tick_event.action.type)
-
-        state = Events.act_on_tick(state, tick_event)
-        tick_event |> Events.delay_event()
+      event ->
+        Events.StateTicked.process(state, event)
         {:noreply, state}
     end
   end
 
   def handle_info(:respawn, state) do
-    {:noreply, Actions.handle_respawn(state)}
+    {:noreply, Character.handle_respawn(state)}
   end
 
   def handle_info(:clean_conversations, state) do
-    {:noreply, Actions.clean_conversations(state, Timex.now())}
+    {:noreply, Character.clean_conversations(state, Timex.now())}
   end
 
   def handle_info({:continuous_effect, effect_id}, state) do
-    state = Actions.handle_continuous_effect(state, effect_id)
+    state = Character.handle_continuous_effect(state, effect_id)
     {:noreply, state}
   end
 

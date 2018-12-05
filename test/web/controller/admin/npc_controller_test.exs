@@ -7,7 +7,6 @@ defmodule Web.Admin.NPCControllerTest do
       "level" => "1",
       "experience_points" => "124",
       "currency" => "10",
-      "events" => "[]",
       "stats" => base_stats() |> Poison.encode!(),
     }
 

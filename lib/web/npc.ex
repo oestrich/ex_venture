@@ -6,7 +6,6 @@ defmodule Web.NPC do
   import Ecto.Query
 
   alias Data.Script.Line
-  alias Data.Event
   alias Data.NPC
   alias Data.NPCItem
   alias Data.NPCSpawner
@@ -153,15 +152,17 @@ defmodule Web.NPC do
   def cast_params(params) do
     params
     |> parse_stats()
-    |> parse_events()
     |> parse_script()
     |> parse_tags()
   end
 
   defp parse_stats(params = %{"stats" => stats}) do
     case Poison.decode(stats) do
-      {:ok, stats} -> stats |> cast_stats(params)
-      _ -> params
+      {:ok, stats} ->
+        cast_stats(stats, params)
+
+      _ ->
+        params
     end
   end
 
@@ -177,33 +178,13 @@ defmodule Web.NPC do
     end
   end
 
-  defp parse_events(params = %{"events" => events}) do
-    case Poison.decode(events) do
-      {:ok, events} -> events |> cast_events(params)
-      _ -> params
-    end
-  end
-
-  defp parse_events(params), do: params
-
-  defp cast_events(events, params) do
-    events =
-      events
-      |> Enum.map(fn event ->
-        case Event.load(event) do
-          {:ok, event} -> event
-          _ -> nil
-        end
-      end)
-      |> Enum.reject(&is_nil/1)
-
-    Map.put(params, "events", events)
-  end
-
   defp parse_script(params = %{"script" => script}) do
     case Poison.decode(script) do
-      {:ok, script} -> script |> cast_script(params)
-      _ -> params
+      {:ok, script} ->
+        script |> cast_script(params)
+
+      _ ->
+        params
     end
   end
 
@@ -448,28 +429,9 @@ defmodule Web.NPC do
   # Events
   #
 
-  @spec force_save_events(NPC.t()) :: {:ok, NPC.t()}
-  def force_save_events(npc) do
-    events = npc.events
-    # to force an update, set this to blank so something changed
-    npc = %{npc | events: []}
-
-    changeset = npc |> NPC.changeset(%{events: events})
-
-    case changeset |> Repo.update() do
-      {:ok, npc} ->
-        push_update(npc)
-        {:ok, npc}
-
-      {:error, changeset} ->
-        {:error, changeset}
-    end
-  end
-
   @spec add_event(NPC.t(), String.t()) :: {:ok, NPC.t()}
   def add_event(npc, event) do
-    with {:ok, event} <- parse_event(event),
-         {:ok, event} <- validate_event(event) do
+    with {:ok, event} <- parse_event(event) do
       changeset = npc |> NPC.changeset(%{events: [event | npc.events]})
 
       case changeset |> Repo.update() do
@@ -483,24 +445,13 @@ defmodule Web.NPC do
     end
   end
 
-  def validate_event(event) do
-    case Event.validate_event(event) do
-      %{valid?: true} ->
-        {:ok, event}
-
-      changeset ->
-        {:error, :invalid, changeset}
-    end
-  end
-
   @spec edit_event(NPC.t(), String.t(), String.t()) :: {:ok, NPC.t()}
   def edit_event(npc, id, event) do
-    with {:ok, event} <- parse_event(event),
-         {:ok, event} <- validate_event(event) do
+    with {:ok, event} <- parse_event(event) do
       events =
         npc.events
         |> Enum.reject(fn event ->
-          event.id == id
+          event["id"] == id
         end)
 
       changeset = npc |> NPC.changeset(%{events: [event | events]})
@@ -517,19 +468,23 @@ defmodule Web.NPC do
   end
 
   defp parse_event(event) do
-    case Poison.decode(event) do
-      {:ok, event} ->
-        case Event.load(event) do
-          {:ok, event} ->
-            {:ok, event}
-
-          _ ->
-            {:error, :invalid}
-        end
-
+    with {:ok, event} <- Jason.decode(event),
+         {:ok, event} <- ensure_id(event) do
+      {:ok, event}
+    else
       _ ->
         errors = %{json: ["is invalid"]}
         {:error, :invalid, %{errors: errors}}
+    end
+  end
+
+  defp ensure_id(event) do
+    case Map.get(event, "id") do
+      nil ->
+        {:ok, Map.put(event, "id", UUID.uuid4())}
+
+      _id ->
+        {:ok, event}
     end
   end
 
@@ -538,7 +493,7 @@ defmodule Web.NPC do
     events =
       npc.events
       |> Enum.reject(fn event ->
-        event.id == id
+        event["id"] == id
       end)
 
     changeset = npc |> NPC.changeset(%{events: events})
