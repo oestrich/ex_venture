@@ -15,27 +15,6 @@ defmodule Data.NPCTest do
     refute changeset.errors[:stats]
   end
 
-  test "validate effects" do
-    changeset = %NPC{} |> NPC.changeset(%{events: nil})
-    assert changeset.errors[:events]
-
-    changeset = %NPC{} |> NPC.changeset(%{events: []})
-    refute changeset.errors[:events]
-
-    changeset =
-      %NPC{}
-      |> NPC.changeset(%{
-        events: [
-          %{id: "id", type: "room/entered", action: %{type: "say", message: "Hi"}}
-        ]
-      })
-
-    refute changeset.errors[:events]
-
-    changeset = %NPC{} |> NPC.changeset(%{events: [%{type: "room/entered"}]})
-    assert changeset.errors[:events]
-  end
-
   test "validate script" do
     changeset = %NPC{} |> NPC.changeset(%{})
     refute changeset.errors[:script]

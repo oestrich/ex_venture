@@ -41,6 +41,7 @@ nav:
     - Races: admin/races.md
     - Scripts: admin/scripts.md
     - Users: admin/users.md
+    - Venture Markup Language: admin/vml.md
     - Zones: admin/zones.md
   - Metrics: metrics.md
   - Docker: docker.md

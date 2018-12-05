@@ -12,9 +12,6 @@ defmodule Web.NPCTest do
       "experience_points" => "124",
       "currency" => "10",
       "tags" => "enemy, dungeon",
-      "events" => [
-        %{"type" => "room/entered", "action" => %{"type" => "say", "message" => "Hi"}},
-      ] |> Poison.encode!(),
       "script" => [
         %{"key" => "start", "message" => "Hi"},
       ] |> Poison.encode!(),
@@ -38,7 +35,6 @@ defmodule Web.NPCTest do
 
     assert npc.name == "Bandit"
     assert npc.tags == ["enemy", "dungeon"]
-    assert npc.events |> length() == 1
     assert npc.script |> length() == 1
   end
 
@@ -169,9 +165,11 @@ defmodule Web.NPCTest do
       npc = create_npc(%{
         events: [
           %{
-            id: UUID.uuid4(),
-            type: "room/entered",
-            action: %{type: "say", message: "Hi"}
+            "id" => UUID.uuid4(),
+            "type" => "room/entered",
+            "actions" => [
+              %{"type" => "commands/say", "options" => %{"message" => "Hi"}}
+            ]
           }
         ]
       })
@@ -187,8 +185,10 @@ defmodule Web.NPCTest do
 
     test "add an event", %{npc: npc} do
       event = %{
-        type: "room/entered",
-        action: %{type: "say", message: "Hi"}
+        "type" => "room/entered",
+        "actions" => [
+          %{"type" => "commands/say", "options" => %{"message" => "Hi"}}
+        ]
       }
 
       {:ok, npc} = NPC.add_event(npc, Poison.encode!(event))
@@ -196,23 +196,17 @@ defmodule Web.NPCTest do
       assert length(npc.events) == 2
     end
 
-    test "add an event - invalid", %{npc: npc} do
-      event = %{type: "room/entered", action: %{type: "say"}}
-
-      {:error, :invalid, changeset} = NPC.add_event(npc, Poison.encode!(event))
-      assert changeset.errors
-    end
-
     test "edit an event", %{npc: npc, event: event} do
-      event = %{event | action: %{type: "say", message: "Hello"}}
-      {:ok, npc} = NPC.edit_event(npc, event.id, Poison.encode!(event))
+      event = %{event | "actions" => [%{type: "commands/say", options: %{message: "Hello"}}]}
+      {:ok, npc} = NPC.edit_event(npc, event["id"], Poison.encode!(event))
 
       event = List.first(npc.events)
-      assert event.action.message == "Hello"
+      action = List.first(event["actions"])
+      assert action["options"]["message"] == "Hello"
     end
 
     test "delete an event", %{npc: npc, event: event} do
-      {:ok, npc} = NPC.delete_event(npc, event.id)
+      {:ok, npc} = NPC.delete_event(npc, event["id"])
       assert Enum.empty?(npc.events)
     end
   end

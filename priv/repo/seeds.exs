@@ -307,20 +307,19 @@ defmodule Seeds do
         %{
           id: UUID.uuid4(),
           type: "room/entered",
-          action: %{type: "target"},
+          actions: [
+            %{type: "commands/target", options: %{player: true}}
+          ],
         },
         %{
           id: UUID.uuid4(),
-          type: "combat/tick",
-          action: %{
-            type: "target/effects",
+          type: "combat/ticked",
+          options: %{
             weight: 10,
-            text: "[user] slashes at you.",
-            effects: [
-              %{kind: "damage", type: "slashing", amount: 2},
-            ],
-            delay: 2.0,
-          }
+          },
+          actions: [
+            %{type: "commands/skill", options: %{skill: "slash"}}
+          ]
         },
       ],
     })

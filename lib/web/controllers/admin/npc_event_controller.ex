@@ -48,7 +48,7 @@ defmodule Web.Admin.NPCEventController do
   def edit(conn, %{"npc_id" => npc_id, "id" => id}) do
     npc = NPC.get(npc_id)
 
-    case Enum.find(npc.events, &(&1.id == id)) do
+    case Enum.find(npc.events, &(&1["id"] == id)) do
       nil ->
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
 
@@ -64,7 +64,7 @@ defmodule Web.Admin.NPCEventController do
   def update(conn, %{"npc_id" => npc_id, "id" => id, "event" => %{"body" => body}}) do
     npc = NPC.get(npc_id)
 
-    case Enum.find(npc.events, &(&1.id == id)) do
+    case Enum.find(npc.events, &(&1["id"] == id)) do
       nil ->
         conn |> redirect(to: npc_event_path(conn, :index, npc.id))
 

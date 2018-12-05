@@ -31,9 +31,11 @@
         </div>
         <div class="box-body">
           <%= Enum.map(@npc.events, fn event -> %>
-            <pre><%= Poison.encode!(event, pretty: true) %></pre>
-            <%= link("Edit", to: npc_event_path(@conn, :edit, @npc.id, event.id), class: "btn btn-default") %>
-            <%= link("Delete", to: npc_event_path(@conn, :delete, @npc.id, event.id), method: :delete, class: "btn btn-danger") %>
+            <%= parse(event) %>
+            <%= if event["id"] do %>
+              <%= link("Edit", to: npc_event_path(@conn, :edit, @npc.id, event["id"]), class: "btn btn-default") %>
+              <%= link("Delete", to: npc_event_path(@conn, :delete, @npc.id, event["id"]), method: :delete, class: "btn btn-danger") %>
+            <% end %>
             <hr />
           <% end) %>
         </div>

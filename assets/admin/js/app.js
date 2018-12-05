@@ -3,7 +3,6 @@ import "admin-lte"
 import "bootstrap"
 import "phoenix_html"
 
-
 import "./socket.js"
 import "./npcs.js"
 

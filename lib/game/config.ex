@@ -62,9 +62,10 @@ defmodule Game.Config do
     max_endurance_points: 20,
     strength: 10,
     agility: 10,
-    vitality: 10,
     intelligence: 10,
-    awareness: 10
+    awareness: 10,
+    vitality: 10,
+    willpower: 10
   }
 
   @doc false
