@@ -14,5 +14,5 @@ defmodule Data.Events.Actions.CommandsTarget do
   def type(), do: @event_type
 
   @impl true
-  def options(), do: []
+  def options(), do: [player: :boolean, npc: :boolean]
 end

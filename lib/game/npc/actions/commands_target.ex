@@ -32,15 +32,30 @@ defmodule Game.NPC.Actions.CommandsTarget do
   Sends a notification and sets the target and marks combat
   """
   def start_combat(state, options) do
-    Character.being_targeted(options.character, Events.npc(state))
+    with true <- check_target_allowed(options) do
+      Character.being_targeted(options.character, Events.npc(state))
 
-    state =
-      state
-      |> Map.put(:combat, true)
-      |> Map.put(:target, Character.who(options.character))
+      state =
+        state
+        |> Map.put(:combat, true)
+        |> Map.put(:target, Character.who(options.character))
 
-    Events.notify_delayed({"combat/ticked"}, 1500)
+      Events.notify_delayed({"combat/ticked"}, 1500)
 
-    {:ok, state}
+      {:ok, state}
+    else
+      _ ->
+        {:ok, state}
+    end
+  end
+
+  def check_target_allowed(options) do
+    case options.character do
+      {:player, _} ->
+        Map.get(options, :player, false)
+
+      {:npc, _} ->
+        Map.get(options, :npc, false)
+    end
   end
 end
