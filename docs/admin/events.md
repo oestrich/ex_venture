@@ -249,10 +249,17 @@ Options:
 
 Sets the characters target to the character that sent the event.
 
+Options:
+
+- `player`: Optional, boolean, default `false`. If true, the command will be allowed to target players
+- `npc`: Optional, boolean, default `false`. If true, the command will be allowed to target npcs
+
 ```json
 {
   "type": "commands/target",
   "delay": 0,
-  "options": {}
+  "options": {
+    "player": true
+  }
 }
 ```
