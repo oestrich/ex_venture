@@ -1,24 +1,28 @@
 Definitions.
 
-LeftBrace = {
-RightBrace = }
+TagOpen = {
+ClosingTagOpen = {/
+TagClose = }
 ClosingSlash = /
-TagName = [a-zA-Z]+
-Variable = \[[a-zA-Z]+\]
-Text = [^{}\n\[\]]+
-Resource = (item|npc|room|zone):[0-9]+
+VariableOpen = \[
+VariableClose = \]
+Word = [^{}\n\[\]=\s'"]+
+Space = \s+
+Quote = ['"]
 NewLine = (\n|\n\r|\r)
-Attribute = [a-zA-Z]+=["'].+["']
+Equal = =
 
 Rules.
 
-{NewLine} : {token, {new_line, TokenLine, TokenChars}}.
-{Text} : {token, {text, TokenLine, TokenChars}}.
-{Variable} : {token, {variable, TokenLine, TokenChars}}.
-{LeftBrace}{LeftBrace}{Resource}{RightBrace}{RightBrace} : {token, {resource, TokenLine, TokenChars}}.
-{LeftBrace}{TagName}(\s{Attribute})*{RightBrace} : {token, {start_tag, TokenLine, TokenChars}}.
-{LeftBrace}{ClosingSlash}{TagName}{RightBrace} : {token, {close_tag, TokenLine, TokenChars}}.
-{LeftBrace} : {token, {left_brace, TokenLine, TokenChars}}.
-{RightBrace} : {token, {right_brace, TokenLine, TokenChars}}.
+{Word} : {token, {word, TokenChars}}.
+{Quote} : {token, {quote, TokenChars}}.
+{Space} : {token, {space, TokenChars}}.
+{NewLine} : {token, {new_line, TokenChars}}.
+{TagOpen} : {token, {'{', TokenChars}}.
+{ClosingTagOpen} : {token, {'{/', TokenChars}}.
+{TagClose} : {token, {'}', TokenChars}}.
+{Equal} : {token, {'=', TokenChars}}.
+{VariableOpen} : {token, {'[', TokenChars}}.
+{VariableClose} : {token, {']', TokenChars}}.
 
 Erlang code.
