@@ -26,7 +26,8 @@ const LeftPane = ({
   strength,
   intelligence,
   endurance,
-  awareness
+  awareness,
+  agility
 }) => {
   return (
     <>
@@ -38,6 +39,25 @@ const LeftPane = ({
           ? `You are a 33 year old ${charClass} hailing from Elwynn Forest`
           : null}
       </CharacterInfo>
+      <br />
+      <table>
+        <tr>
+          <td>STR:</td>
+          <td>{strength}</td>
+          <td>VIT:</td>
+          <td>{vitality}</td>
+          <td>AGI:</td>
+          <td>{agility}</td>
+        </tr>
+        <tr>
+          <td>WIL:</td>
+          <td>{willpower}</td>
+          <td>INT:</td>
+          <td>{intelligence}</td>
+          <td>AWA:</td>
+          <td>{awareness}</td>
+        </tr>
+      </table>
       <br />
     </>
   );
@@ -53,7 +73,8 @@ const mapStateToProps = ({ characterInfo: i, characterVitals: v }) => {
     strength: v.strength,
     intelligence: v.intelligence,
     endurance: v.endurance,
-    awareness: v.awareness
+    awareness: v.awareness,
+    agility: v.agility
   };
 };
 

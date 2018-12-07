@@ -17,7 +17,8 @@ export const vmlTags = {
   command: 'white',
   error: 'red',
   red: '#FA8F8F',
-  white: 'white'
+  white: 'white',
+  map: 'white'
 };
 export const theme = {
   vml: vmlTags,

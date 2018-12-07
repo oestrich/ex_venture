@@ -20,7 +20,7 @@ const initialState = {
     items: [],
     exits: []
   },
-  zoneMap: '',
+  zoneMap: null,
   characterInfo: {
     name: null,
     class: { name: null },
