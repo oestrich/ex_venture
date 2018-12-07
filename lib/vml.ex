@@ -27,12 +27,24 @@ defmodule VML do
     end
   end
 
+  @doc """
+  Preprocess the AST
+
+  - Turn charlists into elixir strings
+  - Collapse blocks of string nodes
+  """
   def pre_process(ast) do
     ast
     |> Enum.map(&process_node/1)
     |> collapse_strings()
   end
 
+  @doc """
+  Process a single node
+
+  Handles strings, variables, resources, and tags. Everything else
+  passes through without change.
+  """
   def process_node({:string, string}) do
     {:string, to_string(string)}
   end
@@ -55,6 +67,14 @@ defmodule VML do
 
   def process_node(node), do: node
 
+  @doc """
+  Collapse string nodes next to each other into a single node
+
+  Recurses through the list adding the newly collapsed node into the processing stream.
+
+      iex> VML.collapse_strings([string: "hello", string: " ", string: "world"])
+      [string: "hello world"]
+  """
   def collapse_strings([{:string, string1}, {:string, string2} | nodes]) do
     collapse_strings([{:string, string1 <> string2} | nodes])
   end

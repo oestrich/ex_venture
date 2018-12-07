@@ -1,6 +1,8 @@
 defmodule VMLTest do
   use ExUnit.Case
 
+  doctest VML
+
   describe "parsing simple text" do
     test "just strings" do
       {:ok, tokens} = VML.parse("hi there")
@@ -23,7 +25,7 @@ defmodule VMLTest do
     test "a template variable" do
       {:ok, tokens} = VML.parse("hello [name]")
 
-      assert tokens == [{:string, "hello "}, {:variable, "name"}] 
+      assert tokens == [{:string, "hello "}, {:variable, "name"}]
     end
 
     test "a resource variable" do
