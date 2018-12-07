@@ -37,11 +37,11 @@ markup -> resource : '$1'.
 markup -> tag : '$1'.
 markup -> variable : '$1'.
 
-markup -> word : val('$1').
-markup -> space : val('$1').
-markup -> quote : val('$1').
-markup -> colon : val('$1').
-markup -> new_line : val('$1').
+markup -> word : string('$1').
+markup -> space : string('$1').
+markup -> quote : string('$1').
+markup -> colon : string('$1').
+markup -> new_line : string('$1').
 
 markup -> '=' : val('$1').
 markup -> '\\' : val('$1').
@@ -68,6 +68,7 @@ variable -> '[' word ']' : {variable, val('$2')}.
 
 Erlang code.
 
+string(V) -> {string, val(V)}.
 val({_, _, V}) -> V.
 name(N) -> {name, val(N)}.
 attributes(A) -> {attributes, A}.
