@@ -43,12 +43,12 @@ markup -> quote : string('$1').
 markup -> colon : string('$1').
 markup -> new_line : string('$1').
 
-markup -> '=' : val('$1').
-markup -> '\\' : val('$1').
-markup -> '\\[' : val('$1').
-markup -> '\\]' : val('$1').
-markup -> '\\{' : val('$1').
-markup -> '\\}' : val('$1').
+markup -> '=' : string('$1').
+markup -> '\\' : string('$1').
+markup -> '\\[' : string('$1').
+markup -> '\\]' : string('$1').
+markup -> '\\{' : string('$1').
+markup -> '\\}' : string('$1').
 
 tag -> '{' word '}' text '{/' word '}' : tag('$2', '$4', '$6').
 tag -> '{' word '}' '{/' word '}' : tag('$2', [], '$5').

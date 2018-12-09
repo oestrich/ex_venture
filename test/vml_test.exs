@@ -33,5 +33,10 @@ defmodule VMLTest do
 
       assert tokens == [{:string, "welcome to "}, {:resource, "zone", "1"}]
     end
+
+    test "special characters" do
+      {:ok, tokens} = VML.parse("=")
+      assert tokens == [{:string, "="}]
+    end
   end
 end
