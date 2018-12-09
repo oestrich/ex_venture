@@ -94,6 +94,7 @@ defmodule Game.Account do
   @spec save_session(User.t(), Character.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
   def save_session(player, character, save, session_started_at, now, stats) do
     with {:ok, character} <- save(character, save),
+         {:ok, _user} <- touch_user(character),
          {:ok, _character} <- update_time_online(character, session_started_at, now) do
       player |> create_session(session_started_at, now, stats)
 
@@ -110,6 +111,17 @@ defmodule Game.Account do
 
     character
     |> Character.changeset(%{save: save})
+    |> Repo.update()
+  end
+
+  @doc """
+  Touch the user on any character save
+  """
+  def touch_user(character) do
+    character = Repo.preload(character, [:user])
+
+    character.user
+    |> Ecto.Changeset.change(%{updated_at: Timex.now() |> DateTime.truncate(:second)})
     |> Repo.update()
   end
 
