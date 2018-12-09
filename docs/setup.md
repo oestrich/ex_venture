@@ -92,7 +92,7 @@ mix local.hex
 mix local.rebar
 ```
 
-Note that you *must* install the versions in the `.tool-versions` file. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
+Note that you _must_ install the versions in the `.tool-versions` file. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
 
 ## ExVenture
 
@@ -105,12 +105,12 @@ mix deps.get
 mix compile
 ```
 
-To get assets set up, which uses [brunch][brunch]. brunch is a package that handles asset compilation for us.
+To get assets set up, which uses [webpack][webpack]. Webpack is a package that handles asset compilation for us.
 
 ```bash
 cd assets
 npm install
-node node_modules/brunch/bin/brunch build
+npm run build
 cd ..
 ```
 
@@ -169,5 +169,5 @@ mix test
 [asdf-erlang]: https://github.com/asdf-vm/asdf-erlang
 [asdf-elixir]: https://github.com/asdf-vm/asdf-elixir
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
-[brunch]: https://github.com/brunch/brunch
+[webpack]: https://webpack.js.org/
 [tt++]: http://tintin.sourceforge.net/
