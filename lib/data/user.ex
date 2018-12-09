@@ -30,7 +30,7 @@ defmodule Data.User do
     has_many(:characters, Character)
     has_many(:sessions, Session)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """
