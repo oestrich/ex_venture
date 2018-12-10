@@ -22,7 +22,8 @@ const RoomName = styled.div`
 `;
 
 const Exit = styled.span`
-  color: ${theme.vml.exit}
+  color: ${theme.vml.exit};
+  text-decoration: underline;
   cursor: pointer;
 `;
 

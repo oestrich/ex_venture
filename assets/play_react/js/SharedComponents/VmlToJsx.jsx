@@ -12,6 +12,7 @@ const ColoredSpan = styled.span`
 
 const Command = styled(ColoredSpan)`
   cursor: pointer;
+  text-decoration: underline;
 `;
 
 const VmlToJsx = ({ dispatch, vmlString }) => {
