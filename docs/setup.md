@@ -14,6 +14,15 @@ Ubuntu:
 sudo apt install git
 ```
 
+### Cloning ExVenture
+
+Clone ExVenture.
+
+```bash
+git clone https://github.com/oestrich/ex_venture.git
+cd ex_venture
+```
+
 ### PostgreSQL
 
 You should install PostgreSQL via your platforms package manager or Postgres.app for Mac.
@@ -36,13 +45,12 @@ sudo -u postgres createuser -P --superuser `whoami`
 
 #### PostgreSQL Authentication
 
-Set up a `config/dev.local.exs` file. This does not exist so you will need to make it. Place the following inside of it, change the username and password to match what you picked above.
+Set up a `config/dev.local.exs` file. This does not exist so you will need to make it. Place the following inside of it, change the username and password to match what you picked above. The username will be your local username, type `whoami` to see it.
 
 ```elixir
 use Mix.Config
 
 config :ex_venture, Data.Repo,
-  adapter: Ecto.Adapters.Postgres,
   database: "ex_venture_dev",
   hostname: "localhost",
   username: "CHANGEME",
@@ -69,7 +77,7 @@ Before installing Erlang you may also require development headers to be in place
 Ubuntu ([taken from asdf-erlang][asdf-erlang]):
 
 ```bash
-sudo apt install build-essential autoconf m4 libncurses5-dev libwxgtk3.0-dev libgl1-mesa-dev libglu1-mesa-dev libpng3 libssh-dev unixodbc-dev python
+sudo apt install build-essential autoconf m4 libncurses5-dev libssh-dev unixodbc-dev python unzip
 ```
 
 Install the nodejs plugin first to source their keyring.
@@ -79,9 +87,11 @@ asdf plugin-add nodejs
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 ```
 
-Install all three languages. This will take a while.
+Install all three languages. This will take a while. You may need to run `asdf install` three times to get all of the languages installed.
 
 ```bash
+asdf plugin-add erlang
+asdf plugin-add elixir
 asdf install
 ```
 
@@ -92,25 +102,23 @@ mix local.hex
 mix local.rebar
 ```
 
-Note that you *must* install the versions in the `.tool-versions` file. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
+Note that you _must_ install the versions in the `.tool-versions` file. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
 
 ## ExVenture
 
 With requirements set up we can start to get ExVenture going. These commands will set up the elixir side:
 
 ```bash
-git clone https://github.com/oestrich/ex_venture.git
-cd ex_venture
 mix deps.get
 mix compile
 ```
 
-To get assets set up, which uses [brunch][brunch]. brunch is a package that handles asset compilation for us.
+To get assets set up, which uses [webpack][webpack]. Webpack is a package that handles asset compilation for us.
 
 ```bash
 cd assets
 npm install
-node node_modules/brunch/bin/brunch build
+npm run build
 cd ..
 ```
 
@@ -169,5 +177,5 @@ mix test
 [asdf-erlang]: https://github.com/asdf-vm/asdf-erlang
 [asdf-elixir]: https://github.com/asdf-vm/asdf-elixir
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
-[brunch]: https://github.com/brunch/brunch
+[webpack]: https://webpack.js.org/
 [tt++]: http://tintin.sourceforge.net/
