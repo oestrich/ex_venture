@@ -7,7 +7,6 @@ defmodule Game.Command.Socials do
 
   import Game.Room.Helpers, only: [find_character: 2]
 
-  alias Game.Format
   alias Game.Format.Socials, as: FormatSocials
   alias Game.Socials
 
@@ -145,6 +144,6 @@ defmodule Game.Command.Socials do
       gettext("Please make sure to enter the social command. See {command}socials{/command} for the list.")
     ]
 
-    state.socket |> @socket.echo(Format.wrap(Enum.join(lines, " ")))
+    state.socket |> @socket.echo(Enum.join(lines, " "))
   end
 end

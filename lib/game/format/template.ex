@@ -3,8 +3,6 @@ defmodule Game.Format.Template do
   Template a string with variables
   """
 
-  @variable_regex ~r/\[([^\[][^\]]*)\]/
-
   @doc """
   Render a template with a context
 
@@ -27,26 +25,49 @@ defmodule Game.Format.Template do
       |> Map.get(:assigns, %{})
       |> Enum.into(%{}, fn {key, val} -> {to_string(key), val} end)
 
-    string
-    |> String.split(@variable_regex, include_captures: true)
-    |> Enum.map(&replace_variables(&1, context))
-    |> Enum.join()
-  end
-
-  defp replace_variables(string, context) do
-    case Regex.run(@variable_regex, string) do
-      nil ->
-        string
-
-      [_, variable] ->
-        key = String.trim(variable)
-        leading_spaces = String.replace(variable, ~r/#{key}[\s]*/, "")
-
-        case Map.get(context, key, "") do
-          "" -> ""
-          nil -> ""
-          value -> Enum.join([leading_spaces, value])
-        end
+    with {:ok, ast} <- VML.parse(string) do
+      VML.collapse(replace_variables(ast, context))
     end
   end
+
+  defp replace_variables([], _context), do: []
+
+  defp replace_variables([node | nodes], context) do
+    [replace_variable(node, context) | replace_variables(nodes, context)]
+  end
+
+  defp replace_variable({:variable, space, name}, context) do
+    case replace_variable({:variable, name}, context) do
+      {:string, ""} ->
+        {:string, ""}
+
+      {:string, value} ->
+        {:string, space <> value}
+
+      value when is_list(value) ->
+        [{:string, space} | value]
+    end
+  end
+
+  defp replace_variable({:variable, name}, context) do
+    case Map.get(context, name, "") do
+      "" ->
+        {:string, ""}
+
+      nil ->
+        {:string, ""}
+
+      value when is_list(value) ->
+        value
+
+      value ->
+        {:string, value}
+    end
+  end
+
+  defp replace_variable({:tag, attributes, nodes}, context) do
+    {:tag, attributes, replace_variables(nodes, context)}
+  end
+
+  defp replace_variable(node, _context), do: node
 end

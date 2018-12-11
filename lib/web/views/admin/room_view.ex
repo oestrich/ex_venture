@@ -106,7 +106,6 @@ defmodule Web.Admin.RoomView do
 
     room
     |> FormatRooms.room_description()
-    |> Format.wrap()
     |> Color.format()
     |> raw()
   end
@@ -116,7 +115,6 @@ defmodule Web.Admin.RoomView do
   def listen(room) do
     text =
       room.listen
-      |> Format.wrap()
       |> Color.format()
       |> raw()
 

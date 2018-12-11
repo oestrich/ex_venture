@@ -4,6 +4,11 @@ defmodule VMLTest do
   doctest VML
 
   describe "parsing simple text" do
+    test "skipping an already parsed ast" do
+      {:ok, tokens} = VML.parse("hi there")
+      {:ok, ^tokens} = VML.parse("hi there")
+    end
+
     test "just strings" do
       {:ok, tokens} = VML.parse("hi there")
 
@@ -26,6 +31,14 @@ defmodule VMLTest do
       {:ok, tokens} = VML.parse("hello [name]")
 
       assert tokens == [{:string, "hello "}, {:variable, "name"}]
+    end
+
+    test "a template variable with spaces" do
+      {:ok, tokens} = VML.parse("hello [ name]")
+      assert tokens == [{:string, "hello "}, {:variable, " ", "name"}]
+
+      {:ok, tokens} = VML.parse("hello [\nname]")
+      assert tokens == [{:string, "hello "}, {:variable, "\n", "name"}]
     end
 
     test "a resource variable" do
@@ -56,6 +69,28 @@ defmodule VMLTest do
       {:ok, tokens} = VML.parse("{command send='help say' click='false'}Say{/command}")
 
       assert tokens == [{:tag, [name: "command", attributes: [{"send", "help say"}, {"click", "false"}]], [{:string, "Say"}]}]
+    end
+  end
+
+  describe "collapse AST back to a string" do
+    test "simple" do
+      string = VML.collapse([{:string, "Hello"}])
+      assert string == "Hello"
+    end
+
+    test "multiple strings" do
+      string = VML.collapse([{:string, "Hello"}, {:string, ", world"}])
+      assert string == "Hello, world"
+    end
+
+    test "with tags" do
+      string = VML.collapse([{:tag, [name: "red"], [{:string, "Hello"}]}])
+      assert string == "{red}Hello{/red}"
+    end
+
+    test "nested lists" do
+      string = VML.collapse([[{:tag, [name: "red"], [{:string, "Hello"}]}], {:string, "World"}])
+      assert string == "{red}Hello{/red}World"
     end
   end
 end

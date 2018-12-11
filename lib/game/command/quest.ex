@@ -225,10 +225,10 @@ defmodule Game.Command.Quest do
 
       false ->
         response =
-          Format.wrap_lines([
+          Enum.join([
             gettext("You have not completed the requirements for the quest."),
             gettext("See {command}quest info %{id}{/command} for your current progress.)", id: progress.quest_id)
-          ])
+          ], " ")
 
         state.socket |> @socket.echo(response)
     end

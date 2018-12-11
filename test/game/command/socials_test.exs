@@ -18,8 +18,8 @@ defmodule Game.Command.SocialsTest do
       id: 1,
       name: "Smile",
       command: "smile",
-      with_target: "{user} smiles at {target}",
-      without_target: "{user} smiles"
+      with_target: "[user] smiles at [target]",
+      without_target: "[user] smiles"
     } |> insert_social()
     %Social{id: 2, name: "Laugh", command: "laugh"} |> insert_social()
 

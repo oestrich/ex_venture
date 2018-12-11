@@ -45,7 +45,7 @@ defmodule Game.Format.Quests do
     #{header}
     #{header |> Format.underline()}
 
-    #{quest.description |> Format.wrap()}
+    #{quest.description}
 
     #{steps |> Enum.join("\n")}
     """

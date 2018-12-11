@@ -30,6 +30,5 @@ defmodule Game.Format.Listen do
     |> assign(:features, features)
     |> assign(:npcs, npcs)
     |> Format.template("{white}You can hear:{/white}[\nroom][\nfeatures][\nnpcs]")
-    |> Format.wrap()
   end
 end

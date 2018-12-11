@@ -70,6 +70,8 @@ attribute_value -> word : [val('$1')].
 resource -> '{' '{' word colon word '}' '}' : {resource, val('$3'), val('$5')}.
 
 variable -> '[' word ']' : {variable, val('$2')}.
+variable -> '[' space word ']' : {variable, val('$2'), val('$3')}.
+variable -> '[' new_line word ']' : {variable, val('$2'), val('$3')}.
 
 Erlang code.
 

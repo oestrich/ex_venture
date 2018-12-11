@@ -3,9 +3,21 @@ defmodule VML do
   Parse VML text strings
   """
 
+  def parse!(string) do
+    case parse(string) do
+      {:ok, ast} ->
+        ast
+
+      {:error, _type, error} ->
+        raise error
+    end
+  end
+
   @doc """
   Parse a string into an AST for processing
   """
+  def parse(list) when is_list(list), do: {:ok, list}
+
   def parse(string) do
     case :vml_lexer.string(String.to_charlist(string)) do
       {:ok, tokens, _} ->
@@ -14,6 +26,30 @@ defmodule VML do
       {:error, {_, _, reason}} ->
         {:error, :lexer, reason}
     end
+  end
+
+  @doc """
+  Convert a processed (no variables) AST back to a string
+  """
+  def collapse(string) when is_binary(string), do: string
+
+  def collapse(integer) when is_integer(integer), do: to_string(integer)
+
+  def collapse(float) when is_float(float), do: to_string(float)
+
+  def collapse(atom) when is_atom(atom), do: to_string(atom)
+
+  def collapse({:tag, attributes, nodes}) do
+    name = Keyword.get(attributes, :name)
+    "{#{name}}#{collapse(nodes)}{/#{name}}"
+  end
+
+  def collapse({:string, string}), do: string
+
+  def collapse(list) when is_list(list) do
+    list
+    |> Enum.map(&collapse/1)
+    |> Enum.join()
   end
 
   @doc false
@@ -51,6 +87,10 @@ defmodule VML do
 
   def process_node({:variable, string}) do
     {:variable, to_string(string)}
+  end
+
+  def process_node({:variable, space, string}) do
+    {:variable, to_string(space), to_string(string)}
   end
 
   def process_node({:resource, resource, id}) do
@@ -97,10 +137,17 @@ defmodule VML do
 
       iex> VML.collapse_strings([string: "hello", string: " ", string: "world"])
       [string: "hello world"]
+
+      iex> VML.collapse_strings([variable: "name", string: ",", string: " ", string: "hello", string: " ", string: "world"])
+      [variable: "name", string: ", hello world"]
   """
+  def collapse_strings([]), do: []
+
   def collapse_strings([{:string, string1}, {:string, string2} | nodes]) do
     collapse_strings([{:string, to_string(string1) <> to_string(string2)} | nodes])
   end
 
-  def collapse_strings(nodes), do: nodes
+  def collapse_strings([node | nodes]) do
+    [node | collapse_strings(nodes)]
+  end
 end

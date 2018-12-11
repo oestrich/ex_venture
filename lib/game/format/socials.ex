@@ -44,7 +44,7 @@ defmodule Game.Format.Socials do
   def social_without_target(social, player) do
     context()
     |> assign(:user, Format.player_name(player))
-    |> Format.template("{say}#{social.without_target}{say}")
+    |> Format.template("{say}#{social.without_target}{/say}")
   end
 
   @doc """
@@ -54,6 +54,6 @@ defmodule Game.Format.Socials do
     context()
     |> assign(:user, Format.player_name(player))
     |> assign(:target, Format.name(target))
-    |> Format.template("{say}#{social.with_target}{say}")
+    |> Format.template("{say}#{social.with_target}{/say}")
   end
 end

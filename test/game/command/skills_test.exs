@@ -19,7 +19,7 @@ defmodule Game.Command.SkillsTest do
       points: 2,
       command: "slash",
       description: "Slash",
-      user_text: "Slash at your {target}",
+      user_text: "Slash at your [target]",
       usee_text: "You were slashed at",
       effects: [%{kind: "damage", type: "slashing", amount: 5}],
     })
