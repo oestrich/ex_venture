@@ -98,8 +98,8 @@ asdf install
 Get local versions of hex and rebar.
 
 ```bash
-mix local.hex
-mix local.rebar
+mix local.hex --force
+mix local.rebar --force
 ```
 
 Note that you _must_ install the versions in the `.tool-versions` file. ExVenture stays very up to date with Erlang/Elixir versions and regularly uses features that require the latest version of Erlang or Elixir.
