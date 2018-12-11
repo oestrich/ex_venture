@@ -4,6 +4,15 @@ By the end of this guide you should have a working ExVenture development environ
 
 ## Requirements
 
+### Cloning ExVenture
+
+Clone ExVenture.
+
+```bash
+git clone https://github.com/oestrich/ex_venture.git
+cd ex_venture
+```
+
 ### Git
 
 You should install Git via your platform's package manager.
@@ -36,7 +45,7 @@ sudo -u postgres createuser -P --superuser `whoami`
 
 #### PostgreSQL Authentication
 
-Set up a `config/dev.local.exs` file. This does not exist so you will need to make it. Place the following inside of it, change the username and password to match what you picked above.
+Set up a `config/dev.local.exs` file. This does not exist so you will need to make it. Place the following inside of it, change the username and password to match what you picked above. The username will be your local username, type `whoami` to see it.
 
 ```elixir
 use Mix.Config
@@ -76,13 +85,6 @@ Install the nodejs plugin first to source their keyring.
 ```bash
 asdf plugin-add nodejs
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-```
-
-Clone ExVenture to get the local `.tools-versions` file so asdf knows what to install.
-
-```bash
-git clone https://github.com/oestrich/ex_venture.git
-cd ex_venture
 ```
 
 Install all three languages. This will take a while. You may need to run `asdf install` three times to get all of the languages installed.
