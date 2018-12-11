@@ -4,15 +4,6 @@ By the end of this guide you should have a working ExVenture development environ
 
 ## Requirements
 
-### Cloning ExVenture
-
-Clone ExVenture.
-
-```bash
-git clone https://github.com/oestrich/ex_venture.git
-cd ex_venture
-```
-
 ### Git
 
 You should install Git via your platform's package manager.
@@ -21,6 +12,15 @@ Ubuntu:
 
 ```bash
 sudo apt install git
+```
+
+### Cloning ExVenture
+
+Clone ExVenture.
+
+```bash
+git clone https://github.com/oestrich/ex_venture.git
+cd ex_venture
 ```
 
 ### PostgreSQL
