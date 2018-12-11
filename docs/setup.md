@@ -42,7 +42,6 @@ Set up a `config/dev.local.exs` file. This does not exist so you will need to ma
 use Mix.Config
 
 config :ex_venture, Data.Repo,
-  adapter: Ecto.Adapters.Postgres,
   database: "ex_venture_dev",
   hostname: "localhost",
   username: "CHANGEME",
@@ -69,7 +68,7 @@ Before installing Erlang you may also require development headers to be in place
 Ubuntu ([taken from asdf-erlang][asdf-erlang]):
 
 ```bash
-sudo apt install build-essential autoconf m4 libncurses5-dev libwxgtk3.0-dev libgl1-mesa-dev libglu1-mesa-dev libpng3 libssh-dev unixodbc-dev python
+sudo apt install build-essential autoconf m4 libncurses5-dev libssh-dev unixodbc-dev python unzip
 ```
 
 Install the nodejs plugin first to source their keyring.
@@ -79,9 +78,18 @@ asdf plugin-add nodejs
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 ```
 
-Install all three languages. This will take a while.
+Clone ExVenture to get the local `.tools-versions` file so asdf knows what to install.
 
 ```bash
+git clone https://github.com/oestrich/ex_venture.git
+cd ex_venture
+```
+
+Install all three languages. This will take a while. You may need to run `asdf install` three times to get all of the languages installed.
+
+```bash
+asdf plugin-add erlang
+asdf plugin-add elixir
 asdf install
 ```
 
@@ -99,8 +107,6 @@ Note that you _must_ install the versions in the `.tool-versions` file. ExVentur
 With requirements set up we can start to get ExVenture going. These commands will set up the elixir side:
 
 ```bash
-git clone https://github.com/oestrich/ex_venture.git
-cd ex_venture
 mix deps.get
 mix compile
 ```
