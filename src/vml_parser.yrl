@@ -2,6 +2,7 @@ Nonterminals
 text
 markup
 tag
+tag_name
 attributes
 attribute
 attribute_value
@@ -50,14 +51,18 @@ markup -> '\\]' : string('$1').
 markup -> '\\{' : string('$1').
 markup -> '\\}' : string('$1').
 
-tag -> '{' word '}' text '{/' word '}' : tag('$2', '$4', '$6').
-tag -> '{' word '}' '{/' word '}' : tag('$2', [], '$5').
-tag -> '{' word space attributes '}' text '{/' word '}' : tag('$2', '$4', '$6', '$8').
+tag -> '{' tag_name '}' text '{/' tag_name '}' : tag('$2', '$4', '$6').
+tag -> '{' tag_name '}' '{/' tag_name '}' : tag('$2', [], '$5').
+tag -> '{' tag_name space attributes '}' text '{/' tag_name '}' : tag('$2', '$4', '$6', '$8').
 
-attributes -> attribute space attribute : ['$1' | ['$3']].
-attributes -> attribute : '$1'.
+tag_name -> word tag_name : [string('$1') | '$2'].
+tag_name -> colon tag_name : [string('$1') | '$2'].
+tag_name -> word : [string('$1')].
 
-attribute -> word '=' quote attribute_value quote : [name('$1'), '$4'].
+attributes -> attribute space attributes : ['$1' | '$3'].
+attributes -> attribute : ['$1'].
+
+attribute -> word '=' quote attribute_value quote : attribute('$1', '$4').
 
 attribute_value -> word space attribute_value : [val('$1') | [val('$2') | '$3']].
 attribute_value -> word : [val('$1')].
@@ -70,13 +75,14 @@ Erlang code.
 
 string(V) -> {string, val(V)}.
 val({_, _, V}) -> V.
-name(N) -> {name, val(N)}.
+
+attribute(Name, Val) -> {val(Name), Val}.
 attributes(A) -> {attributes, A}.
 
 tag(StartName, Markup, EndName) ->
   if
   StartName =:= EndName ->
-    {tag, [name(StartName)], Markup};
+    {tag, [{name, StartName}], Markup};
   true ->
     return_error(1, tag_mismatch_msg(StartName, EndName))
   end.
@@ -84,7 +90,7 @@ tag(StartName, Markup, EndName) ->
 tag(StartName, Attributes, Markup, EndName) ->
   if
   StartName =:= EndName ->
-    {tag, [name(StartName), attributes(Attributes)], Markup};
+    {tag, [{name, StartName}, attributes(Attributes)], Markup};
   true ->
     return_error(1, tag_mismatch_msg(StartName, EndName))
   end.

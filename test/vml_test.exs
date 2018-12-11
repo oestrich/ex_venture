@@ -36,7 +36,26 @@ defmodule VMLTest do
 
     test "special characters" do
       {:ok, tokens} = VML.parse("=")
+
       assert tokens == [{:string, "="}]
+    end
+
+    test "map colors" do
+      {:ok, tokens} = VML.parse("{map:blue}\\[ \\]{/map:blue}")
+
+      assert tokens == [{:tag, [name: "map:blue"], [{:string, "\\[ \\]"}]}]
+    end
+
+    test "tag a attribute" do
+      {:ok, tokens} = VML.parse("{command send='help say'}Say{/command}")
+
+      assert tokens == [{:tag, [name: "command", attributes: [{"send", "help say"}]], [{:string, "Say"}]}]
+    end
+
+    test "tag attributes" do
+      {:ok, tokens} = VML.parse("{command send='help say' click='false'}Say{/command}")
+
+      assert tokens == [{:tag, [name: "command", attributes: [{"send", "help say"}, {"click", "false"}]], [{:string, "Say"}]}]
     end
   end
 end
