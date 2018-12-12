@@ -25,27 +25,45 @@ defmodule Game.Color do
   """
   @spec format(String.t(), map()) :: String.t()
   def format(string, config \\ %{}) do
-    string = string |> strip_commands()
-    split = Regex.split(@color_regex, string, include_captures: true)
-
-    split
-    |> _format([], [], config)
-    |> Enum.reverse()
-    |> Enum.join()
+    with {:ok, ast} <- VML.parse(string) do
+      colorize(ast, config)
+    else
+      _ ->
+        string
+    end
   end
 
-  defp _format([], lines, stack, _config) when length(stack) > 0, do: ["\e[0m" | lines]
-  defp _format([], lines, _stack, _config), do: lines
+  @doc """
+  Colorize a VML AST
+  """
+  def colorize(string, config, current_color \\ "reset")
 
-  defp _format([head | tail], lines, stack, config) do
-    case Regex.match?(@color_regex, head) do
-      true ->
-        {code, stack} = format_color_code(head, stack, config)
-        _format(tail, [code | lines], stack, config)
+  def colorize(string, _config, _current_color) when is_binary(string), do: string
 
-      false ->
-        _format(tail, [head | lines], stack, config)
-    end
+  def colorize(integer, _config, _current_color) when is_integer(integer), do: to_string(integer)
+
+  def colorize(float, _config, _current_color) when is_float(float), do: to_string(float)
+
+  def colorize(atom, _config, _current_color) when is_atom(atom), do: to_string(atom)
+
+  def colorize({:tag, attributes, nodes}, config, current_color) do
+    name = Keyword.get(attributes, :name)
+    color = format_color(name, config)
+    color <> colorize(nodes, config, name) <> format_color(current_color, config)
+  end
+
+  def colorize({:string, string}, _config, _current_color) do
+    string
+    |> String.replace("\\[", "[")
+    |> String.replace("\\]", "]")
+    |> String.replace("\\{", "{")
+    |> String.replace("\\}", "}")
+  end
+
+  def colorize(list, config, current_color) when is_list(list) do
+    list
+    |> Enum.map(&colorize(&1, config, current_color))
+    |> Enum.join()
   end
 
   @doc """
@@ -63,42 +81,6 @@ defmodule Game.Color do
   end
 
   @doc """
-  Determine if the color code is an open tag
-  """
-  @spec color_code_open?(String.t()) :: boolean()
-  def color_code_open?("{/" <> _), do: false
-  def color_code_open?(_), do: true
-
-  @doc """
-  Format a color code, opening will add to the stack, closing will read/pull off of the stack
-  """
-  def format_color_code(code, stack, config) do
-    case color_code_open?(code) do
-      false ->
-        format_closing_code(stack, config)
-
-      true ->
-        {format_color(code, config), [code | stack]}
-    end
-  end
-
-  @doc """
-  Format the closing code, which pulls off of the stack
-  """
-  @spec format_closing_code([], map()) :: {String.t(), []}
-  def format_closing_code([_previous | [previous | stack]], config) do
-    {format_color(previous, config), [previous | stack]}
-  end
-
-  def format_closing_code([_previous | stack], _config) do
-    {format_basic_color("{/color}"), stack}
-  end
-
-  def format_closing_code(stack, _config) do
-    {format_basic_color("{/color}"), stack}
-  end
-
-  @doc """
   Format a specific color tag
   """
   @spec format_color(String.t(), map()) :: String.t()
@@ -109,47 +91,47 @@ defmodule Game.Color do
 
       {tag, color} ->
         color = Map.get(config, String.to_atom("color_#{tag}"), color)
-        format_basic_color("{#{color}}")
+        format_basic_color(to_string(color))
     end
   end
 
-  def format_semantic_color("{npc}"), do: {:npc, :yellow}
-  def format_semantic_color("{item}"), do: {:item, :cyan}
-  def format_semantic_color("{player}"), do: {:player, :blue}
-  def format_semantic_color("{skill}"), do: {:skill, :white}
-  def format_semantic_color("{quest}"), do: {:quest, :yellow}
-  def format_semantic_color("{room}"), do: {:room, :green}
-  def format_semantic_color("{zone}"), do: {:zone, :white}
-  def format_semantic_color("{say}"), do: {:say, :green}
-  def format_semantic_color("{link}"), do: {:link, :white}
-  def format_semantic_color("{command}"), do: {:command, :white}
-  def format_semantic_color("{exit}"), do: {:exit, :white}
-  def format_semantic_color("{shop}"), do: {:shop, :magenta}
-  def format_semantic_color("{hint}"), do: {:hint, :cyan}
-  def format_semantic_color("{error}"), do: {:error, :red}
+  def format_semantic_color("npc"), do: {:npc, :yellow}
+  def format_semantic_color("item"), do: {:item, :cyan}
+  def format_semantic_color("player"), do: {:player, :blue}
+  def format_semantic_color("skill"), do: {:skill, :white}
+  def format_semantic_color("quest"), do: {:quest, :yellow}
+  def format_semantic_color("room"), do: {:room, :green}
+  def format_semantic_color("zone"), do: {:zone, :white}
+  def format_semantic_color("say"), do: {:say, :green}
+  def format_semantic_color("link"), do: {:link, :white}
+  def format_semantic_color("command"), do: {:command, :white}
+  def format_semantic_color("exit"), do: {:exit, :white}
+  def format_semantic_color("shop"), do: {:shop, :magenta}
+  def format_semantic_color("hint"), do: {:hint, :cyan}
+  def format_semantic_color("error"), do: {:error, :red}
   def format_semantic_color(_), do: :error
 
   @doc """
   Format a basic color tag, straight colors
   """
   @spec format_basic_color(String.t()) :: String.t()
-  def format_basic_color("{/" <> _), do: "\e[0m"
+  def format_basic_color("reset"), do: "\e[0m"
 
-  def format_basic_color("{black}"), do: "\e[30m"
-  def format_basic_color("{red}"), do: "\e[31m"
-  def format_basic_color("{green}"), do: "\e[32m"
-  def format_basic_color("{yellow}"), do: "\e[33m"
-  def format_basic_color("{blue}"), do: "\e[34m"
-  def format_basic_color("{magenta}"), do: "\e[35m"
-  def format_basic_color("{cyan}"), do: "\e[36m"
-  def format_basic_color("{white}"), do: "\e[37m"
-  def format_basic_color("{map:default}"), do: ""
-  def format_basic_color("{map:blue}"), do: "\e[38;5;26m"
-  def format_basic_color("{map:brown}"), do: "\e[38;5;94m"
-  def format_basic_color("{map:dark-green}"), do: "\e[38;5;22m"
-  def format_basic_color("{map:green}"), do: "\e[38;5;34m"
-  def format_basic_color("{map:grey}"), do: "\e[38;5;240m"
-  def format_basic_color("{map:light-grey}"), do: "\e[38;5;250m"
+  def format_basic_color("black"), do: "\e[30m"
+  def format_basic_color("red"), do: "\e[31m"
+  def format_basic_color("green"), do: "\e[32m"
+  def format_basic_color("yellow"), do: "\e[33m"
+  def format_basic_color("blue"), do: "\e[34m"
+  def format_basic_color("magenta"), do: "\e[35m"
+  def format_basic_color("cyan"), do: "\e[36m"
+  def format_basic_color("white"), do: "\e[37m"
+  def format_basic_color("map:default"), do: ""
+  def format_basic_color("map:blue"), do: "\e[38;5;26m"
+  def format_basic_color("map:brown"), do: "\e[38;5;94m"
+  def format_basic_color("map:dark-green"), do: "\e[38;5;22m"
+  def format_basic_color("map:green"), do: "\e[38;5;34m"
+  def format_basic_color("map:grey"), do: "\e[38;5;240m"
+  def format_basic_color("map:light-grey"), do: "\e[38;5;250m"
 
   def format_basic_color(key) do
     key =

@@ -25,7 +25,7 @@ defmodule Game.Format.Players do
       iex> stats = %{health_points: 50, max_health_points: 75, skill_points: 9, max_skill_points: 10, endurance_points: 4, max_endurance_points: 10}
       ...> config = %{prompt: "%h/%Hhp %s/%Ssp %e/%Eep %xxp"}
       ...> Players.prompt(%{experience_points: 1010, stats: stats, config: config})
-      "[50/75hp 9/10sp 4/10ep 10xp] > "
+      "\\\\[50/75hp 9/10sp 4/10ep 10xp\\\\] > "
   """
   @spec prompt(Save.t()) :: String.t()
   def prompt(save)
@@ -33,7 +33,7 @@ defmodule Game.Format.Players do
   def prompt(%{experience_points: exp, stats: stats, config: config}) do
     exp = rem(exp, 1000)
 
-    "[#{config.prompt}] > "
+    "\\[#{config.prompt}\\] > "
     |> String.replace("%h", to_string(stats.health_points))
     |> String.replace("%H", to_string(stats.max_health_points))
     |> String.replace("%s", to_string(stats.skill_points))

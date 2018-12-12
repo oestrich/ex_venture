@@ -70,6 +70,14 @@ defmodule VMLTest do
 
       assert tokens == [{:tag, [name: "command", attributes: [{"send", "help say"}, {"click", "false"}]], [{:string, "Say"}]}]
     end
+
+    test "links" do
+      {:ok, tokens} = VML.parse("{link}http://localhost:4000/connection/authorize?id=1eeb44f7-e015-4089-bacc-1a5dc6ec582d{/link}")
+
+      assert tokens == [
+        {:tag, [name: "link"], [string: "http://localhost:4000/connection/authorize?id=1eeb44f7-e015-4089-bacc-1a5dc6ec582d"]}
+      ]
+    end
   end
 
   describe "collapse AST back to a string" do

@@ -90,6 +90,7 @@ defmodule Game.Command.Say do
       |> String.replace(~r/^>/, "")
       |> String.replace(~r/^"/, "")
       |> String.replace(~r/"$/, "")
+      |> VML.escape()
 
     %ParsedMessage{
       message: string,

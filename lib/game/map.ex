@@ -82,6 +82,8 @@ defmodule Game.Map do
     |> Enum.map(&"   #{&1}")
     |> Enum.join("\n")
     |> String.replace(~r/-\+-/, "---")
+    |> String.replace("[", "\\[")
+    |> String.replace("]", "\\]")
   end
 
   @doc """

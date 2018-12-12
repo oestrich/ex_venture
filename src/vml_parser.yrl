@@ -15,6 +15,7 @@ word
 space
 quote
 colon
+dash
 new_line
 '{'
 '{/'
@@ -43,6 +44,7 @@ markup -> space : string('$1').
 markup -> quote : string('$1').
 markup -> colon : string('$1').
 markup -> new_line : string('$1').
+markup -> dash : string('$1').
 
 markup -> '=' : string('$1').
 markup -> '\\' : string('$1').
@@ -57,6 +59,7 @@ tag -> '{' tag_name space attributes '}' text '{/' tag_name '}' : tag('$2', '$4'
 
 tag_name -> word tag_name : [string('$1') | '$2'].
 tag_name -> colon tag_name : [string('$1') | '$2'].
+tag_name -> dash tag_name : [string('$1') | '$2'].
 tag_name -> word : [string('$1')].
 
 attributes -> attribute space attributes : ['$1' | '$3'].

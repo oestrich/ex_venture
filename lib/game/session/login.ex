@@ -76,7 +76,7 @@ defmodule Game.Session.Login do
         socket |> @socket.echo(dgettext("login", "You have mail."))
     end
 
-    socket |> @socket.echo(dgettext("login", "{command send='Sign In'}[Press enter to continue]{/command}"))
+    socket |> @socket.echo(dgettext("login", "{command send='Sign In'}\\[Press enter to continue\\]{/command}"))
 
     state
   end

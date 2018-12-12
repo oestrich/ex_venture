@@ -44,11 +44,11 @@ defmodule Game.ColorTest do
   end
 
   test "replaces map colors" do
-    assert format("{map:blue}[ ]{/map:blue}") == "\e[38;5;26m[ ]\e[0m"
+    assert format("{map:blue}\\[ \\]{/map:blue}") == "\e[38;5;26m[ ]\e[0m"
   end
 
   test "replaces map colors - dark green" do
-    assert format("{map:dark-green}[ ]{/map:dark-green}") == "\e[38;5;22m[ ]\e[0m"
+    assert format("{map:dark-green}\\[ \\]{/map:dark-green}") == "\e[38;5;22m[ ]\e[0m"
   end
 
   describe "state machine" do
@@ -77,9 +77,9 @@ defmodule Game.ColorTest do
       assert format(text) == expected
     end
 
-    test "resets the color if there is stack left" do
+    test "does nothing if there is an invalid set of tags" do
       assert format("{green}hi there {white}command{/white} green again") ==
-        "\e[32mhi there \e[37mcommand\e[32m green again\e[0m"
+        "{green}hi there {white}command{/white} green again"
     end
   end
 

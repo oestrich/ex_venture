@@ -86,6 +86,12 @@ function formatColor(payload) {
   // Closing tags
   string = string.replace(/{\/[\w:-]+}/g, "</span>")
 
+  // escaped special characters
+  string = string.replace(/\\\[/g, "[");
+  string = string.replace(/\\]/g, "]");
+  string = string.replace(/\\{/g, "{");
+  string = string.replace(/\\}/g, "}");
+
   return string;
 }
 

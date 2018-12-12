@@ -84,8 +84,8 @@ defmodule Game.Command.SayTest do
     end
 
     test "adverb phrase is first" do
-      assert %ParsedMessage{adverb_phrase: nil, message: "hello [softly]"} = Say.parse_message("hello [softly]")
-      assert %ParsedMessage{adverb_phrase: nil, message: "hello [softly]"} = Say.parse_message("  hello [softly]")
+      assert %ParsedMessage{adverb_phrase: nil, message: "hello \\[softly\\]"} = Say.parse_message("hello [softly]")
+      assert %ParsedMessage{adverb_phrase: nil, message: "hello \\[softly\\]"} = Say.parse_message("  hello [softly]")
     end
   end
 end

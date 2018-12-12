@@ -11,8 +11,9 @@ VariableOpen = \[
 VariableClose = \]
 EscapedVariableOpen = \\\[
 EscapedVariableClose = \\\]
-Word = [^{}\n\[\]=\s'":\\]+
+Word = [^{}\n\[\]=\s'":\\-]+
 Colon = :
+Dash = -
 Space = \s+
 Quote = ['"]
 NewLine = (\n|\n\r|\r)
@@ -24,6 +25,7 @@ Rules.
 {Quote} : {token, {quote, TokenLine, TokenChars}}.
 {Space} : {token, {space, TokenLine, TokenChars}}.
 {Colon} : {token, {colon, TokenLine, TokenChars}}.
+{Dash} : {token, {dash, TokenLine, TokenChars}}.
 {Equal} : {token, {'=', TokenLine, TokenChars}}.
 {NewLine} : {token, {new_line, TokenLine, TokenChars}}.
 {TagOpen} : {token, {'{', TokenLine, TokenChars}}.

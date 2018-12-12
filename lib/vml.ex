@@ -29,9 +29,17 @@ defmodule VML do
         parse_tokens(tokens)
 
       {:error, {_, _, reason}} ->
-        Logger.warn("Encountered a lexing error for #{inspect(string)}")
+        Logger.warn("Encountered a lexing error for #{inspect(string)} - #{inspect(reason)}")
         {:error, :lexer, reason}
     end
+  end
+
+  def escape(string) do
+    string
+    |> String.replace("[", "\\[")
+    |> String.replace("]", "\\]")
+    |> String.replace("{", "\\{")
+    |> String.replace("}", "\\}")
   end
 
   @doc """
