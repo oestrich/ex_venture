@@ -13,11 +13,14 @@ defmodule Game.Format.Channels do
   Example:
 
       iex> Channels.channel_say(%{name: "global", color: "red"}, {:npc, %{name: "NPC"}}, %{message: "Hello"})
-      ~s([{red}global{/red}] {npc}NPC{/npc} says, {say}"Hello"{/say})
+      ~s(\\\\[{red}global{/red}\\\\] {npc}NPC{/npc} says, {say}"Hello"{/say})
   """
   @spec channel_say(String.t(), Character.t(), map()) :: String.t()
   def channel_say(channel, sender, parsed_message) do
-    ~s([#{channel_name(channel)}] #{say(sender, parsed_message)})
+    context()
+    |> assign(:channel_name, channel_name(channel))
+    |> assign(:say, say(sender, parsed_message))
+    |> Format.template("\\[[channel_name]\\] [say]")
   end
 
   @doc """

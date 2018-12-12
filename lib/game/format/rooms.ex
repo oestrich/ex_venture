@@ -51,8 +51,8 @@ defmodule Game.Format.Rooms do
 
     context =
       context()
-      |> assign(:room, "{green}#{room.name}{/green}")
-      |> assign(:zone, "{white}#{room.zone.name}{/white}")
+      |> assign(:room, room_name(room))
+      |> assign(:zone, zone_name(room.zone))
       |> assign(:features, Enum.join(features(room.features), " "))
 
     context =

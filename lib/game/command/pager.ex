@@ -59,7 +59,7 @@ defmodule Game.Command.Pager do
 
       _ ->
         pager = dgettext("commands", "Pager")
-        message = "#{pager}: [{command}Enter{/command}, {command}All{/command}, {command}Quit{/command}] > "
+        message = "#{pager}: \\[{command}Enter{/command}, {command}All{/command}, {command}Quit{/command}\\] > "
         socket |> @socket.prompt(message)
 
         to_save = Enum.join(to_save, "\n")
