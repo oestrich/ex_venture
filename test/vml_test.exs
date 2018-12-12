@@ -92,5 +92,15 @@ defmodule VMLTest do
       string = VML.collapse([[{:tag, [name: "red"], [{:string, "Hello"}]}], {:string, "World"}])
       assert string == "{red}Hello{/red}World"
     end
+
+    test "tag a attribute" do
+      string = VML.collapse([{:tag, [name: "command", attributes: [{"send", "help say"}]], [{:string, "Say"}]}])
+      assert string == "{command send='help say'}Say{/command}"
+    end
+
+    test "tag a attributes" do
+      string = VML.collapse([{:tag, [name: "command", attributes: [{"send", "help say"}, {"click", "false"}]], [{:string, "Say"}]}])
+      assert string == "{command send='help say' click='false'}Say{/command}"
+    end
   end
 end

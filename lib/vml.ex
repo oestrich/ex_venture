@@ -47,7 +47,14 @@ defmodule VML do
 
   def collapse({:tag, attributes, nodes}) do
     name = Keyword.get(attributes, :name)
-    "{#{name}}#{collapse(nodes)}{/#{name}}"
+
+    case Keyword.get(attributes, :attributes) do
+      nil ->
+        "{#{name}}#{collapse(nodes)}{/#{name}}"
+
+      attributes ->
+        "{#{name} #{collapse_attributes(attributes)}}#{collapse(nodes)}{/#{name}}"
+    end
   end
 
   def collapse({:string, string}), do: string
@@ -56,6 +63,14 @@ defmodule VML do
     list
     |> Enum.map(&collapse/1)
     |> Enum.join()
+  end
+
+  defp collapse_attributes(attributes) do
+    attributes
+    |> Enum.map(fn {key, value} ->
+      "#{key}='#{value}'"
+    end)
+    |> Enum.join(" ")
   end
 
   @doc false
