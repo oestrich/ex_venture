@@ -5,6 +5,9 @@ defmodule VML do
 
   require Logger
 
+  @doc """
+  Parse, raise on errors
+  """
   def parse!(string) do
     case parse(string) do
       {:ok, ast} ->
