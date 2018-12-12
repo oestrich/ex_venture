@@ -14,9 +14,12 @@ module.exports = (env, options) => ({
     ]
   },
   entry: {
-    'home': ['./home/js/app.js'].concat(glob.sync('./home/js/vendor/**/*.js')),
-    'admin': ['./admin/js/app.js'].concat(glob.sync('./admin/js/vendor/**/*.js')),
-    'play': ['./play/js/app.js'].concat(glob.sync('./play/js/vendor/**/*.js'))
+    home: ['./home/js/app.js'].concat(glob.sync('./home/js/vendor/**/*.js')),
+    admin: ['./admin/js/app.js'].concat(glob.sync('./admin/js/vendor/**/*.js')),
+    play: ['./play/js/app.js'].concat(glob.sync('./play/js/vendor/**/*.js')),
+    play_react: ['./play_react/js/index.js'].concat(
+      glob.sync('./play/js/vendor/**/*.js')
+    )
   },
   output: {
     filename: '[name].js',
@@ -47,7 +50,8 @@ module.exports = (env, options) => ({
           mimetype: 'application/font-woff',
           fallback: 'file-loader'
         }
-      }, {
+      },
+      {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
         loader: 'url-loader',
         options: {
@@ -56,13 +60,15 @@ module.exports = (env, options) => ({
           mimetype: 'application/octet-stream',
           fallback: 'file-loader'
         }
-      }, {
+      },
+      {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
         loader: 'file-loader',
         options: {
           name: '../css/[name].[ext]'
         }
-      }, {
+      },
+      {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
         loader: 'url-loader',
         options: {
@@ -79,10 +85,10 @@ module.exports = (env, options) => ({
       {
         test: /\.scss$/,
         use: [
-          "style-loader", // creates style nodes from JS strings
+          'style-loader', // creates style nodes from JS strings
           MiniCssExtractPlugin.loader,
-          "css-loader", // translates CSS into CommonJS
-          "sass-loader" // compiles Sass to CSS, using Node Sass by default
+          'css-loader', // translates CSS into CommonJS
+          'sass-loader' // compiles Sass to CSS, using Node Sass by default
         ]
       }
     ]
@@ -91,10 +97,10 @@ module.exports = (env, options) => ({
     new MiniCssExtractPlugin({ filename: '../css/[name].css' }),
     new CopyWebpackPlugin([{ from: 'static/', to: '../' }]),
     new webpack.ProvidePlugin({
-      '$': 'jquery',
-      'jQuery': 'jquery',
+      $: 'jquery',
+      jQuery: 'jquery',
       'window.jQuery': 'jquery',
-      'window.$': 'jquery',
+      'window.$': 'jquery'
       //  Popper: ['popper.js', 'default']
     })
   ]

@@ -92,6 +92,10 @@ defmodule Web.Router do
 
     get("/play", PlayController, :show)
 
+    if Mix.env() == :dev do
+      get("/play-react", PlayController, :show_react)
+    end
+
     get("/register/reset", RegistrationResetController, :new)
     post("/register/reset", RegistrationResetController, :create)
 
