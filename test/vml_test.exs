@@ -78,6 +78,12 @@ defmodule VMLTest do
         {:tag, [name: "link"], [string: "http://localhost:4000/connection/authorize?id=1eeb44f7-e015-4089-bacc-1a5dc6ec582d"]}
       ]
     end
+
+    test "skipping MXP" do
+      {:ok, tokens} = VML.parse("<send>{command}Say{/command}</send>")
+
+      assert tokens == [{:string, "<send>"}, {:tag, [name: "command"], [{:string, "Say"}]}, {:string, "</send>"}]
+    end
   end
 
   describe "collapse AST back to a string" do

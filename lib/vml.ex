@@ -88,7 +88,7 @@ defmodule VML do
         {:ok, pre_process(ast)}
 
       {:error, {_, _, reason}} ->
-        Logger.warn("Encountered a parsing error for #{inspect(tokens)}")
+        Logger.warn("Encountered a parsing error for #{inspect(tokens)} - #{inspect(reason)}")
         {:error, :parser, reason}
     end
   end

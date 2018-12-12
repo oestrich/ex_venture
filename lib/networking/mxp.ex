@@ -36,7 +36,7 @@ defmodule Networking.MXP do
       |> String.replace("{exit click=false}", "{exit}")
       |> parse_send_commands()
 
-    "\e[1z#{string}"
+    "\e\\[1z#{string}"
   end
 
   defp parse_send_commands(string) do
@@ -46,7 +46,7 @@ defmodule Networking.MXP do
       case Regex.match?(~r/{command send='.*'/, split) do
         true ->
           captures = Regex.named_captures(~r/{command send='(?<send>.*)'}/, split)
-          "<send href='#{captures["send"]}'>"
+          "<send href='#{captures["send"]}'>{command}"
 
         false ->
           split
