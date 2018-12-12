@@ -12,6 +12,7 @@ A text based MMO server written in Elixir.
 - [Support ExVenture on Patreon](https://www.patreon.com/exventure)
 - [Trello Issues](https://trello.com/b/PFGmFWmu/exventure)
 - [Chat with us on Discord](https://discord.gg/GPEa6dB)
+- [Support and Development Forums](https://forums.exventure.org/)
 
 ## Features
 
