@@ -3,6 +3,8 @@ defmodule VML do
   Parse VML text strings
   """
 
+  require Logger
+
   def parse!(string) do
     case parse(string) do
       {:ok, ast} ->
@@ -24,6 +26,7 @@ defmodule VML do
         parse_tokens(tokens)
 
       {:error, {_, _, reason}} ->
+        Logger.warn("Encountered a lexing error for #{inspect(string)}")
         {:error, :lexer, reason}
     end
   end
@@ -59,6 +62,7 @@ defmodule VML do
         {:ok, pre_process(ast)}
 
       {:error, {_, _, reason}} ->
+        Logger.warn("Encountered a parsing error for #{inspect(tokens)}")
         {:error, :parser, reason}
     end
   end

@@ -27,6 +27,9 @@ defmodule Game.Format.Template do
 
     with {:ok, ast} <- VML.parse(string) do
       VML.collapse(replace_variables(ast, context))
+    else
+      {:error, _module, _error} ->
+        "{error}Could not parse text.{/error}"
     end
   end
 
