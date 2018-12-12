@@ -29,6 +29,7 @@ defmodule Game.Help.Agent do
   defp _built_in() do
     path = Path.join(:code.priv_dir(:ex_venture), "help/en.yml")
     {:ok, help_from_file} = YamlElixir.read_from_file(path)
+
     Enum.map(help_from_file, fn help ->
       help = for {key, val} <- help, into: %{}, do: {String.to_atom(key), val}
       help = help |> Enum.into(%{})

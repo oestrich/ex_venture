@@ -101,7 +101,10 @@ defmodule Game.Command.Tell do
 
   defp maybe_tell_npc({:update, state}, _message), do: {:update, state}
 
-  defp maybe_tell_npc(state = %{socket: socket, save: %{room_id: room_id}, character: from}, message) do
+  defp maybe_tell_npc(
+         state = %{socket: socket, save: %{room_id: room_id}, character: from},
+         message
+       ) do
     {:ok, room} = @environment.look(room_id)
 
     npc =
@@ -155,7 +158,9 @@ defmodule Game.Command.Tell do
 
     case Gossip.send_tell(state.character.name, game, name, message) do
       :ok ->
-        state.socket |> @socket.echo(FormatChannels.send_tell({:player, %{name: player_name}}, message))
+        state.socket
+        |> @socket.echo(FormatChannels.send_tell({:player, %{name: player_name}}, message))
+
         {:update, %{state | reply_to: {:gossip, player_name}}}
 
       {:error, :offline} ->
@@ -193,7 +198,11 @@ defmodule Game.Command.Tell do
     tell_gossip(state, player_name, message)
   end
 
-  defp reply_to_npc(message, reply_to, %{socket: socket, character: from, save: %{room_id: room_id}}) do
+  defp reply_to_npc(message, reply_to, %{
+         socket: socket,
+         character: from,
+         save: %{room_id: room_id}
+       }) do
     {:ok, room} = @environment.look(room_id)
     npc = room.npcs |> Enum.find(&Utility.matches?(&1, reply_to.name))
 

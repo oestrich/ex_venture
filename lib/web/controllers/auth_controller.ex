@@ -1,7 +1,7 @@
 defmodule Web.AuthController do
   use Web, :controller
 
-  plug Ueberauth
+  plug(Ueberauth)
 
   alias Web.User
 
@@ -14,7 +14,7 @@ defmodule Web.AuthController do
   def callback(conn = %{assigns: %{ueberauth_failure: failure}}, _params) do
     message =
       failure.errors
-      |> Enum.map(&(&1.message))
+      |> Enum.map(& &1.message)
       |> Enum.join(", ")
 
     conn

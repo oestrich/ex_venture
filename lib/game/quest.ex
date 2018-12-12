@@ -36,7 +36,8 @@ defmodule Game.Quest do
   @doc """
   Find progress of a particular quest for a player
   """
-  @spec progress_for(User.t(), integer()) :: {:ok, QuestProgress.t()} | {:error, :invalid_id} | {:error, :not_found}
+  @spec progress_for(User.t(), integer()) ::
+          {:ok, QuestProgress.t()} | {:error, :invalid_id} | {:error, :not_found}
   def progress_for(player, quest_id) do
     case Ecto.Type.cast(:integer, quest_id) do
       {:ok, quest_id} ->
@@ -65,7 +66,10 @@ defmodule Game.Quest do
   @spec current_tracked_quest(User.t()) :: QuestProgress.t() | nil
   def current_tracked_quest(player) do
     QuestProgress
-    |> where([qp], qp.character_id == ^player.id and qp.is_tracking == true and qp.status != "complete")
+    |> where(
+      [qp],
+      qp.character_id == ^player.id and qp.is_tracking == true and qp.status != "complete"
+    )
     |> preloads()
     |> limit(1)
     |> Repo.one()
@@ -161,7 +165,8 @@ defmodule Game.Quest do
   @doc """
   Find a quest ready to be completed by a player
   """
-  @spec find_quest_for_ready_to_complete([QuestProgress.t()], Save.t()) :: {:ok, QuestProgress.t()} | {:error, :none}
+  @spec find_quest_for_ready_to_complete([QuestProgress.t()], Save.t()) ::
+          {:ok, QuestProgress.t()} | {:error, :none}
   def find_quest_for_ready_to_complete(quest_progress, save) do
     progress =
       Enum.find(quest_progress, fn progress ->

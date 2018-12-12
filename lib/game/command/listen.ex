@@ -104,11 +104,11 @@ defmodule Game.Command.Listen do
   end
 
   defp npc_listens_present?(room) do
-    Enum.any?(room.npcs, &(listen_present?(&1.extra.status_listen)))
+    Enum.any?(room.npcs, &listen_present?(&1.extra.status_listen))
   end
 
   defp feature_listens_present?(room) do
-    Enum.any?(room.features, &(listen_present?(&1.listen)))
+    Enum.any?(room.features, &listen_present?(&1.listen))
   end
 
   defp listen_present?(nil), do: false

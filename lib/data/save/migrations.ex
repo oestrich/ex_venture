@@ -101,7 +101,6 @@ defmodule Data.Save.Migrations do
   end
 
   def migrate_save(save = %{version: 7}) do
-
     save
     |> Map.put(:level_stats, %{})
     |> default_version_stats(7)

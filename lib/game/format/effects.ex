@@ -25,7 +25,10 @@ defmodule Game.Format.Effects do
         ]
 
       %{kind: "recover", type: "health"} ->
-        ["#{effect.amount} damage is healed to #{Format.name(target)}." | effects(remaining, target)]
+        [
+          "#{effect.amount} damage is healed to #{Format.name(target)}."
+          | effects(remaining, target)
+        ]
 
       %{kind: "recover", type: "skill"} ->
         ["#{effect.amount} skill points are recovered." | effects(remaining, target)]

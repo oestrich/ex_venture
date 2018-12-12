@@ -93,6 +93,7 @@ defmodule Web.Feature do
   @spec delete(integer()) :: {:ok, Feature.t()}
   def delete(id) do
     feature = id |> get()
+
     case feature |> Repo.delete() do
       {:ok, feature} ->
         Features.remove(feature)

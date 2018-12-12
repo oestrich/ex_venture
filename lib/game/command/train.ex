@@ -203,7 +203,11 @@ defmodule Game.Command.Train do
   defp check_if_right_level(skill, state = %{save: save}) do
     case skill.level > save.level do
       true ->
-        message = gettext("You are not ready to learn %{name}. Go experience the world more.", name: skill.name)
+        message =
+          gettext("You are not ready to learn %{name}. Go experience the world more.",
+            name: skill.name
+          )
+
         state.socket |> @socket.echo(message)
 
       false ->
@@ -222,7 +226,9 @@ defmodule Game.Command.Train do
         skill
 
       false ->
-        message = gettext("You do not have enough experience to spend to train %{name}.", name: skill.name)
+        message =
+          gettext("You do not have enough experience to spend to train %{name}.", name: skill.name)
+
         state.socket |> @socket.echo(message)
     end
   end
@@ -231,7 +237,13 @@ defmodule Game.Command.Train do
 
   defp train_skill(skill, state = %{save: save}) do
     skill_cost = Skill.skill_train_cost(skill, save)
-    message = gettext("%{name} trained successfully! %{cost} XP spent.", name: skill.name, cost: skill_cost)
+
+    message =
+      gettext("%{name} trained successfully! %{cost} XP spent.",
+        name: skill.name,
+        cost: skill_cost
+      )
+
     state.socket |> @socket.echo(message)
 
     skill_ids = Enum.uniq([skill.id | save.skill_ids])

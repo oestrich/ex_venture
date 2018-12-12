@@ -17,13 +17,15 @@ defmodule Web.ClassView do
     }
   end
 
-  def render("index." <> extension, %{classes: classes}) when Representer.known_extension?(extension) do
+  def render("index." <> extension, %{classes: classes})
+      when Representer.known_extension?(extension) do
     classes
     |> index()
     |> Representer.transform(extension)
   end
 
-  def render("show." <> extension, %{class: class}) when Representer.known_extension?(extension) do
+  def render("show." <> extension, %{class: class})
+      when Representer.known_extension?(extension) do
     up = %Representer.Link{rel: "up", href: RouteHelpers.public_class_url(Endpoint, :index)}
 
     class
@@ -37,7 +39,7 @@ defmodule Web.ClassView do
     %{
       key: class.api_id,
       name: class.name,
-      description: class.description,
+      description: class.description
     }
   end
 
@@ -47,8 +49,11 @@ defmodule Web.ClassView do
       href: RouteHelpers.public_class_url(Endpoint, :show, class.id),
       item: render("class.json", %{class: class}),
       links: [
-        %Representer.Link{rel: "self", href: RouteHelpers.public_class_url(Endpoint, :show, class.id)},
-      ],
+        %Representer.Link{
+          rel: "self",
+          href: RouteHelpers.public_class_url(Endpoint, :show, class.id)
+        }
+      ]
     }
   end
 

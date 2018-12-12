@@ -78,7 +78,11 @@ defmodule Game.Format.Players do
       ["Play Time", play_time(character.seconds_online)]
     ]
 
-    Table.format("#{player_name(character)} - #{character.race.name} - #{character.class.name}", rows, [16, 15])
+    Table.format(
+      "#{player_name(character)} - #{character.race.name} - #{character.class.name}",
+      rows,
+      [16, 15]
+    )
   end
 
   @doc """
@@ -90,7 +94,10 @@ defmodule Game.Format.Players do
       ["Flags", player_flags(player)]
     ]
 
-    Table.format("#{player_name(player)} - #{player.race.name} - #{player.class.name}", rows, [12, 15])
+    Table.format("#{player_name(player)} - #{player.race.name} - #{player.class.name}", rows, [
+      12,
+      15
+    ])
   end
 
   @doc """

@@ -10,7 +10,7 @@ defmodule Game.Format.Context do
 
   - `assigns`: map of key/values to template
   """
-  defstruct [assigns: %{}]
+  defstruct assigns: %{}
 
   @doc """
   Start with a base conntext

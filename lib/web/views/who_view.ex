@@ -6,7 +6,8 @@ defmodule Web.WhoView do
   alias Web.Endpoint
   alias Web.Router.Helpers, as: RouteHelpers
 
-  def render("index." <> extension, %{players: players}) when Representer.known_extension?(extension) do
+  def render("index." <> extension, %{players: players})
+      when Representer.known_extension?(extension) do
     players
     |> index()
     |> Representer.transform(extension)
@@ -14,14 +15,14 @@ defmodule Web.WhoView do
 
   def render("player.json", %{player: player}) do
     %{
-      name: player.name,
+      name: player.name
     }
   end
 
   defp show(player) do
     %Representer.Item{
       item: render("player.json", %{player: player}),
-      links: [],
+      links: []
     }
   end
 

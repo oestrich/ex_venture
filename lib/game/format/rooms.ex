@@ -65,9 +65,11 @@ defmodule Game.Format.Rooms do
 
   defp room_description_with_features(room) do
     contains_features? = String.contains?(room.description, "[features]")
-    contains_sub_features? = Enum.any?(room.features, fn feature ->
-      String.contains?(room.description, "[#{feature.key}]")
-    end)
+
+    contains_sub_features? =
+      Enum.any?(room.features, fn feature ->
+        String.contains?(room.description, "[#{feature.key}]")
+      end)
 
     case contains_features? || contains_sub_features? do
       true ->

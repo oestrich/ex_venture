@@ -91,7 +91,8 @@ defmodule Game.Account do
   @doc """
   Save the final session data for a play
   """
-  @spec save_session(User.t(), Character.t(), Save.t(), Timex.t(), Timex.t(), map()) :: {:ok, User.t()}
+  @spec save_session(User.t(), Character.t(), Save.t(), Timex.t(), Timex.t(), map()) ::
+          {:ok, User.t()}
   def save_session(player, character, save, session_started_at, now, stats) do
     with {:ok, character} <- save(character, save),
          {:ok, _user} <- touch_user(character),
@@ -132,7 +133,9 @@ defmodule Game.Account do
           {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_time_online(character, session_started_at, now) do
     character
-    |> Character.changeset(%{seconds_online: current_play_time(character, session_started_at, now)})
+    |> Character.changeset(%{
+      seconds_online: current_play_time(character, session_started_at, now)
+    })
     |> Repo.update()
   end
 

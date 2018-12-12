@@ -13,7 +13,8 @@ defmodule Web.RaceView do
     |> Map.get(field)
   end
 
-  def render("index." <> extension, %{races: races}) when Representer.known_extension?(extension) do
+  def render("index." <> extension, %{races: races})
+      when Representer.known_extension?(extension) do
     races
     |> index()
     |> Representer.transform(extension)
@@ -45,7 +46,7 @@ defmodule Web.RaceView do
         intelligence: stat(race, :intelligence),
         awareness: stat(race, :awareness),
         vitality: stat(race, :vitality),
-        willpower: stat(race, :willpower),
+        willpower: stat(race, :willpower)
       }
     }
   end
@@ -53,7 +54,7 @@ defmodule Web.RaceView do
   def render("race.json", %{race: race}) do
     %{
       key: race.api_id,
-      name: race.name,
+      name: race.name
     }
   end
 
@@ -63,8 +64,11 @@ defmodule Web.RaceView do
       rel: "https://exventure.org/rels/race",
       item: render("race.json", %{race: race, extended: Keyword.get(opts, :extended, false)}),
       links: [
-        %Representer.Link{rel: "self", href: RouteHelpers.public_race_url(Endpoint, :show, race.id)},
-      ],
+        %Representer.Link{
+          rel: "self",
+          href: RouteHelpers.public_race_url(Endpoint, :show, race.id)
+        }
+      ]
     }
   end
 

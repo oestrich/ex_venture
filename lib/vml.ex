@@ -128,9 +128,10 @@ defmodule VML do
   end
 
   def process_node({:tag, attributes, nodes}) do
-    attributes = Enum.map(attributes, fn {key, value} ->
-      {key, process_attribute(key, value)}
-    end)
+    attributes =
+      Enum.map(attributes, fn {key, value} ->
+        {key, process_attribute(key, value)}
+      end)
 
     {:tag, attributes, pre_process(nodes)}
   end

@@ -7,13 +7,15 @@ defmodule Web.SkillView do
   alias Web.Router.Helpers, as: RouteHelpers
   alias Web.SharedView
 
-  def render("index." <> extension, %{skills: skills, pagination: pagination}) when Representer.known_extension?(extension) do
+  def render("index." <> extension, %{skills: skills, pagination: pagination})
+      when Representer.known_extension?(extension) do
     skills
     |> index(pagination)
     |> Representer.transform(extension)
   end
 
-  def render("show." <> extension, %{skill: skill}) when Representer.known_extension?(extension) do
+  def render("show." <> extension, %{skill: skill})
+      when Representer.known_extension?(extension) do
     up = %Representer.Link{rel: "up", href: RouteHelpers.public_skill_url(Endpoint, :index)}
 
     skill
@@ -29,7 +31,7 @@ defmodule Web.SkillView do
       name: skill.name,
       description: skill.description,
       command: skill.command,
-      points: skill.points,
+      points: skill.points
     }
   end
 
@@ -37,7 +39,7 @@ defmodule Web.SkillView do
     %{
       key: skill.api_id,
       level: skill.level,
-      name: skill.name,
+      name: skill.name
     }
   end
 
@@ -47,7 +49,10 @@ defmodule Web.SkillView do
       rel: "https://exventure.org/rels/skill",
       item: render("skill.json", %{skill: skill, extended: Keyword.get(opts, :extended, false)}),
       links: [
-        %Representer.Link{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id)}
+        %Representer.Link{
+          rel: "self",
+          href: RouteHelpers.public_skill_url(Endpoint, :show, skill.id)
+        }
       ]
     }
   end
@@ -62,7 +67,7 @@ defmodule Web.SkillView do
         base_url: RouteHelpers.public_skill_url(Endpoint, :index),
         current_page: pagination.current,
         total_pages: pagination.total,
-        total_count: pagination.total_count,
+        total_count: pagination.total_count
       },
       links: [
         %Representer.Link{rel: "self", href: RouteHelpers.public_skill_url(Endpoint, :index)},

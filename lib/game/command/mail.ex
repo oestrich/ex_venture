@@ -85,7 +85,8 @@ defmodule Game.Command.Mail do
   def run({:read, id}, state) do
     case Mail.get(state.character, id) do
       nil ->
-        state.socket |> @socket.echo(gettext("The mail requested could not be found. Please try again."))
+        state.socket
+        |> @socket.echo(gettext("The mail requested could not be found. Please try again."))
 
       mail ->
         Mail.mark_read!(mail)

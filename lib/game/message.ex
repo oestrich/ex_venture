@@ -100,7 +100,7 @@ defmodule Game.Message do
       sender: player,
       message: message.message,
       formatted: FormatChannels.channel_say(channel, {:player, player}, message),
-      from_gossip: true,
+      from_gossip: true
     }
   end
 

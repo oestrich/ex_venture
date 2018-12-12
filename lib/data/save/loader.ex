@@ -67,7 +67,7 @@ defmodule Data.Save.Loader do
   Hydrate items and load their instances
   """
   def hydrate_items(save = %{items: items, wearing: wearing, wielding: wielding})
-       when is_list(items) do
+      when is_list(items) do
     items =
       items
       |> Enum.map(&hydrate_item/1)

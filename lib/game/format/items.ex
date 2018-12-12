@@ -42,7 +42,7 @@ defmodule Game.Format.Items do
   def item(item) do
     """
     #{item |> item_name()}
-    #{item.name |> Format.underline}
+    #{item.name |> Format.underline()}
     #{item.description}
     #{item_stats(item)}
     """

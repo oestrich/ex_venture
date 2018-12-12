@@ -30,14 +30,20 @@ defmodule Game.Command.Typo do
   def run(command, state)
 
   def run({}, %{socket: socket}) do
-    message = 
-      gettext("Please provide a typo title. See {command}help typo{/command} for more information.")
+    message =
+      gettext(
+        "Please provide a typo title. See {command}help typo{/command} for more information."
+      )
+
     socket |> @socket.echo(message)
   end
 
   def run({typo_title}, state = %{socket: socket}) do
     message =
-      gettext("Please enter in any more information you have (an empty new line will finish entering text): ")
+      gettext(
+        "Please enter in any more information you have (an empty new line will finish entering text): "
+      )
+
     socket |> @socket.echo(message)
 
     commands =

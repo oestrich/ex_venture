@@ -66,7 +66,10 @@ defmodule Game.Command.Wear do
     else
       {:error, :level_too_low, item} ->
         message =
-          gettext("You cannot wear \"%{name}\", you are not high enough level.", name: Format.item_name(item))
+          gettext("You cannot wear \"%{name}\", you are not high enough level.",
+            name: Format.item_name(item)
+          )
+
         state.socket |> @socket.echo(message)
 
       {:error, :cannot_wear, item} ->
@@ -116,7 +119,12 @@ defmodule Game.Command.Wear do
         {wearing, items} = remove(slot, wearing, items)
         save = %{save | wearing: wearing, items: items}
 
-        message = gettext("You removed %{name} from your %{slot}", name: Format.item_name(item), slot: slot)
+        message =
+          gettext("You removed %{name} from your %{slot}",
+            name: Format.item_name(item),
+            slot: slot
+          )
+
         socket |> @socket.echo(message)
 
         {:update, Map.put(state, :save, save)}

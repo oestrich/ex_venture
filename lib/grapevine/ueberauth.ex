@@ -30,7 +30,7 @@ defmodule Grapevine.Ueberauth.Strategy do
       opts =
         @defaults
         |> Keyword.merge(opts)
-        |> Keyword.merge([client_id: client_id, client_secret: client_secret])
+        |> Keyword.merge(client_id: client_id, client_secret: client_secret)
 
       OAuth2.Client.new(opts)
     end
@@ -129,7 +129,7 @@ defmodule Grapevine.Ueberauth.Strategy do
   def info(conn) do
     %Ueberauth.Auth.Info{
       email: conn.private.grapevine_user["email"],
-      name: conn.private.grapevine_user["username"],
+      name: conn.private.grapevine_user["username"]
     }
   end
 

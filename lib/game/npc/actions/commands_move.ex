@@ -160,7 +160,6 @@ defmodule Game.NPC.Actions.CommandsMove do
   def under_maximum_move?(option, old_room, new_room) do
     max_distance = Map.get(option, :max_distance, 0)
 
-    abs(old_room.x - new_room.x) <= max_distance &&
-      abs(old_room.y - new_room.y) <= max_distance
+    abs(old_room.x - new_room.x) <= max_distance && abs(old_room.y - new_room.y) <= max_distance
   end
 end

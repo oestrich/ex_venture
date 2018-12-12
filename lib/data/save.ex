@@ -81,6 +81,7 @@ defmodule Data.Save do
 
     {:ok, save}
   end
+
   def dump(_), do: :error
 
   @doc """

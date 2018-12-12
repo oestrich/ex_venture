@@ -105,9 +105,9 @@ defmodule Web.Router do
     delete("/sessions", SessionController, :delete)
     resources("/sessions", SessionController, only: [:new, :create])
 
-    get "/auth/:provider", AuthController, :request
-    get "/auth/:provider/callback", AuthController, :callback
-    post "/auth/:provider/callback", AuthController, :callback
+    get("/auth/:provider", AuthController, :request)
+    get("/auth/:provider/callback", AuthController, :callback)
+    post("/auth/:provider/callback", AuthController, :callback)
   end
 
   scope "/admin", Web.Admin do
@@ -226,7 +226,10 @@ defmodule Web.Router do
         as: :feature
       )
 
-      resources("/features/global", RoomGlobalFeatureController, only: [:new, :create, :delete], as: :global_feature)
+      resources("/features/global", RoomGlobalFeatureController,
+        only: [:new, :create, :delete],
+        as: :global_feature
+      )
 
       resources("/items", RoomItemController, only: [:new, :create])
 

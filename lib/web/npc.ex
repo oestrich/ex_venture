@@ -471,10 +471,11 @@ defmodule Web.NPC do
   Force an update for an NPCs events
   """
   def force_save_events(npc) do
-    events = Enum.map(npc.events, fn event ->
-      {:ok, event} = ensure_id(event)
-      event
-    end)
+    events =
+      Enum.map(npc.events, fn event ->
+        {:ok, event} = ensure_id(event)
+        event
+      end)
 
     # to force an update, set this to blank so something changed
     npc = %{npc | events: []}

@@ -180,7 +180,11 @@ defmodule Game.Environment do
   def drop_currency("overworld:" <> overworld_id, character, currency) do
     {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
     character = Character.to_simple(character)
-    GenServer.cast(Sector.pid(zone_id, sector), {:drop_currency, overworld_id, character, currency})
+
+    GenServer.cast(
+      Sector.pid(zone_id, sector),
+      {:drop_currency, overworld_id, character, currency}
+    )
   end
 
   def drop_currency(id, character, currency) do

@@ -100,6 +100,7 @@ defmodule Game.Command.Config do
           true ->
             message =
               "Cannot turn on #{config_name}. See {command}help config{/command} for more information."
+
             state.socket |> @socket.echo(message)
 
           false ->
@@ -121,6 +122,7 @@ defmodule Game.Command.Config do
           true ->
             message =
               "Cannot turn off #{config_name}. See {command}help config{/command} for more information."
+
             state.socket |> @socket.echo(message)
 
           false ->
@@ -156,7 +158,9 @@ defmodule Game.Command.Config do
         end
 
       false ->
-        message = gettext("Unknown configuration option, \"%{config_name}\".", config_name: config_name)
+        message =
+          gettext("Unknown configuration option, \"%{config_name}\".", config_name: config_name)
+
         state.socket |> @socket.echo(message)
     end
   end
@@ -176,7 +180,9 @@ defmodule Game.Command.Config do
 
       {:error, :bad_config} ->
         state.socket
-        |> @socket.echo(gettext("There was a problem saving your config, this config cannot be set."))
+        |> @socket.echo(
+          gettext("There was a problem saving your config, this config cannot be set.")
+        )
     end
   end
 
@@ -198,15 +204,27 @@ defmodule Game.Command.Config do
         state.socket |> @socket.echo(message)
 
       false ->
-        message = gettext("{white}%{config_name}{/white} is turned off.", config_name: config_name)
+        message =
+          gettext("{white}%{config_name}{/white} is turned off.", config_name: config_name)
+
         state.socket |> @socket.echo(message)
 
       string when is_binary(string) ->
-        message = gettext("{white}%{config_name}{/white} is set to \"%{string}\".", config_name: config_name, string: string)
+        message =
+          gettext("{white}%{config_name}{/white} is set to \"%{string}\".",
+            config_name: config_name,
+            string: string
+          )
+
         state.socket |> @socket.echo(message)
 
       integer when is_integer(integer) ->
-        message = gettext("{white}%{config_name}{/white} is set to \"%{integer}\".", config_name: config_name, integer: integer)
+        message =
+          gettext("{white}%{config_name}{/white} is set to \"%{integer}\".",
+            config_name: config_name,
+            integer: integer
+          )
+
         state.socket |> @socket.echo(message)
     end
 

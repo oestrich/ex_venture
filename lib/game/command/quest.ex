@@ -163,10 +163,13 @@ defmodule Game.Command.Quest do
   def run({:track, quest_id}, state) do
     case Quest.track_quest(state.character, quest_id) do
       {:error, :not_started} ->
-        state.socket |> @socket.echo(gettext("You have not started this quest to start tracking it."))
+        state.socket
+        |> @socket.echo(gettext("You have not started this quest to start tracking it."))
 
       {:ok, progress} ->
-        message = gettext("You are tracking %{name}.", name: FormatQuests.quest_name(progress.quest))
+        message =
+          gettext("You are tracking %{name}.", name: FormatQuests.quest_name(progress.quest))
+
         state.socket |> @socket.echo(message)
     end
   end
@@ -203,7 +206,11 @@ defmodule Game.Command.Quest do
 
     case npc do
       nil ->
-        message = gettext("The quest giver %{name} cannot be found.", name: Format.npc_name(progress.quest.giver))
+        message =
+          gettext("The quest giver %{name} cannot be found.",
+            name: Format.npc_name(progress.quest.giver)
+          )
+
         socket |> @socket.echo(message)
 
       _ ->
@@ -225,10 +232,15 @@ defmodule Game.Command.Quest do
 
       false ->
         response =
-          Enum.join([
-            gettext("You have not completed the requirements for the quest."),
-            gettext("See {command}quest info %{id}{/command} for your current progress.)", id: progress.quest_id)
-          ], " ")
+          Enum.join(
+            [
+              gettext("You have not completed the requirements for the quest."),
+              gettext("See {command}quest info %{id}{/command} for your current progress.)",
+                id: progress.quest_id
+              )
+            ],
+            " "
+          )
 
         state.socket |> @socket.echo(response)
     end
@@ -242,7 +254,8 @@ defmodule Game.Command.Quest do
 
     case Quest.complete(progress, save) do
       {:ok, save} ->
-        state.socket |> @socket.echo("Quest completed!\n\nYou gain #{quest.currency} #{currency()}.")
+        state.socket
+        |> @socket.echo("Quest completed!\n\nYou gain #{quest.currency} #{currency()}.")
 
         save = %{save | currency: save.currency + quest.currency}
         state = Player.update_save(state, save)
@@ -254,8 +267,10 @@ defmodule Game.Command.Quest do
         {:update, state}
 
       _ ->
-        message = 
-          gettext("Something went wrong, please contact the administrators if you encounter a problem again.")
+        message =
+          gettext(
+            "Something went wrong, please contact the administrators if you encounter a problem again."
+          )
 
         state.socket |> @socket.echo(message)
     end
@@ -283,7 +298,9 @@ defmodule Game.Command.Quest do
 
   defp maybe_complete(nil, %{socket: socket}) do
     message =
-      gettext("You cannot complete a quest in this room. Find the quest giver or complete required steps.")
+      gettext(
+        "You cannot complete a quest in this room. Find the quest giver or complete required steps."
+      )
 
     socket |> @socket.echo(message)
   end

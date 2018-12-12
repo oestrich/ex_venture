@@ -14,12 +14,15 @@ defmodule Web.Admin.NPCEventView do
       {:error, error} ->
         error = content_tag(:code, inspect(error))
 
-        pre = content_tag(:pre) do
-          Jason.encode!(event, pretty: true)
-        end
+        pre =
+          content_tag(:pre) do
+            Jason.encode!(event, pretty: true)
+          end
 
         [
-          "Error parsing the event: ", error, ". Showing the underlying data instead.",
+          "Error parsing the event: ",
+          error,
+          ". Showing the underlying data instead.",
           pre
         ]
     end
