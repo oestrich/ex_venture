@@ -316,7 +316,7 @@ defmodule Game.Session.GMCP do
     |> Map.take([:id, :name, :ecology, :x, :y, :map_layer])
     |> Map.merge(%{
       zone: zone_info(room),
-      description: Format.Rooms.room_description(room),
+      description: VML.collapse(Format.Rooms.room_description(room)),
       items: render_many(items),
       players: render_many(room, :players),
       npcs: render_many(room, :npcs),
