@@ -58,3 +58,5 @@ Temporary Items
 
 # leex/yecc output
 src/vml_*.erl
+
+.vagrant

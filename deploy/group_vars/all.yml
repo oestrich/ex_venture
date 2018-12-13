@@ -1,0 +1,20 @@
+---
+
+github_keys_create_install_user: false
+github_keys_install_user: deploy
+github_keys_github_users:
+  - oestrich
+
+postgresql_version: 10
+postgresql_encoding: 'UTF-8'
+postgresql_locale: 'en_US.UTF-8'
+postgresql_cluster_name: "main"
+postgresql_cluster_reset: false
+postgresql_default_auth_method: "trust"
+
+postgresql_users:
+  - name: deploy
+
+postgresql_user_privileges:
+  - name: deploy
+    role_attr_flags: "SUPERUSER"

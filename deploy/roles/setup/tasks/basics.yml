@@ -1,0 +1,11 @@
+---
+
+- name: basic packages
+  apt:
+    pkg:
+      - acl
+      - htop
+    state: present
+    force: "yes"
+    update_cache: "yes"
+  become: true
