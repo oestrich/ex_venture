@@ -31,6 +31,10 @@ environment :prod do
   set include_erts: true
   set include_src: false
   set cookie: :"<U}DQ)|8,I)&O_eEHQ$i8TTI]FSbKc(OWHGRhhj5uv/f_mUR_!Qx%KzTK?s|YN}4"
+
+  set config_providers: [
+    {Mix.Releases.Config.Providers.Elixir, ["/etc/exventure.config.exs"]}
+  ]
 end
 
 # You may define one or more releases in this file.
