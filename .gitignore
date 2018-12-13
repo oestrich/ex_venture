@@ -60,3 +60,4 @@ Temporary Items
 src/vml_*.erl
 
 .vagrant
+deploy/hosts_*
