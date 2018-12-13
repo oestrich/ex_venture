@@ -18,3 +18,11 @@ postgresql_users:
 postgresql_user_privileges:
   - name: deploy
     role_attr_flags: "SUPERUSER"
+
+firewall_ports:
+  - rule: allow
+    port: http
+  - rule: allow
+    port: https
+  - rule: allow
+    port: ssh

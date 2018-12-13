@@ -3,6 +3,7 @@
   gather_facts: yes
   hosts: all
   roles:
+    - { role: firewall, become: yes, tags: ['setup'] }
     - { role: setup, action: 'basics', tags: ['setup'] }
     - { role: smartlogic.github_keys, tags: ['user', 'auth'] }
     - { role: jnv.unattended-upgrades, become: yes, tags: ['upgrades'] }

@@ -14,3 +14,6 @@
 - krc: git+git@github.com:smartlogic/ansible-role-prometheus-exporters
   name: prometheus-exporters
   version: 0.5.3
+- src: git+git@github.com:smartlogic/ansible-role-firewall
+  name: firewall
+  version: 0.1.1

@@ -5,7 +5,23 @@
     pkg:
       - acl
       - htop
+      - nginx
+      - certbot
     state: present
     force: "yes"
     update_cache: "yes"
   become: true
+
+- name: copy exventure config
+  copy:
+    src: exventure.config.exs
+    dest: /etc/exventure.config.exs
+    mode: 0644
+  become: yes
+
+- name: copy nginx config
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/sites-enabled/exventure
+    mode: 0644
+  become: yes
