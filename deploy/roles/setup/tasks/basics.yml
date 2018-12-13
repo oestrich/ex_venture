@@ -12,16 +12,35 @@
     update_cache: "yes"
   become: true
 
+- name: Check that the exventure config exists
+  stat:
+    path: /etc/exventure.config.exs
+  register: exventure_config
+
 - name: copy exventure config
   copy:
     src: exventure.config.exs
     dest: /etc/exventure.config.exs
     mode: 0644
+  when: not exventure_config.stat.exists
   become: yes
+
+- name: Check that the nginx config exists
+  stat:
+    path: /etc/nginx/sites-enabled/exventure
+  register: nginx_config
 
 - name: copy nginx config
   copy:
     src: nginx.conf
     dest: /etc/nginx/sites-enabled/exventure
     mode: 0644
+  when: not nginx_config.stat.exists
   become: yes
+
+- name: copy systemd file
+  copy:
+    src: exventure.service
+    dest: /etc/systemd/system/exventure.service
+  become: yes
+  notify: reload systemd

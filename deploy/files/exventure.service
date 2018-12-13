@@ -1,0 +1,20 @@
+[Unit]
+Description=Runner for ExVenture
+After=network.target
+
+[Service]
+Type=forking
+User=deploy
+Group=deploy
+WorkingDirectory=/home/deploy/ex_venture
+Environment=LANG=en_US.UTF-8
+ExecStart=/home/deploy/ex_venture/bin/ex_venture start
+ExecStop=/home/deploy/ex_venture/bin/ex_venture stop
+PIDFile=/home/deploy/ex_venture.pid
+SyslogIdentifier=ex_venture
+RemainAfterExit=no
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
