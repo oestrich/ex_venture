@@ -40,8 +40,6 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
       <br />
       <br />
       <VmlToJsx vmlString={description} />
-      <br />
-      <br />
       <div>
         {players.map(player => (
           <VmlToJsx vmlString={player.status_line} />
@@ -62,14 +60,14 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
             {idx === itemsArr.length - 1 ? (
               <ColoredSpan color={theme.text}>. </ColoredSpan>
             ) : (
-              <ColoredSpan color={theme.text}>, &nbsp</ColoredSpan>
+              <ColoredSpan color={theme.text}>, </ColoredSpan>
             )}
           </ColoredSpan>
         ))}{' '}
       </div>
       <br />
       <Centered>
-        {exits.length > 0 ? 'You can leave: ' : null}
+        {exits.length > 0 ? 'You can leave ' : null}
         {exits.map((exit, idx, exitsArr) => (
           <Exit
             onClick={() => {
