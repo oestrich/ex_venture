@@ -25,6 +25,7 @@ const Exit = styled.span`
   color: ${theme.vml.exit};
   text-decoration: underline;
   cursor: pointer;
+  padding-left: 1ch;
 `;
 
 const ColoredSpan = styled.span`
@@ -61,7 +62,7 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
             {idx === itemsArr.length - 1 ? (
               <ColoredSpan color={theme.text}>. </ColoredSpan>
             ) : (
-              <ColoredSpan color={theme.text}>, </ColoredSpan>
+              <ColoredSpan color={theme.text}>, &nbsp</ColoredSpan>
             )}
           </ColoredSpan>
         ))}{' '}
@@ -76,6 +77,7 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
             }}
             key={exit.room_id}
           >
+            {' '}
             {exit.direction}
             {idx === exitsArr.length - 1 ? (
               <ColoredSpan color={theme.text}>. </ColoredSpan>
