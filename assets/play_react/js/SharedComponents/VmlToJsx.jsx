@@ -30,8 +30,13 @@ const VmlToJsx = ({ dispatch, vmlString }) => {
 const _astToJsx = (dispatch, ast) => {
   return ast.map(node => {
     if (node.type === 'text') {
-      // return <span>{node.content}</span>;
-      return node.content.split('\r\n').map((item, i) => <p key={i}>{item}</p>);
+      return <span>{node.content}</span>;
+      // return node.content.split('\r\n').map((item, i) => (
+      //   <span key={i}>
+      //     {item}
+      //     <br />
+      //   </span>
+      // ));
     }
 
     // If the node type is a 'tag', it will have children node.  Recurse on child nodes.
