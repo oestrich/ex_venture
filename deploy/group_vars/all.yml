@@ -19,6 +19,13 @@ postgresql_user_privileges:
   - name: deploy
     role_attr_flags: "SUPERUSER"
 
+postgresql_databases:
+  - name: exventure
+    owner: deploy
+    encoding: "UTF-8"
+    lc_collate: "en_US.UTF-8"
+    lc_ctype: "en_US.UTF-8"
+
 firewall_ports:
   - rule: allow
     port: http

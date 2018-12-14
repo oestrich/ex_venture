@@ -7,6 +7,7 @@
       - htop
       - nginx
       - certbot
+      - python-certbot-nginx
     state: present
     force: "yes"
     update_cache: "yes"
@@ -25,6 +26,13 @@
   when: not exventure_config.stat.exists
   become: yes
 
+- name: make ex_venture directory
+  file:
+    dest: /home/deploy/ex_venture
+    state: directory
+  become: yes
+  become_user: deploy
+
 - name: Check that the nginx config exists
   stat:
     path: /etc/nginx/sites-enabled/exventure
@@ -38,9 +46,22 @@
   when: not nginx_config.stat.exists
   become: yes
 
+- name: copy nginx config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: yes
+
 - name: copy systemd file
   copy:
     src: exventure.service
     dest: /etc/systemd/system/exventure.service
   become: yes
   notify: reload systemd
+
+- name: link the v5 of ncurses.so
+  file:
+    src: /lib/x86_64-linux-gnu/libncursesw.so.5
+    dest: /lib/x86_64-linux-gnu/libncursesw.so.6
+    state: link
+  become: yes
