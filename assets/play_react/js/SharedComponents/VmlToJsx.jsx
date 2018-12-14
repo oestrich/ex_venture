@@ -31,7 +31,13 @@ const _astToJsx = (dispatch, ast) => {
   return ast.map(node => {
     if (node.type === 'text') {
       if (node.content.includes('\r\n')) {
-        return node.content.split('\r\n').map(i => <p>{i}</p>);
+        return node.content.split(/(\r\n)/).map(txt => {
+          if (txt === '\r\n') {
+            return <br />;
+          } else {
+            return txt;
+          }
+        });
       } else {
         return node.content;
       }

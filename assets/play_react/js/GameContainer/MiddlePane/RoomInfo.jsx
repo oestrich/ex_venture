@@ -40,6 +40,7 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
       <br />
       <br />
       <VmlToJsx vmlString={description} />
+      <br />
       <div>
         {players.map(player => (
           <VmlToJsx vmlString={player.status_line} />
