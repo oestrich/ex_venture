@@ -59,6 +59,12 @@
   become: yes
   notify: reload systemd
 
+
+- name: enable exventure service
+  systemd:
+    name: exventure.service
+    enabled: yes
+
 - name: link the v5 of ncurses.so
   file:
     src: /lib/x86_64-linux-gnu/libncursesw.so.5
