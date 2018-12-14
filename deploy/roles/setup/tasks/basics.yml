@@ -59,15 +59,36 @@
   become: yes
   notify: reload systemd
 
-
 - name: enable exventure service
   systemd:
     name: exventure.service
     enabled: yes
+  become: yes
 
 - name: link the v5 of ncurses.so
   file:
     src: /lib/x86_64-linux-gnu/libncursesw.so.5
     dest: /lib/x86_64-linux-gnu/libncursesw.so.6
     state: link
+  become: yes
+
+- name: setup backups folder
+  file:
+    path: /opt/backups/
+    state: directory
+  become: yes
+
+- name: copy backup file
+  copy:
+    src: backup-exventure.sh
+    dest: /opt/
+    mode: 0744
+  become: yes
+
+- name: Backup the postgres database nightly
+  cron:
+    name: "pg dump"
+    minute: "0"
+    hour: "5"
+    job: "/opt/backup-exventure.sh"
   become: yes
