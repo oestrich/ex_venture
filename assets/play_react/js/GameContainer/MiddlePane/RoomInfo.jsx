@@ -25,7 +25,7 @@ const Exit = styled.span`
   color: ${theme.vml.exit};
   text-decoration: underline;
   cursor: pointer;
-  padding-left: 1ch;
+  padding-left: 0.5ch;
 `;
 
 const ColoredSpan = styled.span`
