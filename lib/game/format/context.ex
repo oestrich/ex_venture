@@ -31,6 +31,9 @@ defmodule Game.Format.Context do
     %{context | assigns: assigns}
   end
 
+  @doc """
+  Assign a variable to the context for use in templating
+  """
   def assign(context, map) do
     assigns =
       context
