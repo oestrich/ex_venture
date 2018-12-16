@@ -76,7 +76,7 @@ If you are running an ExVenture MUD and want to get on this list, let us know on
 ```bash
 mix deps.get
 mix compile
-cd assets && npm install && node node_modules/brunch/bin/brunch build && cd ..
+cd assets && npm install && node run build && cd ..
 mix ecto.reset
 mix run --no-halt
 ```
