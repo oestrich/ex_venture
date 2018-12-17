@@ -15,14 +15,18 @@ defmodule Game.Format.Rooms do
   Display a room's name
   """
   def room_name(room) do
-    "{room}#{room.name}{/room}"
+    context()
+    |> assign(:name, room.name)
+    |> Format.template("{room}[name]{/room}")
   end
 
   @doc """
   Display a zone's name
   """
   def zone_name(zone) do
-    "{zone}#{zone.name}{/zone}"
+    context()
+    |> assign(:name, zone.name)
+    |> Format.template("{zone}[name]{/zone}")
   end
 
   @doc """
@@ -104,7 +108,10 @@ defmodule Game.Format.Rooms do
   """
   @spec peak_room(Room.t(), String.t()) :: String.t()
   def peak_room(room, direction) do
-    "#{room_name(room)} is #{direction}."
+    context()
+    |> assign(:name, room_name(room))
+    |> assign(:direction, direction)
+    |> Format.template("[name] is [direction].")
   end
 
   @doc """

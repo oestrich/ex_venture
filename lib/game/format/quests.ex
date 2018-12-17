@@ -3,8 +3,9 @@ defmodule Game.Format.Quests do
   Format function for quests
   """
 
+  import Game.Format.Context
+
   alias Game.Format
-  alias Game.Format.Rooms
   alias Game.Format.Table
   alias Game.Quest
 
@@ -15,7 +16,9 @@ defmodule Game.Format.Quests do
     "{quest}Into the Dungeon{/quest}"
   """
   def quest_name(quest) do
-    "{quest}#{quest.name}{/quest}"
+    context()
+    |> assign(:name, quest.name)
+    |> Format.template("{quest}[name]{/quest}")
   end
 
   @doc """
@@ -39,50 +42,75 @@ defmodule Game.Format.Quests do
   def quest_detail(progress, save) do
     %{quest: quest} = progress
     steps = quest.quest_steps |> Enum.map(&quest_step(&1, progress, save))
-    header = "#{quest.name} - #{progress.status}"
 
-    """
-    #{header}
-    #{header |> Format.underline()}
-
-    #{quest.description}
-
-    #{steps |> Enum.join("\n")}
-    """
-    |> String.trim()
+    context()
+    |> assign(:name, quest_name(quest))
+    |> assign(:progress, progress.status)
+    |> assign(:underline, Format.underline("#{quest.name} - #{progress.status}"))
+    |> assign(:description, quest.description)
+    |> assign(:steps, Enum.join(steps, "\n"))
+    |> Format.template(template("quest"))
     |> Format.resources()
   end
 
-  defp quest_step(step, progress, save) do
-    case step.type do
-      "item/collect" ->
-        current_step_progress = Quest.current_step_progress(step, progress, save)
-        " - Collect #{item_name(step.item)} - #{current_step_progress}/#{step.count}"
+  def quest_step(step = %{type: "item/collect"}, progress, save) do
+    current_step_progress = Quest.current_step_progress(step, progress, save)
 
-      "item/give" ->
-        current_step_progress = Quest.current_step_progress(step, progress, save)
-
-        " - Give #{item_name(step.item)} to #{npc_name(step.npc)} - #{current_step_progress}/#{
-          step.count
-        }"
-
-      "item/have" ->
-        current_step_progress = Quest.current_step_progress(step, progress, save)
-        " - Have #{item_name(step.item)} - #{current_step_progress}/#{step.count}"
-
-      "npc/kill" ->
-        current_step_progress = Quest.current_step_progress(step, progress, save)
-        " - Kill #{npc_name(step.npc)} - #{current_step_progress}/#{step.count}"
-
-      "room/explore" ->
-        current_step_progress = Quest.current_step_progress(step, progress, save)
-        " - Explore #{room_name(step.room)} - #{current_step_progress}"
-    end
+    context()
+    |> assign(:item_name, Format.item_name(step.item))
+    |> assign(:progress, current_step_progress)
+    |> assign(:total, step.count)
+    |> Format.template(" - Collect [item_name] - [progress]/[total]")
   end
 
-  defp item_name(item), do: Format.item_name(item)
+  def quest_step(step = %{type: "item/give"}, progress, save) do
+    current_step_progress = Quest.current_step_progress(step, progress, save)
 
-  defp npc_name(npc), do: Format.npc_name(npc)
+    context()
+    |> assign(:item_name, Format.item_name(step.item))
+    |> assign(:npc_name, Format.npc_name(step.npc))
+    |> assign(:progress, current_step_progress)
+    |> assign(:total, step.count)
+    |> Format.template(" - Give [item_name] to [npc_name] - [progress]/[total]")
+  end
 
-  defp room_name(room), do: Rooms.room_name(room)
+  def quest_step(step = %{type: "item/have"}, progress, save) do
+    current_step_progress = Quest.current_step_progress(step, progress, save)
+
+    context()
+    |> assign(:item_name, Format.item_name(step.item))
+    |> assign(:progress, current_step_progress)
+    |> assign(:total, step.count)
+    |> Format.template(" - Have [item_name] - [progress]/[total]")
+  end
+
+  def quest_step(step = %{type: "npc/kill"}, progress, save) do
+    current_step_progress = Quest.current_step_progress(step, progress, save)
+
+    context()
+    |> assign(:npc_name, Format.npc_name(step.npc))
+    |> assign(:progress, current_step_progress)
+    |> assign(:total, step.count)
+    |> Format.template(" - Kill [npc_name] - [progress]/[total]")
+  end
+
+  def quest_step(step = %{type: "room/explore"}, progress, save) do
+    current_step_progress = Quest.current_step_progress(step, progress, save)
+
+    context()
+    |> assign(:room_name, Format.room_name(step.room))
+    |> assign(:progress, current_step_progress)
+    |> Format.template(" - Explore [room_name] - [progress]")
+  end
+
+  def template("quest") do
+    """
+    [name] - [progress]
+    [underline]
+
+    [description]
+
+    [steps]
+    """
+  end
 end

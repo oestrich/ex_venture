@@ -11,7 +11,11 @@ defmodule Game.Format.NPCs do
   Colorize an npc's name
   """
   @spec npc_name(NPC.t()) :: String.t()
-  def npc_name(npc), do: "{npc}#{npc.name}{/npc}"
+  def npc_name(npc) do
+    context()
+    |> assign(:name, npc.name)
+    |> Format.template("{npc}[name]{/npc}")
+  end
 
   @doc """
   The status of an NPC
@@ -41,7 +45,9 @@ defmodule Game.Format.NPCs do
   def npc_name_for_status(npc) do
     case Map.get(npc.extra, :is_quest_giver, false) do
       true ->
-        "#{npc_name(npc)} ({quest}!{/quest})"
+        context()
+        |> assign(:name, npc_name(npc))
+        |> Format.template("[name] ({quest}!{/quest})")
 
       false ->
         npc_name(npc)
