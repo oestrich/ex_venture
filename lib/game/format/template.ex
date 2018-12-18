@@ -69,7 +69,15 @@ defmodule Game.Format.Template do
   end
 
   defp replace_variable({:tag, attributes, nodes}, context) do
-    {:tag, attributes, replace_variables(nodes, context)}
+    name = Keyword.get(attributes, :name)
+    attributes = Keyword.get(attributes, :attributes, [])
+    attributes =
+      attributes
+      |> Enum.map(fn {key, value} ->
+        {key, replace_variables(value, context)}
+      end)
+
+    {:tag, [name: name, attributes: attributes], replace_variables(nodes, context)}
   end
 
   defp replace_variable(node, _context), do: node

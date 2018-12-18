@@ -3,6 +3,8 @@ defmodule Game.Format.Scan do
   Formatting for the scan command
   """
 
+  import Game.Format.Context
+
   alias Game.Format
 
   @doc """
@@ -27,17 +29,16 @@ defmodule Game.Format.Scan do
   end
 
   defp room_current(room) do
-    """
-    You look around and see:
-    #{who(room)}
-    """
+    context()
+    |> assign(:who, who(room))
+    |> Format.template("You look around and see:\n[who]")
   end
 
   defp room_in_direction(direction, room) do
-    """
-    You look {command}#{direction}{/command} and see:
-    #{who(room)}
-    """
+    context()
+    |> assign(:direction, direction)
+    |> assign(:who, who(room))
+    |> Format.template("You look {command}#{direction}{/command} and see:\n[who]")
   end
 
   defp who(room) do
@@ -46,13 +47,17 @@ defmodule Game.Format.Scan do
 
   defp npcs(room) do
     Enum.map(room.npcs, fn npc ->
-      " - #{Format.name({:npc, npc})}"
+      context()
+      |> assign(:name, Format.npc_name(npc))
+      |> Format.template(" - [name]")
     end)
   end
 
   defp players(room) do
     Enum.map(room.players, fn player ->
-      " - #{Format.name({:player, player})}"
+      context()
+      |> assign(:name, Format.player_name(player))
+      |> Format.template(" - [name]")
     end)
   end
 end

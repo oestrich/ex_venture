@@ -67,8 +67,12 @@ attributes -> attribute : ['$1'].
 
 attribute -> word '=' quote attribute_value quote : attribute('$1', '$4').
 
-attribute_value -> word space attribute_value : [val('$1') | [val('$2') | '$3']].
-attribute_value -> word : [val('$1')].
+attribute_value -> word attribute_value : [string('$1') | '$2'].
+attribute_value -> space attribute_value : [string('$1') | '$2'].
+attribute_value -> variable attribute_value : ['$1' | '$2'].
+attribute_value -> word : [string('$1')].
+attribute_value -> space : [string('$1')].
+attribute_value -> variable : ['$1'].
 
 resource -> '{' '{' word colon word '}' '}' : {resource, val('$3'), val('$5')}.
 

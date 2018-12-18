@@ -17,7 +17,9 @@ defmodule Game.Format.Skills do
   """
   @spec skill_name(Skill.t()) :: String.t()
   def skill_name(skill) do
-    "{skill}#{skill.name}{/skill}"
+    context()
+    |> assign(:name, skill.name)
+    |> Format.template("{skill}[name]{/skill}")
   end
 
   @doc """
@@ -32,13 +34,10 @@ defmodule Game.Format.Skills do
       |> Enum.map(&skill(&1))
       |> Enum.join("\n")
 
-    """
-    Known Skills
-    #{Format.underline("Known Skills")}
-
-    #{skills}
-    """
-    |> String.trim()
+    context()
+    |> assign(:underline, Format.underline("Known Skills"))
+    |> assign(:skills, skills)
+    |> Format.template("Known Skills\n[underline]\n\n[skills]")
   end
 
   @doc """
@@ -50,11 +49,13 @@ defmodule Game.Format.Skills do
   """
   @spec skill(Skill.t()) :: String.t()
   def skill(skill) do
-    """
-    {skill}#{skill.name}{/skill} - Level #{skill.level} - #{skill.points}sp
-    Command: {command send='help #{skill.command}'}#{skill.command}{/command}
-    #{skill.description}
-    """
+    context()
+    |> assign(:name, skill_name(skill))
+    |> assign(:level, skill.level)
+    |> assign(:points, skill.points)
+    |> assign(:command, skill.command)
+    |> assign(:description, skill.description)
+    |> Format.template(template("skill"))
   end
 
   @doc """
@@ -111,5 +112,13 @@ defmodule Game.Format.Skills do
     rows = [["ID", "Name", "Command", "Cost"] | rows]
 
     Table.format("#{Format.npc_name(trainer)} will train these skills:", rows, [5, 30, 20, 10])
+  end
+
+  def template("skill") do
+    """
+    [name] - Level [level] - [points]sp
+    Command: {command send='help [command]'}[command]{/command}
+    [description]
+    """
   end
 end
