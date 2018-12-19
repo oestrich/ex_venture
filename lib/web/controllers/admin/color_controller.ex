@@ -1,6 +1,8 @@
 defmodule Web.Admin.ColorController do
   use Web.AdminController
 
+  plug(:ensure_admin!)
+
   alias Web.Color
   alias Web.ColorCode
 

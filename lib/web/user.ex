@@ -26,7 +26,7 @@ defmodule Web.User do
   User flags
   """
   @spec flags() :: [String.t()]
-  def flags(), do: ["admin", "disabled"]
+  def flags(), do: ["admin", "builder", "disabled"]
 
   @doc """
   Check if a player is disabled

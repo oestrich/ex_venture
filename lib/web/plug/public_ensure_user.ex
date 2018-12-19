@@ -9,7 +9,7 @@ defmodule Web.Plug.PublicEnsureUser do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    case Map.has_key?(conn.assigns, :user) do
+    case Map.has_key?(conn.assigns, :current_user) do
       true ->
         conn
 

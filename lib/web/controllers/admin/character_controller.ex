@@ -1,6 +1,8 @@
 defmodule Web.Admin.CharacterController do
   use Web.AdminController
 
+  plug(:ensure_admin!)
+
   alias Web.Character
 
   def show(conn, %{"id" => id}) do

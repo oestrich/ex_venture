@@ -10,13 +10,13 @@ defmodule Web.AccountTwoFactorController do
   plug(:ensure_not_verified_yet! when action in [:start, :validate, :qr])
 
   def start(conn, _params) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
     user = User.create_totp_secret(user)
     conn |> render("start.html", user: user)
   end
 
   def validate(conn, %{"user" => %{"token" => token}}) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     case User.valid_totp_token?(user, token) do
       true ->
@@ -39,7 +39,7 @@ defmodule Web.AccountTwoFactorController do
   end
 
   def verify_token(conn, %{"user" => %{"token" => token}}) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     case User.valid_totp_token?(user, token) do
       true ->
@@ -58,7 +58,7 @@ defmodule Web.AccountTwoFactorController do
   end
 
   def clear(conn, _) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     User.reset_totp(user)
 
@@ -69,7 +69,7 @@ defmodule Web.AccountTwoFactorController do
   end
 
   def qr(conn, _params) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     png = User.generate_qr_png(user)
 
@@ -99,7 +99,7 @@ defmodule Web.AccountTwoFactorController do
   by accident.
   """
   def ensure_not_verified_yet!(conn, _opts) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     case user.totp_verified_at do
       nil ->

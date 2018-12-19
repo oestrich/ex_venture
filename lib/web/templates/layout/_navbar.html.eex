@@ -16,7 +16,7 @@
       <%= link("Help", to: public_help_path(@conn, :index), class: "nav-link") %>
     </li>
 
-    <%= if Map.has_key?(@conn.assigns, :user) do %>
+    <%= if Map.has_key?(@conn.assigns, :current_user) do %>
       <li class="nav-item <%= tab_selected(@conn, "chat") %>">
         <%= link("Chat", to: public_chat_path(@conn, :show), class: "nav-link") %>
       </li>
@@ -24,7 +24,7 @@
         <%= if current_character?(@conn) do %>
           <%= link(to: public_mail_path(@conn, :index), class: "nav-link") do %>
             Account
-            <%= if (unread_count = Mail.unread_count(@user)) > 0 do %>
+            <%= if (unread_count = Mail.unread_count(@current_user)) > 0 do %>
               <span class="badge badge-info"><%= unread_count %></span>
             <% end %>
           <% end %>
@@ -34,7 +34,7 @@
           <% end %>
         <% end %>
       </li>
-      <%= if @conn |> is_admin? do %>
+      <%= if is_admin_or_builder?(@conn) do %>
         <li class="nav-item>">
           <%= link("Admin", to: dashboard_path(@conn, :index), class: "nav-link") %>
         </li>
@@ -44,13 +44,13 @@
       </li>
     <% end %>
   </ul>
-  <%= if Map.has_key?(@conn.assigns, :user) do %>
+  <%= if Map.has_key?(@conn.assigns, :current_user) do %>
     <ul class="navbar-nav">
       <%= if Map.has_key?(@conn.assigns, :current_character) do %>
         <li class="nav-item dropdown">
           <%= link(@current_character.name, to: "#", class: "nav-link dropdown-toggle", data: [toggle: "dropdown"]) %>
           <div class="dropdown-menu">
-            <%= Enum.map(@user.characters, fn character -> %>
+            <%= Enum.map(@current_user.characters, fn character -> %>
               <%= link(character.name, to: public_character_path(@conn, :swap, to: character.id), method: :post, class: "dropdown-item #{character_active(@conn, character)}") %>
             <% end) %>
             <div class="dropdown-divider"></div>

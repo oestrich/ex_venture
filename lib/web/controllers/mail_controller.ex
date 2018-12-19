@@ -72,7 +72,7 @@ defmodule Web.MailController do
   end
 
   defp ensure_your_mail!(conn, _opts) do
-    %{user: user, mail: mail} = conn.assigns
+    %{current_user: user, mail: mail} = conn.assigns
 
     case user.id == mail.receiver_id do
       true ->

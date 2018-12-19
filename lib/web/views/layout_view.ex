@@ -47,8 +47,13 @@ defmodule Web.LayoutView do
   def character_token(%{assigns: %{character_token: token}}), do: token
   def character_token(_), do: ""
 
-  def is_admin?(%{assigns: %{user: user}}), do: User.is_admin?(user)
+  def is_admin_or_builder?(assigns), do: is_admin?(assigns) || is_builder?(assigns)
+
+  def is_admin?(%{assigns: %{current_user: user}}), do: User.is_admin?(user)
   def is_admin?(_), do: false
+
+  def is_builder?(%{assigns: %{current_user: user}}), do: User.is_builder?(user)
+  def is_builder?(_), do: false
 
   def page_title(conn, assigns) do
     case render_existing(view_module(conn), "title", assigns) do
