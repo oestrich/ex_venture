@@ -135,7 +135,9 @@ defmodule Game.Format.Rooms do
         ""
 
       _ ->
-        "Exits: #{exits(room)}\n"
+        context()
+        |> assign(:exits, exits(room))
+        |> Format.template("Exits: [exits]\n")
     end
   end
 
@@ -146,10 +148,16 @@ defmodule Game.Format.Rooms do
     |> Enum.map(fn direction ->
       case Exit.exit_to(room, direction) do
         %{door_id: door_id, has_door: true} ->
-          "{exit}#{direction}{/exit} (#{Door.get(door_id)})"
+          context()
+          |> assign(:direction, direction)
+          |> assign(:door_state, Door.get(door_id))
+          |> Format.template("{exit}[direction]{/exit} ([door_state])")
 
         _ ->
           "{exit}#{direction}{/exit}"
+          context()
+          |> assign(:direction, direction)
+          |> Format.template("{exit}[direction]{/exit}")
       end
     end)
     |> Enum.join(", ")
