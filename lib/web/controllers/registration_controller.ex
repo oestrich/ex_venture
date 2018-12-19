@@ -31,7 +31,7 @@ defmodule Web.RegistrationController do
   end
 
   def finalize(conn, _params) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     with true <- User.finalize_registration?(user) do
       changeset = User.finalize(user)
@@ -46,7 +46,7 @@ defmodule Web.RegistrationController do
   end
 
   def update(conn, %{"user" => params}) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     with true <- User.finalize_registration?(user),
          {:ok, _user} <- User.finalize_user(user, params) do

@@ -8,7 +8,7 @@ defmodule Web.AuthConnCase do
         character = create_character(user, %{name: "user"})
         user = %{user | characters: [character]}
 
-        conn = conn |> assign(:user, user)
+        conn = conn |> assign(:current_user, user)
 
         %{conn: conn, user: user, character: character}
       end

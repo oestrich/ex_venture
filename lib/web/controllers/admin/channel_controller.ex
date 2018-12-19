@@ -1,6 +1,8 @@
 defmodule Web.Admin.ChannelController do
   use Web.AdminController
 
+  plug(:ensure_admin!)
+
   alias Web.Channel
 
   def index(conn, _params) do

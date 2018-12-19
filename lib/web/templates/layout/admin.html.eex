@@ -38,7 +38,7 @@
                 <ul class="dropdown-menu">
                   <li>
                     <ul class="menu">
-                      <%= Enum.map(@user.characters, fn character -> %>
+                      <%= Enum.map(@current_user.characters, fn character -> %>
                         <li>
                           <%= link(character.name, to: public_character_path(@conn, :swap, to: character.id), method: :post, class: "dropdown-item #{character_active(@conn, character)}") %>
                         </li>
@@ -104,12 +104,14 @@
                 <span>Socials</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "users") %>">
-              <%= link(to: user_path(@conn, :index)) do %>
-                <i class="fa fa-users"></i>
-                <span>Users</span>
-              <% end %>
-            </li>
+            <%= if is_admin?(@conn) do %>
+              <li class="<%= tab_selected(@conn, "users") %>">
+                <%= link(to: user_path(@conn, :index)) do %>
+                  <i class="fa fa-users"></i>
+                  <span>Users</span>
+                <% end %>
+              </li>
+            <% end %>
             <li class="header">THE WORLD</li>
             <li class="<%= tab_selected(@conn, "features") %>">
               <%= link(to: feature_path(@conn, :index)) do %>
@@ -165,24 +167,28 @@
                 <% end %>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "channels") %>">
-              <%= link(to: channel_path(@conn, :index)) do %>
-                <i class="fa fa-bullhorn"></i>
-                <span>Channels</span>
-              <% end %>
-            </li>
+            <%= if is_admin?(@conn) do %>
+              <li class="<%= tab_selected(@conn, "channels") %>">
+                <%= link(to: channel_path(@conn, :index)) do %>
+                  <i class="fa fa-bullhorn"></i>
+                  <span>Channels</span>
+                <% end %>
+              </li>
+            <% end %>
             <li class="<%= tab_selected(@conn, "colors") %>">
               <%= link(to: color_path(@conn, :index)) do %>
                 <i class="fa fa-code"></i>
                 <span>Colors</span>
               <% end %>
             </li>
-            <li class="<%= tab_selected(@conn, "config") %>">
-              <%= link(to: config_path(@conn, :index)) do %>
-                <i class="fa fa-gears"></i>
-                <span>Config</span>
-              <% end %>
-            </li>
+            <%= if is_admin?(@conn) do %>
+              <li class="<%= tab_selected(@conn, "config") %>">
+                <%= link(to: config_path(@conn, :index)) do %>
+                  <i class="fa fa-gears"></i>
+                  <span>Config</span>
+                <% end %>
+              </li>
+            <% end %>
             <li class="<%= tab_selected(@conn, "damage_types") %>">
               <%= link(to: damage_type_path(@conn, :index)) do %>
                 <i class="fa fa-tint"></i>

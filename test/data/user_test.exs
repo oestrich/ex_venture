@@ -3,6 +3,8 @@ defmodule Data.UserTest do
 
   alias Data.User
 
+  doctest User
+
   test "valid changeset" do
     changeset = User.changeset(%User{}, %{name: "user", password: "password"})
     assert changeset.valid?

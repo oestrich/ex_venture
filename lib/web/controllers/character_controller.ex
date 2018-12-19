@@ -14,7 +14,7 @@ defmodule Web.CharacterController do
   end
 
   def create(conn, %{"character" => params}) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     case Character.create(user, params) do
       {:ok, character} ->
@@ -31,7 +31,7 @@ defmodule Web.CharacterController do
   end
 
   def swap(conn, %{"to" => id}) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     case Character.get_character(user, id) do
       {:ok, character} ->

@@ -2,6 +2,7 @@ defmodule Web.Admin.UserController do
   use Web.AdminController
 
   plug(Web.Plug.FetchPage when action in [:index])
+  plug(:ensure_admin!)
 
   alias Web.User
 

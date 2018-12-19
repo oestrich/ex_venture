@@ -1,6 +1,8 @@
 defmodule Web.Admin.ConfigController do
   use Web.AdminController
 
+  plug(:ensure_admin!)
+
   alias Web.Config
 
   def index(conn, _params) do

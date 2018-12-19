@@ -35,9 +35,28 @@ defmodule Data.User do
 
   @doc """
   Check if a user is an admin
+
+      iex> User.is_admin?(%{flags: ["admin"]})
+      true
+
+      iex> User.is_admin?(%{flags: []})
+      false
   """
   def is_admin?(user) do
     "admin" in user.flags
+  end
+
+  @doc """
+  Check if a user is a builder
+
+      iex> User.is_builder?(%{flags: ["builder"]})
+      true
+
+      iex> User.is_builder?(%{flags: []})
+      false
+  """
+  def is_builder?(user) do
+    "builder" in user.flags
   end
 
   def changeset(struct, params) do
