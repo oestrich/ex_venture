@@ -2,7 +2,7 @@
   <ul class="nav flex-column">
     <li class="nav-item">
       <%= link(to: public_mail_path(@conn, :index), class: "nav-link") do %>
-        Mail <span class="badge badge-light"><%= Mail.unread_count(@conn.assigns.user) %></span>
+        Mail <span class="badge badge-light"><%= Mail.unread_count(@conn.assigns.current_user) %></span>
       <% end %>
     </li>
     <li class="nav-item">

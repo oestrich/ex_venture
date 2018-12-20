@@ -186,10 +186,18 @@ defmodule Web.User do
   """
   @spec update(integer(), map()) :: {:ok, User.t()} | {:error, changeset :: map}
   def update(id, params) do
-    id
-    |> get()
-    |> User.changeset(cast_params(params))
-    |> Repo.update()
+    user = id |> get()
+    case is_nil(user.provider) do
+      true ->
+        user
+        |> User.changeset(cast_params(params))
+        |> Repo.update()
+
+      false ->
+        user
+        |> User.edit_changeset(cast_params(params))
+        |> Repo.update()
+    end
   end
 
   defp cast_params(params) do

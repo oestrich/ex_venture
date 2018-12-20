@@ -15,4 +15,8 @@ defmodule Web.Admin.UserView do
   def checked_flag?(user, flag) do
     flag in user.flags
   end
+
+  def show_password?(user) do
+    is_nil(user.provider)
+  end
 end

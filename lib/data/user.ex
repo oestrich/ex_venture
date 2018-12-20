@@ -81,6 +81,12 @@ defmodule Data.User do
     |> unique_constraint(:email)
   end
 
+  def edit_changeset(struct, params) do
+    struct
+    |> cast(params, [:name, :email, :flags, :notes])
+    |> validate_required([:name, :flags])
+  end
+
   def grapevine_changeset(struct, params) do
     struct
     |> cast(params, [:name, :email, :provider, :provider_uid])

@@ -34,7 +34,9 @@
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <li class="dropdown notifications-menu">
-                <%= link(@current_character.name, to: "#", class: "dropdown-toggle", data: [toggle: "dropdown"]) %>
+                <%= if Map.has_key?(assigns, :current_character) do %>
+                  <%= link(@current_character.name, to: "#", class: "dropdown-toggle", data: [toggle: "dropdown"]) %>
+                <% end %>
                 <ul class="dropdown-menu">
                   <li>
                     <ul class="menu">
