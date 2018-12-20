@@ -3,6 +3,8 @@ defmodule Web.RegistrationResetController do
 
   alias Web.User
 
+  plug(:ensure_registration_enabled?)
+
   def new(conn, _params) do
     changeset = User.new()
 
@@ -39,6 +41,18 @@ defmodule Web.RegistrationResetController do
         conn
         |> put_flash(:info, "Password reset!")
         |> redirect(to: public_session_path(conn, :new))
+    end
+  end
+
+  def ensure_registration_enabled?(conn, _opts) do
+    case Config.grapevine_only_login?() do
+      true ->
+        conn
+        |> redirect(to: public_session_path(conn, :new))
+        |> halt()
+
+      false ->
+        conn
     end
   end
 end

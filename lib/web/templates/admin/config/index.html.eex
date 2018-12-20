@@ -108,6 +108,13 @@
                   <%= link("Edit", to: config_path(@conn, :edit, "discord_invite_url"), class: "btn btn-default btn-xs") %>
                 </td>
               </tr>
+              <tr>
+                <th>Grapevine Only Login</th>
+                <td><%= Config.grapevine_only_login?() %></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "grapevine_only_login"), class: "btn btn-default btn-xs") %>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

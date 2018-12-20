@@ -14,7 +14,10 @@
 
     <%= if !Map.has_key?(@conn.assigns, :current_user) do %>
       <p>
-        <%= link("Sign in", to: public_session_path(@conn, :new)) %> before playing to start right away. You can also <%= link("create a new account", to: public_registration_path(@conn, :new)) %> to start playing.
+        <%= link("Sign in", to: public_session_path(@conn, :new)) %> before playing to start right away.
+        <%= if !Config.grapevine_only_login?() do %>
+          You can also <%= link("create a new account", to: public_registration_path(@conn, :new)) %> to start playing.
+        <% end %>
       </p>
     <% end %>
 

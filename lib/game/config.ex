@@ -297,6 +297,19 @@ defmodule Game.Config do
     find_config("discord_invite_url")
   end
 
+  def grapevine_only_login?() do
+    case find_config("grapevine_only_login") do
+      nil ->
+        false
+
+      "false" ->
+        false
+
+      "true" ->
+        true
+    end
+  end
+
   Enum.each(@color_config, fn {config, default} ->
     def unquote(config)() do
       case find_config(to_string(unquote(config))) do

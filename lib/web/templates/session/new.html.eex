@@ -3,25 +3,33 @@
     <h3>Sign In</h3>
 
     <%= form_tag public_session_path(@conn, :create), [method: :post] do %>
-      <div class="form-group has-feedback">
-        <%= label :user, :name %>
-        <%= text_input :user, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus", autocorrect: "off", autocapitalize: "off", spellcheck: false %>
-      </div>
+      <%= if !Config.grapevine_only_login?() do %>
+        <div class="form-group has-feedback">
+          <%= label :user, :name %>
+          <%= text_input :user, :name, class: "form-control", placeholder: "Name", autofocus: "autofocus", autocorrect: "off", autocapitalize: "off", spellcheck: false %>
+        </div>
 
-      <div class="form-group has-feedback">
-        <%= label :user, :password %>
-        <%= text_input :user, :password, type: "password", class: "form-control", placeholder: "Password" %>
-      </div>
+        <div class="form-group has-feedback">
+          <%= label :user, :password %>
+          <%= text_input :user, :password, type: "password", class: "form-control", placeholder: "Password" %>
+        </div>
+      <% end %>
 
       <div class="actions">
-        <%= submit "Sign In", class: "btn btn-primary btn-block btn-flat" %>
+        <%= if !Config.grapevine_only_login?() do %>
+          <%= submit "Sign In", class: "btn btn-primary btn-block btn-flat" %>
+        <% end %>
+
         <%= if grapevine_enabled?() do %>
           <%= link(to: public_auth_path(@conn, :request, "grapevine"), class: "btn btn-block btn-flat btn-grapevine") do %>
              <%= img_tag("/images/grapevine-icon.png", height: 32) %> Sign in with Grapevine
           <% end %>
         <% end %>
-        <%= link("Create an account", to: public_registration_path(@conn, :new), class: "btn btn-secondary btn-block btn-flat") %>
-        <%= link("Forgot your password?", to: public_registration_reset_path(@conn, :new), class: "btn btn-block btn-flat") %>
+
+        <%= if !Config.grapevine_only_login?() do %>
+          <%= link("Create an account", to: public_registration_path(@conn, :new), class: "btn btn-secondary btn-block btn-flat") %>
+          <%= link("Forgot your password?", to: public_registration_reset_path(@conn, :new), class: "btn btn-block btn-flat") %>
+        <% end %>
       </div>
     <% end %>
   </div>

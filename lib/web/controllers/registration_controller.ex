@@ -5,6 +5,7 @@ defmodule Web.RegistrationController do
   alias Web.User
 
   plug(Web.Plug.PublicEnsureUser when action in [:finalize, :update])
+  plug(:ensure_registration_enabled?)
 
   def new(conn, _params) do
     changeset = User.new()
@@ -59,6 +60,18 @@ defmodule Web.RegistrationController do
 
       _ ->
         redirect(conn, to: public_page_path(conn, :index))
+    end
+  end
+
+  def ensure_registration_enabled?(conn, _opts) do
+    case Config.grapevine_only_login?() do
+      true ->
+        conn
+        |> redirect(to: public_session_path(conn, :new))
+        |> halt()
+
+      false ->
+        conn
     end
   end
 end
