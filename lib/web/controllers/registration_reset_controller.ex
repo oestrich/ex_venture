@@ -1,6 +1,7 @@
 defmodule Web.RegistrationResetController do
   use Web, :controller
 
+  alias Game.Config
   alias Web.User
 
   plug(:ensure_registration_enabled?)
