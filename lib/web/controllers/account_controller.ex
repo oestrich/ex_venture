@@ -6,7 +6,7 @@ defmodule Web.AccountController do
   plug(Web.Plug.PublicEnsureUser)
 
   def show(conn, _params) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     email_changeset = User.email_changeset(user)
 
@@ -16,7 +16,7 @@ defmodule Web.AccountController do
   end
 
   def update(conn, %{"current_password" => current_password, "user" => params}) do
-    case User.change_password(conn.assigns.user, current_password, params) do
+    case User.change_password(conn.assigns.current_user, current_password, params) do
       {:ok, _user} ->
         conn |> redirect(to: public_page_path(conn, :index))
 
@@ -26,7 +26,7 @@ defmodule Web.AccountController do
   end
 
   def update(conn, %{"user" => params}) do
-    %{user: user} = conn.assigns
+    %{current_user: user} = conn.assigns
 
     case User.change_email(user, params) do
       {:ok, _user} ->

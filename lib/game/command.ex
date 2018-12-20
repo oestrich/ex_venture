@@ -49,7 +49,8 @@ defmodule Game.Command do
 
   Should return `{:error, :bad_parse, command}` on a failed parse.
   """
-  @callback parse(command :: String.t(), context :: Command.ParseContext.t()) :: tuple() | {:error, :bad_parse, command :: String.t()}
+  @callback parse(command :: String.t(), context :: Command.ParseContext.t()) ::
+              tuple() | {:error, :bad_parse, command :: String.t()}
 
   @doc """
   Run a command
@@ -143,6 +144,7 @@ defmodule Game.Command do
 
   def parse(command, context) do
     start_parsing_at = Timex.now()
+
     command =
       command
       |> String.replace(~r/  /, " ")
@@ -198,7 +200,9 @@ defmodule Game.Command do
       type: :command
     )
 
-    message = dgettext("commands", "Unknown command, type {command}help{/command} for assistance.")
+    message =
+      dgettext("commands", "Unknown command, type {command}help{/command} for assistance.")
+
     socket |> @socket.echo(message)
   end
 

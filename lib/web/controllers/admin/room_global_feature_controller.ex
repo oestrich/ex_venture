@@ -9,7 +9,7 @@ defmodule Web.Admin.RoomGlobalFeatureController do
 
     conn
     |> assign(:room, room)
-    |> assign(:features, Feature.all()) 
+    |> assign(:features, Feature.all())
     |> render("new.html")
   end
 

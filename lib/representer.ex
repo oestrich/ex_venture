@@ -299,7 +299,7 @@ defmodule Representer do
       end)
     end
 
-    defp flatten_properties(value, base_properties, key)  do
+    defp flatten_properties(value, base_properties, key) do
       Map.put(base_properties, key, value)
     end
 
@@ -457,7 +457,7 @@ defmodule Representer do
           []
 
         items ->
-          Enum.map(items, fn item -> transform(item, collection.name)end)
+          Enum.map(items, fn item -> transform(item, collection.name) end)
       end
     end
 
@@ -469,8 +469,8 @@ defmodule Representer do
     end
 
     defp get_self_links(links) do
-      Enum.filter(links, fn(event) ->
-        Map.get(event, :rel)  == "self"
+      Enum.filter(links, fn event ->
+        Map.get(event, :rel) == "self"
       end)
     end
 

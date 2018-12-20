@@ -169,7 +169,7 @@ defmodule Game.Session.Registry do
     end
   end
 
-  def find_connected_player([name: player_name]) do
+  def find_connected_player(name: player_name) do
     connected_players()
     |> Enum.find(fn %{player: player} ->
       player.name |> String.downcase() == player_name |> String.downcase()
@@ -308,8 +308,11 @@ defmodule Game.Session.Registry do
     {:noreply, %{state | connected_players: connected_players}}
   end
 
-  def handle_cast({:update, pid, player, metadata}, state = %{connected_players: connected_players}) do
-    player_ids = Enum.map(state.connected_players, &(&1.player.id))
+  def handle_cast(
+        {:update, pid, player, metadata},
+        state = %{connected_players: connected_players}
+      ) do
+    player_ids = Enum.map(state.connected_players, & &1.player.id)
 
     case player.id in player_ids do
       true ->

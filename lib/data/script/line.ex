@@ -109,7 +109,7 @@ defmodule Data.Script.Line do
   def valid?(line) do
     Enum.all?(keys(line), fn key -> key in [:key, :message, :listeners, :unknown, :trigger] end) &&
       Enum.all?([:key, :message], fn key -> key in keys(line) end) && valid_listeners?(line) &&
-        valid_trigger?(line) && trigger_only?(line)
+      valid_trigger?(line) && trigger_only?(line)
   end
 
   def valid_listeners?(%{listeners: listeners}) do

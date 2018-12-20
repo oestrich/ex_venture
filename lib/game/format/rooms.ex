@@ -15,14 +15,18 @@ defmodule Game.Format.Rooms do
   Display a room's name
   """
   def room_name(room) do
-    "{room}#{room.name}{/room}"
+    context()
+    |> assign(:name, room.name)
+    |> Format.template("{room}[name]{/room}")
   end
 
   @doc """
   Display a zone's name
   """
   def zone_name(zone) do
-    "{zone}#{zone.name}{/zone}"
+    context()
+    |> assign(:name, zone.name)
+    |> Format.template("{zone}[name]{/zone}")
   end
 
   @doc """
@@ -65,9 +69,11 @@ defmodule Game.Format.Rooms do
 
   defp room_description_with_features(room) do
     contains_features? = String.contains?(room.description, "[features]")
-    contains_sub_features? = Enum.any?(room.features, fn feature ->
-      String.contains?(room.description, "[#{feature.key}]")
-    end)
+
+    contains_sub_features? =
+      Enum.any?(room.features, fn feature ->
+        String.contains?(room.description, "[#{feature.key}]")
+      end)
 
     case contains_features? || contains_sub_features? do
       true ->
@@ -102,7 +108,10 @@ defmodule Game.Format.Rooms do
   """
   @spec peak_room(Room.t(), String.t()) :: String.t()
   def peak_room(room, direction) do
-    "#{room_name(room)} is #{direction}."
+    context()
+    |> assign(:name, room_name(room))
+    |> assign(:direction, direction)
+    |> Format.template("[name] is [direction].")
   end
 
   @doc """
@@ -126,7 +135,9 @@ defmodule Game.Format.Rooms do
         ""
 
       _ ->
-        "Exits: #{exits(room)}\n"
+        context()
+        |> assign(:exits, exits(room))
+        |> Format.template("Exits: [exits]\n")
     end
   end
 
@@ -137,10 +148,16 @@ defmodule Game.Format.Rooms do
     |> Enum.map(fn direction ->
       case Exit.exit_to(room, direction) do
         %{door_id: door_id, has_door: true} ->
-          "{exit}#{direction}{/exit} (#{Door.get(door_id)})"
+          context()
+          |> assign(:direction, direction)
+          |> assign(:door_state, Door.get(door_id))
+          |> Format.template("{exit}[direction]{/exit} ([door_state])")
 
         _ ->
           "{exit}#{direction}{/exit}"
+          context()
+          |> assign(:direction, direction)
+          |> Format.template("{exit}[direction]{/exit}")
       end
     end)
     |> Enum.join(", ")

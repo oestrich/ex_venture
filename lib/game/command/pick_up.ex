@@ -83,7 +83,12 @@ defmodule Game.Command.PickUp do
   def run({@currency}, state) do
     case pick_up_currency(state) do
       {:ok, currency, state} ->
-        message = gettext("You picked up {item}%{amount} %{currency}{/item}.", amount: currency, currency: @currency)
+        message =
+          gettext("You picked up {item}%{amount} %{currency}{/item}.",
+            amount: currency,
+            currency: @currency
+          )
+
         state.socket |> @socket.echo(message)
         {:update, state}
 
@@ -103,7 +108,12 @@ defmodule Game.Command.PickUp do
 
     with {:ok, state} <- pick_up_all_items(state, room),
          {:ok, currency, state} <- pick_up_currency(state) do
-      message = gettext("You picked up {item}%{amount} %{currency}{/item}.", amount: currency, currency: @currency)
+      message =
+        gettext("You picked up {item}%{amount} %{currency}{/item}.",
+          amount: currency,
+          currency: @currency
+        )
+
       state.socket |> @socket.echo(message)
 
       {:update, state}
@@ -141,7 +151,10 @@ defmodule Game.Command.PickUp do
 
   def run({verb, :help}, %{socket: socket}) do
     message =
-      gettext("You don't know what to %{verb}. See {command}help get{/command} for more information.", verb: verb)
+      gettext(
+        "You don't know what to %{verb}. See {command}help get{/command} for more information.",
+        verb: verb
+      )
 
     socket |> @socket.echo(message)
   end

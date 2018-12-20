@@ -126,7 +126,10 @@ defmodule Game.Format.Channels do
   """
   @spec whisper(Character.t(), String.t()) :: String.t()
   def whisper(sender, message) do
-    ~s[#{Format.name(sender)} whispers to you, {say}"#{message}"{/say}]
+    context()
+    |> assign(:sender, Format.name(sender))
+    |> assign(:message, message)
+    |> Format.template("[sender] whispers to you, {say}\"[message]\"{/say}")
   end
 
   @doc """
@@ -137,7 +140,10 @@ defmodule Game.Format.Channels do
   """
   @spec send_whisper(Character.t(), String.t()) :: String.t()
   def send_whisper(receiver, message) do
-    ~s[You whisper to #{Format.name(receiver)}, {say}"#{message}"{/say}]
+    context()
+    |> assign(:receiver, Format.name(receiver))
+    |> assign(:message, message)
+    |> Format.template("You whisper to [receiver], {say}\"[message]\"{/say}")
   end
 
   @doc """
@@ -148,7 +154,10 @@ defmodule Game.Format.Channels do
   """
   @spec whisper_overheard(Character.t(), String.t()) :: String.t()
   def whisper_overheard(sender, receiver) do
-    ~s[You overhear #{Format.name(sender)} whispering to #{Format.name(receiver)}.]
+    context()
+    |> assign(:sender, Format.name(sender))
+    |> assign(:receiver, Format.name(receiver))
+    |> Format.template("You overhear [sender] whispering to [receiver].")
   end
 
   @doc """
@@ -159,7 +168,10 @@ defmodule Game.Format.Channels do
   """
   @spec tell(Character.t(), String.t()) :: String.t()
   def tell(sender, message) do
-    ~s[#{Format.name(sender)} tells you, {say}"#{message}"{/say}]
+    context()
+    |> assign(:sender, Format.name(sender))
+    |> assign(:message, message)
+    |> Format.template("[sender] tells you, {say}\"[message]\"{/say}")
   end
 
   @doc """
@@ -170,6 +182,9 @@ defmodule Game.Format.Channels do
   """
   @spec send_tell(Character.t(), String.t()) :: String.t()
   def send_tell(character, message) do
-    ~s[You tell #{Format.name(character)}, {say}"#{message}"{/say}]
+    context()
+    |> assign(:receiver, Format.name(character))
+    |> assign(:message, message)
+    |> Format.template("You tell [receiver], {say}\"[message]\"{/say}")
   end
 end

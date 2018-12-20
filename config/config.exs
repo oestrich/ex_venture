@@ -66,11 +66,16 @@ config :mime, :types, %{
   "application/vnd.api+json" => ["jsonapi"]
 }
 
-config :phoenix, :format_encoders, [collection: Poison, hal: Poison, mason: Poison, siren: Poison, jsonapi: Poison]
+config :phoenix, :format_encoders,
+  collection: Poison,
+  hal: Poison,
+  mason: Poison,
+  siren: Poison,
+  jsonapi: Poison
 
 config :ueberauth, Ueberauth,
   providers: [
-    grapevine: { Grapevine.Ueberauth.Strategy, [scope: "profile email"] }
+    grapevine: {Grapevine.Ueberauth.Strategy, [scope: "profile email"]}
   ]
 
 import_config "#{Mix.env()}.exs"

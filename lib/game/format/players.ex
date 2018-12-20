@@ -15,7 +15,11 @@ defmodule Game.Format.Players do
   Colorize a player's name
   """
   @spec player_name(User.t()) :: String.t()
-  def player_name(player), do: "{player}#{player.name}{/player}"
+  def player_name(player) do
+    context()
+    |> assign(:name, player.name)
+    |> Format.template("{player}[name]{/player}")
+  end
 
   @doc """
   Format the player's prompt
@@ -78,7 +82,11 @@ defmodule Game.Format.Players do
       ["Play Time", play_time(character.seconds_online)]
     ]
 
-    Table.format("#{player_name(character)} - #{character.race.name} - #{character.class.name}", rows, [16, 15])
+    Table.format(
+      "#{player_name(character)} - #{character.race.name} - #{character.class.name}",
+      rows,
+      [16, 15]
+    )
   end
 
   @doc """
@@ -90,7 +98,10 @@ defmodule Game.Format.Players do
       ["Flags", player_flags(player)]
     ]
 
-    Table.format("#{player_name(player)} - #{player.race.name} - #{player.class.name}", rows, [12, 15])
+    Table.format("#{player_name(player)} - #{player.race.name} - #{player.class.name}", rows, [
+      12,
+      15
+    ])
   end
 
   @doc """
@@ -103,7 +114,9 @@ defmodule Game.Format.Players do
       "none"
   """
   def player_flags(player, opts \\ [none: true])
+
   def player_flags(%{flags: []}, none: true), do: "none"
+
   def player_flags(%{flags: []}, none: false), do: ""
 
   def player_flags(%{flags: flags}, _opts) do
@@ -135,7 +148,11 @@ defmodule Game.Format.Players do
     minutes = seconds |> div(60) |> rem(60) |> to_string |> String.pad_leading(2, "0")
     seconds = seconds |> rem(60) |> to_string |> String.pad_leading(2, "0")
 
-    "#{hours}h #{minutes}m #{seconds}s"
+    context()
+    |> assign(:hours, hours)
+    |> assign(:minutes, minutes)
+    |> assign(:seconds, seconds)
+    |> Format.template("[hours]h [minutes]m [seconds]s")
   end
 
   @doc """

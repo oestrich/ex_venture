@@ -50,7 +50,9 @@ defmodule Game.Command.Examine do
 
   def run({}, %{socket: socket}) do
     message =
-      gettext("You don't know what to examine. See {command}help examine{/command} for more information.")
+      gettext(
+        "You don't know what to examine. See {command}help examine{/command} for more information."
+      )
 
     socket |> @socket.echo(message)
   end

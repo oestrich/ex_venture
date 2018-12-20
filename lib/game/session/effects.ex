@@ -26,7 +26,13 @@ defmodule Game.Session.Effects do
   @spec apply([Data.Effect.t()], tuple, String.t(), Map) :: map
   def apply(effects, from, description, state = %{save: save}) do
     {stats, effects, continuous_effects} =
-      Character.Effects.apply_effects({:player, state.character}, save.stats, state, effects, from)
+      Character.Effects.apply_effects(
+        {:player, state.character},
+        save.stats,
+        state,
+        effects,
+        from
+      )
 
     state = Player.update_save(state, %{save | stats: stats})
 
@@ -53,7 +59,10 @@ defmodule Game.Session.Effects do
     player |> maybe_transport_to_graveyard()
 
     state.save.room_id
-    |> @environment.notify({:player, player}, {"character/died", {:player, player}, :character, from})
+    |> @environment.notify(
+      {:player, player},
+      {"character/died", {:player, player}, :character, from}
+    )
 
     :ok
   end

@@ -113,11 +113,12 @@ mix deps.get
 mix compile
 ```
 
-To get assets set up, which uses [webpack][webpack]. Webpack is a package that handles asset compilation for us.
+To get assets set up, which uses [webpack][webpack] and [yarn][yarn]. Webpack is a package that handles asset compilation for us, Yarn handles package installation.
 
 ```bash
 cd assets
-npm install
+npm install -g yarn
+yarn install
 npm run build
 cd ..
 ```
@@ -178,4 +179,5 @@ mix test
 [asdf-elixir]: https://github.com/asdf-vm/asdf-elixir
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
 [webpack]: https://webpack.js.org/
+[yarn]: https://yarnpkg.com/en/
 [tt++]: http://tintin.sourceforge.net/

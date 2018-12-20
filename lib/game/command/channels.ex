@@ -100,7 +100,11 @@ defmodule Game.Command.Channels do
     case get_joined_channel(channel, state) do
       {:ok, channel} ->
         Channel.leave(channel.name)
-        state.socket |> @socket.echo(gettext("You have left %{channel_name}.", channel_name: Format.channel_name(channel)))
+
+        state.socket
+        |> @socket.echo(
+          gettext("You have left %{channel_name}.", channel_name: Format.channel_name(channel))
+        )
 
       {:error, :not_found} ->
         state.socket |> @socket.echo(gettext("You are not part of that channel."))
@@ -111,10 +115,16 @@ defmodule Game.Command.Channels do
     with {:ok, channel} <- get_channel(channel_name) do
       case in_channel?(channel.name, state.save) do
         true ->
-          state.socket |> @socket.echo(gettext("You are part of %{channel_name}.", channel_name: Format.channel_name(channel)))
+          state.socket
+          |> @socket.echo(
+            gettext("You are part of %{channel_name}.", channel_name: Format.channel_name(channel))
+          )
 
         false ->
-          state.socket |> @socket.echo(gettext("You are not part of %{channel_name}.", Format.channel_name(channel)))
+          state.socket
+          |> @socket.echo(
+            gettext("You are not part of %{channel_name}.", Format.channel_name(channel))
+          )
       end
     else
       _ ->

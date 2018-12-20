@@ -46,7 +46,11 @@ defmodule Game.Experience do
       |> Skills.skills()
       |> Enum.filter(&(&1.level == save.level))
       |> Enum.reduce(save, fn skill, save ->
-        message = Game.Gettext.dgettext("experience", "You can now use %{skill_name}!", skill_name: Format.skill_name(skill))
+        message =
+          Game.Gettext.dgettext("experience", "You can now use %{skill_name}!",
+            skill_name: Format.skill_name(skill)
+          )
+
         state.socket |> @socket.echo(message)
         ActionBar.maybe_add_action(save, %ActionBar.SkillAction{id: skill.id})
       end)

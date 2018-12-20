@@ -106,7 +106,14 @@ defmodule Game.Session.Process do
     @environment.leave(save.room_id, {:player, state.character}, :signout)
     @environment.unlink(save.room_id)
 
-    Account.save_session(state.user, state.character, save, session_started_at, Timex.now(), stats)
+    Account.save_session(
+      state.user,
+      state.character,
+      save,
+      session_started_at,
+      Timex.now(),
+      stats
+    )
 
     {:stop, :normal, state}
   end
@@ -426,7 +433,9 @@ defmodule Game.Session.Process do
         state = %{state | is_afk: true}
         Session.Registry.update(%{state.character | save: state.save}, state)
 
-        state.socket |> @socket.echo("You seem to be idle, setting you to {command}AFK{/command}.")
+        state.socket
+        |> @socket.echo("You seem to be idle, setting you to {command}AFK{/command}.")
+
         Hint.gate(state, "afk.started")
 
         state

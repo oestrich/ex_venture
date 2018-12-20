@@ -84,7 +84,7 @@ defmodule Web.Character do
       Config.starting_save()
       |> Map.put(:stats, race.starting_stats() |> Stats.default())
       |> Account.maybe_change_starting_room()
-    else 
+    else
       _ ->
         nil
     end

@@ -53,11 +53,18 @@ defmodule VML do
 
   def collapse(atom) when is_atom(atom), do: to_string(atom)
 
+  def collapse({:variable, variable}) do
+    "[#{variable}]"
+  end
+
   def collapse({:tag, attributes, nodes}) do
     name = Keyword.get(attributes, :name)
 
     case Keyword.get(attributes, :attributes) do
       nil ->
+        "{#{name}}#{collapse(nodes)}{/#{name}}"
+
+      [] ->
         "{#{name}}#{collapse(nodes)}{/#{name}}"
 
       attributes ->
@@ -76,6 +83,7 @@ defmodule VML do
   defp collapse_attributes(attributes) do
     attributes
     |> Enum.map(fn {key, value} ->
+      value = Enum.map(value, &collapse/1)
       "#{key}='#{value}'"
     end)
     |> Enum.join(" ")
@@ -128,9 +136,10 @@ defmodule VML do
   end
 
   def process_node({:tag, attributes, nodes}) do
-    attributes = Enum.map(attributes, fn {key, value} ->
-      {key, process_attribute(key, value)}
-    end)
+    attributes =
+      Enum.map(attributes, fn {key, value} ->
+        {key, process_attribute(key, value)}
+      end)
 
     {:tag, attributes, pre_process(nodes)}
   end
@@ -151,13 +160,9 @@ defmodule VML do
     end)
   end
 
-  defp process_attribute(:attribute, {name, value}) do
-    value =
-      value
-      |> Enum.map(&to_string/1)
-      |> Enum.join()
-
-    {to_string(name), value}
+  defp process_attribute(:attribute, {name, values}) do
+    values = Enum.map(values, &process_node/1)
+    {to_string(name), collapse_strings(values)}
   end
 
   @doc """

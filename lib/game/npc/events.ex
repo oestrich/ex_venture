@@ -23,10 +23,10 @@ defmodule Game.NPC.Events do
     events =
       npc.events
       |> Enum.map(&Data.Events.parse/1)
-      |> Enum.filter(&elem(&1, 0) == :ok)
+      |> Enum.filter(&(elem(&1, 0) == :ok))
       |> Enum.map(&elem(&1, 1))
 
-     %{npc | events: events}
+    %{npc | events: events}
   end
 
   @doc """
@@ -73,7 +73,7 @@ defmodule Game.NPC.Events do
   Instantiate events and start their ticking
   """
   def start_tick_events(state) do
-    already_ticking_ids = Enum.map(state.tick_events, &(&1.id))
+    already_ticking_ids = Enum.map(state.tick_events, & &1.id)
     events = filter(state.events, StateTicked)
 
     events

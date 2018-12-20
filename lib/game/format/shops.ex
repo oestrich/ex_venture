@@ -5,6 +5,8 @@ defmodule Game.Format.Shops do
 
   use Game.Currency
 
+  import Game.Format.Context
+
   alias Game.Format
   alias Game.Format.Table
 
@@ -15,7 +17,9 @@ defmodule Game.Format.Shops do
      "{shop}Shop{/shop}"
   """
   def shop_name(shop) do
-    "{shop}#{shop.name}{/shop}"
+    context()
+    |> assign(:name, shop.name)
+    |> Format.template("{shop}[name]{/shop}")
   end
 
   @doc """
@@ -24,10 +28,7 @@ defmodule Game.Format.Shops do
   def list(shop, items)
 
   def list(shop, items) do
-    rows =
-      items
-      |> Enum.map(&item/1)
-
+    rows = Enum.map(items, &item/1)
     Table.format(Format.shop_name(shop), rows, [10, 10, 30])
   end
 

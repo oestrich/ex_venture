@@ -187,6 +187,7 @@ defmodule Networking.Protocol do
       message
       |> MXP.handle_mxp(mxp: state.mxp)
       |> Color.format(state.config)
+      |> String.trim()
 
     send_data(state, "\n#{message}\n")
     send_data(state, <<@iac, @ga>>)
@@ -198,6 +199,7 @@ defmodule Networking.Protocol do
       message
       |> MXP.handle_mxp(mxp: state.mxp)
       |> Color.format(state.config)
+      |> String.trim()
 
     send_data(state, "\n#{message}")
     send_data(state, <<@iac, @ga>>)

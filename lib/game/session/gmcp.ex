@@ -19,7 +19,7 @@ defmodule Game.Session.GMCP do
   def handle_gmcp(state, "External.Discord.Hello", _data) do
     data = %{
       inviteurl: Config.discord_invite_url(),
-      applicationid: Config.discord_client_id(),
+      applicationid: Config.discord_client_id()
     }
 
     data =
@@ -156,7 +156,7 @@ defmodule Game.Session.GMCP do
       channel: channel,
       from: character_info({message.type, message.sender}),
       message: message.message,
-      formatted: message.formatted,
+      formatted: message.formatted
     }
 
     socket |> @socket.push_gmcp("Channels.Broadcast", Poison.encode!(data))
@@ -289,7 +289,7 @@ defmodule Game.Session.GMCP do
           name: skill.name,
           command: skill.command,
           points: skill.points,
-          cooldown: skill.cooldown_time,
+          cooldown: skill.cooldown_time
         }
       end)
 

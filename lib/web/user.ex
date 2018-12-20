@@ -26,7 +26,7 @@ defmodule Web.User do
   User flags
   """
   @spec flags() :: [String.t()]
-  def flags(), do: ["admin", "disabled"]
+  def flags(), do: ["admin", "builder", "disabled"]
 
   @doc """
   Check if a player is disabled
@@ -94,9 +94,7 @@ defmodule Web.User do
   def get(id) do
     User
     |> where([u], u.id == ^id)
-    |> preload([
-      sessions: ^from(s in User.Session, order_by: [desc: s.started_at], limit: 10)
-    ])
+    |> preload(sessions: ^from(s in User.Session, order_by: [desc: s.started_at], limit: 10))
     |> preload(characters: [quest_progress: [:quest]])
     |> Repo.one()
   end
@@ -438,7 +436,7 @@ defmodule Web.User do
       provider: to_string(auth.provider),
       provider_uid: auth.uid,
       name: auth.info.name,
-      email: auth.info.email,
+      email: auth.info.email
     }
 
     auth
@@ -467,7 +465,8 @@ defmodule Web.User do
 
   defp maybe_fully_register({:ok, user}, _params), do: {:ok, user}
 
-  defp maybe_fully_register({:ok, :finalize_registration, user}, _params), do: {:ok, :finalize_registration, user}
+  defp maybe_fully_register({:ok, :finalize_registration, user}, _params),
+    do: {:ok, :finalize_registration, user}
 
   defp maybe_fully_register({:error, :not_found}, params) do
     %User{}
@@ -477,7 +476,8 @@ defmodule Web.User do
 
   defp maybe_partially_register({:ok, user}, _params), do: {:ok, user}
 
-  defp maybe_partially_register({:ok, :finalize_registration, user}, _params), do: {:ok, :finalize_registration, user}
+  defp maybe_partially_register({:ok, :finalize_registration, user}, _params),
+    do: {:ok, :finalize_registration, user}
 
   defp maybe_partially_register({:error, _changeset}, params) do
     params =

@@ -41,7 +41,10 @@ defmodule Game.Character do
   """
   @spec apply_effects(tuple(), [Effect.t()], Character.t(), String.t()) :: :ok
   def apply_effects(target, effects, from, description) do
-    GenServer.cast({:via, Via, who(target)}, {:apply_effects, effects, to_simple(from), description})
+    GenServer.cast(
+      {:via, Via, who(target)},
+      {:apply_effects, effects, to_simple(from), description}
+    )
   end
 
   @doc """

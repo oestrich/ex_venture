@@ -108,7 +108,10 @@ defmodule Game.Command.Socials do
 
       social ->
         emote = FormatSocials.social_without_target(social, state.character)
-        save.room_id |> @environment.emote({:player, state.character}, Message.social(state.character, emote))
+
+        save.room_id
+        |> @environment.emote({:player, state.character}, Message.social(state.character, emote))
+
         state.socket |> @socket.echo(emote)
     end
 
@@ -130,7 +133,10 @@ defmodule Game.Command.Socials do
 
           character ->
             emote = FormatSocials.social_with_target(social, state.character, character)
-            save.room_id |> @environment.emote({:player, character}, Message.social(state.character, emote))
+
+            save.room_id
+            |> @environment.emote({:player, character}, Message.social(state.character, emote))
+
             state.socket |> @socket.echo(emote)
         end
     end
@@ -141,7 +147,9 @@ defmodule Game.Command.Socials do
   defp social_not_found(state, social) do
     lines = [
       gettext("\"%{name}\" could not be found.", name: social),
-      gettext("Please make sure to enter the social command. See {command}socials{/command} for the list.")
+      gettext(
+        "Please make sure to enter the social command. See {command}socials{/command} for the list."
+      )
     ]
 
     state.socket |> @socket.echo(Enum.join(lines, " "))

@@ -1,7 +1,7 @@
 # ExVenture
 
 [![Trello](https://img.shields.io/badge/issues-trello-blue.svg)](https://trello.com/b/PFGmFWmu/exventure)
-[![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/GPEa6dB)
+[![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)][discord]
 [![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/exventure)
 
 <img src="https://exventure.org/images/exventure.png" alt="ExVenture Logo" width="200" />
@@ -11,7 +11,8 @@ A text based MMO server written in Elixir.
 - [Documentation for Admins](https://exventure.org/)
 - [Support ExVenture on Patreon](https://www.patreon.com/exventure)
 - [Trello Issues](https://trello.com/b/PFGmFWmu/exventure)
-- [Chat with us on Discord](https://discord.gg/GPEa6dB)
+- [Chat with us on Discord][discord]
+- [Support and Development Forums](https://forums.exventure.org/)
 
 ## Features
 
@@ -56,6 +57,13 @@ A text based MMO server written in Elixir.
 - The world is spread across the entire cluster
 - Building on local resiliency, the app will stay alive if a node goes down
 
+## Games Running ExVenture
+
+If you are running an ExVenture MUD and want to get on this list, let us know on the [Discord][discord]!
+
+- [MidMUD](https://midmud.com/)
+- [Olympia MUD](https://olympia.exventure.world/)
+
 ## Requirements
 
 - PostgreSQL 10
@@ -68,7 +76,7 @@ A text based MMO server written in Elixir.
 ```bash
 mix deps.get
 mix compile
-cd assets && npm install && node node_modules/brunch/bin/brunch build && cd ..
+cd assets && npm install && node run build && cd ..
 mix ecto.reset
 mix run --no-halt
 ```
@@ -106,5 +114,6 @@ See [exventure.org for deployment setup](https://exventure.org/deploy).
 
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
 
+[discord]: https://discord.gg/GPEa6dB
 [gossip]: https://gossip.haus/
 [grapevine]: https://grapevine.haus/

@@ -48,7 +48,9 @@ defmodule Game.Command.Drop do
 
   def run({}, %{socket: socket}) do
     message =
-      gettext("Please provide an item to drop. See {command}help drop{/command} for more information.")
+      gettext(
+        "Please provide an item to drop. See {command}help drop{/command} for more information."
+      )
 
     socket |> @socket.echo(message)
   end
@@ -75,7 +77,12 @@ defmodule Game.Command.Drop do
         _drop_currency(amount, state)
 
       false ->
-        message = gettext("You do not have enough %{currency} to drop %{amount}.", currency: currency(), amount: amount)
+        message =
+          gettext("You do not have enough %{currency} to drop %{amount}.",
+            currency: currency(),
+            amount: amount
+          )
+
         socket |> @socket.echo(message)
     end
   end

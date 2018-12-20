@@ -18,14 +18,14 @@ RUN mix deps.get --only prod
 
 RUN mix deps.compile
 
-FROM node:8.6 as frontend
+FROM node:10.9 as frontend
 
 WORKDIR /app
 COPY assets/package*.json /app/
 COPY --from=builder /app/deps/phoenix /deps/phoenix
 COPY --from=builder /app/deps/phoenix_html /deps/phoenix_html
 
-RUN npm install
+RUN npm install -g yarn && yarn install
 
 COPY assets /app
 RUN npm run deploy
@@ -35,13 +35,14 @@ COPY --from=frontend /priv/static /app/priv/static
 COPY . /app/
 RUN mix phx.digest
 ARG APP_VERSION=0.24.0
-RUN cp config/prod.docker.exs config/prod.exs && \
-    mix release --env=prod --no-tar
+RUN mix deps.clean mime --build && mix deps.compile mime && \
+  mix release --env=prod --no-tar
 
 FROM alpine:3.8
 RUN apk add -U bash libssl1.0
 WORKDIR /app
 COPY --from=releaser /app/_build/prod/rel/ex_venture /app/
+COPY config/prod.docker.exs /etc/exventure.config.exs
 
 ENV MIX_ENV=prod
 

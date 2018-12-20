@@ -126,7 +126,7 @@ defmodule Game.Map do
     [
       "#{exits(room, "north west")}#{exits(room, "north")}#{exits(room, "north east")}",
       "#{exits(room, "west")}#{room_display}#{exits(room, "east")}",
-      "#{exits(room, "south west")}#{exits(room, "south")}#{exits(room, "south east")}",
+      "#{exits(room, "south west")}#{exits(room, "south")}#{exits(room, "south east")}"
     ]
   end
 

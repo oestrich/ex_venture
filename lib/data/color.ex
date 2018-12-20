@@ -51,7 +51,7 @@ defmodule Data.Color do
       "say",
       "shop",
       "skill",
-      "zone",
+      "zone"
     ]
   end
 end

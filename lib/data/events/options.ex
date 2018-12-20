@@ -9,11 +9,11 @@ defmodule Data.Events.Options do
   def validate_options(event_type, options) do
     options = Enum.map(event_type.options(), &parse_option(&1, options))
 
-    case Enum.any?(options, &elem(&1, 0) == :error) do
+    case Enum.any?(options, &(elem(&1, 0) == :error)) do
       true ->
         errors =
           options
-          |> Enum.filter(&elem(&1, 0) == :error)
+          |> Enum.filter(&(elem(&1, 0) == :error))
           |> Enum.into(%{}, &elem(&1, 1))
 
         {:error, errors}
@@ -21,7 +21,7 @@ defmodule Data.Events.Options do
       false ->
         options =
           options
-          |> Enum.filter(&elem(&1, 0) == :ok)
+          |> Enum.filter(&(elem(&1, 0) == :ok))
           |> Enum.map(&elem(&1, 1))
           |> Enum.reject(&is_nil/1)
           |> Enum.into(%{})

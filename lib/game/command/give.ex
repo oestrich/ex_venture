@@ -131,12 +131,20 @@ defmodule Game.Command.Give do
     case save.currency >= currency do
       false ->
         message =
-          gettext("You do not have enough %{currency} to give to %{name}.", currency: currency(), name: Format.name(character))
+          gettext("You do not have enough %{currency} to give to %{name}.",
+            currency: currency(),
+            name: Format.name(character)
+          )
 
         state.socket |> @socket.echo(message)
 
       true ->
-        message = gettext("Gave %{currency} to %{name}.", currency: Format.currency(currency), name: Format.name(character))
+        message =
+          gettext("Gave %{currency} to %{name}.",
+            currency: Format.currency(currency),
+            name: Format.name(character)
+          )
+
         state.socket |> @socket.echo(message)
 
         Character.notify(character, {"currency/receive", {:player, state.character}, currency})
@@ -148,7 +156,12 @@ defmodule Game.Command.Give do
   end
 
   defp send_item_to_character(state = %{save: save}, instance, item, character) do
-    message = gettext("Gave %{item} to %{name}.", item: Format.item_name(item), name: Format.name(character))
+    message =
+      gettext("Gave %{item} to %{name}.",
+        item: Format.item_name(item),
+        name: Format.name(character)
+      )
+
     state.socket |> @socket.echo(message)
 
     Character.notify(character, {"item/receive", {:player, state.character}, instance})

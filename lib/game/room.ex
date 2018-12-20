@@ -171,7 +171,11 @@ defmodule Game.Room do
     %{room: room, players: players} = state
     Logger.debug(fn -> "Player (#{player.id}) entered room (#{room.id})" end, type: :room)
     state = %{state | players: [player | players]}
-    handle_cast({:notify, {:player, player}, {"room/entered", {{:player, player}, reason}}}, state)
+
+    handle_cast(
+      {:notify, {:player, player}, {"room/entered", {{:player, player}, reason}}},
+      state
+    )
   end
 
   def handle_cast({:enter, {:npc, npc}, reason}, state) do

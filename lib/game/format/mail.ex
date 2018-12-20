@@ -3,6 +3,8 @@ defmodule Game.Format.Mail do
   Format functions for mail
   """
 
+  import Game.Format.Context
+
   alias Data.Mail
   alias Game.Format
   alias Game.Format.Table
@@ -29,7 +31,31 @@ defmodule Game.Format.Mail do
   """
   @spec display_mail(Mail.t()) :: String.t()
   def display_mail(mail) do
-    title = "#{mail.id} - #{Format.player_name(mail.sender)} - #{mail.title}"
-    "#{title}\n#{Format.underline(title)}\n\n#{mail.body}"
+    context()
+    |> assign(:title, title(mail))
+    |> assign(:underline, Format.underline(title(mail)))
+    |> assign(:body, mail.body)
+    |> Format.template(template("mail"))
+  end
+
+  def title(mail) do
+    context()
+    |> assign(:id, mail.id)
+    |> assign(:sender, Format.player_name(mail.sender))
+    |> assign(:title, mail.title)
+    |> Format.template(template("title"))
+  end
+
+  def template("title") do
+    "[id] - [sender] - [title]"
+  end
+
+  def template("mail") do
+    """
+    [title]
+    [underline]
+
+    [body]
+    """
   end
 end

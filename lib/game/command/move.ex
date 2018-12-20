@@ -127,7 +127,10 @@ defmodule Game.Command.Move do
         maybe_move_to(state, id, room_exit, direction)
 
       _ ->
-        state.socket |> @socket.echo(gettext("Could not move %{direction}, no exit found.", direction: direction))
+        state.socket
+        |> @socket.echo(
+          gettext("Could not move %{direction}, no exit found.", direction: direction)
+        )
 
         {:error, :no_exit}
     end
@@ -141,10 +144,12 @@ defmodule Game.Command.Move do
         state |> maybe_open_door(door_id) |> update_mini_map(room_id)
 
       %{id: _exit_id} ->
-        state.socket |> @socket.echo(gettext("There is no door %{direction}.", direction: direction))
+        state.socket
+        |> @socket.echo(gettext("There is no door %{direction}.", direction: direction))
 
       _ ->
-        state.socket |> @socket.echo(gettext("There is no exit %{direction}.", direction: direction))
+        state.socket
+        |> @socket.echo(gettext("There is no exit %{direction}.", direction: direction))
     end
 
     :ok
@@ -158,10 +163,12 @@ defmodule Game.Command.Move do
         state |> maybe_close_door(door_id) |> update_mini_map(room_id)
 
       %{id: _exit_id} ->
-        state.socket |> @socket.echo(gettext("There is no door %{direction}.", direction: direction))
+        state.socket
+        |> @socket.echo(gettext("There is no door %{direction}.", direction: direction))
 
       _ ->
-        state.socket |> @socket.echo(gettext("There is no exit %{direction}.", direction: direction))
+        state.socket
+        |> @socket.echo(gettext("There is no exit %{direction}.", direction: direction))
     end
 
     :ok

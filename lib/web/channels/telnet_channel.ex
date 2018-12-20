@@ -354,12 +354,14 @@ defmodule Web.TelnetChannel do
 
   def handle_info({:echo, message}, socket) do
     broadcast(socket, message)
+    message = String.trim(message)
     push(socket, "echo", %{message: "\n#{message}\n", sent_at: Timex.now()})
     {:noreply, socket}
   end
 
   def handle_info({:echo, message, :prompt}, socket) do
     broadcast(socket, message)
+    message = String.trim(message)
     push(socket, "prompt", %{message: "\n#{message}", sent_at: Timex.now()})
     {:noreply, socket}
   end

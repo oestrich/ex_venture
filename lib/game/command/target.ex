@@ -128,7 +128,9 @@ defmodule Game.Command.Target do
 
   def target_player(player = %{save: %{stats: %{health_points: health_points}}}, socket, _state)
       when health_points < 1 do
-    message = gettext("%{name} could not be targeted.", name: Format.target_name({:player, player}))
+    message =
+      gettext("%{name} could not be targeted.", name: Format.target_name({:player, player}))
+
     socket |> @socket.echo(message)
   end
 

@@ -180,7 +180,9 @@ defmodule Game.Command.Hone do
         state
 
       false ->
-        message = gettext("You do not have enough experience to spend to hone %{stat}.", stat: stat)
+        message =
+          gettext("You do not have enough experience to spend to hone %{stat}.", stat: stat)
+
         state.socket |> @socket.echo(message)
     end
   end
@@ -195,7 +197,12 @@ defmodule Game.Command.Hone do
     save = %{save | stats: stats, spent_experience_points: spent_experience_points}
     state = Player.update_save(state, save)
 
-    message = gettext("You honed your %{stat}. It is now at %{stat_value}!", stat: stat, stat_value: stat_at(save, stat))
+    message =
+      gettext("You honed your %{stat}. It is now at %{stat_value}!",
+        stat: stat,
+        stat_value: stat_at(save, stat)
+      )
+
     state.socket |> @socket.echo(message)
 
     {:update, state}

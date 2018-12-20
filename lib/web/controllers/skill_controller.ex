@@ -8,7 +8,8 @@ defmodule Web.SkillController do
   def index(conn, _params) do
     %{page: page, per: per} = conn.assigns
 
-    %{page: skills, pagination: pagination} = Skill.all(page: page, per: per, filter: %{enabled: true})
+    %{page: skills, pagination: pagination} =
+      Skill.all(page: page, per: per, filter: %{enabled: true})
 
     conn
     |> assign(:skills, skills)

@@ -1,0 +1,12 @@
+---
+- name: Basic Ansible Setup
+  gather_facts: yes
+  hosts: all
+  roles:
+    - { role: firewall, become: yes, tags: ['setup'] }
+    - { role: setup, action: 'basics', tags: ['setup'] }
+    - { role: smartlogic.github_keys, tags: ['user', 'auth'] }
+    - { role: jnv.unattended-upgrades, become: yes, tags: ['upgrades'] }
+    - { role: geerlingguy.ntp, become: yes, tags: ['ntp'] }
+    - { role: ANXS.postgresql, become: yes, tags: ['postgres'] }
+    - { role: prometheus-exporters, tags: ['prometheus'], actions: ['node_exporter'] }

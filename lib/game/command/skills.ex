@@ -76,7 +76,8 @@ defmodule Game.Command.Skills do
   @doc """
   Parse skill specific commands
   """
-  @spec parse_skill(String.t(), ParseContext.t()) :: Command.t() | {:error, :bad_parse, String.t()}
+  @spec parse_skill(String.t(), ParseContext.t()) ::
+          Command.t() | {:error, :bad_parse, String.t()}
   def parse_skill(command, context)
 
   def parse_skill(command, context) do
@@ -159,7 +160,7 @@ defmodule Game.Command.Skills do
       save.skill_ids
       |> Skills.skills()
       |> Enum.filter(&(&1.level <= save.level))
-      |> Enum.filter(&(&1.is_enabled))
+      |> Enum.filter(& &1.is_enabled)
       |> Enum.sort_by(& &1.level)
 
     socket |> @socket.echo(FormatSkills.skills(skills))
@@ -180,7 +181,9 @@ defmodule Game.Command.Skills do
   end
 
   def run({skill, :level_too_low}, state) do
-    message = gettext("You are too low of a level to use %{skill}.", skill: FormatSkills.skill_name(skill))
+    message =
+      gettext("You are too low of a level to use %{skill}.", skill: FormatSkills.skill_name(skill))
+
     state.socket |> @socket.echo(message)
   end
 
@@ -293,7 +296,9 @@ defmodule Game.Command.Skills do
         {:skip, :prompt, state}
 
       {:error, _} ->
-        message = gettext(~s(You don't have enough skill points to use "%{skill}".), skill: skill.command)
+        message =
+          gettext(~s(You don't have enough skill points to use "%{skill}".), skill: skill.command)
+
         socket |> @socket.echo(message)
         {:update, state}
     end

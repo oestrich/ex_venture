@@ -1,0 +1,24 @@
+---
+- name: Create the deploy user
+  user:
+    name: deploy
+    shell: /bin/bash
+    password: "*"
+  become: true
+
+- name: Allow 'deploy' to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^deploy'
+    line: 'deploy ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+  become: true
+
+- name: Forward SSH socket through sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    line: 'Defaults    env_keep+=SSH_AUTH_SOCK'
+    validate: 'visudo -cf %s'
+  become: true

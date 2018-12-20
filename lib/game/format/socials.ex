@@ -27,15 +27,13 @@ defmodule Game.Format.Socials do
   View a single social
   """
   def social(social) do
-    """
-    #{social.name}
-    #{Format.underline(social.name)}
-    Command: {command}#{social.command}{/command}
-
-    With a target: {say}#{social.with_target}{/say}
-
-    Without a target: {say}#{social.without_target}{/say}
-    """
+    context()
+    |> assign(:name, social.name)
+    |> assign(:underline, Format.underline(social.name))
+    |> assign(:command, social.command)
+    |> assign(:with_target, social.with_target)
+    |> assign(:without_target, social.without_target)
+    |> Format.template(template("social"))
   end
 
   @doc """
@@ -55,5 +53,17 @@ defmodule Game.Format.Socials do
     |> assign(:user, Format.player_name(player))
     |> assign(:target, Format.name(target))
     |> Format.template("{say}#{social.with_target}{/say}")
+  end
+
+  def template("social") do
+    """
+    [name]
+    [underline]
+    Command: {command}[command]{/command}
+
+    With a target: {say}[with_target]{/say}
+
+    Without a target: {say}[without_target]{/say}
+    """
   end
 end

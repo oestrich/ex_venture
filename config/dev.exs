@@ -17,8 +17,8 @@ config :ex_venture, Web.Endpoint,
       "--mode",
       "development",
       "--watch-stdin",
-        cd: Path.expand("../assets", __DIR__)
-       ]
+      cd: Path.expand("../assets", __DIR__)
+    ]
   ]
 
 config :ex_venture, :networking,

@@ -160,10 +160,14 @@ defmodule Game.Command.Say do
           |> Map.put(:message, message)
           |> Message.format()
 
-        state.socket |> @socket.echo(FormatChannels.say_to(:you, directed_character, parsed_message))
+        state.socket
+        |> @socket.echo(FormatChannels.say_to(:you, directed_character, parsed_message))
 
         room.id
-        |> @environment.say({:player, character}, Message.say_to(character, directed_character, parsed_message))
+        |> @environment.say(
+          {:player, character},
+          Message.say_to(character, directed_character, parsed_message)
+        )
     end
   end
 

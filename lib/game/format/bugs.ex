@@ -3,6 +3,8 @@ defmodule Game.Format.Bugs do
   Format functions for bugs
   """
 
+  import Game.Format.Context
+
   alias Game.Format
   alias Game.Format.Table
 
@@ -27,12 +29,21 @@ defmodule Game.Format.Bugs do
   """
   @spec show_bug(Bug.t()) :: String.t()
   def show_bug(bug) do
-    """
-    #{bug.title}
-    #{Format.underline(bug.title)}
-    Fixed: #{bug.is_completed}
+    context()
+    |> assign(:title, bug.title)
+    |> assign(:underline, Format.underline(bug.title))
+    |> assign(:is_completed, bug.is_completed)
+    |> assign(:body, bug.body)
+    |> Format.template(render("show"))
+  end
 
-    #{bug.body}
+  defp render("show") do
+    """
+    [title]
+    [underline]
+    Fixed: [is_completed]
+
+    [body]
     """
   end
 end

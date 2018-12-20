@@ -71,7 +71,9 @@ defmodule Game.Command.Bug do
 
   def run({:new, bug_title}, state = %{socket: socket}) do
     message =
-      gettext("Please enter in any more information you have (an empty new line will finish entering text): ")
+      gettext(
+        "Please enter in any more information you have (an empty new line will finish entering text): "
+      )
 
     socket |> @socket.echo(message)
 
@@ -84,7 +86,8 @@ defmodule Game.Command.Bug do
   end
 
   def run({:unknown}, %{socket: socket}) do
-    message = gettext("Please provide a bug title. See {command}help bug{/command} for more information.")
+    message =
+      gettext("Please provide a bug title. See {command}help bug{/command} for more information.")
 
     socket |> @socket.echo(message)
   end

@@ -11,7 +11,7 @@ defmodule Web.Plug.LoadCharacter do
 
   def call(conn, _opts) do
     case conn.assigns do
-      %{user: user} when user != nil ->
+      %{current_user: user} when user != nil ->
         load_character(conn, user)
 
       _ ->

@@ -23,13 +23,13 @@ defmodule Game.Gossip do
 
   @impl true
   def channels() do
-    Enum.map(Channels.gossip_channels(), &(&1.gossip_channel))
+    Enum.map(Channels.gossip_channels(), & &1.gossip_channel)
   end
 
   @impl true
   def players() do
     Session.Registry.connected_players()
-    |> Enum.map(&(&1.player.name))
+    |> Enum.map(& &1.player.name)
   end
 
   @impl true
@@ -95,10 +95,15 @@ defmodule Game.Gossip do
       "Received a new tell from #{from_player}@#{from_game} to #{to_player}"
     end)
 
-    with true <- Squabble.node_is_leader?,
+    with true <- Squabble.node_is_leader?(),
          {:ok, player} <- Session.Registry.find_player(to_player) do
       player_name = "#{from_player}@#{from_game}"
-      Channel.tell({:player, player}, {:gossip, player_name}, Message.tell(%{name: player_name}, message))
+
+      Channel.tell(
+        {:player, player},
+        {:gossip, player_name},
+        Message.tell(%{name: player_name}, message)
+      )
 
       :ok
     else

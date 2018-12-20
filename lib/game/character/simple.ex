@@ -26,7 +26,7 @@ defmodule Game.Character.Simple do
         flags: player.flags,
         level: player.save.level,
         race: player.race.name,
-        class: player.class.name,
+        class: player.class.name
       }
     }
   end
@@ -39,7 +39,16 @@ defmodule Game.Character.Simple do
       type: :npc,
       id: npc.id,
       name: npc.name,
-      extra: Map.take(npc, [:original_id, :status_line, :status_listen, :description, :is_quest_giver, :is_trainer, :trainable_skills])
+      extra:
+        Map.take(npc, [
+          :original_id,
+          :status_line,
+          :status_listen,
+          :description,
+          :is_quest_giver,
+          :is_trainer,
+          :trainable_skills
+        ])
     }
   end
 end

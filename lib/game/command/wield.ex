@@ -63,7 +63,11 @@ defmodule Game.Command.Wield do
       state |> item_found(hand, item)
     else
       {:error, :level_too_low, item} ->
-        message = gettext("You cannot wield %{name}, you are not high enough level.", name: Format.item_name(item))
+        message =
+          gettext("You cannot wield %{name}, you are not high enough level.",
+            name: Format.item_name(item)
+          )
+
         state.socket |> @socket.echo(message)
 
       {:error, :cannot_wield, item} ->
@@ -101,7 +105,9 @@ defmodule Game.Command.Wield do
     wielding = Map.put(wielding, hand, instance)
     save = %{save | items: items, wielding: wielding}
 
-    message = gettext("%{name} is now in your %{hand} hand.", name: Format.item_name(item), hand: hand)
+    message =
+      gettext("%{name} is now in your %{hand} hand.", name: Format.item_name(item), hand: hand)
+
     state.socket |> @socket.echo(message)
 
     {:update, Map.put(state, :save, save)}

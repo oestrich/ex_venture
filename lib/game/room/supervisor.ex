@@ -43,7 +43,7 @@ defmodule Game.Room.Supervisor do
       |> Enum.flat_map(fn room_id ->
         [
           worker(Room, [room_id], id: room_id, restart: :permanent),
-          worker(Room.EventBus, [room_id], id: "#{room_id}-notify", restart: :permanent),
+          worker(Room.EventBus, [room_id], id: "#{room_id}-notify", restart: :permanent)
         ]
       end)
 

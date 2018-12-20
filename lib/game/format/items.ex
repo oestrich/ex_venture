@@ -18,7 +18,9 @@ defmodule Game.Format.Items do
   """
   @spec item_name(Item.t()) :: String.t()
   def item_name(item) do
-    "{item}#{item.name}{/item}"
+    context()
+    |> assign(:name, item.name)
+    |> Format.template("{item}[name]{/item}")
   end
 
   @doc """
@@ -26,8 +28,17 @@ defmodule Game.Format.Items do
   """
   @spec currency(Save.t() | Room.t()) :: String.t()
   def currency(%{currency: currency}) when currency == 0, do: ""
-  def currency(%{currency: currency}), do: "{cyan}#{currency} #{@currency}{/cyan}"
-  def currency(currency) when is_integer(currency), do: "{cyan}#{currency} #{@currency}{/cyan}"
+
+  def currency(%{currency: amount}) do
+    currency(amount)
+  end
+
+  def currency(amount) do
+    context()
+    |> assign(:amount, amount)
+    |> assign(:currency, @currency)
+    |> Format.template("{item}[amount] [currency]{/item}")
+  end
 
   @doc """
   Display an item
@@ -40,13 +51,12 @@ defmodule Game.Format.Items do
   """
   @spec item(Item.t()) :: String.t()
   def item(item) do
-    """
-    #{item |> item_name()}
-    #{item.name |> Format.underline}
-    #{item.description}
-    #{item_stats(item)}
-    """
-    |> String.trim()
+    context()
+    |> assign(:name, item_name(item))
+    |> assign(:underline, Format.underline(item.name))
+    |> assign(:description, item.description)
+    |> assign(:stats, item_stats(item))
+    |> Format.template(render("item"))
     |> Format.resources()
   end
 
@@ -63,7 +73,9 @@ defmodule Game.Format.Items do
   def item_stats(item)
 
   def item_stats(%{type: "armor", stats: stats}) do
-    "Slot: #{stats.slot}"
+    context()
+    |> assign(:slot, stats.slot)
+    |> Format.template("Slot: [slot]")
   end
 
   def item_stats(_), do: ""
@@ -72,22 +84,30 @@ defmodule Game.Format.Items do
   Format your inventory
   """
   @spec inventory(integer(), map(), map(), [Item.t()]) :: String.t()
-  def inventory(currency, wearing, wielding, items) do
+  def inventory(currency_amount, wearing, wielding, items) do
     items =
       items
-      |> Enum.map(fn
-        %{item: item, quantity: 1} -> "  - #{item_name(item)}"
-        %{item: item, quantity: quantity} -> "  - {item}#{item.name} x#{quantity}{/item}"
-      end)
+      |> Enum.map(&inventory_item/1)
       |> Enum.join("\n")
 
-    """
-    #{equipment(wearing, wielding)}
-    You are holding:
-    #{items}
-    You have #{currency} #{@currency}.
-    """
-    |> String.trim()
+    context()
+    |> assign(:equipment, equipment(wearing, wielding))
+    |> assign(:items, items)
+    |> assign(:currency, currency(currency_amount))
+    |> Format.template(render("inventory"))
+  end
+
+  def inventory_item(%{item: item, quantity: 1}) do
+    context()
+    |> assign(:name, item_name(item))
+    |> Format.template("  - [name]")
+  end
+
+  def inventory_item(%{item: item, quantity: quantity}) do
+    context()
+    |> assign(:name, item_name(item))
+    |> assign(:quantity, quantity)
+    |> Format.template("  - {item}[name] x[quantity]{/item}")
   end
 
   @doc """
@@ -98,7 +118,7 @@ defmodule Game.Format.Items do
       iex> wearing = %{chest: %{name: "Leather Armor"}}
       iex> wielding = %{right: %{name: "Short Sword"}, left: %{name: "Shield"}}
       iex> Items.equipment(wearing, wielding)
-      "You are wearing:\\n  - {item}Leather Armor{/item} on your chest\\nYou are wielding:\\n  - a {item}Shield{/item} in your left hand\\n  - a {item}Short Sword{/item} in your right hand"
+      "You are wearing:\\n  - {item}Leather Armor{/item} on your chest\\nYou are wielding:\\n  - {item}Shield{/item} in your left hand\\n  - {item}Short Sword{/item} in your right hand"
   """
   @spec equipment(map(), map()) :: String.t()
   def equipment(wearing, wielding) do
@@ -106,19 +126,34 @@ defmodule Game.Format.Items do
       wearing
       |> Map.to_list()
       |> Enum.sort_by(&elem(&1, 0))
-      |> Enum.map(fn {part, item} -> "  - #{item_name(item)} on your #{part}" end)
+      |> Enum.map(&wearing_item/1)
       |> Enum.join("\n")
 
     wielding =
       wielding
       |> Map.to_list()
       |> Enum.sort_by(&elem(&1, 0))
-      |> Enum.map(fn {hand, item} -> "  - a #{item_name(item)} in your #{hand} hand" end)
+      |> Enum.map(&wielding_item/1)
       |> Enum.join("\n")
 
-    ["You are wearing:", wearing, "You are wielding:", wielding]
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.join("\n")
+    context()
+    |> assign(:wearing, wearing)
+    |> assign(:wielding, wielding)
+    |> Format.template("You are wearing:\n[wearing]\nYou are wielding:\n[wielding]")
+  end
+
+  def wearing_item({part, item}) do
+    context()
+    |> assign(:name, item_name(item))
+    |> assign(:part, part)
+    |> Format.template("  - [name] on your [part]")
+  end
+
+  def wielding_item({hand, item}) do
+    context()
+    |> assign(:name, item_name(item))
+    |> assign(:hand, hand)
+    |> Format.template("  - [name] in your [hand] hand")
   end
 
   @doc """
@@ -153,20 +188,44 @@ defmodule Game.Format.Items do
   An item was dropped message
 
       iex> Items.dropped({:npc, %{name: "NPC"}}, %{name: "Sword"})
-      "{npc}NPC{/npc} dropped a {item}Sword{/item}."
+      "{npc}NPC{/npc} dropped {item}Sword{/item}."
 
       iex> Items.dropped({:player, %{name: "Player"}}, %{name: "Sword"})
-      "{player}Player{/player} dropped a {item}Sword{/item}."
+      "{player}Player{/player} dropped {item}Sword{/item}."
 
       iex> Items.dropped({:player, %{name: "Player"}}, {:currency, 100})
       "{player}Player{/player} dropped {item}100 gold{/item}."
   """
   @spec dropped(Character.t(), Item.t()) :: String.t()
   def dropped(who, {:currency, amount}) do
-    "#{Format.name(who)} dropped {item}#{amount} #{currency()}{/item}."
+    context()
+    |> assign(:character, Format.name(who))
+    |> assign(:currency, currency(amount))
+    |> Format.template("[character] dropped [currency].")
   end
 
   def dropped(who, item) do
-    "#{Format.name(who)} dropped a #{item_name(item)}."
+    context()
+    |> assign(:character, Format.name(who))
+    |> assign(:name, item_name(item))
+    |> Format.template("[character] dropped [name].")
+  end
+
+  def render("item") do
+    """
+    [name]
+    [underline]
+    [description]
+    [stats]
+    """
+  end
+
+  def render("inventory") do
+    """
+    [equipment]
+    You are holding:
+    [items]
+    You have [currency].
+    """
   end
 end

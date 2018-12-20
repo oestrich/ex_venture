@@ -1,0 +1,94 @@
+---
+
+- name: basic packages
+  apt:
+    pkg:
+      - acl
+      - htop
+      - nginx
+      - certbot
+      - python-certbot-nginx
+    state: present
+    force: "yes"
+    update_cache: "yes"
+  become: true
+
+- name: Check that the exventure config exists
+  stat:
+    path: /etc/exventure.config.exs
+  register: exventure_config
+
+- name: copy exventure config
+  copy:
+    src: exventure.config.exs
+    dest: /etc/exventure.config.exs
+    mode: 0644
+  when: not exventure_config.stat.exists
+  become: yes
+
+- name: make ex_venture directory
+  file:
+    dest: /home/deploy/ex_venture
+    state: directory
+  become: yes
+  become_user: deploy
+
+- name: Check that the nginx config exists
+  stat:
+    path: /etc/nginx/sites-enabled/exventure
+  register: nginx_config
+
+- name: copy nginx config
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/sites-enabled/exventure
+    mode: 0644
+  when: not nginx_config.stat.exists
+  become: yes
+
+- name: copy nginx config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: yes
+
+- name: copy systemd file
+  copy:
+    src: exventure.service
+    dest: /etc/systemd/system/exventure.service
+  become: yes
+  notify: reload systemd
+
+- name: enable exventure service
+  systemd:
+    name: exventure.service
+    enabled: yes
+  become: yes
+
+- name: link the v5 of ncurses.so
+  file:
+    src: /lib/x86_64-linux-gnu/libncursesw.so.5
+    dest: /lib/x86_64-linux-gnu/libncursesw.so.6
+    state: link
+  become: yes
+
+- name: setup backups folder
+  file:
+    path: /opt/backups/
+    state: directory
+  become: yes
+
+- name: copy backup file
+  copy:
+    src: backup-exventure.sh
+    dest: /opt/
+    mode: 0744
+  become: yes
+
+- name: Backup the postgres database nightly
+  cron:
+    name: "pg dump"
+    minute: "0"
+    hour: "5"
+    job: "/opt/backup-exventure.sh"
+  become: yes

@@ -60,7 +60,7 @@ defmodule Game.Channels do
   """
   @spec gossip_channels() :: [Channel.t()]
   def gossip_channels() do
-    Enum.filter(all(), &(&1.is_gossip_connected))
+    Enum.filter(all(), & &1.is_gossip_connected)
   end
 
   @doc """

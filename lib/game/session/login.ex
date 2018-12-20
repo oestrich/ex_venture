@@ -35,7 +35,12 @@ defmodule Game.Session.Login do
   def start(socket) do
     socket |> @socket.echo("#{ExVenture.version()}\n#{MOTD.random_motd()}")
 
-    prompt = dgettext("login", "What is your player name? (Enter {command}create{/command} for a new account) ")
+    prompt =
+      dgettext(
+        "login",
+        "What is your player name? (Enter {command}create{/command} for a new account) "
+      )
+
     socket |> @socket.prompt(prompt)
   end
 
@@ -76,7 +81,10 @@ defmodule Game.Session.Login do
         socket |> @socket.echo(dgettext("login", "You have mail."))
     end
 
-    socket |> @socket.echo(dgettext("login", "{command send='Sign In'}\\[Press enter to continue\\]{/command}"))
+    socket
+    |> @socket.echo(
+      dgettext("login", "{command send='Sign In'}\\[Press enter to continue\\]{/command}")
+    )
 
     state
   end
@@ -167,12 +175,16 @@ defmodule Game.Session.Login do
       character.user |> login(character, state.socket, state |> Map.delete(:login))
     else
       {:error, :signed_in} ->
-        state.socket |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
+        state.socket
+        |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
+
         state.socket |> @socket.disconnect()
         state
 
       {:error, :disabled} ->
-        message = dgettext("login", "Sorry, your account has been disabled. Please contact the admins.")
+        message =
+          dgettext("login", "Sorry, your account has been disabled. Please contact the admins.")
+
         state.socket |> @socket.echo(message)
         state.socket |> @socket.disconnect()
         state
