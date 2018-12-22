@@ -62,6 +62,7 @@ A text based MMO server written in Elixir.
 If you are running an ExVenture MUD and want to get on this list, let us know on the [Discord][discord]!
 
 - [MidMUD](https://midmud.com/)
+- [Atlantis MUD](https://atlantis.exventure.world)
 - [Olympia MUD](https://olympia.exventure.world/)
 
 ## Requirements
