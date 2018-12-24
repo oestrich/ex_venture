@@ -222,7 +222,9 @@ defmodule Game.Format.Rooms do
         ""
 
       false ->
-        "Items: #{items(room, items)}\n"
+        context()
+        |> assign(:items, items(room, items))
+        |> Format.template("Items: [items]")
     end
   end
 
