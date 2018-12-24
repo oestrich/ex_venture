@@ -1,0 +1,24 @@
+<section class="content-header">
+  <h1>
+    Edit <%= @ability.name %>
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Abilities", to: ability_path(@conn, :index)) %></li>
+    <li><%= link(@ability.name, to: ability_path(@conn, :show, @ability.id)) %></li>
+    <li class="active">Edit</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <%= render("_form.html", path: ability_path(@conn, :update, @ability.id), changeset: @changeset, title: "Edit", submit: "Save") %>
+    </div>
+  </div>
+</section>

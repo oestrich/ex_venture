@@ -1,0 +1,17 @@
+<div class="box box-primary">
+  <div class="box-header">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
+    <%= hidden_input(f, :type, value: "normal") %>
+
+    <div class="box-body">
+      <%= FormView.text_field(f, :name) %>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
+    </div>
+  <% end %>
+</div>

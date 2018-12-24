@@ -119,6 +119,8 @@ defmodule Web.Router do
 
     get("/", DashboardController, :index)
 
+    resources("/abilities", AbilityController, except: [:delete])
+
     resources("/announcements", AnnouncementController, except: [:delete])
 
     resources "/bugs", BugController, only: [:index, :show] do

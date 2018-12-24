@@ -1,0 +1,53 @@
+<section class="content-header">
+  <h1>
+    Abilities
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li class="active">Abilities</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header">
+          <div class="box-tools">
+            <%= link("New Ability", to: ability_path(@conn, :new), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= Enum.map @abilitys, fn (ability) -> %>
+                  <tr>
+                    <td><%= ability.id %></td>
+                    <td><%= ability.name %></td>
+                    <td>
+                      <%= link("View", to: ability_path(@conn, :show, ability.id), class: "btn btn-default btn-xs") %>
+                      <%= link("Edit", to: ability_path(@conn, :edit, ability.id), class: "btn btn-default btn-xs") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
