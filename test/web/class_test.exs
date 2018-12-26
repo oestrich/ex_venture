@@ -1,6 +1,7 @@
 defmodule Web.ClassTest do
   use Data.ModelCase
 
+  alias Data.ClassAbility
   alias Data.ClassSkill
   alias Web.Class
 
@@ -36,6 +37,22 @@ defmodule Web.ClassTest do
       {:ok, class_skill} = Class.add_skill(class, skill.id)
 
       assert {:ok, _} = Class.remove_skill(class_skill.id)
+    end
+  end
+
+  describe "class abilities" do
+    setup do
+      %{class: create_class(), ability: create_ability()}
+    end
+
+    test "adding abilities to a class", %{class: class, ability: ability} do
+      assert {:ok, %ClassAbility{}} = Class.add_ability(class, %{ability_id: ability.id, level: 1, points: 10})
+    end
+
+    test "delete a ability from a class", %{class: class, ability: ability} do
+      {:ok, class_ability} = Class.add_ability(class, %{ability_id: ability.id, level: 1, points: 10})
+
+      assert {:ok, _} = Class.remove_ability(class_ability.id)
     end
   end
 end

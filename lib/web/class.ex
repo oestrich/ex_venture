@@ -6,6 +6,7 @@ defmodule Web.Class do
   import Ecto.Query
 
   alias Data.Class
+  alias Data.ClassAbility
   alias Data.ClassSkill
   alias Data.Repo
   alias Web.Pagination
@@ -52,10 +53,14 @@ defmodule Web.Class do
     Class
     |> where([c], c.id == ^id)
     |> preload(
+      class_abilities:
+        ^from(ca in ClassAbility, left_join: a in assoc(ca, :ability), order_by: ca.level)
+    )
+    |> preload(
       class_skills:
         ^from(cs in ClassSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id])
     )
-    |> preload(class_skills: [:skill])
+    |> preload([class_abilities: [:ability], class_skills: [:skill]])
     |> Repo.one()
   end
 
@@ -117,6 +122,37 @@ defmodule Web.Class do
     case Repo.get(ClassSkill, id) do
       nil -> {:error, :not_found}
       class_skill -> Repo.delete(class_skill)
+    end
+  end
+
+  #
+  # Class Abilities
+  #
+
+  @doc """
+  New changeset
+  """
+  @spec new_class_ability(Class.t()) :: Ecto.Changeset.t()
+  def new_class_ability(class) do
+    class
+    |> Ecto.build_assoc(:class_abilities)
+    |> ClassAbility.changeset(%{})
+  end
+
+  def add_ability(class, params) do
+    class
+    |> Ecto.build_assoc(:class_abilities)
+    |> ClassAbility.changeset(params)
+    |> Repo.insert()
+  end
+
+  def remove_ability(id) do
+    case Repo.get(ClassAbility, id) do
+      nil ->
+        {:error, :not_found}
+
+      class_ability ->
+        Repo.delete(class_ability)
     end
   end
 end

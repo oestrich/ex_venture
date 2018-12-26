@@ -7,6 +7,12 @@ channel.is_gossip_connected:
 class.name:
   Try to limit to 10 characters, it will be cut off in the `who` list otherwise.
 
+class_ability.level:
+  This is the level that the ability will unlock at.
+
+class_ability.points:
+  When the ability unlocks, it will unlock with this many points.
+
 color_code.ansi_escape:
   This is the ANSI escape sequence when someone is connected via telnet, see [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)
 

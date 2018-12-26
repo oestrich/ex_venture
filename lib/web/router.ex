@@ -134,8 +134,12 @@ defmodule Web.Router do
     )
 
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
+      resources("/abilities", ClassAbilityController, only: [:new, :create], as: :ability)
+
       resources("/skills", ClassSkillController, only: [:new, :create], as: :skill)
     end
+
+    resources("/class_abilities", ClassAbilityController, only: [:delete])
 
     resources("/class_skills", ClassSkillController, only: [:delete])
 

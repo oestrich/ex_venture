@@ -1,0 +1,29 @@
+<div class="box box-primary">
+  <div class="box-header with-border">
+    <h3 class="box-title"><%= @title %></h3>
+  </div>
+
+  <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
+    <div class="box-body">
+      <div class="form-group">
+        <%= label f, :ability_id, class: "col-md-4" %>
+        <div class="col-md-8">
+          <%= select f, :ability_id, @abilities |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+          <%= error_tag f, :ability_id %>
+        </div>
+      </div>
+
+      <%= FormView.number_field(f, :level) do %>
+        <%= Help.get("class_ability.level") %>
+      <% end %>
+
+      <%= FormView.number_field(f, :points) do %>
+        <%= Help.get("class_ability.points") %>
+      <% end %>
+    </div>
+
+    <div class="box-footer">
+      <%= submit @submit, class: "btn btn-primary pull-right" %>
+    </div>
+  <% end %>
+</div>
