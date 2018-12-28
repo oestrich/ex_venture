@@ -23,3 +23,7 @@ config :ex_venture, :game,
   continue_wait: 500
 
 config :logger, level: :info
+
+if File.exists?("config/dev.secret.exs") do
+  import_config("prod.secret.exs")
+end
