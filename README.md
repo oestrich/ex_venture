@@ -2,6 +2,7 @@
 
 [![Trello](https://img.shields.io/badge/issues-trello-blue.svg)](https://trello.com/b/PFGmFWmu/exventure)
 [![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)][discord]
+[![Forums](https://img.shields.io/badge/support-forums-orange.svg)][forums]
 [![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/exventure)
 
 <img src="https://exventure.org/images/exventure.png" alt="ExVenture Logo" width="200" />
@@ -12,7 +13,7 @@ A text based MMO server written in Elixir.
 - [Support ExVenture on Patreon](https://www.patreon.com/exventure)
 - [Trello Issues](https://trello.com/b/PFGmFWmu/exventure)
 - [Chat with us on Discord][discord]
-- [Support and Development Forums](https://forums.exventure.org/)
+- [Support and Development Forums][forums]
 
 ## Features
 
@@ -115,6 +116,7 @@ See [exventure.org for deployment setup](https://exventure.org/deploy).
 
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
 
+[forums]: https://forums.exventure.org/
 [discord]: https://discord.gg/GPEa6dB
 [gossip]: https://gossip.haus/
 [grapevine]: https://grapevine.haus/
