@@ -29,11 +29,11 @@ defmodule Game.Format.Who do
 
   defp player_stats(player) do
     Enum.join([
-      "[",
+      "\\[",
       String.pad_leading(Integer.to_string(player.extra.level), 3),
       pad_and_limit(player.extra.class),
       pad_and_limit(player.extra.race),
-      "]"
+      "\\]"
     ])
   end
 
