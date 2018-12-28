@@ -3,6 +3,7 @@ defmodule Data.Save.Loader do
   Functions for loading a save struct
   """
 
+  alias Data.Ability
   alias Data.ActionBar
   alias Data.Item
   alias Data.Save
@@ -134,7 +135,7 @@ defmodule Data.Save.Loader do
         for {key, val} <- ability, into: %{}, do: {String.to_atom(key), val}
       end)
       |> Enum.map(fn ability ->
-        struct(Ability, ability)
+        struct(Ability.Instance, ability)
       end)
 
     %{save | abilities: abilities}

@@ -7,6 +7,14 @@ defmodule Data.Ability do
 
   @types ["normal"]
 
+  defmodule Instance do
+    @moduledoc """
+    Struct for an ability in a character's save
+    """
+
+    defstruct [:ability_id, :ability, :points]
+  end
+
   schema "abilities" do
     field(:name, :string)
     field(:type, :string)

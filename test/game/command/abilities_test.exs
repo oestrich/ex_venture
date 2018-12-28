@@ -1,6 +1,7 @@
 defmodule Game.Command.AbilitiesTest do
   use Data.ModelCase
 
+  alias Data.Ability
   alias Data.Save
   alias Game.Command.Abilities
 
@@ -18,7 +19,7 @@ defmodule Game.Command.AbilitiesTest do
     ability = create_ability(%{name: "Swimming"})
     insert_ability(ability)
 
-    save = %{character.save | abilities: [%Save.Ability{ability_id: ability.id, points: 10}]}
+    save = %{character.save | abilities: [%Ability.Instance{ability_id: ability.id, points: 10}]}
 
     %{state: session_state(%{user: user, character: character, save: save})}
   end
