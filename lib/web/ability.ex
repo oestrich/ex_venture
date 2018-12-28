@@ -7,6 +7,7 @@ defmodule Web.Ability do
 
   alias Data.Ability
   alias Data.Repo
+  alias Game.Abilities
 
   @doc """
   Get all abilities active in the game
@@ -51,6 +52,7 @@ defmodule Web.Ability do
 
     case changeset |> Repo.insert() do
       {:ok, ability} ->
+        Abilities.insert(ability)
         {:ok, ability}
 
       {:error, changeset} ->
@@ -67,6 +69,7 @@ defmodule Web.Ability do
 
     case changeset |> Repo.update() do
       {:ok, ability} ->
+        Abilities.reload(ability)
         {:ok, ability}
 
       {:error, changeset} ->

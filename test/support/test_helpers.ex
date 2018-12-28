@@ -84,6 +84,7 @@ defmodule TestHelpers do
       experience_points: 0,
       spent_experience_points: 0,
       currency: 0,
+      abilities: [],
       items: [],
       skill_ids: [],
       stats: base_stats(),

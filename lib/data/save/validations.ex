@@ -22,6 +22,7 @@ defmodule Data.Save.Validations do
   """
   def valid?(save) do
     keys(save) == [
+      :abilities,
       :actions,
       :channels,
       :config,

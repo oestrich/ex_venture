@@ -14,6 +14,7 @@ defmodule Data.ModelCase do
       import Test.DoorHelper
       import Test.SkillsHelper
       import Test.ChannelsHelper
+      import Test.AbilitiesHelper, only: [start_and_clear_abilities: 0, insert_ability: 1]
     end
   end
 

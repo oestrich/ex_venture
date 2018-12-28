@@ -22,6 +22,7 @@ defmodule Data.Save.Loader do
       |> Migrations.migrate()
       |> Migrations.migrate_config()
       |> hydrate_items()
+      |> hydrate_abilities()
       |> hydrate_actions()
 
     {:ok, struct(Save, save)}
@@ -125,4 +126,19 @@ defmodule Data.Save.Loader do
   end
 
   def hydrate_actions(save), do: save
+
+  def hydrate_abilities(save = %{abilities: abilities}) when abilities != nil do
+    abilities =
+      abilities
+      |> Enum.map(fn ability ->
+        for {key, val} <- ability, into: %{}, do: {String.to_atom(key), val}
+      end)
+      |> Enum.map(fn ability ->
+        struct(Ability, ability)
+      end)
+
+    %{save | abilities: abilities}
+  end
+
+  def hydrate_abilities(save), do: save
 end

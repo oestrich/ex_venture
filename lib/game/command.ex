@@ -90,6 +90,7 @@ defmodule Game.Command do
     Command.Inventory,
 
     # Alphabetical
+    Command.Abilities,
     Command.AFK,
     Command.Bug,
     Command.Colors,
