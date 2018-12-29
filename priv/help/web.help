@@ -10,8 +10,8 @@ class.name:
 class_proficiency.level:
   This is the level that the proficiency will unlock at.
 
-class_proficiency.points:
-  When the proficiency unlocks, it will unlock with this many points.
+class_proficiency.ranks:
+  When the proficiency unlocks, it will unlock with this many ranks.
 
 color_code.ansi_escape:
   This is the ANSI escape sequence when someone is connected via telnet, see [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)

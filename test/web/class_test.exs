@@ -46,11 +46,11 @@ defmodule Web.ClassTest do
     end
 
     test "adding proficiencies to a class", %{class: class, proficiency: proficiency} do
-      assert {:ok, %ClassProficiency{}} = Class.add_proficiency(class, %{proficiency_id: proficiency.id, level: 1, points: 10})
+      assert {:ok, %ClassProficiency{}} = Class.add_proficiency(class, %{proficiency_id: proficiency.id, level: 1, ranks: 10})
     end
 
     test "delete a proficiency from a class", %{class: class, proficiency: proficiency} do
-      {:ok, class_proficiency} = Class.add_proficiency(class, %{proficiency_id: proficiency.id, level: 1, points: 10})
+      {:ok, class_proficiency} = Class.add_proficiency(class, %{proficiency_id: proficiency.id, level: 1, ranks: 10})
 
       assert {:ok, _} = Class.remove_proficiency(class_proficiency.id)
     end

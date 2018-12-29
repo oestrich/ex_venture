@@ -12,7 +12,7 @@ defmodule Data.Proficiency do
     Struct for an proficiency in a character's save
     """
 
-    defstruct [:proficiency_id, :proficiency, :points]
+    defstruct [:proficiency_id, :proficiency, :ranks]
   end
 
   schema "proficiencies" do

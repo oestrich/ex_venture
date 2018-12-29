@@ -12,7 +12,7 @@ defmodule Game.Command.Proficiencies do
 
   @impl Game.Command
   def help(:topic), do: "Proficiencies"
-  def help(:short), do: "View your ablities"
+  def help(:short), do: "View your proficiencies"
 
   def help(:full) do
     """

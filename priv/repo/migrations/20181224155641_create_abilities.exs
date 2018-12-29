@@ -13,7 +13,7 @@ defmodule Data.Repo.Migrations.CreateAbilities do
       add(:class_id, references(:classes), null: false)
       add(:proficiency_id, references(:proficiencies), null: false)
       add(:level, :integer, null: false)
-      add(:points, :integer, null: false)
+      add(:ranks, :integer, null: false)
 
       timestamps()
     end

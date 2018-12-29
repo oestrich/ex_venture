@@ -17,8 +17,8 @@
         <%= Help.get("class_proficiency.level") %>
       <% end %>
 
-      <%= FormView.number_field(f, :points) do %>
-        <%= Help.get("class_proficiency.points") %>
+      <%= FormView.number_field(f, :ranks) do %>
+        <%= Help.get("class_proficiency.ranks") %>
       <% end %>
     </div>
 

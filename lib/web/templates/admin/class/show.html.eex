@@ -55,7 +55,7 @@
               <tr>
                 <th>Level</th>
                 <th>Name</th>
-                <th>Points</th>
+                <th>Ranks</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -64,7 +64,7 @@
                 <tr>
                   <td><%= class_proficiency.level %></td>
                   <td><%= link(class_proficiency.proficiency.name, to: proficiency_path(@conn, :show, class_proficiency.proficiency_id)) %></td>
-                  <td><%= class_proficiency.points %></td>
+                  <td><%= class_proficiency.ranks %></td>
                   <td>
                     <%= link("View", to: proficiency_path(@conn, :show, class_proficiency.proficiency_id), class: "btn btn-default btn-xs") %>
                     <%= link("Edit", to: proficiency_path(@conn, :edit, class_proficiency.proficiency_id), class: "btn btn-default btn-xs") %>
