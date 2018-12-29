@@ -1,16 +1,16 @@
-defmodule Game.Abilities do
+defmodule Game.Proficiencies do
   @moduledoc """
-  GenServer to keep track of abilities in the game.
+  GenServer to keep track of proficiencies in the game.
 
   Stores them in an ETS table
   """
 
   use GenServer
 
-  alias Data.Ability
+  alias Data.Proficiency
   alias Data.Repo
 
-  @key :abilities
+  @key :proficiencies
 
   @doc false
   def start_link() do
@@ -18,16 +18,16 @@ defmodule Game.Abilities do
   end
 
   @doc """
-  Get an ability
+  Get an proficiency
   """
-  def get(ability = %Ability{}) do
-    get(ability.id)
+  def get(proficiency = %Proficiency{}) do
+    get(proficiency.id)
   end
 
   def get(id) when is_integer(id) do
     case Cachex.get(@key, id) do
-      {:ok, ability} when ability != nil ->
-        {:ok, ability}
+      {:ok, proficiency} when proficiency != nil ->
+        {:ok, proficiency}
 
       _ ->
         {:error, :not_found}
@@ -35,14 +35,14 @@ defmodule Game.Abilities do
   end
 
   @doc """
-  Get all abilities from the cache
+  Get all proficiencies from the cache
   """
   def all() do
     case Cachex.keys(@key) do
       {:ok, keys} ->
         keys
         |> Enum.filter(&is_integer/1)
-        |> abilities()
+        |> proficiencies()
 
       _ ->
         []
@@ -50,9 +50,9 @@ defmodule Game.Abilities do
   end
 
   @doc """
-  Get a list of abilities by id
+  Get a list of proficiencies by id
   """
-  def abilities(ids) do
+  def proficiencies(ids) do
     ids
     |> Enum.map(&get/1)
     |> Enum.reject(&(&1 == {:error, :not_found}))
@@ -60,20 +60,20 @@ defmodule Game.Abilities do
   end
 
   @doc """
-  Insert a new ability into the loaded data
+  Insert a new proficiency into the loaded data
   """
-  def insert(ability) do
+  def insert(proficiency) do
     members = :pg2.get_members(@key)
 
     Enum.map(members, fn member ->
-      GenServer.call(member, {:insert, ability})
+      GenServer.call(member, {:insert, proficiency})
     end)
   end
 
   @doc """
-  Trigger an ability reload
+  Trigger an proficiency reload
   """
-  def reload(ability), do: insert(ability)
+  def reload(proficiency), do: insert(proficiency)
 
   @doc """
   For testing only: clear the EST table
@@ -90,21 +90,21 @@ defmodule Game.Abilities do
     :ok = :pg2.create(@key)
     :ok = :pg2.join(@key, self())
 
-    {:ok, %{}, {:continue, :load_abilities}}
+    {:ok, %{}, {:continue, :load_proficiencies}}
   end
 
-  def handle_continue(:load_abilities, state) do
-    abilities = Repo.all(Ability)
+  def handle_continue(:load_proficiencies, state) do
+    proficiencies = Repo.all(Proficiency)
 
-    Enum.each(abilities, fn ability ->
-      Cachex.put(@key, ability.id, ability)
+    Enum.each(proficiencies, fn proficiency ->
+      Cachex.put(@key, proficiency.id, proficiency)
     end)
 
     {:noreply, state}
   end
 
-  def handle_call({:insert, ability}, _from, state) do
-    Cachex.put(@key, ability.id, ability)
+  def handle_call({:insert, proficiency}, _from, state) do
+    Cachex.put(@key, proficiency.id, proficiency)
     {:reply, :ok, state}
   end
 

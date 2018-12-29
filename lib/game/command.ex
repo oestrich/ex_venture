@@ -90,7 +90,6 @@ defmodule Game.Command do
     Command.Inventory,
 
     # Alphabetical
-    Command.Abilities,
     Command.AFK,
     Command.Bug,
     Command.Colors,
@@ -110,6 +109,7 @@ defmodule Game.Command do
     Command.Map,
     Command.Mistake,
     Command.PickUp,
+    Command.Proficiencies,
     Command.Quest,
     Command.Quit,
     Command.Recall,

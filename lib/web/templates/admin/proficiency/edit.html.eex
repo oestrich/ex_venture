@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    Edit <%= @ability.name %>
+    Edit <%= @proficiency.name %>
   </h1>
 
   <ol class="breadcrumb">
@@ -9,8 +9,8 @@
         <i class="fa fa-dashboard"></i> Home
       <% end %>
     </li>
-    <li><%= link("Abilities", to: ability_path(@conn, :index)) %></li>
-    <li><%= link(@ability.name, to: ability_path(@conn, :show, @ability.id)) %></li>
+    <li><%= link("Proficiencies", to: proficiency_path(@conn, :index)) %></li>
+    <li><%= link(@proficiency.name, to: proficiency_path(@conn, :show, @proficiency.id)) %></li>
     <li class="active">Edit</li>
   </ol>
 </section>
@@ -18,7 +18,7 @@
 <section class="content">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
-      <%= render("_form.html", path: ability_path(@conn, :update, @ability.id), changeset: @changeset, title: "Edit", submit: "Save") %>
+      <%= render("_form.html", path: proficiency_path(@conn, :update, @proficiency.id), changeset: @changeset, title: "Edit", submit: "Save") %>
     </div>
   </div>
 </section>

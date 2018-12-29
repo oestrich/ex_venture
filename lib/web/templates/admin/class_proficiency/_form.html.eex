@@ -6,19 +6,19 @@
   <%= form_for @changeset, @path, [class: "form-horizontal"], fn (f) -> %>
     <div class="box-body">
       <div class="form-group">
-        <%= label f, :ability_id, class: "col-md-4" %>
+        <%= label f, :proficiency_id, class: "col-md-4" %>
         <div class="col-md-8">
-          <%= select f, :ability_id, @abilities |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
-          <%= error_tag f, :ability_id %>
+          <%= select f, :proficiency_id, @proficiencies |> Enum.map(&({&1.name, &1.id})), class: "form-control" %>
+          <%= error_tag f, :proficiency_id %>
         </div>
       </div>
 
       <%= FormView.number_field(f, :level) do %>
-        <%= Help.get("class_ability.level") %>
+        <%= Help.get("class_proficiency.level") %>
       <% end %>
 
       <%= FormView.number_field(f, :points) do %>
-        <%= Help.get("class_ability.points") %>
+        <%= Help.get("class_proficiency.points") %>
       <% end %>
     </div>
 

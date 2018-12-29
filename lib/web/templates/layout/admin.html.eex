@@ -82,16 +82,16 @@
               <% end %>
             </li>
             <li class="header">PLAYERS</li>
-            <li class="<%= tab_selected(@conn, "abilities") %>">
-              <%= link(to: ability_path(@conn, :index)) do %>
-                <i class="fa fa-bullseye"></i>
-                <span>Abilities</span>
-              <% end %>
-            </li>
             <li class="<%= tab_selected(@conn, "classes") %>">
               <%= link(to: class_path(@conn, :index)) do %>
                 <i class="fa fa-user-circle"></i>
                 <span>Classes</span>
+              <% end %>
+            </li>
+            <li class="<%= tab_selected(@conn, "proficiencies") %>">
+              <%= link(to: proficiency_path(@conn, :index)) do %>
+                <i class="fa fa-bullseye"></i>
+                <span>Proficiencies</span>
               <% end %>
             </li>
             <li class="<%= tab_selected(@conn, "races") %>">

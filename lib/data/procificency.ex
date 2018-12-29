@@ -1,6 +1,6 @@
-defmodule Data.Ability do
+defmodule Data.Proficiency do
   @moduledoc """
-  Schema for character abilities
+  Schema for character proficiencies
   """
 
   use Data.Schema
@@ -9,13 +9,13 @@ defmodule Data.Ability do
 
   defmodule Instance do
     @moduledoc """
-    Struct for an ability in a character's save
+    Struct for an proficiency in a character's save
     """
 
-    defstruct [:ability_id, :ability, :points]
+    defstruct [:proficiency_id, :proficiency, :points]
   end
 
-  schema "abilities" do
+  schema "proficiencies" do
     field(:name, :string)
     field(:type, :string)
 

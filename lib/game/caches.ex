@@ -12,7 +12,7 @@ defmodule Game.Caches do
 
   def init(_) do
     children = [
-      worker(Cachex, [:abilities, []], id: :abilities_cache),
+      worker(Cachex, [:proficiencies, []], id: :proficiencies_cache),
       worker(Cachex, [:channels, []], id: :channels_cache),
       worker(Cachex, [:color_codes, []], id: :color_code_cache),
       worker(Cachex, [:damage_types, []], id: :damage_type_cache),
@@ -24,13 +24,13 @@ defmodule Game.Caches do
       worker(Cachex, [:skills, []], id: :skills_cache),
       worker(Cachex, [:socials, []], id: :socials_cache),
       worker(Cachex, [:zones, []], id: :zones_cache),
-      worker(Game.Abilities, []),
       worker(Game.Channels, []),
       worker(Game.ColorCodes, []),
       worker(Game.DamageTypes, []),
       worker(Game.Door, []),
       worker(Game.Features, []),
       worker(Game.Items, []),
+      worker(Game.Proficiencies, []),
       worker(Game.Skills, []),
       worker(Game.Socials, [])
     ]

@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    <%= @ability.name %>
+    <%= @proficiency.name %>
   </h1>
 
   <ol class="breadcrumb">
@@ -9,8 +9,8 @@
         <i class="fa fa-dashboard"></i> Home
       <% end %>
     </li>
-    <li><%= link("Abilities", to: ability_path(@conn, :index)) %></li>
-    <li class="active"><%= @ability.name %></li>
+    <li><%= link("Proficiencies", to: proficiency_path(@conn, :index)) %></li>
+    <li class="active"><%= @proficiency.name %></li>
   </ol>
 </section>
 
@@ -21,7 +21,7 @@
         <div class="box-header">
           <h3 class="box-title">Attributes</h3>
           <span class="box-tools">
-            <%= link("Edit", to: ability_path(@conn, :edit, @ability.id), class: "btn btn-default") %>
+            <%= link("Edit", to: proficiency_path(@conn, :edit, @proficiency.id), class: "btn btn-default") %>
           </span>
         </div>
         <div class="box-body">

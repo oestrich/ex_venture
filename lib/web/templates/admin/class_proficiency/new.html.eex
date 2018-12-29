@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    New Class Ability
+    New Class Proficiency
   </h1>
 
   <ol class="breadcrumb">
@@ -11,14 +11,14 @@
     </li>
     <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
     <li><%= link(@class.name, to: class_path(@conn, :show, @class.id)) %></li>
-    <li class="active">New Class Ability</li>
+    <li class="active">New Class Proficiency</li>
   </ol>
 </section>
 
 <section class="content">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
-      <%= render "_form.html", path: class_ability_path(@conn, :create, @class.id), abilities: @abilities, changeset: @changeset, title: "New", submit: "Create" %>
+      <%= render "_form.html", path: class_proficiency_path(@conn, :create, @class.id), proficiencies: @proficiencies, changeset: @changeset, title: "New", submit: "Create" %>
     </div>
   </div>
 </section>

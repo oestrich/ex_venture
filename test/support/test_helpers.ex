@@ -1,11 +1,11 @@
 defmodule TestHelpers do
-  alias Data.Ability
+  alias Data.Proficiency
   alias Data.Announcement
   alias Data.Bug
   alias Data.Channel
   alias Data.Character
   alias Data.Class
-  alias Data.ClassAbility
+  alias Data.ClassProficiency
   alias Data.ClassSkill
   alias Data.Config
   alias Data.Exit
@@ -84,7 +84,7 @@ defmodule TestHelpers do
       experience_points: 0,
       spent_experience_points: 0,
       currency: 0,
-      abilities: [],
+      proficiencies: [],
       items: [],
       skill_ids: [],
       stats: base_stats(),
@@ -297,22 +297,22 @@ defmodule TestHelpers do
     |> Repo.insert!()
   end
 
-  def ability_attributes(attributes) do
+  def proficiency_attributes(attributes) do
     Map.merge(%{
       name: "Swimming",
       type: "normal"
     }, attributes)
   end
 
-  def create_ability(attributes \\ %{}) do
-    %Ability{}
-    |> Ability.changeset(ability_attributes(attributes))
+  def create_proficiency(attributes \\ %{}) do
+    %Proficiency{}
+    |> Proficiency.changeset(proficiency_attributes(attributes))
     |> Repo.insert!()
   end
 
-  def create_class_ability(class, ability) do
-    %ClassAbility{}
-    |> ClassAbility.changeset(%{class_id: class.id, ability_id: ability.id})
+  def create_class_proficiency(class, proficiency) do
+    %ClassProficiency{}
+    |> ClassProficiency.changeset(%{class_id: class.id, proficiency_id: proficiency.id})
     |> Repo.insert!()
   end
 

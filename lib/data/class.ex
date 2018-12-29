@@ -5,7 +5,7 @@ defmodule Data.Class do
 
   use Data.Schema
 
-  alias Data.ClassAbility
+  alias Data.ClassProficiency
   alias Data.ClassSkill
 
   schema "classes" do
@@ -13,7 +13,7 @@ defmodule Data.Class do
     field(:name, :string)
     field(:description, :string)
 
-    has_many(:class_abilities, ClassAbility)
+    has_many(:class_proficiencies, ClassProficiency)
     has_many(:class_skills, ClassSkill)
     has_many(:skills, through: [:class_skills, :skill])
   end

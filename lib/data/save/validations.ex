@@ -22,7 +22,6 @@ defmodule Data.Save.Validations do
   """
   def valid?(save) do
     keys(save) == [
-      :abilities,
       :actions,
       :channels,
       :config,
@@ -31,6 +30,7 @@ defmodule Data.Save.Validations do
       :items,
       :level,
       :level_stats,
+      :proficiencies,
       :room_id,
       :skill_ids,
       :spent_experience_points,

@@ -29,7 +29,7 @@ defmodule Data.Save.Migrations do
   """
   def migrate_save(save = %{version: 13}) do
     save
-    |> Map.put(:abilities, [])
+    |> Map.put(:proficiencies, [])
     |> Map.put(:version, 14)
     |> migrate_save()
   end

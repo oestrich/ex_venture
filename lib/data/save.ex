@@ -8,7 +8,7 @@ defmodule Data.Save do
   alias Data.Save.Loader
   alias Data.Save.Validations
 
-  @type ability :: map()
+  @type proficiency :: map()
 
   @type t :: %{
           room_id: integer,
@@ -22,7 +22,7 @@ defmodule Data.Save do
           skill_ids: [integer()],
           items: [Item.instance()],
           actions: [ActionBar.action()],
-          abilities: [ability()],
+          proficiencies: [proficiency()],
           config: %{
             hints: boolean(),
             prompt: String.t()
@@ -37,7 +37,7 @@ defmodule Data.Save do
         }
 
   defstruct [
-    :abilities,
+    :proficiencies,
     :actions,
     :channels,
     :config,

@@ -6,7 +6,7 @@ defmodule Web.Class do
   import Ecto.Query
 
   alias Data.Class
-  alias Data.ClassAbility
+  alias Data.ClassProficiency
   alias Data.ClassSkill
   alias Data.Repo
   alias Web.Pagination
@@ -53,14 +53,14 @@ defmodule Web.Class do
     Class
     |> where([c], c.id == ^id)
     |> preload(
-      class_abilities:
-        ^from(ca in ClassAbility, left_join: a in assoc(ca, :ability), order_by: ca.level)
+      class_proficiencies:
+        ^from(ca in ClassProficiency, left_join: a in assoc(ca, :proficiency), order_by: ca.level)
     )
     |> preload(
       class_skills:
         ^from(cs in ClassSkill, left_join: s in assoc(cs, :skill), order_by: [s.level, s.id])
     )
-    |> preload([class_abilities: [:ability], class_skills: [:skill]])
+    |> preload([class_proficiencies: [:proficiency], class_skills: [:skill]])
     |> Repo.one()
   end
 
@@ -126,33 +126,33 @@ defmodule Web.Class do
   end
 
   #
-  # Class Abilities
+  # Class Proficiencies
   #
 
   @doc """
   New changeset
   """
-  @spec new_class_ability(Class.t()) :: Ecto.Changeset.t()
-  def new_class_ability(class) do
+  @spec new_class_proficiency(Class.t()) :: Ecto.Changeset.t()
+  def new_class_proficiency(class) do
     class
-    |> Ecto.build_assoc(:class_abilities)
-    |> ClassAbility.changeset(%{})
+    |> Ecto.build_assoc(:class_proficiencies)
+    |> ClassProficiency.changeset(%{})
   end
 
-  def add_ability(class, params) do
+  def add_proficiency(class, params) do
     class
-    |> Ecto.build_assoc(:class_abilities)
-    |> ClassAbility.changeset(params)
+    |> Ecto.build_assoc(:class_proficiencies)
+    |> ClassProficiency.changeset(params)
     |> Repo.insert()
   end
 
-  def remove_ability(id) do
-    case Repo.get(ClassAbility, id) do
+  def remove_proficiency(id) do
+    case Repo.get(ClassProficiency, id) do
       nil ->
         {:error, :not_found}
 
-      class_ability ->
-        Repo.delete(class_ability)
+      class_proficiency ->
+        Repo.delete(class_proficiency)
     end
   end
 end

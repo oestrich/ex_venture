@@ -119,8 +119,6 @@ defmodule Web.Router do
 
     get("/", DashboardController, :index)
 
-    resources("/abilities", AbilityController, except: [:delete])
-
     resources("/announcements", AnnouncementController, except: [:delete])
 
     resources "/bugs", BugController, only: [:index, :show] do
@@ -134,12 +132,12 @@ defmodule Web.Router do
     )
 
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
-      resources("/abilities", ClassAbilityController, only: [:new, :create], as: :ability)
+      resources("/proficiencies", ClassProficiencyController, only: [:new, :create], as: :proficiency)
 
       resources("/skills", ClassSkillController, only: [:new, :create], as: :skill)
     end
 
-    resources("/class_abilities", ClassAbilityController, only: [:delete])
+    resources("/class_proficiencies", ClassProficiencyController, only: [:delete])
 
     resources("/class_skills", ClassSkillController, only: [:delete])
 
@@ -207,6 +205,8 @@ defmodule Web.Router do
     resources("/npc_items", NPCItemController, only: [:edit, :update, :delete])
 
     resources("/npc_spawners", NPCSpawnerController, only: [:show, :edit, :update, :delete])
+
+    resources("/proficiencies", ProficiencyController, except: [:delete])
 
     resources("/quest_relations", QuestRelationController, only: [:delete])
 

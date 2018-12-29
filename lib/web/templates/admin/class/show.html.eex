@@ -44,9 +44,9 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
-          <h3 class="box-title">Abilities</h3>
+          <h3 class="box-title">Proficiencies</h3>
           <div class="box-tools">
-            <%= link("Add Ability", to: class_ability_path(@conn, :new, @class.id), class: "btn btn-primary") %>
+            <%= link("Add Proficiency", to: class_proficiency_path(@conn, :new, @class.id), class: "btn btn-primary") %>
           </div>
         </div>
         <div class="box-body">
@@ -60,15 +60,15 @@
               </tr>
             </thead>
             <tbody>
-              <%= Enum.map @class.class_abilities, fn (class_ability) -> %>
+              <%= Enum.map @class.class_proficiencies, fn (class_proficiency) -> %>
                 <tr>
-                  <td><%= class_ability.level %></td>
-                  <td><%= link(class_ability.ability.name, to: ability_path(@conn, :show, class_ability.ability_id)) %></td>
-                  <td><%= class_ability.points %></td>
+                  <td><%= class_proficiency.level %></td>
+                  <td><%= link(class_proficiency.proficiency.name, to: proficiency_path(@conn, :show, class_proficiency.proficiency_id)) %></td>
+                  <td><%= class_proficiency.points %></td>
                   <td>
-                    <%= link("View", to: ability_path(@conn, :show, class_ability.ability_id), class: "btn btn-default btn-xs") %>
-                    <%= link("Edit", to: ability_path(@conn, :edit, class_ability.ability_id), class: "btn btn-default btn-xs") %>
-                    <%= link(to: class_ability_path(@conn, :delete, class_ability.id), method: :delete, class: "btn btn-warning btn-xs") do %>
+                    <%= link("View", to: proficiency_path(@conn, :show, class_proficiency.proficiency_id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: proficiency_path(@conn, :edit, class_proficiency.proficiency_id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: class_proficiency_path(@conn, :delete, class_proficiency.id), method: :delete, class: "btn btn-warning btn-xs") do %>
                       <i class="fa fa-times"></i>
                     <% end %>
                   </td>
