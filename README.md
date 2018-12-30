@@ -30,7 +30,7 @@ A text based MMO server written in Elixir.
 ### Cross Game Chat
 
 - ExVenture fully supports the [Gossip][gossip] network
-- Supports [Grapevine][grapevine]
+- Supports [Grapevine][grapevine] character registration and OAuth login
 - Cross game channels
 - Cross game tells
 
