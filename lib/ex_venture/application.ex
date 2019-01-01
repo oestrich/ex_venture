@@ -4,7 +4,6 @@ defmodule ExVenture.Application do
   @moduledoc false
 
   @server Application.get_env(:ex_venture, :networking)[:server]
-  @report_errors Application.get_env(:ex_venture, :errors)[:report]
   @cluster_size Application.get_env(:ex_venture, :cluster)[:size]
 
   use Application
@@ -30,7 +29,8 @@ defmodule ExVenture.Application do
     # for other strategies and supported options
     opts = [strategy: :rest_for_one, name: ExVenture.Supervisor]
 
-    if @report_errors do
+    report_errors = Application.get_env(:ex_venture, :errors)[:report]
+    if report_errors do
       {:ok, _} = Logger.add_backend(Sentry.LoggerBackend)
     end
 
