@@ -70,6 +70,7 @@ defmodule Web.Channel do
     case changeset |> Repo.insert() do
       {:ok, channel} ->
         Channels.insert(channel)
+        maybe_subscribe_gossip(channel)
         {:ok, channel}
 
       {:error, changeset} ->
@@ -85,12 +86,34 @@ defmodule Web.Channel do
     changeset = channel |> Channel.changeset(params)
 
     case changeset |> Repo.update() do
-      {:ok, channel} ->
-        Channels.reload(channel)
-        {:ok, channel}
+      {:ok, updated_channel} ->
+        Channels.reload(updated_channel)
+        maybe_resubscribe_channel(channel, updated_channel)
+        {:ok, updated_channel}
 
       {:error, changeset} ->
         {:error, changeset}
+    end
+  end
+
+  defp maybe_subscribe_gossip(channel) do
+    case channel.is_gossip_connected do
+      true ->
+        Gossip.subscribe(channel.gossip_channel)
+
+      false ->
+        :ok
+    end
+  end
+
+  defp maybe_resubscribe_channel(old_channel, new_channel) do
+    case new_channel.is_gossip_connected && old_channel.gossip_channel != new_channel.gossip_channel do
+      true ->
+        if old_channel.gossip_channel, do: Gossip.unsubscribe(old_channel.gossip_channel)
+        Gossip.subscribe(new_channel.gossip_channel)
+
+      false ->
+        if old_channel.is_gossip_connected, do: Gossip.unsubscribe(old_channel.gossip_channel)
     end
   end
 end

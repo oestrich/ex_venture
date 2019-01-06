@@ -33,6 +33,9 @@ defmodule Game.Gossip do
   end
 
   @impl true
+  def authenticated(), do: :ok
+
+  @impl true
   def message_broadcast(message) do
     with {:ok, channel} <- Channels.gossip_channel(message.channel),
          true <- Squabble.node_is_leader?() do
