@@ -59,4 +59,17 @@ defmodule Data.ExitTest do
       assert changeset.errors[:finish_overworld_id]
     end
   end
+
+  describe "simple validation of proficiencies" do
+    test "id and rank" do
+      changeset = Exit.changeset(%Exit{}, %{proficiencies: []})
+      refute changeset.errors[:proficiencies]
+
+      changeset = Exit.changeset(%Exit{}, %{proficiencies: [%{id: 1, rank: 5}]})
+      refute changeset.errors[:proficiencies]
+
+      changeset = Exit.changeset(%Exit{}, %{proficiencies: [%{id: 1}]})
+      assert changeset.errors[:proficiencies]
+    end
+  end
 end

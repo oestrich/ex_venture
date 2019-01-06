@@ -34,6 +34,8 @@ defmodule Data.Exit do
     field(:start_overworld_id, :string)
     field(:finish_overworld_id, :string)
 
+    field(:proficiencies, {:array, :map})
+
     belongs_to(:start_room, Room)
     belongs_to(:start_zone, Zone)
 
@@ -58,13 +60,15 @@ defmodule Data.Exit do
       :start_room_id,
       :finish_room_id,
       :start_overworld_id,
-      :finish_overworld_id
+      :finish_overworld_id,
+      :proficiencies
     ])
     |> cast(params, [:start_zone_id, :finish_zone_id])
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
     |> validate_one_of([:start_room_id, :start_overworld_id])
     |> validate_one_of([:finish_room_id, :finish_overworld_id])
+    |> validate_proficiencies()
     |> foreign_key_constraint(:start_room_id)
     |> foreign_key_constraint(:finish_room_id)
     |> unique_constraint(:start_room_id, name: :exits_direction_start_room_id_index)
@@ -89,6 +93,26 @@ defmodule Data.Exit do
         Enum.reduce(keys, changeset, fn {key, _value}, changeset ->
           add_error(changeset, key, "cannot be combined with other values")
         end)
+    end
+  end
+
+  def validate_proficiencies(changeset) do
+    case get_field(changeset, :proficiencies) do
+      nil ->
+        changeset
+
+      proficiencies ->
+        valid_proficencies? = Enum.all?(proficiencies, fn proficiency ->
+          Enum.sort(Map.keys(proficiency)) == [:id, :rank]
+        end)
+
+        case valid_proficencies? do
+          true ->
+            changeset
+
+          false ->
+            add_error(changeset, :proficiencies, "are invalid")
+        end
     end
   end
 

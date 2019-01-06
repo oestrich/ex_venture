@@ -14,7 +14,11 @@ defmodule Web.Exit do
   """
   @spec create_exit(params :: map) :: {:ok, Exit.t()} | {:error, changeset :: map}
   def create_exit(params) do
-    params = maybe_add_door_id(params)
+    params =
+      params
+      |> maybe_add_door_id()
+      |> cast_params()
+
     changeset = %Exit{} |> Exit.changeset(params)
     reverse_changeset = %Exit{} |> Exit.changeset(reverse_params(params))
 
@@ -37,11 +41,42 @@ defmodule Web.Exit do
     end
   end
 
+  defp cast_params(params) do
+    params
+    |> parse_proficiencies()
+  end
+
+  defp parse_proficiencies(params = %{"proficiencies" => proficiencies}) do
+    case Poison.decode(proficiencies) do
+      {:ok, proficiencies} ->
+        cast_proficiencies(params, proficiencies)
+
+      _ ->
+        params
+    end
+  end
+
+  defp parse_proficiencies(params), do: params
+
+  defp cast_proficiencies(params, proficiencies) do
+    proficiencies =
+      Enum.map(proficiencies, fn proficiency ->
+        proficiency
+        |> Map.take(["id", "rank"])
+        |> Enum.into(%{}, fn {key, value} ->
+          {String.to_atom(key), value}
+        end)
+      end)
+
+    Map.put(params, "proficiencies", proficiencies)
+  end
+
   defp reverse_params(params) do
     reverse_params = %{
       direction: to_string(Exit.opposite(params["direction"])),
       has_door: Map.get(params, "has_door", false),
-      door_id: Map.get(params, "door_id", nil)
+      door_id: Map.get(params, "door_id", nil),
+      proficiencies: Map.get(params, "proficiencies", [])
     }
 
     reverse_params

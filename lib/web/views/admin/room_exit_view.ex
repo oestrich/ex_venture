@@ -15,4 +15,10 @@ defmodule Web.Admin.RoomExitView do
   def disabled_room_option(room) do
     [{"#{room.id} - #{room.name}", room.id}]
   end
+
+  def proficiencies(proficiencies) do
+    Enum.map(proficiencies, fn proficiency ->
+      Elixir.Map.take(proficiency, [:id, :name])
+    end)
+  end
 end
