@@ -4,11 +4,11 @@ import _ from 'lodash';
 class Proficiency extends React.Component {
   render() {
     let name = this.props.name;
-    let rank = this.props.rank;
+    let ranks = this.props.ranks;
 
     return (
       <li className="proficiency">
-        <span>{name}</span> - <span>{rank}</span>
+        <span>{name}</span> - <span>{ranks}</span>
       </li>
     );
   }
@@ -20,7 +20,7 @@ class NewRequirement extends React.Component {
 
     this.state = {
       proficiencyId: null,
-      requiredRank: 0,
+      requiredRanks: 0,
     };
 
     this.addRequirement = this.addRequirement.bind(this);
@@ -30,15 +30,15 @@ class NewRequirement extends React.Component {
   addRequirement(event) {
     event.preventDefault();
 
-    if (this.state.proficiencyId != null && this.state.requiredRank != null) {
+    if (this.state.proficiencyId != null && this.state.requiredRanks != null) {
       this.props.addRequirement({
         id: this.state.proficiencyId,
-        rank: this.state.requiredRank,
+        ranks: this.state.requiredRanks,
       });
 
       this.setState({
         proficiencyId: null,
-        requiredRank: 0,
+        requiredRanks: 0,
       });
     }
   }
@@ -46,7 +46,7 @@ class NewRequirement extends React.Component {
   castField(field, value) {
     switch (field) {
       case "proficiencyId":
-      case "requiredRank":
+      case "requiredRanks":
         if (value === "") {
           return null;
         } else {
@@ -68,7 +68,7 @@ class NewRequirement extends React.Component {
 
   render() {
     let proficiencyId = this.state.proficiencyId || "";
-    let requiredRank = this.state.requiredRank || "";
+    let requiredRanks = this.state.requiredRanks || "";
 
     let proficiencies = this.props.proficiencies;
 
@@ -87,8 +87,8 @@ class NewRequirement extends React.Component {
             </select>
           </div>
           <div className="col-md-4">
-            <label>Required Rank</label>
-            <input type="number" value={requiredRank} className="form-control" onChange={this.handleUpdateField("requiredRank")} />
+            <label>Required Ranks</label>
+            <input type="number" value={requiredRanks} className="form-control" onChange={this.handleUpdateField("requiredRanks")} />
           </div>
         </div>
         <div>
@@ -138,7 +138,7 @@ class ExitProficiencies extends React.Component {
               return proficiency.id == requirement.id;
             })
 
-            return <Proficiency key={proficiency.id} name={proficiency.name} rank={requirement.rank} />
+            return <Proficiency key={proficiency.id} name={proficiency.name} ranks={requirement.ranks} />
           })}
         </ul>
       );

@@ -49,7 +49,7 @@ defmodule Web.Exit do
   defp parse_proficiencies(params = %{"proficiencies" => proficiencies}) do
     case Poison.decode(proficiencies) do
       {:ok, proficiencies} ->
-        cast_proficiencies(params, proficiencies)
+        Map.put(params, "proficiencies", proficiencies)
 
       _ ->
         params
@@ -57,19 +57,6 @@ defmodule Web.Exit do
   end
 
   defp parse_proficiencies(params), do: params
-
-  defp cast_proficiencies(params, proficiencies) do
-    proficiencies =
-      Enum.map(proficiencies, fn proficiency ->
-        proficiency
-        |> Map.take(["id", "rank"])
-        |> Enum.into(%{}, fn {key, value} ->
-          {String.to_atom(key), value}
-        end)
-      end)
-
-    Map.put(params, "proficiencies", proficiencies)
-  end
 
   defp reverse_params(params) do
     reverse_params = %{

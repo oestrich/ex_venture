@@ -5,6 +5,7 @@ defmodule Data.Exit do
 
   use Data.Schema
 
+  alias Data.Proficiency
   alias Data.Room
   alias Data.Zone
 
@@ -34,7 +35,7 @@ defmodule Data.Exit do
     field(:start_overworld_id, :string)
     field(:finish_overworld_id, :string)
 
-    field(:proficiencies, {:array, :map})
+    embeds_many(:proficiencies, Proficiency.Requirement)
 
     belongs_to(:start_room, Room)
     belongs_to(:start_zone, Zone)
@@ -60,10 +61,10 @@ defmodule Data.Exit do
       :start_room_id,
       :finish_room_id,
       :start_overworld_id,
-      :finish_overworld_id,
-      :proficiencies
+      :finish_overworld_id
     ])
     |> cast(params, [:start_zone_id, :finish_zone_id])
+    |> cast_embed(:proficiencies, with: &Proficiency.Requirement.changeset/2)
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
     |> validate_one_of([:start_room_id, :start_overworld_id])
@@ -97,16 +98,12 @@ defmodule Data.Exit do
   end
 
   def validate_proficiencies(changeset) do
-    case get_field(changeset, :proficiencies) do
+    case get_change(changeset, :proficiencies) do
       nil ->
         changeset
 
       proficiencies ->
-        valid_proficencies? = Enum.all?(proficiencies, fn proficiency ->
-          Enum.sort(Map.keys(proficiency)) == [:id, :rank]
-        end)
-
-        case valid_proficencies? do
+        case Enum.all?(proficiencies, &(&1.valid?)) do
           true ->
             changeset
 

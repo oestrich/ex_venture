@@ -65,7 +65,7 @@ defmodule Data.ExitTest do
       changeset = Exit.changeset(%Exit{}, %{proficiencies: []})
       refute changeset.errors[:proficiencies]
 
-      changeset = Exit.changeset(%Exit{}, %{proficiencies: [%{id: 1, rank: 5}]})
+      changeset = Exit.changeset(%Exit{}, %{proficiencies: [%{id: 1, ranks: 5}]})
       refute changeset.errors[:proficiencies]
 
       changeset = Exit.changeset(%Exit{}, %{proficiencies: [%{id: 1}]})
