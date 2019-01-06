@@ -29,6 +29,20 @@ export const initPhxChannelSubscriptions = () => {
       switch (response.module) {
         case GMCP_ROOM_INFO: {
           const roomInfo = JSON.parse(response.data);
+
+          // Preserve order of exits across all rooms
+          const exitsOrderMap = {
+            north: 1,
+            south: 2,
+            west: 3,
+            east: 4,
+            up: 5,
+            down: 6
+          };
+          roomInfo.exits.sort((a, b) => {
+            return exitsOrderMap[a.direction] - exitsOrderMap[b.direction];
+          });
+
           // upon new room, archive current event stream and clear ui
           if (getState().roomInfo.id !== roomInfo.id) {
             dispatch({
