@@ -179,7 +179,7 @@ defmodule Game.Account do
     |> migrate_items()
     |> migrate_skills()
     |> migrate_actions()
-    |> migrate_proficiencies()
+    |> unlock_class_proficiencies()
   end
 
   @doc """
@@ -256,8 +256,10 @@ defmodule Game.Account do
 
   @doc """
   Give players any proficiencies they are missing from their class
+
+  Add in missing proficiencies based on character level
   """
-  def migrate_proficiencies(player) do
+  def unlock_class_proficiencies(player) do
     class_proficiencies =
       ClassProficiency
       |> where([cp], cp.class_id == ^player.class_id)

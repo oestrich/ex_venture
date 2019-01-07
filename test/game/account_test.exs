@@ -151,7 +151,7 @@ defmodule Game.AccountTest do
       create_class_proficiency(character.class, proficiency1, %{level: 1, ranks: 2})
       create_class_proficiency(character.class, proficiency2, %{level: 2, ranks: 3})
 
-      character = Account.migrate_proficiencies(character)
+      character = Account.unlock_class_proficiencies(character)
 
       assert [%{ranks: 2}] = character.save.proficiencies
     end
@@ -164,7 +164,7 @@ defmodule Game.AccountTest do
       save = %{character.save | proficiencies: [%Proficiency.Instance{proficiency_id: proficiency.id, ranks: 1}]}
       character = %{character | save: save}
 
-      character = Account.migrate_proficiencies(character)
+      character = Account.unlock_class_proficiencies(character)
 
       assert [%{ranks: 1}] = character.save.proficiencies
     end

@@ -595,13 +595,13 @@ defmodule Game.SessionTest do
     end
 
     test "npc - a died message is sent and experience is applied", %{state: state} do
-      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 1200}}
+      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 200}}
       state = %{state | target: {:npc, 10}}
 
       {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
 
       assert is_nil(state.target)
-      assert state.save.level == 2
+      assert state.save.experience_points == 200
     end
   end
 end
