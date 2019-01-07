@@ -310,9 +310,16 @@ defmodule TestHelpers do
     |> Repo.insert!()
   end
 
-  def create_class_proficiency(class, proficiency) do
+  def create_class_proficiency(class, proficiency, attributes \\ %{}) do
+    attributes = Map.merge(%{
+      class_id: class.id,
+      proficiency_id: proficiency.id,
+      level: 1,
+      ranks: 1
+    }, attributes)
+
     %ClassProficiency{}
-    |> ClassProficiency.changeset(%{class_id: class.id, proficiency_id: proficiency.id})
+    |> ClassProficiency.changeset(attributes)
     |> Repo.insert!()
   end
 

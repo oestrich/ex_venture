@@ -177,7 +177,7 @@ defmodule Game.Command.Move do
   @doc """
   Maybe move a player
 
-  They require at least 1 movement point to proceed
+  Checks for door state and if cooldowns are active
   """
   def maybe_move_to(state, room_id, room_exit, direction)
 

@@ -12,6 +12,7 @@ defmodule Data.Proficiency do
     Struct for an proficiency in a character's save
     """
 
+    @derive {Jason.Encoder, only: [:proficiency_id, :ranks]}
     defstruct [:proficiency_id, :proficiency, :ranks]
   end
 
@@ -28,6 +29,8 @@ defmodule Data.Proficiency do
     embedded_schema do
       field(:id, :integer)
       field(:ranks, :integer)
+
+      field(:name, :string, virtual: true)
     end
 
     def changeset(struct, params) do

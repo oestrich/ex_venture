@@ -5,7 +5,9 @@ defmodule Game.Account do
 
   alias Data.ActionBar
   alias Data.Character
+  alias Data.ClassProficiency
   alias Data.ClassSkill
+  alias Data.Proficiency
   alias Data.RaceSkill
   alias Data.Repo
   alias Data.Save
@@ -177,6 +179,7 @@ defmodule Game.Account do
     |> migrate_items()
     |> migrate_skills()
     |> migrate_actions()
+    |> migrate_proficiencies()
   end
 
   @doc """
@@ -249,6 +252,30 @@ defmodule Game.Account do
       false ->
         player
     end
+  end
+
+  @doc """
+  Give players any proficiencies they are missing from their class
+  """
+  def migrate_proficiencies(player) do
+    class_proficiencies =
+      ClassProficiency
+      |> where([cp], cp.class_id == ^player.class_id)
+      |> where([cp], cp.level <= ^player.save.level)
+      |> select([cp], %Proficiency.Instance{proficiency_id: cp.proficiency_id, ranks: cp.ranks})
+      |> Repo.all()
+
+    existing_proficiency_ids = Enum.map(player.save.proficiencies, &(&1.proficiency_id))
+
+    proficiencies =
+      class_proficiencies
+      |> Enum.reject(fn instance ->
+        instance.proficiency_id in existing_proficiency_ids
+      end)
+
+    save = Map.put(player.save, :proficiencies, proficiencies ++ player.save.proficiencies)
+
+    %{player | save: save}
   end
 
   @doc """

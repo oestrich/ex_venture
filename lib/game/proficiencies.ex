@@ -24,6 +24,16 @@ defmodule Game.Proficiencies do
     get(proficiency.id)
   end
 
+  def get(requirement = %Proficiency.Requirement{}) do
+    case get(requirement.id) do
+      {:ok, proficiency} ->
+        {:ok, Map.put(requirement, :name, proficiency.name)}
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
+  end
+
   def get(id) when is_integer(id) do
     case Cachex.get(@key, id) do
       {:ok, proficiency} when proficiency != nil ->
