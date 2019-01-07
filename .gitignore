@@ -61,3 +61,4 @@ src/vml_*.erl
 
 .vagrant
 deploy/hosts_*
+deploy/group_vars/*
