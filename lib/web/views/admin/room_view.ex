@@ -123,6 +123,11 @@ defmodule Web.Admin.RoomView do
   end
 
   def exit_proficiencies(room_exit) do
-    Proficiencies.proficiencies(room_exit.proficiencies)
+    room_exit.proficiencies
+    |> Proficiencies.proficiencies()
+    |> Enum.map(fn requirement ->
+      "#{requirement.name} #{requirement.ranks}"
+    end)
+    |> Enum.join(", ")
   end
 end

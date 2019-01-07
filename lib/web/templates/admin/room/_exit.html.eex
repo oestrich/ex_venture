@@ -8,12 +8,7 @@
     <% end %>
 
     <%= unless Enum.empty?(room_exit.proficiencies) do %>
-      <p>Requires:</p>
-      <ul>
-        <%= Enum.map(exit_proficiencies(room_exit), fn requirement -> %>
-          <li><%= requirement.name %> <%= requirement.ranks %></li>
-        <% end) %>
-      </ul>
+      <i class="fa fa-bullseye" data-toggle="tooltip" title="Requires: <%= exit_proficiencies(room_exit) %>"></i>
     <% end %>
 
   <% %{id: id, finish_zone: zone, finish_overworld_id: overworld_id} when overworld_id != nil -> %>
