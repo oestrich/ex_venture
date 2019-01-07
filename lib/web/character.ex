@@ -13,6 +13,7 @@ defmodule Web.Character do
   alias Game.Config
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
+  alias Metrics.PlayerInstrumenter
   alias Web.Race
   alias Web.User
 
@@ -66,6 +67,8 @@ defmodule Web.Character do
   def create(user, params) do
     save = starting_save(params)
     params = Map.put(params, "save", save)
+
+    PlayerInstrumenter.new_character()
 
     user
     |> Ecto.build_assoc(:characters)
