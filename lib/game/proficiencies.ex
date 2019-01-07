@@ -24,6 +24,16 @@ defmodule Game.Proficiencies do
     get(proficiency.id)
   end
 
+  def get(instace = %Proficiency.Instance{}) do
+    case get(instace.id) do
+      {:ok, proficiency} ->
+        {:ok, Map.put(instace, :name, proficiency.name)}
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
+  end
+
   def get(requirement = %Proficiency.Requirement{}) do
     case get(requirement.id) do
       {:ok, proficiency} ->

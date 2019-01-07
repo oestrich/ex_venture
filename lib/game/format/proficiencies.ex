@@ -9,7 +9,7 @@ defmodule Game.Format.Proficiencies do
     rows =
       proficiencies
       |> Enum.map(fn instance ->
-        [instance.proficiency.name, instance.ranks]
+        [instance.name, instance.ranks]
       end)
 
     rows = [["Name", "Ranks"] | rows]

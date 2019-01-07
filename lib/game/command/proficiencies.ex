@@ -48,14 +48,7 @@ defmodule Game.Command.Proficiencies do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    proficiencies =
-      save.proficiencies
-      |> Enum.map(fn instance ->
-        with {:ok, proficiency} <- Proficiencies.get(instance.proficiency_id) do
-          %{instance | proficiency: proficiency}
-        end
-      end)
-
+    proficiencies = Proficiencies.proficiencies(save.proficiencies)
     state.socket |> @socket.echo(ProficienciesFormat.proficiencies(proficiencies))
   end
 end

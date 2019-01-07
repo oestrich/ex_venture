@@ -264,15 +264,15 @@ defmodule Game.Account do
       ClassProficiency
       |> where([cp], cp.class_id == ^player.class_id)
       |> where([cp], cp.level <= ^player.save.level)
-      |> select([cp], %Proficiency.Instance{proficiency_id: cp.proficiency_id, ranks: cp.ranks})
+      |> select([cp], %Proficiency.Instance{id: cp.proficiency_id, ranks: cp.ranks})
       |> Repo.all()
 
-    existing_proficiency_ids = Enum.map(player.save.proficiencies, &(&1.proficiency_id))
+    existing_proficiency_ids = Enum.map(player.save.proficiencies, &(&1.id))
 
     proficiencies =
       class_proficiencies
       |> Enum.reject(fn instance ->
-        instance.proficiency_id in existing_proficiency_ids
+        instance.id in existing_proficiency_ids
       end)
 
     save = Map.put(player.save, :proficiencies, proficiencies ++ player.save.proficiencies)

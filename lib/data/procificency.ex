@@ -12,8 +12,8 @@ defmodule Data.Proficiency do
     Struct for an proficiency in a character's save
     """
 
-    @derive {Jason.Encoder, only: [:proficiency_id, :ranks]}
-    defstruct [:proficiency_id, :proficiency, :ranks]
+    @derive {Jason.Encoder, only: [:id, :ranks]}
+    defstruct [:id, :name, :ranks]
   end
 
   defmodule Requirement do
