@@ -57,7 +57,7 @@ export const initPhxChannelSubscriptions = () => {
         case GMCP_ZONE_MAP: {
           return dispatch({
             type: UPDATE_ZONE_MAP,
-            payload: response.data
+            payload: JSON.parse(response.data).map
           });
         }
         case GMCP_CHARACTER_INFO: {
