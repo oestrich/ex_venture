@@ -1,7 +1,9 @@
 defmodule Game.Command.RunTest do
   use Data.ModelCase
+
   doctest Game.Command.Run
 
+  alias Data.Exit
   alias Game.Command
 
   @socket Test.Networking.Socket
@@ -12,7 +14,7 @@ defmodule Game.Command.RunTest do
       id: 1,
       name: "",
       description: "",
-      exits: [%{direction: "north", start_id: 1, finish_id: 2}],
+      exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}],
       players: [],
       shops: [],
       zone: %{id: 10, name: "Zone"}

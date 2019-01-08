@@ -3,7 +3,16 @@ defmodule Game.Format.Proficiencies do
   Formatting for proficiencies
   """
 
+  import Game.Format.Context
+
+  alias Game.Format
   alias Game.Format.Table
+
+  def name(proficiency) do
+    context()
+    |> assign(:name, proficiency.name)
+    |> Format.template("{white}[name]{/white}")
+  end
 
   def proficiencies(proficiencies) do
     rows =

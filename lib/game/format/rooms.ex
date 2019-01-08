@@ -10,6 +10,7 @@ defmodule Game.Format.Rooms do
   alias Game.Door
   alias Game.Format
   alias Game.Format.NPCs, as: FormatNPCs
+  alias Game.Format.Proficiencies, as: FormatProficiencies
 
   @doc """
   Display a room's name
@@ -103,15 +104,33 @@ defmodule Game.Format.Rooms do
 
   Example:
 
-    iex> Rooms.peak_room(%{name: "Hallway"}, "north")
+    iex> Rooms.peak_room(%{direction: "north", proficiencies: []}, %{name: "Hallway"})
     "{room}Hallway{/room} is north."
   """
-  @spec peak_room(Room.t(), String.t()) :: String.t()
-  def peak_room(room, direction) do
+  def peak_room(room_exit, room) do
     context()
     |> assign(:name, room_name(room))
-    |> assign(:direction, direction)
-    |> Format.template("[name] is [direction].")
+    |> assign(:direction, room_exit.direction)
+    |> assign(:requirements, exit_requirements(room_exit))
+    |> Format.template("[name] is [direction].[requirements]")
+  end
+
+  defp exit_requirements(%{proficiencies: []}), do: nil
+
+  defp exit_requirements(room_exit) do
+    requirements =
+      room_exit.proficiencies
+      |> Enum.map(fn requirement ->
+        context()
+        |> assign(:name, FormatProficiencies.name(requirement))
+        |> assign(:rank, requirement.ranks)
+        |> Format.template("  - [name] [rank]")
+      end)
+      |> Enum.join("\n")
+
+    context()
+    |> assign(:requirements, requirements)
+    |> Format.template("\n\nRequirements:\n[requirements]")
   end
 
   @doc """
@@ -146,21 +165,38 @@ defmodule Game.Format.Rooms do
     |> Room.exits()
     |> Enum.sort()
     |> Enum.map(fn direction ->
-      case Exit.exit_to(room, direction) do
-        %{door_id: door_id, has_door: true} ->
-          context()
-          |> assign(:direction, direction)
-          |> assign(:door_state, Door.get(door_id))
-          |> Format.template("{exit}[direction]{/exit} ([door_state])")
+      room_exit = Exit.exit_to(room, direction)
 
-        _ ->
-          "{exit}#{direction}{/exit}"
-          context()
-          |> assign(:direction, direction)
-          |> Format.template("{exit}[direction]{/exit}")
-      end
+      context()
+      |> assign(:direction, direction)
+      |> assign(:door_state, door_state(room_exit))
+      |> assign(:requirements, exit_requirements_hint(room_exit))
+      |> Format.template("{exit}[direction]{/exit}[requirements][ door_state]")
     end)
     |> Enum.join(", ")
+  end
+
+  defp door_state(room_exit) do
+    case room_exit.has_door do
+      true ->
+        context()
+        |> assign(:door_state, Door.get(room_exit.door_id))
+        |> Format.template("([door_state])")
+
+      false ->
+        nil
+    end
+  end
+
+  defp exit_requirements_hint(room_exit) do
+    case Enum.empty?(room_exit.proficiencies) do
+      true ->
+        nil
+
+      false ->
+        context()
+        |> Format.template("{white}*{/white}")
+    end
   end
 
   @doc """

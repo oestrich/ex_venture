@@ -18,6 +18,16 @@ defmodule Game.Proficiencies do
   end
 
   @doc """
+  Load proficiencies for an exit
+
+  Preloads the name
+  """
+  def load_requirements(room_exit) do
+    requirements = proficiencies(room_exit.proficiencies)
+    %{room_exit | proficiencies: requirements}
+  end
+
+  @doc """
   Get an proficiency
   """
   def get(proficiency = %Proficiency{}) do

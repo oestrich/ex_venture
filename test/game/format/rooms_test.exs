@@ -1,6 +1,7 @@
 defmodule Game.Format.RoomsTest do
   use ExUnit.Case
 
+  alias Data.Exit
   alias Game.Format.Rooms
 
   doctest Game.Format.Rooms
@@ -15,7 +16,7 @@ defmodule Game.Format.RoomsTest do
         currency: 100,
         players: [%{name: "Player"}],
         npcs: [%{name: "Bandit", extra: %{status_line: "[name] is here."}}],
-        exits: [%{direction: "north"}, %{direction: "east"}],
+        exits: [%Exit{has_door: false, direction: "north"}, %Exit{has_door: false, direction: "east"}],
         shops: [%{name: "Hole in the Wall"}],
         features: [%{key: "log", short_description: "A log"}],
       }
