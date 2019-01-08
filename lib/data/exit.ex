@@ -35,7 +35,7 @@ defmodule Data.Exit do
     field(:start_overworld_id, :string)
     field(:finish_overworld_id, :string)
 
-    embeds_many(:proficiencies, Proficiency.Requirement)
+    embeds_many(:requirements, Proficiency.Requirement)
 
     belongs_to(:start_room, Room)
     belongs_to(:start_zone, Zone)
@@ -64,7 +64,7 @@ defmodule Data.Exit do
       :finish_overworld_id
     ])
     |> cast(params, [:start_zone_id, :finish_zone_id])
-    |> cast_embed(:proficiencies, with: &Proficiency.Requirement.changeset/2)
+    |> cast_embed(:requirements, with: &Proficiency.Requirement.changeset/2)
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
     |> validate_one_of([:start_room_id, :start_overworld_id])
@@ -98,17 +98,17 @@ defmodule Data.Exit do
   end
 
   def validate_proficiencies(changeset) do
-    case get_change(changeset, :proficiencies) do
+    case get_change(changeset, :requirements) do
       nil ->
         changeset
 
-      proficiencies ->
-        case Enum.all?(proficiencies, &(&1.valid?)) do
+      requirements ->
+        case Enum.all?(requirements, &(&1.valid?)) do
           true ->
             changeset
 
           false ->
-            add_error(changeset, :proficiencies, "are invalid")
+            add_error(changeset, :requirements, "are invalid")
         end
     end
   end

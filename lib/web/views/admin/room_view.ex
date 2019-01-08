@@ -122,8 +122,8 @@ defmodule Web.Admin.RoomView do
     ["\n", content_tag(:span, "You hear:", class: "white"), "\n", text]
   end
 
-  def exit_proficiencies(room_exit) do
-    room_exit.proficiencies
+  def exit_requirements(room_exit) do
+    room_exit.requirements
     |> Proficiencies.proficiencies()
     |> Enum.map(fn requirement ->
       "#{requirement.name} #{requirement.ranks}"

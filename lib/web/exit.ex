@@ -43,27 +43,27 @@ defmodule Web.Exit do
 
   defp cast_params(params) do
     params
-    |> parse_proficiencies()
+    |> parse_requirements()
   end
 
-  defp parse_proficiencies(params = %{"proficiencies" => proficiencies}) do
-    case Poison.decode(proficiencies) do
-      {:ok, proficiencies} ->
-        Map.put(params, "proficiencies", proficiencies)
+  defp parse_requirements(params = %{"requirements" => requirements}) do
+    case Poison.decode(requirements) do
+      {:ok, requirements} ->
+        Map.put(params, "requirements", requirements)
 
       _ ->
         params
     end
   end
 
-  defp parse_proficiencies(params), do: params
+  defp parse_requirements(params), do: params
 
   defp reverse_params(params) do
     reverse_params = %{
       direction: to_string(Exit.opposite(params["direction"])),
       has_door: Map.get(params, "has_door", false),
       door_id: Map.get(params, "door_id", nil),
-      proficiencies: Map.get(params, "proficiencies", [])
+      requirements: Map.get(params, "requirements", [])
     }
 
     reverse_params

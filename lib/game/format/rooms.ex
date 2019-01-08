@@ -104,7 +104,7 @@ defmodule Game.Format.Rooms do
 
   Example:
 
-    iex> Rooms.peak_room(%{direction: "north", proficiencies: []}, %{name: "Hallway"})
+    iex> Rooms.peak_room(%{direction: "north", requirements: []}, %{name: "Hallway"})
     "{room}Hallway{/room} is north."
   """
   def peak_room(room_exit, room) do
@@ -115,11 +115,11 @@ defmodule Game.Format.Rooms do
     |> Format.template("[name] is [direction].[requirements]")
   end
 
-  defp exit_requirements(%{proficiencies: []}), do: nil
+  defp exit_requirements(%{requirements: []}), do: nil
 
   defp exit_requirements(room_exit) do
     requirements =
-      room_exit.proficiencies
+      room_exit.requirements
       |> Enum.map(fn requirement ->
         context()
         |> assign(:name, FormatProficiencies.name(requirement))
@@ -189,7 +189,7 @@ defmodule Game.Format.Rooms do
   end
 
   defp exit_requirements_hint(room_exit) do
-    case Enum.empty?(room_exit.proficiencies) do
+    case Enum.empty?(room_exit.requirements) do
       true ->
         nil
 

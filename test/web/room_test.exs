@@ -123,14 +123,14 @@ defmodule Web.RoomTest do
         "start_room_id" => room1.id,
         "finish_room_id" => room2.id,
         "direction" => "south",
-        "proficiencies" => Jason.encode!([
+        "requirements" => Jason.encode!([
           %{"id" => 1, "ranks" => 5}
         ])
       })
 
-      assert Enum.count(room_exit.proficiencies) == 1
+      assert Enum.count(room_exit.requirements) == 1
 
-      [requirement] = room_exit.proficiencies
+      [requirement] = room_exit.requirements
       assert requirement.id == 1
       assert requirement.ranks == 5
     end

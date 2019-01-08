@@ -23,8 +23,8 @@ defmodule Game.Proficiencies do
   Preloads the name
   """
   def load_requirements(room_exit) do
-    requirements = proficiencies(room_exit.proficiencies)
-    %{room_exit | proficiencies: requirements}
+    requirements = proficiencies(room_exit.requirements)
+    %{room_exit | requirements: requirements}
   end
 
   @doc """

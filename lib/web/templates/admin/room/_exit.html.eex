@@ -7,8 +7,8 @@
       <i class="fa fa-times"></i>
     <% end %>
 
-    <%= unless Enum.empty?(room_exit.proficiencies) do %>
-      <i class="fa fa-bullseye" data-toggle="tooltip" title="Requires: <%= exit_proficiencies(room_exit) %>"></i>
+    <%= unless Enum.empty?(room_exit.requirements) do %>
+      <i class="fa fa-bullseye" data-toggle="tooltip" title="Requires: <%= exit_requirements(room_exit) %>"></i>
     <% end %>
 
   <% %{id: id, finish_zone: zone, finish_overworld_id: overworld_id} when overworld_id != nil -> %>

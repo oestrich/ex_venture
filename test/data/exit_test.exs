@@ -60,16 +60,16 @@ defmodule Data.ExitTest do
     end
   end
 
-  describe "simple validation of proficiencies" do
+  describe "simple validation of requirements" do
     test "id and rank" do
-      changeset = Exit.changeset(%Exit{}, %{proficiencies: []})
-      refute changeset.errors[:proficiencies]
+      changeset = Exit.changeset(%Exit{}, %{requirements: []})
+      refute changeset.errors[:requirements]
 
-      changeset = Exit.changeset(%Exit{}, %{proficiencies: [%{id: 1, ranks: 5}]})
-      refute changeset.errors[:proficiencies]
+      changeset = Exit.changeset(%Exit{}, %{requirements: [%{id: 1, ranks: 5}]})
+      refute changeset.errors[:requirements]
 
-      changeset = Exit.changeset(%Exit{}, %{proficiencies: [%{id: 1}]})
-      assert changeset.errors[:proficiencies]
+      changeset = Exit.changeset(%Exit{}, %{requirements: [%{id: 1}]})
+      assert changeset.errors[:requirements]
     end
   end
 end
