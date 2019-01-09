@@ -143,7 +143,7 @@ defmodule Game.Command do
   def parse("", _context), do: {:skip, {}}
 
   def parse(command, context) do
-    start_parsing_at = Timex.now()
+    start_parsing_at = System.monotonic_time()
 
     command =
       command
@@ -166,8 +166,8 @@ defmodule Game.Command do
   end
 
   defp record_parse_time(command = %Command{}, start_parsing_at) do
-    end_parsing_at = Timex.now()
-    %{command | parsed_in: Timex.diff(end_parsing_at, start_parsing_at, :microseconds)}
+    end_parsing_at = System.monotonic_time()
+    %{command | parsed_in: end_parsing_at - start_parsing_at}
   end
 
   defp record_parse_time(command, _start_parsing_at), do: command
@@ -207,7 +207,7 @@ defmodule Game.Command do
   end
 
   def run(command = %__MODULE__{module: module, args: args}, state = %{socket: socket}) do
-    started_run_at = Timex.now()
+    started_run_at = System.monotonic_time()
 
     case module.must_be_alive? do
       true ->
@@ -231,8 +231,8 @@ defmodule Game.Command do
 
   # Log the command and pass thru the value the command returned
   defp log_command(pass_thru, command = %Command{}, started_run_at) do
-    ran_in = Timex.diff(Timex.now(), started_run_at, :microseconds)
-    command = %{command | ran_in: ran_in}
+    ended_run_at = System.monotonic_time()
+    command = %{command | ran_in: ended_run_at - started_run_at}
     CommandInstrumenter.command_run(self(), command)
     pass_thru
   end

@@ -11,17 +11,17 @@ defmodule Metrics.CommandInstrumenter do
     Counter.declare(name: :exventure_command_total, help: "Command Count", labels: [:command])
 
     Histogram.declare(
-      name: :exventure_command_parsed_in_microseconds,
+      name: :exventure_command_parsed_in_seconds,
       help: "Parse time for a command",
-      buckets: [100, 200, 300, 400, 500, 600, 700, 800, 1_000],
-      duration_unit: false
+      buckets: [0.0001, 0.0002, 0.0003, 0.0004, 0.0005, 0.0006, 0.0007, 0.0008, 0.001],
+      duration_unit: :seconds
     )
 
     Histogram.declare(
-      name: :exventure_command_ran_in_microseconds,
+      name: :exventure_command_ran_in_seconds,
       help: "Run time for a command",
-      buckets: [100, 1_000, 3_000, 4_000, 6_000, 8_000, 10_000, 20_000, 50_000, 100_000, 500_000],
-      duration_unit: false
+      buckets: :default,
+      duration_unit: :seconds
     )
 
     Counter.declare(name: :exventure_command_bad_parse_total, help: "Bad command parse counts")
@@ -47,8 +47,8 @@ defmodule Metrics.CommandInstrumenter do
 
   defp record_timing(%{parsed_in: parsed_in, ran_in: ran_in})
        when parsed_in != nil and ran_in != nil do
-    Histogram.observe([name: :exventure_command_parsed_in_microseconds], parsed_in)
-    Histogram.observe([name: :exventure_command_ran_in_microseconds], ran_in)
+    Histogram.observe([name: :exventure_command_parsed_in_seconds], parsed_in)
+    Histogram.observe([name: :exventure_command_ran_in_seconds], ran_in)
   end
 
   defp record_timing(_), do: nil
