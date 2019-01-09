@@ -205,19 +205,23 @@ a:hover {
   color: <%= Config.color_white() %>;
 }
 
-.color-code-brown {
+.color-code-brown,
+.brown {
   color: <%= Config.color_brown() %>;
 }
 
-.color-code-dark-green {
+.color-code-dark-green,
+.dark-green {
   color: <%= Config.color_dark_green() %>;
 }
 
-.color-code-grey {
+.color-code-grey,
+.grey {
   color: <%= Config.color_grey() %>;
 }
 
-.color-code-light-grey {
+.color-code-light-grey,
+.light-grey {
   color: <%= Config.color_light_grey() %>;
 }
 
