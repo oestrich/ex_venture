@@ -8,16 +8,51 @@ defmodule Game.MapTest do
   setup do
     start_and_clear_doors()
 
-    north = %{id: 1, x: 2, y: 1, map_layer: 1, exits: [%{id: 10, has_door: true, direction: "south", start_id: 1, finish_id: 5}]}
-    east = %{id: 2, x: 3, y: 2, map_layer: 1, exits: [%{id: 11, has_door: true, direction: "west", start_id: 2, finish_id: 5}]}
-    south = %{id: 3, x: 2, y: 3, map_layer: 1, exits: [%{direction: "north", start_id: 3, finish_id: 5}]}
-    west = %{id: 4, x: 1, y: 2, map_layer: 1, exits: [%{direction: "east", start_id: 4, finish_id: 5}]}
-    center = %{id: 5, x: 2, y: 2, map_layer: 1, exits: [
-      %{id: 10, door_id: 10, has_door: true, direction: "north", start_id: 5, finish_id: 1},
-      %{id: 11, door_id: 11, has_door: true, direction: "east", start_id: 5, finish_id: 2},
-      %{direction: "south", start_id: 5, finish_id: 3},
-      %{direction: "west", start_id: 5, finish_id: 4},
-    ]}
+    north = %{
+      id: 1,
+      x: 2,
+      y: 1,
+      map_layer: 1,
+      exits: [%{id: 10, has_door: true, direction: "south", start_id: 1, finish_id: 5}]
+    }
+
+    east = %{
+      id: 2,
+      x: 3,
+      y: 2,
+      map_layer: 1,
+      exits: [%{id: 11, has_door: true, direction: "west", start_id: 2, finish_id: 5}]
+    }
+
+    south = %{
+      id: 3,
+      x: 2,
+      y: 3,
+      map_layer: 1,
+      exits: [%{direction: "north", start_id: 3, finish_id: 5}]
+    }
+
+    west = %{
+      id: 4,
+      x: 1,
+      y: 2,
+      map_layer: 1,
+      exits: [%{direction: "east", start_id: 4, finish_id: 5}]
+    }
+
+    center = %{
+      id: 5,
+      x: 2,
+      y: 2,
+      map_layer: 1,
+      exits: [
+        %{id: 10, door_id: 10, has_door: true, direction: "north", start_id: 5, finish_id: 1},
+        %{id: 11, door_id: 11, has_door: true, direction: "east", start_id: 5, finish_id: 2},
+        %{direction: "south", start_id: 5, finish_id: 3},
+        %{direction: "west", start_id: 5, finish_id: 4}
+      ]
+    }
+
     up = %{id: 6, x: 2, y: 2, map_layer: 2, exits: []}
 
     Door.load(10)
@@ -40,26 +75,26 @@ defmodule Game.MapTest do
       map =
         zone
         |> Map.map()
-        |> Enum.map(fn (row) -> Enum.map(row, fn ({_, room}) -> room end) end)
+        |> Enum.map(fn row -> Enum.map(row, fn {_, room} -> room end) end)
 
       assert [
-        [nil, nil, nil, nil, nil],
-        [nil, nil, %{x: 2, y: 1}, nil, nil],
-        [nil, %{x: 1, y: 2}, %{x: 2, y: 2}, %{x: 3, y: 2}, nil],
-        [nil, nil, %{x: 2, y: 3}, nil, nil],
-        [nil, nil, nil, nil, nil],
-      ] = map
+               [nil, nil, nil, nil, nil],
+               [nil, nil, %{x: 2, y: 1}, nil, nil],
+               [nil, %{x: 1, y: 2}, %{x: 2, y: 2}, %{x: 3, y: 2}, nil],
+               [nil, nil, %{x: 2, y: 3}, nil, nil],
+               [nil, nil, nil, nil, nil]
+             ] = map
     end
 
     test "fetching another layer of the map", %{zone: zone} do
       map =
         zone
         |> Map.map(layer: 2, buffer: false)
-        |> Enum.map(fn (row) -> Enum.map(row, fn ({_, room}) -> room end) end)
+        |> Enum.map(fn row -> Enum.map(row, fn {_, room} -> room end) end)
 
       assert [
-        [%{x: 2, y: 2}],
-      ] = map
+               [%{x: 2, y: 2}]
+             ] = map
     end
   end
 
@@ -76,8 +111,9 @@ defmodule Game.MapTest do
         "     \\[ \\] - \\[X\\] - \\[ \\]  ",
         "            |         ",
         "           \\[ \\]        ",
-        "                      ",
+        "                      "
       ]
+
       assert Map.display_map(zone, {2, 2, 1}) == Enum.join(map, "\n")
     end
 
@@ -85,8 +121,9 @@ defmodule Game.MapTest do
       map = [
         "          ",
         "     \\[X\\]  ",
-        "          ",
+        "          "
       ]
+
       assert Map.display_map(zone, {2, 2, 2}) == Enum.join(map, "\n")
     end
 
@@ -98,52 +135,53 @@ defmodule Game.MapTest do
         "     \\[ \\] - \\[X\\] - \\[ \\]  ",
         "            |         ",
         "           \\[ \\]        ",
-        "                      ",
+        "                      "
       ]
-      assert Map.display_map(zone, {2, 2, 1}, [mini: true]) == Enum.join(map, "\n")
+
+      assert Map.display_map(zone, {2, 2, 1}, mini: true) == Enum.join(map, "\n")
     end
   end
 
   describe "map colors" do
     test "blue rooms" do
       ["ocean", "river", "lake"]
-      |> Enum.each(fn (ecology) ->
-        assert Map.room_color(%{ecology: ecology}) == "map:blue"
+      |> Enum.each(fn ecology ->
+        assert Map.room_color(%{ecology: ecology}) == "blue"
       end)
     end
 
     test "brown rooms" do
       ["mountain", "road"]
-      |> Enum.each(fn (ecology) ->
-        assert Map.room_color(%{ecology: ecology}) == "map:brown"
+      |> Enum.each(fn ecology ->
+        assert Map.room_color(%{ecology: ecology}) == "brown"
       end)
     end
 
     test "green rooms" do
       ["hill", "field"]
-      |> Enum.each(fn (ecology) ->
-        assert Map.room_color(%{ecology: ecology}) == "map:green"
+      |> Enum.each(fn ecology ->
+        assert Map.room_color(%{ecology: ecology}) == "green"
       end)
     end
 
     test "dark green rooms" do
       ["forest", "jungle"]
-      |> Enum.each(fn (ecology) ->
-        assert Map.room_color(%{ecology: ecology}) == "map:dark-green"
+      |> Enum.each(fn ecology ->
+        assert Map.room_color(%{ecology: ecology}) == "dark-green"
       end)
     end
 
     test "grey rooms" do
       ["town", "dungeon"]
-      |> Enum.each(fn (ecology) ->
-        assert Map.room_color(%{ecology: ecology}) == "map:grey"
+      |> Enum.each(fn ecology ->
+        assert Map.room_color(%{ecology: ecology}) == "grey"
       end)
     end
 
     test "light grey rooms" do
       ["inside"]
-      |> Enum.each(fn (ecology) ->
-        assert Map.room_color(%{ecology: ecology}) == "map:light-grey"
+      |> Enum.each(fn ecology ->
+        assert Map.room_color(%{ecology: ecology}) == "light-grey"
       end)
     end
   end
