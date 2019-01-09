@@ -27,13 +27,12 @@ Built in tags:
 `magenta`
 `cyan`
 `white`
-`map:default`
-`map:blue`
-`map:brown`
-`map:dark-green`
-`map:green`
-`map:grey`
-`map:light-grey`
+`blue`
+`brown`
+`dark-green`
+`green`
+`grey`
+`light-grey`
 
 Example:
 
