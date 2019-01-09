@@ -205,32 +205,20 @@ a:hover {
   color: <%= Config.color_white() %>;
 }
 
-.map-default {
-  color: <%= Config.color_map_default() %>;
+.color-code-brown {
+  color: <%= Config.color_brown() %>;
 }
 
-.map-blue {
-  color: <%= Config.color_map_blue() %>;
+.color-code-dark-green {
+  color: <%= Config.color_dark_green() %>;
 }
 
-.map-brown {
-  color: <%= Config.color_map_brown() %>;
+.color-code-grey {
+  color: <%= Config.color_grey() %>;
 }
 
-.map-dark-green {
-  color: <%= Config.color_map_dark_green() %>;
-}
-
-.map-green {
-  color: <%= Config.color_map_green() %>;
-}
-
-.map-grey {
-  color: <%= Config.color_map_grey() %>;
-}
-
-.map-light-grey {
-  color: <%= Config.color_map_light_grey() %>;
+.color-code-light-grey {
+  color: <%= Config.color_light_grey() %>;
 }
 
 /**
