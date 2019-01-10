@@ -55,7 +55,7 @@ defmodule ExVenture.Mixfile do
       {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:distillery, "~> 2.0", runtime: false},
-      {:earmark, "~> 1.2.3"},
+      {:earmark, "~> 1.3.1"},
       {:ecto, "~> 3.0"},
       {:ecto_sql, "~> 3.0"},
       {:elixir_uuid, "~> 1.2"},
