@@ -45,7 +45,6 @@ export const initPhxChannelSubscriptions = () => {
             in: 11,
             out: 12
           };
-          console.log('***roomInfo.exits', roomInfo.exits);
           roomInfo.exits.sort((a, b) => {
             return exitsOrderMap[a.direction] - exitsOrderMap[b.direction];
           });
