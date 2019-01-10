@@ -26,16 +26,16 @@
       </div>
     </div>
 
-    <div class="col-md-4">
+    <%# <div class="col-md-4">
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Map Colors</h3>
         </div>
         <div class="box-body">
-          <pre class="console"><%= render("_map_colors.html") %></pre>
-        </div>
+          <pre class="console"><%= render("_map_colors.html")</pre> %>
+        <%# </div>
       </div>
-    </div>
+    </div> %>
 
     <div class="col-md-4">
       <div class="box">
@@ -103,17 +103,13 @@
 
             <%= color_field(:white, "White") %>
 
-            <%= color_field(:map_blue, "Map Blue") %>
+            <%= color_field(:brown, "Brown") %>
 
-            <%= color_field(:map_brown, "Map Brown") %>
+            <%= color_field(:dark_green, "Dark Green") %>
 
-            <%= color_field(:map_dark_green, "Map Dark Green") %>
+            <%= color_field(:grey, "Grey") %>
 
-            <%= color_field(:map_green, "Map Green") %>
-
-            <%= color_field(:map_grey, "Map Grey") %>
-
-            <%= color_field(:map_light_grey, "Map Light Grey") %>
+            <%= color_field(:light_grey, "Light Grey") %>
 
             <h4>Client Colors</h4>
             <span class="help-block">These change the "chrome" of the web client</span>

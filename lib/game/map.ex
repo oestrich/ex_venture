@@ -280,20 +280,20 @@ defmodule Game.Map do
   Determine the color of the room in the map
 
       iex> Game.Map.room_color(%{ecology: "default"})
-      "map:default"
+      "white"
   """
   @spec room_color(room :: Room.t()) :: String.t()
   def room_color(room)
 
   def room_color(%{ecology: ecology}) do
     case ecology do
-      ecology when ecology in ["ocean", "lake", "river"] -> "map:blue"
-      ecology when ecology in ["mountain", "road"] -> "map:brown"
-      ecology when ecology in ["hill", "field", "meadow"] -> "map:green"
-      ecology when ecology in ["forest", "jungle"] -> "map:dark-green"
-      ecology when ecology in ["town", "dungeon"] -> "map:grey"
-      ecology when ecology in ["inside"] -> "map:light-grey"
-      _ -> "map:default"
+      ecology when ecology in ["ocean", "lake", "river"] -> "blue"
+      ecology when ecology in ["mountain", "road"] -> "brown"
+      ecology when ecology in ["hill", "field", "meadow"] -> "green"
+      ecology when ecology in ["forest", "jungle"] -> "dark-green"
+      ecology when ecology in ["town", "dungeon"] -> "grey"
+      ecology when ecology in ["inside"] -> "light-grey"
+      _ -> "white"
     end
   end
 
