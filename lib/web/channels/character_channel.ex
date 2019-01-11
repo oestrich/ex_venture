@@ -7,8 +7,6 @@ defmodule Web.CharacterChannel do
 
   require Logger
 
-  alias Metrics.AdminInstrumenter
-
   def join("character:" <> id, _message, socket) do
     %{user: user} = socket.assigns
     {id, _} = Integer.parse(id)
@@ -18,7 +16,7 @@ defmodule Web.CharacterChannel do
       |> assign(:character_id, id)
 
     Logger.info("Admin (#{user.id}) is watching character (#{id})")
-    AdminInstrumenter.watching_player()
+    :telemetry.execute([:exventure, :admin, :user, :watch], 1)
 
     {:ok, socket}
   end

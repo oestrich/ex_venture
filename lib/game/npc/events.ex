@@ -14,7 +14,6 @@ defmodule Game.NPC.Events do
   alias Game.NPC.Actions
   alias Game.NPC.Events
   alias Game.Quest
-  alias Metrics.NPCInstrumenter
 
   @doc """
   Parse the events for an NPC and update the struct
@@ -217,7 +216,7 @@ defmodule Game.NPC.Events do
   end
 
   def broadcast(%{id: id}, event, message) do
-    NPCInstrumenter.event_acted_on(event)
+    :telemetry.execute([:exventure, :npc, :event, :acted], 1, %{event: event})
     Web.Endpoint.broadcast("npc:#{id}", event, message)
   end
 
