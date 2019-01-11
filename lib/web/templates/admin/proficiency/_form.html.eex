@@ -8,6 +8,10 @@
 
     <div class="box-body">
       <%= FormView.text_field(f, :name) %>
+
+      <%= FormView.textarea_field(f, :description, rows: 5) do %>
+        <span class="help-block">Used in help files.</span>
+      <% end %>
     </div>
 
     <div class="box-footer">

@@ -5,6 +5,7 @@ defmodule Data.Repo.Migrations.CreateAbilities do
     create table(:proficiencies) do
       add(:name, :string, null: false)
       add(:type, :string, null: false)
+      add(:description, :string)
 
       timestamps()
     end

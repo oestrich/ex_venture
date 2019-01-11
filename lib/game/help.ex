@@ -7,7 +7,9 @@ defmodule Game.Help do
 
   alias Game.Command
   alias Game.Format
+  alias Game.Format.Proficiencies, as: FormatProficiencies
   alias Game.Help.Agent, as: HelpAgent
+  alias Game.Proficiencies
   alias Game.Skills
 
   @doc """
@@ -179,7 +181,7 @@ defmodule Game.Help do
   def find_skill_topic(topic) do
     case Skills.skill(String.downcase(topic)) do
       nil ->
-        "Unknown topic"
+        find_proficiency_topic(topic)
 
       skill ->
         format_skill_topic(skill)
@@ -194,5 +196,20 @@ defmodule Game.Help do
     #{skill.description}
     """
     |> String.trim()
+  end
+
+  def find_proficiency_topic(topic) do
+    proficiency =
+      Enum.find(Proficiencies.all(), fn proficiency ->
+        String.downcase(proficiency.name) == String.downcase(topic)
+      end)
+
+    case proficiency do
+      nil ->
+        "Unknown topic"
+
+      proficiency ->
+        FormatProficiencies.help(proficiency)
+    end
   end
 end

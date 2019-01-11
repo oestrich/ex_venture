@@ -25,4 +25,11 @@ defmodule Game.Format.Proficiencies do
 
     Table.format("Proficiencies", rows, [20, 5])
   end
+
+  def help(proficiency) do
+    context()
+    |> assign(:name, name(proficiency))
+    |> assign(:description, proficiency.description)
+    |> Format.template("[name] - Proficiency\n\n[description]")
+  end
 end

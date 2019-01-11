@@ -41,15 +41,16 @@ defmodule Data.Proficiency do
   end
 
   schema "proficiencies" do
-    field(:name, :string)
     field(:type, :string)
+    field(:name, :string)
+    field(:description, :string)
 
     timestamps()
   end
 
   def changeset(struct, params) do
     struct
-    |> cast(params, [:name, :type])
+    |> cast(params, [:name, :type, :description])
     |> validate_required([:name, :type])
     |> validate_inclusion(:type, @types)
   end

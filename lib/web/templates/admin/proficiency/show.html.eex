@@ -25,6 +25,7 @@
           </span>
         </div>
         <div class="box-body">
+          <%= text_to_html(@proficiency.description || "") %>
         </div>
       </div>
     </div>
