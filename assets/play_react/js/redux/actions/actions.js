@@ -36,8 +36,14 @@ export const initPhxChannelSubscriptions = () => {
             south: 2,
             west: 3,
             east: 4,
-            up: 5,
-            down: 6
+            'north east': 5,
+            'south west': 6,
+            'north west': 7,
+            'south east': 8,
+            up: 9,
+            down: 10,
+            in: 11,
+            out: 12
           };
           roomInfo.exits.sort((a, b) => {
             return exitsOrderMap[a.direction] - exitsOrderMap[b.direction];
