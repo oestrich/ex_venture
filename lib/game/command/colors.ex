@@ -134,7 +134,7 @@ defmodule Game.Command.Colors do
   defp map_colors() do
     Color.map_colors()
     |> Enum.map(fn color ->
-      "{map:#{color}}#{color}{/map:#{color}}"
+      "{#{color}}#{color}{/#{color}}"
     end)
     |> Enum.join("\n")
   end

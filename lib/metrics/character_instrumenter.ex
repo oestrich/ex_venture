@@ -13,41 +13,36 @@ defmodule Metrics.CharacterInstrumenter do
     )
 
     Histogram.declare(
-      name: :exventure_character_moved_in_microseconds,
+      name: :exventure_character_moved_in_seconds,
       help: "Parse time for a command",
       buckets: [
-        10,
-        35,
-        80,
-        100,
-        135,
-        170,
-        200,
-        250,
-        300,
-        400,
-        1_000,
-        5_000,
-        10_000,
-        25_000,
-        100_000
+        0.000001,
+        0.000035,
+        0.00008,
+        0.0001,
+        0.000135,
+        0.00017,
+        0.0002,
+        0.00025,
+        0.0003,
+        0.0004,
+        0.001,
+        0.005,
+        0.01,
+        0.025,
+        0.1
       ],
-      duration_unit: :microseconds
+      duration_unit: :seconds
     )
   end
 
   def movement(type, fun) do
-    start_time = Timex.now()
-
+    start_time = System.monotonic_time()
     movement = fun.()
-
-    moved_in =
-      Timex.now()
-      |> Timex.diff(start_time, :microseconds)
-      |> :erlang.convert_time_unit(:microsecond, :native)
+    moved_in = System.monotonic_time() - start_time
 
     Counter.inc(name: :exventure_character_movement_total, labels: [type])
-    Histogram.observe([name: :exventure_character_moved_in_microseconds], moved_in)
+    Histogram.observe([name: :exventure_character_moved_in_seconds], moved_in)
 
     movement
   end

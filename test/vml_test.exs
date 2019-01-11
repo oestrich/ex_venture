@@ -24,7 +24,10 @@ defmodule VMLTest do
     test "tag in a tag" do
       {:ok, tokens} = VML.parse("{say}hi there {npc}Guard{/npc}{/say}")
 
-      assert tokens == [{:tag, [name: "say"], [{:string, "hi there "}, {:tag, [name: "npc"], [string: "Guard"]}]}]
+      assert tokens == [
+               {:tag, [name: "say"],
+                [{:string, "hi there "}, {:tag, [name: "npc"], [string: "Guard"]}]}
+             ]
     end
 
     test "a template variable" do
@@ -54,41 +57,67 @@ defmodule VMLTest do
     end
 
     test "map colors" do
-      {:ok, tokens} = VML.parse("{map:blue}\\[ \\]{/map:blue}")
+      {:ok, tokens} = VML.parse("{blue}\\[ \\]{/blue}")
 
-      assert tokens == [{:tag, [name: "map:blue"], [{:string, "\\[ \\]"}]}]
+      assert tokens == [{:tag, [name: "blue"], [{:string, "\\[ \\]"}]}]
     end
 
     test "tag a attribute" do
       {:ok, tokens} = VML.parse("{command send='help say'}Say{/command}")
 
-      assert tokens == [{:tag, [name: "command", attributes: [{"send", [{:string, "help say"}]}]], [{:string, "Say"}]}]
+      assert tokens == [
+               {:tag, [name: "command", attributes: [{"send", [{:string, "help say"}]}]],
+                [{:string, "Say"}]}
+             ]
     end
 
     test "tag a attribute with a variable" do
       {:ok, tokens} = VML.parse("{command send='help [command]'}Say{/command}")
 
-      assert tokens == [{:tag, [name: "command", attributes: [{"send", [{:string, "help "}, {:variable, "command"}]}]], [{:string, "Say"}]}]
+      assert tokens == [
+               {:tag,
+                [
+                  name: "command",
+                  attributes: [{"send", [{:string, "help "}, {:variable, "command"}]}]
+                ], [{:string, "Say"}]}
+             ]
     end
 
     test "tag attributes" do
       {:ok, tokens} = VML.parse("{command send='help say' click='false'}Say{/command}")
 
-      assert tokens == [{:tag, [name: "command", attributes: [{"send", [{:string, "help say"}]}, {"click", [{:string, "false"}]}]], [{:string, "Say"}]}]
+      assert tokens == [
+               {:tag,
+                [
+                  name: "command",
+                  attributes: [{"send", [{:string, "help say"}]}, {"click", [{:string, "false"}]}]
+                ], [{:string, "Say"}]}
+             ]
     end
 
     test "links" do
-      {:ok, tokens} = VML.parse("{link}http://localhost:4000/connection/authorize?id=1eeb44f7-e015-4089-bacc-1a5dc6ec582d{/link}")
+      {:ok, tokens} =
+        VML.parse(
+          "{link}http://localhost:4000/connection/authorize?id=1eeb44f7-e015-4089-bacc-1a5dc6ec582d{/link}"
+        )
 
       assert tokens == [
-        {:tag, [name: "link"], [string: "http://localhost:4000/connection/authorize?id=1eeb44f7-e015-4089-bacc-1a5dc6ec582d"]}
-      ]
+               {:tag, [name: "link"],
+                [
+                  string:
+                    "http://localhost:4000/connection/authorize?id=1eeb44f7-e015-4089-bacc-1a5dc6ec582d"
+                ]}
+             ]
     end
 
     test "skipping MXP" do
       {:ok, tokens} = VML.parse("<send>{command}Say{/command}</send>")
 
-      assert tokens == [{:string, "<send>"}, {:tag, [name: "command"], [{:string, "Say"}]}, {:string, "</send>"}]
+      assert tokens == [
+               {:string, "<send>"},
+               {:tag, [name: "command"], [{:string, "Say"}]},
+               {:string, "</send>"}
+             ]
     end
   end
 
@@ -114,17 +143,38 @@ defmodule VMLTest do
     end
 
     test "tag attribute" do
-      string = VML.collapse([{:tag, [name: "command", attributes: [{"send", [{:string, "help say"}]}]], [{:string, "Say"}]}])
+      string =
+        VML.collapse([
+          {:tag, [name: "command", attributes: [{"send", [{:string, "help say"}]}]],
+           [{:string, "Say"}]}
+        ])
+
       assert string == "{command send='help say'}Say{/command}"
     end
 
     test "tag attribute with a variable" do
-      string = VML.collapse([{:tag, [name: "command", attributes: [{"send", [{:string, "help "}, {:variable, "command"}]}]], [{:string, "Say"}]}])
+      string =
+        VML.collapse([
+          {:tag,
+           [
+             name: "command",
+             attributes: [{"send", [{:string, "help "}, {:variable, "command"}]}]
+           ], [{:string, "Say"}]}
+        ])
+
       assert string == "{command send='help [command]'}Say{/command}"
     end
 
     test "tag attributes" do
-      string = VML.collapse([{:tag, [name: "command", attributes: [{"send", [{:string, "help say"}]}, {"click", [{:string, "false"}]}]], [{:string, "Say"}]}])
+      string =
+        VML.collapse([
+          {:tag,
+           [
+             name: "command",
+             attributes: [{"send", [{:string, "help say"}]}, {"click", [{:string, "false"}]}]
+           ], [{:string, "Say"}]}
+        ])
+
       assert string == "{command send='help say' click='false'}Say{/command}"
     end
   end

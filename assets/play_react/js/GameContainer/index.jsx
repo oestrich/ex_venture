@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import LeftPane from './LeftPane/index.jsx';
 import MiddlePane from './MiddlePane/index.jsx';
 import RightPane from './RightPane/index.jsx';
+import MediaQuery from 'react-responsive';
 import { theme } from '../theme.js';
 
 const FlexRow = styled.div`
@@ -37,17 +38,29 @@ const RightPaneContainer = styled.div`
 const GameContainer = props => {
   return (
     <FlexRow>
-      <LeftPaneContainer>
-        <LeftPane />
-      </LeftPaneContainer>
+      <MediaQuery minWidth={768}>
+        {matches => {
+          return matches ? (
+            <LeftPaneContainer>
+              <LeftPane />
+            </LeftPaneContainer>
+          ) : null;
+        }}
+      </MediaQuery>
 
       <MiddlePaneContainer>
         <MiddlePane />
       </MiddlePaneContainer>
 
-      <RightPaneContainer>
-        <RightPane />
-      </RightPaneContainer>
+      <MediaQuery minWidth={768}>
+        {matches => {
+          return matches ? (
+            <RightPaneContainer>
+              <RightPane />
+            </RightPaneContainer>
+          ) : null;
+        }}
+      </MediaQuery>
     </FlexRow>
   );
 };

@@ -40,12 +40,12 @@ defmodule Game.Command.Map do
        /  - Path way
 
     Map colors show what the room's ecology might be:
-    {map:blue}[ ]{/map:blue} - Ocean, lake, or river
-    {map:brown}[ ]{/map:brown} - Mount, or road
-    {map:dark-green}[ ]{/map:dark-green} - Hill, field, or meadow
-    {map:green}[ ]{/map:green} - Forest, or jungle
-    {map:grey}[ ]{/map:grey} - Town, or dungeon
-    {map:light-grey}[ ]{/map:light-grey} - Inside
+    {blue}[ ]{/blue} - Ocean, lake, or river
+    {brown}[ ]{/brown} - Mount, or road
+    {dark-green}[ ]{/dark-green} - Hill, field, or meadow
+    {green}[ ]{/green} - Forest, or jungle
+    {grey}[ ]{/grey} - Town, or dungeon
+    {light-grey}[ ]{/light-grey} - Inside
     """
   end
 

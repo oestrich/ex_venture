@@ -25,6 +25,7 @@ const Exit = styled.span`
   color: ${theme.vml.exit};
   text-decoration: underline;
   cursor: pointer;
+  padding-left: 0.5ch;
 `;
 
 const ColoredSpan = styled.span`
@@ -39,7 +40,6 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
       <br />
       <br />
       <VmlToJsx vmlString={description} />
-      <br />
       <br />
       <div>
         {players.map(player => (
@@ -68,7 +68,7 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
       </div>
       <br />
       <Centered>
-        {exits.length > 0 ? 'You can leave: ' : null}
+        {exits.length > 0 ? 'You can leave ' : null}
         {exits.map((exit, idx, exitsArr) => (
           <Exit
             onClick={() => {
@@ -76,6 +76,7 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
             }}
             key={exit.room_id}
           >
+            {' '}
             {exit.direction}
             {idx === exitsArr.length - 1 ? (
               <ColoredSpan color={theme.text}>. </ColoredSpan>
