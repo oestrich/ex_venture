@@ -109,6 +109,7 @@ defmodule Game.Command do
     Command.Map,
     Command.Mistake,
     Command.PickUp,
+    Command.Proficiencies,
     Command.Quest,
     Command.Quit,
     Command.Recall,

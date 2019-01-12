@@ -30,6 +30,7 @@ defmodule Data.Save.Validations do
       :items,
       :level,
       :level_stats,
+      :proficiencies,
       :room_id,
       :skill_ids,
       :spent_experience_points,

@@ -17,6 +17,7 @@ defmodule Game.Command.Look do
   alias Game.Hint
   alias Game.Item
   alias Game.Items
+  alias Game.Proficiencies
   alias Game.Quest
   alias Game.Session.GMCP
   alias Game.Utility
@@ -99,9 +100,10 @@ defmodule Game.Command.Look do
   def run({:direction, direction}, state = %{save: save}) do
     with :room <- Environment.room_type(save.room_id),
          {:ok, room} <- @environment.look(save.room_id),
-         %{finish_id: room_id} <- Exit.exit_to(room, direction),
-         {:ok, room} <- @environment.look(room_id) do
-      state.socket |> @socket.echo(FormatRooms.peak_room(room, direction))
+         room_exit <- Exit.exit_to(room, direction),
+         {:ok, room} <- @environment.look(room_exit.finish_id) do
+      room_exit = Proficiencies.load_requirements(room_exit)
+      state.socket |> @socket.echo(FormatRooms.peak_room(room_exit, room))
     else
       :overworld ->
         :ok

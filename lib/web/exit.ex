@@ -14,7 +14,11 @@ defmodule Web.Exit do
   """
   @spec create_exit(params :: map) :: {:ok, Exit.t()} | {:error, changeset :: map}
   def create_exit(params) do
-    params = maybe_add_door_id(params)
+    params =
+      params
+      |> maybe_add_door_id()
+      |> cast_params()
+
     changeset = %Exit{} |> Exit.changeset(params)
     reverse_changeset = %Exit{} |> Exit.changeset(reverse_params(params))
 
@@ -37,11 +41,29 @@ defmodule Web.Exit do
     end
   end
 
+  defp cast_params(params) do
+    params
+    |> parse_requirements()
+  end
+
+  defp parse_requirements(params = %{"requirements" => requirements}) do
+    case Poison.decode(requirements) do
+      {:ok, requirements} ->
+        Map.put(params, "requirements", requirements)
+
+      _ ->
+        params
+    end
+  end
+
+  defp parse_requirements(params), do: params
+
   defp reverse_params(params) do
     reverse_params = %{
       direction: to_string(Exit.opposite(params["direction"])),
       has_door: Map.get(params, "has_door", false),
-      door_id: Map.get(params, "door_id", nil)
+      door_id: Map.get(params, "door_id", nil),
+      requirements: Map.get(params, "requirements", [])
     }
 
     reverse_params

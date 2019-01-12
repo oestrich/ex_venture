@@ -88,6 +88,12 @@
                 <span>Classes</span>
               <% end %>
             </li>
+            <li class="<%= tab_selected(@conn, "proficiencies") %>">
+              <%= link(to: proficiency_path(@conn, :index)) do %>
+                <i class="fa fa-bullseye"></i>
+                <span>Proficiencies</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "races") %>">
               <%= link(to: race_path(@conn, :index)) do %>
                 <i class="fa fa-eye"></i>

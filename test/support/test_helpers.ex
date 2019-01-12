@@ -1,9 +1,11 @@
 defmodule TestHelpers do
+  alias Data.Proficiency
   alias Data.Announcement
   alias Data.Bug
   alias Data.Channel
   alias Data.Character
   alias Data.Class
+  alias Data.ClassProficiency
   alias Data.ClassSkill
   alias Data.Config
   alias Data.Exit
@@ -82,6 +84,7 @@ defmodule TestHelpers do
       experience_points: 0,
       spent_experience_points: 0,
       currency: 0,
+      proficiencies: [],
       items: [],
       skill_ids: [],
       stats: base_stats(),
@@ -291,7 +294,33 @@ defmodule TestHelpers do
   def create_skill(attributes \\ %{}) do
     %Skill{}
     |> Skill.changeset(skill_attributes(attributes))
-    |> Repo.insert!
+    |> Repo.insert!()
+  end
+
+  def proficiency_attributes(attributes) do
+    Map.merge(%{
+      name: "Swimming",
+      type: "normal"
+    }, attributes)
+  end
+
+  def create_proficiency(attributes \\ %{}) do
+    %Proficiency{}
+    |> Proficiency.changeset(proficiency_attributes(attributes))
+    |> Repo.insert!()
+  end
+
+  def create_class_proficiency(class, proficiency, attributes \\ %{}) do
+    attributes = Map.merge(%{
+      class_id: class.id,
+      proficiency_id: proficiency.id,
+      level: 1,
+      ranks: 1
+    }, attributes)
+
+    %ClassProficiency{}
+    |> ClassProficiency.changeset(attributes)
+    |> Repo.insert!()
   end
 
   def create_class_skill(class, skill) do
@@ -303,7 +332,7 @@ defmodule TestHelpers do
   def create_race_skill(race, skill) do
     %RaceSkill{}
     |> RaceSkill.changeset(%{race_id: race.id, skill_id: skill.id})
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 
   def npc_attributes(attributes) do

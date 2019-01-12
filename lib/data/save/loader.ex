@@ -5,6 +5,7 @@ defmodule Data.Save.Loader do
 
   alias Data.ActionBar
   alias Data.Item
+  alias Data.Proficiency
   alias Data.Save
   alias Data.Save.Migrations
 
@@ -22,6 +23,7 @@ defmodule Data.Save.Loader do
       |> Migrations.migrate()
       |> Migrations.migrate_config()
       |> hydrate_items()
+      |> hydrate_proficiencies()
       |> hydrate_actions()
 
     {:ok, struct(Save, save)}
@@ -125,4 +127,19 @@ defmodule Data.Save.Loader do
   end
 
   def hydrate_actions(save), do: save
+
+  def hydrate_proficiencies(save = %{proficiencies: proficiencies}) when proficiencies != nil do
+    proficiencies =
+      proficiencies
+      |> Enum.map(fn proficiency ->
+        for {key, val} <- proficiency, into: %{}, do: {String.to_atom(key), val}
+      end)
+      |> Enum.map(fn proficiency ->
+        struct(Proficiency.Instance, proficiency)
+      end)
+
+    %{save | proficiencies: proficiencies}
+  end
+
+  def hydrate_proficiencies(save), do: save
 end

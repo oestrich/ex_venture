@@ -1,10 +1,14 @@
 <%= case @room |> Exit.exit_to(@direction) do %>
-  <% %{id: id, finish_room_id: room_id} when room_id != nil -> %>
+  <% room_exit = %{finish_room_id: room_id} when room_id != nil -> %>
     <%= link(to: room_path(@conn, :show, room_id)) do %>
       <%= display_exit(@room, @direction) %>
     <% end %>
-    <%= link(to: exit_path(@conn, :delete, id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
+    <%= link(to: exit_path(@conn, :delete, room_exit.id, room_id: @room.id), method: :delete, data: [confirm: "Are you sure?"]) do %>
       <i class="fa fa-times"></i>
+    <% end %>
+
+    <%= unless Enum.empty?(room_exit.requirements) do %>
+      <i class="fa fa-bullseye" data-toggle="tooltip" title="Requires: <%= exit_requirements(room_exit) %>"></i>
     <% end %>
 
   <% %{id: id, finish_zone: zone, finish_overworld_id: overworld_id} when overworld_id != nil -> %>

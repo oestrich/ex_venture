@@ -5,6 +5,7 @@ defmodule Game.Session.Character do
 
   use Networking.Socket
 
+  alias Game.Account
   alias Game.Character
   alias Game.Experience
   alias Game.Format
@@ -344,7 +345,10 @@ defmodule Game.Session.Character do
           state.socket |> @socket.echo("You leveled up!")
 
           # May add to the action bar
-          state = state |> Experience.notify_new_skills()
+          state =
+            state
+            |> Experience.notify_new_skills()
+            |> unlock_class_proficiencies()
 
           state |> GMCP.vitals()
           state |> GMCP.character_skills()
@@ -355,6 +359,11 @@ defmodule Game.Session.Character do
 
     state |> GMCP.character()
     state
+  end
+
+  defp unlock_class_proficiencies(state) do
+    character = Account.unlock_class_proficiencies(state.character)
+    Player.update_save(state, character.save)
   end
 
   @doc """

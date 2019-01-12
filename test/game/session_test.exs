@@ -2,6 +2,7 @@ defmodule Game.SessionTest do
   use GenServerCase
   use Data.ModelCase
 
+  alias Data.Exit
   alias Data.Mail
   alias Game.Command
   alias Game.Message
@@ -151,7 +152,7 @@ defmodule Game.SessionTest do
   test "processing a command that has continued commands", %{state: state} do
     user = create_user(%{name: "user", password: "password"})
 
-    @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
+    @room.set_room(%{@basic_room | exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}]})
 
     state = %{state | user: user,
       save: %{level: 1, room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}},
@@ -171,7 +172,7 @@ defmodule Game.SessionTest do
     character = create_character(user)
     character = Repo.preload(character, [:race, class: [:skills]])
 
-    @room.set_room(%{@basic_room | exits: [%{direction: "north", start_id: 1, finish_id: 2}]})
+    @room.set_room(%{@basic_room | exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}]})
 
     state = %{state | character: character,
       save: %{level: 1, room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}},
@@ -595,13 +596,13 @@ defmodule Game.SessionTest do
     end
 
     test "npc - a died message is sent and experience is applied", %{state: state} do
-      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 1200}}
+      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 200}}
       state = %{state | target: {:npc, 10}}
 
       {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
 
       assert is_nil(state.target)
-      assert state.save.level == 2
+      assert state.save.experience_points == 200
     end
   end
 end

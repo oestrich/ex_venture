@@ -9,8 +9,9 @@ defmodule Game.Format.Context do
   Context struct for formatting strings
 
   - `assigns`: map of key/values to template
+  - `many_assigns`: render lists with a function, key/{value, fun}
   """
-  defstruct assigns: %{}
+  defstruct assigns: %{}, many_assigns: %{}
 
   @doc """
   Start with a base conntext
@@ -29,6 +30,15 @@ defmodule Game.Format.Context do
       |> Map.put(key, value)
 
     %{context | assigns: assigns}
+  end
+
+  def assign_many(context, key, value, render_fun) do
+    many_assigns =
+      context
+      |> Map.get(:many_assigns, %{})
+      |> Map.put(key, {value, render_fun})
+
+    %{context | many_assigns: many_assigns}
   end
 
   @doc """

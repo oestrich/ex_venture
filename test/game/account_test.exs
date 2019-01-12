@@ -3,6 +3,7 @@ defmodule Game.AccountTest do
 
   alias Data.Character
   alias Data.Item
+  alias Data.Proficiency
   alias Data.User
   alias Game.Account
 
@@ -130,6 +131,42 @@ defmodule Game.AccountTest do
       character = Account.migrate_skills(character)
 
       assert character.save.skill_ids == [skill.id]
+    end
+  end
+
+  describe "migrating known proficiencies" do
+    setup do
+      user = create_user()
+      character = create_character(user)
+
+      start_and_clear_proficiencies()
+
+      %{user: user, character: character}
+    end
+
+    test "adds class proficiencies that are the characters level and below", %{character: character} do
+      proficiency1 = create_proficiency() |> insert_proficiency()
+      proficiency2 = create_proficiency() |> insert_proficiency()
+
+      create_class_proficiency(character.class, proficiency1, %{level: 1, ranks: 2})
+      create_class_proficiency(character.class, proficiency2, %{level: 2, ranks: 3})
+
+      character = Account.unlock_class_proficiencies(character)
+
+      assert [%{ranks: 2}] = character.save.proficiencies
+    end
+
+    test "does not overwrite existing proficiencies", %{character: character} do
+      proficiency = create_proficiency() |> insert_proficiency()
+
+      create_class_proficiency(character.class, proficiency, %{level: 1, ranks: 2})
+
+      save = %{character.save | proficiencies: [%Proficiency.Instance{id: proficiency.id, ranks: 1}]}
+      character = %{character | save: save}
+
+      character = Account.unlock_class_proficiencies(character)
+
+      assert [%{ranks: 1}] = character.save.proficiencies
     end
   end
 end

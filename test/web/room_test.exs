@@ -87,31 +87,53 @@ defmodule Web.RoomTest do
     assert state.room.room_items |> length() == 0
   end
 
-  test "create an exit", %{zone: zone} do
-    {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
-    {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
+  describe "exits" do
+    test "create an exit", %{zone: zone} do
+      {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
+      {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
 
-    {:ok, _room_exit} = Room.create_exit(%{"start_room_id" => room1.id, "finish_room_id" => room2.id, "direction" => "south"})
+      {:ok, _room_exit} = Room.create_exit(%{"start_room_id" => room1.id, "finish_room_id" => room2.id, "direction" => "south"})
 
-    state = Game.Room._get_state(room1.id)
-    assert state.room.exits |> length() == 1
+      state = Game.Room._get_state(room1.id)
+      assert state.room.exits |> length() == 1
 
-    state = Game.Room._get_state(room2.id)
-    assert state.room.exits |> length() == 1
-  end
+      state = Game.Room._get_state(room2.id)
+      assert state.room.exits |> length() == 1
+    end
 
-  test "delete a room exit", %{zone: zone} do
-    {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
-    {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
+    test "delete a room exit", %{zone: zone} do
+      {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
+      {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
 
-    {:ok, room_exit} = Room.create_exit(%{"start_room_id" => room1.id, "finish_room_id" => room2.id, "direction" => "south"})
-    {:ok, _room_exit} = Room.delete_exit(room_exit.id)
+      {:ok, room_exit} = Room.create_exit(%{"start_room_id" => room1.id, "finish_room_id" => room2.id, "direction" => "south"})
+      {:ok, _room_exit} = Room.delete_exit(room_exit.id)
 
-    state = Game.Room._get_state(room1.id)
-    assert state.room.exits |> length() == 0
+      state = Game.Room._get_state(room1.id)
+      assert state.room.exits |> length() == 0
 
-    state = Game.Room._get_state(room2.id)
-    assert state.room.exits |> length() == 0
+      state = Game.Room._get_state(room2.id)
+      assert state.room.exits |> length() == 0
+    end
+
+    test "create an exit with proficiency requirements", %{zone: zone} do
+      {:ok, room1} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
+      {:ok, room2} = Room.create(zone, room_attributes(%{name: "Forest Path", y: 2}))
+
+      {:ok, room_exit} = Room.create_exit(%{
+        "start_room_id" => room1.id,
+        "finish_room_id" => room2.id,
+        "direction" => "south",
+        "requirements" => Jason.encode!([
+          %{"id" => 1, "ranks" => 5}
+        ])
+      })
+
+      assert Enum.count(room_exit.requirements) == 1
+
+      [requirement] = room_exit.requirements
+      assert requirement.id == 1
+      assert requirement.ranks == 5
+    end
   end
 
   describe "room features" do

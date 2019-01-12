@@ -27,6 +27,13 @@ defmodule Data.Save.Migrations do
   @doc """
   Migrate the save structure forward
   """
+  def migrate_save(save = %{version: 13}) do
+    save
+    |> Map.put(:proficiencies, [])
+    |> Map.put(:version, 14)
+    |> migrate_save()
+  end
+
   def migrate_save(save = %{version: 12}) do
     # This particular save data should *already* exist, but I am adding the
     # version to delete the ensures from the `Save.Loader`.

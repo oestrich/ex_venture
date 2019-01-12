@@ -1,5 +1,6 @@
 defmodule Game.HelpTest do
   use Data.ModelCase
+
   doctest Game.Help
 
   alias Game.Help
@@ -25,6 +26,15 @@ defmodule Game.HelpTest do
     Agent.update(Help.Agent, fn (_) -> %{database: [topic]} end)
 
     assert Regex.match?(~r(world), Help.topic("world"))
+  end
+
+  test "loading help from proficiencies" do
+    start_and_clear_proficiencies()
+
+    create_proficiency(%{name: "Swimming", description: "Swim to places."})
+    |> insert_proficiency()
+
+    assert Regex.match?(~r(Swim), Help.topic("swimming"))
   end
 
   test "load built in help files" do

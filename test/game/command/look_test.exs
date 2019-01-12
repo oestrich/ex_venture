@@ -5,6 +5,7 @@ defmodule Game.Command.LookTest do
   @socket Test.Networking.Socket
   @room Test.Game.Room
 
+  alias Data.Exit
   alias Data.Item
   alias Game.Command.Look
   alias Game.Environment
@@ -107,7 +108,7 @@ defmodule Game.Command.LookTest do
     setup do
       room = %Environment.State.Overworld{
         id: "overworld:1:1,1",
-        exits: [%{direction: "west"}],
+        exits: [%Exit{has_door: false, direction: "west"}],
       }
       @room.set_room(room)
 

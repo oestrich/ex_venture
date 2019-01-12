@@ -7,7 +7,7 @@ $bootstrap-sass-asset-helper: "~bootstrap-sass/assets/fonts/bootstrap/";
 @import '~admin-lte/dist/css/AdminLTE';
 @import '~admin-lte/dist/css/skins/skin-black';
 
-
+@import "proficiencies";
 @import "npcs";
 @import "world_map";
 
@@ -19,7 +19,7 @@ $bootstrap-sass-asset-helper: "~bootstrap-sass/assets/fonts/bootstrap/";
 .map span.btn {
   cursor: default;
 }
- 
+
 .announcement pre,
 .console {
   margin: 0;

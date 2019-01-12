@@ -8,6 +8,7 @@ defmodule Web.Admin.RoomView do
   alias Game.Format
   alias Game.Format.Rooms, as: FormatRooms
   alias Game.Items
+  alias Game.Proficiencies
   alias Web.Color
   alias Web.Help
   alias Web.Admin.SharedView
@@ -119,5 +120,14 @@ defmodule Web.Admin.RoomView do
       |> raw()
 
     ["\n", content_tag(:span, "You hear:", class: "white"), "\n", text]
+  end
+
+  def exit_requirements(room_exit) do
+    room_exit.requirements
+    |> Proficiencies.proficiencies()
+    |> Enum.map(fn requirement ->
+      "#{requirement.name} #{requirement.ranks}"
+    end)
+    |> Enum.join(", ")
   end
 end

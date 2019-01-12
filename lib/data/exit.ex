@@ -5,6 +5,7 @@ defmodule Data.Exit do
 
   use Data.Schema
 
+  alias Data.Proficiency
   alias Data.Room
   alias Data.Zone
 
@@ -34,6 +35,8 @@ defmodule Data.Exit do
     field(:start_overworld_id, :string)
     field(:finish_overworld_id, :string)
 
+    embeds_many(:requirements, Proficiency.Requirement)
+
     belongs_to(:start_room, Room)
     belongs_to(:start_zone, Zone)
 
@@ -61,10 +64,12 @@ defmodule Data.Exit do
       :finish_overworld_id
     ])
     |> cast(params, [:start_zone_id, :finish_zone_id])
+    |> cast_embed(:requirements, with: &Proficiency.Requirement.changeset/2)
     |> validate_required([:direction, :has_door])
     |> validate_inclusion(:direction, @directions)
     |> validate_one_of([:start_room_id, :start_overworld_id])
     |> validate_one_of([:finish_room_id, :finish_overworld_id])
+    |> validate_proficiencies()
     |> foreign_key_constraint(:start_room_id)
     |> foreign_key_constraint(:finish_room_id)
     |> unique_constraint(:start_room_id, name: :exits_direction_start_room_id_index)
@@ -89,6 +94,22 @@ defmodule Data.Exit do
         Enum.reduce(keys, changeset, fn {key, _value}, changeset ->
           add_error(changeset, key, "cannot be combined with other values")
         end)
+    end
+  end
+
+  def validate_proficiencies(changeset) do
+    case get_change(changeset, :requirements) do
+      nil ->
+        changeset
+
+      requirements ->
+        case Enum.all?(requirements, &(&1.valid?)) do
+          true ->
+            changeset
+
+          false ->
+            add_error(changeset, :requirements, "are invalid")
+        end
     end
   end
 

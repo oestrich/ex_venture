@@ -44,6 +44,47 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header">
+          <h3 class="box-title">Proficiencies</h3>
+          <div class="box-tools">
+            <%= link("Add Proficiency", to: class_proficiency_path(@conn, :new, @class.id), class: "btn btn-primary") %>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Name</th>
+                <th>Ranks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= Enum.map @class.class_proficiencies, fn (class_proficiency) -> %>
+                <tr>
+                  <td><%= class_proficiency.level %></td>
+                  <td><%= link(class_proficiency.proficiency.name, to: proficiency_path(@conn, :show, class_proficiency.proficiency_id)) %></td>
+                  <td><%= class_proficiency.ranks %></td>
+                  <td>
+                    <%= link("View", to: proficiency_path(@conn, :show, class_proficiency.proficiency_id), class: "btn btn-default btn-xs") %>
+                    <%= link("Edit", to: proficiency_path(@conn, :edit, class_proficiency.proficiency_id), class: "btn btn-default btn-xs") %>
+                    <%= link(to: class_proficiency_path(@conn, :delete, class_proficiency.id), method: :delete, class: "btn btn-warning btn-xs") do %>
+                      <i class="fa fa-times"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box">
+        <div class="box-header">
           <h3 class="box-title">Skills</h3>
           <div class="box-tools">
             <%= link("Add Skill", to: class_skill_path(@conn, :new, @class.id), class: "btn btn-primary") %>

@@ -123,8 +123,11 @@ defmodule Game.Command.Hone do
       end)
 
     case stat do
-      nil -> {:error, :bad_stat}
-      stat -> {:ok, stat}
+      nil ->
+        {:error, :bad_stat}
+
+      stat ->
+        {:ok, stat}
     end
   end
 

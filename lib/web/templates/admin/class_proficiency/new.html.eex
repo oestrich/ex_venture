@@ -1,0 +1,24 @@
+<section class="content-header">
+  <h1>
+    New Class Proficiency
+  </h1>
+
+  <ol class="breadcrumb">
+    <li>
+      <%= link(to: dashboard_path(@conn, :index)) do %>
+        <i class="fa fa-dashboard"></i> Home
+      <% end %>
+    </li>
+    <li><%= link("Classes", to: class_path(@conn, :index)) %></li>
+    <li><%= link(@class.name, to: class_path(@conn, :show, @class.id)) %></li>
+    <li class="active">New Class Proficiency</li>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <%= render "_form.html", path: class_proficiency_path(@conn, :create, @class.id), proficiencies: @proficiencies, changeset: @changeset, title: "New", submit: "Create" %>
+    </div>
+  </div>
+</section>

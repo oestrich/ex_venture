@@ -44,6 +44,13 @@
             </div>
 
             <%= FormView.checkbox_field(f, :has_door, label: "Has Door?") %>
+
+            <div class="form-group">
+              <%= label f, :requirements, class: "col-md-4" %>
+              <div class="col-md-8">
+                <%= React.react_component("Components.ExitProficiencies", name: "exit[requirements]", proficiencies: proficiencies(@proficiencies)) %>
+              </div>
+            </div>
           </div>
 
           <div class="box-footer">

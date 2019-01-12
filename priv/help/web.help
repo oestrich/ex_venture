@@ -7,6 +7,12 @@ channel.is_gossip_connected:
 class.name:
   Try to limit to 10 characters, it will be cut off in the `who` list otherwise.
 
+class_proficiency.level:
+  This is the level that the proficiency will unlock at.
+
+class_proficiency.ranks:
+  When the proficiency unlocks, it will unlock with this many ranks.
+
 color_code.ansi_escape:
   This is the ANSI escape sequence when someone is connected via telnet, see [Wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)
 
@@ -105,6 +111,9 @@ room.items:
 
 room.zone_exit:
   A room that is a zone exit will always show up in the room selection box when creating exits, not just for the current zone.
+
+room_exit.proficiency_id:
+  Select a proficiency that is required to get through the exit. A rank is required if selected.
 
 room_feature.listen:
   What the user will hear when they listen in the room. If the key is in this text, it will be highlighted white.
