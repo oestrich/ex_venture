@@ -9,7 +9,10 @@ defmodule Game.Command.Move do
   alias Data.Exit
   alias Game.Command.AFK
   alias Game.Door
+  alias Game.Format.Proficiencies, as: FormatProficiencies
   alias Game.Player
+  alias Game.Proficiency
+  alias Game.Proficiencies
   alias Game.Quest
   alias Game.Session.GMCP
   alias Metrics.CharacterInstrumenter
@@ -181,26 +184,33 @@ defmodule Game.Command.Move do
   """
   def maybe_move_to(state, room_id, room_exit, direction)
 
-  def maybe_move_to(state = %{socket: socket}, room_id, room_exit = %{has_door: true}, direction) do
-    case Door.get(room_exit.door_id) do
-      "open" ->
-        maybe_move_to(state, room_id, %{}, direction)
-
-      "closed" ->
-        Door.set(room_exit.door_id, "open")
-        socket |> @socket.echo(gettext("You opened the door."))
-        maybe_move_to(state, room_id, room_exit, direction)
-    end
-  end
-
-  def maybe_move_to(state, room_id, _, direction) do
-    with {:ok, state} <- check_cooldowns(state) do
+  def maybe_move_to(state, room_id, room_exit, direction) do
+    with {:ok, state} <- maybe_open_door_before_move(state, room_exit),
+         {:ok, state} <- check_cooldowns(state),
+         {:ok, state} <- check_requirements(state, room_exit) do
       state |> move_to(room_id, {:leave, direction}, {:enter, Exit.opposite(direction)})
     else
       {:error, :cooldowns_active} ->
         state.socket |> @socket.echo(gettext("You cannot move while a skill is cooling down."))
+
+      {:error, :not_proficient, missing_requirements} ->
+        state.socket |> @socket.echo(FormatProficiencies.missing_requirements(direction, missing_requirements))
     end
   end
+
+  defp maybe_open_door_before_move(state, room_exit = %{has_door: true}) do
+    case Door.get(room_exit.door_id) do
+      "open" ->
+        {:ok, state}
+
+      "closed" ->
+        Door.set(room_exit.door_id, "open")
+        state.socket |> @socket.echo(gettext("You opened the door."))
+        {:ok, state}
+    end
+  end
+
+  defp maybe_open_door_before_move(state, _), do: {:ok, state}
 
   defp check_cooldowns(state) do
     case Enum.empty?(Map.keys(state.skills)) do
@@ -209,6 +219,18 @@ defmodule Game.Command.Move do
 
       false ->
         {:error, :cooldowns_active}
+    end
+  end
+
+  defp check_requirements(state, room_exit) do
+    room_exit = Proficiencies.load_requirements(room_exit)
+
+    case Proficiency.check_requirements_met(state.save, room_exit.requirements) do
+      :ok ->
+        {:ok, state}
+
+      {:missing, requirements} ->
+        {:error, :not_proficient, requirements}
     end
   end
 

@@ -45,6 +45,12 @@ defmodule Game.Format.TemplateTest do
     end
   end
 
+  describe "rendering a list of values" do
+    context = Context.assign_many(context(), :names, ["Player 1", "Player 2"], fn value -> String.upcase(value) end)
+
+    assert Template.render(context, "[names]") == "PLAYER 1\nPLAYER 2"
+  end
+
   test "nil variables are treated as empty" do
     string =
       context()

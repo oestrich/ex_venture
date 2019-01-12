@@ -41,7 +41,7 @@ defmodule Game.Format do
   @doc """
   Template a string
 
-      iex> Game.Format.template(%{assigns: %{name: "Player"}}, "[name] says hello")
+      iex> Game.Format.template(%Context{assigns: %{name: "Player"}}, "[name] says hello")
       "Player says hello"
   """
   def template(context, string) do

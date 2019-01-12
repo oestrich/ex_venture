@@ -5,6 +5,7 @@ defmodule Game.Command.MoveTest do
   @room Test.Game.Room
 
   alias Data.Exit
+  alias Data.Proficiency
   alias Game.Command
   alias Game.Command.Move
   alias Game.Door
@@ -22,6 +23,7 @@ defmodule Game.Command.MoveTest do
   setup do
     @socket.clear_messages
     start_and_clear_doors()
+    start_and_clear_proficiencies()
 
     user = base_user()
     character = base_character(user)
@@ -32,7 +34,17 @@ defmodule Game.Command.MoveTest do
 
   describe "moving in a direction" do
     setup do
-      %{room_exit: %Exit{id: 1, direction: "north", start_id: 1, finish_id: 2, has_door: false, door_id: nil}}
+      room_exit = %Exit{
+        id: 1,
+        direction: "north",
+        start_id: 1,
+        finish_id: 2,
+        has_door: false,
+        door_id: nil,
+        requirements: []
+      }
+
+      %{room_exit: room_exit}
     end
 
     test "north", %{state: state, room_exit: room_exit} do
@@ -51,11 +63,14 @@ defmodule Game.Command.MoveTest do
     test "north - door is closed", %{state: state, room_exit: room_exit} do
       room_exit = %{room_exit | has_door: true, door_id: "uuid"}
       @room.set_room(%{@basic_room | exits: [room_exit]})
+
       Door.load(room_exit)
       Door.set(room_exit, "closed")
 
+      state = Map.merge(state, %{save: %{state.save | room_id: 1}})
       command = %Command{module: Command.Move, args: {:move, "north"}}
-      {:update, state} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
+
+      {:update, state} = Command.run(command, state)
 
       assert state.save.room_id == 2
 
@@ -66,18 +81,42 @@ defmodule Game.Command.MoveTest do
     test "north - door is open", %{state: state, room_exit: room_exit} do
       room_exit = %{room_exit | has_door: true, door_id: "uuid"}
       @room.set_room(%{@basic_room | exits: [room_exit]})
+
       Door.load(room_exit)
       Door.set(room_exit, "open")
 
+      state = Map.merge(state, %{save: %{state.save | room_id: 1}})
       command = %Command{module: Command.Move, args: {:move, "north"}}
-      {:update, state} = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
+
+      {:update, state} = Command.run(command, state)
 
       assert state.save.room_id == 2
+    end
+
+    test "north - requires ranks in a proficiency", %{state: state, room_exit: room_exit} do
+      swimming = create_proficiency(%{name: "Swimming"})
+      insert_proficiency(swimming)
+
+      requirements = [
+        %Proficiency.Requirement{id: swimming.id, ranks: 10}
+      ]
+
+      room_exit = %{room_exit | requirements: requirements}
+      @room.set_room(%{@basic_room | exits: [room_exit]})
+
+      state = %{state | save: %{state.save | room_id: @basic_room.id}}
+      command = %Command{module: Command.Move, args: {:move, "north"}}
+
+      :ok = Command.run(command, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r(Swimming), echo)
     end
   end
 
   test "clears the target after moving", %{socket: socket, state: state} do
-    @room.set_room(%{@basic_room | exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}]})
+    room_exit = %Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2, requirements: []}
+    @room.set_room(%{@basic_room | exits: [room_exit]})
     Registry.register(state.character)
 
     state = Map.merge(state, %{save: %{room_id: 1}, target: {:player, 10}})

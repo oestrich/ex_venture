@@ -22,6 +22,7 @@ defmodule Game.Format.Template do
   def render(context, string) do
     context =
       context
+      |> render_many()
       |> Map.get(:assigns, %{})
       |> Enum.into(%{}, fn {key, val} -> {to_string(key), val} end)
 
@@ -31,6 +32,20 @@ defmodule Game.Format.Template do
       {:error, _module, _error} ->
         "{error}Could not parse text.{/error}"
     end
+  end
+
+  defp render_many(context) do
+    assigns =
+      Enum.reduce(context.many_assigns, context.assigns, fn {key, {values, fun}}, assigns ->
+        values =
+          values
+          |> Enum.map(fun)
+          |> Enum.join("\n")
+
+        Map.put(assigns, key, values)
+      end)
+
+    Map.put(context, :assigns, assigns)
   end
 
   defp replace_variables([], _context), do: []

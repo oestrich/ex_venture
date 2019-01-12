@@ -32,4 +32,30 @@ defmodule Game.Format.Proficiencies do
     |> assign(:description, proficiency.description)
     |> Format.template("[name] - Proficiency\n\n[description]")
   end
+
+  def missing_requirements(direction, requirements) do
+    context()
+    |> assign(:direction, direction)
+    |> assign_many(:requirements, requirements, &requirement_line/1)
+    |> Format.template(template("missing-requirements"))
+  end
+
+  def requirement_line(requirement) do
+    context()
+    |> assign(:name, name(requirement))
+    |> assign(:ranks, requirement.ranks)
+    |> Format.template(template("requirement-line"))
+  end
+
+  def template("requirement-line") do
+    " - [name], [ranks]"
+  end
+
+  def template("missing-requirements") do
+    """
+    You cannot move [direction]. You are missing:
+
+    [requirements]
+    """
+  end
 end
