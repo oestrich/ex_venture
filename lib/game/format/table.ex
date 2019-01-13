@@ -3,32 +3,28 @@ defmodule Game.Format.Table do
   Format a table
   """
 
+  import Game.Format.Context
+
   alias Game.Color
+  alias Game.Format
 
   @doc """
   Format an ASCII table
   """
-  @spec format(String.t(), [[String.t()]], [integer]) :: String.t()
   def format(legend, rows, column_sizes) do
     width = total_width(column_sizes)
 
-    rows =
-      rows
-      |> Enum.map(&row(&1, column_sizes))
-      |> Enum.join("\n")
-
-    """
-    #{horizontal_line(width)}
-    | #{pad_trailing(legend, width - 4)} |
-    #{horizontal_line(width)}
-    #{rows}
-    #{horizontal_line(width)}
-    """
-    |> String.trim()
+    context()
+    |> assign_many(:rows, rows, &row(&1, column_sizes))
+    |> assign(:line, horizontal_line(width))
+    |> assign(:legend, pad_trailing(legend, width - 4))
+    |> Format.template(template("table"))
   end
 
   def horizontal_line(width) do
-    "+#{pad_trailing("", width - 2, "-")}+"
+    context()
+    |> assign(:line, pad_trailing("", width - 2, "-"))
+    |> Format.template("+[line]+")
   end
 
   @doc """
@@ -39,12 +35,10 @@ defmodule Game.Format.Table do
       iex> Game.Format.Table.total_width([5, 10, 3])
       1+5+3+10+3+3+3
   """
-  @spec total_width([integer]) :: integer
   def total_width(column_sizes) do
     Enum.reduce(column_sizes, 0, fn column_size, size -> column_size + size + 1 + 2 end) + 1
   end
 
-  @spec row([String.t()], [integer]) :: String.t()
   def row(row, column_sizes) do
     row =
       row
@@ -72,7 +66,6 @@ defmodule Game.Format.Table do
       iex> Game.Format.Table.pad_trailing("", 5, "-")
       "-----"
   """
-  @spec pad_trailing(String.t(), integer, String.t()) :: String.t()
   def pad_trailing(string, width, pad_string \\ " ") do
     no_color_string = Color.strip_color(string)
     no_color_string_length = String.length(no_color_string)
@@ -80,7 +73,7 @@ defmodule Game.Format.Table do
     case width - no_color_string_length do
       str_length when str_length > 0 ->
         padder = String.pad_trailing("", width - no_color_string_length, pad_string)
-        "#{string}#{padder}"
+        string <> padder
 
       _ ->
         string
@@ -96,7 +89,6 @@ defmodule Game.Format.Table do
       iex> Game.Format.Table.limit_visible("{cyan}string{/cyan}", 3)
       "{cyan}str{/cyan}"
   """
-  @spec limit_visible(String.t(), integer) :: String.t()
   def limit_visible(string, limit) do
     string
     |> String.to_charlist()
@@ -105,6 +97,7 @@ defmodule Game.Format.Table do
   end
 
   defp _limit_visible(characters, limit, pass \\ false)
+
   defp _limit_visible([], _limit, _), do: []
 
   defp _limit_visible([char | left], limit, _) when [char] == '{' do
@@ -125,5 +118,15 @@ defmodule Game.Format.Table do
 
   defp _limit_visible([char | left], limit, false) do
     [char | _limit_visible(left, limit - 1)]
+  end
+
+  def template("table") do
+    """
+    [line]
+    | [legend] |
+    [line]
+    [rows]
+    [line]
+    """
   end
 end

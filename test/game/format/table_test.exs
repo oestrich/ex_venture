@@ -17,7 +17,7 @@ defmodule Game.Format.TableTest do
     | Thing      | 5/5   | Column 3     |
     | Another Th | 15/15 |              |
     +-----------------------------------+
-    """ |> String.trim
+    """
   end
 
   test "formatting a row with color in it" do

@@ -11,53 +11,36 @@ defmodule Game.Format.Scan do
   Format the scan for the room you're in
   """
   def room(room, rooms) do
-    [
-      room_current(room),
-      rooms(rooms)
-    ]
-    |> Enum.join("\n")
-    |> String.trim()
-  end
-
-  defp rooms(rooms) do
-    rooms
-    |> Enum.map(fn {direction, room} ->
-      room_in_direction(direction, room)
-    end)
-    |> Enum.join("\n")
-    |> String.trim()
+    context()
+    |> assign(:current, room_current(room))
+    |> assign_many(:rooms, rooms, &room_in_direction/1)
+    |> Format.template("[current][\nrooms]")
   end
 
   defp room_current(room) do
     context()
-    |> assign(:who, who(room))
-    |> Format.template("You look around and see:\n[who]")
+    |> assign_many(:players, room.players, &player_line/1)
+    |> assign_many(:npcs, room.npcs, &npc_line/1)
+    |> Format.template("You look around and see:\n[players\n][npcs\n]")
   end
 
-  defp room_in_direction(direction, room) do
+  defp room_in_direction({direction, room}) do
     context()
     |> assign(:direction, direction)
-    |> assign(:who, who(room))
-    |> Format.template("You look {command}#{direction}{/command} and see:\n[who]")
+    |> assign_many(:players, room.players, &player_line/1)
+    |> assign_many(:npcs, room.npcs, &npc_line/1)
+    |> Format.template("You look {command}#{direction}{/command} and see:\n[players\n][npcs\n]")
   end
 
-  defp who(room) do
-    Enum.join(npcs(room) ++ players(room), "\n")
+  def npc_line(npc) do
+    context()
+    |> assign(:name, Format.npc_name(npc))
+    |> Format.template(" - [name]")
   end
 
-  defp npcs(room) do
-    Enum.map(room.npcs, fn npc ->
-      context()
-      |> assign(:name, Format.npc_name(npc))
-      |> Format.template(" - [name]")
-    end)
-  end
-
-  defp players(room) do
-    Enum.map(room.players, fn player ->
-      context()
-      |> assign(:name, Format.player_name(player))
-      |> Format.template(" - [name]")
-    end)
+  def player_line(player) do
+    context()
+    |> assign(:name, Format.player_name(player))
+    |> Format.template(" - [name]")
   end
 end

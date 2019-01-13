@@ -56,7 +56,7 @@ defmodule Game.Format.Items do
     |> assign(:underline, Format.underline(item.name))
     |> assign(:description, item.description)
     |> assign(:stats, item_stats(item))
-    |> Format.template(render("item"))
+    |> Format.template(template("item"))
     |> Format.resources()
   end
 
@@ -94,7 +94,7 @@ defmodule Game.Format.Items do
     |> assign(:equipment, equipment(wearing, wielding))
     |> assign(:items, items)
     |> assign(:currency, currency(currency_amount))
-    |> Format.template(render("inventory"))
+    |> Format.template(template("inventory"))
   end
 
   def inventory_item(%{item: item, quantity: 1}) do
@@ -211,7 +211,7 @@ defmodule Game.Format.Items do
     |> Format.template("[character] dropped [name].")
   end
 
-  def render("item") do
+  def template("item") do
     """
     [name]
     [underline]
@@ -220,7 +220,7 @@ defmodule Game.Format.Items do
     """
   end
 
-  def render("inventory") do
+  def template("inventory") do
     """
     [equipment]
     You are holding:

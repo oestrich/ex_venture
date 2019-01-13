@@ -29,23 +29,14 @@ defmodule Game.Format.Skills do
   def skills(skills)
 
   def skills(skills) do
-    skills =
-      skills
-      |> Enum.map(&skill(&1))
-      |> Enum.join("\n")
-
     context()
     |> assign(:underline, Format.underline("Known Skills"))
-    |> assign(:skills, skills)
+    |> assign_many(:skills, skills, &skill/1)
     |> Format.template("Known Skills\n[underline]\n\n[skills]")
   end
 
   @doc """
   Format a skill
-
-      iex> skill = %{level: 1, name: "Slash", points: 2, command: "slash", description: "Fight your foe"}
-      iex> Skills.skill(skill)
-      "{skill}Slash{/skill} - Level 1 - 2sp\\nCommand: {command send='help slash'}slash{/command}\\nFight your foe\\n"
   """
   @spec skill(Skill.t()) :: String.t()
   def skill(skill) do
@@ -116,7 +107,7 @@ defmodule Game.Format.Skills do
 
   def template("skill") do
     """
-    [name] - Level [level] - [points]sp
+    [name] - Level [level] - [points] sp
     Command: {command send='help [command]'}[command]{/command}
     [description]
     """

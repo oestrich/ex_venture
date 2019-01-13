@@ -110,7 +110,7 @@ defmodule Game.Command.SkillsTest do
 
       [{_socket, look}] = @socket.get_echos()
       assert Regex.match?(~r(slash), look)
-      assert Regex.match?(~r(2sp), look)
+      assert Regex.match?(~r(2 sp), look)
 
       refute Regex.match?(~r(kick)i, look)
     end

@@ -34,10 +34,10 @@ defmodule Game.Format.Bugs do
     |> assign(:underline, Format.underline(bug.title))
     |> assign(:is_completed, bug.is_completed)
     |> assign(:body, bug.body)
-    |> Format.template(render("show"))
+    |> Format.template(template("show"))
   end
 
-  defp render("show") do
+  def template("show") do
     """
     [title]
     [underline]

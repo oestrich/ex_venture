@@ -120,11 +120,15 @@ defmodule Game.Format.Players do
   def player_flags(%{flags: []}, none: false), do: ""
 
   def player_flags(%{flags: flags}, _opts) do
-    flags
-    |> Enum.map(fn flag ->
-      "{red}(#{String.capitalize(flag)}){/red}"
-    end)
-    |> Enum.join(" ")
+    context()
+    |> assign_many(:flags, flags, &player_flag/1, joiner: " ")
+    |> Format.template("[flags]")
+  end
+
+  def player_flag(flag) do
+    context()
+    |> assign(:flag, String.capitalize(flag))
+    |> Format.template("{red}([flag]){/red}")
   end
 
   @doc """
