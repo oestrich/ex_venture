@@ -30,15 +30,15 @@ defmodule Game.NPC.Actions do
     end
   end
 
-  defp get_module(%{__struct__: Events.Actions.CommandsEmote}), do: Actions.CommandsEmote
+  defp get_module(%Events.Actions.CommandsEmote{}), do: Actions.CommandsEmote
 
-  defp get_module(%{__struct__: Events.Actions.CommandsMove}), do: Actions.CommandsMove
+  defp get_module(%Events.Actions.CommandsMove{}), do: Actions.CommandsMove
 
-  defp get_module(%{__struct__: Events.Actions.CommandsSay}), do: Actions.CommandsSay
+  defp get_module(%Events.Actions.CommandsSay{}), do: Actions.CommandsSay
 
-  defp get_module(%{__struct__: Events.Actions.CommandsSkill}), do: Actions.CommandsSkill
+  defp get_module(%Events.Actions.CommandsSkill{}), do: Actions.CommandsSkill
 
-  defp get_module(%{__struct__: Events.Actions.CommandsTarget}), do: Actions.CommandsTarget
+  defp get_module(%Events.Actions.CommandsTarget{}), do: Actions.CommandsTarget
 
   @doc """
   Add a character to the options of any action that requires it
