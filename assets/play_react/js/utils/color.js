@@ -29,6 +29,7 @@ export function defaultColorCSS(tag, color) {
 
 function formatColor(payload) {
   let string = payload;
+  console.log('String to be Formatted', string);
 
   string = string.replace(/{npc}/g, defaultColor('npc', 'yellow'));
   string = string.replace(/{item}/g, defaultColor('item', 'cyan'));
@@ -56,6 +57,7 @@ function formatColor(payload) {
   string = string.replace(
     /{command( send='(.*)')?}/g,
     (_match, _fullSend, command) => {
+      command = stripColor(command);
       let color = defaultColorCSS('command', 'white');
       if (payload.delink == undefined || payload.delink == false) {
         if (command != undefined) {
