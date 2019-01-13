@@ -89,6 +89,7 @@ defmodule Web.Router do
     get("/help/commands/:command", HelpController, :command)
     resources("/help", HelpController, only: [:index, :show])
     get("/help/builtin/:id", HelpController, :built_in)
+    get("/help/proficiencies/:id", HelpController, :proficiency)
 
     get("/play", PlayController, :show)
 

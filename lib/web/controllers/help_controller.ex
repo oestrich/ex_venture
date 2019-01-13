@@ -2,6 +2,7 @@ defmodule Web.HelpController do
   use Web, :controller
 
   alias Game.Help
+  alias Game.Proficiencies
   alias Web.HelpTopic
 
   def index(conn, _params) do
@@ -49,6 +50,16 @@ defmodule Web.HelpController do
 
       built_in ->
         conn |> render("built_in.html", built_in: built_in)
+    end
+  end
+
+  def proficiency(conn, %{"id" => id}) do
+    with {id, _} <- Integer.parse(id),
+         {:ok, proficiency} <- Proficiencies.get(id) do
+        conn |> render("proficiency.html", proficiency: proficiency)
+    else
+      _ ->
+        conn |> redirect(to: public_page_path(conn, :index))
     end
   end
 

@@ -10,6 +10,7 @@ defmodule Web.HelpTopic do
   alias Data.Repo
   alias Game.Command
   alias Game.Help.Agent, as: HelpAgent
+  alias Game.Proficiencies
   alias Web.Pagination
 
   @doc """
@@ -21,8 +22,9 @@ defmodule Web.HelpTopic do
   def all(alpha: true) do
     help_topics = HelpAgent.database()
     built_ins = HelpAgent.built_in()
+    proficiencies = Proficiencies.all()
 
-    (help_topics ++ built_ins)
+    (help_topics ++ built_ins ++ proficiencies)
     |> Enum.sort_by(& &1.name)
   end
 

@@ -1,6 +1,7 @@
 defmodule Web.HelpView do
   use Web, :view
 
+  alias Data.Proficiency
   alias Game.Help.BuiltIn
   alias Web.Color
 
