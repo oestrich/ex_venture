@@ -20,7 +20,7 @@ defmodule Game.Supervisor do
       worker(Game.Channel, []),
       supervisor(Game.World, []),
       worker(Game.Insight, []),
-      worker(Game.Help.Agent, [])
+      worker(Game.Help.Agent, [[name: Game.Help.Agent]])
     ]
 
     supervise(children, strategy: :one_for_one)

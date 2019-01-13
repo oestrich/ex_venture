@@ -15,6 +15,7 @@ defmodule Data.ModelCase do
       import Test.SkillsHelper
       import Test.ChannelsHelper
       import Test.ProficienciesHelper, only: [start_and_clear_proficiencies: 0, insert_proficiency: 1]
+      import Test.HelpHelper, only: [start_and_clear_help: 0, insert_help_topic: 1]
     end
   end
 

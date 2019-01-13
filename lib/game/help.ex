@@ -32,7 +32,7 @@ defmodule Game.Help do
       end)
 
     built_ins =
-      HelpAgent.built_in()
+      HelpAgent.built_ins()
       |> Enum.map(fn built_in ->
         %Topic{name: built_in.name, short: built_in.short}
       end)
@@ -97,7 +97,7 @@ defmodule Game.Help do
   end
 
   defp find_help_topic(topic) do
-    case Enum.find(HelpAgent.database(), &match_help_topic?(&1, topic)) do
+    case Enum.find(HelpAgent.topics(), &match_help_topic?(&1, topic)) do
       nil ->
         find_built_in_topic(topic)
 
@@ -113,7 +113,7 @@ defmodule Game.Help do
   end
 
   def find_built_in_topic(topic) do
-    case Enum.find(HelpAgent.built_in(), &match_built_in_topic?(&1, topic)) do
+    case Enum.find(HelpAgent.built_ins(), &match_built_in_topic?(&1, topic)) do
       nil ->
         find_skill_topic(topic)
 

@@ -20,8 +20,8 @@ defmodule Web.HelpTopic do
   def all(opts \\ [])
 
   def all(alpha: true) do
-    help_topics = HelpAgent.database()
-    built_ins = HelpAgent.built_in()
+    help_topics = HelpAgent.topics()
+    built_ins = HelpAgent.built_ins()
     proficiencies = Proficiencies.all()
 
     (help_topics ++ built_ins ++ proficiencies)
@@ -74,7 +74,7 @@ defmodule Web.HelpTopic do
   end
 
   def built_in(id) do
-    HelpAgent.built_in()
+    HelpAgent.built_ins()
     |> Enum.find(&(&1.id == id))
   end
 
@@ -108,7 +108,7 @@ defmodule Web.HelpTopic do
 
     case changeset |> Repo.insert() do
       {:ok, help_topic} ->
-        HelpAgent.add(help_topic)
+        HelpAgent.insert(help_topic)
         {:ok, help_topic}
 
       anything ->
@@ -126,7 +126,7 @@ defmodule Web.HelpTopic do
 
     case changeset |> Repo.update() do
       {:ok, help_topic} ->
-        HelpAgent.update(help_topic)
+        HelpAgent.reload(help_topic)
         {:ok, help_topic}
 
       anything ->

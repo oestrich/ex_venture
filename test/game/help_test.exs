@@ -23,7 +23,8 @@ defmodule Game.HelpTest do
 
   test "loading a topic from the database" do
     topic = create_help_topic(%{name: "The World", keywords: ["world"], body: "It is a world"})
-    Agent.update(Help.Agent, fn (_) -> %{database: [topic]} end)
+    start_and_clear_help()
+    insert_help_topic(topic)
 
     assert Regex.match?(~r(world), Help.topic("world"))
   end
@@ -38,7 +39,7 @@ defmodule Game.HelpTest do
   end
 
   test "load built in help files" do
-    Help.Agent.reset()
+    start_and_clear_help()
     assert Regex.match?(~r(target), Help.topic("combat"))
   end
 end
