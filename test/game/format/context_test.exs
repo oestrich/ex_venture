@@ -36,7 +36,7 @@ defmodule Game.Format.ContextTest do
     test "assign a new list of values and the render function", %{context: context} do
       context = Context.assign_many(context, :variable, [:value], fn value -> to_string(value) end)
 
-      assert {[:value], _} = context.many_assigns.variable
+      assert {[:value], _, []} = context.many_assigns.variable
     end
   end
 end

@@ -3,6 +3,8 @@ defmodule Game.Overworld do
   Overworld helpers
   """
 
+  alias Data.Exit
+
   @type cell :: %{x: integer(), y: integer()}
 
   @sector_boundary 10
@@ -78,7 +80,9 @@ defmodule Game.Overworld do
         nil ->
           finish_id = "overworld:#{zone.id}:#{direction.x},#{direction.y}"
 
-          %{
+          %Exit{
+            has_door: false,
+            requirements: [],
             id: direction.start_id,
             direction: direction.direction,
             start_id: direction.start_id,

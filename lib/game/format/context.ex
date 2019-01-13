@@ -32,11 +32,11 @@ defmodule Game.Format.Context do
     %{context | assigns: assigns}
   end
 
-  def assign_many(context, key, value, render_fun) do
+  def assign_many(context, key, value, render_fun, opts \\ []) do
     many_assigns =
       context
       |> Map.get(:many_assigns, %{})
-      |> Map.put(key, {value, render_fun})
+      |> Map.put(key, {value, render_fun, opts})
 
     %{context | many_assigns: many_assigns}
   end

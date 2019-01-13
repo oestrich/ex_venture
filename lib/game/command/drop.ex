@@ -91,7 +91,7 @@ defmodule Game.Command.Drop do
     save = %{state.save | currency: currency - amount}
     state = Player.update_save(state, save)
 
-    message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency)
+    message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency())
     socket |> @socket.echo(message)
 
     @environment.drop_currency(save.room_id, {:player, state.character}, amount)

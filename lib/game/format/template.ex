@@ -36,11 +36,11 @@ defmodule Game.Format.Template do
 
   defp render_many(context) do
     assigns =
-      Enum.reduce(context.many_assigns, context.assigns, fn {key, {values, fun}}, assigns ->
+      Enum.reduce(context.many_assigns, context.assigns, fn {key, {values, fun, opts}}, assigns ->
         values =
           values
           |> Enum.map(fun)
-          |> Enum.join("\n")
+          |> Enum.join(Keyword.get(opts, :joiner, "\n"))
 
         Map.put(assigns, key, values)
       end)
@@ -54,7 +54,7 @@ defmodule Game.Format.Template do
     [replace_variable(node, context) | replace_variables(nodes, context)]
   end
 
-  defp replace_variable({:variable, space, name}, context) do
+  defp replace_variable({:variable, {:space, space}, {:name, name}}, context) do
     case replace_variable({:variable, name}, context) do
       {:string, ""} ->
         {:string, ""}
@@ -64,6 +64,19 @@ defmodule Game.Format.Template do
 
       value when is_list(value) ->
         [{:string, space} | value]
+    end
+  end
+
+  defp replace_variable({:variable, {:name, name}, {:space, space}}, context) do
+    case replace_variable({:variable, name}, context) do
+      {:string, ""} ->
+        {:string, ""}
+
+      {:string, value} ->
+        {:string, value <> space}
+
+      value when is_list(value) ->
+        value ++ [{:string, space}]
     end
   end
 

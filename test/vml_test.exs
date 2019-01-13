@@ -38,10 +38,16 @@ defmodule VMLTest do
 
     test "a template variable with spaces" do
       {:ok, tokens} = VML.parse("hello [ name]")
-      assert tokens == [{:string, "hello "}, {:variable, " ", "name"}]
+      assert tokens == [{:string, "hello "}, {:variable, {:space, " "}, {:name, "name"}}]
 
       {:ok, tokens} = VML.parse("hello [\nname]")
-      assert tokens == [{:string, "hello "}, {:variable, "\n", "name"}]
+      assert tokens == [{:string, "hello "}, {:variable, {:space, "\n"}, {:name, "name"}}]
+
+      {:ok, tokens} = VML.parse("hello [name ]")
+      assert tokens == [{:string, "hello "}, {:variable, {:name, "name"}, {:space, " "}}]
+
+      {:ok, tokens} = VML.parse("hello [name\n]")
+      assert tokens == [{:string, "hello "}, {:variable, {:name, "name"}, {:space, "\n"}}]
     end
 
     test "a resource variable" do

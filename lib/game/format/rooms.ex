@@ -35,17 +35,16 @@ defmodule Game.Format.Rooms do
   """
   @spec room(Room.t(), [Item.t()], Map.t()) :: String.t()
   def room(room, items, map) do
-    """
-    #{room_name(room)}
-    #{Format.underline(room.name)}
-    #{room_description(room)}\n
-    #{map}
-
-    #{who_is_here(room)}
-
-    #{maybe_exits(room)}#{maybe_items(room, items)}#{shops(room)}
-    """
-    |> String.trim()
+    context()
+    |> assign(:name, room_name(room))
+    |> assign(:underline, Format.underline(room.name))
+    |> assign(:description, room_description(room))
+    |> assign(:map, map)
+    |> assign(:who, who_is_here(room))
+    |> assign(:exits, maybe_exits(room))
+    |> assign(:items, maybe_items(room, items))
+    |> assign(:shops, shops(room))
+    |> Format.template(template("room"))
   end
 
   @doc """
@@ -118,19 +117,16 @@ defmodule Game.Format.Rooms do
   defp exit_requirements(%{requirements: []}), do: nil
 
   defp exit_requirements(room_exit) do
-    requirements =
-      room_exit.requirements
-      |> Enum.map(fn requirement ->
-        context()
-        |> assign(:name, FormatProficiencies.name(requirement))
-        |> assign(:rank, requirement.ranks)
-        |> Format.template("  - [name] [rank]")
-      end)
-      |> Enum.join("\n")
-
     context()
-    |> assign(:requirements, requirements)
+    |> assign_many(:requirements, room_exit.requirements, &render_requirement/1)
     |> Format.template("\n\nRequirements:\n[requirements]")
+  end
+
+  def render_requirement(requirement) do
+    context()
+    |> assign(:name, FormatProficiencies.name(requirement))
+    |> assign(:rank, requirement.ranks)
+    |> Format.template("  - [name] [rank]")
   end
 
   @doc """
@@ -138,42 +134,35 @@ defmodule Game.Format.Rooms do
   """
   @spec overworld_room(Overworld.t(), String.t()) :: String.t()
   def overworld_room(room, map) do
-    """
-    {bold}#{map}{/bold}
-
-    #{who_is_here(room)}
-
-    #{maybe_exits(room)}
-    """
-    |> String.trim()
+    context()
+    |> assign(:map, map)
+    |> assign(:who, who_is_here(room))
+    |> assign(:exits, maybe_exits(room))
+    |> Format.template(template("overworld"))
   end
 
   defp maybe_exits(room) do
     case room |> Room.exits() do
       [] ->
-        ""
+        nil
 
-      _ ->
+      directions ->
+        directions = Enum.sort(directions)
+
         context()
-        |> assign(:exits, exits(room))
-        |> Format.template("Exits: [exits]\n")
+        |> assign_many(:exits, directions, &render_exit(room, &1), joiner: ", ")
+        |> Format.template("Exits: [exits]")
     end
   end
 
-  defp exits(room) do
-    room
-    |> Room.exits()
-    |> Enum.sort()
-    |> Enum.map(fn direction ->
-      room_exit = Exit.exit_to(room, direction)
+  defp render_exit(room, direction) do
+    room_exit = Exit.exit_to(room, direction)
 
-      context()
-      |> assign(:direction, direction)
-      |> assign(:door_state, door_state(room_exit))
-      |> assign(:requirements, exit_requirements_hint(room_exit))
-      |> Format.template("{exit}[direction]{/exit}[requirements][ door_state]")
-    end)
-    |> Enum.join(", ")
+    context()
+    |> assign(:direction, direction)
+    |> assign(:door_state, door_state(room_exit))
+    |> assign(:requirements, exit_requirements_hint(room_exit))
+    |> Format.template("{exit}[direction]{/exit}[requirements][ door_state]")
   end
 
   defp door_state(room_exit) do
@@ -205,49 +194,23 @@ defmodule Game.Format.Rooms do
   Example:
 
       iex> Rooms.who_is_here(%{players: [%{name: "Mordred"}], npcs: [%{name: "Arthur", extra: %{status_line: "[name] is here."}}]})
-      "{npc}Arthur{/npc} is here.\\n{player}Mordred{/player} is here."
+      "{player}Mordred{/player} is here.\\n{npc}Arthur{/npc} is here."
   """
   def who_is_here(room) do
-    [npcs(room), players(room)]
-    |> Enum.reject(fn line -> line == "" end)
-    |> Enum.join("\n")
+    context()
+    |> assign_many(:players, room.players, &player_line/1)
+    |> assign_many(:npcs, room.npcs, &FormatNPCs.npc_status/1)
+    |> Format.template("[players\n][npcs]")
   end
 
   @doc """
-  Format Player text for who is in the room
-
-  Example:
-
-      iex> Rooms.players(%{players: [%{name: "Mordred"}, %{name: "Arthur"}]})
-      "{player}Mordred{/player} is here.\\n{player}Arthur{/player} is here."
+  Format a player's status line
   """
-  @spec players(Room.t()) :: String.t()
-  def players(%{players: players}) do
-    players
-    |> Enum.map(fn player -> "#{Format.player_name(player)} is here." end)
-    |> Enum.join("\n")
+  def player_line(player) do
+    context()
+    |> assign(:name, Format.player_name(player))
+    |> Format.template("[name] is here.")
   end
-
-  def players(_), do: ""
-
-  @doc """
-  Format NPC text for who is in the room
-
-  Example:
-
-      iex> mordred = %{name: "Mordred", extra: %{status_line: "[name] is in the room."}}
-      iex> arthur = %{name: "Arthur", extra: %{status_line: "[name] is here."}}
-      iex> Rooms.npcs(%{npcs: [mordred, arthur]})
-      "{npc}Mordred{/npc} is in the room.\\n{npc}Arthur{/npc} is here."
-  """
-  @spec npcs(Room.t()) :: String.t()
-  def npcs(%{npcs: npcs}) do
-    npcs
-    |> Enum.map(&FormatNPCs.npc_status/1)
-    |> Enum.join("\n")
-  end
-
-  def npcs(_), do: ""
 
   @doc """
   Maybe display items
@@ -255,57 +218,69 @@ defmodule Game.Format.Rooms do
   def maybe_items(room, items) do
     case Enum.empty?(items) and room.currency == 0 do
       true ->
-        ""
+        nil
 
       false ->
+        items = Enum.map(items, &Format.item_name/1)
+        items = items ++ [Format.currency(room)]
+        items = Enum.reject(items, &(&1 == ""))
+
         context()
-        |> assign(:items, items(room, items))
+        |> assign_many(:items, items, &(&1), joiner: ", ")
         |> Format.template("Items: [items]")
     end
   end
 
   @doc """
-  Format items for a room
-  """
-  def items(room, items) when is_list(items) do
-    items = items |> Enum.map(&Format.item_name/1)
-
-    (items ++ [Format.currency(room)])
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.join(", ")
-  end
-
-  def items(_, _), do: ""
-
-  @doc """
   Format Shop text for shops in the room
-
-  Example:
-
-      iex> Rooms.shops(%{shops: [%{name: "Hole in the Wall"}]})
-      "Shops: {shop}Hole in the Wall{/shop}\\n"
-
-      iex> Rooms.shops(%{shops: [%{name: "Hole in the Wall"}]}, label: false)
-      "  - {shop}Hole in the Wall{/shop}"
   """
-  @spec shops(Room.t()) :: String.t()
-  def shops(room, opts \\ [])
-  def shops(%{shops: []}, _opts), do: ""
+  def shops(room) do
+    case Enum.empty?(room.shops) do
+      true ->
+        nil
 
-  def shops(%{shops: shops}, label: false) do
-    shops
-    |> Enum.map(fn shop -> "  - #{Format.shop_name(shop)}" end)
-    |> Enum.join(", ")
+      false ->
+        context()
+        |> assign_many(:shops, room.shops, &Format.shop_name/1, joiner: ", ")
+        |> Format.template("Shops: [shops]")
+    end
   end
 
-  def shops(%{shops: shops}, _) do
-    shops =
-      shops
-      |> Enum.map(&Format.shop_name/1)
-      |> Enum.join(", ")
-
-    "Shops: #{shops}\n"
+  def list_shops(room) do
+    context()
+    |> assign_many(:shops, room.shops, &shop_line/1)
+    |> Format.template("Shops around you:\n[shops]")
   end
 
-  def shops(_, _), do: ""
+  def shop_line(shop) do
+    context()
+    |> assign(:name, Format.shop_name(shop))
+    |> Format.template("  - [name]")
+  end
+
+  def template("room") do
+    """
+    [name]
+    [underline]
+    [description]
+
+    [map]
+
+    [who]
+
+    [exits]
+    [items]
+    [shops]
+    """
+  end
+
+  def template("overworld") do
+    """
+    {bold}[map]{/bold}
+
+    [who]
+
+    [exits]
+    """
+  end
 end

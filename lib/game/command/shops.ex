@@ -133,7 +133,7 @@ defmodule Game.Command.Shops do
             socket |> @socket.echo(gettext("There are no shops here."))
 
           false ->
-            socket |> @socket.echo(FormatRooms.shops(room, label: false))
+            socket |> @socket.echo(FormatRooms.list_shops(room))
         end
 
       :overworld ->

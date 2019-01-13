@@ -127,8 +127,12 @@ defmodule VML do
     {:variable, to_string(string)}
   end
 
-  def process_node({:variable, space, string}) do
-    {:variable, to_string(space), to_string(string)}
+  def process_node({:variable, {:space, space}, {:name, string}}) do
+    {:variable, {:space, to_string(space)}, {:name, to_string(string)}}
+  end
+
+  def process_node({:variable, {:name, string}, {:space, space}}) do
+    {:variable, {:name, to_string(string)}, {:space, to_string(space)}}
   end
 
   def process_node({:resource, resource, id}) do
