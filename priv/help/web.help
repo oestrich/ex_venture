@@ -22,6 +22,9 @@ color_code.hex_code:
 color_code.key:
   This key is used when adding color to game text fields, e.g. if the key was `gold`, you would use it as `{gold}text{/gold}`
 
+config.description:
+  This is used on the home page and as a meta tag.
+
 config.message_break:
   You can crate multiple messages by adding in a break, `(----)`. A random message will be selected.
 

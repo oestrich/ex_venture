@@ -42,6 +42,13 @@
                 </td>
               </tr>
               <tr>
+                <th>Description</th>
+                <td><%= Config.description() %></td>
+                <td>
+                  <%= link("Edit", to: config_path(@conn, :edit, "description"), class: "btn btn-default btn-xs") %>
+                </td>
+              </tr>
+              <tr>
                 <th>Message of the day</th>
                 <td><pre><%= Config.motd("Not set") %></pre></td>
                 <td>

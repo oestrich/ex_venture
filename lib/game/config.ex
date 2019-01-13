@@ -126,7 +126,6 @@ defmodule Game.Config do
 
   Used in web page titles
   """
-  @spec game_name(String.t()) :: String.t()
   def game_name(default \\ "ExVenture") do
     case find_config("game_name") do
       nil ->
@@ -134,6 +133,19 @@ defmodule Game.Config do
 
       game_name ->
         game_name
+    end
+  end
+
+  @doc """
+  Get the game's description
+  """
+  def description(default \\ "A MUD built with ExVenture.") do
+    case find_config("description") do
+      nil ->
+        default
+
+      description ->
+        description
     end
   end
 

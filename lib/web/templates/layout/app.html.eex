@@ -4,8 +4,22 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="<%= Config.game_name() %>">
-    <meta name="author" content="">
+    <meta name="author" content="<%= Config.game_name() %>">
+    <meta name="description" content="<%= Config.description() %>">
+
+    <%= if Map.has_key?(assigns, :open_graph_title) do %>
+      <meta property="og:title" content="<%= @open_graph_title %>" />
+    <% end %>
+
+    <%= if Map.has_key?(assigns, :open_graph_description) do %>
+      <meta property="og:description" content="<%= @open_graph_description %>" />
+    <% end %>
+
+    <%= if Map.has_key?(assigns, :open_graph_url) do %>
+      <meta property="og:url" content="<%= @open_graph_url %>" />
+    <% end %>
+
+    <meta property="og:site_name" content="<%= Config.game_name() %>" />
 
     <meta name="theme-color" content="<%= Config.color_home_header() %>"/>
     <link rel="manifest" href="/manifest.json">

@@ -405,6 +405,7 @@ defmodule Seeds do
     }
 
     create_config("game_name", "ExVenture MUD")
+    create_config("description", "A MUD built with ExVenture.")
     create_config("motd", "Welcome to the {white}MUD{/white}")
     create_config("after_sign_in_message", "Thanks for checking out the game!")
     create_config("starting_save", save |> Poison.encode!)
