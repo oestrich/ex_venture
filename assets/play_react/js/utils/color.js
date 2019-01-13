@@ -63,10 +63,10 @@ function formatColor(payload) {
         if (command != undefined) {
           return `<span class='${color} command' style='color:${color};text-decoration:underline;cursor:pointer'  onclick='send("${command}")' data-command='${command}'>`;
         } else {
-          return `<span class='${color} command'>`;
+          return `<span class='${color}  command' style='color:${color}'>`;
         }
       } else {
-        return `<span class='${color}'>`;
+        return `<span class='${color}' style='color:${color}'>`;
       }
     }
   );
@@ -74,29 +74,29 @@ function formatColor(payload) {
   string = string.replace(/{link}(.*){\/link}/g, (_match, link) => {
     let color = defaultColorCSS('link', 'white');
     if (payload.delink == undefined || payload.delink == false) {
-      return `<a href='${link}' class='${color} link' target='_blank'>${link}</a>`;
+      return `<a href='${link}' style='color:${color}' class='${color} link' target='_blank'>${link}</a>`;
     } else {
-      return `<span class='${color}'>${link}</span>`;
+      return `<span class='${color}' style='color:${color}'>${link}</span>`;
     }
   });
 
-  string = string.replace(/{black}/g, "<span class='black'>");
-  string = string.replace(/{red}/g, "<span class='red'>");
-  string = string.replace(/{green}/g, "<span class='green'>");
-  string = string.replace(/{yellow}/g, "<span class='yellow'>");
-  string = string.replace(/{blue}/g, "<span class='blue'>");
-  string = string.replace(/{magenta}/g, "<span class='magenta'>");
-  string = string.replace(/{cyan}/g, "<span class='cyan'>");
-  string = string.replace(/{white}/g, "<span class='white'>");
-  string = string.replace(/{brown}/g, "<span class='brown'>");
-  string = string.replace(/{dark-green}/g, "<span class='dark-green'>");
-  string = string.replace(/{grey}/g, "<span class='grey'>");
-  string = string.replace(/{light-grey}/g, "<span class='light-grey'>");
-  string = string.replace(/{bold}/g, "<span class='bold'>");
+  string = string.replace(/{black}/g, "<span style='color:black'>");
+  string = string.replace(/{red}/g, "<span style='color:red'>");
+  string = string.replace(/{green}/g, "<span style='color:green'>");
+  string = string.replace(/{yellow}/g, "<span style='color:yellow'>");
+  string = string.replace(/{blue}/g, "<span style='color:blue'>");
+  string = string.replace(/{magenta}/g, "<span style='color:magenta'>");
+  string = string.replace(/{cyan}/g, "<span style='color:cyan'>");
+  string = string.replace(/{white}/g, "<span style='color:white'>");
+  string = string.replace(/{brown}/g, "<span style='color:brown'>");
+  string = string.replace(/{dark-green}/g, "<span style='color:dark-green'>");
+  string = string.replace(/{grey}/g, "<span style='color:grey'>");
+  string = string.replace(/{light-grey}/g, "<span style='color:light-grey'>");
+  string = string.replace(/{bold}/g, "<span style='color:bold'>");
 
   // assume all other tags are custom colors
   string = string.replace(/{([\w:-]+)}/g, (_match, color) => {
-    return `<span class='color-code-${color}'>`;
+    return `<span class='color-code-${color}' style='color:${color}'>`;
   });
 
   // Closing tags
