@@ -82,6 +82,12 @@
               <% end %>
             </li>
             <li class="header">PLAYERS</li>
+            <li class="<%= tab_selected(@conn, "characters") %>">
+              <%= link(to: character_path(@conn, :index)) do %>
+                <i class="fa fa-users"></i>
+                <span>Characters</span>
+              <% end %>
+            </li>
             <li class="<%= tab_selected(@conn, "classes") %>">
               <%= link(to: class_path(@conn, :index)) do %>
                 <i class="fa fa-user-circle"></i>

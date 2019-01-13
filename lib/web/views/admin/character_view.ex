@@ -5,6 +5,9 @@ defmodule Web.Admin.CharacterView do
 
   alias Game.Format.Players, as: FormatPlayers
   alias Game.Items
+  alias Web.Admin.SharedView
+  alias Web.Class
+  alias Web.Race
   alias Web.User
 
   def online?(character) do

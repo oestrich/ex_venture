@@ -14,8 +14,53 @@ defmodule Web.Character do
   alias Game.Session
   alias Game.Session.Registry, as: SessionRegistry
   alias Metrics.PlayerInstrumenter
+  alias Web.Filter
+  alias Web.Pagination
   alias Web.Race
   alias Web.User
+
+  @behaviour Filter
+
+  @doc """
+  Load all characters
+  """
+  def all(opts \\ []) do
+    opts = Enum.into(opts, %{})
+
+    Character
+    |> order_by([c], desc: c.updated_at)
+    |> preload([:class, :race, :user])
+    |> Filter.filter(opts[:filter], __MODULE__)
+    |> Pagination.paginate(opts)
+  end
+
+  @impl Filter
+  def filter_on_attribute({"level_from", level}, query) do
+    query
+    |> where([c], fragment("?->>'level' >= ?", c.save, ^to_string(level)))
+  end
+
+  def filter_on_attribute({"level_to", level}, query) do
+    query
+    |> where([c], fragment("?->>'level' <= ?", c.save, ^to_string(level)))
+  end
+
+  def filter_on_attribute({"name", name}, query) do
+    query
+    |> where([c], ilike(c.name, ^"%#{name}%"))
+  end
+
+  def filter_on_attribute({"class_id", class_id}, query) do
+    query
+    |> where([c], c.class_id == ^class_id)
+  end
+
+  def filter_on_attribute({"race_id", race_id}, query) do
+    query
+    |> where([c], c.race_id == ^race_id)
+  end
+
+  def filter_on_attribute(_, query), do: query
 
   @doc """
   Get a character by their name

@@ -126,11 +126,7 @@ defmodule Web.Router do
       post("/complete", BugController, :complete, as: :complete)
     end
 
-    resources(
-      "/channels",
-      ChannelController,
-      only: [:index, :new, :show, :create, :edit, :update]
-    )
+    resources("/channels", ChannelController, except: [:delete])
 
     resources "/classes", ClassController, only: [:index, :show, :new, :create, :edit, :update] do
       resources("/proficiencies", ClassProficiencyController, only: [:new, :create], as: :proficiency)
@@ -142,7 +138,7 @@ defmodule Web.Router do
 
     resources("/class_skills", ClassSkillController, only: [:delete])
 
-    resources("/characters", CharacterController, only: [:show]) do
+    resources("/characters", CharacterController, only: [:index, :show]) do
       delete("/disconnect", CharacterController, :disconnect, as: :disconnect)
       get("/watch", CharacterController, :watch, as: :watch)
       post("/reset", CharacterController, :reset, as: :reset)

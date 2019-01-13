@@ -1,9 +1,22 @@
 defmodule Web.Admin.CharacterController do
   use Web.AdminController
 
+  plug(Web.Plug.FetchPage when action in [:index])
   plug(:ensure_admin!)
 
   alias Web.Character
+
+  def index(conn, params) do
+    %{page: page, per: per} = conn.assigns
+    filter = Map.get(params, "character", %{})
+    %{page: characters, pagination: pagination} = Character.all(filter: filter, page: page, per: per)
+
+    conn
+    |> assign(:characters, characters)
+    |> assign(:filter, filter)
+    |> assign(:pagination, pagination)
+    |> render("index.html")
+  end
 
   def show(conn, %{"id" => id}) do
     with {:ok, character} <- Character.get(id) do

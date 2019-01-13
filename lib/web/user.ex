@@ -60,29 +60,9 @@ defmodule Web.User do
   end
 
   @impl Filter
-  def filter_on_attribute({"level_from", level}, query) do
-    query
-    |> where([u], fragment("?->>'level' >= ?", u.save, ^to_string(level)))
-  end
-
-  def filter_on_attribute({"level_to", level}, query) do
-    query
-    |> where([u], fragment("?->>'level' <= ?", u.save, ^to_string(level)))
-  end
-
   def filter_on_attribute({"name", name}, query) do
     query
     |> where([u], ilike(u.name, ^"%#{name}%"))
-  end
-
-  def filter_on_attribute({"class_id", class_id}, query) do
-    query
-    |> where([u], u.class_id == ^class_id)
-  end
-
-  def filter_on_attribute({"race_id", race_id}, query) do
-    query
-    |> where([u], u.race_id == ^race_id)
   end
 
   def filter_on_attribute(_, query), do: query
