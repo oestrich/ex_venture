@@ -68,19 +68,19 @@ defmodule Game.Command.Wield do
             name: Format.item_name(item)
           )
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:error, :cannot_wield, item} ->
         message = gettext("%{name} cannot be wielded.", name: Format.item_name(item))
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:error, :not_found} ->
         message = gettext(~s("%{name}" could not be found."), name: item_name)
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
-  def run({:unwield, hand}, state = %{socket: socket}) do
+  def run({:unwield, hand}, state) do
     case hand do
       "right" ->
         run_unwield(:right, state)
@@ -89,7 +89,7 @@ defmodule Game.Command.Wield do
         run_unwield(:left, state)
 
       _ ->
-        socket |> @socket.echo(gettext("Unknown hand"))
+        state |> Socket.echo(gettext("Unknown hand"))
     end
   end
 
@@ -108,7 +108,7 @@ defmodule Game.Command.Wield do
     message =
       gettext("%{name} is now in your %{hand} hand.", name: Format.item_name(item), hand: hand)
 
-    state.socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
   end
@@ -119,7 +119,7 @@ defmodule Game.Command.Wield do
     {wielding, items} = unwield(hand, save.wielding, save.items)
     save = %{save | items: items, wielding: wielding}
     message = gettext("Your %{hand} hand is now empty.", hand: hand)
-    state.socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
   end

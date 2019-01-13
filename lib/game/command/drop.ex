@@ -42,17 +42,17 @@ defmodule Game.Command.Drop do
         drop(state, item_name)
 
       :overworld ->
-        state.socket |> @socket.echo(gettext("You cannot drop items in the overworld."))
+        state |> Socket.echo(gettext("You cannot drop items in the overworld."))
     end
   end
 
-  def run({}, %{socket: socket}) do
+  def run({}, state) do
     message =
       gettext(
         "Please provide an item to drop. See {command}help drop{/command} for more information."
       )
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
   defp drop(state, item_name) do
@@ -65,7 +65,7 @@ defmodule Game.Command.Drop do
     end
   end
 
-  defp drop_currency(amount_to_drop, state = %{socket: socket, save: %{currency: currency}}) do
+  defp drop_currency(amount_to_drop, state = %{save: %{currency: currency}}) do
     amount =
       amount_to_drop
       |> String.split(" ")
@@ -83,29 +83,29 @@ defmodule Game.Command.Drop do
             amount: amount
           )
 
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
-  defp _drop_currency(amount, state = %{socket: socket, save: %{currency: currency}}) do
+  defp _drop_currency(amount, state = %{save: %{currency: currency}}) do
     save = %{state.save | currency: currency - amount}
     state = Player.update_save(state, save)
 
     message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency())
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     @environment.drop_currency(save.room_id, {:player, state.character}, amount)
 
     {:update, state}
   end
 
-  defp drop_item(item_name, state = %{socket: socket, save: %{items: items}}) do
+  defp drop_item(item_name, state = %{save: %{items: items}}) do
     items = Items.items(items)
 
     case Enum.find(items, &Item.matches_lookup?(&1, item_name)) do
       nil ->
         message = gettext(~s(Could not find "%{name}".), name: item_name)
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       item ->
         _drop_item(item, state)
@@ -119,7 +119,7 @@ defmodule Game.Command.Drop do
     @environment.drop(save.room_id, {:player, state.character}, instance)
 
     message = gettext("You dropped %{name}.", name: Format.item_name(item))
-    state.socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     {:update, state}
   end

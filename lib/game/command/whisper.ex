@@ -61,11 +61,11 @@ defmodule Game.Command.Whisper do
     case find_character(room, who_and_message, message: true) do
       {:error, :not_found} ->
         message = gettext("No character could be found matching your text.")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       character ->
         message = Utility.strip_name(elem(character, 1), who_and_message)
-        state.socket |> @socket.echo(FormatChannels.send_whisper(character, message))
+        state |> Socket.echo(FormatChannels.send_whisper(character, message))
         Character.notify(character, {"room/whisper", Message.whisper(state.character, message)})
 
         room.id

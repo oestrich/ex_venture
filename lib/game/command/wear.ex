@@ -70,19 +70,19 @@ defmodule Game.Command.Wear do
             name: Format.item_name(item)
           )
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:error, :cannot_wear, item} ->
         message = gettext(~s(You cannot wear %{name}.), name: Format.item_name(item))
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:error, :not_found} ->
         message = gettext(~s("%{name}" could not be found."), name: item_name)
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
-  def run({:remove, slot}, state = %{socket: socket}) do
+  def run({:remove, slot}, state) do
     slots = Enum.map(Stats.slots(), &to_string/1)
 
     case slot in slots do
@@ -90,7 +90,7 @@ defmodule Game.Command.Wear do
         slot |> String.to_atom() |> run_remove(state)
 
       false ->
-        socket |> @socket.echo(gettext("Unknown armor slot."))
+        state |> Socket.echo(gettext("Unknown armor slot."))
     end
   end
 
@@ -105,12 +105,12 @@ defmodule Game.Command.Wear do
     save = %{save | items: items, wearing: wearing}
 
     message = gettext(~s(You are now wearing %{name}), name: Format.item_name(item))
-    state.socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
   end
 
-  defp run_remove(slot, state = %{socket: socket, save: save}) do
+  defp run_remove(slot, state = %{save: save}) do
     %{wearing: wearing, items: items} = save
 
     case Map.has_key?(wearing, slot) do
@@ -125,12 +125,12 @@ defmodule Game.Command.Wear do
             slot: slot
           )
 
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
         {:update, Map.put(state, :save, save)}
 
       false ->
-        socket |> @socket.echo(gettext("Nothing was on your %{slot}.", slot: slot))
+        state |> Socket.echo(gettext("Nothing was on your %{slot}.", slot: slot))
     end
   end
 

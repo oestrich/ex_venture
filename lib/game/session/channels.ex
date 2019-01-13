@@ -3,12 +3,11 @@ defmodule Game.Session.Channels do
   Implementation for channel callbacks
   """
 
-  use Networking.Socket
-
   alias Game.Hint
   alias Game.Player
   alias Game.Session.GMCP
   alias Game.Session.State
+  alias Game.Socket
 
   @doc """
   Call back for joining a channel
@@ -36,8 +35,8 @@ defmodule Game.Session.Channels do
   Callback for receiving a broadcast on a channel
   """
   @spec broadcast(State.t(), String.t(), Message.t()) :: State.t()
-  def broadcast(state = %{socket: socket}, channel, message) do
-    socket |> @socket.echo(message.formatted)
+  def broadcast(state, channel, message) do
+    state |> Socket.echo(message.formatted)
     state |> GMCP.channel_broadcast(channel, message)
     state
   end
@@ -46,8 +45,8 @@ defmodule Game.Session.Channels do
   Callback for receiving a tell
   """
   @spec tell(State.t(), Character.t(), Message.t()) :: State.t()
-  def tell(state = %{socket: socket}, from, message) do
-    socket |> @socket.echo(message.formatted)
+  def tell(state, from, message) do
+    state |> Socket.echo(message.formatted)
     state |> GMCP.tell(from, message)
 
     state

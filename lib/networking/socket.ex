@@ -23,10 +23,4 @@ defmodule Networking.Socket do
   @callback nop(socket :: pid()) :: :ok
 
   @callback push_gmcp(socket :: pid(), module :: String.t(), data :: String.t()) :: :ok
-
-  defmacro __using__(_opts) do
-    quote do
-      @socket Application.get_env(:ex_venture, :networking)[:socket_module]
-    end
-  end
 end

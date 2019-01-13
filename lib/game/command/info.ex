@@ -57,23 +57,23 @@ defmodule Game.Command.Info do
   """
   def run(command, state)
 
-  def run({}, state = %{socket: socket, character: character, save: save}) do
+  def run({}, state = %{character: character, save: save}) do
     character =
       character
       |> Map.put(:save, cacluate_save(save))
       |> Map.put(:seconds_online, seconds_online(state.character, state))
 
-    socket |> @socket.echo(FormatPlayers.info(character))
+    state |> Socket.echo(FormatPlayers.info(character))
   end
 
-  def run({name}, %{socket: socket}) do
+  def run({name}, state) do
     case Account.get_player(name) do
       {:ok, player} ->
-        socket |> @socket.echo(FormatPlayers.short_info(player))
+        state |> Socket.echo(FormatPlayers.short_info(player))
 
       {:error, :not_found} ->
         message = gettext("Could not find a player with the name \"%{name}\".", name: name)
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 

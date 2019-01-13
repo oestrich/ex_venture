@@ -47,7 +47,7 @@ defmodule Game.Command.Who do
     #{remote_names()}
     """
 
-    state.socket |> @socket.echo(String.trim(message))
+    state |> Socket.echo(String.trim(message))
   end
 
   def run({name}, state), do: Info.run({name}, state)

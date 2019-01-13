@@ -5,13 +5,12 @@ defmodule Game.Session.CreateAccount do
   Asks for basic information to create an account.
   """
 
-  use Networking.Socket
-
   alias Game.Account
   alias Game.Class
   alias Game.Config
   alias Game.Race
   alias Game.Session.Login
+  alias Game.Socket
   alias Metrics.PlayerInstrumenter
   alias Web.ErrorHelpers
 
@@ -20,8 +19,7 @@ defmodule Game.Session.CreateAccount do
 
   This echos to the socket and ends with asking for the first field.
   """
-  @spec start(pid) :: :ok
-  def start(socket) do
+  def start(state) do
     message = """
     Welcome to #{Config.game_name()}.
     Thank you for joining!.
@@ -31,15 +29,12 @@ defmodule Game.Session.CreateAccount do
 
     message = String.trim(message)
 
-    @socket.echo(socket, message)
-    @socket.prompt(socket, "Name: ")
+    Socket.echo(state, message)
+    Socket.prompt(state, "Name: ")
   end
 
-  def process(
-        password,
-        state = %{socket: socket, create: %{name: name, email: email, race: race, class: class}}
-      ) do
-    socket |> @socket.tcp_option(:echo, true)
+  def process(password, state = %{create: %{name: name, email: email, race: race, class: class}}) do
+    state |> Socket.tcp_option(:echo, true)
 
     case Account.create(%{name: name, email: email, password: password}, %{
            race: race,
@@ -47,102 +42,102 @@ defmodule Game.Session.CreateAccount do
          }) do
       {:ok, user, character} ->
         PlayerInstrumenter.new_character()
-        user |> Login.login(character, socket, state |> Map.delete(:create))
+        user |> Login.login(character, state |> Map.delete(:create))
 
       {:error, changeset} ->
-        socket
-        |> @socket.echo(
+        state
+        |> Socket.echo(
           "There was a problem creating your account.\nPlease start over.\n#{
             changeset_errors(changeset)
           }"
         )
 
-        socket |> @socket.prompt("Name: ")
+        state |> Socket.prompt("Name: ")
         state |> Map.delete(:create)
     end
   end
 
-  def process(email, state = %{socket: socket, create: %{name: name, race: race, class: class}}) do
+  def process(email, state = %{create: %{name: name, race: race, class: class}}) do
     case email == "" || Regex.match?(~r/.+@.+\..+/, email) do
       true ->
-        socket |> @socket.prompt("Password: ")
-        socket |> @socket.tcp_option(:echo, false)
+        state |> Socket.prompt("Password: ")
+        state |> Socket.tcp_option(:echo, false)
         Map.merge(state, %{create: %{name: name, email: email, race: race, class: class}})
 
       false ->
-        socket |> @socket.echo("Invalid email, please enter again.")
-        socket |> email_prompt()
+        state |> Socket.echo("Invalid email, please enter again.")
+        state |> email_prompt()
         Map.merge(state, %{create: %{name: name, race: race, class: class}})
     end
   end
 
-  def process(class, state = %{socket: socket, create: %{name: name, race: race}}) do
+  def process(class, state = %{create: %{name: name, race: race}}) do
     class =
       Class.classes()
       |> Enum.find(fn cls -> String.downcase(cls.name) == String.downcase(class) end)
 
     case class do
       nil ->
-        socket |> class_prompt()
+        state |> class_prompt()
         state
 
       class ->
-        socket |> email_prompt()
+        state |> email_prompt()
         Map.merge(state, %{create: %{name: name, race: race, class: class}})
     end
   end
 
-  def process(race_name, state = %{socket: socket, create: %{name: name}}) do
+  def process(race_name, state = %{create: %{name: name}}) do
     race =
       Race.races()
       |> Enum.find(fn race -> String.downcase(race.name) == String.downcase(race_name) end)
 
     case race do
       nil ->
-        socket |> race_prompt
+        state |> race_prompt
         state
 
       race ->
-        socket |> class_prompt()
+        state |> class_prompt()
         Map.merge(state, %{create: %{name: name, race: race}})
     end
   end
 
-  def process(name, state = %{socket: socket}) do
+  def process(name, state) do
     case String.contains?(name, " ") do
       true ->
-        socket |> @socket.echo("Your name cannot contain spaces. Please pick a new one.")
-        socket |> @socket.prompt("Name: ")
+        state |> Socket.echo("Your name cannot contain spaces. Please pick a new one.")
+        state |> Socket.prompt("Name: ")
         state
 
       false ->
-        socket |> race_prompt()
+        state |> race_prompt()
         Map.merge(state, %{create: %{name: name}})
     end
   end
 
-  defp race_prompt(socket) do
+  defp race_prompt(state) do
     races =
       Race.races()
       |> Enum.map(fn race -> "\t- #{race.name()}" end)
       |> Enum.join("\n")
 
-    socket |> @socket.echo("Now to pick a race. Your options are:\n#{races}")
-    socket |> @socket.prompt("Race: ")
+    state |> Socket.echo("Now to pick a race. Your options are:\n#{races}")
+    state |> Socket.prompt("Race: ")
   end
 
-  defp class_prompt(socket) do
+  defp class_prompt(state) do
     classes =
       Class.classes()
       |> Enum.map(fn class -> "\t- #{class.name()}" end)
       |> Enum.join("\n")
 
-    socket |> @socket.echo("Now to pick a class. Your options are:\n#{classes}")
-    socket |> @socket.prompt("Class: ")
+    state |> Socket.echo("Now to pick a class. Your options are:\n#{classes}")
+    state |> Socket.prompt("Class: ")
   end
 
-  defp email_prompt(socket) do
-    socket |> @socket.prompt("Email (optional, enter for blank): ")
+  defp email_prompt(state) do
+    state |> Socket.prompt("Email (optional, enter for blank): ")
   end
 
   defp changeset_errors(%{errors: errors}) do

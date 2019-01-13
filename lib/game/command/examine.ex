@@ -41,19 +41,19 @@ defmodule Game.Command.Examine do
     case Item.find_item(items, item_name) do
       {:error, :not_found} ->
         message = gettext("\"%{name}\" could not be found.", name: item_name)
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:ok, item} ->
-        state.socket |> @socket.echo(FormatItems.item(item))
+        state |> Socket.echo(FormatItems.item(item))
     end
   end
 
-  def run({}, %{socket: socket}) do
+  def run({}, state) do
     message =
       gettext(
         "You don't know what to examine. See {command}help examine{/command} for more information."
       )
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 end

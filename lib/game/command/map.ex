@@ -91,7 +91,7 @@ defmodule Game.Command.Map do
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     state |> GMCP.map(mini_map)
 
-    state.socket |> @socket.echo(map)
+    state |> Socket.echo(map)
   end
 
   defp overworld_map(state = %{save: %{room_id: room_id}}) do
@@ -101,6 +101,6 @@ defmodule Game.Command.Map do
     mini_map = room.zone_id |> @zone.map({room.x, room.y}, mini: true)
     state |> GMCP.map(mini_map)
 
-    state.socket |> @socket.echo(map)
+    state |> Socket.echo(map)
   end
 end

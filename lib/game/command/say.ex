@@ -141,7 +141,7 @@ defmodule Game.Command.Say do
 
   def say(state = %{character: character, save: save}, parsed_message) do
     parsed_message = Message.format(parsed_message)
-    state.socket |> @socket.echo(FormatChannels.say(:you, parsed_message))
+    state |> Socket.echo(FormatChannels.say(:you, parsed_message))
     save.room_id |> @environment.say({:player, character}, Message.new(character, parsed_message))
   end
 
@@ -150,7 +150,7 @@ defmodule Game.Command.Say do
 
     case find_character(room, parsed_message.message, message: true) do
       {:error, :not_found} ->
-        state.socket |> @socket.echo(gettext("No character could be found matching your text."))
+        state |> Socket.echo(gettext("No character could be found matching your text."))
 
       directed_character ->
         message = Utility.strip_name(elem(directed_character, 1), parsed_message.message)
@@ -160,8 +160,8 @@ defmodule Game.Command.Say do
           |> Map.put(:message, message)
           |> Message.format()
 
-        state.socket
-        |> @socket.echo(FormatChannels.say_to(:you, directed_character, parsed_message))
+        message = FormatChannels.say_to(:you, directed_character, parsed_message)
+        state |> Socket.echo(message)
 
         room.id
         |> @environment.say(

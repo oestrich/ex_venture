@@ -42,12 +42,12 @@ defmodule Game.Command.Mistake do
   @impl Game.Command
   def run(command, state)
 
-  def run({:auto_combat}, %{socket: socket}) do
+  def run({:auto_combat}, state) do
     message =
       gettext(
         "There is no auto combat. Please read {command}help combat{/command} for more information."
       )
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 end

@@ -58,8 +58,8 @@ defmodule Game.Command.Greet do
   """
   def run(command, state)
 
-  def run({:greet, :help}, %{socket: socket}) do
-    socket |> @socket.echo(gettext("You are not sure who to greet."))
+  def run({:greet, :help}, state) do
+    state |> Socket.echo(gettext("You are not sure who to greet."))
   end
 
   def run({:greet, name}, state = %{save: %{room_id: room_id}}) do
@@ -81,13 +81,13 @@ defmodule Game.Command.Greet do
 
       npc ->
         @npc.greet(npc.id, state.character)
-        state.socket |> @socket.echo(gettext("You greet %{name}.", name: Format.npc_name(npc)))
+        state |> Socket.echo(gettext("You greet %{name}.", name: Format.npc_name(npc)))
     end
   end
 
   defp maybe_greet_player(:ok, _player_name, _state), do: :ok
 
-  defp maybe_greet_player(room, player_name, %{socket: socket}) do
+  defp maybe_greet_player(room, player_name, state) do
     player = room.players |> Enum.find(&Utility.matches?(&1, player_name))
 
     case player do
@@ -95,7 +95,7 @@ defmodule Game.Command.Greet do
         room
 
       player ->
-        socket |> @socket.echo(gettext("You greet %{name}.", name: Format.player_name(player)))
+        state |> Socket.echo(gettext("You greet %{name}.", name: Format.player_name(player)))
     end
   end
 end

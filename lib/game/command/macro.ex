@@ -5,7 +5,6 @@ defmodule Game.Command.Macro do
 
   defmacro __using__(_opts) do
     quote do
-      use Networking.Socket
       use Game.Environment
 
       import Game.Command.Macro, only: [commands: 1, commands: 2, gettext: 1, gettext: 2]
@@ -16,6 +15,7 @@ defmodule Game.Command.Macro do
       alias Game.Format
       alias Game.Message
       alias Game.Session
+      alias Game.Socket
 
       Module.register_attribute(__MODULE__, :commands, accumulate: true)
       Module.register_attribute(__MODULE__, :aliases, accumulate: true)

@@ -3,8 +3,6 @@ defmodule Game.Experience do
   Leveling up a character
   """
 
-  use Networking.Socket
-
   require Game.Gettext
 
   alias Data.ActionBar
@@ -13,6 +11,7 @@ defmodule Game.Experience do
   alias Game.Format
   alias Game.Player
   alias Game.Skills
+  alias Game.Socket
 
   @doc """
   Apply experience points to the user's save
@@ -51,7 +50,7 @@ defmodule Game.Experience do
             skill_name: Format.skill_name(skill)
           )
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
         ActionBar.maybe_add_action(save, %ActionBar.SkillAction{id: skill.id})
       end)
 

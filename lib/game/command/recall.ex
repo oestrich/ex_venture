@@ -68,7 +68,7 @@ defmodule Game.Command.Recall do
             points: min
           )
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -84,12 +84,12 @@ defmodule Game.Command.Recall do
 
         Session.teleport(self(), graveyard_id)
 
-        state.socket |> @socket.echo(gettext("Recalling to the zone's graveyard..."))
+        state |> Socket.echo(gettext("Recalling to the zone's graveyard..."))
 
         {:update, state}
 
       {:error, :no_graveyard} ->
-        state.socket |> @socket.echo(gettext("You cannot recall here."))
+        state |> Socket.echo(gettext("You cannot recall here."))
     end
   end
 end

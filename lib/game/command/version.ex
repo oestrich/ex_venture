@@ -51,6 +51,6 @@ defmodule Game.Command.Version do
     https://exventure.org - https://github.com/oestrich/ex_venture
     """
 
-    state.socket |> @socket.echo(version)
+    state |> Socket.echo(version)
   end
 end

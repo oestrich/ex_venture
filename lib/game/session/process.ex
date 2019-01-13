@@ -6,7 +6,6 @@ defmodule Game.Session.Process do
   """
 
   use GenServer, restart: :temporary
-  use Networking.Socket
   use Game.Environment
 
   require Logger
@@ -29,6 +28,7 @@ defmodule Game.Session.Process do
   alias Game.Session.Regen
   alias Game.Session.SessionStats
   alias Game.Session.State
+  alias Game.Socket
   alias Game.World.Master, as: WorldMaster
   alias Metrics.PlayerInstrumenter
 
@@ -123,26 +123,26 @@ defmodule Game.Session.Process do
     {:stop, :normal, state}
   end
 
-  def handle_cast({:disconnect, opts}, state = %{socket: socket}) when is_list(opts) do
+  def handle_cast({:disconnect, opts}, state) when is_list(opts) do
     case Keyword.get(opts, :reason) do
       "server shutdown" ->
-        state.socket |> @socket.echo("The server will be shutting down shortly.")
+        state |> Socket.echo("The server will be shutting down shortly.")
 
       _ ->
-        state.socket |> @socket.echo("You are being signed out.\nGood bye.")
+        state |> Socket.echo("You are being signed out.\nGood bye.")
     end
 
     Task.start(fn ->
       Process.sleep(@force_disconnect_period)
-      socket |> @socket.disconnect()
+      state |> Socket.disconnect()
     end)
 
     {:noreply, state}
   end
 
   # forward the echo the socket pid
-  def handle_cast({:echo, message}, state = %{socket: socket}) do
-    socket |> @socket.echo(message)
+  def handle_cast({:echo, message}, state) do
+    state |> Socket.echo(message)
     {:noreply, state}
   end
 
@@ -270,10 +270,10 @@ defmodule Game.Session.Process do
   def handle_info(:start, state) do
     case WorldMaster.is_world_online?() do
       true ->
-        state.socket |> Session.Login.start()
+        state |> Session.Login.start()
 
       false ->
-        state.socket |> @socket.echo("The world is not online yet. Please try again shortly.")
+        state |> Socket.echo("The world is not online yet. Please try again shortly.")
         self() |> Process.send_after({:disconnect, :world_not_alive}, 750)
     end
 
@@ -286,7 +286,7 @@ defmodule Game.Session.Process do
   end
 
   def handle_info({:disconnect, :world_not_alive}, state) do
-    state.socket |> @socket.disconnect()
+    state |> Socket.disconnect()
     {:noreply, state}
   end
 
@@ -326,7 +326,7 @@ defmodule Game.Session.Process do
 
   def handle_info(:heartbeat, state) do
     state |> GMCP.heartbeat()
-    state.socket |> @socket.nop()
+    state |> Socket.nop()
     self() |> schedule_heartbeat()
     {:noreply, state}
   end
@@ -360,7 +360,7 @@ defmodule Game.Session.Process do
   end
 
   def handle_info({:skill, :ready, skill}, state) do
-    state.socket |> @socket.echo("#{Format.skill_name(skill)} is ready.")
+    state |> Socket.echo("#{Format.skill_name(skill)} is ready.")
     state |> GMCP.skill_state(skill, active: true)
     skills = Map.delete(state.skills, skill.id)
     state = Map.put(state, :skills, skills)
@@ -393,9 +393,9 @@ defmodule Game.Session.Process do
   @doc """
   Send the prompt to the user's socket
   """
-  def prompt(state = %{socket: socket, save: save}) do
+  def prompt(state) do
     state |> GMCP.vitals()
-    socket |> @socket.prompt(FormatPlayers.prompt(save))
+    state |> Socket.prompt(FormatPlayers.prompt(state.save))
     state
   end
 
@@ -433,8 +433,8 @@ defmodule Game.Session.Process do
         state = %{state | is_afk: true}
         Session.Registry.update(%{state.character | save: state.save}, state)
 
-        state.socket
-        |> @socket.echo("You seem to be idle, setting you to {command}AFK{/command}.")
+        message = "You seem to be idle, setting you to {command}AFK{/command}."
+        state |> Socket.echo(message)
 
         Hint.gate(state, "afk.started")
 

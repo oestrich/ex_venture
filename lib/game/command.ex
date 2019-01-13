@@ -5,6 +5,8 @@ defmodule Game.Command do
 
   import Game.Gettext, only: [dgettext: 2]
 
+  alias Game.Socket
+
   defstruct text: "",
             module: nil,
             args: {},
@@ -67,8 +69,6 @@ defmodule Game.Command do
       use Game.Command.Macro
     end
   end
-
-  use Networking.Socket
 
   require Logger
 
@@ -193,7 +193,7 @@ defmodule Game.Command do
   @spec run({atom(), tuple()}, State.t()) :: :ok
   def run({:skip, {}}, _state), do: :ok
 
-  def run({:error, :bad_parse, command}, %{socket: socket}) do
+  def run({:error, :bad_parse, command}, state) do
     Insight.bad_command(command)
 
     Logger.info(
@@ -204,10 +204,10 @@ defmodule Game.Command do
     message =
       dgettext("commands", "Unknown command, type {command}help{/command} for assistance.")
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
-  def run(command = %__MODULE__{module: module, args: args}, state = %{socket: socket}) do
+  def run(command = %__MODULE__{module: module, args: args}, state) do
     started_run_at = System.monotonic_time()
 
     case module.must_be_alive? do
@@ -215,7 +215,7 @@ defmodule Game.Command do
         case state do
           %{save: %{stats: %{health_points: health_points}}} when health_points <= 0 ->
             message = dgettext("commands", "You are passed out and cannot perform this action.")
-            socket |> @socket.echo(message)
+            state |> Socket.echo(message)
 
           _ ->
             args

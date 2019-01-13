@@ -48,20 +48,20 @@ defmodule Game.Command.Debug do
   def run({:squabble}, state) do
     case "admin" in state.user.flags do
       true ->
-        state.socket |> @socket.echo(String.trim(debug_info()))
+        state |> Socket.echo(String.trim(debug_info()))
 
       false ->
-        state.socket |> @socket.echo(gettext("You must be an admin to use this command."))
+        state |> Socket.echo(gettext("You must be an admin to use this command."))
     end
   end
 
   def run({:players}, state) do
     case "admin" in state.user.flags do
       true ->
-        state.socket |> @socket.echo(String.trim(players()))
+        state |> Socket.echo(String.trim(players()))
 
       false ->
-        state.socket |> @socket.echo(gettext("You must be an admin to use this command."))
+        state |> Socket.echo(gettext("You must be an admin to use this command."))
     end
   end
 

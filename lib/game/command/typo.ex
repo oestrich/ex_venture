@@ -29,22 +29,22 @@ defmodule Game.Command.Typo do
   @impl Game.Command
   def run(command, state)
 
-  def run({}, %{socket: socket}) do
+  def run({}, state) do
     message =
       gettext(
         "Please provide a typo title. See {command}help typo{/command} for more information."
       )
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
-  def run({typo_title}, state = %{socket: socket}) do
+  def run({typo_title}, state) do
     message =
       gettext(
         "Please enter in any more information you have (an empty new line will finish entering text): "
       )
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     commands =
       state
@@ -63,7 +63,7 @@ defmodule Game.Command.Typo do
     {:update, state}
   end
 
-  def editor(:complete, state = %{socket: socket}) do
+  def editor(:complete, state) do
     typo = state.commands.typo
 
     params = %{
@@ -73,7 +73,7 @@ defmodule Game.Command.Typo do
       room_id: state.save.room_id
     }
 
-    params |> create_typo(socket)
+    params |> create_typo(state)
 
     commands =
       state
@@ -83,12 +83,12 @@ defmodule Game.Command.Typo do
     {:update, Map.put(state, :commands, commands)}
   end
 
-  defp create_typo(params, socket) do
+  defp create_typo(params, state) do
     changeset = %Typo{} |> Typo.changeset(params)
 
     case changeset |> Repo.insert() do
       {:ok, _typo} ->
-        socket |> @socket.echo(gettext("Your typo has been submitted. Thanks!"))
+        state |> Socket.echo(gettext("Your typo has been submitted. Thanks!"))
 
       {:error, changeset} ->
         error =
@@ -98,7 +98,7 @@ defmodule Game.Command.Typo do
           end)
 
         message = gettext("There was an issue creating the typo.")
-        socket |> @socket.echo("#{message}\n#{error}")
+        state |> Socket.echo("#{message}\n#{error}")
     end
   end
 end

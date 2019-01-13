@@ -56,26 +56,26 @@ defmodule Game.Command.Bug do
 
   def run({:list}, state) do
     bugs = Bugs.reported_by(state.character)
-    state.socket |> @socket.echo(Format.list_bugs(bugs))
+    state |> Socket.echo(Format.list_bugs(bugs))
   end
 
   def run({:read, id}, state) do
     case Bugs.get(state.character, id) do
       {:error, :not_found} ->
-        state.socket |> @socket.echo(gettext("Bug #%{id} not found.", id: id))
+        state |> Socket.echo(gettext("Bug #%{id} not found.", id: id))
 
       {:ok, bug} ->
-        state.socket |> @socket.echo(Format.show_bug(bug))
+        state |> Socket.echo(Format.show_bug(bug))
     end
   end
 
-  def run({:new, bug_title}, state = %{socket: socket}) do
+  def run({:new, bug_title}, state) do
     message =
       gettext(
         "Please enter in any more information you have (an empty new line will finish entering text): "
       )
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     commands =
       state
@@ -85,11 +85,11 @@ defmodule Game.Command.Bug do
     {:editor, __MODULE__, Map.put(state, :commands, commands)}
   end
 
-  def run({:unknown}, %{socket: socket}) do
+  def run({:unknown}, state) do
     message =
       gettext("Please provide a bug title. See {command}help bug{/command} for more information.")
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
   @impl Game.Command.Editor
@@ -102,7 +102,7 @@ defmodule Game.Command.Bug do
     {:update, state}
   end
 
-  def editor(:complete, state = %{socket: socket}) do
+  def editor(:complete, state) do
     bug = state.commands.bug
 
     params = %{
@@ -111,7 +111,7 @@ defmodule Game.Command.Bug do
       reporter_id: state.character.id
     }
 
-    params |> create_bug(socket)
+    create_bug(state, params)
 
     commands =
       state
@@ -121,12 +121,12 @@ defmodule Game.Command.Bug do
     {:update, Map.put(state, :commands, commands)}
   end
 
-  defp create_bug(params, socket) do
+  defp create_bug(state, params) do
     changeset = %Bug{} |> Bug.changeset(params)
 
     case changeset |> Repo.insert() do
       {:ok, _bug} ->
-        socket |> @socket.echo(gettext("Your bug has been submitted. Thanks!"))
+        state |> Socket.echo(gettext("Your bug has been submitted. Thanks!"))
 
       {:error, changeset} ->
         error =
@@ -136,7 +136,7 @@ defmodule Game.Command.Bug do
           end)
 
         message = gettext("There was an issue creating the bug.")
-        socket |> @socket.echo("#{message}\n#{error}")
+        state |> Socket.echo("#{message}\n#{error}")
     end
   end
 end

@@ -6,7 +6,6 @@ defmodule Game.Session.Login do
   creating an account if that is asked for.
   """
 
-  use Networking.Socket
   use Game.Environment
 
   import Game.Gettext, only: [dgettext: 2]
@@ -25,15 +24,15 @@ defmodule Game.Session.Login do
   alias Game.Session.Process
   alias Game.Session.GMCP
   alias Game.Session.Regen
+  alias Game.Socket
   alias Metrics.PlayerInstrumenter
   alias Web.Router.Helpers, as: Routes
 
   @doc """
   Start text for logging in
   """
-  @spec start(socket :: pid) :: :ok
-  def start(socket) do
-    socket |> @socket.echo("#{ExVenture.version()}\n#{MOTD.random_motd()}")
+  def start(state) do
+    state |> Socket.echo("#{ExVenture.version()}\n#{MOTD.random_motd()}")
 
     prompt =
       dgettext(
@@ -41,7 +40,7 @@ defmodule Game.Session.Login do
         "What is your player name? (Enter {command}create{/command} for a new account) "
       )
 
-    socket |> @socket.prompt(prompt)
+    state |> Socket.prompt(prompt)
   end
 
   @doc """
@@ -49,7 +48,7 @@ defmodule Game.Session.Login do
 
   Edit the state to be signed in and active
   """
-  def login(player, character, socket, state) do
+  def login(player, character, state) do
     self() |> Process.schedule_save()
     self() |> Process.schedule_inactive_check()
     self() |> Process.schedule_heartbeat()
@@ -61,7 +60,7 @@ defmodule Game.Session.Login do
       |> setup_state_after_login(player, character)
       |> Map.put(:state, "after_sign_in")
 
-    socket |> @socket.set_character_id(character.id)
+    state |> Socket.set_character_id(character.id)
     state |> CommandConfig.push_config(character.save.config)
     state |> GMCP.config_actions()
 
@@ -71,20 +70,18 @@ defmodule Game.Session.Login do
     #{MOTD.random_asim()}
     """
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     case Mail.unread_mail_for(player) do
       [] ->
         :ok
 
       _ ->
-        socket |> @socket.echo(dgettext("login", "You have mail."))
+        state |> Socket.echo(dgettext("login", "You have mail."))
     end
 
-    socket
-    |> @socket.echo(
-      dgettext("login", "{command send='Sign In'}\\[Press enter to continue\\]{/command}")
-    )
+    message = dgettext("login", "{command send='Sign In'}\\[Press enter to continue\\]{/command}")
+    state |> Socket.echo(message)
 
     state
   end
@@ -94,8 +91,8 @@ defmodule Game.Session.Login do
       finish_login(state, session)
     else
       {:error, :room, :missing} ->
-        state.socket |> @socket.echo(dgettext("login", "The room you were in has been deleted."))
-        state.socket |> @socket.echo(dgettext("login", "Sending you back to the starting room!"))
+        state |> Socket.echo(dgettext("login", "The room you were in has been deleted."))
+        state |> Socket.echo(dgettext("login", "Sending you back to the starting room!"))
 
         starting_save = Game.Config.starting_save()
 
@@ -140,10 +137,10 @@ defmodule Game.Session.Login do
     end
   end
 
-  def sign_in(character_id, state = %{socket: socket}) do
+  def sign_in(character_id, state) do
     case Authentication.find_character(character_id) do
       nil ->
-        socket |> @socket.disconnect()
+        state |> Socket.disconnect()
         state
 
       character ->
@@ -152,7 +149,7 @@ defmodule Game.Session.Login do
   end
 
   def process("create", state) do
-    state.socket |> Session.CreateAccount.start()
+    state |> Session.CreateAccount.start()
     state |> Map.put(:state, "create")
   end
 
@@ -165,28 +162,28 @@ defmodule Game.Session.Login do
     link = Routes.public_connection_url(Web.Endpoint, :authorize, id: state.id)
     echo = dgettext("login", "Please sign in via the website to authorize this connection.")
     echo = "#{echo}\n\n{link}#{link}{/link}"
-    state.socket |> @socket.echo(echo)
+    state |> Socket.echo(echo)
     Map.merge(state, %{login: %{name: message}})
   end
 
   defp process_login(character, state) do
     with :ok <- check_already_signed_in(character),
          :ok <- check_disabled(character.user) do
-      character.user |> login(character, state.socket, state |> Map.delete(:login))
+      character.user |> login(character, state |> Map.delete(:login))
     else
       {:error, :signed_in} ->
-        state.socket
-        |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
+        message = dgettext("login", "Sorry, this player is already logged in.")
+        state |> Socket.echo(message)
 
-        state.socket |> @socket.disconnect()
+        state |> Socket.disconnect()
         state
 
       {:error, :disabled} ->
         message =
           dgettext("login", "Sorry, your account has been disabled. Please contact the admins.")
 
-        state.socket |> @socket.echo(message)
-        state.socket |> @socket.disconnect()
+        state |> Socket.echo(message)
+        state |> Socket.disconnect()
         state
     end
   end
@@ -198,7 +195,7 @@ defmodule Game.Session.Login do
   def recover_session(character_id, state) do
     case Authentication.find_character(character_id) do
       nil ->
-        state.socket |> @socket.disconnect()
+        state |> Socket.disconnect()
         state
 
       character ->
@@ -206,13 +203,13 @@ defmodule Game.Session.Login do
     end
   end
 
-  defp process_recovery(character, state = %{socket: socket}) do
+  defp process_recovery(character, state) do
     with :ok <- check_already_signed_in(character) do
       character |> _recover_session(state)
     else
       {:error, :signed_in} ->
-        socket |> @socket.echo(dgettext("login", "Sorry, this player is already logged in."))
-        socket |> @socket.disconnect()
+        state |> Socket.echo(dgettext("login", "Sorry, this player is already logged in."))
+        state |> Socket.disconnect()
         state
     end
   end
@@ -223,7 +220,7 @@ defmodule Game.Session.Login do
     state = setup_state_after_login(state, character.user, character)
     state = after_sign_in(state, self())
 
-    state.socket |> @socket.echo(dgettext("login", "Session recovering..."))
+    state |> Socket.echo(dgettext("login", "Session recovering..."))
     state |> Process.prompt()
     state |> Regen.maybe_trigger_regen()
 

@@ -60,26 +60,26 @@ defmodule Game.Command.Crash do
   """
   def run(command, state)
 
-  def run({:room}, %{user: user, save: save, socket: socket}) do
+  def run({:room}, state = %{user: user, save: save}) do
     case "admin" in user.flags do
       true ->
         save.room_id |> @environment.crash()
-        socket |> @socket.echo("Sent a message to crash the room.")
+        state |> Socket.echo("Sent a message to crash the room.")
 
       false ->
-        socket |> @socket.echo("You must be an admin to perform this.")
+        state |> Socket.echo("You must be an admin to perform this.")
     end
   end
 
-  def run({:zone}, %{user: user, save: save, socket: socket}) do
+  def run({:zone}, state = %{user: user, save: save}) do
     case "admin" in user.flags do
       true ->
         {:ok, room} = save.room_id |> @environment.look()
         room.zone_id |> @zone.crash()
-        socket |> @socket.echo("Sent a message to crash the zone.")
+        state |> Socket.echo("Sent a message to crash the zone.")
 
       false ->
-        socket |> @socket.echo("You must be an admin to perform this.")
+        state |> Socket.echo("You must be an admin to perform this.")
     end
   end
 end

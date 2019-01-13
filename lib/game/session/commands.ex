@@ -3,8 +3,6 @@ defmodule Game.Session.Commands do
   Module to hold functions related to command processing
   """
 
-  use Networking.Socket
-
   alias Game.Color
   alias Game.Command
   alias Game.Command.Pager
@@ -12,6 +10,7 @@ defmodule Game.Session.Commands do
   alias Game.Session
   alias Game.Session.Regen
   alias Game.Session.State
+  alias Game.Socket
 
   @doc """
   Parse and run a command from the user
@@ -84,7 +83,7 @@ defmodule Game.Session.Commands do
         message =
           "{red}ERROR{/red}: {white}The game is experiencing issues, the room is not online.{/white}"
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
         {:stop, :normal, :state}
 
       _ ->

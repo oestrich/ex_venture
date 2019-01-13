@@ -155,7 +155,7 @@ defmodule Game.Command.Skills do
   """
   def run(command, state)
 
-  def run({}, %{socket: socket, save: save}) do
+  def run({}, state = %{save: save}) do
     skills =
       save.skill_ids
       |> Skills.skills()
@@ -163,33 +163,33 @@ defmodule Game.Command.Skills do
       |> Enum.filter(& &1.is_enabled)
       |> Enum.sort_by(& &1.level)
 
-    socket |> @socket.echo(FormatSkills.skills(skills))
+    state |> Socket.echo(FormatSkills.skills(skills))
   end
 
-  def run({:all}, %{socket: socket, save: save}) do
+  def run({:all}, state = %{save: save}) do
     skills =
       save.skill_ids
       |> Skills.skills()
       |> Enum.sort_by(& &1.level)
 
-    socket |> @socket.echo(FormatSkills.skills(skills))
+    state |> Socket.echo(FormatSkills.skills(skills))
   end
 
-  def run({%{command: command}, command}, %{socket: socket, target: target})
+  def run({%{command: command}, command}, state = %{target: target})
       when is_nil(target) do
-    socket |> @socket.echo(gettext("You don't have a target."))
+    state |> Socket.echo(gettext("You don't have a target."))
   end
 
   def run({skill, :level_too_low}, state) do
     message =
       gettext("You are too low of a level to use %{skill}.", skill: FormatSkills.skill_name(skill))
 
-    state.socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
   def run({skill, :not_known}, state) do
     message = gettext("You do not know %{skill}.", skill: FormatSkills.skill_name(skill))
-    state.socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
   def run({skill, command}, state = %{save: %{room_id: room_id}, target: target}) do
@@ -207,14 +207,14 @@ defmodule Game.Command.Skills do
       use_skill(skill, target, state)
     else
       {:error, :not_found} ->
-        state.socket |> @socket.echo(gettext("Your target could not be found."))
+        state |> Socket.echo(gettext("Your target could not be found."))
 
       {:error, :skill, :level_too_low} ->
-        state.socket |> @socket.echo(gettext("You are not high enough level to use this skill."))
+        state |> Socket.echo(gettext("You are not high enough level to use this skill."))
 
       {:error, :skill_not_ready, remaining_seconds} ->
         message = gettext("%{skill} is not ready yet.", skill: FormatSkills.skill_name(skill))
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
         Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
         :ok
     end
@@ -260,7 +260,7 @@ defmodule Game.Command.Skills do
   end
 
   defp use_skill(skill, target, state) do
-    %{socket: socket, save: save = %{stats: stats}} = state
+    %{save: save = %{stats: stats}} = state
 
     {state, target} = maybe_change_target(state, skill, target)
 
@@ -284,7 +284,7 @@ defmodule Game.Command.Skills do
           FormatSkills.skill_usee(skill, user: {:player, state.character}, target: target)
         )
 
-        socket |> @socket.echo(FormatSkills.skill_user(skill, {:player, state.character}, target))
+        state |> Socket.echo(FormatSkills.skill_user(skill, {:player, state.character}, target))
         state |> GMCP.skill_state(skill, active: false)
 
         state =
@@ -299,7 +299,7 @@ defmodule Game.Command.Skills do
         message =
           gettext(~s(You don't have enough skill points to use "%{skill}".), skill: skill.command)
 
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
         {:update, state}
     end
   end
@@ -327,11 +327,11 @@ defmodule Game.Command.Skills do
       false ->
         case target do
           {:npc, npc} ->
-            {:update, state} = Target.target_npc(npc, state.socket, state)
+            {:update, state} = Target.target_npc(npc, state, state)
             {state, target}
 
           {:player, character} ->
-            {:update, state} = Target.target_player(character, state.socket, state)
+            {:update, state} = Target.target_player(character, state, state)
             {state, target}
         end
     end

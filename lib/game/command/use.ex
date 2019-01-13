@@ -69,38 +69,38 @@ defmodule Game.Command.Use do
   """
   def run(command, state)
 
-  def run({:use, item_name}, state = %{socket: socket, save: %{items: items}}) do
+  def run({:use, item_name}, state = %{save: %{items: items}}) do
     items = Items.items_keep_instance(items)
 
     case Item.find_item(items, item_name) do
       {:error, :not_found} ->
-        socket |> item_not_found(item_name)
+        state |> item_not_found(item_name)
 
       {:ok, item} ->
         state |> use_item(item)
     end
   end
 
-  def run({}, %{socket: socket}) do
+  def run({}, state) do
     message =
       gettext(
         "You are not sure what to use. See {command}help use{/command} for more information."
       )
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
-  defp item_not_found(socket, item_name) do
+  defp item_not_found(state, item_name) do
     message = gettext(~s("%{name}" could not be found.), name: item_name)
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
-  defp use_item(%{socket: socket}, {_, item = %{is_usable: false}}) do
+  defp use_item(state, {_, item = %{is_usable: false}}) do
     message = gettext("%{name} could not be used", name: FormatItems.item_name(item))
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
-  defp use_item(state = %{socket: socket, save: save}, {instance, item}) do
+  defp use_item(state = %{save: save}, {instance, item}) do
     player_effects = save |> Item.effects_on_player()
 
     effects =
@@ -131,7 +131,7 @@ defmodule Game.Command.Use do
     effects_message =
       Enum.join([description | FormatEffects.effects(effects, {:player, state.character})], "\n")
 
-    socket |> @socket.echo(effects_message)
+    state |> Socket.echo(effects_message)
 
     spend_item(state, instance)
   end

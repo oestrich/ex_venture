@@ -71,10 +71,10 @@ defmodule Game.Command.Listen do
 
     case room_has_noises?(room) do
       true ->
-        state.socket |> @socket.echo(FormatListen.to_room(room))
+        state |> Socket.echo(FormatListen.to_room(room))
 
       false ->
-        state.socket |> @socket.echo(gettext("Nothing can be heard."))
+        state |> Socket.echo(gettext("Nothing can be heard."))
     end
   end
 
@@ -83,13 +83,13 @@ defmodule Game.Command.Listen do
 
     with {:ok, room} <- room |> RoomHelpers.get_exit(direction),
          true <- room_has_noises?(room) do
-      state.socket |> @socket.echo(FormatListen.to_room(room))
+      state |> Socket.echo(FormatListen.to_room(room))
     else
       {:error, :not_found} ->
-        state.socket |> @socket.echo(gettext("There is no exit that direction to listen to."))
+        state |> Socket.echo(gettext("There is no exit that direction to listen to."))
 
       _ ->
-        state.socket |> @socket.echo(gettext("Nothing can be heard."))
+        state |> Socket.echo(gettext("Nothing can be heard."))
     end
   end
 

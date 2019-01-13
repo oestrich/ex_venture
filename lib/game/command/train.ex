@@ -104,15 +104,15 @@ defmodule Game.Command.Train do
 
         message = gettext("You have %{xp} XP to spend.", xp: spent_experience_points)
         message = "#{message}\n#{skill_table}"
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:error, :more_than_one_trainer} ->
         message = gettext("There are more than one trainer in this room. Please refer by name.")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:error, :not_found} ->
         message = gettext("There are no trainers in this room. Go find some!")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -122,11 +122,11 @@ defmodule Game.Command.Train do
     case find_trainer(room.npcs, name) do
       {:ok, trainer} ->
         skills = Skills.skills(trainer.extra.trainable_skills)
-        state.socket |> @socket.echo(FormatSkills.trainable_skills(trainer, skills))
+        state |> Socket.echo(FormatSkills.trainable_skills(trainer, skills))
 
       {:error, :not_found} ->
         message = gettext("There are no trainers by that name in this room. Go find them!")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -139,11 +139,11 @@ defmodule Game.Command.Train do
 
       {:error, :more_than_one_trainer} ->
         message = gettext("There are more than one trainer in this room. Please refer by name.")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:error, :not_found} ->
         message = gettext("There are no trainers in this room. Go find some!")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -156,7 +156,7 @@ defmodule Game.Command.Train do
 
       {:error, :not_found} ->
         message = gettext("There are no trainers by that name in this room. Go find them!")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -178,7 +178,7 @@ defmodule Game.Command.Train do
     case skill do
       nil ->
         message = gettext("Could not find skill \"%{name}\".", name: skill_name)
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       skill ->
         skill
@@ -191,7 +191,7 @@ defmodule Game.Command.Train do
     case Enum.member?(save.skill_ids, skill.id) do
       true ->
         message = gettext("%{name} is already known.", name: skill.name)
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       false ->
         skill
@@ -208,7 +208,7 @@ defmodule Game.Command.Train do
             name: skill.name
           )
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       false ->
         skill
@@ -229,7 +229,7 @@ defmodule Game.Command.Train do
         message =
           gettext("You do not have enough experience to spend to train %{name}.", name: skill.name)
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -244,7 +244,7 @@ defmodule Game.Command.Train do
         cost: skill_cost
       )
 
-    state.socket |> @socket.echo(message)
+    state |> Socket.echo(message)
 
     skill_ids = Enum.uniq([skill.id | save.skill_ids])
     spent_experience_points = save.spent_experience_points + skill_cost

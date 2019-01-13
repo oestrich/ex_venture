@@ -3,8 +3,6 @@ defmodule Game.Session.Character do
   Implementation for character callbacks
   """
 
-  use Networking.Socket
-
   alias Game.Account
   alias Game.Character
   alias Game.Experience
@@ -18,12 +16,13 @@ defmodule Game.Session.Character do
   alias Game.Session.Effects
   alias Game.Session.GMCP
   alias Game.Session.Regen
+  alias Game.Socket
 
   @doc """
   Callback for being targeted
   """
-  def targeted(state = %{socket: socket}, character) do
-    socket |> @socket.echo("You are being targeted by #{Format.name(character)}.")
+  def targeted(state, character) do
+    state |> Socket.echo("You are being targeted by #{Format.name(character)}.")
     state |> GMCP.counter_targeted(character)
 
     state
@@ -51,7 +50,7 @@ defmodule Game.Session.Character do
 
       false ->
         message = Enum.join(FormatEffects.effects(effects, target), "\n")
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
         state |> Session.Process.prompt()
         state
     end
@@ -63,7 +62,7 @@ defmodule Game.Session.Character do
   def notify(state, event)
 
   def notify(state, {"character/died", character, :character, who}) do
-    state.socket |> @socket.echo("#{Format.name(character)} has died.")
+    state |> Socket.echo("#{Format.name(character)} has died.")
     state |> GMCP.character_leave(character)
 
     # see if who is you
@@ -96,16 +95,16 @@ defmodule Game.Session.Character do
         state
 
       false ->
-        state.socket
-        |> @socket.echo("#{Format.name(character)} dropped #{Format.currency(currency)}.")
+        state
+        |> Socket.echo("#{Format.name(character)} dropped #{Format.currency(currency)}.")
 
         state
     end
   end
 
   def notify(state = %{save: save}, {"currency/receive", character, currency}) do
-    state.socket
-    |> @socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}.")
+    state
+    |> Socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}.")
 
     save = %{save | currency: save.currency + currency}
     Player.update_save(state, save)
@@ -117,8 +116,8 @@ defmodule Game.Session.Character do
         state
 
       false ->
-        state.socket
-        |> @socket.echo("#{Format.name(character)} dropped #{Format.item_name(item)}.")
+        state
+        |> Socket.echo("#{Format.name(character)} dropped #{Format.item_name(item)}.")
 
         state
     end
@@ -127,35 +126,35 @@ defmodule Game.Session.Character do
   def notify(state = %{save: save}, {"item/receive", character, instance}) do
     item = Items.item(instance)
 
-    state.socket
-    |> @socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}.")
+    state
+    |> Socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}.")
 
     save = %{save | items: [instance | save.items]}
     Player.update_save(state, save)
   end
 
   def notify(state, {"mail/new", mail}) do
-    state.socket
-    |> @socket.echo("You have new mail. {command}mail read #{mail.id}{/command} to read it.")
+    state
+    |> Socket.echo("You have new mail. {command}mail read #{mail.id}{/command} to read it.")
 
     state |> GMCP.mail_new(mail)
     state
   end
 
   def notify(state, {"player/offline", player}) do
-    state.socket |> @socket.echo("#{Format.player_name(player)} went offline.")
+    state |> Socket.echo("#{Format.player_name(player)} went offline.")
     state
   end
 
   def notify(state, {"player/online", player}) do
-    state.socket |> @socket.echo("#{Format.player_name(player)} is now online.")
+    state |> Socket.echo("#{Format.player_name(player)} is now online.")
     state
   end
 
   def notify(state, {"gossip/player-offline", game_name, player_name}) do
     name = "#{player_name}@#{game_name}"
     player = %{name: name}
-    state.socket |> @socket.echo("#{Format.player_name(player)} went offline.")
+    state |> Socket.echo("#{Format.player_name(player)} went offline.")
 
     state
   end
@@ -163,7 +162,7 @@ defmodule Game.Session.Character do
   def notify(state, {"gossip/player-online", game_name, player_name}) do
     name = "#{player_name}@#{game_name}"
     player = %{name: name}
-    state.socket |> @socket.echo("#{Format.player_name(player)} is now online.")
+    state |> Socket.echo("#{Format.player_name(player)} is now online.")
 
     state
   end
@@ -171,19 +170,19 @@ defmodule Game.Session.Character do
   def notify(state, {"room/entered", {character, reason}}) do
     case reason do
       {:enter, direction} ->
-        state.socket
-        |> @socket.echo(
+        state
+        |> Socket.echo(
           "#{Format.name(character)} enters from the {command}#{direction}{/command}."
         )
 
       :teleport ->
-        state.socket |> @socket.echo("#{Format.name(character)} warps in.")
+        state |> Socket.echo("#{Format.name(character)} warps in.")
 
       :login ->
-        state.socket |> @socket.echo("#{Format.name(character)} logs in.")
+        state |> Socket.echo("#{Format.name(character)} logs in.")
 
       :respawn ->
-        state.socket |> @socket.echo("#{Format.name(character)} respawns.")
+        state |> Socket.echo("#{Format.name(character)} respawns.")
     end
 
     state |> GMCP.character_enter(character)
@@ -193,13 +192,13 @@ defmodule Game.Session.Character do
   def notify(state, {"room/leave", {character, reason}}) do
     case reason do
       {:leave, direction} ->
-        state.socket
-        |> @socket.echo(
+        state
+        |> Socket.echo(
           "#{Format.name(character)} leaves heading {command}#{direction}{/command}."
         )
 
       :signout ->
-        state.socket |> @socket.echo("#{Format.name(character)} signs out.")
+        state |> Socket.echo("#{Format.name(character)} signs out.")
 
       :teleport ->
         :ok
@@ -220,7 +219,7 @@ defmodule Game.Session.Character do
 
   def notify(state, {"room/heard", message}) do
     state |> GMCP.room_heard(message)
-    state.socket |> @socket.echo(message.formatted)
+    state |> Socket.echo(message.formatted)
     state
   end
 
@@ -235,20 +234,20 @@ defmodule Game.Session.Character do
         state
 
       false ->
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
         state
     end
   end
 
   def notify(state, {"room/whisper", message}) do
     state |> GMCP.room_whisper(message)
-    state.socket |> @socket.echo(message.formatted)
+    state |> Socket.echo(message.formatted)
     state
   end
 
   def notify(state, {"quest/new", quest}) do
-    state.socket
-    |> @socket.echo("You received a new quest, #{Format.Quests.quest_name(quest)} (#{quest.id}).")
+    state
+    |> Socket.echo("You received a new quest, #{Format.Quests.quest_name(quest)} (#{quest.id}).")
 
     Hint.gate(state, "quests.new", id: quest.id)
 
@@ -292,7 +291,7 @@ defmodule Game.Session.Character do
   def maybe_target(state, _), do: state
 
   defp _target(state, player) do
-    state.socket |> @socket.echo("You are now targeting #{Format.name(player)}.")
+    state |> Socket.echo("You are now targeting #{Format.name(player)}.")
 
     state |> GMCP.target(player)
 
@@ -335,14 +334,14 @@ defmodule Game.Session.Character do
     state =
       case Experience.apply(state, level: level, experience_points: experience_points) do
         {:ok, experience, state} ->
-          state.socket |> @socket.echo("You received #{experience} experience points.")
+          state |> Socket.echo("You received #{experience} experience points.")
           state |> GMCP.vitals()
 
           state
 
         {:ok, :level_up, experience, state} ->
-          state.socket |> @socket.echo("You received #{experience} experience points.")
-          state.socket |> @socket.echo("You leveled up!")
+          state |> Socket.echo("You received #{experience} experience points.")
+          state |> Socket.echo("You leveled up!")
 
           # May add to the action bar
           state =

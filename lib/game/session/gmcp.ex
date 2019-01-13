@@ -3,13 +3,12 @@ defmodule Game.Session.GMCP do
   Helpers for pushing GMCP data
   """
 
-  use Networking.Socket
-
   alias Data.Exit
   alias Data.Room
   alias Game.Config
-  alias Game.Skills
   alias Game.Format
+  alias Game.Skills
+  alias Game.Socket
 
   @doc """
   Handle a GMCP request from the client
@@ -29,7 +28,7 @@ defmodule Game.Session.GMCP do
       end)
       |> Enum.into(%{})
 
-    state.socket |> @socket.push_gmcp("External.Discord.Info", data |> Poison.encode!())
+    state |> Socket.push_gmcp("External.Discord.Info", data |> Poison.encode!())
   end
 
   def handle_gmcp(state, "External.Discord.Get", _data) do
@@ -53,8 +52,7 @@ defmodule Game.Session.GMCP do
   @doc """
   Push Character data (save stats)
   """
-  @spec character(map) :: :ok
-  def character(%{socket: socket, character: character}) do
+  def character(state = %{character: character}) do
     data = %{
       name: character.name,
       level: character.save.level,
@@ -63,27 +61,25 @@ defmodule Game.Session.GMCP do
       }
     }
 
-    socket |> @socket.push_gmcp("Character.Info", data |> Poison.encode!())
+    state |> Socket.push_gmcp("Character.Info", data |> Poison.encode!())
   end
 
   @doc """
   Push Character.Vitals data (save stats)
   """
-  @spec vitals(map) :: :ok
-  def vitals(%{socket: socket, save: save}) do
+  def vitals(state = %{save: save}) do
     vitals =
       save.stats
       |> Map.put(:experience_towards_level, rem(save.experience_points, 1000))
 
-    socket |> @socket.push_gmcp("Character.Vitals", vitals |> Poison.encode!())
+    state |> Socket.push_gmcp("Character.Vitals", vitals |> Poison.encode!())
   end
 
   @doc """
   Push Room.Info data
   """
-  @spec room(map, Room.t(), [Item.t()]) :: :ok
-  def room(%{socket: socket}, room, items) do
-    socket |> @socket.push_gmcp("Room.Info", room |> room_info(items) |> Poison.encode!())
+  def room(state, room, items) do
+    state |> Socket.push_gmcp("Room.Info", room |> room_info(items) |> Poison.encode!())
   end
 
   @doc """
@@ -91,10 +87,9 @@ defmodule Game.Session.GMCP do
 
   Does not push directly to the socket
   """
-  @spec character_enter(map, Character.t()) :: {String.t(), map}
-  def character_enter(%{socket: socket}, character) do
-    socket
-    |> @socket.push_gmcp(
+  def character_enter(state, character) do
+    state
+    |> Socket.push_gmcp(
       "Room.Character.Enter",
       character |> character_info() |> Poison.encode!()
     )
@@ -105,10 +100,9 @@ defmodule Game.Session.GMCP do
 
   Does not push directly to the socket
   """
-  @spec character_leave(map, Character.t()) :: {String.t(), map}
-  def character_leave(%{socket: socket}, character) do
-    socket
-    |> @socket.push_gmcp(
+  def character_leave(state, character) do
+    state
+    |> Socket.push_gmcp(
       "Room.Character.Leave",
       character |> character_info() |> Poison.encode!()
     )
@@ -117,41 +111,36 @@ defmodule Game.Session.GMCP do
   @doc """
   Send the player's target info
   """
-  @spec target(map, Character.t()) :: :ok
-  def target(%{socket: socket}, character) do
-    socket
-    |> @socket.push_gmcp("Target.Character", character |> character_info() |> Poison.encode!())
+  def target(state, character) do
+    state
+    |> Socket.push_gmcp("Target.Character", character |> character_info() |> Poison.encode!())
   end
 
   @doc """
   A character targeted the player
   """
-  @spec counter_targeted(map, Character.t()) :: :ok
-  def counter_targeted(%{socket: socket}, character) do
-    socket |> @socket.push_gmcp("Target.You", character |> character_info() |> Poison.encode!())
+  def counter_targeted(state, character) do
+    state |> Socket.push_gmcp("Target.You", character |> character_info() |> Poison.encode!())
   end
 
   @doc """
   Send a target cleared message
   """
-  @spec clear_target(map) :: :ok
-  def clear_target(%{socket: socket}) do
-    socket |> @socket.push_gmcp("Target.Clear", "{}")
+  def clear_target(state) do
+    state |> Socket.push_gmcp("Target.Clear", "{}")
   end
 
   @doc """
   Send a map message
   """
-  @spec map(map, String.t()) :: :ok
-  def map(%{socket: socket}, map) do
-    socket |> @socket.push_gmcp("Zone.Map", %{map: map} |> Poison.encode!())
+  def map(state, map) do
+    state |> Socket.push_gmcp("Zone.Map", %{map: map} |> Poison.encode!())
   end
 
   @doc """
   Push a new channel message
   """
-  @spec channel_broadcast(State.t(), String.t(), Message.t()) :: :ok
-  def channel_broadcast(%{socket: socket}, channel, message) do
+  def channel_broadcast(state, channel, message) do
     data = %{
       channel: channel,
       from: character_info({message.type, message.sender}),
@@ -159,74 +148,68 @@ defmodule Game.Session.GMCP do
       formatted: message.formatted
     }
 
-    socket |> @socket.push_gmcp("Channels.Broadcast", Poison.encode!(data))
+    state |> Socket.push_gmcp("Channels.Broadcast", Poison.encode!(data))
   end
 
   @doc """
   Push a new tell
   """
-  @spec tell(State.t(), Character.t(), Message.t()) :: :ok
-  def tell(%{socket: socket}, character, message) do
+  def tell(state, character, message) do
     data = %{
       from: character_info(character),
       message: message.message
     }
 
-    socket |> @socket.push_gmcp("Channels.Tell", Poison.encode!(data))
+    state |> Socket.push_gmcp("Channels.Tell", Poison.encode!(data))
   end
 
   @doc """
   Push a new room heard
   """
-  @spec room_heard(State.t(), Message.t()) :: :ok
-  def room_heard(%{socket: socket}, message) do
+  def room_heard(state, message) do
     data = %{
       from: character_info({message.type, message.sender}),
       message: message.message
     }
 
-    socket |> @socket.push_gmcp("Room.Heard", Poison.encode!(data))
+    state |> Socket.push_gmcp("Room.Heard", Poison.encode!(data))
   end
 
   @doc """
   Push a new room whisper
   """
-  @spec room_whisper(State.t(), Message.t()) :: :ok
-  def room_whisper(%{socket: socket}, message) do
+  def room_whisper(state, message) do
     data = %{
       from: character_info({message.type, message.sender}),
       message: message.message
     }
 
-    socket |> @socket.push_gmcp("Room.Whisper", Poison.encode!(data))
+    state |> Socket.push_gmcp("Room.Whisper", Poison.encode!(data))
   end
 
   @doc """
   Push a new mail
   """
-  @spec mail_new(State.t(), Mail.t()) :: :ok
-  def mail_new(%{socket: socket}, mail) do
+  def mail_new(state, mail) do
     data = %{
       id: mail.id,
       from: player_info(mail.sender),
       title: mail.title
     }
 
-    socket |> @socket.push_gmcp("Mail.New", Poison.encode!(data))
+    state |> Socket.push_gmcp("Mail.New", Poison.encode!(data))
   end
 
   @doc """
   Push player configuration to the client
   """
-  @spec config(State.t(), map()) :: :ok
-  def config(%{socket: socket}, config) do
-    socket |> @socket.push_gmcp("Config.Update", Poison.encode!(config))
+  def config(state, config) do
+    state |> Socket.push_gmcp("Config.Update", Poison.encode!(config))
   end
 
   @doc """
   Send the player's configured action bar
   """
-  @spec config_actions(State.t()) :: :ok
   def config_actions(state) do
     actions =
       state.character.save.actions
@@ -235,7 +218,7 @@ defmodule Game.Session.GMCP do
 
     data = %{actions: actions}
 
-    state.socket |> @socket.push_gmcp("Config.Actions", Poison.encode!(data))
+    state |> Socket.push_gmcp("Config.Actions", Poison.encode!(data))
   end
 
   def config_action_transform(action = %{type: "skill"}) do
@@ -255,16 +238,14 @@ defmodule Game.Session.GMCP do
   @doc """
   Push Core.Heartbeat
   """
-  @spec heartbeat(map) :: :ok
-  def heartbeat(%{socket: socket}) do
-    socket |> @socket.push_gmcp("Core.Heartbeat", Poison.encode!(%{}))
+  def heartbeat(state) do
+    state |> Socket.push_gmcp("Core.Heartbeat", Poison.encode!(%{}))
   end
 
   @doc """
   Let the player know the skill is inactive
   """
-  @spec skill_state(State.t(), Skill.t(), Keyword.t()) :: :ok
-  def skill_state(%{socket: socket}, skill, opts) do
+  def skill_state(state, skill, opts) do
     data = %{
       key: skill.api_id,
       name: skill.name,
@@ -272,13 +253,12 @@ defmodule Game.Session.GMCP do
       active: opts[:active]
     }
 
-    socket |> @socket.push_gmcp("Character.Skill", Poison.encode!(data))
+    state |> Socket.push_gmcp("Character.Skill", Poison.encode!(data))
   end
 
   @doc """
   Send the player's skills
   """
-  @spec character_skills(State.t()) :: :ok
   def character_skills(state) do
     skills =
       state.character.save.skill_ids
@@ -295,20 +275,19 @@ defmodule Game.Session.GMCP do
 
     data = %{skills: skills}
 
-    state.socket |> @socket.push_gmcp("Character.Skills", Poison.encode!(data))
+    state |> Socket.push_gmcp("Character.Skills", Poison.encode!(data))
   end
 
   @doc """
   Send discord status
   """
-  @spec discord_status(State.t()) :: :ok
   def discord_status(state) do
     data = %{
       game: Config.game_name(),
       starttime: state.session_started_at |> Timex.to_unix()
     }
 
-    state.socket |> @socket.push_gmcp("External.Discord.Status", data |> Poison.encode!())
+    state |> Socket.push_gmcp("External.Discord.Status", data |> Poison.encode!())
   end
 
   defp room_info(room, items) do
@@ -328,7 +307,6 @@ defmodule Game.Session.GMCP do
   @doc """
   Get info for an NPC or a User
   """
-  @spec character_info(Character.t()) :: map()
   def character_info({:player, player}), do: player_info(player)
   def character_info({:npc, npc}), do: npc_info(npc)
   def character_info({:gossip, player_name}), do: gossip_info(player_name)
@@ -336,7 +314,6 @@ defmodule Game.Session.GMCP do
   @doc """
   Gather information for a player
   """
-  @spec player_info(User.t()) :: map
   def player_info(player) do
     %{
       type: :player,
@@ -348,7 +325,6 @@ defmodule Game.Session.GMCP do
   @doc """
   Gather information for a npc
   """
-  @spec npc_info(NPC.t()) :: map
   def npc_info(npc) do
     %{
       type: :npc,
@@ -360,7 +336,6 @@ defmodule Game.Session.GMCP do
   @doc """
   Gather information for a Gossip player
   """
-  @spec gossip_info(String.t()) :: map()
   def gossip_info(player_name) do
     %{
       type: :gossip,

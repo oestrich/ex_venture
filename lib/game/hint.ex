@@ -4,11 +4,11 @@ defmodule Game.Hint do
   """
 
   use ExVenture.TextCompiler, "help/hint.help"
-  use Networking.Socket
 
   import Game.Format.Context, only: [context: 0, assign: 2]
 
   alias Game.Format
+  alias Game.Socket
 
   def hint(key, context) do
     assigns = Enum.into(context, %{})
@@ -25,7 +25,7 @@ defmodule Game.Hint do
   def gate(state, key, context \\ %{}) do
     case state.save.config.hints do
       true ->
-        state.socket |> @socket.echo("{hint}HINT{/hint}: #{hint(key, context)}")
+        state |> Socket.echo("{hint}HINT{/hint}: #{hint(key, context)}")
 
       false ->
         :ok

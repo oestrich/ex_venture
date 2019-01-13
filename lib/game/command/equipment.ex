@@ -52,7 +52,7 @@ defmodule Game.Command.Equipment do
   """
   def run(command, state)
 
-  def run({}, %{socket: socket, save: %{wearing: wearing, wielding: wielding}}) do
+  def run({}, state = %{save: %{wearing: wearing, wielding: wielding}}) do
     wearing =
       wearing
       |> Enum.reduce(%{}, fn {slot, instance}, wearing ->
@@ -65,7 +65,6 @@ defmodule Game.Command.Equipment do
         Map.put(wielding, hand, Items.item(instance))
       end)
 
-    socket |> @socket.echo(FormatItems.equipment(wearing, wielding))
-    :ok
+    state |> Socket.echo(FormatItems.equipment(wearing, wielding))
   end
 end

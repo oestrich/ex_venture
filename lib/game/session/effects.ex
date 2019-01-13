@@ -5,7 +5,6 @@ defmodule Game.Session.Effects do
 
   use Game.Environment
   use Game.Zone
-  use Networking.Socket
 
   require Logger
 
@@ -14,6 +13,7 @@ defmodule Game.Session.Effects do
   alias Game.Format.Effects, as: FormatEffects
   alias Game.Player
   alias Game.Session.Process
+  alias Game.Socket
 
   import Game.Session, only: [echo: 2]
   import Game.Character.Helpers, only: [update_effect_count: 2, is_alive?: 1]
@@ -129,7 +129,7 @@ defmodule Game.Session.Effects do
       |> FormatEffects.effects({:player, state.character})
       |> Enum.join("\n")
 
-    state.socket |> @socket.echo(effects_message)
+    state |> Socket.echo(effects_message)
 
     state.character |> maybe_died(state, from)
     state |> Process.prompt()

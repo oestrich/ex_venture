@@ -103,7 +103,7 @@ defmodule Game.Command.Look do
          room_exit <- Exit.exit_to(room, direction),
          {:ok, room} <- @environment.look(room_exit.finish_id) do
       room_exit = Proficiencies.load_requirements(room_exit)
-      state.socket |> @socket.echo(FormatRooms.peak_room(room_exit, room))
+      state |> Socket.echo(FormatRooms.peak_room(room_exit, room))
     else
       :overworld ->
         :ok
@@ -113,7 +113,7 @@ defmodule Game.Command.Look do
 
       _ ->
         message = gettext("Nothing can be seen %{direction}.", direction: direction)
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -143,7 +143,7 @@ defmodule Game.Command.Look do
     state |> GMCP.room(room, items)
     state |> GMCP.map(mini_map)
 
-    state.socket |> @socket.echo(FormatRooms.room(room, items, room_map))
+    state |> Socket.echo(FormatRooms.room(room, items, room_map))
 
     maybe_hint_quest(state, room)
   end
@@ -154,7 +154,7 @@ defmodule Game.Command.Look do
     state |> GMCP.map(mini_map)
 
     room = remove_yourself(room, state)
-    state.socket |> @socket.echo(FormatRooms.overworld_room(room, mini_map))
+    state |> Socket.echo(FormatRooms.overworld_room(room, mini_map))
   end
 
   defp maybe_hint_quest(state, room) do
@@ -185,7 +185,7 @@ defmodule Game.Command.Look do
 
   defp maybe_look_item(room = %Overworld{}, _item_name, _state), do: room
 
-  defp maybe_look_item(room, item_name, %{socket: socket}) do
+  defp maybe_look_item(room, item_name, state) do
     item =
       room.items
       |> Items.items_keep_instance()
@@ -196,13 +196,13 @@ defmodule Game.Command.Look do
         room
 
       {:ok, {_instance, item}} ->
-        socket |> @socket.echo(FormatItems.item(item))
+        state |> Socket.echo(FormatItems.item(item))
     end
   end
 
   defp maybe_look_npc(:ok, _name, _state), do: :ok
 
-  defp maybe_look_npc(room, npc_name, %{socket: socket}) do
+  defp maybe_look_npc(room, npc_name, state) do
     npc = room.npcs |> Enum.find(&Utility.matches?(&1, npc_name))
 
     case npc do
@@ -210,13 +210,13 @@ defmodule Game.Command.Look do
         room
 
       npc ->
-        socket |> @socket.echo(FormatNPCs.npc_full(npc))
+        state |> Socket.echo(FormatNPCs.npc_full(npc))
     end
   end
 
   defp maybe_look_player(:ok, _name, _state), do: :ok
 
-  defp maybe_look_player(room, player_name, %{socket: socket}) do
+  defp maybe_look_player(room, player_name, state) do
     player = room.players |> Enum.find(&Utility.matches?(&1, player_name))
 
     case player do
@@ -224,7 +224,7 @@ defmodule Game.Command.Look do
         room
 
       player ->
-        socket |> @socket.echo(FormatPlayers.player_full(player))
+        state |> Socket.echo(FormatPlayers.player_full(player))
     end
   end
 
@@ -232,7 +232,7 @@ defmodule Game.Command.Look do
 
   defp maybe_look_feature(room = %Overworld{}, _item_name, _state), do: room
 
-  defp maybe_look_feature(room, key, %{socket: socket}) do
+  defp maybe_look_feature(room, key, state) do
     feature = room.features |> Enum.find(&Utility.matches?(&1.key, key))
 
     case feature do
@@ -240,13 +240,13 @@ defmodule Game.Command.Look do
         room
 
       feature ->
-        socket |> @socket.echo(feature.description)
+        state |> Socket.echo(feature.description)
     end
   end
 
   defp could_not_find(:ok, _name, _state), do: :ok
 
-  defp could_not_find(_, name, %{socket: socket}) do
-    socket |> @socket.echo(gettext("Could not find \"%{name}\".", name: name))
+  defp could_not_find(_, name, state) do
+    state |> Socket.echo(gettext("Could not find \"%{name}\".", name: name))
   end
 end

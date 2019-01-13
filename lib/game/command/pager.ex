@@ -3,12 +3,12 @@ defmodule Game.Command.Pager do
   Paginate text to the user
   """
 
-  use Networking.Socket
-
   @default_lines 20
 
   import Game.Gettext, only: [dgettext: 2]
   import Game.Session.Process, only: [prompt: 1]
+
+  alias Game.Socket
 
   @doc """
   Paginate text
@@ -27,8 +27,8 @@ defmodule Game.Command.Pager do
   @doc """
   Display all text, then quit pagination.
   """
-  def all(state = %{socket: socket, pagination: %{text: text}}) do
-    socket |> @socket.echo(text)
+  def all(state = %{pagination: %{text: text}}) do
+    state |> Socket.echo(text)
     state |> quit()
   end
 
@@ -43,7 +43,7 @@ defmodule Game.Command.Pager do
     |> Map.delete(:pagination)
   end
 
-  defp _paginate(state = %{socket: socket, pagination: %{text: text}}, lines) do
+  defp _paginate(state = %{pagination: %{text: text}}, lines) do
     {to_print, to_save} =
       text
       |> String.trim("\n")
@@ -51,7 +51,7 @@ defmodule Game.Command.Pager do
       |> Enum.split(lines)
 
     to_print = Enum.join(to_print, "\n")
-    socket |> @socket.echo(to_print)
+    state |> Socket.echo(to_print)
 
     case to_save |> length() do
       0 ->
@@ -63,7 +63,7 @@ defmodule Game.Command.Pager do
         message =
           "#{pager}: \\[{command}Enter{/command}, {command}All{/command}, {command}Quit{/command}\\] > "
 
-        socket |> @socket.prompt(message)
+        state |> Socket.prompt(message)
 
         to_save = Enum.join(to_save, "\n")
 

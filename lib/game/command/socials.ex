@@ -95,7 +95,7 @@ defmodule Game.Command.Socials do
         state |> social_not_found(social)
 
       social ->
-        state.socket |> @socket.echo(FormatSocials.social(social))
+        state |> Socket.echo(FormatSocials.social(social))
     end
 
     :ok
@@ -112,7 +112,7 @@ defmodule Game.Command.Socials do
         save.room_id
         |> @environment.emote({:player, state.character}, Message.social(state.character, emote))
 
-        state.socket |> @socket.echo(emote)
+        state |> Socket.echo(emote)
     end
 
     :ok
@@ -129,7 +129,7 @@ defmodule Game.Command.Socials do
         case find_character(room, character_name) do
           {:error, :not_found} ->
             message = gettext("\"%{name}\" could not be found.", name: character_name)
-            state.socket |> @socket.echo(message)
+            state |> Socket.echo(message)
 
           character ->
             emote = FormatSocials.social_with_target(social, state.character, character)
@@ -137,7 +137,7 @@ defmodule Game.Command.Socials do
             save.room_id
             |> @environment.emote({:player, character}, Message.social(state.character, emote))
 
-            state.socket |> @socket.echo(emote)
+            state |> Socket.echo(emote)
         end
     end
 
@@ -152,6 +152,6 @@ defmodule Game.Command.Socials do
       )
     ]
 
-    state.socket |> @socket.echo(Enum.join(lines, " "))
+    state |> Socket.echo(Enum.join(lines, " "))
   end
 end

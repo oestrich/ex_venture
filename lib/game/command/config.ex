@@ -101,17 +101,17 @@ defmodule Game.Command.Config do
             message =
               "Cannot turn on #{config_name}. See {command}help config{/command} for more information."
 
-            state.socket |> @socket.echo(message)
+            state |> Socket.echo(message)
 
           false ->
             update_config(config_name, true, state)
         end
 
       false ->
-        state.socket
-        |> @socket.echo(
+        message =
           gettext("Unknown configuration option, \"%{config_name}\".", config_name: config_name)
-        )
+
+        state |> Socket.echo(message)
     end
   end
 
@@ -123,17 +123,17 @@ defmodule Game.Command.Config do
             message =
               "Cannot turn off #{config_name}. See {command}help config{/command} for more information."
 
-            state.socket |> @socket.echo(message)
+            state |> Socket.echo(message)
 
           false ->
             update_config(config_name, false, state)
         end
 
       false ->
-        state.socket
-        |> @socket.echo(
+        message =
           gettext("Unknown configuration option, \"%{config_name}\".", config_name: config_name)
-        )
+
+        state |> Socket.echo(message)
     end
   end
 
@@ -154,14 +154,14 @@ defmodule Game.Command.Config do
                 config_name: config_name
               )
 
-            state.socket |> @socket.echo(message)
+            state |> Socket.echo(message)
         end
 
       false ->
         message =
           gettext("Unknown configuration option, \"%{config_name}\".", config_name: config_name)
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
@@ -173,16 +173,16 @@ defmodule Game.Command.Config do
         update_config(config_name, value, state)
 
       :error ->
-        state.socket
-        |> @socket.echo(
+        message =
           gettext("There was a problem saving your config, it appears to be in the wrong format.")
-        )
+
+        state |> Socket.echo(message)
 
       {:error, :bad_config} ->
-        state.socket
-        |> @socket.echo(
+        message =
           gettext("There was a problem saving your config, this config cannot be set.")
-        )
+
+        state |> Socket.echo(message)
     end
   end
 
@@ -201,13 +201,13 @@ defmodule Game.Command.Config do
     case value do
       true ->
         message = gettext("{white}%{config_name}{/white} is turned on.", config_name: config_name)
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       false ->
         message =
           gettext("{white}%{config_name}{/white} is turned off.", config_name: config_name)
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       string when is_binary(string) ->
         message =
@@ -216,7 +216,7 @@ defmodule Game.Command.Config do
             string: string
           )
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       integer when is_integer(integer) ->
         message =
@@ -225,7 +225,7 @@ defmodule Game.Command.Config do
             integer: integer
           )
 
-        state.socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
 
     state |> push_config(config)
@@ -238,7 +238,7 @@ defmodule Game.Command.Config do
   """
   @spec push_config(State.t(), map()) :: :ok
   def push_config(state, config) do
-    state.socket |> @socket.set_config(config)
+    state |> Socket.set_config(config)
     state |> GMCP.config(config)
     :ok
   end

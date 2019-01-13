@@ -49,6 +49,6 @@ defmodule Game.Command.Proficiencies do
 
   def run({}, state = %{save: save}) do
     proficiencies = Proficiencies.proficiencies(save.proficiencies)
-    state.socket |> @socket.echo(ProficienciesFormat.proficiencies(proficiencies))
+    state |> Socket.echo(ProficienciesFormat.proficiencies(proficiencies))
   end
 end

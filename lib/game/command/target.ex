@@ -74,14 +74,14 @@ defmodule Game.Command.Target do
     {:update, Map.put(state, :target, nil)}
   end
 
-  def run({:set, target}, state = %{socket: socket, save: %{room_id: room_id}}) do
+  def run({:set, target}, state = %{save: %{room_id: room_id}}) do
     {:ok, room} = @environment.look(room_id)
-    socket |> target_character(target, room, state)
+    state |> target_character(target, room, state)
   end
 
-  def run({}, %{socket: socket, save: %{room_id: room_id}, target: target}) do
+  def run({}, state = %{save: %{room_id: room_id}, target: target}) do
     {:ok, room} = @environment.look(room_id)
-    socket |> display_target(target, room)
+    state |> display_target(target, room)
     :ok
   end
 
@@ -89,17 +89,17 @@ defmodule Game.Command.Target do
   Target a character (NPC or PC)
   """
   @spec target_character(pid, String.t(), Room.t(), map) :: :ok | {:update, map}
-  def target_character(socket, target, room, state) do
+  def target_character(state, target, room, state) do
     case find_target(state, target, room.players, room.npcs) do
       nil ->
         message = gettext(~s(Could not find target "%{name}".), name: target)
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
 
       {:npc, npc} ->
-        npc |> target_npc(socket, state)
+        npc |> target_npc(state, state)
 
       {:player, player} ->
-        player |> target_player(socket, state)
+        player |> target_player(state, state)
     end
   end
 
@@ -107,12 +107,12 @@ defmodule Game.Command.Target do
   Target an NPC
   """
   @spec target_npc(NPC.t(), pid, map) :: {:update, map}
-  def target_npc(npc, socket, state)
+  def target_npc(npc, state, state)
 
-  def target_npc(npc = %{id: id}, socket, state) do
+  def target_npc(npc = %{id: id}, state, state) do
     Character.being_targeted({:npc, id}, {:player, state.character})
     message = gettext("You are now targeting %{name}.", name: Format.npc_name(npc))
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
     state |> GMCP.target({:npc, npc})
 
     {:update, Map.put(state, :target, {:npc, id})}
@@ -124,20 +124,20 @@ defmodule Game.Command.Target do
   Does not target if the target is too low of health
   """
   @spec target_player(User.t(), pid, map) :: :ok | {:update, map}
-  def target_player(player, socket, state)
+  def target_player(player, state, state)
 
-  def target_player(player = %{save: %{stats: %{health_points: health_points}}}, socket, _state)
+  def target_player(player = %{save: %{stats: %{health_points: health_points}}}, state, _state)
       when health_points < 1 do
     message =
       gettext("%{name} could not be targeted.", name: Format.target_name({:player, player}))
 
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
   end
 
-  def target_player(player = %{id: id}, socket, state) do
+  def target_player(player = %{id: id}, state, state) do
     Character.being_targeted({:player, id}, {:player, state.character})
     message = gettext("You are now targeting %{name}.", name: Format.player_name(player))
-    socket |> @socket.echo(message)
+    state |> Socket.echo(message)
     state |> GMCP.target({:player, player})
 
     {:update, Map.put(state, :target, {:player, id})}
@@ -147,31 +147,31 @@ defmodule Game.Command.Target do
   Display your target
   """
   @spec display_target(pid, Character.t(), map) :: :ok
-  def display_target(socket, target, room)
+  def display_target(state, target, room)
 
-  def display_target(socket, nil, _room) do
-    socket |> @socket.echo(gettext("You don't have a target."))
+  def display_target(state, nil, _room) do
+    state |> Socket.echo(gettext("You don't have a target."))
   end
 
-  def display_target(socket, {:npc, npc_id}, room) do
+  def display_target(state, {:npc, npc_id}, room) do
     case Enum.find(room.npcs, &(&1.id == npc_id)) do
       nil ->
-        socket |> @socket.echo(gettext("Your target could not be found."))
+        state |> Socket.echo(gettext("Your target could not be found."))
 
       npc ->
         message = gettext("Your target is %{name}.", name: Format.npc_name(npc))
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
-  def display_target(socket, {:player, player_id}, room) do
+  def display_target(state, {:player, player_id}, room) do
     case Enum.find(room.players, &(&1.id == player_id)) do
       nil ->
-        socket |> @socket.echo(gettext("Your target could not be found."))
+        state |> Socket.echo(gettext("Your target could not be found."))
 
       player ->
         message = gettext("Your target is %{name}.", name: Format.player_name(player))
-        socket |> @socket.echo(message)
+        state |> Socket.echo(message)
     end
   end
 
