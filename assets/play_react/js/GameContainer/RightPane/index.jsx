@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { theme } from '../../theme.js';
+import VmlParser from '../../SharedComponents/VmlParser.jsx';
 
 const ZoneName = styled.div`
   display: flex;
@@ -11,10 +12,12 @@ const ZoneName = styled.div`
 `;
 
 const ZoneMap = styled.div`
+  display: flex;
   white-space: pre;
   font-family: 'Lucida Console', Monaco, monospace;
   font-size: 12px;
   font-weight: bold;
+  justify-content: center;
 `;
 
 const RightPane = ({ zoneMap, zoneName }) => {
@@ -24,32 +27,17 @@ const RightPane = ({ zoneMap, zoneName }) => {
       <br />
       <br />
       <ZoneMap>
-        {zoneMap.map(row => (
-          <div>{row}</div>
-        ))}
+        <VmlParser vmlString={zoneMap} />
       </ZoneMap>
     </>
   );
 };
 
 const mapStateToProps = ({ zoneMap }) => {
-  let map = zoneMap;
-
-  map = map.replace(/\\]/g, ']');
-  map = map.replace(/\\\[/g, '[');
-  map = map.replace(/{map:default}/g, '');
-  map = map.replace(/{map:blue}/g, '');
-  map = map.replace(/{map:brown}/g, '');
-  map = map.replace(/{map:dark-green}/g, '');
-  map = map.replace(/{map:green}/g, '');
-  map = map.replace(/{map:grey}/g, '');
-  map = map.replace(/{map:light-grey}/g, '');
-  map = map.replace(/{\/[\w:-]+}/g, '');
-  map = map.split('\n');
-
+  let map = zoneMap.split('\n');
   return {
     zoneName: map ? map[0] : '',
-    zoneMap: map ? map.slice(2) : []
+    zoneMap: map ? map.slice(2).join('\n') : ''
   };
 };
 

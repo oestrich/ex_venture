@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { connect } from 'react-redux';
-import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
+import VmlParser from '../../SharedComponents/VmlParser.jsx';
 import { theme } from '../../theme.js';
 import { send } from '../../redux/actions/actions.js';
 
@@ -39,19 +39,19 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
       <RoomName>{name}</RoomName>
       <br />
       <br />
-      <VmlToJsx vmlString={description} />
+      <VmlParser vmlString={description} />
       <br />
       <div>
         {players.map(player => (
-          <VmlToJsx vmlString={player.status_line} />
+          <VmlParser vmlString={player.status_line} />
         ))}
         {'  '}
         {npcs.map(npc => (
-          <VmlToJsx vmlString={npc.status_line} />
+          <VmlParser vmlString={npc.status_line} />
         ))}{' '}
         {'  '}
         {shops.map(shop => (
-          <VmlToJsx vmlString={shop.name} />
+          <VmlParser vmlString={shop.name} />
         ))}
         {'  '}
         {/* Items in the Room.Info GMCP module are not VML tagged so we need to manually color them here. */}

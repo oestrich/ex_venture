@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import VmlToJsx from '../../SharedComponents/VmlToJsx.jsx';
+import VmlParser from '../../SharedComponents/VmlParser.jsx';
 
 const RoomEventsContainer = styled.div`
   padding: 1em 2em 1em 2em;
@@ -30,13 +30,7 @@ class RoomEvents extends Component {
       <RoomEventsContainer>
         <div>
           {this.props.eventStream.map(event => {
-            return (
-              <div key={event.sent_at}>
-                <VmlToJsx vmlString={event.message} />
-                <br />
-                <br />
-              </div>
-            );
+            return <VmlParser key={event.sent_at} vmlString={event.message} />;
           })}
           <div
             ref={el => {
