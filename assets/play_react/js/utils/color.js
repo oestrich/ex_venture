@@ -57,7 +57,8 @@ function formatColor(payload) {
   string = string.replace(
     /{command( send=['"](.*?)['"])?}/g,
     (_match, _fullSend, command) => {
-      command = stripColor(command);
+      console.log('***COMMAND***', command);
+      command ? (command = stripColor(command)) : '';
       let color = defaultColorCSS('command', 'white');
       if (payload.delink == undefined || payload.delink == false) {
         if (command != undefined) {
