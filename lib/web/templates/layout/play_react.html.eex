@@ -8,6 +8,8 @@
     <meta name="author" content="">
 
     <title><%= Config.game_name() %></title>
+
+    <link rel="stylesheet" href="<%= color_css_path(@conn, client: true) %>">
   </head>
   <body id="body" data-character-token="<%= @conn |> character_token() %>">
     <%= render @view_module, @view_template, assigns %>
