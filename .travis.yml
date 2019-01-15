@@ -13,6 +13,8 @@ cache:
   directories:
     - deps
     - _build/
+before_script:
+  - cp .travis/test.exs config/test.exs
 install:
   - mix local.rebar --force
   - mix local.hex --force
