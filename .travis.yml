@@ -2,11 +2,11 @@ language: elixir
 services:
   - postgresql
 addons:
-    postgresql: "10.5"
+    postgresql: "11.1"
 elixir:
-  - 1.7.2
+  - 1.8.0
 otp_release:
-  - 21.0.5
+  - 21.2
 env:
   - MIX_ENV=test
 cache:

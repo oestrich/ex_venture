@@ -1,14 +1,11 @@
 use Mix.Config
 
-#
-# Don't forget to update .travis/test.exs!
-#
-
 config :logger, level: :error
 
 config :ex_venture, Data.Repo,
   database: "ex_venture_test",
   hostname: "localhost",
+  username: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox
 
 config :ex_venture, :networking,
