@@ -5,8 +5,10 @@ defmodule Game.Command.Hone do
 
   use Game.Command
 
+  alias Game.Command.Hone.Proficiencies
+  alias Game.Command.Hone.Stats
   alias Game.Player
-  alias Game.Proficiencies
+  alias Game.Proficiencies, as: GameProficiencies
 
   @hone_cost 300
 
@@ -80,18 +82,16 @@ defmodule Game.Command.Hone do
   end
 
   def run({:hone, stat}, state) do
-    # parse the stat, if it's a proficiency handle it separately
-
     case parse_stat(stat) do
       {:error, :bad_stat} ->
         message = gettext("\"%{stat}\" is not a stat you can hone.", stat: stat)
         state |> Socket.echo(message)
 
       {:ok, :stat, stat} ->
-        hone_stat(state, stat)
+        Stats.hone_stat(state, stat)
 
       {:ok, :proficiency, proficiency} ->
-        hone_proficiency(state, proficiency)
+        Proficiencies.hone_proficiency(state, proficiency)
     end
   end
 
@@ -137,7 +137,7 @@ defmodule Game.Command.Hone do
 
   defp parse_proficiency(stat) do
     proficiency =
-      Enum.find(Proficiencies.all(), fn proficiency ->
+      Enum.find(GameProficiencies.all(), fn proficiency ->
         String.downcase(proficiency.name) == String.downcase(stat)
       end)
 
@@ -215,112 +215,132 @@ defmodule Game.Command.Hone do
     end
   end
 
-  @doc """
-  Hone a specific stat, if there is enough experience points
-  """
-  def hone_stat(state, stat) do
-    with {:ok, state} <- spend_experience(state) do
-      stats = raise_stat(state.save, stat)
+  defmodule Stats do
+    @moduledoc """
+    Hone a specific stat
+    """
 
-      save = %{state.save | stats: stats}
+    alias Game.Command.Hone
+    alias Game.Player
+
+    @hone_points_boost 5
+    @hone_stat_boost 1
+
+    @doc """
+    Hone a specific stat, if there is enough experience points
+    """
+    def hone_stat(state, stat) do
+      with {:ok, state} <- Hone.spend_experience(state) do
+        stats = raise_stat(state.save, stat)
+
+        save = %{state.save | stats: stats}
+        state = Player.update_save(state, save)
+
+        Hone.send_stat_raised(state, stat, stat_at(save, stat))
+
+        {:update, state}
+      else
+        {:error, :not_enough_experience} ->
+          Hone.send_not_enough_experience(state, stat)
+      end
+    end
+
+    def stat_at(save, :health) do
+      Map.get(save.stats, :max_health_points)
+    end
+
+    def stat_at(save, :skill) do
+      Map.get(save.stats, :max_skill_points)
+    end
+
+    def stat_at(save, :endurance) do
+      Map.get(save.stats, :max_endurance_points)
+    end
+
+    def stat_at(save, stat) do
+      Map.get(save.stats, stat)
+    end
+
+    def raise_stat(save, :health) do
+      save.stats |> Map.put(:max_health_points, stat_at(save, :health) + @hone_points_boost)
+    end
+
+    def raise_stat(save, :skill) do
+      save.stats |> Map.put(:max_skill_points, stat_at(save, :skill) + @hone_points_boost)
+    end
+
+    def raise_stat(save, :endurance) do
+      save.stats |> Map.put(:max_endurance_points, stat_at(save, :endurance) + @hone_points_boost)
+    end
+
+    def raise_stat(save, stat) do
+      save.stats |> Map.put(stat, stat_at(save, stat) + @hone_stat_boost)
+    end
+  end
+
+  defmodule Proficiencies do
+    @moduledoc """
+    Hone a specific proficiency
+    """
+
+    alias Game.Command.Hone
+
+    @doc """
+    Hone a proficiency, if the player has the proficiency and enough experience
+    """
+    def hone_proficiency(state = %{save: save}, proficiency) do
+      with {:ok, instance} <- find_proficiency_instance(save, proficiency),
+           {:ok, state} <- Hone.spend_experience(state) do
+        raise_proficiency(state, proficiency, instance)
+      else
+        {:error, :not_enough_experience} ->
+          Hone.send_not_enough_experience(state, proficiency.name)
+
+        {:error, :unknown} ->
+          message =
+            gettext("You do not know %{stat}.", stat: proficiency.name)
+
+            state |> Socket.echo(message)
+      end
+    end
+
+    def find_proficiency_instance(save, proficiency) do
+      instance =
+        Enum.find(save.proficiencies, fn instance ->
+          instance.id == proficiency.id
+        end)
+
+      case instance do
+        nil ->
+          {:error, :unknown}
+
+        instance ->
+          {:ok, instance}
+      end
+    end
+
+    def raise_proficiency(state = %{save: save}, proficiency, instance) do
+      instances = List.delete(save.proficiencies, instance)
+      instance = Map.put(instance, :ranks, instance.ranks + 1)
+      instances = [instance | instances]
+
+      save = %{save | proficiencies: instances}
       state = Player.update_save(state, save)
 
-      send_stat_raised(state, stat, stat_at(save, stat))
+      Hone.send_stat_raised(state, proficiency.name, instance.ranks)
 
       {:update, state}
-    else
-      {:error, :not_enough_experience} ->
-        send_not_enough_experience(state, stat)
     end
   end
 
-  defp stat_at(save, :health) do
-    Map.get(save.stats, :max_health_points)
-  end
-
-  defp stat_at(save, :skill) do
-    Map.get(save.stats, :max_skill_points)
-  end
-
-  defp stat_at(save, :endurance) do
-    Map.get(save.stats, :max_endurance_points)
-  end
-
-  defp stat_at(save, stat) do
-    Map.get(save.stats, stat)
-  end
-
-  defp raise_stat(save, :health) do
-    save.stats |> Map.put(:max_health_points, stat_at(save, :health) + @hone_points_boost)
-  end
-
-  defp raise_stat(save, :skill) do
-    save.stats |> Map.put(:max_skill_points, stat_at(save, :skill) + @hone_points_boost)
-  end
-
-  defp raise_stat(save, :endurance) do
-    save.stats |> Map.put(:max_endurance_points, stat_at(save, :endurance) + @hone_points_boost)
-  end
-
-  defp raise_stat(save, stat) do
-    save.stats |> Map.put(stat, stat_at(save, stat) + @hone_stat_boost)
-  end
-
-  @doc """
-  Hone a proficiency, if the player has the proficiency and enough experience
-  """
-  def hone_proficiency(state = %{save: save}, proficiency) do
-    with {:ok, instance} <- find_proficiency_instance(save, proficiency),
-         {:ok, state} <- spend_experience(state) do
-      raise_proficiency(state, proficiency, instance)
-    else
-      {:error, :not_enough_experience} ->
-        send_not_enough_experience(state, proficiency.name)
-
-      {:error, :unknown} ->
-        message =
-          gettext("You do not know %{stat}.", stat: proficiency.name)
-
-        state |> Socket.echo(message)
-    end
-  end
-
-  defp find_proficiency_instance(save, proficiency) do
-    instance =
-      Enum.find(save.proficiencies, fn instance ->
-        instance.id == proficiency.id
-      end)
-
-    case instance do
-      nil ->
-        {:error, :unknown}
-
-      instance ->
-        {:ok, instance}
-    end
-  end
-
-  defp raise_proficiency(state = %{save: save}, proficiency, instance) do
-    instances = List.delete(save.proficiencies, instance)
-    instance = Map.put(instance, :ranks, instance.ranks + 1)
-    instances = [instance | instances]
-
-    save = %{save | proficiencies: instances}
-    state = Player.update_save(state, save)
-
-    send_stat_raised(state, proficiency.name, instance.ranks)
-
-    {:update, state}
-  end
-
-  defp send_stat_raised(state, name, value) do
+  def send_stat_raised(state, name, value) do
     message =
       gettext("You honed your %{name}. It is now at %{value}!", name: name, value: value)
 
     state |> Socket.echo(message)
   end
 
-  defp send_not_enough_experience(state, name) do
+  def send_not_enough_experience(state, name) do
     message =
       gettext("You do not have enough experience to spend to hone %{name}.", name: name)
 
