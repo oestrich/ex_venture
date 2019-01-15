@@ -7,6 +7,7 @@ defmodule Game.Command.Hone do
 
   alias Game.Command.Hone.Proficiencies
   alias Game.Command.Hone.Stats
+  alias Game.Format.Hone, as: FormatHone
   alias Game.Player
   alias Game.Proficiencies, as: GameProficiencies
 
@@ -16,6 +17,10 @@ defmodule Game.Command.Hone do
   @hone_stat_boost 1
 
   commands(["hone"], parse: false)
+
+  def hone_cost(), do: @hone_cost
+  def hone_points_boost(), do: @hone_points_boost
+  def hone_stat_boost(), do: @hone_stat_boost
 
   @impl Game.Command
   def help(:topic), do: "Hone"
@@ -156,42 +161,7 @@ defmodule Game.Command.Hone do
   @spec hone_help(Save.t()) :: String.t()
   def hone_help(save) do
     spendable_experience = save.experience_points - save.spent_experience_points
-
-    """
-    Which statistic do you want to hone?
-
-    #{hone_field_help(save, :strength, "Strength")}
-    #{hone_field_help(save, :agility, "Agility")}
-    #{hone_field_help(save, :intelligence, "Intelligence")}
-    #{hone_field_help(save, :awareness, "Awareness")}
-    #{hone_field_help(save, :vitality, "Vitality")}
-    #{hone_field_help(save, :willpower, "Willpower")}
-    #{hone_points_help(save, :health, "Health")}
-    #{hone_points_help(save, :skill, "Skill")}
-    #{hone_points_help(save, :endurance, "Endurance")}
-
-    Honing costs #{@hone_cost} xp. You have #{spendable_experience} xp left to spend.
-    """
-  end
-
-  defp hone_field_help(save, field, title) do
-    stat = Map.get(save.stats, field)
-
-    String.trim("""
-    {command send='hone #{field}'}#{title}{/command}
-      Your #{field} is currently at #{stat}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
-    """)
-  end
-
-  defp hone_points_help(save, field, title) do
-    stat = Map.get(save.stats, String.to_atom("max_#{field}_points"))
-
-    boost = @hone_points_boost
-
-    String.trim("""
-    {command send='hone #{field}'}#{title}{/command} Points
-      Your max #{field} points are currently at #{stat}, honing will add {yellow}#{boost}{/yellow}
-    """)
+    FormatHone.help(save, spendable_experience)
   end
 
   @doc """

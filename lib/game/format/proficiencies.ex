@@ -26,6 +26,19 @@ defmodule Game.Format.Proficiencies do
     Table.format("Proficiencies", rows, [20, 5])
   end
 
+  def list(proficiencies) do
+    context()
+    |> assign_many(:proficiencies, proficiencies, &list_line/1)
+    |> Format.template(template("list"))
+  end
+
+  def list_line(proficiency) do
+    context()
+    |> assign(:name, proficiency.name)
+    |> assign(:key, String.downcase(proficiency.name))
+    |> Format.template(" - {command send='help [key]'}[name]{/command}")
+  end
+
   def help(proficiency) do
     context()
     |> assign(:name, name(proficiency))
@@ -45,6 +58,14 @@ defmodule Game.Format.Proficiencies do
     |> assign(:name, name(requirement))
     |> assign(:ranks, requirement.ranks)
     |> Format.template(template("requirement-line"))
+  end
+
+  def template("list") do
+    """
+    The available proficiencies are:
+
+    [proficiencies]
+    """
   end
 
   def template("requirement-line") do

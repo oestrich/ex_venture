@@ -60,7 +60,7 @@ defmodule Game.Format.Template do
         {:string, ""}
 
       {:string, value} ->
-        {:string, space <> value}
+        {:string, to_string(space) <> value}
 
       value when is_list(value) ->
         [{:string, space} | value]
@@ -73,7 +73,7 @@ defmodule Game.Format.Template do
         {:string, ""}
 
       {:string, value} ->
-        {:string, value <> space}
+        {:string, to_string(value) <> space}
 
       value when is_list(value) ->
         value ++ [{:string, space}]
@@ -92,7 +92,7 @@ defmodule Game.Format.Template do
         value
 
       value ->
-        {:string, value}
+        {:string, to_string(value)}
     end
   end
 
