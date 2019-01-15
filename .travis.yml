@@ -3,8 +3,9 @@ services:
   - postgresql
 addons:
   artifacts:
+    working_dir: tmp
     paths:
-      - tmp/ex_venture.tar.gz
+      - ex_venture.tar.gz
     target_paths:
       - /${TRAVIS_COMMIT}/
   postgresql: "10"
