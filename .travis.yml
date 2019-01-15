@@ -26,6 +26,9 @@ cache:
   directories:
     - deps
     - _build/
+branches:
+  only:
+  - master
 install:
   - sudo -u postgres psql -p 5433 -c "create user exventure with superuser password 'password';"
   - cp .travis/test.exs config/test.exs
