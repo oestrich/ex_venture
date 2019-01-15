@@ -169,7 +169,7 @@ defmodule Game.NPC.ConversationTest do
       assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "a quest opener"}}}
     end
 
-    test "gives the quest out when the conversation dictates it", %{character: character, character: character, state: state, quest: quest} do
+    test "gives the quest out when the conversation dictates it", %{character: character, state: state, quest: quest} do
       state = Conversation.recv(state, character, "bandit")
 
       assert is_nil(Map.get(state.conversations, character.id))

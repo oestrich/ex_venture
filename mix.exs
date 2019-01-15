@@ -5,7 +5,7 @@ defmodule ExVenture.Mixfile do
     [
       app: :ex_venture,
       version: "0.29.0",
-      elixir: "~> 1.7.2",
+      elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
