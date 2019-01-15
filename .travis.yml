@@ -2,7 +2,7 @@ language: elixir
 services:
   - postgresql
 addons:
-    postgresql: "11.1"
+    postgresql: "10"
 elixir:
   - 1.8.0
 otp_release:
@@ -18,7 +18,7 @@ install:
   - mix local.hex --force
   - mix deps.get
   - mix compile
-script:
   - mix do ecto.create, ecto.migrate
+script:
   - mix credo
   - mix test
