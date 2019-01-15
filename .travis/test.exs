@@ -7,6 +7,7 @@ config :ex_venture, Data.Repo,
   hostname: "localhost",
   username: "exventure",
   password: "password",
+  port: 5433,
   pool: Ecto.Adapters.SQL.Sandbox
 
 config :ex_venture, :networking,
