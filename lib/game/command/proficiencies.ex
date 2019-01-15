@@ -6,7 +6,7 @@ defmodule Game.Command.Proficiencies do
   use Game.Command
 
   alias Game.Proficiencies
-  alias Game.Format.Proficiencies, as: ProficienciesFormat
+  alias Game.Format.Proficiencies, as: FormatProficiencies
 
   commands(["proficiencies"], parse: false)
 
@@ -16,10 +16,11 @@ defmodule Game.Command.Proficiencies do
 
   def help(:full) do
     """
-    View your proficiencies.
-
-    Example:
+    View your proficiencies:
     [ ] > {command}proficiencies{/command}
+
+    View all available proficiencies:
+    [ ] > {command}proficiencies all{/command}
     """
   end
 
@@ -39,6 +40,7 @@ defmodule Game.Command.Proficiencies do
   @spec parse(String.t()) :: {any()}
   def parse(command)
   def parse("proficiencies"), do: {}
+  def parse("proficiencies all"), do: {:all}
 
   @doc """
   Echo the currently connected players
@@ -49,6 +51,11 @@ defmodule Game.Command.Proficiencies do
 
   def run({}, state = %{save: save}) do
     proficiencies = Proficiencies.proficiencies(save.proficiencies)
-    state |> Socket.echo(ProficienciesFormat.proficiencies(proficiencies))
+    state |> Socket.echo(FormatProficiencies.proficiencies(proficiencies))
+  end
+
+  def run({:all}, state) do
+    proficiencies = Enum.sort_by(Proficiencies.all(), &(&1.name))
+    state |> Socket.echo(FormatProficiencies.list(proficiencies))
   end
 end

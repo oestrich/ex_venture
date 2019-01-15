@@ -5,7 +5,11 @@ defmodule Game.Command.Hone do
 
   use Game.Command
 
+  alias Game.Command.Hone.Proficiencies
+  alias Game.Command.Hone.Stats
+  alias Game.Format.Hone, as: FormatHone
   alias Game.Player
+  alias Game.Proficiencies, as: GameProficiencies
 
   @hone_cost 300
 
@@ -13,6 +17,10 @@ defmodule Game.Command.Hone do
   @hone_stat_boost 1
 
   commands(["hone"], parse: false)
+
+  def hone_cost(), do: @hone_cost
+  def hone_points_boost(), do: @hone_points_boost
+  def hone_stat_boost(), do: @hone_stat_boost
 
   @impl Game.Command
   def help(:topic), do: "Hone"
@@ -84,10 +92,11 @@ defmodule Game.Command.Hone do
         message = gettext("\"%{stat}\" is not a stat you can hone.", stat: stat)
         state |> Socket.echo(message)
 
-      {:ok, stat} ->
-        state
-        |> check_if_enough_experience_to_spend(stat)
-        |> hone_stat(stat)
+      {:ok, :stat, stat} ->
+        Stats.hone_stat(state, stat)
+
+      {:ok, :proficiency, proficiency} ->
+        Proficiencies.hone_proficiency(state, proficiency)
     end
   end
 
@@ -117,17 +126,32 @@ defmodule Game.Command.Hone do
       |> String.replace("points", "")
       |> String.trim()
 
-    stat =
+    detected_stat =
       Enum.find(fields(), fn field ->
         to_string(field) == stat
       end)
 
-    case stat do
+    case detected_stat do
+      nil ->
+        parse_proficiency(stat)
+
+      detected_stat ->
+        {:ok, :stat, detected_stat}
+    end
+  end
+
+  defp parse_proficiency(stat) do
+    proficiency =
+      Enum.find(GameProficiencies.all(), fn proficiency ->
+        String.downcase(proficiency.name) == String.downcase(stat)
+      end)
+
+    case proficiency do
       nil ->
         {:error, :bad_stat}
 
-      stat ->
-        {:ok, stat}
+      proficiency ->
+        {:ok, :proficiency, proficiency}
     end
   end
 
@@ -137,109 +161,159 @@ defmodule Game.Command.Hone do
   @spec hone_help(Save.t()) :: String.t()
   def hone_help(save) do
     spendable_experience = save.experience_points - save.spent_experience_points
-
-    """
-    Which statistic do you want to hone?
-
-    #{hone_field_help(save, :strength, "Strength")}
-    #{hone_field_help(save, :agility, "Agility")}
-    #{hone_field_help(save, :intelligence, "Intelligence")}
-    #{hone_field_help(save, :awareness, "Awareness")}
-    #{hone_field_help(save, :vitality, "Vitality")}
-    #{hone_field_help(save, :willpower, "Willpower")}
-    #{hone_points_help(save, :health, "Health")}
-    #{hone_points_help(save, :skill, "Skill")}
-    #{hone_points_help(save, :endurance, "Endurance")}
-
-    Honing costs #{@hone_cost} xp. You have #{spendable_experience} xp left to spend.
-    """
+    FormatHone.help(save, spendable_experience)
   end
 
-  defp hone_field_help(save, field, title) do
-    stat = Map.get(save.stats, field)
+  @doc """
+  Record the experience spend in the save
 
-    String.trim("""
-    {command send='hone #{field}'}#{title}{/command}
-      Your #{field} is currently at #{stat}, honing will add {yellow}#{@hone_stat_boost}{/yellow}
-    """)
-  end
-
-  defp hone_points_help(save, field, title) do
-    stat = Map.get(save.stats, String.to_atom("max_#{field}_points"))
-
-    boost = @hone_points_boost
-
-    String.trim("""
-    {command send='hone #{field}'}#{title}{/command} Points
-      Your max #{field} points are currently at #{stat}, honing will add {yellow}#{boost}{/yellow}
-    """)
-  end
-
-  defp check_if_enough_experience_to_spend(state = %{save: save}, stat) do
+  If not enough experience available to spend, returns an error
+  """
+  def spend_experience(state = %{save: save}, hone_cost \\ @hone_cost) do
     spendable_experience = save.experience_points - save.spent_experience_points
 
-    case @hone_cost <= spendable_experience do
+    case hone_cost <= spendable_experience do
       true ->
-        state
+        spent_experience_points = save.spent_experience_points + hone_cost
+        save = %{save | spent_experience_points: spent_experience_points}
+        state = Player.update_save(state, save)
+
+        {:ok, state}
 
       false ->
-        message =
-          gettext("You do not have enough experience to spend to hone %{stat}.", stat: stat)
-
-        state |> Socket.echo(message)
+        {:error, :not_enough_experience}
     end
   end
 
-  def hone_stat(:ok, _stat), do: :ok
+  defmodule Stats do
+    @moduledoc """
+    Hone a specific stat
+    """
 
-  def hone_stat(state = %{save: save}, stat) do
-    spent_experience_points = save.spent_experience_points + @hone_cost
+    alias Game.Command.Hone
+    alias Game.Player
 
-    stats = raise_stat(save, stat)
+    @hone_points_boost 5
+    @hone_stat_boost 1
 
-    save = %{save | stats: stats, spent_experience_points: spent_experience_points}
-    state = Player.update_save(state, save)
+    @doc """
+    Hone a specific stat, if there is enough experience points
+    """
+    def hone_stat(state, stat) do
+      with {:ok, state} <- Hone.spend_experience(state) do
+        stats = raise_stat(state.save, stat)
 
+        save = %{state.save | stats: stats}
+        state = Player.update_save(state, save)
+
+        Hone.send_stat_raised(state, stat, stat_at(save, stat))
+
+        {:update, state}
+      else
+        {:error, :not_enough_experience} ->
+          Hone.send_not_enough_experience(state, stat)
+      end
+    end
+
+    def stat_at(save, :health) do
+      Map.get(save.stats, :max_health_points)
+    end
+
+    def stat_at(save, :skill) do
+      Map.get(save.stats, :max_skill_points)
+    end
+
+    def stat_at(save, :endurance) do
+      Map.get(save.stats, :max_endurance_points)
+    end
+
+    def stat_at(save, stat) do
+      Map.get(save.stats, stat)
+    end
+
+    def raise_stat(save, :health) do
+      save.stats |> Map.put(:max_health_points, stat_at(save, :health) + @hone_points_boost)
+    end
+
+    def raise_stat(save, :skill) do
+      save.stats |> Map.put(:max_skill_points, stat_at(save, :skill) + @hone_points_boost)
+    end
+
+    def raise_stat(save, :endurance) do
+      save.stats |> Map.put(:max_endurance_points, stat_at(save, :endurance) + @hone_points_boost)
+    end
+
+    def raise_stat(save, stat) do
+      save.stats |> Map.put(stat, stat_at(save, stat) + @hone_stat_boost)
+    end
+  end
+
+  defmodule Proficiencies do
+    @moduledoc """
+    Hone a specific proficiency
+    """
+
+    alias Game.Command.Hone
+
+    @doc """
+    Hone a proficiency, if the player has the proficiency and enough experience
+    """
+    def hone_proficiency(state = %{save: save}, proficiency) do
+      with {:ok, instance} <- find_proficiency_instance(save, proficiency),
+           {:ok, state} <- Hone.spend_experience(state) do
+        raise_proficiency(state, proficiency, instance)
+      else
+        {:error, :not_enough_experience} ->
+          Hone.send_not_enough_experience(state, proficiency.name)
+
+        {:error, :unknown} ->
+          message =
+            gettext("You do not know %{stat}.", stat: proficiency.name)
+
+            state |> Socket.echo(message)
+      end
+    end
+
+    def find_proficiency_instance(save, proficiency) do
+      instance =
+        Enum.find(save.proficiencies, fn instance ->
+          instance.id == proficiency.id
+        end)
+
+      case instance do
+        nil ->
+          {:error, :unknown}
+
+        instance ->
+          {:ok, instance}
+      end
+    end
+
+    def raise_proficiency(state = %{save: save}, proficiency, instance) do
+      instances = List.delete(save.proficiencies, instance)
+      instance = Map.put(instance, :ranks, instance.ranks + 1)
+      instances = [instance | instances]
+
+      save = %{save | proficiencies: instances}
+      state = Player.update_save(state, save)
+
+      Hone.send_stat_raised(state, proficiency.name, instance.ranks)
+
+      {:update, state}
+    end
+  end
+
+  def send_stat_raised(state, name, value) do
     message =
-      gettext("You honed your %{stat}. It is now at %{stat_value}!",
-        stat: stat,
-        stat_value: stat_at(save, stat)
-      )
+      gettext("You honed your %{name}. It is now at %{value}!", name: name, value: value)
 
     state |> Socket.echo(message)
-
-    {:update, state}
   end
 
-  def stat_at(save, :health) do
-    Map.get(save.stats, :max_health_points)
-  end
+  def send_not_enough_experience(state, name) do
+    message =
+      gettext("You do not have enough experience to spend to hone %{name}.", name: name)
 
-  def stat_at(save, :skill) do
-    Map.get(save.stats, :max_skill_points)
-  end
-
-  def stat_at(save, :endurance) do
-    Map.get(save.stats, :max_endurance_points)
-  end
-
-  def stat_at(save, stat) do
-    Map.get(save.stats, stat)
-  end
-
-  def raise_stat(save, :health) do
-    save.stats |> Map.put(:max_health_points, stat_at(save, :health) + @hone_points_boost)
-  end
-
-  def raise_stat(save, :skill) do
-    save.stats |> Map.put(:max_skill_points, stat_at(save, :skill) + @hone_points_boost)
-  end
-
-  def raise_stat(save, :endurance) do
-    save.stats |> Map.put(:max_endurance_points, stat_at(save, :endurance) + @hone_points_boost)
-  end
-
-  def raise_stat(save, stat) do
-    save.stats |> Map.put(stat, stat_at(save, stat) + @hone_stat_boost)
+    state |> Socket.echo(message)
   end
 end

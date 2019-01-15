@@ -1,7 +1,9 @@
 defmodule Game.Command.HoneTest do
   use Data.ModelCase
+
   doctest Game.Command.Hone
 
+  alias Data.Proficiency
   alias Game.Command.Hone
 
   @socket Test.Networking.Socket
@@ -91,6 +93,50 @@ defmodule Game.Command.HoneTest do
 
       [{_socket, echo}] = @socket.get_echos()
       assert Regex.match?(~r/unknown/i, echo)
+    end
+  end
+
+  describe "honing proficiencies" do
+    setup %{state: state} do
+      start_and_clear_proficiencies()
+      proficiency = create_proficiency(%{name: "Swimming"})
+      insert_proficiency(proficiency)
+
+      save = %{state.save | proficiencies: [%Proficiency.Instance{id: proficiency.id, ranks: 5}]}
+      state = %{state | save: save}
+
+      %{state: state, proficiency: proficiency}
+    end
+
+    test "hone proficiency", %{state: state} do
+      {:update, state} = Hone.run({:hone, "swimming"}, state)
+
+      assert state.save.spent_experience_points == 400
+
+      instance = List.first(state.save.proficiencies)
+      assert instance.ranks == 6
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/honed your swimming/i, echo)
+    end
+
+    test "raising a proficiency you don't have", %{state: state} do
+      save = %{state.save | proficiencies: []}
+      state = %{state | save: save}
+
+      :ok = Hone.run({:hone, "swimming"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/do not know/i, echo)
+    end
+
+    test "not enough experience to spend", %{state: state} do
+      state = %{state | save: %{state.save | spent_experience_points: 1100}}
+
+      :ok = Hone.run({:hone, "swimming"}, state)
+
+      [{_socket, echo}] = @socket.get_echos()
+      assert Regex.match?(~r/do not have enough/i, echo)
     end
   end
 end
