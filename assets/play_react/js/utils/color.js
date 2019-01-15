@@ -80,10 +80,7 @@ function formatColor(payload) {
     }
   });
 
-  string = string.replace(
-    /{black}/g,
-    "<span class='black'style='color:black'>"
-  );
+  string = string.replace(/{black}/g, "<span class='black'>");
   string = string.replace(/{red}/g, "<span  class='red'>");
   string = string.replace(/{green}/g, "<span class='green'>");
   string = string.replace(/{yellow}/g, "<span class='yellow'>");
