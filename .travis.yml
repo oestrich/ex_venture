@@ -14,6 +14,7 @@ cache:
     - deps
     - _build/
 before_script:
+  - psql -c "create user exventure with superuser password 'password';" -U postgres
   - cp .travis/test.exs config/test.exs
 install:
   - mix local.rebar --force
