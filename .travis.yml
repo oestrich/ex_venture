@@ -21,7 +21,7 @@ cache:
     - deps
     - _build/
 install:
-  - psql -c "create user exventure with superuser password 'password';" -U postgres
+  - psql -p 5433 -U postgres -c "create user exventure with superuser password 'password';"
   - cp .travis/test.exs config/test.exs
   - mix local.rebar --force
   - mix local.hex --force
