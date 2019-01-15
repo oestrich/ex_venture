@@ -1,5 +1,6 @@
 # ExVenture
 
+[![Build Status](https://travis-ci.org/oestrich/ex_venture.svg?branch=master)](https://travis-ci.org/oestrich/ex_venture)
 [![Trello](https://img.shields.io/badge/issues-trello-blue.svg)](https://trello.com/b/PFGmFWmu/exventure)
 [![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)][discord]
 [![Forums](https://img.shields.io/badge/support-forums-orange.svg)][forums]
