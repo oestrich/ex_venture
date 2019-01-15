@@ -1,6 +1,6 @@
 use Mix.Config
 
-{version, _} = System.cmd("git", ["rev-parse", "HEAD"])
+version = System.get_env("SHA") || "no sha"
 config :ex_venture, version: String.trim(version)
 
 config :ex_venture, Web.Endpoint,

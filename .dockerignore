@@ -29,6 +29,8 @@ backups
 schema.sql
 config/prod.secret.exs
 config/dev.local.exs
+/*.sh
+/*.tar.gz
 
 # Ignores for Docker context only below
 .git

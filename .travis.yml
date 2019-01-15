@@ -2,6 +2,11 @@ language: elixir
 services:
   - postgresql
 addons:
+  artifacts:
+    paths:
+      - tmp/ex_venture.tar.gz
+    target_paths:
+      - /${TRAVIS_COMMIT}/
   postgresql: "10"
   apt:
     packages:
@@ -31,3 +36,4 @@ install:
 script:
   - mix credo
   - mix test
+  - ./release.sh
