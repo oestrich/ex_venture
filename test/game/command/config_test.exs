@@ -1,13 +1,11 @@
 defmodule Game.Command.ConfigTest do
-  use Data.ModelCase
-  doctest Game.Command.Config
+  use ExVenture.CommandCase
 
   alias Game.Command.Config
 
-  @socket Test.Networking.Socket
+  doctest Config
 
   setup do
-    @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
 
@@ -30,22 +28,19 @@ defmodule Game.Command.ConfigTest do
 
       assert save.config.hints
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/on/, echo)
+      assert_socket_echo "on"
     end
 
     test "cannot turn on settable config options - like pager_size", %{state: state} do
       :ok = Config.run({:on, "pager_size"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/cannot/i, echo)
+      assert_socket_echo "cannot"
     end
 
     test "the key is not found - skips", %{state: state} do
       :ok = Config.run({:on, "missing"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/unknown/i, echo)
+      assert_socket_echo "unknown"
     end
   end
 
@@ -57,22 +52,19 @@ defmodule Game.Command.ConfigTest do
 
       refute save.config.hints
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/off/, echo)
+      assert_socket_echo "off"
     end
 
     test "cannot turn off settable config options - like pager_size", %{state: state} do
       :ok = Config.run({:off, "pager_size"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/cannot/i, echo)
+      assert_socket_echo "cannot"
     end
 
     test "the key is not found - skips", %{state: state} do
       :ok = Config.run({:off, "missing"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/unknown/i, echo)
+      assert_socket_echo "unknown"
     end
   end
 
@@ -84,8 +76,7 @@ defmodule Game.Command.ConfigTest do
 
       assert save.config.prompt == "%h/%Hhp"
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/set/, echo)
+      assert_socket_echo "set"
     end
 
     test "set to a color - color_npc", %{state: state} do
@@ -95,8 +86,7 @@ defmodule Game.Command.ConfigTest do
 
       assert save.config.color_npc == "green"
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/set/, echo)
+      assert_socket_echo "set"
     end
 
     test "set to an integer - pager_size", %{state: state} do
@@ -106,22 +96,19 @@ defmodule Game.Command.ConfigTest do
 
       assert save.config.pager_size == 25
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/set/, echo)
+      assert_socket_echo "set"
     end
 
     test "cannot set non-string config options - like hint", %{state: state} do
       :ok = Config.run({:set, "hints true"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/cannot/i, echo)
+      assert_socket_echo "cannot"
     end
 
     test "cannot set unknown config options", %{state: state} do
       :ok = Config.run({:set, "unknown hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/unknown/i, echo)
+      assert_socket_echo "unknown"
     end
   end
 end

@@ -1,16 +1,12 @@
 defmodule Game.Command.HoneTest do
-  use Data.ModelCase
-
-  doctest Game.Command.Hone
+  use ExVenture.CommandCase
 
   alias Data.Proficiency
   alias Game.Command.Hone
 
-  @socket Test.Networking.Socket
+  doctest Hone
 
   setup do
-    @socket.clear_messages()
-
     save =
       base_save()
       |> Map.put(:experience_points, 1200)
@@ -23,8 +19,7 @@ defmodule Game.Command.HoneTest do
     test "list what stats you can raise", %{state: state} do
       :ok = Hone.run({:help}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/strength/i, echo)
+      assert_socket_echo "strength"
     end
   end
 
@@ -35,8 +30,7 @@ defmodule Game.Command.HoneTest do
       assert state.save.spent_experience_points == 400
       assert state.save.stats.strength == 11
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/honed your strength/i, echo)
+      assert_socket_echo "honed your strength"
     end
 
     test "hone willpower", %{state: state} do
@@ -45,8 +39,7 @@ defmodule Game.Command.HoneTest do
       assert state.save.spent_experience_points == 400
       assert state.save.stats.willpower == 11
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/honed your willpower/i, echo)
+      assert_socket_echo "honed your willpower"
     end
 
     test "hone health points", %{state: state} do
@@ -55,8 +48,7 @@ defmodule Game.Command.HoneTest do
       assert state.save.spent_experience_points == 400
       assert state.save.stats.max_health_points == 55
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/honed your health/i, echo)
+      assert_socket_echo "honed your health"
     end
 
     test "hone skill points", %{state: state} do
@@ -65,8 +57,7 @@ defmodule Game.Command.HoneTest do
       assert state.save.spent_experience_points == 400
       assert state.save.stats.max_skill_points == 55
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/honed your skill/i, echo)
+      assert_socket_echo "honed your skill"
     end
 
     test "hone endurance points", %{state: state} do
@@ -75,8 +66,7 @@ defmodule Game.Command.HoneTest do
       assert state.save.spent_experience_points == 400
       assert state.save.stats.max_endurance_points == 55
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/honed your endurance/i, echo)
+      assert_socket_echo "honed your endurance"
     end
 
     test "not enough xp left over", %{state: state} do
@@ -84,15 +74,13 @@ defmodule Game.Command.HoneTest do
 
       :ok = Hone.run({:hone, "strength"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/do not have enough/i, echo)
+      assert_socket_echo "do not have enough"
     end
 
     test "bad stat", %{state: state} do
       :ok = Hone.run({:hone, "unknown"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/unknown/i, echo)
+      assert_socket_echo "unknown"
     end
   end
 
@@ -116,8 +104,7 @@ defmodule Game.Command.HoneTest do
       instance = List.first(state.save.proficiencies)
       assert instance.ranks == 6
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/honed your swimming/i, echo)
+      assert_socket_echo "honed your swimming"
     end
 
     test "raising a proficiency you don't have", %{state: state} do
@@ -126,8 +113,7 @@ defmodule Game.Command.HoneTest do
 
       :ok = Hone.run({:hone, "swimming"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/do not know/i, echo)
+      assert_socket_echo "do not know"
     end
 
     test "not enough experience to spend", %{state: state} do
@@ -135,8 +121,7 @@ defmodule Game.Command.HoneTest do
 
       :ok = Hone.run({:hone, "swimming"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/do not have enough/i, echo)
+      assert_socket_echo "do not have enough"
     end
   end
 end

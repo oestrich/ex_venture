@@ -1,13 +1,12 @@
 defmodule Game.Command.UseTest do
-  use Data.ModelCase
-  doctest Game.Command.Use
+  use ExVenture.CommandCase
 
   alias Data.Item
   alias Game.Command.ParseContext
   alias Game.Command.Use
   alias Game.Session.Registry
 
-  @socket Test.Networking.Socket
+  doctest Use
 
   setup do
     start_and_clear_items()
@@ -31,8 +30,6 @@ defmodule Game.Command.UseTest do
       effects: [],
       is_usable: false,
     })
-
-    @socket.clear_messages
 
     user = base_user()
     character = base_character(user)
@@ -62,8 +59,7 @@ defmodule Game.Command.UseTest do
 
       assert [] = state.save.items
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Used a potion), look)
+      assert_socket_echo "used a potion"
       assert_receive {:"$gen_cast", {:apply_effects, [], {:player, %{id: 10}}, _}}
     end
 
@@ -98,15 +94,13 @@ defmodule Game.Command.UseTest do
 
       :ok = Use.run({:use, "leather armor"}, %{state | save: save})
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(could not be used), look)
+      assert_socket_echo "could not be used"
     end
 
     test "item not found", %{state: state} do
       :ok = Use.run({:use, "poton"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(could not be found), look)
+      assert_socket_echo "could not be found"
     end
   end
 end

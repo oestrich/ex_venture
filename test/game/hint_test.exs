@@ -1,27 +1,21 @@
 defmodule Game.HintTest do
   use ExUnit.Case
 
-  alias Game.Hint
+  import Test.Networking.Socket.Helpers
 
-  @socket Test.Networking.Socket
+  alias Game.Hint
 
   test "formats hints" do
     assert Hint.hint("quests.new", %{id: 10}) == "You can view this with {command}quest info 10{/command}."
   end
 
   describe "gating hints" do
-    setup do
-      @socket.clear_messages()
-      :ok
-    end
-
     test "config is on" do
       state = %{socket: :socket, save: %{config: %{hints: true}}}
 
       Hint.gate(state, "quests.new", id: 10)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/quest/, echo)
+      assert_socket_echo "quest"
     end
 
     test "config is off" do
@@ -29,7 +23,7 @@ defmodule Game.HintTest do
 
       Hint.gate(state, "quests.new", id: 10)
 
-      assert [] = @socket.get_echos()
+      refute_socket_echo()
     end
   end
 end

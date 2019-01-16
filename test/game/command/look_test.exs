@@ -1,14 +1,14 @@
 defmodule Game.Command.LookTest do
-  use Data.ModelCase
-  doctest Game.Command.Look
-
-  @socket Test.Networking.Socket
-  @room Test.Game.Room
+  use ExVenture.CommandCase
 
   alias Data.Exit
   alias Data.Item
   alias Game.Command.Look
   alias Game.Environment
+
+  doctest Look
+
+  @room Test.Game.Room
 
   describe "normal room" do
     setup do
@@ -35,8 +35,6 @@ defmodule Game.Command.LookTest do
       }
       @room.set_room(Map.merge(@room._room(), room))
 
-      @socket.clear_messages()
-
       user = create_user(%{name: "hero", password: "password"})
       character = create_character(user, %{name: "hero"})
       %{state: session_state(%{user: user, character: character})}
@@ -45,12 +43,8 @@ defmodule Game.Command.LookTest do
     test "view room information", %{state: state} do
       :ok = Look.run({}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Hallway), look)
-      assert Regex.match?(~r(Exits), look)
-      assert Regex.match?(~r(Items), look)
-
-      assert Enum.any?(@socket.get_push_gmcps(), fn ({_socket, module, _}) -> module == "Zone.Map" end)
+      assert_socket_echo ["hallway", "exits", "items"]
+      assert_socket_gmcp {"Zone.Map", _}
     end
 
     test "view room information - the room is offline", %{state: state} do
@@ -58,49 +52,43 @@ defmodule Game.Command.LookTest do
 
       {:error, :room_offline} = Look.run({}, state)
 
-      assert @socket.get_echos() == []
+      assert_socket_no_echo()
     end
 
     test "looking at an item", %{state: state} do
       :ok = Look.run({:other, "short sword"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(A simple blade), look)
+      assert_socket_echo "a simple blade"
     end
 
     test "looking at an npc", %{state: state} do
       :ok = Look.run({:other, "bandit"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(bandit description), look)
+      assert_socket_echo "bandit description"
     end
 
     test "looking at a player", %{state: state} do
       :ok = Look.run({:other, "player"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Player), look)
+      assert_socket_echo "player"
     end
 
     test "looking in a direction", %{state: state} do
       :ok = Look.run({:direction, "north"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Hallway), look)
+      assert_socket_echo "hallway"
     end
 
     test "looking at a room feature", %{state: state} do
       :ok = Look.run({:other, "log"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(a log), look)
+      assert_socket_echo "a log"
     end
 
     test "could not find the name", %{state: state} do
       :ok = Look.run({:other, "unknown"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Could not find), look)
+      assert_socket_echo "could not find"
     end
   end
 
@@ -121,8 +109,7 @@ defmodule Game.Command.LookTest do
     test "looking in the overworld", %{state: state} do
       :ok = Look.run({}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Exits), echo)
+      assert_socket_echo "exits"
     end
   end
 end

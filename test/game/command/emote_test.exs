@@ -1,9 +1,10 @@
 defmodule Game.Command.EmoteTest do
-  use Data.ModelCase
-  doctest Game.Command.Emote
+  use ExVenture.CommandCase
 
   alias Game.Command.Emote
   alias Game.Message
+
+  doctest Emote
 
   @room Test.Game.Room
 

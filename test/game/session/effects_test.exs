@@ -1,16 +1,13 @@
 defmodule Game.Session.EffectsTest do
-  use GenServerCase
-  use Data.ModelCase
+  use ExVenture.SessionCase
 
   import Test.DamageTypesHelper
 
   alias Game.Session.Effects
 
-  @socket Test.Networking.Socket
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages
     @room.clear_update_characters()
 
     start_and_clear_damage_types()
@@ -48,7 +45,7 @@ defmodule Game.Session.EffectsTest do
       state = Effects.handle_continuous_effect(state, effect.id)
 
       assert state.save.stats.health_points == 15
-      [{:socket, ~s(10 slashing damage is dealt) <> _}] = @socket.get_echos()
+      assert_socket_echo "10 slashing damage is dealt"
 
       [{_, %{id: :id, count: 2}}] = state.continuous_effects
 

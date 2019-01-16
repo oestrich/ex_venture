@@ -12,13 +12,25 @@ defmodule Test.Session do
 
     attributes =
       attributes
-      |> maybe_characterize()
+      |> maybe_add_user()
+      |> maybe_add_character()
       |> maybe_pull_out_save()
 
     struct(Game.Session.State, attributes)
   end
 
-  defp maybe_characterize(attributes) do
+  defp maybe_add_user(attributes) do
+    case Map.has_key?(attributes, :character) do
+      true ->
+        attributes
+
+      false ->
+        user = TestHelpers.user_attributes(%{})
+        Map.put(attributes, :user, user)
+    end
+  end
+
+  defp maybe_add_character(attributes) do
     case Map.has_key?(attributes, :character) do
       true ->
         attributes

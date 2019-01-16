@@ -1,7 +1,6 @@
 defmodule Game.Command.DropTest do
-  use Data.ModelCase
+  use ExVenture.CommandCase
 
-  @socket Test.Networking.Socket
   @room Test.Game.Room
 
   alias Game.Command.Drop
@@ -9,8 +8,6 @@ defmodule Game.Command.DropTest do
   setup do
     start_and_clear_items()
     insert_item(%{id: 1, name: "Sword", keywords: []})
-
-    @socket.clear_messages()
 
     user = base_user()
     state = session_state(%{user: user})
@@ -27,8 +24,7 @@ defmodule Game.Command.DropTest do
 
     assert state.save.items |> length == 0
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(You dropped), look)
+    assert_socket_echo "you dropped"
 
     assert [{1, {:player, _}, %{id: 1}}] = @room.get_drops()
   end
@@ -41,8 +37,7 @@ defmodule Game.Command.DropTest do
 
     assert state.save.currency == 1
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(You dropped), look)
+    assert_socket_echo "you dropped"
 
     assert [{1, {:player, _}, 100}] = @room.get_drop_currencies()
   end
@@ -53,15 +48,13 @@ defmodule Game.Command.DropTest do
     state = %{state | save: %{state.save | room_id: 1, currency: 101}}
     :ok = Drop.run({"110 gold"}, state)
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(You do not have enough), look)
+    assert_socket_echo "you do not have enough"
   end
 
   test "item not found in your inventory", %{state: state} do
     state = %{state | save: %{state.save | room_id: 1, items: [item_instance(2)]}}
     :ok = Drop.run({"sword"}, state)
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(Could not find), look)
+    assert_socket_echo "could not find"
   end
 end

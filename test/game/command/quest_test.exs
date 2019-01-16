@@ -1,16 +1,15 @@
 defmodule Game.Command.QuestTest do
-  use Data.ModelCase
-  doctest Game.Command.Quest
+  use ExVenture.CommandCase
 
   alias Game.Character
   alias Game.Command.Quest
 
-  @socket Test.Networking.Socket
+  doctest Quest
+
   @room Test.Game.Room
   @npc Test.Game.NPC
 
   setup do
-    @socket.clear_messages
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
 
@@ -28,8 +27,7 @@ defmodule Game.Command.QuestTest do
     test "with no active quests", %{state: state} do
       :ok = Quest.run({:list, :active}, state)
 
-      [{_, quests}] = @socket.get_echos()
-      assert Regex.match?(~r/no active quests/, quests)
+      assert_socket_echo "no active quests"
     end
 
     test "a quest is in progress", %{state: state, quest: quest} do
@@ -37,9 +35,7 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:list, :active}, state)
 
-      [{_, quests}] = @socket.get_echos()
-      assert Regex.match?(~r/1 active quest/, quests)
-      assert Regex.match?(~r/Into the Dungeon/, quests)
+      assert_socket_echo ["1 active quest", "into the dungeon"]
     end
   end
 
@@ -61,10 +57,7 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:show, to_string(quest.id)}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/Into the Dungeon/, quest)
-      assert Regex.match?(~r/Goblin/, quest)
-      assert Regex.match?(~r/Potion/, quest)
+      assert_socket_echo ["into the dungeon", "goblin", "potion"]
     end
 
     test "viewing your tracked quest", %{state: state, quest: quest} do
@@ -73,10 +66,7 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:show, :tracked}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/Into the Dungeon/, quest)
-      assert Regex.match?(~r/Goblin/, quest)
-      assert Regex.match?(~r/Potion/, quest)
+      assert_socket_echo ["into the dungeon", "goblin", "potion"]
     end
 
     test "viewing your tracked quest - no tracked quest", %{state: state, quest: quest} do
@@ -84,22 +74,19 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:show, :tracked}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/do not/i, quest)
+      assert_socket_echo "do not"
     end
 
     test "viewing a quest that you do not have", %{state: state, quest: quest} do
       :ok = Quest.run({:show, to_string(quest.id)}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/You have not started this quest/, quest)
+      assert_socket_echo "have not started"
     end
 
     test "sending not an integer as the id", %{state: state} do
       :ok = Quest.run({:show, "anything"}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/could not parse/i, quest)
+      assert_socket_echo "could not parse"
     end
   end
 
@@ -127,9 +114,7 @@ defmodule Game.Command.QuestTest do
 
       {:update, state} = Quest.run({:complete, to_string(quest.id)}, state)
 
-      [{_, quest}, {_, _experience}] = @socket.get_echos()
-      assert Regex.match?(~r/quest complete/i, quest)
-      assert Regex.match?(~r/25 gold/i, quest)
+      assert_socket_echo ["quest complete", "25 gold"]
       assert state.save.currency == 40
       assert state.save.experience_points == 220
     end
@@ -154,8 +139,7 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/cannot be found/, quest)
+      assert_socket_echo "cannot be found"
     end
 
     test "have not completed the steps", %{state: state, quest: quest} do
@@ -165,8 +149,7 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/You have not completed the requirements/, quest)
+      assert_socket_echo "have not completed"
     end
 
     test "quest is already complete", %{state: state, quest: quest} do
@@ -174,15 +157,13 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/already complete/, quest)
+      assert_socket_echo "already complete"
     end
 
     test "completing a quest that you do not have", %{state: state, quest: quest} do
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/You have not started this quest/, quest)
+      assert_socket_echo "have not started"
     end
 
     test "completing a quest with a shortcut command", %{state: state, quest: quest} do
@@ -190,9 +171,7 @@ defmodule Game.Command.QuestTest do
 
       {:update, _state} = Quest.run({:complete, :any}, state)
 
-      [{_, quest}, {_, _experience}] = @socket.get_echos()
-      assert Regex.match?(~r/quest complete/i, quest)
-      assert Regex.match?(~r/25 gold/i, quest)
+      assert_socket_echo ["quest complete", "25 gold"]
     end
   end
 
@@ -209,15 +188,13 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:track, to_string(quest.id)}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/tracking/i, echo)
+      assert_socket_echo "tracking"
     end
 
     test "tracking a quest - not part of your quest", %{state: state, quest: quest} do
       :ok = Quest.run({:track, to_string(quest.id)}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/not started/i, echo)
+      assert_socket_echo "not started"
     end
   end
 
@@ -249,16 +226,13 @@ defmodule Game.Command.QuestTest do
 
       {:update, _state} = Quest.run({:complete, :any}, state)
 
-      [{_, quest}, {_, _experience}] = @socket.get_echos()
-      assert Regex.match?(~r/quest complete/i, quest)
-      assert Regex.match?(~r/25 gold/i, quest)
+      assert_socket_echo ["quest complete", "25 gold"]
     end
 
     test "responds if you have no quests available to complete", %{state: state} do
       :ok = Quest.run({:complete, :any}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/no quests/i, quest)
+      assert_socket_echo "no quests"
     end
 
     test "handles no npc in the room to hand in to", %{state: state, quest: quest} do
@@ -267,8 +241,7 @@ defmodule Game.Command.QuestTest do
 
       :ok = Quest.run({:complete, :any}, state)
 
-      [{_, quest}] = @socket.get_echos()
-      assert Regex.match?(~r/find the quest giver/i, quest)
+      assert_socket_echo "find the quest giver"
     end
   end
 end

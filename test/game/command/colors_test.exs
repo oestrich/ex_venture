@@ -1,14 +1,12 @@
 defmodule Game.Command.ColorsTest do
-  use Data.ModelCase
-  doctest Game.Command.Colors
+  use ExVenture.CommandCase
 
   alias Game.ColorCodes
   alias Game.Command.Colors
 
-  @socket Test.Networking.Socket
+  doctest Colors
 
   setup do
-    @socket.clear_messages()
     save = base_save()
     %{state: session_state(%{user: %{save: save}, save: save})}
   end

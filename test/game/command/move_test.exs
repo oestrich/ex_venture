@@ -1,8 +1,5 @@
 defmodule Game.Command.MoveTest do
-  use Data.ModelCase
-
-  @socket Test.Networking.Socket
-  @room Test.Game.Room
+  use ExVenture.CommandCase
 
   alias Data.Exit
   alias Data.Proficiency
@@ -10,6 +7,8 @@ defmodule Game.Command.MoveTest do
   alias Game.Command.Move
   alias Game.Door
   alias Game.Session.Registry
+
+  @room Test.Game.Room
 
   @basic_room %Game.Environment.State.Room{
     id: 1,
@@ -21,7 +20,6 @@ defmodule Game.Command.MoveTest do
   }
 
   setup do
-    @socket.clear_messages
     start_and_clear_doors()
     start_and_clear_proficiencies()
 
@@ -29,7 +27,7 @@ defmodule Game.Command.MoveTest do
     character = base_character(user)
     state = session_state(%{user: user, character: character, skills: %{}})
 
-    %{socket: :socket, user: user, state: state}
+    %{user: user, state: state}
   end
 
   describe "moving in a direction" do
@@ -74,8 +72,7 @@ defmodule Game.Command.MoveTest do
 
       assert state.save.room_id == 2
 
-      socket = state.socket
-      [{^socket, "You opened the door."}, {^socket, _}] = @socket.get_echos()
+      assert_socket_echo "opened the door"
     end
 
     test "north - door is open", %{state: state, room_exit: room_exit} do
@@ -109,12 +106,11 @@ defmodule Game.Command.MoveTest do
 
       :ok = Command.run(command, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Swimming), echo)
+      assert_socket_echo "swimming"
     end
   end
 
-  test "clears the target after moving", %{socket: socket, state: state} do
+  test "clears the target after moving", %{state: state} do
     room_exit = %Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2, requirements: []}
     @room.set_room(%{@basic_room | exits: [room_exit]})
     Registry.register(state.character)
@@ -124,7 +120,7 @@ defmodule Game.Command.MoveTest do
     {:update, state} = Command.run(command, state)
 
     assert state.target == nil
-    assert [{^socket, "Target.Clear", "{}"} | _] = @socket.get_push_gmcps()
+    assert_socket_gmcp {"Target.Clear", "{}"}
 
     Registry.unregister()
   end
@@ -138,45 +134,40 @@ defmodule Game.Command.MoveTest do
       %{room_exit: room_exit}
     end
 
-    test "open the door", %{socket: socket, state: state} do
+    test "open the door", %{state: state} do
       command = %Command{module: Command.Move, args: {:open, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(opened the door), echo)
-
-      [{^socket, "Zone.Map", _gmcp}] = @socket.get_push_gmcps()
+      assert_socket_echo "opened the door"
+      assert_socket_gmcp {"Zone.Map", _}
     end
 
-    test "a door does not exist in the direction", %{socket: socket, state: state} do
+    test "a door does not exist in the direction", %{state: state} do
       room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: false}
       @room.set_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:open, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(no door)i, error)
+      assert_socket_echo "no door"
     end
 
-    test "an exit does not exist in the direction", %{socket: socket, state: state} do
+    test "an exit does not exist in the direction", %{state: state} do
       @room.set_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:open, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(no exit)i, error)
+      assert_socket_echo "no exit"
     end
 
-    test "door already open", %{socket: socket, state: state, room_exit: room_exit} do
+    test "door already open", %{state: state, room_exit: room_exit} do
       Door.set(room_exit, "open")
 
       command = %Command{module: Command.Move, args: {:open, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door was already open), error)
+      assert_socket_echo "was already open"
     end
   end
 
@@ -189,45 +180,40 @@ defmodule Game.Command.MoveTest do
       %{room_exit: room_exit}
     end
 
-    test "close the door", %{socket: socket, state: state} do
+    test "close the door", %{state: state} do
       command = %Command{module: Command.Move, args: {:close, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(closed the door), echo)
-
-      [{^socket, "Zone.Map", _gmcp}] = @socket.get_push_gmcps()
+      assert_socket_echo "closed the door"
+      assert_socket_gmcp {"Zone.Map", _}
     end
 
-    test "a door does not exist in the direction", %{socket: socket, state: state} do
+    test "a door does not exist in the direction", %{state: state} do
       room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: false}
       @room.set_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:close, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(no door)i, error)
+      assert_socket_echo "no door"
     end
 
-    test "an exit does not exist in the direction", %{socket: socket, state: state} do
+    test "an exit does not exist in the direction", %{state: state} do
       @room.set_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [], players: [], shops: []})
 
       command = %Command{module: Command.Move, args: {:close, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(no exit)i, error)
+      assert_socket_echo "no exit"
     end
 
-    test "door already closed", %{socket: socket, state: state, room_exit: room_exit} do
+    test "door already closed", %{state: state, room_exit: room_exit} do
       Door.set(room_exit, "closed")
 
       command = %Command{module: Command.Move, args: {:close, "north"}}
       :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
 
-      [{^socket, error}] = @socket.get_echos()
-      assert Regex.match?(~r(door was already closed), error)
+      assert_socket_echo "was already closed"
     end
   end
 
@@ -243,8 +229,7 @@ defmodule Game.Command.MoveTest do
 
       :ok = Move.run({:move, "north"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(cannot move)i, echo)
+      assert_socket_echo "cannot move"
     end
   end
 end

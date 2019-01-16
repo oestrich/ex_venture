@@ -1,14 +1,13 @@
 defmodule Game.Command.WhisperTest do
-  use Data.ModelCase
-  doctest Game.Command.Whisper
+  use ExVenture.CommandCase
 
   alias Game.Command.Whisper
 
-  @socket Test.Networking.Socket
+  doctest Whisper
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
     %{state: session_state(%{user: user, character: character})}
@@ -21,8 +20,7 @@ defmodule Game.Command.WhisperTest do
 
       :ok = Whisper.run({:whisper, "player hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/hi/, echo)
+      assert_socket_echo "hi"
     end
 
     test "to an npc", %{state: state} do
@@ -31,8 +29,7 @@ defmodule Game.Command.WhisperTest do
 
       :ok = Whisper.run({:whisper, "guard hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/hi/, echo)
+      assert_socket_echo "hi"
     end
 
     test "target not found", %{state: state} do
@@ -40,8 +37,7 @@ defmodule Game.Command.WhisperTest do
 
       :ok = Whisper.run({:whisper, "guard hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/no .+ could be found/i, echo)
+      assert_socket_echo "no .+ could be found"
     end
   end
 end

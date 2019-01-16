@@ -1,16 +1,12 @@
 defmodule Game.Command.ProficienciesTest do
-  use Data.ModelCase
+  use ExVenture.CommandCase
 
   alias Data.Proficiency
   alias Game.Command.Proficiencies
 
   doctest Proficiencies
 
-  @socket Test.Networking.Socket
-
   setup do
-    @socket.clear_messages()
-
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
 
@@ -27,8 +23,7 @@ defmodule Game.Command.ProficienciesTest do
     test "view the version", %{state: state} do
       :ok = Proficiencies.run({}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Swimming), echo)
+      assert_socket_echo "swimming"
     end
   end
 end

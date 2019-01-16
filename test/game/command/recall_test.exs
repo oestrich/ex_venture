@@ -1,15 +1,14 @@
 defmodule Game.Command.RecallTest do
-  use Data.ModelCase
-  doctest Game.Command.Recall
+  use ExVenture.CommandCase
 
   alias Game.Command.Recall
 
-  @socket Test.Networking.Socket
+  doctest Recall
+
   @room Test.Game.Room
   @zone Test.Game.Zone
 
   setup do
-    @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
     %{state: session_state(%{user: user, character: character, save: character.save})}
@@ -33,8 +32,7 @@ defmodule Game.Command.RecallTest do
 
       :ok = Recall.run({}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r{do not have enough endurance}, echo)
+      assert_socket_echo "do not have enough endurance"
     end
 
     test "zone does not have a graveyard", %{state: state} do
@@ -43,8 +41,7 @@ defmodule Game.Command.RecallTest do
 
       :ok = Recall.run({}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r{you cannot recall here}i, echo)
+      assert_socket_echo "you cannot recall"
     end
   end
 end

@@ -1,56 +1,91 @@
 defmodule Test.Networking.Socket do
   @behaviour Networking.Socket
 
-  @doc false
-  def start_link() do
-    Agent.start_link(fn -> %{} end, name: __MODULE__)
-  end
+  defmodule Helpers do
+    @moduledoc """
+    Helpers for dealing with the socket in tests
+    """
 
-  def clear_messages() do
-    start_link()
-    Agent.update(__MODULE__, fn (_) -> %{} end)
+    @doc """
+    Assert an echo was sent
+    """
+    defmacro assert_socket_echo(messages) when is_list(messages) do
+      quote do
+        assert_receive {:echo, _, recv_message}
+        Enum.map(unquote(messages), fn message ->
+          assert Regex.match?(~r(#{message})i, recv_message)
+        end)
+      end
+    end
+
+    defmacro assert_socket_echo(message) do
+      quote do
+        assert_receive {:echo, _, recv_message}
+        assert Regex.match?(~r(#{unquote(message)})i, recv_message)
+      end
+    end
+
+    defmacro refute_socket_echo(message) do
+      quote do
+        assert_receive {:echo, _, recv_message}
+        refute Regex.match?(~r(#{unquote(message)})i, recv_message)
+      end
+    end
+
+    defmacro refute_socket_echo() do
+      quote do
+        refute_receive {:echo, _, _}
+      end
+    end
+
+    defmacro assert_socket_prompt(message) do
+      quote do
+        assert_receive {:prompt, _, recv_message}
+        assert Regex.match?(~r(#{unquote(message)})i, recv_message)
+      end
+    end
+
+    defmacro assert_socket_no_echo() do
+      quote do
+        refute_receive {:echo, _, _}
+      end
+    end
+
+    defmacro assert_socket_gmcp(message) do
+      quote do
+        assert_receive {:gmcp, _socket, unquote(message)}
+      end
+    end
+
+    defmacro assert_socket_disconnect() do
+      quote do
+        assert_receive {:disconnect, _}
+      end
+    end
+
+    defmacro refute_socket_disconnect() do
+      quote do
+        refute_receive {:disconnect, _}
+      end
+    end
   end
 
   @impl Networking.Socket
   def echo(socket, message) do
-    start_link()
-    Agent.update(__MODULE__, fn state ->
-      echos = Map.get(state, :echo, [])
-      Map.put(state, :echo, echos ++ [{socket, message}])
-    end)
+    send(self(), {:echo, socket, message})
     :ok
-  end
-
-  def get_echos() do
-    Agent.get(__MODULE__, fn state -> Map.get(state, :echo, []) end)
   end
 
   @impl Networking.Socket
   def prompt(socket, message) do
-    start_link()
-    Agent.update(__MODULE__, fn state ->
-      prompts = Map.get(state, :prompt, [])
-      Map.put(state, :prompt, prompts ++ [{socket, message}])
-    end)
+    send(self(), {:prompt, socket, message})
     :ok
-  end
-
-  def get_prompts() do
-    Agent.get(__MODULE__, fn state -> Map.get(state, :prompt, []) end)
   end
 
   @impl Networking.Socket
   def disconnect(socket) do
-    start_link()
-    Agent.update(__MODULE__, fn state ->
-      disconnects = Map.get(state, :disconnect, [])
-      Map.put(state, :disconnect, disconnects ++ [socket])
-    end)
+    send(self(), {:disconnect, socket})
     :ok
-  end
-
-  def get_disconnects() do
-    Agent.get(__MODULE__, fn state -> Map.get(state, :disconnect, []) end)
   end
 
   @impl Networking.Socket
@@ -58,16 +93,8 @@ defmodule Test.Networking.Socket do
 
   @impl Networking.Socket
   def push_gmcp(socket, module, data) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      push_gmcps = Map.get(state, :push_gmcp, [])
-      Map.put(state, :push_gmcp, push_gmcps ++ [{socket, module, data}])
-    end)
+    send(self(), {:gmcp, socket, {module, data}})
     :ok
-  end
-
-  def get_push_gmcps() do
-    Agent.get(__MODULE__, fn state -> Map.get(state, :push_gmcp, []) end)
   end
 
   @impl Networking.Socket

@@ -1,10 +1,9 @@
 defmodule Game.Command.DebugTest do
-  use Data.ModelCase
-  doctest Game.Command.Debug
+  use ExVenture.CommandCase
 
   alias Game.Command.Debug
 
-  @socket Test.Networking.Socket
+  doctest Debug
 
   describe "list debug information for admins" do
     setup do
@@ -16,8 +15,7 @@ defmodule Game.Command.DebugTest do
     test "displays debug information", %{state: state} do
       :ok = Debug.run({:squabble}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Node)i, echo)
+      assert_socket_echo "node"
     end
 
     test "must be an admin", %{state: state} do
@@ -25,8 +23,7 @@ defmodule Game.Command.DebugTest do
 
       :ok = Debug.run({:squabble}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(must be an admin)i, echo)
+      assert_socket_echo "must be an admin"
     end
   end
 
@@ -40,8 +37,7 @@ defmodule Game.Command.DebugTest do
     test "displays debug information", %{state: state} do
       :ok = Debug.run({:players}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Players)i, echo)
+      assert_socket_echo "players"
     end
 
     test "must be an admin", %{state: state} do
@@ -49,8 +45,7 @@ defmodule Game.Command.DebugTest do
 
       :ok = Debug.run({:players}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(must be an admin)i, echo)
+      assert_socket_echo "must be an admin"
     end
   end
 end

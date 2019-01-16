@@ -1,10 +1,9 @@
 defmodule Game.Command.EquipmentTest do
-  use Data.ModelCase
-  doctest Game.Command.Equipment
+  use ExVenture.CommandCase
 
   alias Game.Command.Equipment
 
-  @socket Test.Networking.Socket
+  doctest Equipment
 
   setup do
     start_and_clear_items()
@@ -12,7 +11,6 @@ defmodule Game.Command.EquipmentTest do
     insert_item(%{id: 2, name: "Shield"})
     insert_item(%{id: 3, name: "Leather Chest"})
 
-    @socket.clear_messages
     {:ok, %{socket: :socket}}
   end
 
@@ -20,9 +18,6 @@ defmodule Game.Command.EquipmentTest do
     state = %{socket: socket, save: %{item_ids: [1], wearing: %{chest: 3}, wielding: %{right: 2}}}
     Equipment.run({}, state)
 
-    [{^socket, look}] = @socket.get_echos()
-    refute Regex.match?(~r(Sword), look)
-    assert Regex.match?(~r(Shield), look)
-    assert Regex.match?(~r(Leather), look)
+    assert_socket_echo ["shield", "leather"]
   end
 end

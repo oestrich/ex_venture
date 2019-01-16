@@ -1,13 +1,11 @@
 defmodule Game.Command.MailTest do
-  use Data.ModelCase
-  doctest Game.Command.Mail
+  use ExVenture.CommandCase
 
   alias Game.Command.Mail
 
-  @socket Test.Networking.Socket
+  doctest Mail
 
   setup do
-    @socket.clear_messages
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user, %{name: "user"})
 
@@ -18,8 +16,7 @@ defmodule Game.Command.MailTest do
     test "no messages", %{state: state} do
       :ok = Mail.run({:unread}, state)
 
-      [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(no unread mail), mail)
+      assert_socket_echo "no unread mail"
     end
 
     test "includes messages", %{state: state} do
@@ -54,8 +51,7 @@ defmodule Game.Command.MailTest do
     test "could not find mail", %{state: state} do
       :ok = Mail.run({:read, 10}, state)
 
-      [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(could not), mail)
+      assert_socket_echo "could not"
     end
 
     test "trying to read someone else's mail", %{sender: sender, state: state} do
@@ -65,8 +61,7 @@ defmodule Game.Command.MailTest do
 
       :ok = Mail.run({:read, mail.id}, state)
 
-      [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(could not), mail)
+      assert_socket_echo "could not"
     end
   end
 
@@ -83,15 +78,13 @@ defmodule Game.Command.MailTest do
 
       assert state.commands.mail.player.id == receiver.id
 
-      [{_, echo}] = @socket.get_prompts()
-      assert Regex.match?(~r(Title), echo)
+      assert_socket_prompt "Title"
     end
 
     test "player not found", %{state: state} do
       :ok = Mail.run({:new, "unknown"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/Could not/i, echo)
+      assert_socket_echo "could not"
     end
 
     test "capture the title", %{state: state, receiver: receiver} do
@@ -116,7 +109,6 @@ defmodule Game.Command.MailTest do
       {:update, state} = Mail.editor(:complete, state)
 
       assert state.commands == %{}
-
       assert length(Game.Mail.unread_mail_for(receiver)) == 1
     end
   end

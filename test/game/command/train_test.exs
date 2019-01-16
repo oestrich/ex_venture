@@ -1,16 +1,15 @@
 defmodule Game.Command.TrainTest do
-  use Data.ModelCase
-  doctest Game.Command.Train
+  use ExVenture.CommandCase
 
   alias Data.ActionBar
   alias Game.Character
   alias Game.Command.Train
 
-  @socket Test.Networking.Socket
+  doctest Train
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
     save = %{character.save | level: 2, experience_points: 1100}
@@ -28,8 +27,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:list}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(will train), echo)
+      assert_socket_echo "will train"
     end
 
     test "hides skills the player already knows", %{state: state, guard: guard} do
@@ -46,9 +44,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:list}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      refute Regex.match?(~r(slash)i, echo)
-      assert Regex.match?(~r(kick)i, echo)
+      assert_socket_echo "kick"
     end
 
     test "hides skills the player is not ready for - too high a level", %{state: state, guard: guard} do
@@ -65,9 +61,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:list}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(slash)i, echo)
-      refute Regex.match?(~r(kick)i, echo)
+      assert_socket_echo "slash"
     end
 
     test "no trainers in the room", %{state: state} do
@@ -75,8 +69,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:list}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(no trainers)i, echo)
+      assert_socket_echo "no trainers"
     end
 
     test "more than one trainer", %{state: state, guard: guard} do
@@ -86,8 +79,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:list}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(more than one), echo)
+      assert_socket_echo "more than one"
     end
 
     test "more than one trainer - by name", %{state: state, guard: guard} do
@@ -96,8 +88,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:list, "guard"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Guard.+ will train), echo)
+      assert_socket_echo "Guard.+ will train"
     end
 
     test "trainer not found - by name", %{state: state} do
@@ -105,8 +96,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:list, "guard"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(no trainers), echo)
+      assert_socket_echo "no trainers"
     end
   end
 
@@ -127,8 +117,7 @@ defmodule Game.Command.TrainTest do
 
       {:update, state} = Train.run({:train, "slash"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(trained success)i, echo)
+      assert_socket_echo "trained success"
 
       assert state.save.skill_ids == [slash.id]
       assert state.save.spent_experience_points == 1000
@@ -140,8 +129,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:train, "kick"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(could not find)i, echo)
+      assert_socket_echo "could not find"
     end
 
     test "skill already known", %{state: state, guard: guard, slash: slash} do
@@ -150,8 +138,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:train, "slash"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(already known)i, echo)
+      assert_socket_echo "already known"
     end
 
     test "not high enough level", %{state: state, guard: guard, slash: slash} do
@@ -162,8 +149,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:train, "slash"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(not ready)i, echo)
+      assert_socket_echo "not ready"
     end
 
     test "not enough xp left to spend", %{state: state, guard: guard} do
@@ -172,8 +158,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:train, "slash"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(do not have enough)i, echo)
+      assert_socket_echo "do not have enough"
     end
 
     test "no trainers in the room", %{state: state} do
@@ -181,8 +166,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:train, "slash"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(no trainers)i, echo)
+      assert_socket_echo "no trainers"
     end
 
     test "more than one trainer", %{state: state, guard: guard} do
@@ -192,8 +176,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:train, "slash"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(more than one), echo)
+      assert_socket_echo "more than one"
     end
 
     test "more than one trainer - by name", %{state: state, guard: guard, slash: slash} do
@@ -201,8 +184,7 @@ defmodule Game.Command.TrainTest do
 
       {:update, state} = Train.run({:train, "slash", :from, "guard"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(trained success)i, echo)
+      assert_socket_echo "trained success"
 
       assert state.save.skill_ids == [slash.id]
     end
@@ -212,8 +194,7 @@ defmodule Game.Command.TrainTest do
 
       :ok = Train.run({:train, "slash", :from, "unknown"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(no trainers by that name)i, echo)
+      assert_socket_echo "no trainers by that name"
     end
   end
 end

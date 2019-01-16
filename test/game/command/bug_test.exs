@@ -1,17 +1,11 @@
 defmodule Game.Command.BugTest do
-  use Data.ModelCase
-  doctest Game.Command.Bug
+  use ExVenture.CommandCase
 
   import Ecto.Query
 
   alias Game.Command.Bug
 
-  @socket Test.Networking.Socket
-
-  setup do
-    @socket.clear_messages()
-    :ok
-  end
+  doctest Bug
 
   describe "viewing a list of your bugs" do
     setup do
@@ -25,8 +19,7 @@ defmodule Game.Command.BugTest do
 
       :ok = Bug.run({:list}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(my bug), echo)
+      assert_socket_echo "my bug"
     end
 
     test "view a single bug", %{state: state} do
@@ -34,8 +27,7 @@ defmodule Game.Command.BugTest do
 
       :ok = Bug.run({:read, to_string(bug.id)}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(my bug), echo)
+      assert_socket_echo "my bug"
     end
   end
 
@@ -53,14 +45,14 @@ defmodule Game.Command.BugTest do
 
       assert state.commands.bug.title == "title"
       assert state.commands.bug.lines == []
-
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(enter in any more), echo)
+      assert_socket_echo "enter in any more"
     end
 
     test "add lines together in the editor", %{state: state} do
       state = %{state | commands: %{bug: %{lines: []}}}
+
       {:update, state} = Bug.editor({:text, "line"}, state)
+
       assert state.commands.bug.lines == ["line"]
     end
 
@@ -70,7 +62,6 @@ defmodule Game.Command.BugTest do
       {:update, state} = Bug.editor(:complete, state)
 
       assert state.commands == %{}
-
       assert Data.Bug |> select([b], count(b.id)) |> Repo.one == 1
     end
 
@@ -80,11 +71,8 @@ defmodule Game.Command.BugTest do
       {:update, state} = Bug.editor(:complete, state)
 
       assert state.commands == %{}
-
       assert Data.Bug |> select([b], count(b.id)) |> Repo.one == 0
-      [{_socket, echo}] = @socket.get_echos()
-
-      assert Regex.match?(~r(an issue), echo)
+      assert_socket_echo "an issue"
     end
   end
 end

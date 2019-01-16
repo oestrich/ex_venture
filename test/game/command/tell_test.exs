@@ -1,17 +1,16 @@
 defmodule Game.Command.TellTest do
-  use Data.ModelCase
-  doctest Game.Command.Tell
+  use ExVenture.CommandCase
 
   alias Game.Channel
   alias Game.Command.Tell
   alias Game.Message
   alias Game.Session
 
-  @socket Test.Networking.Socket
+  doctest Tell
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     @room.set_room(Map.merge(@room._room(), %{npcs: []}))
 
     user = base_user()
@@ -34,8 +33,7 @@ defmodule Game.Command.TellTest do
     test "send a tell - player not found", %{state: state} do
       :ok = Tell.run({"tell", "player hello"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(not online), echo)
+      assert_socket_echo "not online"
     end
   end
 
@@ -63,8 +61,7 @@ defmodule Game.Command.TellTest do
 
       :ok = Tell.run({"tell", "guard howdy"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(not), echo)
+      assert_socket_echo "not"
     end
   end
 
@@ -82,15 +79,13 @@ defmodule Game.Command.TellTest do
     test "send a reply - player not online", %{state: state} do
       :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.character}})
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(not online), echo)
+      assert_socket_echo "not online"
     end
 
     test "send reply - no reply to", %{state: state} do
       :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: nil})
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(no one to reply), echo)
+      assert_socket_echo "no one to reply"
     end
   end
 
@@ -118,8 +113,7 @@ defmodule Game.Command.TellTest do
 
       :ok = Tell.run({"reply", "howdy"}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(not), echo)
+      assert_socket_echo "not"
     end
   end
 end

@@ -1,15 +1,13 @@
 defmodule Game.Command.ChannelsTest do
-  use Data.ModelCase
-  doctest Game.Command.Channels
+  use ExVenture.CommandCase
 
   alias Game.Channel
   alias Game.Command.Channels
   alias Game.Message
 
-  @socket Test.Networking.Socket
+  doctest Channels
 
   setup do
-    @socket.clear_messages()
     Game.Channels.clear()
 
     %Data.Channel{id: 1, name: "global", color: "red"} |> insert_channel()
@@ -31,9 +29,7 @@ defmodule Game.Command.ChannelsTest do
 
     :ok = Channels.run({}, state)
 
-    [{_socket, echo}] = @socket.get_echos()
-    assert Regex.match?(~r(global), echo)
-    assert Regex.match?(~r(newbie), echo)
+    assert_socket_echo ["global", "newbie"]
   end
 
   describe "broadcasting messages" do

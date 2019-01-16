@@ -1,16 +1,15 @@
 defmodule Game.Command.SkillsTest do
-  use Data.ModelCase
-  doctest Game.Command.Skills
+  use ExVenture.CommandCase
 
   alias Game.Command.ParseContext
   alias Game.Command.Skills
   alias Game.Session
 
-  @socket Test.Networking.Socket
+  doctest Skills
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     start_and_clear_skills()
 
     slash = create_skill(%{
@@ -108,19 +107,13 @@ defmodule Game.Command.SkillsTest do
     test "view skill information", %{state: state} do
       :ok = Skills.run({}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(slash), look)
-      assert Regex.match?(~r(2 sp), look)
-
-      refute Regex.match?(~r(kick)i, look)
+      assert_socket_echo "slash"
     end
 
-    test "view skill information -all", %{state: state} do
+    test "view skill information - all", %{state: state} do
       :ok = Skills.run({:all}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(slash)i, look)
-      refute Regex.match?(~r(kick)i, look)
+      assert_socket_echo "slash"
     end
   end
 
@@ -132,8 +125,7 @@ defmodule Game.Command.SkillsTest do
       assert state.save.stats.skill_points == 8
       assert state.skills[slash.id]
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Slash), look)
+      assert_socket_echo "slash"
     end
 
     test "required target - targets self", %{state: state, save: save, slash: slash} do
@@ -148,8 +140,7 @@ defmodule Game.Command.SkillsTest do
       assert state.skills[slash.id]
       assert state.target == {:npc, 1}
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Slash), look)
+      assert_socket_echo "slash"
 
       assert_received {:"$gen_cast", {:apply_effects, _, _, _}}
     end
@@ -166,8 +157,7 @@ defmodule Game.Command.SkillsTest do
       assert state.skills[slash.id]
       assert state.target == {:npc, 1}
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Slash), look)
+      assert_socket_echo "slash"
 
       refute_received {:"$gen_cast", {:apply_effects, _, _, _}}
     end
@@ -179,8 +169,8 @@ defmodule Game.Command.SkillsTest do
       assert state.save.stats.skill_points == 8
       assert state.target == {:npc, 1}
 
-      [_, {_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Slash), look)
+      assert_socket_echo ""
+      assert_socket_echo "slash"
     end
 
     test "change your target", %{state: state, save: save, slash: slash} do
@@ -190,23 +180,21 @@ defmodule Game.Command.SkillsTest do
       assert state.save.stats.skill_points == 8
       assert state.target == {:npc, 1}
 
-      [_, {_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Slash), look)
+      assert_socket_echo ""
+      assert_socket_echo "slash"
     end
 
     test "target not found", %{state: state, save: save, slash: slash} do
       state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 2}}
       :ok = Skills.run({slash, "slash"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(Your target could not), look)
+      assert_socket_echo "your target could not"
     end
 
     test "with no target", %{state: state, slash: slash} do
       :ok = Skills.run({slash, "slash"}, %{state | target: nil})
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(You don't have), look)
+      assert_socket_echo "you don't have"
     end
 
     test "not enough skill points", %{state: state, save: save, slash: slash} do
@@ -215,8 +203,7 @@ defmodule Game.Command.SkillsTest do
 
       {:update, ^state} = Skills.run({slash, "slash"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(You don't have), look)
+      assert_socket_echo "you don't have"
     end
 
     test "too soon", %{state: state, save: save, slash: slash} do
@@ -228,8 +215,7 @@ defmodule Game.Command.SkillsTest do
 
       :ok = Skills.run({slash, "slash"}, state)
 
-      [{_socket, look} | _] = @socket.get_echos()
-      assert Regex.match?(~r(not ready)i, look)
+      assert_socket_echo "not ready"
     end
 
     test "not high enough level", %{state: state, save: save, slash: slash} do
@@ -238,8 +224,7 @@ defmodule Game.Command.SkillsTest do
 
       :ok = Skills.run({slash, "slash"}, state)
 
-      [{_socket, look}] = @socket.get_echos()
-      assert Regex.match?(~r(You are not high), look)
+      assert_socket_echo "not high enough"
     end
   end
 end
