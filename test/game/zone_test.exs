@@ -1,6 +1,5 @@
 defmodule Game.ZoneTest do
   use Data.ModelCase
-  use GenServerCase
   import Test.DoorHelper
 
   alias Game.Door

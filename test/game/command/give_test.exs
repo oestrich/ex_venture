@@ -1,14 +1,13 @@
 defmodule Game.Command.GiveTest do
-  use Data.ModelCase
-  doctest Game.Command.Give
+  use ExVenture.CommandCase
 
   alias Game.Command.Give
 
-  @socket Test.Networking.Socket
+  doctest Give
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
     %{state: session_state(%{user: user, character: character, save: character.save})}
@@ -52,22 +51,19 @@ defmodule Game.Command.GiveTest do
     test "item not found", %{state: state} do
       :ok = Give.run({"thing", :to, "player"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r[could not be found], echo)
+      assert_socket_echo "could not be found"
     end
 
     test "not enough currency", %{state: state} do
       :ok = Give.run({"100 gold", :to, "player"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r[do not have enough gold], echo)
+      assert_socket_echo "do not have enough gold"
     end
 
     test "character not found", %{state: state} do
       :ok = Give.run({"potion", :to, "bandit"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r[could not be found], echo)
+      assert_socket_echo "could not be found"
     end
   end
 end

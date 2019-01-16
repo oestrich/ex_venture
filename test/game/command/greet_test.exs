@@ -1,16 +1,14 @@
 defmodule Game.Command.GreetTest do
-  use Data.ModelCase
-  doctest Game.Command.Greet
+  use ExVenture.CommandCase
 
   alias Game.Command.Greet
 
+  doctest Greet
+
   @room Test.Game.Room
   @npc Test.Game.NPC
-  @socket Test.Networking.Socket
 
   setup do
-    @socket.clear_messages
-
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
 
@@ -33,8 +31,7 @@ defmodule Game.Command.GreetTest do
     test "npc present", %{state: state} do
       :ok = Greet.run({:greet, "guard"}, state)
 
-      [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(greet {npc}Guard{/npc}), mail)
+      assert_socket_echo "greet .*Guard"
 
       assert @npc.get_greets() == [{1, state.character}]
     end
@@ -44,8 +41,7 @@ defmodule Game.Command.GreetTest do
     test "player present", %{state: state} do
       :ok = Greet.run({:greet, "player"}, state)
 
-      [{_, mail}] = @socket.get_echos()
-      assert Regex.match?(~r(greet {player}Player{/player}), mail)
+      assert_socket_echo "greet .*Player"
     end
   end
 end

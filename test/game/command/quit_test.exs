@@ -1,4 +1,7 @@
 defmodule Game.Command.QuitTest do
-  use Data.ModelCase
-  doctest Game.Command.Quit
+  use ExVenture.CommandCase
+
+  alias Game.Command.Quit
+
+  doctest Quit
 end

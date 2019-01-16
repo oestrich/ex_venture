@@ -1,6 +1,5 @@
 defmodule Game.SessionTest do
-  use GenServerCase
-  use Data.ModelCase
+  use ExVenture.SessionCase
 
   alias Data.Exit
   alias Data.Mail
@@ -9,14 +8,12 @@ defmodule Game.SessionTest do
   alias Game.Session
   alias Game.Session.Process
 
-  @socket Test.Networking.Socket
   @room Test.Game.Room
   @zone Test.Game.Zone
 
   @basic_room %Game.Environment.State.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
 
   setup do
-    @socket.clear_messages()
     @room.clear_notifies()
 
     user = base_user()
@@ -38,7 +35,7 @@ defmodule Game.SessionTest do
   test "echoing messages", %{state: state} do
     {:noreply, ^state} = Process.handle_cast({:echo, "a message"}, state)
 
-    assert @socket.get_echos() == [{state.socket, "a message"}]
+    assert_socket_echo "message"
   end
 
   describe "regenerating" do
@@ -133,7 +130,6 @@ defmodule Game.SessionTest do
   test "recv'ing messages - the first", %{state: state} do
     {:noreply, state} = Process.handle_cast({:recv, "name"}, %{state | state: "login"})
 
-    assert @socket.get_prompts() == []
     assert state.last_recv
   end
 
@@ -143,7 +139,7 @@ defmodule Game.SessionTest do
     state = %{state | user: user, save: %{room_id: 1, experience_points: 10, stats: %{}}}
     {:noreply, state} = Process.handle_cast({:recv, "quit"}, state)
 
-    assert @socket.get_echos() == [{state.socket, "Good bye."}]
+    assert_socket_echo "good bye"
     assert state.last_recv
   after
     Session.Registry.unregister()
@@ -192,7 +188,7 @@ defmodule Game.SessionTest do
     {:noreply, state} = Process.handle_cast({:recv, "say Hello"}, state)
 
     assert state.mode == "continuing"
-    assert @socket.get_echos() == []
+    refute_socket_echo()
   after
     Session.Registry.unregister()
   end
@@ -216,7 +212,7 @@ defmodule Game.SessionTest do
   test "checking for inactive players - not inactive", %{state: state} do
     {:noreply, _state} = Process.handle_info(:inactive_check, %{state | last_recv: Timex.now()})
 
-    assert @socket.get_disconnects() == []
+    refute_socket_disconnect()
   end
 
   test "checking for inactive players - inactive", %{state: state} do
@@ -377,8 +373,6 @@ defmodule Game.SessionTest do
 
   describe "channels" do
     setup do
-      @socket.clear_messages()
-
       %{from: %{id: 10, name: "Player"}}
     end
 
@@ -387,8 +381,7 @@ defmodule Game.SessionTest do
 
       {:noreply, state} = Process.handle_info({:channel, {:tell, {:player, from}, message}}, state)
 
-      [{_socket, tell} | _] = @socket.get_echos()
-      assert Regex.match?(~r/Howdy/, tell)
+      assert_socket_echo "howdy"
       assert state.reply_to == {:player, from}
     end
 
@@ -476,22 +469,26 @@ defmodule Game.SessionTest do
   describe "event notification" do
     test "player enters the room", %{state: state} do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:player, %{id: 1, name: "Player"}}, {:enter, "south"}}}}, state)
-      [{_, "{player}Player{/player} enters from the {command}south{/command}."}] = @socket.get_echos()
+
+      assert_socket_echo "enters from the"
     end
 
     test "npc enters the room", %{state: state} do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, {:enter, "south"}}}}, state)
-      [{_, "{npc}Bandit{/npc} enters from the {command}south{/command}."}] = @socket.get_echos()
+
+      assert_socket_echo "enters from the"
     end
 
     test "player leaves the room", %{state: state} do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:player, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
-      [{_, "{player}Player{/player} leaves heading {command}north{/command}."}] = @socket.get_echos()
+
+      assert_socket_echo "leaves heading"
     end
 
     test "npc leaves the room", %{state: state} do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, {:leave, "north"}}}}, state)
-      [{_, "{npc}Bandit{/npc} leaves heading {command}north{/command}."}] = @socket.get_echos()
+
+      assert_socket_echo "leaves heading"
     end
 
     test "player leaves the room and they were the target", %{state: state} do
@@ -510,21 +507,19 @@ defmodule Game.SessionTest do
       message = Message.say(%{id: 1, name: "Player"}, %{message: "hi"})
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/heard", message}}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Hi.), echo)
+      assert_socket_echo "hi"
     end
 
     test "room overheard - echos if user is not in the list of characters", %{state: state} do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [], "hi"}}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(hi), echo)
+      assert_socket_echo "hi"
     end
 
     test "room overheard - does not echo if user is in the list of characters", %{state: state} do
       {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [{:player, state.character}], "hi"}}, state)
 
-      assert [] = @socket.get_echos()
+      refute_socket_echo()
     end
 
     test "new mail received", %{state: state} do
@@ -532,8 +527,7 @@ defmodule Game.SessionTest do
 
       {:noreply, ^state} = Process.handle_cast({:notify, {"mail/new", mail}}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(New mail)i, echo)
+      assert_socket_echo "new mail"
     end
 
     test "character died", %{state: state} do
@@ -541,8 +535,7 @@ defmodule Game.SessionTest do
 
       {:noreply, ^state} = Process.handle_cast({:notify, {"character/died", npc, :character, npc}}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(has died), echo)
+      assert_socket_echo "has died"
     end
 
     test "new item received", %{state: state} do
@@ -556,9 +549,7 @@ defmodule Game.SessionTest do
 
       assert state.save.items == [instance]
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(Potion)i, echo)
-      assert Regex.match?(~r(Guard)i, echo)
+      assert_socket_echo ["potion", "guard"]
     end
 
     test "new currency received", %{state: state} do
@@ -568,9 +559,7 @@ defmodule Game.SessionTest do
 
       assert state.save.currency == 60
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(50 gold)i, echo)
-      assert Regex.match?(~r(Guard)i, echo)
+      assert_socket_echo ["50 gold", "guard"]
     end
   end
 

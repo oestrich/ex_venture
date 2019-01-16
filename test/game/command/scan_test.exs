@@ -1,11 +1,11 @@
 defmodule Game.Command.ScanTest do
-  use Data.ModelCase
-  doctest Game.Command.Scan
+  use ExVenture.CommandCase
 
   alias Game.Command.Scan
   alias Game.Door
 
-  @socket Test.Networking.Socket
+  doctest Scan
+
   @room Test.Game.Room
 
   @basic_room %Game.Environment.State.Room{
@@ -15,8 +15,6 @@ defmodule Game.Command.ScanTest do
   }
 
   setup do
-    @socket.clear_messages()
-
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
 
@@ -61,22 +59,19 @@ defmodule Game.Command.ScanTest do
     test "sees what is in your current room", %{state: state} do
       :ok = Scan.run({}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/Bandit/, echo)
+      assert_socket_echo "bandit"
     end
 
     test "sees what is in rooms next to you", %{state: state} do
       :ok = Scan.run({}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/Player/, echo)
+      assert_socket_echo "player"
     end
 
     test "doors block sight", %{state: state} do
       :ok = Scan.run({}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      refute Regex.match?(~r/Guard/, echo)
+      refute_socket_echo "guard"
     end
   end
 end

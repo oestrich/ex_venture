@@ -1,17 +1,17 @@
 defmodule Game.ExperienceTest do
   use Data.ModelCase
-  doctest Game.Experience
 
   import Test.DamageTypesHelper
+  import Test.Networking.Socket.Helpers
 
   alias Game.Experience
 
-  @socket Test.Networking.Socket
+  doctest Experience
 
   setup do
-    @socket.clear_messages()
     user = base_user()
     character = base_character(user)
+
     %{state: session_state(%{user: user, character: character, save: character.save})}
   end
 
@@ -59,8 +59,7 @@ defmodule Game.ExperienceTest do
 
       Experience.notify_new_skills(state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r[can now use], echo)
+      assert_socket_echo "can now use"
     end
   end
 

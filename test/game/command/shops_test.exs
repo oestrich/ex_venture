@@ -1,13 +1,13 @@
 defmodule Game.Command.ShopsTest do
-  use Data.ModelCase
-  doctest Game.Command.Shops
+  use ExVenture.CommandCase
 
-  @socket Test.Networking.Socket
   @room Test.Game.Room
   @shop Test.Game.Shop
 
   alias Game.Command.Shops
   alias Game.Environment.State.Overworld
+
+  doctest Game.Command.Shops
 
   setup do
     start_and_clear_items()
@@ -22,311 +22,273 @@ defmodule Game.Command.ShopsTest do
 
     @shop.clear_buys()
     @shop.clear_sells()
-    @socket.clear_messages()
-    {:ok, %{socket: :socket, room: room, tree_stand: tree_stand}}
+
+    {:ok, %{state: session_state(%{}), room: room, tree_stand: tree_stand}}
   end
 
-  test "a bad shop command displays help", %{socket: socket} do
-    :ok = Shops.run({:help}, %{socket: socket})
+  test "a bad shop command displays help", %{state: state} do
+    :ok = Shops.run({:help}, state)
 
-    [{^socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(see {command}help shops{/command}), look)
+    assert_socket_echo "see {command}help shops{/command}"
   end
 
-  test "view shops in the room", %{socket: socket} do
-    :ok = Shops.run({}, %{socket: socket, save: %{room_id: 1}})
+  test "view shops in the room", %{state: state} do
+    :ok = Shops.run({}, %{state | save: %{room_id: 1}})
 
-    [{^socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(Tree Stand Shop), look)
-    assert Regex.match?(~r(Hole in the Wall), look)
+    assert_socket_echo ["tree stand shop", "hole in the wall"]
   end
 
-  test "view shops in the room - overworld", %{socket: socket} do
+  test "view shops in the room - overworld", %{state: state} do
     room = %Overworld{id: "overworld:1:1,1"}
     @room.set_room(room)
 
-    :ok = Shops.run({}, %{socket: socket, save: %{room_id: "overworld:1:1,1"}})
+    :ok = Shops.run({}, %{state | save: %{room_id: "overworld:1:1,1"}})
 
-    [{^socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(no shops), look)
+    assert_socket_echo "no shops"
   end
 
-  test "view shops in the room - no shops", %{socket: socket} do
+  test "view shops in the room - no shops", %{state: state} do
     room = %{@room._room() | shops: []}
     @room.set_room(room)
 
-    :ok = Shops.run({}, %{socket: socket, save: %{room_id: 1}})
+    :ok = Shops.run({}, %{state | save: %{room_id: 1}})
 
-    [{^socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(no shops), look)
+    assert_socket_echo "no shops"
   end
 
-  test "view items in a shop", %{socket: socket} do
-    :ok = Shops.run({:list, "tree stand"}, %{socket: socket, save: %{room_id: 1}})
+  test "view items in a shop", %{state: state} do
+    :ok = Shops.run({:list, "tree stand"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Tree Stand Shop), list)
-    assert Regex.match?(~r(Sword), list)
+    assert_socket_echo ["tree stand shop", "sword"]
   end
 
-  test "view items in a shop - one shop", %{socket: socket, room: room, tree_stand: tree_stand} do
+  test "view items in a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
     room = %{room | shops: [tree_stand]}
     @room.set_room(room)
 
-    :ok = Shops.run({:list}, %{socket: socket, save: %{room_id: 1}})
+    :ok = Shops.run({:list}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Tree Stand Shop), list)
-    assert Regex.match?(~r(Sword), list)
+    assert_socket_echo ["tree stand shop", "sword"]
   end
 
-  test "view items in a shop - one shop - more than one shop", %{socket: socket} do
-    :ok = Shops.run({:list}, %{socket: socket, save: %{room_id: 1}})
+  test "view items in a shop - one shop - more than one shop", %{state: state} do
+    :ok = Shops.run({:list}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(more than one shop), list)
+    assert_socket_echo "more than one shop"
   end
 
-  test "view items in a shop - one shop - no shop found", %{socket: socket, room: room} do
+  test "view items in a shop - one shop - no shop found", %{state: state, room: room} do
     room = %{room | shops: []}
     @room.set_room(room)
 
-    :ok = Shops.run({:list}, %{socket: socket, save: %{room_id: 1}})
+    :ok = Shops.run({:list}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "view items in a shop - bad shop name", %{socket: socket} do
-    :ok = Shops.run({:list, "stand"}, %{socket: socket, save: %{room_id: 1}})
+  test "view items in a shop - bad shop name", %{state: state} do
+    :ok = Shops.run({:list, "stand"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r("stand" shop could not be found), list)
+    assert_socket_echo "could not be found"
   end
 
-  test "view an item in a shop", %{socket: socket} do
-    :ok = Shops.run({:show, "sword", :from, "tree stand"}, %{socket: socket, save: %{room_id: 1}})
+  test "view an item in a shop", %{state: state} do
+    :ok = Shops.run({:show, "sword", :from, "tree stand"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Sword), list)
+    assert_socket_echo "sword"
   end
 
-  test "view an item in a shop - item not found", %{socket: socket} do
-    :ok = Shops.run({:show, "shield", :from, "tree stand"}, %{socket: socket, save: %{room_id: 1}})
+  test "view an item in a shop - item not found", %{state: state} do
+    :ok = Shops.run({:show, "shield", :from, "tree stand"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "view an item in a shop - one shop", %{socket: socket, room: room, tree_stand: tree_stand} do
+  test "view an item in a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
     room = %{room | shops: [tree_stand]}
     @room.set_room(room)
 
-    :ok = Shops.run({:show, "sword"}, %{socket: socket, save: %{room_id: 1}})
+    :ok = Shops.run({:show, "sword"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Sword), list)
+    assert_socket_echo "sword"
   end
 
-  test "view an item in a shop - one shop - more than one shop", %{socket: socket} do
-    :ok = Shops.run({:show, "sword"}, %{socket: socket, save: %{room_id: 1}})
+  test "view an item in a shop - one shop - more than one shop", %{state: state} do
+    :ok = Shops.run({:show, "sword"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(more than one shop), list)
+    assert_socket_echo "more than one shop"
   end
 
-  test "view an item in a shop - one shop - no shop found", %{socket: socket, room: room} do
+  test "view an item in a shop - one shop - no shop found", %{state: state, room: room} do
     room = %{room | shops: []}
     @room.set_room(room)
 
-    :ok = Shops.run({:show, "sword"}, %{socket: socket, save: %{room_id: 1}})
+    :ok = Shops.run({:show, "sword"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "view an item in a shop - shop not found", %{socket: socket} do
-    :ok = Shops.run({:show, "sword", :from, "tre3"}, %{socket: socket, save: %{room_id: 1}})
+  test "view an item in a shop - shop not found", %{state: state} do
+    :ok = Shops.run({:show, "sword", :from, "tre3"}, %{state | save: %{room_id: 1}})
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "buy an item in a shop", %{socket: socket} do
+  test "buy an item in a shop", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20}
     @shop.set_buy({:ok, %{save | currency: 19}, %{name: "Sword"}})
 
-    {:update, state} = Shops.run({:buy, "sword", :from, "tree stand"}, %{socket: socket, save: save})
+    {:update, state} = Shops.run({:buy, "sword", :from, "tree stand"}, %{state | save: save})
 
     assert state.save.currency == 19
     assert [{_, "sword", _save}] = @shop.get_buys()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Tree Stand Shop), list)
-    assert Regex.match?(~r(Sword), list)
+    assert_socket_echo ["tree stand shop", "sword"]
   end
 
-  test "buy an item in a shop - shop not found", %{socket: socket} do
+  test "buy an item in a shop - shop not found", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:buy, "sword", :from, "treestand"}, %{socket: socket, save: save})
+    :ok = Shops.run({:buy, "sword", :from, "treestand"}, %{state | save: save})
 
     assert [] = @shop.get_buys()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r("treestand" shop could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "buy an item in a shop - one shop", %{socket: socket, room: room, tree_stand: tree_stand} do
+  test "buy an item in a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
     room = %{room | shops: [tree_stand]}
     @room.set_room(room)
 
     save = %{base_save() | room_id: 1, currency: 20}
     @shop.set_buy({:ok, %{save | currency: 19}, %{name: "Sword"}})
 
-    {:update, state} = Shops.run({:buy, "sword"}, %{socket: socket, save: save})
+    {:update, state} = Shops.run({:buy, "sword"}, %{state | save: save})
 
     assert state.save.currency == 19
     assert [{_, "sword", _save}] = @shop.get_buys()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Tree Stand Shop), list)
-    assert Regex.match?(~r(Sword), list)
+    assert_socket_echo ["tree stand", "sword"]
   end
 
-  test "buy an item in a shop - one shop - but more than one shop in room", %{socket: socket} do
+  test "buy an item in a shop - one shop - but more than one shop in room", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:buy, "sword"}, %{socket: socket, save: save})
+    :ok = Shops.run({:buy, "sword"}, %{state | save: save})
 
     assert [] = @shop.get_buys()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(more than one shop), list)
+    assert_socket_echo "more than one"
   end
 
-  test "buy an item in a shop - one shop parse - no shop in room", %{socket: socket, room: room} do
+  test "buy an item in a shop - one shop parse - no shop in room", %{state: state, room: room} do
     room = %{room | shops: []}
     @room.set_room(room)
 
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:buy, "sword"}, %{socket: socket, save: save})
+    :ok = Shops.run({:buy, "sword"}, %{state | save: save})
 
     assert [] = @shop.get_buys()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(shop could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "buy an item in a shop - item not found", %{socket: socket} do
+  test "buy an item in a shop - item not found", %{state: state} do
     @shop.set_buy({:error, :item_not_found})
 
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:buy, "swrd", :from, "tree stand"}, %{socket: socket, save: save})
+    :ok = Shops.run({:buy, "swrd", :from, "tree stand"}, %{state | save: save})
 
     assert [{_, "swrd", _}] = @shop.get_buys()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r("swrd" item could not), list)
+    assert_socket_echo "item could not"
   end
 
-  test "buy an item in a shop - not enough currency", %{socket: socket} do
+  test "buy an item in a shop - not enough currency", %{state: state} do
     @shop.set_buy({:error, :not_enough_currency, %{name: "Sword"}})
 
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:buy, "sword", :from, "tree stand"}, %{socket: socket, save: save})
+    :ok = Shops.run({:buy, "sword", :from, "tree stand"}, %{state | save: save})
 
     assert [{_id, "sword", _save}] = @shop.get_buys()
 
-    [{^socket, buy}] = @socket.get_echos()
-    assert Regex.match?(~r(You do not have), buy)
+    assert_socket_echo "do not have"
   end
 
-  test "buy an item in a shop - not enough quantity", %{socket: socket} do
+  test "buy an item in a shop - not enough quantity", %{state: state} do
     @shop.set_buy({:error, :not_enough_quantity, %{name: "Sword"}})
 
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:buy, "sword", :from, "tree stand"}, %{socket: socket, save: save})
+    :ok = Shops.run({:buy, "sword", :from, "tree stand"}, %{state | save: save})
 
     assert [{_id, "sword", _save}] = @shop.get_buys()
 
-    [{^socket, buy}] = @socket.get_echos()
-    assert Regex.match?(~r( does not ), buy)
+    assert_socket_echo "does not"
   end
 
-  test "sell an item to a shop", %{socket: socket} do
+  test "sell an item to a shop", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
 
-    {:update, state} = Shops.run({:sell, "sword", :to, "tree stand"}, %{socket: socket, save: save})
+    {:update, state} = Shops.run({:sell, "sword", :to, "tree stand"}, %{state | save: save})
 
     assert state.save.currency == 30
     assert [{_, "sword", _save}] = @shop.get_sells()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Tree Stand Shop), list)
-    assert Regex.match?(~r(Sword), list)
-    assert Regex.match?(~r(10 gold), list)
+    assert_socket_echo "10 gold"
   end
 
-  test "sell an item to a shop - one shop", %{socket: socket, room: room, tree_stand: tree_stand} do
+  test "sell an item to a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
     room = %{room | shops: [tree_stand]}
     @room.set_room(room)
 
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
 
-    {:update, state} = Shops.run({:sell, "sword"}, %{socket: socket, save: save})
+    {:update, state} = Shops.run({:sell, "sword"}, %{state | save: save})
 
     assert state.save.currency == 30
     assert [{_, "sword", _save}] = @shop.get_sells()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(Tree Stand Shop), list)
-    assert Regex.match?(~r(Sword), list)
-    assert Regex.match?(~r(10 gold), list)
+    assert_socket_echo "10 gold"
   end
 
-  test "sell an item in a shop - one shop - but more than one shop in room", %{socket: socket} do
+  test "sell an item in a shop - one shop - but more than one shop in room", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:sell, "sword"}, %{socket: socket, save: save})
+    :ok = Shops.run({:sell, "sword"}, %{state | save: save})
 
     assert [] = @shop.get_sells()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(more than one shop), list)
+    assert_socket_echo "more than one"
   end
 
-  test "sell an item in a shop - one shop parse - no shop in room", %{socket: socket, room: room} do
+  test "sell an item in a shop - one shop parse - no shop in room", %{state: state, room: room} do
     room = %{room | shops: []}
     @room.set_room(room)
 
     save = %{base_save() | room_id: 1, currency: 20}
-    :ok = Shops.run({:sell, "sword"}, %{socket: socket, save: save})
+    :ok = Shops.run({:sell, "sword"}, %{state | save: save})
 
     assert [] = @shop.get_sells()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r(shop could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "sell an item to a shop - shop not found", %{socket: socket} do
+  test "sell an item to a shop - shop not found", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
-    :ok = Shops.run({:sell, "sword", :to, "treestand"}, %{socket: socket, save: save})
+    :ok = Shops.run({:sell, "sword", :to, "treestand"}, %{state | save: save})
 
     assert [] = @shop.get_sells()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r("treestand" shop could not), list)
+    assert_socket_echo "could not"
   end
 
-  test "sell an item to a shop - item not found", %{socket: socket} do
+  test "sell an item to a shop - item not found", %{state: state} do
     @shop.set_sell({:error, :item_not_found})
 
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
-    :ok = Shops.run({:sell, "swrd", :to, "tree stand"}, %{socket: socket, save: save})
+    :ok = Shops.run({:sell, "swrd", :to, "tree stand"}, %{state | save: save})
 
     assert [{_, "swrd", _}] = @shop.get_sells()
 
-    [{^socket, list}] = @socket.get_echos()
-    assert Regex.match?(~r("swrd" item could not), list)
+    assert_socket_echo "could not"
   end
 end

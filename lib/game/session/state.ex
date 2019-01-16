@@ -28,6 +28,8 @@ defmodule Game.Session.State do
   - `:skills` - Similar to `:commands`, but for skills (last used at)
   - `:is_afk` - Flag for if the user is AFK or not
   - `:continuous_effects` - Continuous effects that the user has, list
+  - `:create` - storage for creating a character
+  - `:login` - storage for logging in
   """
   @enforce_keys [:socket, :state, :mode]
   defstruct [
@@ -47,6 +49,8 @@ defmodule Game.Session.State do
     :commands,
     :skills,
     :is_afk,
+    :create,
+    :login,
     mode: "comands",
     continuous_effects: [],
     stats: %SessionStats{}

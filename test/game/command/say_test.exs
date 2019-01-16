@@ -1,15 +1,14 @@
 defmodule Game.Command.SayTest do
-  use Data.ModelCase
-  doctest Game.Command.Say
+  use ExVenture.CommandCase
 
   alias Game.Command.Say
   alias Game.Command.Say.ParsedMessage
 
-  @socket Test.Networking.Socket
+  doctest Say
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
     %{state: session_state(%{user: user, character: character, save: character.save})}
@@ -19,8 +18,7 @@ defmodule Game.Command.SayTest do
     test "say to the", %{state: state} do
       :ok = Say.run({"hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/"Hi."/, echo)
+      assert_socket_echo ~s("hi.")
     end
   end
 
@@ -28,8 +26,7 @@ defmodule Game.Command.SayTest do
     test "appends to after", %{state: state} do
       :ok = Say.run({"[softly] hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/say softly,/, echo)
+      assert_socket_echo "say softly,"
     end
   end
 
@@ -40,8 +37,7 @@ defmodule Game.Command.SayTest do
 
       :ok = Say.run({">player hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/"Hi."/, echo)
+      assert_socket_echo ~s("hi.")
     end
 
     test "to an npc", %{state: state} do
@@ -50,8 +46,7 @@ defmodule Game.Command.SayTest do
 
       :ok = Say.run({">guard hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/"Hi."/, echo)
+      assert_socket_echo ~s("hi.")
     end
 
     test "target not found", %{state: state} do
@@ -59,8 +54,7 @@ defmodule Game.Command.SayTest do
 
       :ok = Say.run({">guard hi"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/no .+ could be found/i, echo)
+      assert_socket_echo "no .+ could be found"
     end
   end
 

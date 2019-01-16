@@ -1,54 +1,56 @@
 defmodule Game.Session.LoginTest do
-  use GenServerCase
-  use Data.ModelCase
+  use ExVenture.SessionCase
 
   alias Game.Session.Login
   alias Game.Session.Registry
-
-  @socket Test.Networking.Socket
+  alias Game.Session.State
 
   setup do
-    @socket.clear_messages()
-    %{socket: :socket}
+    state = %State{
+      socket: :socket,
+      state: "active",
+      mode: "commands",
+    }
+
+    %{state: state}
   end
 
-  test "start signing in", %{socket: socket} do
-    state = Login.process("name", %{id: UUID.uuid4(), socket: socket})
+  test "start signing in", %{state: state} do
+    state = Login.process("name", %{state | id: UUID.uuid4()})
 
     assert state.login.name == "name"
-    assert @socket.get_prompts() == []
   end
 
-  test "entering the name as 'create' will make a new account", %{socket: socket} do
-    state = Login.process("create", %{socket: socket})
+  test "entering the name as 'create' will make a new account", %{state: state} do
+    state = Login.process("create", state)
 
     assert state.state == "create"
-    assert @socket.get_prompts() == [{socket, "Name: "}]
+    assert_socket_prompt "name:"
   end
 
-  test "a session already exists", %{socket: socket} do
+  test "a session already exists", %{state: state} do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user, %{name: "user"})
     character = Repo.preload(character, [:race, :class])
     Registry.register(character)
 
-    state = Login.sign_in(character.id, %{socket: socket, login: %{name: "user"}})
+    state = Login.sign_in(character.id, %{state | login: %{name: "user"}})
 
-    assert Map.has_key?(state, :user) == false
-    assert @socket.get_echos() == [{socket, "Sorry, this player is already logged in."}]
-    assert @socket.get_disconnects() == [socket]
+    refute state.user
+    assert_socket_echo "player is already logged in"
+    assert_socket_disconnect()
 
     Registry.unregister()
   end
 
-  test "user has been disabled", %{socket: socket} do
+  test "user has been disabled", %{state: state} do
     user = create_user(%{name: "user", password: "password", flags: ["disabled"]})
     character = create_character(user, %{name: "user"})
 
-    state = Login.sign_in(character.id, %{socket: socket, login: %{name: "user"}})
+    state = Login.sign_in(character.id, %{state | login: %{name: "user"}})
 
-    assert Map.has_key?(state, :user) == false
-    assert @socket.get_echos() == [{socket, "Sorry, your account has been disabled. Please contact the admins."}]
-    assert @socket.get_disconnects() == [socket]
+    refute state.user
+    assert_socket_echo "has been disabled"
+    assert_socket_disconnect()
   end
 end

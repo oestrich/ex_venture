@@ -1,13 +1,9 @@
 defmodule Game.Command.PagerTest do
-  use Data.ModelCase
-
-  @socket Test.Networking.Socket
+  use ExVenture.CommandCase
 
   alias Game.Command.Pager
 
   setup do
-    @socket.clear_messages
-
     user = create_user(%{name: "user", password: "password"})
 
     # for the prompt
@@ -24,10 +20,8 @@ defmodule Game.Command.PagerTest do
     assert state.mode == "paginate"
     assert state.pagination.text == "text"
 
-    [{_, text}] = @socket.get_echos()
-    assert text == "Lines\nof"
-
-    assert @socket.get_prompts() |> length() == 1
+    assert_socket_echo "lines\nof"
+    assert_socket_prompt "."
   end
 
   test "stop paginate mode if out of text", %{state: state} do
@@ -37,8 +31,7 @@ defmodule Game.Command.PagerTest do
     assert state.mode == "commands"
     refute Map.has_key?(state, :pagination)
 
-    [{_, text}] = @socket.get_echos()
-    assert text == "Lines\nof\ntext"
+    assert_socket_echo "lines\nof\ntext"
   end
 
   test "display all text at once", %{state: state} do
@@ -48,8 +41,7 @@ defmodule Game.Command.PagerTest do
     assert state.mode == "commands"
     refute Map.has_key?(state, :pagination)
 
-    [{_, text}] = @socket.get_echos()
-    assert text == "Lines\nof\ntext"
+    assert_socket_echo "lines\nof\ntext"
   end
 
   test "quit pagination early", %{state: state} do

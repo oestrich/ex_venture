@@ -1,15 +1,12 @@
 defmodule Game.Session.CharacterTest do
-  use Data.ModelCase
-  doctest Game.Session.Character
+  use ExVenture.SessionCase
 
   alias Game.Session.Character
   alias Game.Session.State
 
-  @socket Test.Networking.Socket
+  doctest Character
 
   setup do
-    @socket.clear_messages()
-
     state = %State{
       socket: :socket,
       state: "active",
@@ -23,15 +20,13 @@ defmodule Game.Session.CharacterTest do
     test "player going online echos", %{state: state} do
       _state = Character.notify(state, {"player/online", %{name: "Player"}})
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/Player/i, echo)
+      assert_socket_echo "player"
     end
 
     test "player going offline echos", %{state: state} do
       _state = Character.notify(state, {"player/offline", %{name: "Player"}})
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/Player/i, echo)
+      assert_socket_echo "player"
     end
   end
 end

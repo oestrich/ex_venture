@@ -1,12 +1,12 @@
 defmodule Game.Command.PickUpTest do
-  use Data.ModelCase
-  doctest Game.Command.PickUp
-
-  @socket Test.Networking.Socket
-  @room Test.Game.Room
+  use ExVenture.CommandCase
 
   alias Data.Item
   alias Game.Command.PickUp
+
+  doctest PickUp
+
+  @room Test.Game.Room
 
   setup do
     start_and_clear_items()
@@ -14,7 +14,6 @@ defmodule Game.Command.PickUpTest do
     insert_item(item)
 
     @room.set_room(Map.merge(@room._room(), %{items: [Item.instantiate(item)]}))
-    @socket.clear_messages()
 
     user = base_user()
     character = base_character(user)
@@ -28,16 +27,13 @@ defmodule Game.Command.PickUpTest do
     {:update, state} = PickUp.run({"sword"}, state)
 
     assert state.save.items |> length == 1
-
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(You picked up), look)
+    assert_socket_echo "you picked up"
   end
 
   test "item does not exist in the room", %{state: state} do
     :ok = PickUp.run({"shield"}, state)
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r("shield" could not be found), look)
+    assert_socket_echo ~s("shield" could not be found)
   end
 
   test "item has already been removed", %{state: state} do
@@ -55,8 +51,7 @@ defmodule Game.Command.PickUpTest do
 
     assert state.save.currency == 101
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(You picked up), look)
+    assert_socket_echo "you picked up"
   end
 
   test "pick up gold from a room, but no gold", %{state: state} do
@@ -64,8 +59,7 @@ defmodule Game.Command.PickUpTest do
 
     :ok = PickUp.run({"gold"}, state)
 
-    [{_socket, look}] = @socket.get_echos()
-    assert Regex.match?(~r(There was no gold), look)
+    assert_socket_echo "no gold"
   end
 
   describe "pick up all" do
@@ -78,9 +72,8 @@ defmodule Game.Command.PickUpTest do
       assert state.save.items |> length() == 1
       assert state.save.currency == 101
 
-      [{_socket1, item}, {_socket2, currency}] = @socket.get_echos()
-      assert Regex.match?(~r(You picked up), item)
-      assert Regex.match?(~r(You picked up), currency)
+      assert_socket_echo "you picked up"
+      assert_socket_echo "you picked up"
     end
 
     test "does not echo currency if not available", %{state: state} do
@@ -92,8 +85,7 @@ defmodule Game.Command.PickUpTest do
       assert state.save.items |> length() == 1
       assert state.save.currency == 1
 
-      [{_socket1, item}] = @socket.get_echos()
-      assert Regex.match?(~r(You picked up), item)
+      assert_socket_echo "you picked up"
     end
   end
 end

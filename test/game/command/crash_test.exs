@@ -1,14 +1,13 @@
 defmodule Game.Command.CrashTest do
-  use Data.ModelCase
-  doctest Game.Command.Crash
+  use ExVenture.CommandCase
 
   alias Game.Command.Crash
 
-  @socket Test.Networking.Socket
+  doctest Crash
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     @room.clear_crashes()
 
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
@@ -19,8 +18,8 @@ defmodule Game.Command.CrashTest do
     test "sends a signal to crash the room you are in", %{state: state} do
       :ok = Crash.run({:room}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(crash)i, echo)
+      assert_receive {:echo, _, message}
+      assert Regex.match?(~r(crash)i, message)
 
       assert [10] == @room.get_crashes()
     end
@@ -30,8 +29,8 @@ defmodule Game.Command.CrashTest do
 
       :ok = Crash.run({:room}, state)
 
-      [{_, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(must be an admin)i, echo)
+      assert_receive {:echo, _, message}
+      assert Regex.match?(~r(must be an admin)i, message)
 
       assert [] == @room.get_crashes()
     end

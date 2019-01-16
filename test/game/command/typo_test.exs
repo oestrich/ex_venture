@@ -1,15 +1,12 @@
 defmodule Game.Command.TypoTest do
-  use Data.ModelCase
+  use ExVenture.CommandCase
+
   import Ecto.Query
 
   alias Game.Command.Typo
   alias Game.Session.State
 
-  @socket Test.Networking.Socket
-
   setup do
-    @socket.clear_messages()
-
     state = %State{socket: :socket, state: "active", mode: "editor", commands: %{typo: %{lines: []}}}
     %{state: state}
   end
@@ -21,8 +18,7 @@ defmodule Game.Command.TypoTest do
       assert state.commands.typo.title == "title"
       assert state.commands.typo.lines == []
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r(enter in any more), echo)
+      assert_socket_echo "enter in any more"
     end
 
     test "add lines together in the editor", %{state: state} do
@@ -56,9 +52,8 @@ defmodule Game.Command.TypoTest do
       assert state.commands == %{}
 
       assert Data.Typo |> select([b], count(b.id)) |> Repo.one == 0
-      [{_socket, echo}] = @socket.get_echos()
 
-      assert Regex.match?(~r(an issue), echo)
+      assert_socket_echo "an issue"
     end
   end
 end

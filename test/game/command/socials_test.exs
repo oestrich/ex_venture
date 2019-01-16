@@ -1,17 +1,16 @@
 defmodule Game.Command.SocialsTest do
-  use Data.ModelCase
-  import Test.SocialsHelper
+  use ExVenture.CommandCase
 
-  doctest Game.Command.Socials
+  import Test.SocialsHelper
 
   alias Data.Social
   alias Game.Command.Socials
 
-  @socket Test.Networking.Socket
+  doctest Socials
+
   @room Test.Game.Room
 
   setup do
-    @socket.clear_messages()
     start_and_clear_socials()
 
     %Social{
@@ -40,15 +39,13 @@ defmodule Game.Command.SocialsTest do
     test "social is found", %{state: state} do
       :ok = Socials.run({:help, "smile"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/Smile/, echo)
+      assert_socket_echo "smile"
     end
 
     test "social is not found", %{state: state} do
       :ok = Socials.run({:help, "wave"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/could not be found/, echo)
+      assert_socket_echo "could not be found"
     end
   end
 
@@ -77,8 +74,7 @@ defmodule Game.Command.SocialsTest do
 
       :ok = Socials.run({"smile", "guard"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/smiles at/, echo)
+      assert_socket_echo "smiles at"
     end
 
     test "with a target - target not found", %{state: state} do
@@ -86,15 +82,13 @@ defmodule Game.Command.SocialsTest do
 
       :ok = Socials.run({"smile", "guard"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/could not be found/, echo)
+      assert_socket_echo "could not be"
     end
 
     test "without a target", %{state: state} do
       :ok = Socials.run({"smile"}, state)
 
-      [{_socket, echo}] = @socket.get_echos()
-      assert Regex.match?(~r/smiles/, echo)
+      assert_socket_echo "smiles"
     end
   end
 end
