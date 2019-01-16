@@ -4,6 +4,7 @@ defmodule Data.ModelCase do
   using do
     quote do
       alias Data.Repo
+      alias Test.NamedProcess
 
       import Ecto
       import Ecto.Changeset

@@ -1,7 +1,6 @@
 defmodule Web.ZoneTest do
   use Data.ModelCase
 
-  alias Web.Room
   alias Web.Zone
 
   test "creating a new zone adds a child to the zone supervision tree" do
@@ -15,21 +14,21 @@ defmodule Web.ZoneTest do
   end
 
   test "updating a zone updates the gen server state for that zone" do
-    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
-    {:ok, zone} = Zone.update(zone.id, %{name: "Forest"})
+    zone = create_zone()
+    NamedProcess.start_link({Game.Zone, zone.id})
 
-    pid = {:global, {Game.Zone, zone.id}}
-    state = :sys.get_state(pid)
+    {:ok, _zone} = Zone.update(zone.id, %{name: "Forest"})
 
-    assert state.zone.name == "Forest"
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   describe "overworld exits" do
     setup do
-      {:ok, room_zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
-      {:ok, room} = Room.create(room_zone, room_attributes(%{name: "Forest Path"}))
+      room_zone = create_zone(%{name: "The Forest"})
+      room = create_room(room_zone, %{name: "Forest Path"})
 
-      {:ok, overworld_zone} = Zone.create(zone_attributes(%{name: "The Forest", type: "overworld"}))
+      overworld_zone = create_zone(%{name: "The Forest", type: "overworld"})
+      NamedProcess.start_link({Game.Zone, overworld_zone.id})
 
       %{room: room, overworld_zone: overworld_zone}
     end

@@ -1,83 +1,72 @@
 defmodule Web.ShopTest do
   use Data.ModelCase
 
-  alias Web.Room
   alias Web.Shop
-  alias Web.Zone
 
   setup do
-    {:ok, zone} = Zone.create(zone_attributes(%{name: "The Forest"}))
-    {:ok, room} = Room.create(zone, room_attributes(%{name: "Forest Path"}))
+    zone = create_zone(%{name: "The Forest"})
+    room = create_room(zone, %{name: "Forest Path"})
+
     %{zone: zone, room: room}
   end
 
-  test "creating a new shop pushes it into the room and spawns a process", %{room: room} do
-    params = %{name: "Tree Stand Shop"}
+  test "creating a new shop pushes it into the room and spawns a process", %{room: room, zone: zone} do
+    NamedProcess.start_link({Game.Zone, zone.id})
 
-    {:ok, shop} = Shop.create(room, params)
+    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
+
     assert shop.name == "Tree Stand Shop"
-
-    state = Game.Room._get_state(room.id)
-    assert state.room.shops |> length() == 1
-
-    # Check the supervision tree to make sure casts have gone through
-    Game.Zone._get_state(room.zone_id)
-
-    state = Game.Shop._get_state(shop.id)
-    assert state.shop.id == shop.id
+    assert_receive {_, {:cast, {:spawn_shop, _}}}
   end
 
   test "updating a shop updates the room", %{room: room} do
-    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
+    shop = create_shop(room, %{name: "Tree Stand Shop"})
+    NamedProcess.start_link({Game.Room, room.id})
+    NamedProcess.start_link({Game.Shop, shop.id})
 
     {:ok, shop} = Shop.update(shop.id, %{name: "Tree Stand"})
     assert shop.name == "Tree Stand"
 
-    state = Game.Room._get_state(room.id)
-    assert state.room.shops |> List.first() |> Map.get(:name) == "Tree Stand"
-
-    state = Game.Shop._get_state(shop.id)
-    assert state.shop.name == "Tree Stand"
+    assert_receive {{Game.Room, _}, {:cast, {:update, _}}}
+    assert_receive {{Game.Shop, _}, {:cast, {:update, _}}}
   end
 
   test "adding an item to a shop", %{room: room} do
+    shop = create_shop(room, %{name: "Tree Stand Shop"})
+    NamedProcess.start_link({Game.Shop, shop.id})
+
     item = create_item()
-    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
 
     {:ok, _shop_item} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
 
     shop = Shop.get(shop.id)
-    assert shop.shop_items |> length() == 1
+    assert length(shop.shop_items) == 1
 
-    state = Game.Shop._get_state(shop.id)
-    assert state.shop.shop_items |> length() == 1
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   test "updating an item to a shop", %{room: room} do
+    shop = create_shop(room, %{name: "Tree Stand Shop"})
+    NamedProcess.start_link({Game.Shop, shop.id})
+
     item = create_item()
-    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
 
     {:ok, shop_item} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
     {:ok, _shop_item} = Shop.update_item(shop_item.id, %{"price" => 200})
 
-    shop = Shop.get(shop.id)
-    [%{price: 200}] = shop.shop_items
-
-    state = Game.Shop._get_state(shop.id)
-    [%{price: 200}] = state.shop.shop_items
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   test "removing an item from a shop", %{room: room} do
     item = create_item()
-    {:ok, shop} = Shop.create(room, %{name: "Tree Stand Shop"})
-    {:ok, _shop_item} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
+    shop = create_shop(room, %{name: "Tree Stand Shop"})
+    NamedProcess.start_link({Game.Shop, shop.id})
 
-    shop = Shop.get(shop.id)
-    shop_item = shop.shop_items |> List.first()
+    {:ok, shop_item} = Shop.add_item(shop, item, %{"price" => 100, "quantity" => -1})
 
     {:ok, _shop_item} = Shop.delete_item(shop_item.id)
 
-    state = Game.Shop._get_state(shop.id)
-    assert state.shop.shop_items |> length() == 0
+    assert_receive {_, {:cast, {:update, _}}}
+    assert_receive {_, {:cast, {:update, _}}}
   end
 end
