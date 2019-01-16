@@ -42,27 +42,24 @@ defmodule Web.NPCTest do
     room = create_room(zone)
     npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    :yes = :global.register_name({Game.NPC, npc_spawner.id}, self())
+    NamedProcess.start_link({Game.NPC, npc_spawner.id})
 
     {:ok, npc} = NPC.update(npc.id, %{name: "Barbarian"})
 
     assert npc.name == "Barbarian"
-    assert_receive {:"$gen_cast", {:update, _}}
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   test "adding a new spawner" do
     zone = create_zone(%{name: "The Forest"})
     room = create_room(zone, %{name: "Forest Path"})
-
     npc = create_npc(%{name: "Fighter"})
-
-    :yes = :global.register_name({Game.Zone, zone.id}, self())
+    NamedProcess.start_link({Game.Zone, zone.id})
 
     {:ok, npc_spawner} = NPC.add_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
     assert npc_spawner.zone_id == zone.id
-
-    assert_receive {:"$gen_cast", {:spawn_npc, _}}
+    assert_receive {{Game.Zone, _}, {:cast, {:spawn_npc, _}}}
   end
 
   test "updating a spawner" do
@@ -72,12 +69,12 @@ defmodule Web.NPCTest do
     room = create_room(zone)
     npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    :yes = :global.register_name({Game.NPC, npc_spawner.id}, self())
+    NamedProcess.start_link({Game.NPC, npc_spawner.id})
 
     {:ok, npc_spawner} = NPC.update_spawner(npc_spawner.id, %{spawn_interval: 30})
 
     assert npc_spawner.spawn_interval == 30
-    assert_receive {:"$gen_cast", {:update, _}}
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   test "deleting a spawner" do
@@ -87,10 +84,11 @@ defmodule Web.NPCTest do
     room = create_room(zone)
     npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    :yes = :global.register_name({Game.NPC, npc_spawner.id}, self())
+    NamedProcess.start_link({Game.NPC, npc_spawner.id})
 
-    assert {:ok, _npc_spanwer} = NPC.delete_spawner(npc_spawner.id)
-    assert_receive {:"$gen_cast", :terminate}
+    {:ok, _npc_spawner} = NPC.delete_spawner(npc_spawner.id)
+
+    assert_receive {_, {:cast, :terminate}}
   end
 
   test "adding an item to an NPC" do
@@ -101,12 +99,12 @@ defmodule Web.NPCTest do
     room = create_room(zone)
     npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    :yes = :global.register_name({Game.NPC, npc_spawner.id}, self())
+    NamedProcess.start_link({Game.NPC, npc_spawner.id})
 
     {:ok, npc_item} = NPC.add_item(npc, %{"item_id" => armor.id, "drop_rate" => 10})
 
     assert npc_item.drop_rate == 10
-    assert_receive {:"$gen_cast", {:update, _}}
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   test "updating an item on an npc" do
@@ -117,14 +115,14 @@ defmodule Web.NPCTest do
     room = create_room(zone)
     npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    :yes = :global.register_name({Game.NPC, npc_spawner.id}, self())
+    NamedProcess.start_link({Game.NPC, npc_spawner.id})
 
     {:ok, npc_item} = NPC.add_item(npc, %{"item_id" => armor.id, "drop_rate" => 10})
     {:ok, npc_item} = NPC.update_item(npc_item.id, %{"drop_rate" => 15})
 
     assert npc_item.drop_rate == 15
-    assert_receive {:"$gen_cast", {:update, _}}
-    assert_receive {:"$gen_cast", {:update, _}}
+    assert_receive {_, {:cast, {:update, _}}}
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   test "deleting an item npc an NPC" do
@@ -135,13 +133,13 @@ defmodule Web.NPCTest do
     room = create_room(zone)
     npc_spawner = create_npc_spawner(npc, %{zone_id: zone.id, room_id: room.id, spawn_interval: 15})
 
-    :yes = :global.register_name({Game.NPC, npc_spawner.id}, self())
+    NamedProcess.start_link({Game.NPC, npc_spawner.id})
 
     {:ok, npc_item} = NPC.add_item(npc, %{"item_id" => armor.id, "drop_rate" => 10})
     {:ok, _npc_item} = NPC.delete_item(npc_item.id)
 
-    assert_receive {:"$gen_cast", {:update, _}}
-    assert_receive {:"$gen_cast", {:update, _}}
+    assert_receive {_, {:cast, {:update, _}}}
+    assert_receive {_, {:cast, {:update, _}}}
   end
 
   describe "events" do
