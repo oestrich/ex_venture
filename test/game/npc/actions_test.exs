@@ -23,7 +23,7 @@ defmodule Game.NPC.ActionsTest do
     test "no more actions" do
       Actions.delay([])
 
-      refute_receive {:delayed_actions, []}
+      refute_received {:delayed_actions, []}
     end
   end
 
@@ -46,7 +46,7 @@ defmodule Game.NPC.ActionsTest do
 
       {:ok, ^state} = Actions.process(state, [])
 
-      refute_receive {:delayed_actions, []}
+      refute_received {:delayed_actions, []}
     end
   end
 

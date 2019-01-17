@@ -67,7 +67,7 @@ defmodule Game.Session.EffectsTest do
       [] = state.continuous_effects
 
       effect_id = effect.id
-      refute_receive {:continuous_effect, ^effect_id}
+      refute_receive {:continuous_effect, ^effect_id}, 50
     end
 
     test "does nothing if effect is not found", %{state: state} do

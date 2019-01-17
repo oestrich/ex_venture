@@ -1,5 +1,5 @@
 defmodule Game.Command.AFKTest do
-  use ExVenture.CommandCase, async: true
+  use ExVenture.CommandCase
 
   alias Game.Command.AFK
 

@@ -34,7 +34,7 @@ defmodule Test.Networking.Socket do
 
     defmacro refute_socket_echo() do
       quote do
-        refute_receive {:echo, _, _}
+        refute_receive {:echo, _, _}, 50
       end
     end
 
@@ -47,7 +47,7 @@ defmodule Test.Networking.Socket do
 
     defmacro assert_socket_no_echo() do
       quote do
-        refute_receive {:echo, _, _}
+        refute_receive {:echo, _, _}, 50
       end
     end
 
@@ -65,7 +65,7 @@ defmodule Test.Networking.Socket do
 
     defmacro refute_socket_disconnect() do
       quote do
-        refute_receive {:disconnect, _}
+        refute_receive {:disconnect, _}, 50
       end
     end
   end

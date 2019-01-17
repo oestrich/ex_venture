@@ -97,7 +97,7 @@ defmodule Game.SessionTest do
       assert stats.skill_points == 12
       assert stats.endurance_points == 10
 
-      refute_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
+      refute_received {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}, 50
     end
 
     test "does not echo if config is off", %{state: state} do
@@ -113,7 +113,7 @@ defmodule Game.SessionTest do
       assert stats.skill_points == 11
       assert stats.endurance_points == 9
 
-      refute_receive {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}
+      refute_receive {:"$gen_cast", {:echo, ~s(You regenerated some health and skill points.)}}, 50
     end
 
     test "does not regen, only increments count if not high enough", %{state: state} do
@@ -345,7 +345,7 @@ defmodule Game.SessionTest do
 
     assert state.save.stats.health_points == -5
 
-    refute_receive {:"$gen_cast", {:teleport, _}}
+    refute_receive {:"$gen_cast", {:teleport, _}}, 50
   after
     Session.Registry.unregister()
   end

@@ -179,7 +179,7 @@ defmodule Test.Game.Room do
 
     defmacro refute_enter() do
       quote do
-        refute_receive {:enter, _}, 50
+        refute_received {:enter, _}
       end
     end
 
@@ -191,7 +191,7 @@ defmodule Test.Game.Room do
 
     defmacro refute_leave() do
       quote do
-        refute_receive {:leave, _}, 50
+        refute_received {:leave, _}
       end
     end
 
@@ -210,7 +210,7 @@ defmodule Test.Game.Room do
 
     defmacro refute_say() do
       quote do
-        refute_receive {:say, _}
+        refute_receive {:say, _}, 50
       end
     end
   end

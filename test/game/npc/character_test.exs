@@ -174,7 +174,7 @@ defmodule Game.NPC.CharacterTest do
 
       effect_id = effect.id
       assert [] = state.continuous_effects
-      refute_receive {:continuous_effect, ^effect_id}
+      refute_received {:continuous_effect, ^effect_id}
     end
 
     test "does nothing if effect is not found", %{state: state} do
