@@ -98,7 +98,7 @@ defmodule Game.Command.LookTest do
         id: "overworld:1:1,1",
         exits: [%Exit{has_door: false, direction: "west"}],
       }
-      start_overworld_room(room)
+      start_room(room)
 
       user = create_user(%{name: "hero", password: "password"})
       character = create_character(user, %{name: "hero"})

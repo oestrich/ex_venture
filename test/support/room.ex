@@ -191,10 +191,6 @@ defmodule Test.Game.Room do
       Room.set_room(Map.merge(basic_room, attributes))
     end
 
-    def start_overworld_room(cell) do
-      Room.set_room(cell)
-    end
-
     def put_pick_up_response(room, response) do
       Room.set_pick_up(room, response)
     end
