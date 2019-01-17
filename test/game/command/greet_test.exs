@@ -5,7 +5,6 @@ defmodule Game.Command.GreetTest do
 
   doctest Greet
 
-  @room Test.Game.Room
   @npc Test.Game.NPC
 
   setup do
@@ -17,7 +16,7 @@ defmodule Game.Command.GreetTest do
       npcs: [npc_attributes(%{id: 1, name: "Guard"})],
       players: [user_attributes(%{id: 1, name: "Player"})],
     }
-    @room.set_room(Map.merge(@room._room(), room))
+    start_room(room)
 
     save = %{character.save | room_id: room.id}
     %{state: session_state(%{user: user, character: character, save: save})}

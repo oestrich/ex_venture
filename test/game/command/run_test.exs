@@ -7,8 +7,6 @@ defmodule Game.Command.RunTest do
 
   doctest Run
 
-  @room Test.Game.Room
-
   setup do
     room = %Game.Environment.State.Room{
       id: 1,
@@ -19,7 +17,8 @@ defmodule Game.Command.RunTest do
       shops: [],
       zone: %{id: 10, name: "Zone"}
     }
-    @room.set_room(room)
+    start_room(room)
+    start_room(%{id: 2})
 
     user = base_user()
     character = base_character(user)

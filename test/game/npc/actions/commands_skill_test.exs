@@ -1,5 +1,5 @@
 defmodule Game.NPC.Actions.CommandsSkillTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   alias Data.Events.Actions
   alias Game.Character
@@ -8,8 +8,6 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
   alias Game.Session.Registry
 
   doctest CommandsSkill
-
-  @room Test.Game.Room
 
   setup [:basic_setup]
 
@@ -41,9 +39,7 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
     end
 
     test "with target not in the room", %{state: state, action: action, player: player} do
-      @room._room()
-      |> Map.put(:players, [])
-      |> @room.set_room()
+      start_room(%{players: []})
 
       state = %{state | combat: true, target: {:player, player}}
 
@@ -73,9 +69,7 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
     Registry.register(notify_character)
     Registry.catch_up()
 
-    @room._room()
-    |> Map.put(:players, [player])
-    |> @room.set_room()
+    start_room(%{players: [player]})
 
     start_and_clear_skills()
     insert_skill(create_skill(%{command: "slash"}))

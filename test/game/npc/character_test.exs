@@ -40,6 +40,8 @@ defmodule Game.NPC.CharacterTest do
     end
 
     test "respawns the npc", %{state: state, npc: npc} do
+      start_room(%{id: 1})
+
       state = %{state | npc: put_in(npc, [:stats, :health_points], 0)}
 
       state = Character.handle_respawn(state)

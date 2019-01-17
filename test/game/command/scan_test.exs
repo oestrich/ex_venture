@@ -6,14 +6,6 @@ defmodule Game.Command.ScanTest do
 
   doctest Scan
 
-  @room Test.Game.Room
-
-  @basic_room %Game.Environment.State.Room{
-    name: "Room",
-    players: [],
-    npcs: []
-  }
-
   setup do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
@@ -32,26 +24,22 @@ defmodule Game.Command.ScanTest do
       north_exit = %{id: 4, has_door: true, door_id: 4, direction: "north", start_id: 1, finish_id: 2}
       in_exit = %{id: 5, has_door: true, door_id: 5, direction: "in", start_id: 1, finish_id: 3}
 
-      room =
-        Map.merge(@basic_room, %{
-          id: 1,
-          exits: [north_exit, in_exit],
-          npcs: [%{id: 1, name: "Bandit"}],
-        })
-
       Door.set(north_exit, "open")
       Door.set(in_exit, "closed")
 
-      @room.set_room(room, multiple: true)
-
-      @room.set_room(Map.merge(@basic_room, %{
+      start_room(%{
+        id: 1,
+        exits: [north_exit, in_exit],
+        npcs: [%{id: 1, name: "Bandit"}],
+      })
+      start_room(%{
         id: 2,
         players: [%{id: 1, name: "Player"}],
-      }), multiple: true)
-      @room.set_room(Map.merge(@basic_room, %{
+      })
+      start_room(%{
         id: 3,
         npcs: [%{id: 1, name: "Guard"}],
-      }), multiple: true)
+      })
 
       :ok
     end

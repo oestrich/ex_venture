@@ -5,10 +5,8 @@ defmodule Game.Command.MapTest do
 
   doctest Map
 
-  @room Test.Game.Room
-
   setup do
-    @room.set_room(@room._room())
+    start_room(%{})
     %{socket: :socket}
   end
 

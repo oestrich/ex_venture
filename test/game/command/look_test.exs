@@ -8,8 +8,6 @@ defmodule Game.Command.LookTest do
 
   doctest Look
 
-  @room Test.Game.Room
-
   describe "normal room" do
     setup do
       start_and_clear_items()
@@ -33,7 +31,7 @@ defmodule Game.Command.LookTest do
         features: [%{key: "log", short_description: "log", description: "a log"}],
         zone: %{id: 10, name: "Zone"}
       }
-      @room.set_room(Map.merge(@room._room(), room))
+      start_room(room)
 
       user = create_user(%{name: "hero", password: "password"})
       character = create_character(user, %{name: "hero"})
@@ -48,7 +46,7 @@ defmodule Game.Command.LookTest do
     end
 
     test "view room information - the room is offline", %{state: state} do
-      @room.set_room(:offline)
+      mark_room_offline()
 
       {:error, :room_offline} = Look.run({}, state)
 
@@ -74,6 +72,8 @@ defmodule Game.Command.LookTest do
     end
 
     test "looking in a direction", %{state: state} do
+      start_room(%{id: 2, name: "Hallway"})
+
       :ok = Look.run({:direction, "north"}, state)
 
       assert_socket_echo "hallway"
@@ -98,7 +98,7 @@ defmodule Game.Command.LookTest do
         id: "overworld:1:1,1",
         exits: [%Exit{has_door: false, direction: "west"}],
       }
-      @room.set_room(room)
+      start_overworld_room(room)
 
       user = create_user(%{name: "hero", password: "password"})
       character = create_character(user, %{name: "hero"})

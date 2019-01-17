@@ -6,7 +6,6 @@ defmodule Game.Command.QuestTest do
 
   doctest Quest
 
-  @room Test.Game.Room
   @npc Test.Game.NPC
 
   setup do
@@ -96,10 +95,7 @@ defmodule Game.Command.QuestTest do
       guard = Map.put(guard, :original_id, guard.id)
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
 
-      room = Map.merge(@room._room(), %{
-        npcs: [Character.Simple.from_npc(guard)],
-      })
-      @room.set_room(room)
+      start_room(%{npcs: [Character.Simple.from_npc(guard)]})
       @npc.clear_notifies()
 
       state = state |> Map.put(:save, %{state.save | room_id: 1, level: 1, experience_points: 20, currency: 15})
@@ -135,7 +131,7 @@ defmodule Game.Command.QuestTest do
       goblin = create_npc(%{name: "Goblin"})
       npc_step = create_quest_step(quest, %{type: "npc/kill", count: 3, npc_id: goblin.id})
       create_quest_progress(state.character, quest, %{progress: %{npc_step.id => 3}})
-      @room.set_room(Map.merge(@room._room(), %{npcs: []}))
+      start_room(%{npcs: []})
 
       :ok = Quest.run({:complete, to_string(quest.id)}, state)
 
@@ -204,10 +200,7 @@ defmodule Game.Command.QuestTest do
       guard = Map.put(guard, :original_id, guard.id)
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
 
-      room = Map.merge(@room._room(), %{
-        npcs: [Character.Simple.from_npc(guard)],
-      })
-      @room.set_room(room)
+      start_room(%{npcs: [Character.Simple.from_npc(guard)]})
       @npc.clear_notifies()
 
       state = state |> Map.put(:save, %{state.save | room_id: 1, level: 1, experience_points: 20, currency: 15})
@@ -237,7 +230,7 @@ defmodule Game.Command.QuestTest do
 
     test "handles no npc in the room to hand in to", %{state: state, quest: quest} do
       create_quest_progress(state.character, quest)
-      @room.set_room(Map.merge(@room._room(), %{npcs: []}))
+      start_room(%{npcs: []})
 
       :ok = Quest.run({:complete, :any}, state)
 

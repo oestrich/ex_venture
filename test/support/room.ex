@@ -1,6 +1,7 @@
 defmodule Test.Game.Room do
   alias Data.Exit
   alias Game.Environment
+  alias Test.Game.Room.FakeRoom
 
   def start_link() do
     Agent.start_link(fn () ->
@@ -11,6 +12,8 @@ defmodule Test.Game.Room do
       }
     end, name: __MODULE__)
   end
+
+  def default_room(), do: _room()
 
   def _room() do
     %Environment.State.Room{
@@ -40,45 +43,22 @@ defmodule Test.Game.Room do
   end
 
   def set_room(:offline) do
-    start_link()
-
-    Agent.update(__MODULE__, fn (state) ->
-      Map.put(state, :offline, true)
-    end)
+    Process.put(:offline, true)
   end
 
-  def set_room(room, opts \\ []) do
-    start_link()
-
-    Agent.update(__MODULE__, fn (state) ->
-      rooms =
-        case Keyword.get(opts, :multiple, false) do
-          true ->
-            state
-            |> Map.get(:rooms, %{})
-            |> Map.put(room.id, room)
-          false ->
-            %{}
-        end
-
-      state
-      |> Map.put(:offline, false)
-      |> Map.put(:room, room)
-      |> Map.put(:rooms, rooms)
-    end)
+  def set_room(room) do
+    {:ok, pid} = FakeRoom.start_link(room)
+    Process.put({:room, room.id}, pid)
   end
 
   def look(id) do
-    start_link()
-    Agent.get(__MODULE__, fn (state) ->
-      case state.offline do
-        true ->
-          {:error, :room_offline}
+    case Process.get(:offline, false) do
+      true ->
+        {:error, :room_offline}
 
-        false ->
-          {:ok, Map.get(state.rooms, id, state.room)}
-      end
-    end)
+      false ->
+        GenServer.call(Process.get({:room, id}), {:look})
+    end
   end
 
   def enter(id, character, reason \\ :enter) do
@@ -105,29 +85,32 @@ defmodule Test.Game.Room do
     send(self(), {:character, {id, character}})
   end
 
-  def set_pick_up(response) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up, response) end)
+  def set_pick_up(room, response) do
+    GenServer.call(Process.get({:room, room.id}), {:put, {:pick_up, response}})
   end
 
-  def pick_up(_id, item) do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :pick_up, {:ok, item}) end)
+  def pick_up(id, item) do
+    case Process.get(:offline, false) do
+      true ->
+        {:error, :room_offline}
+
+      false ->
+        GenServer.call(Process.get({:room, id}), {:pick_up, item})
+    end
   end
 
-  def clear_pick_up() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.delete(state, :pick_up) end)
+  def set_pick_up_currency(room, response) do
+    GenServer.call(Process.get({:room, room.id}), {:put, {:pick_up_currency, response}})
   end
 
-  def set_pick_up_currency(response) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up_currency, response) end)
-  end
+  def pick_up_currency(id) do
+    case Process.get(:offline, false) do
+      true ->
+        {:error, :room_offline}
 
-  def pick_up_currency(_id) do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :pick_up_currency) end)
+      false ->
+        GenServer.call(Process.get({:room, id}), {:pick_up_currency})
+    end
   end
 
   def drop(id, who, item) do
@@ -141,17 +124,85 @@ defmodule Test.Game.Room do
   defmodule FakeRoom do
     use GenServer
 
-    def start_link(state) do
-      GenServer.start_link(__MODULE__, state)
+    def start_link(room) do
+      GenServer.start_link(__MODULE__, room)
     end
 
     @impl true
-    def init(state) do
-      {:ok, Enum.into(state, %{})}
+    def init(room) do
+      {:ok, %{room: room, responses: %{}}}
+    end
+
+    @impl true
+    def handle_call({:look}, _from, state) do
+      {:reply, {:ok, state.room}, state}
+    end
+
+    def handle_call({:put, {field, response}}, _from, state) do
+      responses = Map.put(state.responses, field, response)
+      state = Map.put(state, :responses, responses)
+
+      {:reply, :ok, state}
+    end
+
+    def handle_call({:pick_up, _item}, _from, state) do
+      {:reply, state.responses[:pick_up], state}
+    end
+
+    def handle_call({:pick_up_currency}, _from, state) do
+      {:reply, state.responses[:pick_up_currency], state}
     end
   end
 
   defmodule Helpers do
+    @moduledoc """
+    Helpers for dealing with rooms
+    """
+
+    alias Test.Game.Room
+
+    def mark_room_offline() do
+      Room.set_room(:offline)
+    end
+
+    def start_room(room = %Game.Environment.State.Room{}) do
+      Room.set_room(room)
+    end
+
+    def start_room(room = %Game.Environment.State.Overworld{}) do
+      Room.set_room(room)
+    end
+
+    def start_room(attributes) do
+      attributes = Map.merge(Room.default_room(), attributes)
+      Room.set_room(attributes)
+    end
+
+    def start_simple_room(attributes) do
+      basic_room = %Game.Environment.State.Room{
+        id: 1,
+        name: "",
+        description: "",
+        players: [],
+        shops: [],
+        zone: %{id: 1, name: ""}
+      }
+
+      Room.set_room(Map.merge(basic_room, attributes))
+    end
+
+    def start_overworld_room(cell) do
+      Room.set_room(cell)
+    end
+
+    def put_pick_up_response(room, response) do
+      Room.set_pick_up(room, response)
+    end
+
+    def put_pick_up_currency_response(room, response) do
+      Room.set_pick_up_currency(room, response)
+    end
+
     defmacro assert_drop(message) do
       quote do
         assert_received {:drop, unquote(message)}

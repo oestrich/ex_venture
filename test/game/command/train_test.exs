@@ -7,8 +7,6 @@ defmodule Game.Command.TrainTest do
 
   doctest Train
 
-  @room Test.Game.Room
-
   setup do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
@@ -23,7 +21,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "one npc in the room", %{state: state, guard: guard} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       :ok = Train.run({:list}, state)
 
@@ -38,7 +36,7 @@ defmodule Game.Command.TrainTest do
 
       guard = %{guard | extra: %{guard.extra | trainable_skills: [slash.id, kick.id]}}
 
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       state = %{state | save: %{state.save | skill_ids: [slash.id]}}
 
@@ -55,7 +53,7 @@ defmodule Game.Command.TrainTest do
 
       guard = %{guard | extra: %{guard.extra | trainable_skills: [slash.id, kick.id]}}
 
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       state = %{state | save: %{state.save | level: 2}}
 
@@ -65,7 +63,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "no trainers in the room", %{state: state} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: []}))
+      start_room(%{npcs: []})
 
       :ok = Train.run({:list}, state)
 
@@ -75,7 +73,7 @@ defmodule Game.Command.TrainTest do
     test "more than one trainer", %{state: state, guard: guard} do
       master = create_npc(%{name: "Guard", is_trainer: true})
       master = Character.Simple.from_npc(master)
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard, master]}))
+      start_room(%{npcs: [guard, master]})
 
       :ok = Train.run({:list}, state)
 
@@ -84,7 +82,7 @@ defmodule Game.Command.TrainTest do
 
     test "more than one trainer - by name", %{state: state, guard: guard} do
       master = create_npc(%{name: "Guard", is_trainer: true})
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard, master]}))
+      start_room(%{npcs: [guard, master]})
 
       :ok = Train.run({:list, "guard"}, state)
 
@@ -92,7 +90,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "trainer not found - by name", %{state: state} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: []}))
+      start_room(%{npcs: []})
 
       :ok = Train.run({:list, "guard"}, state)
 
@@ -113,7 +111,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "training a skill", %{state: state, guard: guard, slash: slash} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       {:update, state} = Train.run({:train, "slash"}, state)
 
@@ -125,7 +123,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "skill not found", %{state: state, guard: guard} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       :ok = Train.run({:train, "kick"}, state)
 
@@ -133,7 +131,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "skill already known", %{state: state, guard: guard, slash: slash} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
       state = %{state | save: %{state.save | skill_ids: [slash.id]}}
 
       :ok = Train.run({:train, "slash"}, state)
@@ -144,7 +142,7 @@ defmodule Game.Command.TrainTest do
     test "not high enough level", %{state: state, guard: guard, slash: slash} do
       slash |> Map.put(:level, 4) |> insert_skill()
 
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
       state = %{state | save: %{state.save | level: 3}}
 
       :ok = Train.run({:train, "slash"}, state)
@@ -153,7 +151,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "not enough xp left to spend", %{state: state, guard: guard} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
       state = %{state | save: %{state.save | spent_experience_points: 900, experience_points: 1000}}
 
       :ok = Train.run({:train, "slash"}, state)
@@ -162,7 +160,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "no trainers in the room", %{state: state} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: []}))
+      start_room(%{npcs: []})
 
       :ok = Train.run({:train, "slash"}, state)
 
@@ -172,7 +170,7 @@ defmodule Game.Command.TrainTest do
     test "more than one trainer", %{state: state, guard: guard} do
       master = create_npc(%{name: "Guard", is_trainer: true})
       master = Character.Simple.from_npc(master)
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard, master]}))
+      start_room(%{npcs: [guard, master]})
 
       :ok = Train.run({:train, "slash"}, state)
 
@@ -180,7 +178,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "more than one trainer - by name", %{state: state, guard: guard, slash: slash} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       {:update, state} = Train.run({:train, "slash", :from, "guard"}, state)
 
@@ -190,7 +188,7 @@ defmodule Game.Command.TrainTest do
     end
 
     test "trainer not found - by name", %{state: state, guard: guard} do
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       :ok = Train.run({:train, "slash", :from, "unknown"}, state)
 

@@ -8,8 +8,6 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
   doctest CommandsMove
 
-  @room Test.Game.Room
-
   setup [:basic_setup]
 
   describe "acting" do
@@ -25,11 +23,7 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
     test "does not move if a door is closed", %{state: state, action: action} do
       room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: true, door_id: 10}
 
-      @room._room()
-      |> Map.put(:id, 1)
-      |> Map.put(:y, 1)
-      |> Map.put(:exits, [room_exit])
-      |> @room.set_room(multiple: true)
+      start_room(%{id: 1, y: 1, exits: [room_exit]})
 
       Door.load(room_exit)
       Door.set(room_exit, "closed")
@@ -60,11 +54,8 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
     end
 
     test "does not move if going past the maximum distance", %{state: state, action: action} do
-      @room._room()
-      |> Map.put(:id, 2)
-      |> Map.put(:y, 7)
-      |> Map.put(:exits, [%{direction: "south", start_id: 2, finish_id: 1, has_door: false}])
-      |> @room.set_room(multiple: true)
+      room_exit = %{direction: "south", start_id: 2, finish_id: 1, has_door: false}
+      start_room(%{id: 2, y: 7, exits: [room_exit]})
 
       {:ok, state} = CommandsMove.act(state, action)
 
@@ -75,10 +66,7 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
     end
 
     test "does not move into a new zone", %{state: state, action: action} do
-      @room._room()
-      |> Map.put(:id, 2)
-      |> Map.put(:zone_id, 2)
-      |> @room.set_room(multiple: true)
+      start_room(%{id: 2, zone_id: 2})
 
       {:ok, state} = CommandsMove.act(state, action)
 
@@ -98,17 +86,11 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
       npc_spawner: %{room_id: 1}
     }
 
-    @room._room()
-    |> Map.put(:id, 1)
-    |> Map.put(:y, 1)
-    |> Map.put(:exits, [%{direction: "north", start_id: 1, finish_id: 2, has_door: false}])
-    |> @room.set_room(multiple: true)
+    room_exit = %{direction: "north", start_id: 1, finish_id: 2, has_door: false}
+    start_room(%{id: 1, y: 1, exits: [room_exit]})
 
-    @room._room()
-    |> Map.put(:id, 2)
-    |> Map.put(:y, 0)
-    |> Map.put(:exits, [%{direction: "south", start_id: 2, finish_id: 1, has_door: false}])
-    |> @room.set_room(multiple: true)
+    room_exit = %{direction: "south", start_id: 2, finish_id: 1, has_door: false}
+    start_room(%{id: 2, y: 0, exits: [room_exit]})
 
     start_and_clear_doors()
 

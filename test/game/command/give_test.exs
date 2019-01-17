@@ -5,8 +5,6 @@ defmodule Game.Command.GiveTest do
 
   doctest Give
 
-  @room Test.Game.Room
-
   setup do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
@@ -15,12 +13,10 @@ defmodule Game.Command.GiveTest do
 
   describe "giving items away" do
     setup %{state: state} do
-      room = Map.merge(@room._room(), %{
+      start_room(%{
         npcs: [npc_attributes(%{id: 1, name: "Guard"})],
         players: [user_attributes(%{id: 1, name: "Player"})],
       })
-
-      @room.set_room(room)
 
       start_and_clear_items()
       insert_item(%{id: 1, name: "potion", keywords: []})

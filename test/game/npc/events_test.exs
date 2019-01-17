@@ -3,8 +3,6 @@ defmodule Game.NPC.EventsTest do
 
   import Test.DamageTypesHelper
 
-  @room Test.Game.Room
-
   alias Data.Events.Actions.CommandsSay
   alias Data.Events.RoomHeard
   alias Data.Events.StateTicked
@@ -58,10 +56,7 @@ defmodule Game.NPC.EventsTest do
 
       state = %State{room_id: 1, npc: npc, target: nil}
 
-      @room._room()
-      |> Map.put(:npcs, [npc])
-      |> Map.put(:players, [%{id: 1, name: "Player"}])
-      |> @room.set_room()
+      start_room(%{npcs: [npc], players: [%{id: 1, name: "Player"}]})
 
       event = {"character/died", {:player, character}, :character, {:npc, npc}}
 

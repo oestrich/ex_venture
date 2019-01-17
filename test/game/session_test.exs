@@ -8,10 +8,7 @@ defmodule Game.SessionTest do
   alias Game.Session
   alias Game.Session.Process
 
-  @room Test.Game.Room
   @zone Test.Game.Zone
-
-  @basic_room %Game.Environment.State.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
 
   setup do
     user = base_user()
@@ -146,7 +143,8 @@ defmodule Game.SessionTest do
   test "processing a command that has continued commands", %{state: state} do
     user = create_user(%{name: "user", password: "password"})
 
-    @room.set_room(%{@basic_room | exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}]})
+    start_simple_room(%{exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}]})
+    start_room(%{id: 2})
 
     state = %{state | user: user,
       save: %{level: 1, room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}},
@@ -166,7 +164,8 @@ defmodule Game.SessionTest do
     character = create_character(user)
     character = Repo.preload(character, [:race, class: [:skills]])
 
-    @room.set_room(%{@basic_room | exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}]})
+    start_simple_room(%{exits: [%Exit{has_door: false, direction: "north", start_id: 1, finish_id: 2}]})
+    start_room(%{id: 2})
 
     state = %{state | character: character,
       save: %{level: 1, room_id: 1, experience_points: 10, stats: %{base_stats() | endurance_points: 10}},
@@ -289,6 +288,8 @@ defmodule Game.SessionTest do
   test "applying effects - died", %{state: state} do
     Session.Registry.register(base_character(base_user()))
 
+    start_room(%{id: 1})
+
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}
     user = %{base_user() | id: 2, name: "user"}
@@ -297,8 +298,8 @@ defmodule Game.SessionTest do
 
     state = %{state | user: user, character: character, save: save}
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
-    assert state.save.stats.health_points == -5
 
+    assert state.save.stats.health_points == -5
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
     assert_notify {"character/died", _, _, _}
   after
@@ -308,7 +309,7 @@ defmodule Game.SessionTest do
   test "applying effects - died with zone graveyard", %{state: state} do
     Session.Registry.register(base_character(base_user()))
 
-    @room.set_room(@room._room())
+    start_room(%{})
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, 2))
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
@@ -330,7 +331,7 @@ defmodule Game.SessionTest do
   test "applying effects - died with no zone graveyard", %{state: state} do
     Session.Registry.register(base_character(base_user()))
 
-    @room.set_room(@room._room())
+    start_room(%{})
     @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, nil))
     @zone.set_graveyard({:error, :no_graveyard})
 
@@ -423,13 +424,18 @@ defmodule Game.SessionTest do
     end
 
     test "teleports the character", %{state: state, character: character, room: room} do
+      start_room(%{id: room.id})
+
       {:noreply, state} = Process.handle_cast({:teleport, room.id}, %{state | character: character, save: character.save})
+
       assert state.save.room_id == room.id
     end
   end
 
   describe "resurrection" do
     test "sets health_points to 1 if < 0", %{state: state} do
+      start_room(%{id: 2})
+
       save = %{stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 2}
       state = %{state | save: save}
 
@@ -440,6 +446,8 @@ defmodule Game.SessionTest do
     end
 
     test "leaves old room, enters new room", %{state: state} do
+      start_room(%{id: 2})
+
       save = %{stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 1}
       state = %{state | save: save}
 

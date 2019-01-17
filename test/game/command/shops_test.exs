@@ -1,7 +1,6 @@
 defmodule Game.Command.ShopsTest do
   use ExVenture.CommandCase
 
-  @room Test.Game.Room
   @shop Test.Game.Shop
 
   alias Game.Command.Shops
@@ -15,15 +14,14 @@ defmodule Game.Command.ShopsTest do
 
     tree_stand = %{id: 10, name: "Tree Stand Shop", shop_items: [%{item_id: 1, price: 10, quantity: -1}]}
     hole_wall = %{id: 11, name: "Hole in the Wall"}
-    room = %{@room._room() | shops: [tree_stand, hole_wall]}
+    start_room(%{shops: [tree_stand, hole_wall]})
 
-    @room.set_room(room)
     @shop.set_shop(tree_stand)
 
     @shop.clear_buys()
     @shop.clear_sells()
 
-    {:ok, %{state: session_state(%{}), room: room, tree_stand: tree_stand}}
+    %{state: session_state(%{}), tree_stand: tree_stand}
   end
 
   test "a bad shop command displays help", %{state: state} do
@@ -39,8 +37,7 @@ defmodule Game.Command.ShopsTest do
   end
 
   test "view shops in the room - overworld", %{state: state} do
-    room = %Overworld{id: "overworld:1:1,1"}
-    @room.set_room(room)
+    start_room(%Overworld{id: "overworld:1:1,1"})
 
     :ok = Shops.run({}, %{state | save: %{room_id: "overworld:1:1,1"}})
 
@@ -48,8 +45,7 @@ defmodule Game.Command.ShopsTest do
   end
 
   test "view shops in the room - no shops", %{state: state} do
-    room = %{@room._room() | shops: []}
-    @room.set_room(room)
+    start_room(%{shops: []})
 
     :ok = Shops.run({}, %{state | save: %{room_id: 1}})
 
@@ -62,9 +58,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo ["tree stand shop", "sword"]
   end
 
-  test "view items in a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
-    room = %{room | shops: [tree_stand]}
-    @room.set_room(room)
+  test "view items in a shop - one shop", %{state: state, tree_stand: tree_stand} do
+    start_room(%{shops: [tree_stand]})
 
     :ok = Shops.run({:list}, %{state | save: %{room_id: 1}})
 
@@ -77,9 +72,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "more than one shop"
   end
 
-  test "view items in a shop - one shop - no shop found", %{state: state, room: room} do
-    room = %{room | shops: []}
-    @room.set_room(room)
+  test "view items in a shop - one shop - no shop found", %{state: state} do
+    start_room(%{shops: []})
 
     :ok = Shops.run({:list}, %{state | save: %{room_id: 1}})
 
@@ -104,9 +98,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "could not"
   end
 
-  test "view an item in a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
-    room = %{room | shops: [tree_stand]}
-    @room.set_room(room)
+  test "view an item in a shop - one shop", %{state: state, tree_stand: tree_stand} do
+    start_room(%{shops: [tree_stand]})
 
     :ok = Shops.run({:show, "sword"}, %{state | save: %{room_id: 1}})
 
@@ -119,9 +112,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "more than one shop"
   end
 
-  test "view an item in a shop - one shop - no shop found", %{state: state, room: room} do
-    room = %{room | shops: []}
-    @room.set_room(room)
+  test "view an item in a shop - one shop - no shop found", %{state: state} do
+    start_room(%{shops: []})
 
     :ok = Shops.run({:show, "sword"}, %{state | save: %{room_id: 1}})
 
@@ -155,9 +147,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "could not"
   end
 
-  test "buy an item in a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
-    room = %{room | shops: [tree_stand]}
-    @room.set_room(room)
+  test "buy an item in a shop - one shop", %{state: state, tree_stand: tree_stand} do
+    start_room(%{shops: [tree_stand]})
 
     save = %{base_save() | room_id: 1, currency: 20}
     @shop.set_buy({:ok, %{save | currency: 19}, %{name: "Sword"}})
@@ -179,9 +170,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "more than one"
   end
 
-  test "buy an item in a shop - one shop parse - no shop in room", %{state: state, room: room} do
-    room = %{room | shops: []}
-    @room.set_room(room)
+  test "buy an item in a shop - one shop parse - no shop in room", %{state: state} do
+    start_room(%{shops: []})
 
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:buy, "sword"}, %{state | save: save})
@@ -236,9 +226,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "10 gold"
   end
 
-  test "sell an item to a shop - one shop", %{state: state, room: room, tree_stand: tree_stand} do
-    room = %{room | shops: [tree_stand]}
-    @room.set_room(room)
+  test "sell an item to a shop - one shop", %{state: state, tree_stand: tree_stand} do
+    start_room(%{shops: [tree_stand]})
 
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
@@ -260,9 +249,8 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "more than one"
   end
 
-  test "sell an item in a shop - one shop parse - no shop in room", %{state: state, room: room} do
-    room = %{room | shops: []}
-    @room.set_room(room)
+  test "sell an item in a shop - one shop parse - no shop in room", %{state: state} do
+    start_room(%{shops: []})
 
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:sell, "sword"}, %{state | save: save})

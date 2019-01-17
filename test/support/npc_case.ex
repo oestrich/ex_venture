@@ -1,5 +1,7 @@
 defmodule ExVenture.NPCCase do
-  defmacro __using__(_) do
+  use ExUnit.CaseTemplate
+
+  using do
     quote do
       use Data.ModelCase
 
