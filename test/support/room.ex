@@ -3,19 +3,7 @@ defmodule Test.Game.Room do
   alias Game.Environment
   alias Test.Game.Room.FakeRoom
 
-  def start_link() do
-    Agent.start_link(fn () ->
-      %{
-        offline: false,
-        room: _room(),
-        rooms: %{},
-      }
-    end, name: __MODULE__)
-  end
-
-  def default_room(), do: _room()
-
-  def _room() do
+  def default_room() do
     %Environment.State.Room{
       id: 1,
       name: "Hallway",

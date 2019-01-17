@@ -5,8 +5,6 @@ defmodule Game.Command.GreetTest do
 
   doctest Greet
 
-  @npc Test.Game.NPC
-
   setup do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
@@ -23,16 +21,11 @@ defmodule Game.Command.GreetTest do
   end
 
   describe "greet an NPC" do
-    setup do
-      @npc.clear_greets()
-    end
-
     test "npc present", %{state: state} do
       :ok = Greet.run({:greet, "guard"}, state)
 
       assert_socket_echo "greet .*Guard"
-
-      assert @npc.get_greets() == [{1, state.character}]
+      assert_npc_greet()
     end
   end
 

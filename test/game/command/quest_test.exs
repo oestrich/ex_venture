@@ -6,8 +6,6 @@ defmodule Game.Command.QuestTest do
 
   doctest Quest
 
-  @npc Test.Game.NPC
-
   setup do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
@@ -96,7 +94,6 @@ defmodule Game.Command.QuestTest do
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
 
       start_room(%{npcs: [Character.Simple.from_npc(guard)]})
-      @npc.clear_notifies()
 
       state = state |> Map.put(:save, %{state.save | room_id: 1, level: 1, experience_points: 20, currency: 15})
 
@@ -122,9 +119,7 @@ defmodule Game.Command.QuestTest do
 
       {:update, _state} = Quest.run({:complete, to_string(quest.id)}, state)
 
-      giver_id = quest.giver_id
-      quest_id = quest.id
-      assert [{^giver_id, {"quest/completed", _, %{id: ^quest_id}}}] = @npc.get_notifies()
+      assert_npc_notify {_, {"quest/completed", _, _}}
     end
 
     test "giver is not in your room", %{state: state, quest: quest} do
@@ -201,7 +196,6 @@ defmodule Game.Command.QuestTest do
       quest = create_quest(guard, %{name: "Into the Dungeon", experience: 200, currency: 25})
 
       start_room(%{npcs: [Character.Simple.from_npc(guard)]})
-      @npc.clear_notifies()
 
       state = state |> Map.put(:save, %{state.save | room_id: 1, level: 1, experience_points: 20, currency: 15})
 

@@ -8,8 +8,6 @@ defmodule Game.SessionTest do
   alias Game.Session
   alias Game.Session.Process
 
-  @zone Test.Game.Zone
-
   setup do
     user = base_user()
     character = base_character(user)
@@ -289,6 +287,8 @@ defmodule Game.SessionTest do
     Session.Registry.register(base_character(base_user()))
 
     start_room(%{id: 1})
+    start_zone(%{id: 1})
+    put_zone_graveyard(%{id: 1}, {:ok, 1})
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}
@@ -310,7 +310,8 @@ defmodule Game.SessionTest do
     Session.Registry.register(base_character(base_user()))
 
     start_room(%{})
-    @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, 2))
+    start_zone(%{id: 1})
+    put_zone_graveyard(%{id: 1}, {:ok, 2})
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}
@@ -332,8 +333,8 @@ defmodule Game.SessionTest do
     Session.Registry.register(base_character(base_user()))
 
     start_room(%{})
-    @zone.set_zone(Map.put(@zone._zone(), :graveyard_id, nil))
-    @zone.set_graveyard({:error, :no_graveyard})
+    start_zone(%{id: 1})
+    put_zone_graveyard(%{id: 1}, {:error, :no_graveyard})
 
     effect = %{kind: "damage", type: "slashing", amount: 15}
     stats = %{base_stats() | health_points: 5, strength: 10}

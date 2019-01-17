@@ -1,8 +1,6 @@
 defmodule Game.Command.ShopsTest do
   use ExVenture.CommandCase
 
-  @shop Test.Game.Shop
-
   alias Game.Command.Shops
   alias Game.Environment.State.Overworld
 
@@ -14,12 +12,9 @@ defmodule Game.Command.ShopsTest do
 
     tree_stand = %{id: 10, name: "Tree Stand Shop", shop_items: [%{item_id: 1, price: 10, quantity: -1}]}
     hole_wall = %{id: 11, name: "Hole in the Wall"}
+    start_shop(tree_stand)
+
     start_room(%{shops: [tree_stand, hole_wall]})
-
-    @shop.set_shop(tree_stand)
-
-    @shop.clear_buys()
-    @shop.clear_sells()
 
     %{state: session_state(%{}), tree_stand: tree_stand}
   end
@@ -126,23 +121,20 @@ defmodule Game.Command.ShopsTest do
     assert_socket_echo "could not"
   end
 
-  test "buy an item in a shop", %{state: state} do
+  test "buy an item in a shop", %{state: state, tree_stand: tree_stand} do
     save = %{base_save() | room_id: 1, currency: 20}
-    @shop.set_buy({:ok, %{save | currency: 19}, %{name: "Sword"}})
+    put_shop_buy_response(tree_stand, {:ok, %{save | currency: 19}, %{name: "Sword"}})
 
     {:update, state} = Shops.run({:buy, "sword", :from, "tree stand"}, %{state | save: save})
 
     assert state.save.currency == 19
-    assert [{_, "sword", _save}] = @shop.get_buys()
-
+    assert_shop_buy {_, "sword", _}
     assert_socket_echo ["tree stand shop", "sword"]
   end
 
   test "buy an item in a shop - shop not found", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:buy, "sword", :from, "treestand"}, %{state | save: save})
-
-    assert [] = @shop.get_buys()
 
     assert_socket_echo "could not"
   end
@@ -151,21 +143,18 @@ defmodule Game.Command.ShopsTest do
     start_room(%{shops: [tree_stand]})
 
     save = %{base_save() | room_id: 1, currency: 20}
-    @shop.set_buy({:ok, %{save | currency: 19}, %{name: "Sword"}})
+    put_shop_buy_response(tree_stand, {:ok, %{save | currency: 19}, %{name: "Sword"}})
 
     {:update, state} = Shops.run({:buy, "sword"}, %{state | save: save})
 
     assert state.save.currency == 19
-    assert [{_, "sword", _save}] = @shop.get_buys()
-
+    assert_shop_buy {_, "sword", _}
     assert_socket_echo ["tree stand", "sword"]
   end
 
   test "buy an item in a shop - one shop - but more than one shop in room", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:buy, "sword"}, %{state | save: save})
-
-    assert [] = @shop.get_buys()
 
     assert_socket_echo "more than one"
   end
@@ -176,53 +165,48 @@ defmodule Game.Command.ShopsTest do
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:buy, "sword"}, %{state | save: save})
 
-    assert [] = @shop.get_buys()
-
     assert_socket_echo "could not"
   end
 
-  test "buy an item in a shop - item not found", %{state: state} do
-    @shop.set_buy({:error, :item_not_found})
+  test "buy an item in a shop - item not found", %{state: state, tree_stand: tree_stand} do
+    put_shop_buy_response(tree_stand, {:error, :item_not_found})
 
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:buy, "swrd", :from, "tree stand"}, %{state | save: save})
 
-    assert [{_, "swrd", _}] = @shop.get_buys()
-
+    assert_shop_buy {_, "swrd", _}
     assert_socket_echo "item could not"
   end
 
-  test "buy an item in a shop - not enough currency", %{state: state} do
-    @shop.set_buy({:error, :not_enough_currency, %{name: "Sword"}})
+  test "buy an item in a shop - not enough currency", %{state: state, tree_stand: tree_stand} do
+    put_shop_buy_response(tree_stand, {:error, :not_enough_currency, %{name: "Sword"}})
 
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:buy, "sword", :from, "tree stand"}, %{state | save: save})
 
-    assert [{_id, "sword", _save}] = @shop.get_buys()
-
+    assert_shop_buy {_, "sword", _}
     assert_socket_echo "do not have"
   end
 
-  test "buy an item in a shop - not enough quantity", %{state: state} do
-    @shop.set_buy({:error, :not_enough_quantity, %{name: "Sword"}})
+  test "buy an item in a shop - not enough quantity", %{state: state, tree_stand: tree_stand} do
+    put_shop_buy_response(tree_stand, {:error, :not_enough_quantity, %{name: "Sword"}})
 
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:buy, "sword", :from, "tree stand"}, %{state | save: save})
 
-    assert [{_id, "sword", _save}] = @shop.get_buys()
-
+    assert_shop_buy {_, "sword", _}
     assert_socket_echo "does not"
   end
 
-  test "sell an item to a shop", %{state: state} do
+  test "sell an item to a shop", %{state: state, tree_stand: tree_stand} do
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
-    @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
+    put_shop_sell_response(tree_stand, {:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
 
     {:update, state} = Shops.run({:sell, "sword", :to, "tree stand"}, %{state | save: save})
 
     assert state.save.currency == 30
-    assert [{_, "sword", _save}] = @shop.get_sells()
 
+    assert_shop_sell {_, "sword", _}
     assert_socket_echo "10 gold"
   end
 
@@ -230,21 +214,19 @@ defmodule Game.Command.ShopsTest do
     start_room(%{shops: [tree_stand]})
 
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
-    @shop.set_sell({:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
+    put_shop_sell_response(tree_stand, {:ok, %{save | currency: 30}, %{name: "Sword", cost: 10}})
 
     {:update, state} = Shops.run({:sell, "sword"}, %{state | save: save})
 
     assert state.save.currency == 30
-    assert [{_, "sword", _save}] = @shop.get_sells()
 
+    assert_shop_sell {_, "sword", _}
     assert_socket_echo "10 gold"
   end
 
   test "sell an item in a shop - one shop - but more than one shop in room", %{state: state} do
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:sell, "sword"}, %{state | save: save})
-
-    assert [] = @shop.get_sells()
 
     assert_socket_echo "more than one"
   end
@@ -255,8 +237,6 @@ defmodule Game.Command.ShopsTest do
     save = %{base_save() | room_id: 1, currency: 20}
     :ok = Shops.run({:sell, "sword"}, %{state | save: save})
 
-    assert [] = @shop.get_sells()
-
     assert_socket_echo "could not"
   end
 
@@ -264,19 +244,16 @@ defmodule Game.Command.ShopsTest do
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     :ok = Shops.run({:sell, "sword", :to, "treestand"}, %{state | save: save})
 
-    assert [] = @shop.get_sells()
-
     assert_socket_echo "could not"
   end
 
-  test "sell an item to a shop - item not found", %{state: state} do
-    @shop.set_sell({:error, :item_not_found})
+  test "sell an item to a shop - item not found", %{state: state, tree_stand: tree_stand} do
+    put_shop_sell_response(tree_stand, {:error, :item_not_found})
 
     save = %{base_save() | room_id: 1, currency: 20, items: [item_instance(1)]}
     :ok = Shops.run({:sell, "swrd", :to, "tree stand"}, %{state | save: save})
 
-    assert [{_, "swrd", _}] = @shop.get_sells()
-
+    assert_shop_sell {_, "swrd", _}
     assert_socket_echo "could not"
   end
 end
