@@ -1,5 +1,5 @@
 defmodule Game.NPC.Actions.CommandsMoveTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   alias Data.Events.Actions
   alias Game.Door
@@ -7,8 +7,6 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
   alias Game.NPC.Actions.CommandsMove
 
   doctest CommandsMove
-
-  @room Test.Game.Room
 
   setup [:basic_setup]
 
@@ -18,18 +16,14 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
       assert state.room_id == 2
 
-      assert [{2, {:npc, _npc}, _reason}] = @room.get_enters()
-      assert [{1, {:npc, _npc}, _reason}] = @room.get_leaves()
+      assert_enter {2, {:npc, _}, _}
+      assert_leave {1, {:npc, _}, _}
     end
 
     test "does not move if a door is closed", %{state: state, action: action} do
       room_exit = %{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: true, door_id: 10}
 
-      @room._room()
-      |> Map.put(:id, 1)
-      |> Map.put(:y, 1)
-      |> Map.put(:exits, [room_exit])
-      |> @room.set_room(multiple: true)
+      start_room(%{id: 1, y: 1, exits: [room_exit]})
 
       Door.load(room_exit)
       Door.set(room_exit, "closed")
@@ -38,8 +32,8 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
       assert state.room_id == 1
 
-      assert [] = @room.get_enters()
-      assert [] = @room.get_leaves()
+      refute_enter()
+      refute_leave()
     end
 
     test "does not move when a target is present", %{state: state, action: action} do
@@ -60,39 +54,30 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
     end
 
     test "does not move if going past the maximum distance", %{state: state, action: action} do
-      @room._room()
-      |> Map.put(:id, 2)
-      |> Map.put(:y, 7)
-      |> Map.put(:exits, [%{direction: "south", start_id: 2, finish_id: 1, has_door: false}])
-      |> @room.set_room(multiple: true)
+      room_exit = %{direction: "south", start_id: 2, finish_id: 1, has_door: false}
+      start_room(%{id: 2, y: 7, exits: [room_exit]})
 
       {:ok, state} = CommandsMove.act(state, action)
 
       assert state.room_id == 1
 
-      assert [] = @room.get_enters()
-      assert [] = @room.get_leaves()
+      refute_enter()
+      refute_leave()
     end
 
     test "does not move into a new zone", %{state: state, action: action} do
-      @room._room()
-      |> Map.put(:id, 2)
-      |> Map.put(:zone_id, 2)
-      |> @room.set_room(multiple: true)
+      start_room(%{id: 2, zone_id: 2})
 
       {:ok, state} = CommandsMove.act(state, action)
 
       assert state.room_id == 1
 
-      assert [] = @room.get_enters()
-      assert [] = @room.get_leaves()
+      refute_enter()
+      refute_leave()
     end
   end
 
   def basic_setup(_) do
-    @room.clear_enters()
-    @room.clear_leaves()
-
     npc = npc_attributes(%{id: 1})
 
     state = %State{
@@ -101,17 +86,11 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
       npc_spawner: %{room_id: 1}
     }
 
-    @room._room()
-    |> Map.put(:id, 1)
-    |> Map.put(:y, 1)
-    |> Map.put(:exits, [%{direction: "north", start_id: 1, finish_id: 2, has_door: false}])
-    |> @room.set_room(multiple: true)
+    room_exit = %{direction: "north", start_id: 1, finish_id: 2, has_door: false}
+    start_room(%{id: 1, y: 1, exits: [room_exit]})
 
-    @room._room()
-    |> Map.put(:id, 2)
-    |> Map.put(:y, 0)
-    |> Map.put(:exits, [%{direction: "south", start_id: 2, finish_id: 1, has_door: false}])
-    |> @room.set_room(multiple: true)
+    room_exit = %{direction: "south", start_id: 2, finish_id: 1, has_door: false}
+    start_room(%{id: 2, y: 0, exits: [room_exit]})
 
     start_and_clear_doors()
 

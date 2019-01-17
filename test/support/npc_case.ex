@@ -1,12 +1,13 @@
-defmodule ExVenture.CommandCase do
+defmodule ExVenture.NPCCase do
   use ExUnit.CaseTemplate
 
   using do
     quote do
       use Data.ModelCase
 
-      import Test.Networking.Socket.Helpers
       import Test.Game.Room.Helpers
+
+      alias Game.NPC.State
     end
   end
 end

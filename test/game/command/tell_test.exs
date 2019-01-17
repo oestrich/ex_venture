@@ -8,14 +8,11 @@ defmodule Game.Command.TellTest do
 
   doctest Tell
 
-  @room Test.Game.Room
-
   setup do
-    @room.set_room(Map.merge(@room._room(), %{npcs: []}))
-
     user = base_user()
     character = base_character(user)
     save = %{character.save | room_id: 1}
+
     %{state: session_state(%{user: user, character: character, save: save})}
   end
 
@@ -31,6 +28,8 @@ defmodule Game.Command.TellTest do
     end
 
     test "send a tell - player not found", %{state: state} do
+      start_room(%{})
+
       :ok = Tell.run({"tell", "player hello"}, state)
 
       assert_socket_echo "not online"
@@ -42,7 +41,7 @@ defmodule Game.Command.TellTest do
       npc = create_npc(%{name: "Guard"})
 
       room = %{id: 1, npcs: [npc]}
-      @room.set_room(Map.merge(@room._room(), room))
+      start_room(room)
 
       %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: {:npc, npc}}}
     end
@@ -56,8 +55,7 @@ defmodule Game.Command.TellTest do
     end
 
     test "send a tell - npc not in the room", %{state: state} do
-      room = %{id: 1, npcs: []}
-      @room.set_room(Map.merge(@room._room(), room))
+      start_room(%{npcs: []})
 
       :ok = Tell.run({"tell", "guard howdy"}, state)
 
@@ -94,7 +92,7 @@ defmodule Game.Command.TellTest do
       npc = create_npc()
 
       room = %{id: 1, npcs: [npc]}
-      @room.set_room(Map.merge(@room._room(), room))
+      start_room(room)
 
       %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: {:npc, npc}}}
     end
@@ -108,8 +106,7 @@ defmodule Game.Command.TellTest do
     end
 
     test "send a reply - npc not in the room", %{state: state} do
-      room = %{id: 1, npcs: []}
-      @room.set_room(Map.merge(@room._room(), room))
+      start_room(%{id: 1, npcs: []})
 
       :ok = Tell.run({"reply", "howdy"}, state)
 

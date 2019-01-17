@@ -5,19 +5,17 @@ defmodule Game.Command.TargetTest do
 
   doctest Target
 
-  @room Test.Game.Room
-
   setup do
     npc = %{id: 1, name: "Bandit"}
 
-    room = @room._room()
-    |> Map.put(:npcs, [npc])
-    |> Map.put(:players, [%{id: 2, name: "Player", save: %{stats: %{health_points: 1}}}])
-
-    @room.set_room(room)
+    start_room(%{
+      npcs: [npc],
+      players: [%{id: 2, name: "Player", save: %{stats: %{health_points: 1}}}]
+    })
 
     user = base_user()
     character = base_character(user)
+
     %{state: session_state(%{user: user, character: character})}
   end
 
@@ -49,10 +47,10 @@ defmodule Game.Command.TargetTest do
   end
 
   test "cannot target another player if health is < 1", %{state: state} do
-    room = @room._room()
-    |> Map.put(:npcs, [])
-    |> Map.put(:players, [%{id: 2, name: "Player", save: %{stats: %{health_points: -1}}}])
-    @room.set_room(room)
+    start_room(%{
+      npcs: [],
+      players: [%{id: 2, name: "Player", save: %{stats: %{health_points: -1}}}]
+    })
 
     :ok = Game.Command.Target.run({:set, "player"}, state)
 

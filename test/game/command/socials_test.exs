@@ -8,8 +8,6 @@ defmodule Game.Command.SocialsTest do
 
   doctest Socials
 
-  @room Test.Game.Room
-
   setup do
     start_and_clear_socials()
 
@@ -70,7 +68,7 @@ defmodule Game.Command.SocialsTest do
   describe "using a social" do
     test "with a target", %{state: state} do
       guard = create_npc(%{name: "Guard"})
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       :ok = Socials.run({"smile", "guard"}, state)
 
@@ -78,7 +76,7 @@ defmodule Game.Command.SocialsTest do
     end
 
     test "with a target - target not found", %{state: state} do
-      @room.set_room(@room._room())
+      start_room(%{})
 
       :ok = Socials.run({"smile", "guard"}, state)
 

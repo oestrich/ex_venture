@@ -5,11 +5,7 @@ defmodule Game.Session.EffectsTest do
 
   alias Game.Session.Effects
 
-  @room Test.Game.Room
-
   setup do
-    @room.clear_update_characters()
-
     start_and_clear_damage_types()
 
     insert_damage_type(%{
@@ -54,6 +50,8 @@ defmodule Game.Session.EffectsTest do
     end
 
     test "handles death", %{state: state, effect: effect, from: from} do
+      start_room(%{id: state.save.room_id})
+
       effect = %{effect | amount: 38}
       state = %{state | continuous_effects: [{from, effect}]}
 
@@ -71,7 +69,7 @@ defmodule Game.Session.EffectsTest do
       [] = state.continuous_effects
 
       effect_id = effect.id
-      refute_receive {:continuous_effect, ^effect_id}
+      refute_receive {:continuous_effect, ^effect_id}, 50
     end
 
     test "does nothing if effect is not found", %{state: state} do

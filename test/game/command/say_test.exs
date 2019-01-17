@@ -6,8 +6,6 @@ defmodule Game.Command.SayTest do
 
   doctest Say
 
-  @room Test.Game.Room
-
   setup do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
@@ -33,7 +31,7 @@ defmodule Game.Command.SayTest do
   describe "say to someone" do
     test "to a player", %{state: state} do
       player = %{id: 1, name: "Player"}
-      @room.set_room(Map.merge(@room._room(), %{players: [player]}))
+      start_room(%{players: [player]})
 
       :ok = Say.run({">player hi"}, state)
 
@@ -42,7 +40,7 @@ defmodule Game.Command.SayTest do
 
     test "to an npc", %{state: state} do
       guard = create_npc(%{name: "Guard"})
-      @room.set_room(Map.merge(@room._room(), %{npcs: [guard]}))
+      start_room(%{npcs: [guard]})
 
       :ok = Say.run({">guard hi"}, state)
 
@@ -50,7 +48,7 @@ defmodule Game.Command.SayTest do
     end
 
     test "target not found", %{state: state} do
-      @room.set_room(@room._room())
+      start_room(%{})
 
       :ok = Say.run({">guard hi"}, state)
 

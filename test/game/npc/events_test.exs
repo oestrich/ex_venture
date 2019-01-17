@@ -1,9 +1,7 @@
 defmodule Game.NPC.EventsTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   import Test.DamageTypesHelper
-
-  @room Test.Game.Room
 
   alias Data.Events.Actions.CommandsSay
   alias Data.Events.RoomHeard
@@ -14,9 +12,6 @@ defmodule Game.NPC.EventsTest do
   alias Game.NPC.State
 
   setup do
-    @room.clear_says()
-    @room.clear_emotes()
-
     start_and_clear_damage_types()
 
     %{key: "slashing", stat_modifier: :strength, boost_ratio: 20}
@@ -61,10 +56,7 @@ defmodule Game.NPC.EventsTest do
 
       state = %State{room_id: 1, npc: npc, target: nil}
 
-      @room._room()
-      |> Map.put(:npcs, [npc])
-      |> Map.put(:players, [%{id: 1, name: "Player"}])
-      |> @room.set_room()
+      start_room(%{npcs: [npc], players: [%{id: 1, name: "Player"}]})
 
       event = {"character/died", {:player, character}, :character, {:npc, npc}}
 

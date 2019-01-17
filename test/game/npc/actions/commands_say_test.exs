@@ -1,16 +1,12 @@
 defmodule Game.NPC.Actions.CommandsSayTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   alias Data.Events.Actions
   alias Game.NPC.Actions.CommandsSay
 
   doctest CommandsSay
 
-  @room Test.Game.Room
-
   setup do
-    @room.clear_says()
-
     %{state: %{npc: npc_attributes(%{id: 1}), room_id: 1}}
   end
 
@@ -22,8 +18,7 @@ defmodule Game.NPC.Actions.CommandsSayTest do
 
       {:ok, ^state} = CommandsSay.act(state, action)
 
-      [{_, message}] = @room.get_says()
-      assert message.message == "Hello"
+      assert_say "hello"
     end
 
     test "selects a random message", %{state: state} do
@@ -33,8 +28,7 @@ defmodule Game.NPC.Actions.CommandsSayTest do
 
       {:ok, ^state} = CommandsSay.act(state, action)
 
-      [{_, message}] = @room.get_says()
-      assert message.message == "Hello"
+      assert_say "hello"
     end
   end
 
@@ -49,8 +43,7 @@ defmodule Game.NPC.Actions.CommandsSayTest do
 
       {:ok, ^state} = CommandsSay.act(state, action)
 
-      [{_, message}] = @room.get_says()
-      assert message.message == "Hello"
+      assert_say "hello"
     end
 
     test "when does not matches", %{state: state} do
@@ -63,7 +56,7 @@ defmodule Game.NPC.Actions.CommandsSayTest do
 
       {:ok, ^state} = CommandsSay.act(state, action)
 
-      assert @room.get_says() == []
+      refute_say()
     end
   end
 end

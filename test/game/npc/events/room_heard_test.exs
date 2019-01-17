@@ -36,7 +36,7 @@ defmodule Game.NPC.Events.RoomHeardTest do
 
       {:ok, ^state} = RoomHeard.process(state, sent_event)
 
-      refute_receive {:delayed_actions, [_]}
+      refute_received {:delayed_actions, [_]}
     end
   end
 

@@ -6,23 +6,25 @@ defmodule Game.Command.PickUpTest do
 
   doctest PickUp
 
-  @room Test.Game.Room
-
   setup do
     start_and_clear_items()
     item = create_item(%{name: "Short Sword", description: "A simple blade", keywords: ["sword"]})
     insert_item(item)
 
-    @room.set_room(Map.merge(@room._room(), %{items: [Item.instantiate(item)]}))
+    item_instance = Item.instantiate(item)
+    room = %{id: 1, items: [item_instance]}
+    start_room(room)
 
     user = base_user()
     character = base_character(user)
-    save = %{character.save | room_id: 1, items: [], currency: 1}
-    %{state: session_state(%{user: user, character: character, save: save})}
+    save = %{character.save | room_id: room.id, items: [], currency: 1}
+    state = session_state(%{user: user, character: character, save: save})
+
+    %{state: state, room: room, item_instance: item_instance}
   end
 
-  test "pick up an item from a room", %{state: state} do
-    @room.clear_pick_up()
+  test "pick up an item from a room", %{state: state, room: room, item_instance: item_instance} do
+    put_pick_up_response(room, {:ok, item_instance})
 
     {:update, state} = PickUp.run({"sword"}, state)
 
@@ -36,16 +38,16 @@ defmodule Game.Command.PickUpTest do
     assert_socket_echo ~s("shield" could not be found)
   end
 
-  test "item has already been removed", %{state: state} do
-    @room.set_pick_up(:error)
+  test "item has already been removed", %{state: state, room: room} do
+    put_pick_up_response(room, :error)
 
     item = %Data.Item{id: 15, name: "shield"}
     room = %Data.Room{id: 1}
     assert {:error, :could_not_pickup, ^item} = PickUp.pick_up(item, room, state)
   end
 
-  test "pick up gold from a room", %{state: state} do
-    @room.set_pick_up_currency({:ok, 100})
+  test "pick up gold from a room", %{state: state, room: room} do
+    put_pick_up_currency_response(room, {:ok, 100})
 
     {:update, state} = PickUp.run({"gold"}, state)
 
@@ -54,8 +56,8 @@ defmodule Game.Command.PickUpTest do
     assert_socket_echo "you picked up"
   end
 
-  test "pick up gold from a room, but no gold", %{state: state} do
-    @room.set_pick_up_currency({:error, :no_currency})
+  test "pick up gold from a room, but no gold", %{state: state, room: room} do
+    put_pick_up_currency_response(room, {:error, :no_currency})
 
     :ok = PickUp.run({"gold"}, state)
 
@@ -63,9 +65,9 @@ defmodule Game.Command.PickUpTest do
   end
 
   describe "pick up all" do
-    test "gets everything", %{state: state} do
-      @room.clear_pick_up()
-      @room.set_pick_up_currency({:ok, 100})
+    test "gets everything", %{state: state, room: room, item_instance: item_instance} do
+      put_pick_up_response(room, {:ok, item_instance})
+      put_pick_up_currency_response(room, {:ok, 100})
 
       {:update, state} = PickUp.run({:all}, state)
 
@@ -76,9 +78,9 @@ defmodule Game.Command.PickUpTest do
       assert_socket_echo "you picked up"
     end
 
-    test "does not echo currency if not available", %{state: state} do
-      @room.clear_pick_up()
-      @room.set_pick_up_currency({:error, :no_currency})
+    test "does not echo currency if not available", %{state: state, room: room, item_instance: item_instance} do
+      put_pick_up_response(room, {:ok, item_instance})
+      put_pick_up_currency_response(room, {:error, :no_currency})
 
       {:update, state} = PickUp.run({:all}, state)
 

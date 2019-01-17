@@ -5,8 +5,6 @@ defmodule Game.Command.ListenTest do
 
   doctest Listen
 
-  @room Test.Game.Room
-
   setup do
     save = base_save()
     %{state: %{socket: :socket, user: %{save: save}, save: save}}
@@ -23,13 +21,13 @@ defmodule Game.Command.ListenTest do
           %{name: "Guard", extra: %{status_listen: "[name] is yelling."}},
         ],
       }
-      @room.set_room(Map.merge(@room._room(), room))
+      start_room(room)
 
       :ok
     end
 
     test "room contains no listening text", %{state: state} do
-      @room.set_room(@room._room())
+      start_room(%{})
 
       :ok = Listen.run({}, state)
 
@@ -58,7 +56,7 @@ defmodule Game.Command.ListenTest do
   describe "listening in a direction" do
     setup do
       room = %{id: 1, exits: [%{direction: "north", start_id: 1, finish_id: 2}]}
-      @room.set_room(Map.merge(@room._room(), room), multiple: true)
+      start_room(room)
 
       room = %{
         id: 2,
@@ -67,7 +65,7 @@ defmodule Game.Command.ListenTest do
           %{key: "flag", listen: "A flag is flapping in the breeze"},
         ],
       }
-      @room.set_room(Map.merge(@room._room(), room), multiple: true)
+      start_room(room)
 
       :ok
     end

@@ -1,6 +1,7 @@
 defmodule Test.Game.Room do
   alias Data.Exit
   alias Game.Environment
+  alias Test.Game.Room.FakeRoom
 
   def start_link() do
     Agent.start_link(fn () ->
@@ -11,6 +12,8 @@ defmodule Test.Game.Room do
       }
     end, name: __MODULE__)
   end
+
+  def default_room(), do: _room()
 
   def _room() do
     %Environment.State.Room{
@@ -36,231 +39,226 @@ defmodule Test.Game.Room do
   def unlink(_id), do: :ok
 
   def crash(id) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      crashes = Map.get(state, :crash, [])
-      Map.put(state, :crash, crashes ++ [id])
-    end)
-  end
-
-  def get_crashes() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :crash, []) end)
-  end
-
-  def clear_crashes() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :crash, []) end)
+    send(self(), {:crash, id})
   end
 
   def set_room(:offline) do
-    start_link()
-
-    Agent.update(__MODULE__, fn (state) ->
-      Map.put(state, :offline, true)
-    end)
+    Process.put(:offline, true)
   end
 
-  def set_room(room, opts \\ []) do
-    start_link()
-
-    Agent.update(__MODULE__, fn (state) ->
-      rooms =
-        case Keyword.get(opts, :multiple, false) do
-          true ->
-            state
-            |> Map.get(:rooms, %{})
-            |> Map.put(room.id, room)
-          false ->
-            %{}
-        end
-
-      state
-      |> Map.put(:offline, false)
-      |> Map.put(:room, room)
-      |> Map.put(:rooms, rooms)
-    end)
+  def set_room(room) do
+    {:ok, pid} = FakeRoom.start_link(room)
+    Process.put({:room, room.id}, pid)
   end
 
   def look(id) do
-    start_link()
-    Agent.get(__MODULE__, fn (state) ->
-      case state.offline do
-        true ->
-          {:error, :room_offline}
+    case Process.get(:offline, false) do
+      true ->
+        {:error, :room_offline}
 
-        false ->
-          {:ok, Map.get(state.rooms, id, state.room)}
-      end
-    end)
+      false ->
+        GenServer.call(Process.get({:room, id}), {:look})
+    end
   end
 
-  def enter(id, who, reason \\ :enter) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      enters = Map.get(state, :enter, [])
-      Map.put(state, :enter, enters ++ [{id, who, reason}])
-    end)
+  def enter(id, character, reason \\ :enter) do
+    send(self(), {:enter, {id, character, reason}})
   end
 
-  def get_enters() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :enter, []) end)
+  def leave(id, character, reason \\ :leave) do
+    send(self(), {:leave, {id, character, reason}})
   end
 
-  def clear_enters() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :enter, []) end)
+  def notify(id, sender, event) do
+    send(self(), {:notify, {id, sender, event}})
   end
 
-  def leave(id, user, reason \\ :leave) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      leaves = Map.get(state, :leave, [])
-      Map.put(state, :leave, leaves ++ [{id, user, reason}])
-    end)
+  def say(room_id, sender, message) do
+    send(self(), {:say, {room_id, sender, message}})
   end
 
-  def get_leaves() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :leave, []) end)
-  end
-
-  def clear_leaves() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :leave, []) end)
-  end
-
-  def notify(id, _sender, event) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      notifys = Map.get(state, :notify, [])
-      Map.put(state, :notify, notifys ++ [{id, event}])
-    end)
-  end
-
-  def get_notifies() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :notify, []) end)
-  end
-
-  def clear_notifies() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :notify, []) end)
-  end
-
-  def say(id, _sender, message) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      says = Map.get(state, :say, [])
-      Map.put(state, :say, says ++ [{id, message}])
-    end)
-  end
-
-  def get_says() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :say, []) end)
-  end
-
-  def clear_says() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :say, []) end)
-  end
-
-  def emote(id, _sender, message) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      emotes = Map.get(state, :emote, [])
-      Map.put(state, :emote, emotes ++ [{id, message}])
-    end)
-  end
-
-  def get_emotes() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :emote, []) end)
-  end
-
-  def clear_emotes() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :emote, []) end)
+  def emote(room_id, sender, message) do
+    send(self(), {:emote, {room_id, sender, message}})
   end
 
   def update_character(id, character) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      update_characters = Map.get(state, :update_character, [])
-      Map.put(state, :update_character, update_characters ++ [{id, character}])
-    end)
+    send(self(), {:character, {id, character}})
   end
 
-  def get_update_characters() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :update_character, []) end)
+  def set_pick_up(room, response) do
+    GenServer.call(Process.get({:room, room.id}), {:put, {:pick_up, response}})
   end
 
-  def clear_update_characters() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :update_character, []) end)
+  def pick_up(id, item) do
+    case Process.get(:offline, false) do
+      true ->
+        {:error, :room_offline}
+
+      false ->
+        GenServer.call(Process.get({:room, id}), {:pick_up, item})
+    end
   end
 
-  def set_pick_up(response) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up, response) end)
+  def set_pick_up_currency(room, response) do
+    GenServer.call(Process.get({:room, room.id}), {:put, {:pick_up_currency, response}})
   end
 
-  def pick_up(_id, item) do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :pick_up, {:ok, item}) end)
-  end
+  def pick_up_currency(id) do
+    case Process.get(:offline, false) do
+      true ->
+        {:error, :room_offline}
 
-  def clear_pick_up() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.delete(state, :pick_up) end)
-  end
-
-  def set_pick_up_currency(response) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :pick_up_currency, response) end)
-  end
-
-  def pick_up_currency(_id) do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :pick_up_currency) end)
+      false ->
+        GenServer.call(Process.get({:room, id}), {:pick_up_currency})
+    end
   end
 
   def drop(id, who, item) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      drops = Map.get(state, :drop, [])
-      Map.put(state, :drop, drops ++ [{id, who, item}])
-    end)
-  end
-
-  def get_drops() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :drop, []) end)
-  end
-
-  def clear_drops() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :drop, []) end)
+    send(self(), {:drop, {id, who, item}})
   end
 
   def drop_currency(id, who, amount) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      drops = Map.get(state, :drop_currency, [])
-      Map.put(state, :drop_currency, drops ++ [{id, who, amount}])
-    end)
+    send(self(), {:drop, {id, who, {:currency, amount}}})
   end
 
-  def get_drop_currencies() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :drop_currency, []) end)
+  defmodule FakeRoom do
+    use GenServer
+
+    def start_link(room) do
+      GenServer.start_link(__MODULE__, room)
+    end
+
+    @impl true
+    def init(room) do
+      {:ok, %{room: room, responses: %{}}}
+    end
+
+    @impl true
+    def handle_call({:look}, _from, state) do
+      {:reply, {:ok, state.room}, state}
+    end
+
+    def handle_call({:put, {field, response}}, _from, state) do
+      responses = Map.put(state.responses, field, response)
+      state = Map.put(state, :responses, responses)
+
+      {:reply, :ok, state}
+    end
+
+    def handle_call({:pick_up, _item}, _from, state) do
+      {:reply, state.responses[:pick_up], state}
+    end
+
+    def handle_call({:pick_up_currency}, _from, state) do
+      {:reply, state.responses[:pick_up_currency], state}
+    end
   end
 
-  def clear_drop_currencies() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :drop_currency, []) end)
+  defmodule Helpers do
+    @moduledoc """
+    Helpers for dealing with rooms
+    """
+
+    alias Test.Game.Room
+
+    def mark_room_offline() do
+      Room.set_room(:offline)
+    end
+
+    def start_room(room = %Game.Environment.State.Room{}) do
+      Room.set_room(room)
+    end
+
+    def start_room(room = %Game.Environment.State.Overworld{}) do
+      Room.set_room(room)
+    end
+
+    def start_room(attributes) do
+      attributes = Map.merge(Room.default_room(), attributes)
+      Room.set_room(attributes)
+    end
+
+    def start_simple_room(attributes) do
+      basic_room = %Game.Environment.State.Room{
+        id: 1,
+        name: "",
+        description: "",
+        players: [],
+        shops: [],
+        zone: %{id: 1, name: ""}
+      }
+
+      Room.set_room(Map.merge(basic_room, attributes))
+    end
+
+    def put_pick_up_response(room, response) do
+      Room.set_pick_up(room, response)
+    end
+
+    def put_pick_up_currency_response(room, response) do
+      Room.set_pick_up_currency(room, response)
+    end
+
+    defmacro assert_drop(message) do
+      quote do
+        assert_received {:drop, unquote(message)}
+      end
+    end
+
+    defmacro refute_drop(message) do
+      quote do
+        refute_receive {:drop, unquote(message)}, 50
+      end
+    end
+
+    defmacro assert_emote(emote) do
+      quote do
+        assert_received {:emote, {_, _, message}}
+        assert Regex.match?(~r(#{unquote(emote)})i, message.message)
+      end
+    end
+
+    defmacro assert_enter(event) do
+      quote do
+        assert_received {:enter, unquote(event)}
+      end
+    end
+
+    defmacro refute_enter() do
+      quote do
+        refute_received {:enter, _}
+      end
+    end
+
+    defmacro assert_leave(event) do
+      quote do
+        assert_received {:leave, unquote(event)}
+      end
+    end
+
+    defmacro refute_leave() do
+      quote do
+        refute_received {:leave, _}
+      end
+    end
+
+    defmacro assert_notify(event) do
+      quote do
+        assert_received {:notify, {_, _, unquote(event)}}
+      end
+    end
+
+    defmacro assert_say(say) do
+      quote do
+        assert_received {:say, {_, _, message}}
+        assert Regex.match?(~r(#{unquote(say)})i, message.message)
+      end
+    end
+
+    defmacro refute_say() do
+      quote do
+        refute_receive {:say, _}, 50
+      end
+    end
   end
 end

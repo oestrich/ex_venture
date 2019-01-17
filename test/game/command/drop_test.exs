@@ -1,8 +1,6 @@
 defmodule Game.Command.DropTest do
   use ExVenture.CommandCase
 
-  @room Test.Game.Room
-
   alias Game.Command.Drop
 
   setup do
@@ -16,8 +14,6 @@ defmodule Game.Command.DropTest do
   end
 
   test "drop an item in a room", %{state: state} do
-    @room.clear_drops()
-
     state = %{state | save: %{state.save | room_id: 1, items: [item_instance(1)]}}
 
     {:update, state} = Drop.run({"sword"}, state)
@@ -25,27 +21,22 @@ defmodule Game.Command.DropTest do
     assert state.save.items |> length == 0
 
     assert_socket_echo "you dropped"
-
-    assert [{1, {:player, _}, %{id: 1}}] = @room.get_drops()
+    assert_drop {_, {:player, _}, %{id: 1}}
   end
 
   test "drop currency in a room", %{state: state} do
-    @room.clear_drop_currencies()
-
     state = %{state | save: %{state.save | room_id: 1, currency: 101}}
     {:update, state} = Drop.run({"100 gold"}, state)
 
     assert state.save.currency == 1
 
     assert_socket_echo "you dropped"
-
-    assert [{1, {:player, _}, 100}] = @room.get_drop_currencies()
+    assert_drop {_, {:player, _}, {:currency, 100}}
   end
 
   test "drop currency in a room - not enough to do so", %{state: state} do
-    @room.clear_drop_currencies()
-
     state = %{state | save: %{state.save | room_id: 1, currency: 101}}
+
     :ok = Drop.run({"110 gold"}, state)
 
     assert_socket_echo "you do not have enough"

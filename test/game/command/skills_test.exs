@@ -7,8 +7,6 @@ defmodule Game.Command.SkillsTest do
 
   doctest Skills
 
-  @room Test.Game.Room
-
   setup do
     start_and_clear_skills()
 
@@ -30,12 +28,7 @@ defmodule Game.Command.SkillsTest do
     save = %{base_save() | level: 1, stats: %{health_points: 20, strength: 10, skill_points: 10}, wearing: %{}, skill_ids: [slash.id]}
     character = %{base_character(user) | save: save}
 
-    room =
-      @room._room()
-      |> Map.put(:npcs, [npc])
-      |> Map.put(:players, [user])
-
-    @room.set_room(room)
+    start_room(%{npcs: [npc], players: [user]})
 
     state = session_state(%{
       skills: %{},

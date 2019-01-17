@@ -1,17 +1,12 @@
 defmodule Game.NPC.Actions.CommandsEmoteTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   alias Data.Events.Actions
   alias Game.NPC.Actions.CommandsEmote
-  alias Game.NPC.State
 
   doctest CommandsEmote
 
-  @room Test.Game.Room
-
   setup do
-    @room.clear_emotes()
-
     npc = npc_attributes(%{
       id: 1,
       status_line: "[name] is here.",
@@ -29,8 +24,7 @@ defmodule Game.NPC.Actions.CommandsEmoteTest do
 
       {:ok, ^state} = CommandsEmote.act(state, action)
 
-      [{_, message}] = @room.get_emotes()
-      assert message.message == "Hello"
+      assert_emote "hello"
     end
 
     test "handles status updates", %{state: state} do

@@ -81,7 +81,7 @@ defmodule Game.Room.ActionsTest do
 
     test "doesn't spawn again if already spawning", %{room: room, item: %{id: item_id}} do
       {:update, _state} = Room.Actions.maybe_respawn_items(%{room: %{room | items: []}, respawn: %{item_id => Timex.now}})
-      refute_receive {:respawn, ^item_id}
+      refute_receive {:respawn, ^item_id}, 50
     end
 
     test "respawns an item", %{room: room, item: %{id: item_id}} do
