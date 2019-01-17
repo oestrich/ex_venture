@@ -1,19 +1,13 @@
 defmodule Game.NPCTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   import Test.DamageTypesHelper
-
-  @room Test.Game.Room
 
   alias Game.NPC
   alias Game.NPC.State
   alias Game.Session.Registry
 
   setup do
-    @room.clear_notifies()
-    @room.clear_says()
-    @room.clear_leaves()
-
     start_and_clear_damage_types()
 
     insert_damage_type(%{
@@ -63,8 +57,8 @@ defmodule Game.NPCTest do
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:player, %{id: 2, name: "Player"}}, "description"}, state)
     assert state.npc.stats.health_points == 0
 
-    assert [{1, {:npc, _}, :death}] = @room.get_leaves()
-    assert [{1, {"character/died", _, _, _}}] = @room.get_notifies()
+    assert_leave {1, {:npc, _}, :death}
+    assert_notify {"character/died", _, _, _}
 
     Registry.unregister()
   end

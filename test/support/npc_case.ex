@@ -1,10 +1,11 @@
-defmodule ExVenture.CommandCase do
+defmodule ExVenture.NPCCase do
   defmacro __using__(_) do
     quote do
       use Data.ModelCase
 
-      import Test.Networking.Socket.Helpers
       import Test.Game.Room.Helpers
+
+      alias Game.NPC.State
     end
   end
 end

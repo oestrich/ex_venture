@@ -36,21 +36,7 @@ defmodule Test.Game.Room do
   def unlink(_id), do: :ok
 
   def crash(id) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      crashes = Map.get(state, :crash, [])
-      Map.put(state, :crash, crashes ++ [id])
-    end)
-  end
-
-  def get_crashes() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :crash, []) end)
-  end
-
-  def clear_crashes() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :crash, []) end)
+    send(self(), {:crash, id})
   end
 
   def set_room(:offline) do
@@ -95,112 +81,28 @@ defmodule Test.Game.Room do
     end)
   end
 
-  def enter(id, who, reason \\ :enter) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      enters = Map.get(state, :enter, [])
-      Map.put(state, :enter, enters ++ [{id, who, reason}])
-    end)
+  def enter(id, character, reason \\ :enter) do
+    send(self(), {:enter, {id, character, reason}})
   end
 
-  def get_enters() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :enter, []) end)
+  def leave(id, character, reason \\ :leave) do
+    send(self(), {:leave, {id, character, reason}})
   end
 
-  def clear_enters() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :enter, []) end)
+  def notify(id, sender, event) do
+    send(self(), {:notify, {id, sender, event}})
   end
 
-  def leave(id, user, reason \\ :leave) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      leaves = Map.get(state, :leave, [])
-      Map.put(state, :leave, leaves ++ [{id, user, reason}])
-    end)
+  def say(room_id, sender, message) do
+    send(self(), {:say, {room_id, sender, message}})
   end
 
-  def get_leaves() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :leave, []) end)
-  end
-
-  def clear_leaves() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :leave, []) end)
-  end
-
-  def notify(id, _sender, event) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      notifys = Map.get(state, :notify, [])
-      Map.put(state, :notify, notifys ++ [{id, event}])
-    end)
-  end
-
-  def get_notifies() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :notify, []) end)
-  end
-
-  def clear_notifies() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :notify, []) end)
-  end
-
-  def say(id, _sender, message) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      says = Map.get(state, :say, [])
-      Map.put(state, :say, says ++ [{id, message}])
-    end)
-  end
-
-  def get_says() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :say, []) end)
-  end
-
-  def clear_says() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :say, []) end)
-  end
-
-  def emote(id, _sender, message) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      emotes = Map.get(state, :emote, [])
-      Map.put(state, :emote, emotes ++ [{id, message}])
-    end)
-  end
-
-  def get_emotes() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :emote, []) end)
-  end
-
-  def clear_emotes() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :emote, []) end)
+  def emote(room_id, sender, message) do
+    send(self(), {:emote, {room_id, sender, message}})
   end
 
   def update_character(id, character) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      update_characters = Map.get(state, :update_character, [])
-      Map.put(state, :update_character, update_characters ++ [{id, character}])
-    end)
-  end
-
-  def get_update_characters() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :update_character, []) end)
-  end
-
-  def clear_update_characters() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :update_character, []) end)
+    send(self(), {:character, {id, character}})
   end
 
   def set_pick_up(response) do
@@ -229,38 +131,87 @@ defmodule Test.Game.Room do
   end
 
   def drop(id, who, item) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      drops = Map.get(state, :drop, [])
-      Map.put(state, :drop, drops ++ [{id, who, item}])
-    end)
-  end
-
-  def get_drops() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :drop, []) end)
-  end
-
-  def clear_drops() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :drop, []) end)
+    send(self(), {:drop, {id, who, item}})
   end
 
   def drop_currency(id, who, amount) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) ->
-      drops = Map.get(state, :drop_currency, [])
-      Map.put(state, :drop_currency, drops ++ [{id, who, amount}])
-    end)
+    send(self(), {:drop, {id, who, {:currency, amount}}})
   end
 
-  def get_drop_currencies() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :drop_currency, []) end)
+  defmodule FakeRoom do
+    use GenServer
+
+    def start_link(state) do
+      GenServer.start_link(__MODULE__, state)
+    end
+
+    @impl true
+    def init(state) do
+      {:ok, Enum.into(state, %{})}
+    end
   end
 
-  def clear_drop_currencies() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :drop_currency, []) end)
+  defmodule Helpers do
+    defmacro assert_drop(message) do
+      quote do
+        assert_received {:drop, unquote(message)}
+      end
+    end
+
+    defmacro refute_drop(message) do
+      quote do
+        refute_receive {:drop, unquote(message)}, 50
+      end
+    end
+
+    defmacro assert_emote(emote) do
+      quote do
+        assert_received {:emote, {_, _, message}}
+        assert Regex.match?(~r(#{unquote(emote)})i, message.message)
+      end
+    end
+
+    defmacro assert_enter(event) do
+      quote do
+        assert_received {:enter, unquote(event)}
+      end
+    end
+
+    defmacro refute_enter() do
+      quote do
+        refute_receive {:enter, _}, 50
+      end
+    end
+
+    defmacro assert_leave(event) do
+      quote do
+        assert_received {:leave, unquote(event)}
+      end
+    end
+
+    defmacro refute_leave() do
+      quote do
+        refute_receive {:leave, _}, 50
+      end
+    end
+
+    defmacro assert_notify(event) do
+      quote do
+        assert_received {:notify, {_, _, unquote(event)}}
+      end
+    end
+
+    defmacro assert_say(say) do
+      quote do
+        assert_received {:say, {_, _, message}}
+        assert Regex.match?(~r(#{unquote(say)})i, message.message)
+      end
+    end
+
+    defmacro refute_say() do
+      quote do
+        refute_receive {:say, _}
+      end
+    end
   end
 end

@@ -14,8 +14,6 @@ defmodule Game.SessionTest do
   @basic_room %Game.Environment.State.Room{id: 1, name: "", description: "", players: [], shops: [], zone: %{id: 1, name: ""}}
 
   setup do
-    @room.clear_notifies()
-
     user = base_user()
     character = base_character(user)
 
@@ -302,7 +300,7 @@ defmodule Game.SessionTest do
     assert state.save.stats.health_points == -5
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
-    assert [{1, {"character/died", _, _, _}}] = @room.get_notifies()
+    assert_notify {"character/died", _, _, _}
   after
     Session.Registry.unregister()
   end
@@ -431,11 +429,6 @@ defmodule Game.SessionTest do
   end
 
   describe "resurrection" do
-    setup do
-      @room.clear_enters()
-      @room.clear_leaves()
-    end
-
     test "sets health_points to 1 if < 0", %{state: state} do
       save = %{stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 2}
       state = %{state | save: save}
@@ -452,8 +445,8 @@ defmodule Game.SessionTest do
 
       {:noreply, _state} = Process.handle_info({:resurrect, 2}, state)
 
-      [{1, {:player, _}, :death}] = @room.get_leaves()
-      [{2, {:player, _}, :respawn}] = @room.get_enters()
+      assert_leave {1, {:player, _}, :death}
+      assert_enter {2, {:player, _}, :respawn}
     end
 
     test "does not touch health_points if > 0", %{state: state} do

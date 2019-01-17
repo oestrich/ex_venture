@@ -1,5 +1,5 @@
 defmodule Game.NPC.EventsTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   import Test.DamageTypesHelper
 
@@ -14,9 +14,6 @@ defmodule Game.NPC.EventsTest do
   alias Game.NPC.State
 
   setup do
-    @room.clear_says()
-    @room.clear_emotes()
-
     start_and_clear_damage_types()
 
     %{key: "slashing", stat_modifier: :strength, boost_ratio: 20}

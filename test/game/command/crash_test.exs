@@ -5,11 +5,7 @@ defmodule Game.Command.CrashTest do
 
   doctest Crash
 
-  @room Test.Game.Room
-
   setup do
-    @room.clear_crashes()
-
     user = create_user(%{name: "user", password: "password", flags: ["admin"]})
     %{state: %{socket: :socket, user: user, save: %{room_id: 10}}}
   end
@@ -18,10 +14,7 @@ defmodule Game.Command.CrashTest do
     test "sends a signal to crash the room you are in", %{state: state} do
       :ok = Crash.run({:room}, state)
 
-      assert_receive {:echo, _, message}
-      assert Regex.match?(~r(crash)i, message)
-
-      assert [10] == @room.get_crashes()
+      assert_socket_echo "crash"
     end
 
     test "you must be an admin", %{state: state} do
@@ -29,10 +22,7 @@ defmodule Game.Command.CrashTest do
 
       :ok = Crash.run({:room}, state)
 
-      assert_receive {:echo, _, message}
-      assert Regex.match?(~r(must be an admin)i, message)
-
-      assert [] == @room.get_crashes()
+      assert_socket_echo "must be an admin"
     end
   end
 end

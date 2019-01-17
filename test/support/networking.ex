@@ -11,7 +11,7 @@ defmodule Test.Networking.Socket do
     """
     defmacro assert_socket_echo(messages) when is_list(messages) do
       quote do
-        assert_receive {:echo, _, recv_message}
+        assert_received {:echo, _, recv_message}
         Enum.map(unquote(messages), fn message ->
           assert Regex.match?(~r(#{message})i, recv_message)
         end)
@@ -20,14 +20,14 @@ defmodule Test.Networking.Socket do
 
     defmacro assert_socket_echo(message) do
       quote do
-        assert_receive {:echo, _, recv_message}
+        assert_received {:echo, _, recv_message}
         assert Regex.match?(~r(#{unquote(message)})i, recv_message)
       end
     end
 
     defmacro refute_socket_echo(message) do
       quote do
-        assert_receive {:echo, _, recv_message}
+        assert_received {:echo, _, recv_message}
         refute Regex.match?(~r(#{unquote(message)})i, recv_message)
       end
     end
@@ -40,7 +40,7 @@ defmodule Test.Networking.Socket do
 
     defmacro assert_socket_prompt(message) do
       quote do
-        assert_receive {:prompt, _, recv_message}
+        assert_received {:prompt, _, recv_message}
         assert Regex.match?(~r(#{unquote(message)})i, recv_message)
       end
     end
@@ -53,13 +53,13 @@ defmodule Test.Networking.Socket do
 
     defmacro assert_socket_gmcp(message) do
       quote do
-        assert_receive {:gmcp, _socket, unquote(message)}
+        assert_received {:gmcp, _socket, unquote(message)}
       end
     end
 
     defmacro assert_socket_disconnect() do
       quote do
-        assert_receive {:disconnect, _}
+        assert_received {:disconnect, _}
       end
     end
 

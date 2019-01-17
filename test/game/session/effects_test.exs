@@ -5,11 +5,7 @@ defmodule Game.Session.EffectsTest do
 
   alias Game.Session.Effects
 
-  @room Test.Game.Room
-
   setup do
-    @room.clear_update_characters()
-
     start_and_clear_damage_types()
 
     insert_damage_type(%{

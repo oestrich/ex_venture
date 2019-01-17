@@ -1,5 +1,5 @@
 defmodule Game.NPC.Actions.CommandsMoveTest do
-  use Data.ModelCase
+  use ExVenture.NPCCase
 
   alias Data.Events.Actions
   alias Game.Door
@@ -18,8 +18,8 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
       assert state.room_id == 2
 
-      assert [{2, {:npc, _npc}, _reason}] = @room.get_enters()
-      assert [{1, {:npc, _npc}, _reason}] = @room.get_leaves()
+      assert_enter {2, {:npc, _}, _}
+      assert_leave {1, {:npc, _}, _}
     end
 
     test "does not move if a door is closed", %{state: state, action: action} do
@@ -38,8 +38,8 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
       assert state.room_id == 1
 
-      assert [] = @room.get_enters()
-      assert [] = @room.get_leaves()
+      refute_enter()
+      refute_leave()
     end
 
     test "does not move when a target is present", %{state: state, action: action} do
@@ -70,8 +70,8 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
       assert state.room_id == 1
 
-      assert [] = @room.get_enters()
-      assert [] = @room.get_leaves()
+      refute_enter()
+      refute_leave()
     end
 
     test "does not move into a new zone", %{state: state, action: action} do
@@ -84,15 +84,12 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
       assert state.room_id == 1
 
-      assert [] = @room.get_enters()
-      assert [] = @room.get_leaves()
+      refute_enter()
+      refute_leave()
     end
   end
 
   def basic_setup(_) do
-    @room.clear_enters()
-    @room.clear_leaves()
-
     npc = npc_attributes(%{id: 1})
 
     state = %State{

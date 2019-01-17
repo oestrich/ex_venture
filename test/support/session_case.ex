@@ -3,6 +3,7 @@ defmodule ExVenture.SessionCase do
     quote do
       use Data.ModelCase
 
+      import Test.Game.Room.Helpers
       import Test.Networking.Socket.Helpers
     end
   end

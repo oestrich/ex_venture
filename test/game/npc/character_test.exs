@@ -1,14 +1,14 @@
 defmodule Game.NPC.CharacterTest do
   use ExUnit.Case
-  doctest Game.NPC.Character
 
   import Test.ItemsHelper
   import Test.DamageTypesHelper
+  import Test.Game.Room.Helpers
 
   alias Game.NPC.Character
   alias Game.NPC.State
 
-  @room Test.Game.Room
+  doctest Character
 
   setup do
     start_and_clear_damage_types()
@@ -26,8 +26,6 @@ defmodule Game.NPC.CharacterTest do
 
   describe "tick - respawning the npc" do
     setup do
-      @room.clear_enters()
-
       npc = %{
         id: 1,
         stats: %{health_points: 10, max_health_points: 15},
@@ -48,7 +46,7 @@ defmodule Game.NPC.CharacterTest do
 
       assert state.npc.stats.health_points == 15
       assert state.room_id == 1
-      assert [{1, {:npc, _}, :respawn}] = @room.get_enters()
+      assert_enter {_, {:npc, _}, :respawn}
     end
   end
 
@@ -78,9 +76,6 @@ defmodule Game.NPC.CharacterTest do
 
   describe "dying" do
     setup do
-      @room.clear_drop_currencies()
-      @room.clear_drops()
-
       start_and_clear_items()
       insert_item(%{id: 1, name: "Sword", keywords: [], is_usable: false})
       insert_item(%{id: 2, name: "Shield", keywords: [], is_usable: false})
@@ -105,14 +100,14 @@ defmodule Game.NPC.CharacterTest do
     test "drops currency in the room", state do
       _state = Character.died(state, {:npc, state.npc})
 
-      assert [{1, {:npc, _}, 51}] = @room.get_drop_currencies()
+      assert_drop {_, {:npc, _}, {:currency, 51}}
     end
 
     test "does not drop 0 currency", state do
       npc = %{state.npc | currency: 0}
       _state = Character.died(%{state | npc: npc}, {:npc, state.npc})
 
-      assert [] = @room.get_drop_currencies()
+      refute_drop {_, {:npc, _}, {:currency, _}}
     end
 
     test "will drop an amount 50-100% of the total currency" do
@@ -122,7 +117,8 @@ defmodule Game.NPC.CharacterTest do
     test "drops items in the room", state do
       _state = Character.died(state, {:npc, state.npc})
 
-      assert [{1, {:npc, _}, %{id: 1}}, {1, {:npc, _}, %{id: 2}}] = @room.get_drops()
+      assert_drop {_, {:npc, _}, %{id: 1}}
+      assert_drop {_, {:npc, _}, %{id: 2}}
     end
 
     test "will drop an item if the chance is below the item's drop rate" do
@@ -148,8 +144,6 @@ defmodule Game.NPC.CharacterTest do
         continuous_effects: [{from, effect}],
       }
 
-      @room.clear_leaves()
-
       %{state: state, effect: effect, from: from}
     end
 
@@ -168,7 +162,7 @@ defmodule Game.NPC.CharacterTest do
 
       state = Character.handle_continuous_effect(state, :id)
 
-      assert [{1, {:npc, _}, :death}] = @room.get_leaves()
+      assert_leave {1, {:npc, _}, :death}
       assert state.continuous_effects == []
     end
 
