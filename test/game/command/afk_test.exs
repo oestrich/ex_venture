@@ -1,8 +1,9 @@
 defmodule Game.Command.AFKTest do
-  use Data.ModelCase
-  doctest Game.Command.AFK
+  use ExVenture.CommandCase, async: true
 
   alias Game.Command.AFK
+
+  doctest AFK
 
   describe "go afk" do
     setup do
