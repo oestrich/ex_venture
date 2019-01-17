@@ -1,74 +1,100 @@
 defmodule Test.Game.Shop do
-  alias Data.Item
   alias Data.Shop
-
-  def start_link() do
-    Agent.start_link(fn () -> %{shop: _shop()} end, name: __MODULE__)
-  end
-
-  def _shop() do
-    %Shop{
-      name: "Tree Stand Shop",
-    }
-  end
+  alias Test.Game.Shop.FakeShop
 
   def set_shop(shop) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :shop, shop) end)
+    {:ok, pid} = FakeShop.start_link(shop)
+    Process.put({:shop, shop.id}, pid)
   end
 
-  def list(_id) do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :shop) end)
+  def list(id) do
+    GenServer.call(Process.get({:shop, id}), {:list})
   end
 
-  def set_buy(buy_response) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :buy_response, buy_response) end)
+  def set_buy(shop, response) do
+    GenServer.call(Process.get({:shop, shop.id}), {:put, {:buy, response}})
   end
 
   def buy(id, item_id, save) do
-    start_link()
-    Agent.get_and_update(__MODULE__, fn (state) ->
-      buys = Map.get(state, :buy, [])
-      state = Map.put(state, :buy, buys ++ [{id, item_id, save}])
-      response = Map.get(state, :buy_response, {:ok, %{save | currency: save.currency - 1}, %Item{}})
-      {response, state}
-    end)
+    GenServer.call(Process.get({:shop, id}), {:buy, item_id, save})
   end
 
-  def get_buys() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :buy, []) end)
+  def set_sell(shop, response) do
+    GenServer.call(Process.get({:shop, shop.id}), {:put, {:sell, response}})
   end
 
-  def clear_buys() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :buy, []) end)
+  def sell(id, item_name, save) do
+    GenServer.call(Process.get({:shop, id}), {:sell, item_name, save})
   end
 
-  def set_sell(sell_response) do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :sell_response, sell_response) end)
+  defmodule FakeShop do
+    use GenServer
+
+    def start_link(shop) do
+      GenServer.start_link(__MODULE__, [shop: shop, caller: self()])
+    end
+
+    @impl true
+    def init(opts) do
+      state = %{
+        shop: opts[:shop],
+        caller: opts[:caller],
+        responses: %{}
+      }
+
+      {:ok, state}
+    end
+
+    @impl true
+    def handle_call({:put, {field, response}}, _from, state) do
+      responses = Map.put(state.responses, field, response)
+      state = Map.put(state, :responses, responses)
+
+      {:reply, :ok, state}
+    end
+
+    def handle_call({:list}, _from, state) do
+      {:reply, state.shop, state}
+    end
+
+    def handle_call({:buy, item_id, save}, _from, state) do
+      send(state.caller, {:buy, {state.shop.id, item_id, save}})
+
+      {:reply, state.responses[:buy], state}
+    end
+
+    def handle_call({:sell, item_name, save}, _from, state) do
+      send(state.caller, {:sell, {state.shop.id, item_name, save}})
+
+      {:reply, state.responses[:sell], state}
+    end
   end
 
-  def sell(id, item_id, save) do
-    start_link()
-    Agent.get_and_update(__MODULE__, fn (state) ->
-      sells = Map.get(state, :sell, [])
-      state = Map.put(state, :sell, sells ++ [{id, item_id, save}])
-      response = Map.get(state, :sell_response, {:ok, %{save | currency: save.currency - 1}, %Item{}})
-      {response, state}
-    end)
-  end
+  defmodule Helpers do
+    alias Test.Game.Shop
 
-  def get_sells() do
-    start_link()
-    Agent.get(__MODULE__, fn (state) -> Map.get(state, :sell, []) end)
-  end
+    def start_shop(shop) do
+      Shop.set_shop(shop)
+    end
 
-  def clear_sells() do
-    start_link()
-    Agent.update(__MODULE__, fn (state) -> Map.put(state, :sell, []) end)
+    def put_shop_buy_response(shop, response) do
+      Shop.set_buy(shop, response)
+    end
+
+    def put_shop_sell_response(shop, response) do
+      Shop.set_sell(shop, response)
+    end
+
+    defmacro assert_shop_buy(message) do
+      quote do
+        assert_received {:buy, unquote(message)}
+      end
+    end
+
+    defmacro assert_shop_sell(message) do
+      quote do
+        assert_received {:sell, unquote(message)}
+      end
+    end
   end
 end

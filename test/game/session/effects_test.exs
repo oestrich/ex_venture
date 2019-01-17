@@ -51,6 +51,7 @@ defmodule Game.Session.EffectsTest do
 
     test "handles death", %{state: state, effect: effect, from: from} do
       start_room(%{id: state.save.room_id})
+      start_zone(%{id: 1})
 
       effect = %{effect | amount: 38}
       state = %{state | continuous_effects: [{from, effect}]}

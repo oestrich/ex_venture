@@ -5,8 +5,6 @@ defmodule Game.Command.RecallTest do
 
   doctest Recall
 
-  @zone Test.Game.Zone
-
   setup do
     user = create_user(%{name: "user", password: "password"})
     character = create_character(user)
@@ -17,7 +15,8 @@ defmodule Game.Command.RecallTest do
   describe "recalling to a graveyard" do
     test "teleports to the zone's graveyard", %{state: state} do
       start_room(%{})
-      @zone.set_graveyard({:ok, 2})
+      start_zone(%{id: 1})
+      put_zone_graveyard(%{id: 1}, {:ok, 2})
 
       {:update, state} = Recall.run({}, state)
 
@@ -37,7 +36,8 @@ defmodule Game.Command.RecallTest do
 
     test "zone does not have a graveyard", %{state: state} do
       start_room(%{})
-      @zone.set_graveyard({:error, :no_graveyard})
+      start_zone(%{id: 1})
+      put_zone_graveyard(%{id: 1}, {:error, :no_graveyard})
 
       :ok = Recall.run({}, state)
 
