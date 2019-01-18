@@ -110,7 +110,7 @@ defmodule Game.Command.Socials do
         emote = FormatSocials.social_without_target(social, state.character)
 
         message = Message.social(state.character, emote)
-        Environment.emote(save.room_id, {:player, state.character}, message)
+        Environment.notify(save.room_id, {:player, state.character}, {"room/heard", message})
 
         state |> Socket.echo(emote)
     end
@@ -135,7 +135,7 @@ defmodule Game.Command.Socials do
             emote = FormatSocials.social_with_target(social, state.character, character)
 
             message = Message.social(state.character, emote)
-            Environment.emote(save.room_id, {:player, character}, message)
+            Environment.notify(save.room_id, {:player, character}, {"room/heard", message})
 
             state |> Socket.echo(emote)
         end

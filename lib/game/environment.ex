@@ -34,14 +34,6 @@ defmodule Game.Environment do
     @environment.notify(room_id, character, event)
   end
 
-  def say(room_id, sender, message) do
-    @environment.say(room_id, sender, message)
-  end
-
-  def emote(room_id, sender, message) do
-    @environment.emote(room_id, sender, message)
-  end
-
   def pick_up(room_id, item) do
     @environment.pick_up(room_id, item)
   end

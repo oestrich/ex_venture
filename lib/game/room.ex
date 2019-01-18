@@ -17,7 +17,6 @@ defmodule Game.Room do
   alias Game.Session
   alias Game.World.Master, as: WorldMaster
   alias Game.Zone
-  alias Metrics.CommunicationInstrumenter
 
   @type t :: map
 
@@ -205,16 +204,6 @@ defmodule Game.Room do
     EventBus.notify(state.room.id, actor, event, state.players, state.npcs)
 
     {:noreply, state}
-  end
-
-  def handle_cast({:say, sender, message}, state) do
-    CommunicationInstrumenter.say()
-    handle_cast({:notify, sender, {"room/heard", message}}, state)
-  end
-
-  def handle_cast({:emote, sender, message}, state) do
-    CommunicationInstrumenter.emote()
-    handle_cast({:notify, sender, {"room/heard", message}}, state)
   end
 
   def handle_cast({:update_character, {:player, player}}, state = %{players: players}) do

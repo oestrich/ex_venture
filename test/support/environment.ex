@@ -21,14 +21,6 @@ defmodule Test.Game.Environment do
     Room.notify(id, character, event)
   end
 
-  def say(id, sender, message) do
-    Room.say(id, sender, message)
-  end
-
-  def emote(id, sender, message) do
-    Room.emote(id, sender, message)
-  end
-
   def pick_up(id, item) do
     Room.pick_up(id, item)
   end

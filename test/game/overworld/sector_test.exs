@@ -144,36 +144,6 @@ defmodule Game.Overworld.SectorTest do
     end
   end
 
-  describe "say" do
-    test "sends a say message", %{state: state, character: character, overworld_id: overworld_id} do
-      notify_user = %{base_user() | id: 11}
-      notify_character = %{base_character(notify_user) | id: 11}
-      Session.Registry.register(notify_character)
-      Session.Registry.catch_up()
-
-      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
-
-      {:noreply, _state} = Sector.handle_cast({:say, overworld_id, {:player, character}, "hi"}, state)
-
-      assert_receive {:"$gen_cast", {:notify, {"room/heard", "hi"}}}
-    end
-  end
-
-  describe "emote" do
-    test "sends an emote message", %{state: state, character: character, overworld_id: overworld_id} do
-      notify_user = %{base_user() | id: 11}
-      notify_character = %{base_character(notify_user) | id: 11}
-      Session.Registry.register(notify_character)
-      Session.Registry.catch_up()
-
-      state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
-
-      {:noreply, _state} = Sector.handle_cast({:emote, overworld_id, {:player, character}, "hi"}, state)
-
-      assert_receive {:"$gen_cast", {:notify, {"room/heard", "hi"}}}
-    end
-  end
-
   describe "update character" do
     test "stores the new information", %{state: state, character: character, overworld_id: overworld_id} do
       character = %{character | name: "Player2"}

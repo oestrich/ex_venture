@@ -16,7 +16,7 @@ defmodule Game.NPC.Actions.CommandsEmote do
     message = action.options.message
 
     message = Message.npc_emote(state.npc, Format.resources(message))
-    state.room_id |> Environment.emote(Events.npc(state), message)
+    Environment.notify(state.room_id, Events.npc(state), {"room/heard", message})
     Events.broadcast(state.npc, "room/heard", message)
 
     state = maybe_update_status(state, action)

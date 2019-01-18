@@ -16,7 +16,7 @@ defmodule Game.NPC.Actions.CommandsSay do
       message = select_message(action)
       message = Message.npc_say(state.npc, Format.resources(message))
 
-      state.room_id |> Environment.say(Events.npc(state), message)
+      Environment.notify(state.room_id, Events.npc(state), {"room/heard", message})
       Events.broadcast(state.npc, "room/heard", message)
 
       {:ok, state}
