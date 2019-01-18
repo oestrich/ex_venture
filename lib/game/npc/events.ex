@@ -3,8 +3,6 @@ defmodule Game.NPC.Events do
   Handle events that NPCs have defined
   """
 
-  use Game.Environment
-
   alias Data.Events.StateTicked
   alias Game.Channel
   alias Game.Character

@@ -67,7 +67,7 @@ defmodule Game.Command.Listen do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    {:ok, room} = @environment.look(save.room_id)
+    {:ok, room} = Environment.look(save.room_id)
 
     case room_has_noises?(room) do
       true ->
@@ -79,7 +79,7 @@ defmodule Game.Command.Listen do
   end
 
   def run({direction}, state = %{save: save}) do
-    {:ok, room} = @environment.look(save.room_id)
+    {:ok, room} = Environment.look(save.room_id)
 
     with {:ok, room} <- room |> RoomHelpers.get_exit(direction),
          true <- room_has_noises?(room) do

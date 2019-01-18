@@ -5,13 +5,12 @@ defmodule Game.Command.Macro do
 
   defmacro __using__(_opts) do
     quote do
-      use Game.Environment
-
       import Game.Command.Macro, only: [commands: 1, commands: 2, gettext: 1, gettext: 2]
 
       require Game.Gettext
       require Logger
 
+      alias Game.Environment
       alias Game.Format
       alias Game.Message
       alias Game.Session

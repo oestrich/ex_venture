@@ -3,10 +3,9 @@ defmodule Game.NPC.Actions.CommandsMove do
   Target a character
   """
 
-  use Game.Environment
-
   alias Data.Exit
   alias Game.Door
+  alias Game.Environment
   alias Game.NPC
   alias Game.NPC.Events
   alias Metrics.CharacterInstrumenter
@@ -21,8 +20,8 @@ defmodule Game.NPC.Actions.CommandsMove do
 
     with {:ok, :conscious} <- check_conscious(state),
          {:ok, :no_target} <- check_no_target(state),
-         {:ok, starting_room} <- @environment.look(spawner.room_id),
-         {:ok, old_room} <- @environment.look(state.room_id),
+         {:ok, starting_room} <- Environment.look(spawner.room_id),
+         {:ok, old_room} <- Environment.look(state.room_id),
          {:ok, room_exit, new_room} <- select_new_room(old_room),
          {:ok, :allowed} <- check_movement_allowed(action, starting_room, room_exit, new_room) do
       move_room(state, old_room, new_room, room_exit.direction)
@@ -76,7 +75,7 @@ defmodule Game.NPC.Actions.CommandsMove do
   def select_new_room(room) do
     room_exit = Enum.random(room.exits)
 
-    case @environment.look(room_exit.finish_id) do
+    case Environment.look(room_exit.finish_id) do
       {:ok, room} ->
         {:ok, room_exit, room}
 
@@ -123,10 +122,10 @@ defmodule Game.NPC.Actions.CommandsMove do
   """
   def move_room(state, old_room, new_room, direction) do
     CharacterInstrumenter.movement(:npc, fn ->
-      @environment.unlink(old_room.id)
-      @environment.leave(old_room.id, Events.npc(state), {:leave, direction})
-      @environment.enter(new_room.id, Events.npc(state), {:enter, Exit.opposite(direction)})
-      @environment.link(old_room.id)
+      Environment.unlink(old_room.id)
+      Environment.leave(old_room.id, Events.npc(state), {:leave, direction})
+      Environment.enter(new_room.id, Events.npc(state), {:enter, Exit.opposite(direction)})
+      Environment.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
         NPC.delay_notify(

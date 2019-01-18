@@ -142,11 +142,11 @@ defmodule Game.Command.Say do
   def say(state = %{character: character, save: save}, parsed_message) do
     parsed_message = Message.format(parsed_message)
     state |> Socket.echo(FormatChannels.say(:you, parsed_message))
-    save.room_id |> @environment.say({:player, character}, Message.new(character, parsed_message))
+    Environment.say(save.room_id, {:player, character}, Message.new(character, parsed_message))
   end
 
   def say_directed(state = %{character: character, save: save}, parsed_message) do
-    {:ok, room} = @environment.look(save.room_id)
+    {:ok, room} = Environment.look(save.room_id)
 
     case find_character(room, parsed_message.message, message: true) do
       {:error, :not_found} ->
@@ -163,11 +163,8 @@ defmodule Game.Command.Say do
         message = FormatChannels.say_to(:you, directed_character, parsed_message)
         state |> Socket.echo(message)
 
-        room.id
-        |> @environment.say(
-          {:player, character},
-          Message.say_to(character, directed_character, parsed_message)
-        )
+        message = Message.say_to(character, directed_character, parsed_message)
+        Environment.say(room.id, {:player, character}, message)
     end
   end
 

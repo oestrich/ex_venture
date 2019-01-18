@@ -109,8 +109,8 @@ defmodule Game.Command.Socials do
       social ->
         emote = FormatSocials.social_without_target(social, state.character)
 
-        save.room_id
-        |> @environment.emote({:player, state.character}, Message.social(state.character, emote))
+        message = Message.social(state.character, emote)
+        Environment.emote(save.room_id, {:player, state.character}, message)
 
         state |> Socket.echo(emote)
     end
@@ -124,7 +124,7 @@ defmodule Game.Command.Socials do
         state |> social_not_found(social)
 
       social ->
-        {:ok, room} = @environment.look(save.room_id)
+        {:ok, room} = Environment.look(save.room_id)
 
         case find_character(room, character_name) do
           {:error, :not_found} ->
@@ -134,8 +134,8 @@ defmodule Game.Command.Socials do
           character ->
             emote = FormatSocials.social_with_target(social, state.character, character)
 
-            save.room_id
-            |> @environment.emote({:player, character}, Message.social(state.character, emote))
+            message = Message.social(state.character, emote)
+            Environment.emote(save.room_id, {:player, character}, message)
 
             state |> Socket.echo(emote)
         end

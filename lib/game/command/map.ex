@@ -85,7 +85,7 @@ defmodule Game.Command.Map do
   end
 
   defp room_map(state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer})
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
@@ -95,7 +95,7 @@ defmodule Game.Command.Map do
   end
 
   defp overworld_map(state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     map = room.zone_id |> @zone.map({room.x, room.y})
     mini_map = room.zone_id |> @zone.map({room.x, room.y}, mini: true)

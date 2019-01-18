@@ -3,8 +3,6 @@ defmodule Game.Character.Helpers do
   Character helper module, common character functions
   """
 
-  use Game.Environment
-
   alias Data.Effect
 
   @doc """

@@ -3,11 +3,10 @@ defmodule Game.NPC.Actions.CommandsSkill do
   Use a skill on the NPC's target
   """
 
-  use Game.Environment
-
   alias Game.Character
   alias Game.Command.Skills, as: CommandSkills
   alias Game.Effect
+  alias Game.Environment
   alias Game.Format.Skills, as: FormatSkills
   alias Game.Skill
   alias Game.Skills
@@ -32,7 +31,7 @@ defmodule Game.NPC.Actions.CommandsSkill do
   end
 
   defp look_room(state) do
-    @environment.look(state.room_id)
+    Environment.look(state.room_id)
   end
 
   defp get_target(state, room) do

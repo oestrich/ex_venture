@@ -94,7 +94,7 @@ defmodule Game.Command.Drop do
     message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency())
     state |> Socket.echo(message)
 
-    @environment.drop_currency(save.room_id, {:player, state.character}, amount)
+    Environment.drop_currency(save.room_id, {:player, state.character}, amount)
 
     {:update, state}
   end
@@ -116,7 +116,7 @@ defmodule Game.Command.Drop do
     {instance, items} = Item.remove(save.items, item)
     state = Player.update_save(state, %{save | items: items})
 
-    @environment.drop(save.room_id, {:player, state.character}, instance)
+    Environment.drop(save.room_id, {:player, state.character}, instance)
 
     message = gettext("You dropped %{name}.", name: Format.item_name(item))
     state |> Socket.echo(message)

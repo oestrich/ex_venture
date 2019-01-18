@@ -123,7 +123,7 @@ defmodule Game.Command.Move do
   def run(command, state)
 
   def run({:move, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       room_exit = %{finish_id: id} ->
@@ -140,7 +140,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:open, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       %{door_id: door_id, has_door: true} ->
@@ -159,7 +159,7 @@ defmodule Game.Command.Move do
   end
 
   def run({:close, direction}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case room |> Exit.exit_to(direction) do
       %{door_id: door_id, has_door: true} ->
@@ -247,8 +247,8 @@ defmodule Game.Command.Move do
     %{save: save, character: character} = state
 
     CharacterInstrumenter.movement(:player, fn ->
-      @environment.unlink(save.room_id)
-      @environment.leave(save.room_id, {:player, character}, leave_reason)
+      Environment.unlink(save.room_id)
+      Environment.leave(save.room_id, {:player, character}, leave_reason)
 
       clear_target(state)
 
@@ -263,8 +263,8 @@ defmodule Game.Command.Move do
         |> Map.put(:is_targeting, MapSet.new())
         |> Map.put(:is_afk, false)
 
-      @environment.enter(room_id, {:player, character}, enter_reason)
-      @environment.link(room_id)
+      Environment.enter(room_id, {:player, character}, enter_reason)
+      Environment.link(room_id)
 
       Quest.track_progress(state.character, {:room, room_id})
 
@@ -321,7 +321,7 @@ defmodule Game.Command.Move do
   Push out an update for the mini map after opening/closing doors
   """
   def update_mini_map(state, room_id) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
     mini_map = room.zone_id |> @zone.map({room.x, room.y, room.map_layer}, mini: true)
     state |> GMCP.map(mini_map)
     :ok

@@ -75,12 +75,12 @@ defmodule Game.Command.Target do
   end
 
   def run({:set, target}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
     state |> target_character(target, room, state)
   end
 
   def run({}, state = %{save: %{room_id: room_id}, target: target}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
     state |> display_target(target, room)
     :ok
   end

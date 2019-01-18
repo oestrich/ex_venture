@@ -104,7 +104,7 @@ defmodule Game.Command.PickUp do
 
   def run({:all}, state) do
     %{save: save} = state
-    {:ok, room} = @environment.look(save.room_id)
+    {:ok, room} = Environment.look(save.room_id)
 
     with {:ok, state} <- pick_up_all_items(state, room),
          {:ok, currency, state} <- pick_up_currency(state) do
@@ -130,7 +130,7 @@ defmodule Game.Command.PickUp do
   end
 
   def run({item_name}, state = %{save: save}) do
-    {:ok, room} = @environment.look(save.room_id)
+    {:ok, room} = Environment.look(save.room_id)
 
     with {:ok, instance} <- find_item(room, item_name),
          {:ok, item, state} <- pick_up(instance, room, state) do
@@ -202,7 +202,7 @@ defmodule Game.Command.PickUp do
   Pick up an item from a room
   """
   def pick_up(item, room, state = %{save: save}) do
-    case @environment.pick_up(room.id, item) do
+    case Environment.pick_up(room.id, item) do
       {:ok, instance} ->
         item = Items.item(instance)
 
@@ -222,7 +222,7 @@ defmodule Game.Command.PickUp do
   defp pick_up_currency(state) do
     %{save: save} = state
 
-    case @environment.pick_up_currency(save.room_id) do
+    case Environment.pick_up_currency(save.room_id) do
       {:ok, currency} ->
         Logger.info(
           "Session (#{inspect(self())}) picking up #{currency} currency from room (#{save.room_id})",
