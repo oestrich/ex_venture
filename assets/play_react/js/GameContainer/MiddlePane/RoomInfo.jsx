@@ -45,16 +45,15 @@ const RoomInfo = ({ dispatch, className, roomInfo }) => {
         {players.map(player => (
           <VmlParser vmlString={player.status_line} />
         ))}
-        {'  '}
         {npcs.map(npc => (
           <VmlParser vmlString={npc.status_line} />
-        ))}{' '}
-        {'  '}
+        ))}
         {shops.map(shop => (
           <VmlParser vmlString={shop.name} />
         ))}
-        {'  '}
         {/* Items in the Room.Info GMCP module are not VML tagged so we need to manually color them here. */}
+        <br />
+        {items.length > 0 ? 'Items: ' : null}
         {items.map((item, idx, itemsArr) => (
           <ColoredSpan color={theme.vml.item} key={item.id}>
             {item.name}
