@@ -6,7 +6,6 @@ defmodule Game.Session.Process do
   """
 
   use GenServer, restart: :temporary
-  use Game.Environment
 
   require Logger
 
@@ -14,6 +13,7 @@ defmodule Game.Session.Process do
   alias Game.Character
   alias Game.Command.Move
   alias Game.Command.Pager
+  alias Game.Environment
   alias Game.Format
   alias Game.Format.Players, as: FormatPlayers
   alias Game.Hint
@@ -103,8 +103,8 @@ defmodule Game.Session.Process do
     Session.Registry.unregister()
     Session.Registry.player_offline(state.character)
 
-    @environment.leave(save.room_id, {:player, state.character}, :signout)
-    @environment.unlink(save.room_id)
+    Environment.leave(save.room_id, {:player, state.character}, :signout)
+    Environment.unlink(save.room_id)
 
     Account.save_session(
       state.user,

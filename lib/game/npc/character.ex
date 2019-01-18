@@ -5,8 +5,6 @@ defmodule Game.NPC.Character do
 
   @rand Application.get_env(:ex_venture, :game)[:rand]
 
-  use Game.Environment
-
   import Game.Character.Helpers, only: [update_effect_count: 2, is_alive?: 1]
 
   require Logger
@@ -16,6 +14,7 @@ defmodule Game.NPC.Character do
   alias Game.Character
   alias Game.Character.Effects
   alias Game.Effect
+  alias Game.Environment
   alias Game.Items
   alias Game.NPC.Events
   alias Game.NPC.Status
@@ -38,10 +37,10 @@ defmodule Game.NPC.Character do
     npc = %{npc | stats: %{npc.stats | health_points: npc.stats.max_health_points}}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
 
-    npc_spawner.room_id |> @environment.enter({:npc, npc}, :respawn)
-    npc_spawner.room_id |> @environment.link()
+    npc_spawner.room_id |> Environment.enter({:npc, npc}, :respawn)
+    npc_spawner.room_id |> Environment.link()
 
-    {:ok, room} = @environment.look(npc_spawner.room_id)
+    {:ok, room} = Environment.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
       GenServer.cast(self(), {:notify, {"room/entered", {{:player, player}, :enter}}})
@@ -70,9 +69,9 @@ defmodule Game.NPC.Character do
   def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner}, who) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    room_id |> @environment.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
-    room_id |> @environment.leave({:npc, npc}, :death)
-    room_id |> @environment.unlink()
+    room_id |> Environment.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
+    room_id |> Environment.leave({:npc, npc}, :death)
+    room_id |> Environment.unlink()
 
     Events.broadcast(npc, "character/died")
 
@@ -97,7 +96,7 @@ defmodule Game.NPC.Character do
 
     case currency do
       currency when currency > 0 ->
-        room_id |> @environment.drop_currency({:npc, npc}, currency)
+        room_id |> Environment.drop_currency({:npc, npc}, currency)
 
       _ ->
         nil
@@ -124,7 +123,7 @@ defmodule Game.NPC.Character do
     |> Enum.filter(&drop_item?/1)
     |> Enum.map(fn npc_item ->
       item = Items.item(npc_item.item_id)
-      room_id |> @environment.drop({:npc, npc}, Item.instantiate(item))
+      room_id |> Environment.drop({:npc, npc}, Item.instantiate(item))
     end)
   end
 

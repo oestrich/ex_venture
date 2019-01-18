@@ -89,7 +89,7 @@ defmodule Game.Command.Look do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    with {:ok, room} <- @environment.look(save.room_id) do
+    with {:ok, room} <- Environment.look(save.room_id) do
       state |> look_room(room)
     else
       {:error, :room_offline} ->
@@ -99,9 +99,9 @@ defmodule Game.Command.Look do
 
   def run({:direction, direction}, state = %{save: save}) do
     with :room <- Environment.room_type(save.room_id),
-         {:ok, room} <- @environment.look(save.room_id),
+         {:ok, room} <- Environment.look(save.room_id),
          room_exit <- Exit.exit_to(room, direction),
-         {:ok, room} <- @environment.look(room_exit.finish_id) do
+         {:ok, room} <- Environment.look(room_exit.finish_id) do
       room_exit = Proficiencies.load_requirements(room_exit)
       state |> Socket.echo(FormatRooms.peak_room(room_exit, room))
     else
@@ -118,7 +118,7 @@ defmodule Game.Command.Look do
   end
 
   def run({:other, name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     room
     |> maybe_look_item(name, state)

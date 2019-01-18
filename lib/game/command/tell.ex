@@ -102,7 +102,7 @@ defmodule Game.Command.Tell do
   defp maybe_tell_npc({:update, state}, _message), do: {:update, state}
 
   defp maybe_tell_npc(state = %{save: %{room_id: room_id}, character: from}, message) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     npc =
       room.npcs
@@ -196,7 +196,7 @@ defmodule Game.Command.Tell do
   end
 
   defp reply_to_npc(message, reply_to, state = %{character: from, save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
     npc = room.npcs |> Enum.find(&Utility.matches?(&1, reply_to.name))
 
     case npc do

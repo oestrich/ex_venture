@@ -63,7 +63,7 @@ defmodule Game.Command.Greet do
   end
 
   def run({:greet, name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     room
     |> maybe_greet_npc(name, state)

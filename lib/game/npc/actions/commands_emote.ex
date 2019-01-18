@@ -3,8 +3,7 @@ defmodule Game.NPC.Actions.CommandsEmote do
   Speak to the room that the NPC is in
   """
 
-  use Game.Environment
-
+  alias Game.Environment
   alias Game.Format
   alias Game.Message
   alias Game.NPC.Events
@@ -17,7 +16,7 @@ defmodule Game.NPC.Actions.CommandsEmote do
     message = action.options.message
 
     message = Message.npc_emote(state.npc, Format.resources(message))
-    state.room_id |> @environment.emote(Events.npc(state), message)
+    state.room_id |> Environment.emote(Events.npc(state), message)
     Events.broadcast(state.npc, "room/heard", message)
 
     state = maybe_update_status(state, action)

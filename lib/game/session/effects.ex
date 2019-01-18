@@ -3,13 +3,13 @@ defmodule Game.Session.Effects do
   Handle effects on a user
   """
 
-  use Game.Environment
   use Game.Zone
 
   require Logger
 
   alias Game.Character
   alias Game.Effect
+  alias Game.Environment
   alias Game.Format.Effects, as: FormatEffects
   alias Game.Player
   alias Game.Session.Process
@@ -59,7 +59,7 @@ defmodule Game.Session.Effects do
     player |> maybe_transport_to_graveyard()
 
     state.save.room_id
-    |> @environment.notify(
+    |> Environment.notify(
       {:player, player},
       {"character/died", {:player, player}, :character, from}
     )
@@ -76,7 +76,7 @@ defmodule Game.Session.Effects do
   def maybe_transport_to_graveyard(player)
 
   def maybe_transport_to_graveyard(%{save: %{room_id: room_id}}) do
-    {:ok, room} = room_id |> @environment.look()
+    {:ok, room} = room_id |> Environment.look()
 
     case @zone.graveyard(room.zone_id) do
       {:ok, graveyard_id} ->

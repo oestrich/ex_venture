@@ -3,9 +3,8 @@ defmodule Game.Room.Helpers do
   Helpers for interacting with a room
   """
 
-  use Game.Environment
-
   alias Data.Exit
+  alias Game.Environment
   alias Game.Utility
 
   @doc """
@@ -62,7 +61,7 @@ defmodule Game.Room.Helpers do
   def get_exit(room, direction) do
     case room |> Exit.exit_to(direction) do
       %{finish_id: room_id} ->
-        @environment.look(room_id)
+        Environment.look(room_id)
 
       _ ->
         {:error, :not_found}

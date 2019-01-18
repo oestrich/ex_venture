@@ -6,8 +6,6 @@ defmodule Game.Session.Login do
   creating an account if that is asked for.
   """
 
-  use Game.Environment
-
   import Game.Gettext, only: [dgettext: 2]
 
   require Logger
@@ -17,6 +15,7 @@ defmodule Game.Session.Login do
   alias Game.Authentication
   alias Game.Command.Config, as: CommandConfig
   alias Game.Channel
+  alias Game.Environment
   alias Game.Mail
   alias Game.MOTD
   alias Game.Player
@@ -106,8 +105,8 @@ defmodule Game.Session.Login do
     Session.Registry.register(character)
     Session.Registry.player_online(character)
 
-    @environment.link(character.save.room_id)
-    @environment.enter(character.save.room_id, {:player, character}, :login)
+    Environment.link(character.save.room_id)
+    Environment.enter(character.save.room_id, {:player, character}, :login)
     session |> Session.recv("look")
     state |> GMCP.character()
     state |> GMCP.character_skills()

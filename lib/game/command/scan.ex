@@ -44,7 +44,7 @@ defmodule Game.Command.Scan do
   def run(command, state)
 
   def run({}, state = %{save: save}) do
-    {:ok, room} = @environment.look(save.room_id)
+    {:ok, room} = Environment.look(save.room_id)
     rooms = scan_rooms(room)
     state |> Socket.echo(Format.Scan.room(room, rooms))
   end
@@ -61,7 +61,7 @@ defmodule Game.Command.Scan do
         {room_exit.direction, :closed}
 
       _ ->
-        {:ok, room} = @environment.look(room_exit.finish_id)
+        {:ok, room} = Environment.look(room_exit.finish_id)
         {room_exit.direction, room}
     end
   end

@@ -73,7 +73,7 @@ defmodule Game.Command.Give do
   def run(command, state)
 
   def run({item_name, :to, character_name}, state = %{save: save}) do
-    {:ok, room} = @environment.look(save.room_id)
+    {:ok, room} = Environment.look(save.room_id)
 
     case find_item_or_currency(state.save, item_name) do
       {:error, :not_found} ->

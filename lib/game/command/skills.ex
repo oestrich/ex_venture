@@ -198,7 +198,7 @@ defmodule Game.Command.Skills do
       |> String.replace(skill.command, "")
       |> String.trim()
 
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     with {:ok, target} <- maybe_replace_target_with_self(state, skill, target),
          {:ok, target} <- find_target(state, room, target, new_target),

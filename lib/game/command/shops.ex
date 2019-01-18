@@ -124,7 +124,7 @@ defmodule Game.Command.Shops do
   def run(command, state)
 
   def run({}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case Environment.room_type(room_id) do
       :room ->
@@ -151,7 +151,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:list, shop_name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
@@ -164,7 +164,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:list}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case one_shop(room) do
       {:error, :not_found} ->
@@ -181,7 +181,7 @@ defmodule Game.Command.Shops do
   def run({:show, item_name, :from, shop_name}, state) do
     %{save: %{room_id: room_id}} = state
 
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
@@ -194,7 +194,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:show, item_name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case one_shop(room) do
       {:error, :not_found} ->
@@ -211,7 +211,7 @@ defmodule Game.Command.Shops do
   def run({:buy, item_name, :from, shop_name}, state) do
     %{save: %{room_id: room_id}} = state
 
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
@@ -224,7 +224,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:buy, item_name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case one_shop(room) do
       {:error, :not_found} ->
@@ -241,7 +241,7 @@ defmodule Game.Command.Shops do
   def run({:sell, item_name, :to, shop_name}, state) do
     %{save: %{room_id: room_id}} = state
 
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case find_shop(room, shop_name) do
       {:error, :not_found} ->
@@ -254,7 +254,7 @@ defmodule Game.Command.Shops do
   end
 
   def run({:sell, item_name}, state = %{save: %{room_id: room_id}}) do
-    {:ok, room} = @environment.look(room_id)
+    {:ok, room} = Environment.look(room_id)
 
     case one_shop(room) do
       {:error, :not_found} ->

@@ -63,7 +63,7 @@ defmodule Game.Command.Crash do
   def run({:room}, state = %{user: user, save: save}) do
     case "admin" in user.flags do
       true ->
-        save.room_id |> @environment.crash()
+        Environment.crash(save.room_id)
         state |> Socket.echo("Sent a message to crash the room.")
 
       false ->
@@ -74,7 +74,7 @@ defmodule Game.Command.Crash do
   def run({:zone}, state = %{user: user, save: save}) do
     case "admin" in user.flags do
       true ->
-        {:ok, room} = save.room_id |> @environment.look()
+        {:ok, room} = Environment.look(save.room_id)
         room.zone_id |> @zone.crash()
         state |> Socket.echo("Sent a message to crash the zone.")
 
