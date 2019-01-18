@@ -31,7 +31,7 @@ config :ex_venture, :game,
   npc: Game.NPC,
   zone: Game.Zone,
   room: Game.Room,
-  environment: Game.Environment,
+  environment: Game.Environment.Implementation,
   shop: Game.Shop,
   zone: Game.Zone,
   continue_wait: 500
