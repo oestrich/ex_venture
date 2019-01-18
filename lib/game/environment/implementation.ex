@@ -1,4 +1,8 @@
 defmodule Game.Environment.Implementation do
+  @moduledoc """
+  Handle the split between standard rooms and overworld cells
+  """
+
   alias Game.Character
   alias Game.Room
   alias Game.Overworld
