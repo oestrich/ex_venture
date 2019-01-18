@@ -61,14 +61,6 @@ defmodule Test.Game.Room do
     send(self(), {:notify, {id, sender, event}})
   end
 
-  def say(room_id, sender, message) do
-    send(self(), {:say, {room_id, sender, message}})
-  end
-
-  def emote(room_id, sender, message) do
-    send(self(), {:emote, {room_id, sender, message}})
-  end
-
   def update_character(id, character) do
     send(self(), {:character, {id, character}})
   end
@@ -201,7 +193,7 @@ defmodule Test.Game.Room do
 
     defmacro assert_emote(emote) do
       quote do
-        assert_received {:emote, {_, _, message}}
+        assert_received {:notify, {_, _, {"room/heard", message}}}
         assert Regex.match?(~r(#{unquote(emote)})i, message.message)
       end
     end
@@ -238,14 +230,14 @@ defmodule Test.Game.Room do
 
     defmacro assert_say(say) do
       quote do
-        assert_received {:say, {_, _, message}}
+        assert_received {:notify, {_, _, {"room/heard", message}}}
         assert Regex.match?(~r(#{unquote(say)})i, message.message)
       end
     end
 
     defmacro refute_say() do
       quote do
-        refute_receive {:say, _}, 50
+        refute_receive {:notify, {_, _, {"room/heard", _}}}, 50
       end
     end
   end

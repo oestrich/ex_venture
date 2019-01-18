@@ -12,7 +12,6 @@ defmodule Game.Overworld.Sector do
   alias Game.Overworld
   alias Game.Session
   alias Game.Overworld.Sector.Implementation
-  alias Metrics.CommunicationInstrumenter
 
   def start_link(zone_id, sector) do
     GenServer.start_link(__MODULE__, [zone_id, sector], name: pid(zone_id, sector))
@@ -61,16 +60,6 @@ defmodule Game.Overworld.Sector do
 
   def handle_cast({:notify, overworld_id, character, event}, state) do
     {:noreply, Implementation.notify(state, overworld_id, character, event)}
-  end
-
-  def handle_cast({:say, overworld_id, sender, message}, state) do
-    CommunicationInstrumenter.say()
-    handle_cast({:notify, overworld_id, sender, {"room/heard", message}}, state)
-  end
-
-  def handle_cast({:emote, overworld_id, sender, message}, state) do
-    CommunicationInstrumenter.emote()
-    handle_cast({:notify, overworld_id, sender, {"room/heard", message}}, state)
   end
 
   # skipping for now

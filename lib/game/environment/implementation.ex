@@ -86,34 +86,6 @@ defmodule Game.Environment.Implementation do
   end
 
   @doc """
-  Say to the players in the room
-  """
-  @spec say(integer(), pid(), Message.t()) :: :ok
-  def say("overworld:" <> overworld_id, sender, message) do
-    {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
-    GenServer.cast(Sector.pid(zone_id, sector), {:say, overworld_id, sender, message})
-  end
-
-  def say(id, sender, message) do
-    GenServer.cast(Room.pid(id), {:say, sender, message})
-  end
-
-  @doc """
-  Emote to the players in the room
-  """
-  @spec emote(integer(), pid(), Message.t()) :: :ok
-  def emote("overworld:" <> overworld_id, sender, message) do
-    {zone_id, sector} = Overworld.sector_from_overworld_id(overworld_id)
-    sender = Character.to_simple(sender)
-    GenServer.cast(Sector.pid(zone_id, sector), {:emote, overworld_id, sender, message})
-  end
-
-  def emote(id, sender, message) do
-    sender = Character.to_simple(sender)
-    GenServer.cast(Room.pid(id), {:emote, sender, message})
-  end
-
-  @doc """
   Pick up the item
   """
   @spec pick_up(integer(), Item.t()) :: :ok

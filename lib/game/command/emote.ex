@@ -58,7 +58,10 @@ defmodule Game.Command.Emote do
 
   def run({emote}, state = %{character: character, save: save}) do
     state |> Socket.echo(FormatChannels.emote({:player, character}, emote))
-    Environment.emote(save.room_id, {:player, character}, Message.emote(character, emote))
+
+    message = Message.emote(character, emote)
+    Environment.notify(save.room_id, {:player, character}, {"room/heard", message})
+
     :ok
   end
 end
