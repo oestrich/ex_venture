@@ -11,14 +11,12 @@ const FlexRow = styled.div`
   flex-direction: row;
   height: 800px;
   widht: 100%;
-  color: ${theme.text};
   font-family: ${theme.font};
 `;
 
 const LeftPaneContainer = styled.div`
   padding: 2em 2em 2em 2em;
   flex: 1;
-  background-color: ${theme.bgSecondary};
 `;
 
 const MiddlePaneContainer = styled.div`
@@ -26,13 +24,11 @@ const MiddlePaneContainer = styled.div`
   flex: 0 0 768px;
   flex-direction: column;
   height: 800px;
-  background-color: ${theme.bgPrimary};
 `;
 
 const RightPaneContainer = styled.div`
   padding: 2em 2em 2em 2em;
   flex: 1;
-  background-color: ${theme.bgSecondary};
 `;
 
 const GameContainer = props => {
@@ -41,7 +37,7 @@ const GameContainer = props => {
       <MediaQuery minWidth={768}>
         {matches => {
           return matches ? (
-            <LeftPaneContainer>
+            <LeftPaneContainer className="character-info">
               <LeftPane />
             </LeftPaneContainer>
           ) : null;
@@ -49,13 +45,13 @@ const GameContainer = props => {
       </MediaQuery>
 
       <MiddlePaneContainer>
-        <MiddlePane />
+        <MiddlePane className="body" />
       </MiddlePaneContainer>
 
       <MediaQuery minWidth={768}>
         {matches => {
           return matches ? (
-            <RightPaneContainer>
+            <RightPaneContainer className="room-info">
               <RightPane />
             </RightPaneContainer>
           ) : null;
