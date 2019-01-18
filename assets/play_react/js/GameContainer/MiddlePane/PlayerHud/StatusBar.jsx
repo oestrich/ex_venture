@@ -15,8 +15,8 @@ const BarContainer = styled.div`
   font-family: ${theme.font};
   flex: 1;
   display: inline-block;
-  border: 1px solid #6177c8;
-  background: #879ade;
+  border: 0px;
+  background: #1d4651;
   box-shadow: 0 2px 5px 0px #000000;
   border-radius: 5px;
   vertical-align: middle;
