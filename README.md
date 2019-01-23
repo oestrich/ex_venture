@@ -28,7 +28,7 @@ A text based MMO server written in Elixir.
 
 ### Cross Game Chat
 
-- ExVenture fully supports the [Gossip][gossip] network
+- ExVenture fully supports the [Grapevine][grapevine] network
 - Supports [Grapevine][grapevine] character registration and OAuth login
 - Cross game channels
 - Cross game tells
@@ -116,5 +116,4 @@ See [exventure.org for deployment setup](https://exventure.org/deploy).
 Prometheus metrics are set up and will be reported on `/metrics`. You may want to have nginx deny requests to this endpoint or whitelist it for IPs, etc.
 
 [discord]: https://discord.gg/GPEa6dB
-[gossip]: https://gossip.haus/
 [grapevine]: https://grapevine.haus/
