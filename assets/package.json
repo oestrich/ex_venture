@@ -18,6 +18,7 @@
     "react-dom": "^16.4.0",
     "react-redux": "^5.1.1",
     "react-responsive": "^6.0.1",
+    "react-tooltip-controller": "^1.0.6",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "sizzle": "^2.3.3",
