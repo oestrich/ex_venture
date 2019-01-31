@@ -7,8 +7,6 @@ defmodule Game.Emails do
 
   use Bamboo.Phoenix, view: Web.EmailView
 
-  @from_email Application.get_env(:ex_venture, :mailer)[:from]
-
   def welcome(user) do
     base_email()
     |> to(user.email)
@@ -32,7 +30,9 @@ defmodule Game.Emails do
   end
 
   def base_email() do
+    from_email = Application.get_env(:ex_venture, :mailer)[:from]
+
     new_email()
-    |> from(ExVenture.config(@from_email))
+    |> from(ExVenture.config(from_email))
   end
 end
