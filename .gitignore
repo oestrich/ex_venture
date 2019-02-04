@@ -64,3 +64,12 @@ deploy/hosts_*
 deploy/group_vars/*
 /ex_venture.tar.gz
 /tmp
+
+# Emacs / Vim swap files
+*~
+.#*
+
+# GTAGS
+GTAGS
+GPATH
+GRTAGS
