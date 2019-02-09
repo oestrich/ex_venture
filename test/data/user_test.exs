@@ -35,6 +35,6 @@ defmodule Data.UserTest do
 
   test "ensure password is not blank" do
     changeset = User.changeset(%User{}, %{name: "user", password: ""})
-    assert !changeset.valid?
+    refute changeset.valid?
   end
 end
