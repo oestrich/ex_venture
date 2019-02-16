@@ -518,6 +518,7 @@ defmodule Seeds do
       usee_text: "You were healed by [user].",
       command: "heal",
       whitelist_effects: ["recover", "stats"],
+      require_target: true,
       effects: [
         %{kind: "recover", type: "health", amount: 10},
       ],
