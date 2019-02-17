@@ -40,8 +40,13 @@ class InteractableItem extends React.Component {
         id={`${itemType}-tooltip-${idx}`}
         returnState={isTooltipShowing => {
           if (isTooltipShowing) {
-            this.setState({ selected: `${itemType}-tooltip-${idx}` }, () =>
-              send(`target ${item.name}`)
+            this.setState(
+              { selected: `${itemType}-tooltip-${idx}` },
+              function() {
+                if (itemType !== 'item') {
+                  send(`target ${item.name}`);
+                }
+              }
             );
           } else if (this.state.selected === `${itemType}-tooltip-${idx}`) {
             this.setState({ selected: '' });
