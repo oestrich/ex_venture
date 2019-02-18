@@ -18,7 +18,7 @@ host=$1
 echo "Deploying to ${host}";
 
 echo "Copying file"
-scp _build/prod/rel/ex_venture/releases/0.28.0/ex_venture.tar.gz deploy@$host:
+scp tmp/ex_venture.tar.gz deploy@$host:
 
 echo "Stopping ExVenture"
 ssh deploy@$host 'sudo systemctl stop exventure'
