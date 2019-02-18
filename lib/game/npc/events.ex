@@ -6,6 +6,7 @@ defmodule Game.NPC.Events do
   alias Data.Events.StateTicked
   alias Game.Channel
   alias Game.Character
+  alias Game.Events.RoomHeard
   alias Game.Format
   alias Game.Message
   alias Game.NPC
@@ -142,7 +143,7 @@ defmodule Game.NPC.Events do
     end
   end
 
-  def act_on(state, sent_event = {"room/heard", message}) do
+  def act_on(state, sent_event = %RoomHeard{message: message}) do
     broadcast(state.npc, "room/heard", %{
       type: message.type,
       name: message.sender.name,

@@ -1,6 +1,6 @@
 defmodule Game.NPC.Events.RoomEntered do
   @moduledoc """
-  Processes the `room/heard` event
+  Processes the `room/entered` event
   """
 
   alias Data.Events.RoomEntered

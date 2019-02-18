@@ -4,6 +4,7 @@ defmodule Game.SessionTest do
   alias Data.Exit
   alias Data.Mail
   alias Game.Command
+  alias Game.Events.RoomHeard
   alias Game.Message
   alias Game.Session
   alias Game.Session.Process
@@ -507,7 +508,7 @@ defmodule Game.SessionTest do
 
     test "room heard", %{state: state} do
       message = Message.say(%{id: 1, name: "Player"}, %{message: "hi"})
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/heard", message}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, %RoomHeard{message: message}}, state)
 
       assert_socket_echo "hi"
     end

@@ -4,6 +4,7 @@ defmodule Game.NPC.Actions.CommandsSay do
   """
 
   alias Game.Environment
+  alias Game.Events.RoomHeard
   alias Game.Format
   alias Game.Message
   alias Game.NPC.Events
@@ -16,7 +17,8 @@ defmodule Game.NPC.Actions.CommandsSay do
       message = select_message(action)
       message = Message.npc_say(state.npc, Format.resources(message))
 
-      Environment.notify(state.room_id, Events.npc(state), {"room/heard", message})
+      event = %RoomHeard{character: Events.npc(state), message: message}
+      Environment.notify(state.room_id, event.character, event)
       Events.broadcast(state.npc, "room/heard", message)
 
       {:ok, state}

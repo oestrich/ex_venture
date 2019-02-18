@@ -7,6 +7,7 @@ defmodule Game.Command.Say do
 
   import Game.Room.Helpers, only: [find_character: 3]
 
+  alias Game.Events.RoomHeard
   alias Game.Format.Channels, as: FormatChannels
   alias Game.Hint
   alias Game.Utility
@@ -144,7 +145,8 @@ defmodule Game.Command.Say do
     state |> Socket.echo(FormatChannels.say(:you, parsed_message))
 
     message = Message.new(character, parsed_message)
-    Environment.notify(save.room_id, {:player, character}, {"room/heard", message})
+    event = %RoomHeard{character: {:player, character}, message: message}
+    Environment.notify(save.room_id, event.character, event)
   end
 
   def say_directed(state = %{character: character, save: save}, parsed_message) do
@@ -166,7 +168,8 @@ defmodule Game.Command.Say do
         state |> Socket.echo(message)
 
         message = Message.say_to(character, directed_character, parsed_message)
-        Environment.notify(room.id, {:player, character}, {"room/heard", message})
+        event = %RoomHeard{character: {:player, character}, message: message}
+        Environment.notify(room.id, event.character, event)
     end
   end
 

@@ -4,6 +4,7 @@ defmodule Game.NPC.Actions.CommandsEmote do
   """
 
   alias Game.Environment
+  alias Game.Events.RoomHeard
   alias Game.Format
   alias Game.Message
   alias Game.NPC.Events
@@ -16,7 +17,8 @@ defmodule Game.NPC.Actions.CommandsEmote do
     message = action.options.message
 
     message = Message.npc_emote(state.npc, Format.resources(message))
-    Environment.notify(state.room_id, Events.npc(state), {"room/heard", message})
+    event = %RoomHeard{character: Events.npc(state), message: message}
+    Environment.notify(state.room_id, event.character, event)
     Events.broadcast(state.npc, "room/heard", message)
 
     state = maybe_update_status(state, action)

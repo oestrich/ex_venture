@@ -2,6 +2,7 @@ defmodule Game.NPC.Events.RoomHeardTest do
   use Data.ModelCase
 
   alias Data.Events
+  alias Game.Events.RoomHeard, as: GameRoomHeard
   alias Game.Message
   alias Game.NPC.Events.RoomHeard
   alias Game.NPC.State
@@ -12,7 +13,7 @@ defmodule Game.NPC.Events.RoomHeardTest do
 
   describe "processing the events" do
     test "with no options", %{state: state} do
-      sent_event = {"room/heard", %Message{message: "hello"}}
+      sent_event = %GameRoomHeard{message: %Message{message: "hello"}}
 
       {:ok, ^state} = RoomHeard.process(state, sent_event)
 
@@ -22,7 +23,7 @@ defmodule Game.NPC.Events.RoomHeardTest do
     test "with a regex that matches", %{state: state, event: event} do
       event = %{event | options: %{regex: "hello"}}
       state = %{state | events: [event]}
-      sent_event = {"room/heard", %Message{message: "hello"}}
+      sent_event = %GameRoomHeard{message: %Message{message: "hello"}}
 
       {:ok, ^state} = RoomHeard.process(state, sent_event)
 
@@ -32,7 +33,7 @@ defmodule Game.NPC.Events.RoomHeardTest do
     test "with a regex that does not match", %{state: state, event: event} do
       event = %{event | options: %{regex: "hi"}}
       state = %{state | events: [event]}
-      sent_event = {"room/heard", %Message{message: "hello"}}
+      sent_event = %GameRoomHeard{message: %Message{message: "hello"}}
 
       {:ok, ^state} = RoomHeard.process(state, sent_event)
 

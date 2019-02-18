@@ -5,6 +5,7 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.RoomHeard
   alias Game.Experience
   alias Game.Format
   alias Game.Format.Effects, as: FormatEffects
@@ -217,7 +218,7 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state, {"room/heard", message}) do
+  def notify(state, %RoomHeard{message: message}) do
     state |> GMCP.room_heard(message)
     state |> Socket.echo(message.formatted)
     state

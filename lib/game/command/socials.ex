@@ -7,6 +7,7 @@ defmodule Game.Command.Socials do
 
   import Game.Room.Helpers, only: [find_character: 2]
 
+  alias Game.Events.RoomHeard
   alias Game.Format.Socials, as: FormatSocials
   alias Game.Socials
 
@@ -110,7 +111,8 @@ defmodule Game.Command.Socials do
         emote = FormatSocials.social_without_target(social, state.character)
 
         message = Message.social(state.character, emote)
-        Environment.notify(save.room_id, {:player, state.character}, {"room/heard", message})
+        event = %RoomHeard{character: {:player, state.character}, message: message}
+        Environment.notify(save.room_id, event.character, event)
 
         state |> Socket.echo(emote)
     end
@@ -135,7 +137,8 @@ defmodule Game.Command.Socials do
             emote = FormatSocials.social_with_target(social, state.character, character)
 
             message = Message.social(state.character, emote)
-            Environment.notify(save.room_id, {:player, character}, {"room/heard", message})
+            event = %RoomHeard{character: {:player, state.character}, message: message}
+            Environment.notify(save.room_id, event.character, event)
 
             state |> Socket.echo(emote)
         end
