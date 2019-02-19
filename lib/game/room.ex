@@ -9,6 +9,7 @@ defmodule Game.Room do
 
   alias Data.Room
   alias Game.Environment
+  alias Game.Events.ItemDropped
   alias Game.Events.RoomEntered
   alias Game.Events.RoomLeft
   alias Game.Features
@@ -246,7 +247,7 @@ defmodule Game.Room do
           type: :room
         )
 
-        players |> inform_players({"item/dropped", who, item})
+        players |> inform_players(%ItemDropped{character: who, instance: item})
         {:noreply, Map.put(state, :room, room)}
 
       _ ->

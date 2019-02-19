@@ -5,6 +5,7 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.ItemDropped
   alias Game.Events.ItemReceived
   alias Game.Events.PlayerSignedIn
   alias Game.Events.PlayerSignedOut
@@ -117,14 +118,14 @@ defmodule Game.Session.Character do
     Player.update_save(state, save)
   end
 
-  def notify(state, {"item/dropped", character, item}) do
+  def notify(state, %ItemDropped{character: character, instance: item}) do
     case Character.who(character) == {:player, state.character.id} do
       true ->
         state
 
       false ->
-        state
-        |> Socket.echo("#{Format.name(character)} dropped #{Format.item_name(item)}.")
+        message = "#{Format.name(character)} dropped #{Format.item_name(item)}."
+        Socket.echo(state, message)
 
         state
     end
