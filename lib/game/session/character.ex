@@ -15,6 +15,7 @@ defmodule Game.Session.Character do
   alias Game.Events.RoomHeard
   alias Game.Events.RoomLeft
   alias Game.Events.RoomOverheard
+  alias Game.Events.RoomWhispered
   alias Game.Experience
   alias Game.Format
   alias Game.Format.Effects, as: FormatEffects
@@ -220,7 +221,7 @@ defmodule Game.Session.Character do
   def notify(state, %RoomOverheard{characters: characters, message: message}) do
     skip_echo? =
       Enum.any?(characters, fn character ->
-        character == {:player, state.character}
+        Character.who(character) == Character.who({:player, state.character})
       end)
 
     case skip_echo? do
@@ -233,7 +234,7 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state, {"room/whisper", message}) do
+  def notify(state, %RoomWhispered{message: message}) do
     state |> GMCP.room_whisper(message)
     state |> Socket.echo(message.formatted)
     state

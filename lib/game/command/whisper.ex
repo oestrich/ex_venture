@@ -9,6 +9,7 @@ defmodule Game.Command.Whisper do
 
   alias Game.Character
   alias Game.Events.RoomOverheard
+  alias Game.Events.RoomWhispered
   alias Game.Format.Channels, as: FormatChannels
   alias Game.Utility
 
@@ -65,11 +66,15 @@ defmodule Game.Command.Whisper do
         state |> Socket.echo(message)
 
       character ->
+        player = {:player, state.character}
+
         message = Utility.strip_name(elem(character, 1), who_and_message)
         state |> Socket.echo(FormatChannels.send_whisper(character, message))
-        Character.notify(character, {"room/whisper", Message.whisper(state.character, message)})
 
-        player = {:player, state.character}
+        message = Message.whisper(state.character, message)
+        event = %RoomWhispered{character: player, message: message}
+        Character.notify(character, event)
+
         message = FormatChannels.whisper_overheard(player, character)
         event = %RoomOverheard{character: player, characters: [player, character], message: message}
         Environment.notify(room.id, player, event)
