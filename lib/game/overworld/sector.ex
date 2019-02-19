@@ -9,6 +9,7 @@ defmodule Game.Overworld.Sector do
 
   alias Game.Environment
   alias Game.Events.RoomEntered
+  alias Game.Events.RoomLeft
   alias Game.NPC
   alias Game.Overworld
   alias Game.Session
@@ -127,8 +128,8 @@ defmodule Game.Overworld.Sector do
 
       state = filter_character(state, cell, character)
 
-      state.players |> inform_players(cell, {"room/leave", {character, reason}})
-      state.npcs |> inform_npcs(cell, {"room/leave", {character, reason}})
+      state.players |> inform_players(cell, %RoomLeft{character: character, reason: reason})
+      state.npcs |> inform_npcs(cell, %RoomLeft{character: character, reason: reason})
 
       state
     end

@@ -3,6 +3,7 @@ defmodule Game.Overworld.SectorTest do
 
   alias Data.Character
   alias Game.Events.RoomEntered
+  alias Game.Events.RoomLeft
   alias Game.Overworld.Sector
   alias Game.Session
 
@@ -100,7 +101,7 @@ defmodule Game.Overworld.SectorTest do
 
       {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
 
-      assert_receive {:"$gen_cast", {:notify, {"room/leave", {{:player, ^character}, :leave}}}}
+      assert_receive {:"$gen_cast", {:notify, %RoomLeft{character: {:player, ^character}}}}
     end
 
     test "does not send notifications to users in different cells", %{state: state, character: character, overworld_id: overworld_id} do
@@ -113,7 +114,7 @@ defmodule Game.Overworld.SectorTest do
 
       {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
 
-      refute_receive {:"$gen_cast", {:notify, {"room/leave", {{:player, ^character}, :leave}}}}, 50
+      refute_receive {:"$gen_cast", {:notify, %RoomLeft{character: {:player, ^character}}}}, 50
     end
   end
 

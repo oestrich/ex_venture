@@ -10,6 +10,7 @@ defmodule Game.Room do
   alias Data.Room
   alias Game.Environment
   alias Game.Events.RoomEntered
+  alias Game.Events.RoomLeft
   alias Game.Features
   alias Game.Items
   alias Game.Room.Actions
@@ -190,7 +191,9 @@ defmodule Game.Room do
     Logger.debug(fn -> "Player (#{player.id}) left room (#{room.id})" end, type: :room)
     players = Enum.reject(players, &(&1.id == player.id))
     state = %{state | players: players}
-    handle_cast({:notify, {:player, player}, {"room/leave", {{:player, player}, reason}}}, state)
+
+    event = %RoomLeft{character: {:player, player}, reason: reason}
+    handle_cast({:notify, {:player, player}, event}, state)
   end
 
   def handle_cast({:leave, {:npc, npc}, reason}, state) do
@@ -198,7 +201,9 @@ defmodule Game.Room do
     Logger.debug(fn -> "NPC (#{npc.id}) left room (#{room.id})" end, type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
     state = %{state | npcs: npcs}
-    handle_cast({:notify, {:npc, npc}, {"room/leave", {{:npc, npc}, reason}}}, state)
+
+    event = %RoomLeft{character: {:npc, npc}, reason: reason}
+    handle_cast({:notify, {:npc, npc}, event}, state)
   end
 
   def handle_cast({:notify, actor, event}, state) do

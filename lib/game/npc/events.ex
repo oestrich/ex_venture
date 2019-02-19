@@ -8,6 +8,7 @@ defmodule Game.NPC.Events do
   alias Game.Character
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
+  alias Game.Events.RoomLeft
   alias Game.Format
   alias Game.Message
   alias Game.NPC
@@ -130,8 +131,8 @@ defmodule Game.NPC.Events do
     :ok
   end
 
-  def act_on(state = %{npc: npc}, {"room/leave", {character, _reason}}) do
-    broadcast(npc, "room/leave", who(character))
+  def act_on(state = %{npc: npc}, %RoomLeft{character: character}) do
+    broadcast(npc, "room/left", who(character))
 
     target = Map.get(state, :target, nil)
 

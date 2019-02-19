@@ -6,6 +6,7 @@ defmodule Game.SessionTest do
   alias Game.Command
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
+  alias Game.Events.RoomLeft
   alias Game.Message
   alias Game.Session
   alias Game.Session.Process
@@ -488,26 +489,36 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:player, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "leaves heading"
     end
 
     test "npc leaves the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "leaves heading"
     end
 
     test "player leaves the room and they were the target", %{state: state} do
       state = %{state | target: {:player, 1}}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:player, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
+
       assert is_nil(state.target)
     end
 
     test "npc leaves the room and they were the target", %{state: state} do
       state = %{state | target: {:npc, 1}}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
+
       assert is_nil(state.target)
     end
 
