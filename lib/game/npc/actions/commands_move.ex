@@ -6,6 +6,7 @@ defmodule Game.NPC.Actions.CommandsMove do
   alias Data.Exit
   alias Game.Door
   alias Game.Environment
+  alias Game.Events.RoomEntered
   alias Game.NPC
   alias Game.NPC.Events
   alias Metrics.CharacterInstrumenter
@@ -128,10 +129,8 @@ defmodule Game.NPC.Actions.CommandsMove do
       Environment.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
-        NPC.delay_notify(
-          {"room/entered", {{:player, player}, :enter}},
-          milliseconds: @npc_reaction_time_ms
-        )
+        event = %RoomEntered{character: {:player, player}}
+        NPC.delay_notify(event, milliseconds: @npc_reaction_time_ms)
       end)
     end)
 

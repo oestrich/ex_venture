@@ -4,6 +4,7 @@ defmodule Game.SessionTest do
   alias Data.Exit
   alias Data.Mail
   alias Game.Command
+  alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Message
   alias Game.Session
@@ -471,13 +472,17 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:player, %{id: 1, name: "Player"}}, {:enter, "south"}}}}, state)
+      event = %RoomEntered{character: {:player, %{id: 1, name: "Player"}}, reason: {:enter, "south"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "enters from the"
     end
 
     test "npc enters the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, {:enter, "south"}}}}, state)
+      event = %RoomEntered{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:enter, "south"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "enters from the"
     end

@@ -9,6 +9,7 @@ defmodule Game.Room do
 
   alias Data.Room
   alias Game.Environment
+  alias Game.Events.RoomEntered
   alias Game.Features
   alias Game.Items
   alias Game.Room.Actions
@@ -171,17 +172,17 @@ defmodule Game.Room do
     Logger.debug(fn -> "Player (#{player.id}) entered room (#{room.id})" end, type: :room)
     state = %{state | players: [player | players]}
 
-    handle_cast(
-      {:notify, {:player, player}, {"room/entered", {{:player, player}, reason}}},
-      state
-    )
+    event = %RoomEntered{character: {:player, player}, reason: reason}
+    handle_cast({:notify, {:player, player}, event}, state)
   end
 
   def handle_cast({:enter, {:npc, npc}, reason}, state) do
     %{room: room, npcs: npcs} = state
     Logger.debug(fn -> "NPC (#{npc.id}) entered room (#{room.id})" end, type: :room)
     state = %{state | npcs: [npc | npcs]}
-    handle_cast({:notify, {:npc, npc}, {"room/entered", {{:npc, npc}, reason}}}, state)
+
+    event = %RoomEntered{character: {:npc, npc}, reason: reason}
+    handle_cast({:notify, {:npc, npc}, event}, state)
   end
 
   def handle_cast({:leave, {:player, player}, reason}, state) do

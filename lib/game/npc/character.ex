@@ -15,6 +15,7 @@ defmodule Game.NPC.Character do
   alias Game.Character.Effects
   alias Game.Effect
   alias Game.Environment
+  alias Game.Events.RoomEntered
   alias Game.Items
   alias Game.NPC.Events
   alias Game.NPC.Status
@@ -43,7 +44,8 @@ defmodule Game.NPC.Character do
     {:ok, room} = Environment.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
-      GenServer.cast(self(), {:notify, {"room/entered", {{:player, player}, :enter}}})
+      event = %RoomEntered{character: {:player, player}}
+      GenServer.cast(self(), {:notify, event})
     end)
 
     Events.broadcast(npc, "character/respawned")

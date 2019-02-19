@@ -8,6 +8,7 @@ defmodule Game.Overworld.Sector do
   use GenServer
 
   alias Game.Environment
+  alias Game.Events.RoomEntered
   alias Game.NPC
   alias Game.Overworld
   alias Game.Session
@@ -109,8 +110,8 @@ defmodule Game.Overworld.Sector do
     def character_enter(state, overworld_id, character, reason) do
       {_zone, cell} = Overworld.split_id(overworld_id)
 
-      state.players |> inform_players(cell, {"room/entered", {character, reason}})
-      state.npcs |> inform_npcs(cell, {"room/entered", {character, reason}})
+      state.players |> inform_players(cell, %RoomEntered{character: character, reason: reason})
+      state.npcs |> inform_npcs(cell, %RoomEntered{character: character, reason: reason})
 
       case character do
         {:player, player} ->

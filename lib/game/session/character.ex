@@ -5,6 +5,7 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Experience
   alias Game.Format
@@ -168,7 +169,7 @@ defmodule Game.Session.Character do
     state
   end
 
-  def notify(state, {"room/entered", {character, reason}}) do
+  def notify(state, %RoomEntered{character: character, reason: reason}) do
     case reason do
       {:enter, direction} ->
         state

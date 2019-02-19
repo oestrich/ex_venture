@@ -6,6 +6,7 @@ defmodule Game.NPC.Events do
   alias Data.Events.StateTicked
   alias Game.Channel
   alias Game.Character
+  alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Format
   alias Game.Message
@@ -123,7 +124,7 @@ defmodule Game.NPC.Events do
     state |> act_on_item_receive(character, instance)
   end
 
-  def act_on(state, sent_event = {"room/entered", {character, _reason}}) do
+  def act_on(state, sent_event = %RoomEntered{character: character}) do
     broadcast(state.npc, "room/entered", who(character))
     Events.RoomEntered.process(state, sent_event)
     :ok

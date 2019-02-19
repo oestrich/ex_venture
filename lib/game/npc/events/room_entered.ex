@@ -15,9 +15,7 @@ defmodule Game.NPC.Events.RoomEntered do
     {:ok, state}
   end
 
-  def process_event(event, sent_event) do
-    {"room/entered", {character, _direction}} = sent_event
-
+  def process_event(event, %{character: character}) do
     event.actions
     |> Actions.add_character(character)
     |> Actions.delay()
