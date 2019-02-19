@@ -5,6 +5,8 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.PlayerSignedIn
+  alias Game.Events.PlayerSignedOut
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Events.RoomLeft
@@ -145,13 +147,13 @@ defmodule Game.Session.Character do
     state
   end
 
-  def notify(state, {"player/offline", player}) do
-    state |> Socket.echo("#{Format.player_name(player)} went offline.")
+  def notify(state, %PlayerSignedOut{character: character}) do
+    state |> Socket.echo("#{Format.name(character)} went offline.")
     state
   end
 
-  def notify(state, {"player/online", player}) do
-    state |> Socket.echo("#{Format.player_name(player)} is now online.")
+  def notify(state, %PlayerSignedIn{character: character}) do
+    state |> Socket.echo("#{Format.name(character)} is now online.")
     state
   end
 

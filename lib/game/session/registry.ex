@@ -7,6 +7,8 @@ defmodule Game.Session.Registry do
 
   alias Data.User
   alias Game.Character
+  alias Game.Events.PlayerSignedIn
+  alias Game.Events.PlayerSignedOut
 
   @group :session
 
@@ -192,7 +194,8 @@ defmodule Game.Session.Registry do
       player.id == disconnecting_player.id
     end)
     |> Enum.each(fn %{player: player} ->
-      Character.notify({:player, player}, {"player/offline", disconnecting_player})
+      event = %PlayerSignedOut{character: {:player, disconnecting_player}}
+      Character.notify({:player, player}, event)
     end)
   end
 
@@ -208,7 +211,8 @@ defmodule Game.Session.Registry do
       player.id == connecting_player.id
     end)
     |> Enum.each(fn %{player: player} ->
-      Character.notify({:player, player}, {"player/online", connecting_player})
+      event = %PlayerSignedIn{character: {:player, connecting_player}}
+      Character.notify({:player, player}, event)
     end)
   end
 
