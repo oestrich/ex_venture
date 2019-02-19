@@ -5,6 +5,8 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.CurrencyDropped
+  alias Game.Events.CurrencyReceived
   alias Game.Events.ItemDropped
   alias Game.Events.ItemReceived
   alias Game.Events.PlayerSignedIn
@@ -97,24 +99,24 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state, {"currency/dropped", character, currency}) do
+  def notify(state, %CurrencyDropped{character: character, amount: amount}) do
     case Character.who(character) == {:player, state.character.id} do
       true ->
         state
 
       false ->
-        state
-        |> Socket.echo("#{Format.name(character)} dropped #{Format.currency(currency)}.")
+        message = "#{Format.name(character)} dropped #{Format.currency(amount)}."
+        Socket.echo(state, message)
 
         state
     end
   end
 
-  def notify(state = %{save: save}, {"currency/receive", character, currency}) do
-    state
-    |> Socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}.")
+  def notify(state, %CurrencyReceived{character: character, amount: amount}) do
+    message = "You received #{Format.currency(amount)} from #{Format.name(character)}."
+    Socket.echo(state, message)
 
-    save = %{save | currency: save.currency + currency}
+    save = %{state.save | currency: state.save.currency + amount}
     Player.update_save(state, save)
   end
 

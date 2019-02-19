@@ -4,6 +4,7 @@ defmodule Game.SessionTest do
   alias Data.Exit
   alias Data.Mail
   alias Game.Command
+  alias Game.Events.CurrencyReceived
   alias Game.Events.ItemReceived
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
@@ -580,8 +581,9 @@ defmodule Game.SessionTest do
 
     test "new currency received", %{state: state} do
       state = %{state | user: %{save: nil}, save: %{currency: 10}}
+      event = %CurrencyReceived{character: {:npc, %{name: "Guard"}}, amount: 50}
 
-      {:noreply, state} = Process.handle_cast({:notify, {"currency/receive", {:npc, %{name: "Guard"}}, 50}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert state.save.currency == 60
 

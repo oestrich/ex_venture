@@ -10,6 +10,7 @@ defmodule Game.Command.Give do
   import Game.Room.Helpers, only: [find_character: 2]
 
   alias Game.Character
+  alias Game.Events.CurrencyReceived
   alias Game.Events.ItemReceived
   alias Game.Format
   alias Game.Item
@@ -146,9 +147,10 @@ defmodule Game.Command.Give do
             name: Format.name(character)
           )
 
-        state |> Socket.echo(message)
+        Socket.echo(state, message)
 
-        Character.notify(character, {"currency/receive", {:player, state.character}, currency})
+        event = %CurrencyReceived{character: {:player, state.character}, amount: currency}
+        Character.notify(character, event)
 
         state = Player.update_save(state, %{save | currency: save.currency - currency})
 
