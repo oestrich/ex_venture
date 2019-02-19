@@ -4,6 +4,7 @@ defmodule Game.SessionTest do
   alias Data.Exit
   alias Data.Mail
   alias Game.Command
+  alias Game.Events.ItemReceived
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Events.RoomLeft
@@ -568,8 +569,9 @@ defmodule Game.SessionTest do
       instance = item_instance(1)
 
       state = %{state | user: %{save: nil}, save: %{items: []}}
+      event = %ItemReceived{character: {:npc, %{name: "Guard"}}, instance: instance}
 
-      {:noreply, state} = Process.handle_cast({:notify, {"item/receive", {:npc, %{name: "Guard"}}, instance}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert state.save.items == [instance]
 

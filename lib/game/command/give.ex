@@ -10,6 +10,7 @@ defmodule Game.Command.Give do
   import Game.Room.Helpers, only: [find_character: 2]
 
   alias Game.Character
+  alias Game.Events.ItemReceived
   alias Game.Format
   alias Game.Item
   alias Game.Items
@@ -164,7 +165,8 @@ defmodule Game.Command.Give do
 
     state |> Socket.echo(message)
 
-    Character.notify(character, {"item/receive", {:player, state.character}, instance})
+    event = %ItemReceived{character: {:player, state.character}, instance: instance}
+    Character.notify(character, event)
 
     items = List.delete(save.items, instance)
     state = Player.update_save(state, %{save | items: items})

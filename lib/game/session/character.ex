@@ -5,6 +5,7 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.ItemReceived
   alias Game.Events.PlayerSignedIn
   alias Game.Events.PlayerSignedOut
   alias Game.Events.RoomEntered
@@ -129,7 +130,7 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state = %{save: save}, {"item/receive", character, instance}) do
+  def notify(state = %{save: save}, %ItemReceived{character: character, instance: instance}) do
     item = Items.item(instance)
 
     state
