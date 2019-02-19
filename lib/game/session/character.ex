@@ -157,22 +157,6 @@ defmodule Game.Session.Character do
     state
   end
 
-  def notify(state, {"gossip/player-offline", game_name, player_name}) do
-    name = "#{player_name}@#{game_name}"
-    player = %{name: name}
-    state |> Socket.echo("#{Format.player_name(player)} went offline.")
-
-    state
-  end
-
-  def notify(state, {"gossip/player-online", game_name, player_name}) do
-    name = "#{player_name}@#{game_name}"
-    player = %{name: name}
-    state |> Socket.echo("#{Format.player_name(player)} is now online.")
-
-    state
-  end
-
   def notify(state, %RoomEntered{character: character, reason: reason}) do
     case reason do
       {:enter, direction} ->
