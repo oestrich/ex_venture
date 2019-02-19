@@ -7,6 +7,7 @@ defmodule Game.SessionTest do
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Events.RoomLeft
+  alias Game.Events.RoomOverheard
   alias Game.Message
   alias Game.Session
   alias Game.Session.Process
@@ -530,13 +531,17 @@ defmodule Game.SessionTest do
     end
 
     test "room overheard - echos if user is not in the list of characters", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [], "hi"}}, state)
+      event = %RoomOverheard{characters: [], message: "hi"}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "hi"
     end
 
     test "room overheard - does not echo if user is in the list of characters", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [{:player, state.character}], "hi"}}, state)
+      event = %RoomOverheard{characters: [{:player, state.character}], message: "hi"}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       refute_socket_echo()
     end

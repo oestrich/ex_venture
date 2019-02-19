@@ -8,6 +8,7 @@ defmodule Game.Session.Character do
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Events.RoomLeft
+  alias Game.Events.RoomOverheard
   alias Game.Experience
   alias Game.Format
   alias Game.Format.Effects, as: FormatEffects
@@ -226,7 +227,7 @@ defmodule Game.Session.Character do
     state
   end
 
-  def notify(state, {"room/overheard", characters, message}) do
+  def notify(state, %RoomOverheard{characters: characters, message: message}) do
     skip_echo? =
       Enum.any?(characters, fn character ->
         character == {:player, state.character}
