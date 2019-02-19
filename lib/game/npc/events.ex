@@ -6,6 +6,7 @@ defmodule Game.NPC.Events do
   alias Data.Events.StateTicked
   alias Game.Channel
   alias Game.Character
+  alias Game.Events.CharacterDied
   alias Game.Events.ItemReceived
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
@@ -106,7 +107,7 @@ defmodule Game.NPC.Events do
   @spec act_on(NPC.State.t(), {String.t(), any()}) :: :ok | {:update, NPC.State.t()}
   def act_on(state, action)
 
-  def act_on(state = %{npc: npc}, {"character/died", character, :character, from}) do
+  def act_on(state = %{npc: npc}, %CharacterDied{character: character, killer: from}) do
     broadcast(npc, "character/died", who(character))
     state |> act_on_character_died(character, from)
   end

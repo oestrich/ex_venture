@@ -7,6 +7,7 @@ defmodule Game.NPC.EventsTest do
   alias Data.Events.RoomHeard
   alias Data.Events.StateTicked
   alias Game.Channel
+  alias Game.Events.CharacterDied
   alias Game.Events.RoomLeft
   alias Game.Message
   alias Game.NPC.Events
@@ -59,7 +60,7 @@ defmodule Game.NPC.EventsTest do
 
       start_room(%{npcs: [npc], players: [%{id: 1, name: "Player"}]})
 
-      event = {"character/died", {:player, character}, :character, {:npc, npc}}
+      event = %CharacterDied{character: {:player, character}, killer: {:npc, npc}}
 
       %{state: state, event: event}
     end

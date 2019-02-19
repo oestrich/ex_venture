@@ -4,6 +4,7 @@ defmodule Game.SessionTest do
   alias Data.Exit
   alias Data.Mail
   alias Game.Command
+  alias Game.Events.CharacterDied
   alias Game.Events.CurrencyReceived
   alias Game.Events.ItemReceived
   alias Game.Events.RoomEntered
@@ -307,7 +308,7 @@ defmodule Game.SessionTest do
 
     assert state.save.stats.health_points == -5
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
-    assert_notify {"character/died", _, _, _}
+    assert_notify %CharacterDied{}
   after
     Session.Registry.unregister()
   end
@@ -556,14 +557,6 @@ defmodule Game.SessionTest do
       assert_socket_echo "new mail"
     end
 
-    test "character died", %{state: state} do
-      npc = {:npc, %{id: 1, name: "bandit"}}
-
-      {:noreply, ^state} = Process.handle_cast({:notify, {"character/died", npc, :character, npc}}, state)
-
-      assert_socket_echo "has died"
-    end
-
     test "new item received", %{state: state} do
       start_and_clear_items()
       insert_item(%{id: 1, name: "Potion"})
@@ -607,7 +600,9 @@ defmodule Game.SessionTest do
     end
 
     test "clears your target", %{state: state, target: target} do
-      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
+      event = %CharacterDied{character: target, killer: {:player, state.user}}
+
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert is_nil(state.target)
     end
@@ -615,8 +610,9 @@ defmodule Game.SessionTest do
     test "npc - a died message is sent and experience is applied", %{state: state} do
       target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 200}}
       state = %{state | target: {:npc, 10}}
+      event = %CharacterDied{character: target, killer: {:player, state.user}}
 
-      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert is_nil(state.target)
       assert state.save.experience_points == 200

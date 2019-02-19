@@ -5,6 +5,7 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.CharacterDied
   alias Game.Events.CurrencyDropped
   alias Game.Events.CurrencyReceived
   alias Game.Events.ItemDropped
@@ -72,7 +73,7 @@ defmodule Game.Session.Character do
   """
   def notify(state, event)
 
-  def notify(state, {"character/died", character, :character, who}) do
+  def notify(state, %CharacterDied{character: character, killer: who}) do
     state |> Socket.echo("#{Format.name(character)} has died.")
     state |> GMCP.character_leave(character)
 

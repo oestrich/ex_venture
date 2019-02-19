@@ -15,6 +15,7 @@ defmodule Game.NPC.Character do
   alias Game.Character.Effects
   alias Game.Effect
   alias Game.Environment
+  alias Game.Events.CharacterDied
   alias Game.Events.RoomEntered
   alias Game.Items
   alias Game.NPC.Events
@@ -71,7 +72,9 @@ defmodule Game.NPC.Character do
   def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner}, who) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    room_id |> Environment.notify({:npc, npc}, {"character/died", {:npc, npc}, :character, who})
+    event = %CharacterDied{character: {:npc, npc}, killer: who}
+    room_id |> Environment.notify({:npc, npc}, event)
+
     room_id |> Environment.leave({:npc, npc}, :death)
     room_id |> Environment.unlink()
 
