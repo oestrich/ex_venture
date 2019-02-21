@@ -3,6 +3,7 @@ defmodule Game.Command.QuestTest do
 
   alias Game.Character
   alias Game.Command.Quest
+  alias Game.Events.QuestCompleted
 
   doctest Quest
 
@@ -119,7 +120,7 @@ defmodule Game.Command.QuestTest do
 
       {:update, _state} = Quest.run({:complete, to_string(quest.id)}, state)
 
-      assert_npc_notify {_, {"quest/completed", _, _}}
+      assert_npc_notify {_, %QuestCompleted{}}
     end
 
     test "giver is not in your room", %{state: state, quest: quest} do

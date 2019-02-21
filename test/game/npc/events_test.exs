@@ -8,6 +8,7 @@ defmodule Game.NPC.EventsTest do
   alias Data.Events.StateTicked
   alias Game.Channel
   alias Game.Events.CharacterDied
+  alias Game.Events.QuestCompleted
   alias Game.Events.RoomLeft
   alias Game.Message
   alias Game.NPC.Events
@@ -104,7 +105,7 @@ defmodule Game.NPC.EventsTest do
       quest = %{id: 1, completed_message: "Hello"}
       npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
-      event = {"quest/completed", user, quest}
+      event = %QuestCompleted{player: user, quest: quest}
 
       Channel.join_tell({:player, character})
 

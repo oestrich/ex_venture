@@ -7,6 +7,7 @@ defmodule Game.Command.Quest do
   use Game.Currency
   use Game.NPC
 
+  alias Game.Events.QuestCompleted
   alias Game.Format.Quests, as: FormatQuests
   alias Game.Player
   alias Game.Quest
@@ -262,7 +263,7 @@ defmodule Game.Command.Quest do
 
         state = Character.apply_experience(state, {:quest, quest})
 
-        npc.id |> @npc.notify({"quest/completed", state.character, quest})
+        @npc.notify(npc.id, %QuestCompleted{player: state.character, quest: quest})
 
         {:update, state}
 

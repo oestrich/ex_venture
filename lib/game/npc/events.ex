@@ -8,6 +8,7 @@ defmodule Game.NPC.Events do
   alias Game.Character
   alias Game.Events.CharacterDied
   alias Game.Events.ItemReceived
+  alias Game.Events.QuestCompleted
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Events.RoomLeft
@@ -160,7 +161,7 @@ defmodule Game.NPC.Events do
     :ok
   end
 
-  def act_on(state = %{npc: npc}, {"quest/completed", player, quest}) do
+  def act_on(state = %{npc: npc}, %QuestCompleted{player: player, quest: quest}) do
     broadcast(npc, "quest/completed", %{
       player: %{id: player.id, name: player.name},
       quest: %{id: quest.id}
