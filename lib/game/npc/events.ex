@@ -184,7 +184,7 @@ defmodule Game.NPC.Events do
   def act_on_character_died(%{target: nil}, _character, _from), do: :ok
 
   def act_on_character_died(state, character, _from) do
-    case Character.who(character) == Character.who(state.target) do
+    case Character.equal?(state.target, character) do
       true ->
         {:update, Map.put(state, :target, nil)}
 
@@ -226,7 +226,10 @@ defmodule Game.NPC.Events do
   end
 
   def who({:npc, npc}), do: %{type: "npc", name: npc.name}
+
   def who({:player, player}), do: %{type: "player", name: player.name}
+
+  def who(character), do: Map.take(character, [:type, :name])
 
   def npc(%{npc: npc, status: status}) when status != nil do
     {:npc, %{npc | status_line: status.line, status_listen: status.listen}}

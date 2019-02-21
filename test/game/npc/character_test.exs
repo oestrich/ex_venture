@@ -1,10 +1,11 @@
 defmodule Game.NPC.CharacterTest do
-  use ExUnit.Case
+  use Data.ModelCase
 
   import Test.ItemsHelper
   import Test.DamageTypesHelper
   import Test.Game.Room.Helpers
 
+  alias Game.Character, as: GameCharacter
   alias Game.NPC.Character
   alias Game.NPC.State
 
@@ -26,7 +27,7 @@ defmodule Game.NPC.CharacterTest do
 
   describe "tick - respawning the npc" do
     setup do
-      npc = %{
+      npc = %{base_npc() |
         id: 1,
         stats: %{health_points: 10, max_health_points: 15},
         status_line: "[name] is here",
@@ -42,7 +43,8 @@ defmodule Game.NPC.CharacterTest do
     test "respawns the npc", %{state: state, npc: npc} do
       start_room(%{id: 1})
 
-      state = %{state | npc: put_in(npc, [:stats, :health_points], 0)}
+      stats = %{npc.stats | health_points: 0}
+      state = %{state | npc: %{npc | stats: stats}}
 
       state = Character.handle_respawn(state)
 
@@ -54,7 +56,7 @@ defmodule Game.NPC.CharacterTest do
 
   describe "tick - cleaning up conversation state" do
     setup do
-      npc = %{id: 1}
+      npc = %{base_npc() | id: 1}
 
       time = Timex.now()
 
@@ -87,14 +89,14 @@ defmodule Game.NPC.CharacterTest do
         %{item_id: 2, drop_rate: 50},
       ]
 
-      npc = %{id: 1, name: "NPC", currency: 100, npc_items: npc_items}
+      npc = %{base_npc() | id: 1, name: "NPC", currency: 100, npc_items: npc_items}
       npc_spawner = %{id: 1, spawn_interval: 0}
 
       %{room_id: 1, npc: npc, npc_spawner: npc_spawner, target: nil}
     end
 
     test "triggers respawn", state do
-      _state = Character.died(state, {:npc, state.npc})
+      _state = Character.died(state, GameCharacter.to_simple(state.npc))
 
       assert_receive :respawn
     end
@@ -107,7 +109,7 @@ defmodule Game.NPC.CharacterTest do
 
     test "does not drop 0 currency", state do
       npc = %{state.npc | currency: 0}
-      _state = Character.died(%{state | npc: npc}, {:npc, state.npc})
+      _state = Character.died(%{state | npc: npc}, GameCharacter.to_simple(state.npc))
 
       refute_drop {_, {:npc, _}, {:currency, _}}
     end
@@ -117,7 +119,7 @@ defmodule Game.NPC.CharacterTest do
     end
 
     test "drops items in the room", state do
-      _state = Character.died(state, {:npc, state.npc})
+      _state = Character.died(state, GameCharacter.to_simple(state.npc))
 
       assert_drop {_, {:npc, _}, %{id: 1}}
       assert_drop {_, {:npc, _}, %{id: 2}}
@@ -135,8 +137,9 @@ defmodule Game.NPC.CharacterTest do
   describe "continuous effects" do
     setup do
       effect = %{id: :id, kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
-      from = {:player, %{id: 1, name: "Player"}}
-      npc = %{id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25, agility: 10}}
+      from = %{base_character(base_user()) | id: 1, name: "Player"}
+      from = GameCharacter.to_simple(from)
+      npc = %{base_npc() | id: 1, name: "NPC", currency: 0, npc_items: [], stats: %{health_points: 25, agility: 10}}
       npc_spawner = %{id: 1, spawn_interval: 0}
 
       state = %State{

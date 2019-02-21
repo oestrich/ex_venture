@@ -7,6 +7,7 @@ defmodule Game.NPC.EventsTest do
   alias Data.Events.RoomHeard
   alias Data.Events.StateTicked
   alias Game.Channel
+  alias Game.Character
   alias Game.Events.CharacterDied
   alias Game.Events.QuestCompleted
   alias Game.Events.RoomLeft
@@ -53,7 +54,7 @@ defmodule Game.NPC.EventsTest do
 
   describe "character/died" do
     setup do
-      npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
+      npc = %{base_npc() | id: 1, name: "Mayor", events: [], stats: base_stats()}
       user = %{base_user() | id: 2}
       character = %{base_character(user) | id: 2}
 
@@ -61,13 +62,13 @@ defmodule Game.NPC.EventsTest do
 
       start_room(%{npcs: [npc], players: [%{id: 1, name: "Player"}]})
 
-      event = %CharacterDied{character: {:player, character}, killer: {:npc, npc}}
+      event = %CharacterDied{character: Character.to_simple(character), killer: Character.to_simple(npc)}
 
       %{state: state, event: event}
     end
 
     test "clears the target if they were targetting the character", %{state: state, event: event} do
-      state = %{state | target: {:player, 2}}
+      state = %{state | target: %Character.Simple{type: "player", id: 2}}
       {:update, state} = Events.act_on(state, event)
       assert is_nil(state.target)
     end

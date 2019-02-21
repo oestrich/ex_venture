@@ -58,6 +58,21 @@ defmodule TestHelpers do
     }
   end
 
+  def base_npc() do
+    %NPC{
+      type: "npc",
+      original_id: 1,
+      name: "Bandit",
+      level: 1,
+      experience_points: 124,
+      currency: 0,
+      events: [],
+      status_line: "{name} is here.",
+      description: "{status_line}",
+      stats: base_stats(),
+    }
+  end
+
   def base_stats() do
     %{
       health_points: 50,

@@ -72,7 +72,7 @@ defmodule Game.NPC.Character do
   def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner}, who) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    event = %CharacterDied{character: {:npc, npc}, killer: who}
+    event = %CharacterDied{character: Character.to_simple(npc), killer: who}
     room_id |> Environment.notify({:npc, npc}, event)
 
     room_id |> Environment.leave({:npc, npc}, :death)
@@ -150,7 +150,7 @@ defmodule Game.NPC.Character do
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
   def apply_effects(state = %{npc: npc}, effects, from) do
     {stats, _effects, continuous_effects} =
-      Effects.apply_effects({:npc, npc}, npc.stats, state, effects, from)
+      Effects.apply_effects(Character.to_simple(npc), npc.stats, state, effects, from)
 
     npc = Map.put(npc, :stats, stats)
     state = %{state | npc: npc}

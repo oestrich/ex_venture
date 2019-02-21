@@ -10,7 +10,12 @@ defmodule Game.Character.Simple do
   @doc """
   Convert a character into their simple version
   """
+  def from_character(npc = %{type: "npc"}), do: from_npc(npc)
+
+  def from_character(player = %{type: "player"}), do: from_player(player)
+
   def from_character({:npc, npc}), do: {:npc, from_npc(npc)}
+
   def from_character({:player, player}), do: {:player, from_player(player)}
 
   @doc """

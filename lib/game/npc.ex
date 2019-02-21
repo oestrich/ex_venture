@@ -317,7 +317,7 @@ defmodule Game.NPC do
 
   def handle_cast({:apply_effects, effects, from, description}, state = %{npc: npc}) do
     Logger.info(
-      "Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})",
+      "Applying effects to NPC (#{npc.id}) from (#{from.type}, #{from.id})",
       type: :npc
     )
 

@@ -30,6 +30,10 @@ defmodule Game.Format do
 
   def skill_name(skill), do: Skills.skill_name(skill)
 
+  def target_name(npc = %{type: "npc"}), do: npc_name(npc)
+
+  def target_name(player = %{type: "player"}), do: player_name(player)
+
   def target_name({:npc, npc}), do: npc_name(npc)
 
   def target_name({:player, player}), do: player_name(player)

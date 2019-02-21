@@ -1,16 +1,17 @@
 defmodule Game.Command.TargetTest do
   use ExVenture.CommandCase
 
+  alias Game.Character
   alias Game.Command.Target
 
   doctest Target
 
   setup do
-    npc = %{id: 1, name: "Bandit"}
+    npc = %Character.Simple{id: 1, type: "npc", name: "Bandit"}
 
     start_room(%{
       npcs: [npc],
-      players: [%{id: 2, name: "Player", save: %{stats: %{health_points: 1}}}]
+      players: [%Character.Simple{id: 2, type: "player", name: "Player"}]
     })
 
     user = base_user()
@@ -22,7 +23,7 @@ defmodule Game.Command.TargetTest do
   test "set your target from someone in the room", %{state: state} do
     {:update, state} = Game.Command.Target.run({:set, "bandit"}, state)
 
-    assert state.target == {:npc, 1}
+    assert %{type: "npc", id: 1} = state.target
 
     assert_socket_echo "now targeting"
     assert_socket_gmcp {"Target.Character", _}
@@ -31,7 +32,7 @@ defmodule Game.Command.TargetTest do
   test "targeting another player", %{state: state} do
     {:update, state} = Game.Command.Target.run({:set, "player"}, state)
 
-    assert state.target == {:player, 2}
+    assert %{type: "player", id: 2} = state.target
 
     assert_socket_echo "now targeting"
     assert_socket_gmcp {"Target.Character", _}
@@ -40,21 +41,11 @@ defmodule Game.Command.TargetTest do
   test "targeting yourself", %{state: state} do
     {:update, state} = Game.Command.Target.run({:set, "self"}, state)
 
-    assert state.target == {:player, state.character.id}
+    character_id = state.character.id
+    assert %{type: "player", id: ^character_id} = state.target
 
     assert_socket_echo "now targeting"
     assert_socket_gmcp {"Target.Character", _}
-  end
-
-  test "cannot target another player if health is < 1", %{state: state} do
-    start_room(%{
-      npcs: [],
-      players: [%{id: 2, name: "Player", save: %{stats: %{health_points: -1}}}]
-    })
-
-    :ok = Game.Command.Target.run({:set, "player"}, state)
-
-    assert_socket_echo "could not"
   end
 
   test "target not found", %{state: state} do

@@ -26,6 +26,8 @@ defmodule Game.Character do
   @doc """
   Convert a character into a stripped down version
   """
+  def to_simple(character = %Simple{}), do: character
+
   def to_simple(character), do: Simple.from_character(character)
 
   @doc """
@@ -69,6 +71,17 @@ defmodule Game.Character do
   @spec notify(Character.t(), map()) :: :ok
   def notify(target, event) do
     GenServer.cast({:via, Via, who(target)}, {:notify, event})
+  end
+
+  @doc """
+  Check if a character equals another character, generaly the simple version
+  """
+  def equal?(nil, _target), do: false
+
+  def equal?(_character, nil), do: false
+
+  def equal?(character, target) do
+    character.type == target.type && character.id == target.id
   end
 
   @doc """

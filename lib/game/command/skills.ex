@@ -224,7 +224,7 @@ defmodule Game.Command.Skills do
   defp maybe_replace_target_with_self(state, skill, target) do
     case skill.require_target do
       true ->
-        {:ok, {:player, state.character.id}}
+        {:ok, Character.to_simple(state.character)}
 
       false ->
         {:ok, target}
@@ -281,11 +281,11 @@ defmodule Game.Command.Skills do
         Character.apply_effects(
           target,
           effects,
-          {:player, state.character},
-          FormatSkills.skill_usee(skill, user: {:player, state.character}, target: target)
+          Character.to_simple(state.character),
+          FormatSkills.skill_usee(skill, user: state.character, target: target)
         )
 
-        state |> Socket.echo(FormatSkills.skill_user(skill, {:player, state.character}, target))
+        state |> Socket.echo(FormatSkills.skill_user(skill, state.character, target))
         state |> GMCP.skill_state(skill, active: false)
 
         state =
@@ -321,17 +321,17 @@ defmodule Game.Command.Skills do
   end
 
   defp _maybe_change_target(state, target) do
-    case Character.who(target) == state.target do
+    case Character.equal?(state.target, target) do
       true ->
         {state, target}
 
       false ->
         case target do
-          {:npc, npc} ->
+          npc = %{type: "npc"} ->
             {:update, state} = Target.target_npc(npc, state, state)
             {state, target}
 
-          {:player, character} ->
+          character = %{type: "player"} ->
             {:update, state} = Target.target_player(character, state, state)
             {state, target}
         end
@@ -341,20 +341,20 @@ defmodule Game.Command.Skills do
   @doc """
   Find a target from state target
 
-      iex> Game.Command.Skills.find_target(%{npcs: []}, {:npc, 1})
+      iex> Game.Command.Skills.find_target(%{npcs: []}, %Character.Simple{type: "npc", id: 1})
       {:error, :not_found}
 
-      iex> Game.Command.Skills.find_target(%{npcs: [%{id: 1, name: "Bandit"}]}, {:npc, 1})
-      {:ok, {:npc, %{id: 1, name: "Bandit"}}}
+      iex> Game.Command.Skills.find_target(%{npcs: [%{id: 1, name: "Bandit"}]}, %Character.Simple{type: "npc", id: 1})
+      {:ok, %{id: 1, name: "Bandit"}}
 
-      iex> Game.Command.Skills.find_target(%{players: []}, {:player, 1})
+      iex> Game.Command.Skills.find_target(%{players: []}, %Character.Simple{type: "player", id: 1})
       {:error, :not_found}
 
-      iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}]}, {:player, 1})
-      {:ok, {:player, %{id: 1, name: "Bandit"}}}
+      iex> Game.Command.Skills.find_target(%{players: [%{id: 1, name: "Bandit"}]}, %Character.Simple{type: "player", id: 1})
+      {:ok, %{id: 1, name: "Bandit"}}
 
-      iex> Game.Command.Skills.find_target(%{}, %{players: [%{id: 1, name: "Bandit"}], npcs: []}, {:player, 2}, "bandit")
-      {:ok, {:player, %{id: 1, name: "Bandit"}}}
+      iex> Game.Command.Skills.find_target(%{}, %{players: [%{id: 1, name: "Bandit"}], npcs: []}, %Character.Simple{type: "player", id: 2}, "bandit")
+      {:ok, %{id: 1, name: "Bandit"}}
   """
   @spec find_target(Room.t(), Character.t(), String.t()) :: Character.t()
   def find_target(state, room, target, new_target \\ "")
@@ -377,7 +377,7 @@ defmodule Game.Command.Skills do
         {:error, :not_found}
 
       npc ->
-        {:ok, {:npc, npc}}
+        {:ok, npc}
     end
   end
 
@@ -387,27 +387,7 @@ defmodule Game.Command.Skills do
         {:error, :not_found}
 
       player ->
-        {:ok, {:player, player}}
-    end
-  end
-
-  def find_target(%{npcs: npcs}, {:npc, id}) do
-    case Enum.find(npcs, &(&1.id == id)) do
-      nil ->
-        {:error, :not_found}
-
-      npc ->
-        {:ok, {:npc, npc}}
-    end
-  end
-
-  def find_target(%{players: players}, {:player, id}) do
-    case Enum.find(players, &(&1.id == id)) do
-      nil ->
-        {:error, :not_found}
-
-      player ->
-        {:ok, {:player, player}}
+        {:ok, player}
     end
   end
 

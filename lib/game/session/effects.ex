@@ -59,7 +59,7 @@ defmodule Game.Session.Effects do
       when health_points < 1 do
     player |> maybe_transport_to_graveyard()
 
-    event = %CharacterDied{character: {:player, player}, killer: from}
+    event = %CharacterDied{character: Character.to_simple(player), killer: from}
     Environment.notify(state.save.room_id, {:player, player}, event)
 
     :ok

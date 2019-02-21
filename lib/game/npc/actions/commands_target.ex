@@ -34,7 +34,8 @@ defmodule Game.NPC.Actions.CommandsTarget do
   """
   def start_combat(state, options) do
     with true <- check_target_allowed(options) do
-      Character.being_targeted(options.character, Events.npc(state))
+      {:npc, npc} = Events.npc(state)
+      Character.being_targeted(options.character, Character.to_simple(npc))
 
       state =
         state

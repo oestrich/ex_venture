@@ -3,6 +3,7 @@ defmodule Game.Session.EffectsTest do
 
   import Test.DamageTypesHelper
 
+  alias Game.Character
   alias Game.Session.Effects
 
   setup do
@@ -16,12 +17,14 @@ defmodule Game.Session.EffectsTest do
       reverse_boost: 20,
     })
 
-    user = %{id: 2, name: "user", save: base_save(), class: class_attributes(%{})}
-    stats = %{user.save.stats | health_points: 25, agility: 10}
+    user = base_user()
+    character = %{base_character(user) | id: 2, name: "user", save: base_save(), class: class_attributes(%{})}
+    stats = %{character.save.stats | health_points: 25, agility: 10}
 
     state = session_state(%{
       user: user,
-      save: %{user.save | room_id: 1, experience_points: 10, stats: stats},
+      character: character,
+      save: %{character.save | room_id: 1, experience_points: 10, stats: stats},
       is_targeting: MapSet.new(),
     })
 
@@ -30,7 +33,7 @@ defmodule Game.Session.EffectsTest do
 
   describe "continuous effects" do
     setup %{state: state} do
-      from = {:npc, %{id: 1, name: "Bandit"}}
+      from = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
       effect = %{id: :id, kind: "damage/over-time", type: "slashing", every: 10, count: 3, amount: 15}
       state = %{state | continuous_effects: [{from, effect}]}
 

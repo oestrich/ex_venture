@@ -112,8 +112,7 @@ defmodule Game.Session.GMCP do
   Send the player's target info
   """
   def target(state, character) do
-    state
-    |> Socket.push_gmcp("Target.Character", character |> character_info() |> Poison.encode!())
+    Socket.push_gmcp(state, "Target.Character", character |> character_info() |> Poison.encode!())
   end
 
   @doc """
@@ -307,8 +306,14 @@ defmodule Game.Session.GMCP do
   @doc """
   Get info for an NPC or a User
   """
+  def character_info(player = %{type: "player"}), do: player_info(player)
+
+  def character_info(npc = %{type: "npc"}), do: npc_info(npc)
+
   def character_info({:player, player}), do: player_info(player)
+
   def character_info({:npc, npc}), do: npc_info(npc)
+
   def character_info({:gossip, player_name}), do: gossip_info(player_name)
 
   @doc """
