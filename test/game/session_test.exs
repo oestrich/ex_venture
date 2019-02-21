@@ -569,7 +569,7 @@ defmodule Game.SessionTest do
       instance = item_instance(1)
 
       state = %{state | user: %{save: nil}, save: %{items: []}}
-      event = %ItemReceived{character: {:npc, %{name: "Guard"}}, instance: instance}
+      event = %ItemReceived{character: %{type: "npc", name: "Guard"}, instance: instance}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 

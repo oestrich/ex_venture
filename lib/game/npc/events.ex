@@ -198,7 +198,7 @@ defmodule Game.NPC.Events do
   """
   def act_on_item_receive(state, character, item_instance)
 
-  def act_on_item_receive(state, {:player, player}, item_instance) do
+  def act_on_item_receive(state, player = %{type: "player"}, item_instance) do
     npc = %{state.npc | id: state.npc.original_id}
     Quest.track_progress(player, {:item, item_instance, npc})
     :ok
