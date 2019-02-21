@@ -7,6 +7,7 @@ defmodule Game.SessionTest do
   alias Game.Events.CharacterDied
   alias Game.Events.CurrencyReceived
   alias Game.Events.ItemReceived
+  alias Game.Events.MailReceived
   alias Game.Events.RoomEntered
   alias Game.Events.RoomHeard
   alias Game.Events.RoomLeft
@@ -552,7 +553,7 @@ defmodule Game.SessionTest do
     test "new mail received", %{state: state} do
       mail = %Mail{id: 1, sender: %{id: 10, name: "Player"}}
 
-      {:noreply, ^state} = Process.handle_cast({:notify, {"mail/new", mail}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, %MailReceived{mail: mail}}, state)
 
       assert_socket_echo "new mail"
     end

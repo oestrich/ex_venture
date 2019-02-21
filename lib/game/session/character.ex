@@ -10,6 +10,7 @@ defmodule Game.Session.Character do
   alias Game.Events.CurrencyReceived
   alias Game.Events.ItemDropped
   alias Game.Events.ItemReceived
+  alias Game.Events.MailReceived
   alias Game.Events.PlayerSignedIn
   alias Game.Events.PlayerSignedOut
   alias Game.Events.RoomEntered
@@ -145,7 +146,7 @@ defmodule Game.Session.Character do
     Player.update_save(state, save)
   end
 
-  def notify(state, {"mail/new", mail}) do
+  def notify(state, %MailReceived{mail: mail}) do
     state
     |> Socket.echo("You have new mail. {command}mail read #{mail.id}{/command} to read it.")
 
