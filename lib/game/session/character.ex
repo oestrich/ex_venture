@@ -18,6 +18,7 @@ defmodule Game.Session.Character do
   alias Game.Events.RoomLeft
   alias Game.Events.RoomOverheard
   alias Game.Events.RoomWhispered
+  alias Game.Events.QuestReceived
   alias Game.Experience
   alias Game.Format
   alias Game.Format.Effects, as: FormatEffects
@@ -242,12 +243,10 @@ defmodule Game.Session.Character do
     state
   end
 
-  def notify(state, {"quest/new", quest}) do
-    state
-    |> Socket.echo("You received a new quest, #{Format.Quests.quest_name(quest)} (#{quest.id}).")
-
+  def notify(state, %QuestReceived{quest: quest}) do
+    message = "You received a new quest, #{Format.Quests.quest_name(quest)} (#{quest.id})."
+    Socket.echo(state, message)
     Hint.gate(state, "quests.new", id: quest.id)
-
     Quest.track_quest(state.character, quest.id)
 
     state
