@@ -39,7 +39,7 @@ defmodule Game.NPC.Actions.CommandsTarget do
       state =
         state
         |> Map.put(:combat, true)
-        |> Map.put(:target, Character.who(options.character))
+        |> Map.put(:target, options.character)
 
       Events.notify_delayed(%CombatTicked{}, 1500)
 
@@ -51,11 +51,11 @@ defmodule Game.NPC.Actions.CommandsTarget do
   end
 
   def check_target_allowed(options) do
-    case options.character do
-      {:player, _} ->
+    case options.character.type do
+      "player" ->
         Map.get(options, :player, false)
 
-      {:npc, _} ->
+      "npc" ->
         Map.get(options, :npc, false)
     end
   end

@@ -51,17 +51,21 @@ defmodule Game.NPC.Actions do
 
   defp maybe_add_character_option(action = %Events.Actions.CommandsSkill{}, character) do
     options = Map.get(action, :options) || %{}
-    options = Map.put(options, :character, character)
+    options = Map.put(options, :character, unwrap_character(character))
     %{action | options: options}
   end
 
   defp maybe_add_character_option(action = %Events.Actions.CommandsTarget{}, character) do
     options = Map.get(action, :options) || %{}
-    options = Map.put(options, :character, character)
+    options = Map.put(options, :character, unwrap_character(character))
     %{action | options: options}
   end
 
   defp maybe_add_character_option(action, _character), do: action
+
+  defp unwrap_character({_, character}), do: character
+
+  defp unwrap_character(character), do: character
 
   @doc """
   Calculate a delay for an action

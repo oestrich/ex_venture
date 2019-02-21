@@ -225,8 +225,8 @@ defmodule Game.NPC.Events do
     Web.Endpoint.broadcast("npc:#{id}", event, message)
   end
 
-  def who({:npc, npc}), do: %{type: :npc, name: npc.name}
-  def who({:player, player}), do: %{type: :player, name: player.name}
+  def who({:npc, npc}), do: %{type: "npc", name: npc.name}
+  def who({:player, player}), do: %{type: "player", name: player.name}
 
   def npc(%{npc: npc, status: status}) when status != nil do
     {:npc, %{npc | status_line: status.line, status_listen: status.listen}}

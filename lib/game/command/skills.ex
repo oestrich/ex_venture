@@ -6,6 +6,7 @@ defmodule Game.Command.Skills do
   use Game.Command
 
   alias Game.Character
+  alias Game.Character.Simple, as: CharacterSimple
   alias Game.Command
   alias Game.Command.Target
   alias Game.Effect
@@ -369,6 +370,26 @@ defmodule Game.Command.Skills do
   end
 
   def find_target(_state, room, character, _), do: find_target(room, character)
+
+  def find_target(%{npcs: npcs}, %CharacterSimple{type: "npc", id: id}) do
+    case Enum.find(npcs, &(&1.id == id)) do
+      nil ->
+        {:error, :not_found}
+
+      npc ->
+        {:ok, {:npc, npc}}
+    end
+  end
+
+  def find_target(%{players: players}, %CharacterSimple{type: "player", id: id}) do
+    case Enum.find(players, &(&1.id == id)) do
+      nil ->
+        {:error, :not_found}
+
+      player ->
+        {:ok, {:player, player}}
+    end
+  end
 
   def find_target(%{npcs: npcs}, {:npc, id}) do
     case Enum.find(npcs, &(&1.id == id)) do

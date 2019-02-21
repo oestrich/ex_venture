@@ -13,7 +13,7 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
 
   describe "using skills" do
     test "uses the skill", %{state: state, action: action, player: player} do
-      state = %{state | combat: true, target: {:player, player}}
+      state = %{state | combat: true, target: player}
 
       {:ok, ^state} = CommandsSkill.act(state, action)
 
@@ -21,7 +21,7 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
     end
 
     test "no skill found", %{state: state, action: action, player: player} do
-      state = %{state | combat: true, target: {:player, player}}
+      state = %{state | combat: true, target: player}
       action = %{action | options: %{skill: "bash"}}
 
       {:ok, ^state} = CommandsSkill.act(state, action)
@@ -41,7 +41,7 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
     test "with target not in the room", %{state: state, action: action, player: player} do
       start_room(%{players: []})
 
-      state = %{state | combat: true, target: {:player, player}}
+      state = %{state | combat: true, target: player}
 
       {:ok, state} = CommandsSkill.act(state, action)
 

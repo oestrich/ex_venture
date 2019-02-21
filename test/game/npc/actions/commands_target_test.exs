@@ -14,9 +14,9 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
 
   describe "acting" do
     test "targets the player", %{state: state} do
-      player = %Character.Simple{type: :npc, id: 1}
+      player = %Character.Simple{id: 1, type: "player"}
       action = %Actions.CommandsTarget{
-        options: %{player: true, character: {:player, player}}
+        options: %{player: true, character: player}
       }
 
       {:ok, state} = CommandsTarget.act(state, action)
@@ -26,9 +26,9 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
     end
 
     test "will not target the player", %{state: state} do
-      player = %Character.Simple{type: :npc, id: 1}
+      player = %Character.Simple{id: 1, type: "player"}
       action = %Actions.CommandsTarget{
-        options: %{player: false, character: {:player, player}}
+        options: %{player: false, character: player}
       }
 
       {:ok, state} = CommandsTarget.act(state, action)
@@ -38,9 +38,9 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
     end
 
     test "targets an npc", %{state: state} do
-      npc = %Character.Simple{type: :npc, id: 1}
+      npc = %Character.Simple{id: 1, type: "npc"}
       action = %Actions.CommandsTarget{
-        options: %{npc: true, character: {:npc, npc}}
+        options: %{npc: true, character: npc}
       }
 
       {:ok, state} = CommandsTarget.act(state, action)
@@ -50,9 +50,9 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
     end
 
     test "will not target an npc", %{state: state} do
-      npc = %Character.Simple{type: :npc, id: 1}
+      npc = %Character.Simple{id: 1, type: "npc"}
       action = %Actions.CommandsTarget{
-        options: %{npc: false, character: {:npc, npc}}
+        options: %{npc: false, character: npc}
       }
 
       {:ok, state} = CommandsTarget.act(state, action)
@@ -64,9 +64,9 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
     test "already in combat", %{state: state} do
       state = %{state | combat: true}
 
-      player = %Character.Simple{id: 1}
+      player = %Character.Simple{id: 1, type: "player"}
       action = %Actions.CommandsTarget{
-        options: %{player: true, character: {:player, player}}
+        options: %{player: true, character: player}
       }
 
       {:ok, state} = CommandsTarget.act(state, action)
@@ -76,9 +76,9 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
     end
 
     test "already has a target", %{state: state} do
-      player = %Character.Simple{id: 1}
+      player = %Character.Simple{id: 1, type: "player"}
       action = %Actions.CommandsTarget{
-        options: %{player: true, character: {:player, player}}
+        options: %{player: true, character: player}
       }
 
       state = %{state | target: {:player, player}}

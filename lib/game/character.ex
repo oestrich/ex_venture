@@ -77,8 +77,14 @@ defmodule Game.Character do
   @spec who({:npc, integer()} | {:npc, NPC.t()}) :: {:npc, integer()}
   @spec who({:player, integer()} | {:player, User.t()}) :: {:player, integer()}
   def who(target)
+
+  def who(character = %Simple{}), do: character
+
   def who({:npc, id}) when is_integer(id), do: {:npc, id}
+
   def who({:npc, npc}), do: {:npc, npc.id}
+
   def who({:player, id}) when is_integer(id), do: {:player, id}
+
   def who({:player, player}), do: {:player, player.id}
 end
