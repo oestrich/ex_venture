@@ -1,6 +1,7 @@
 defmodule Game.Command.SayTest do
   use ExVenture.CommandCase
 
+  alias Game.Character
   alias Game.Command.Say
   alias Game.Command.Say.ParsedMessage
   alias Game.Events.RoomHeard
@@ -33,8 +34,8 @@ defmodule Game.Command.SayTest do
 
   describe "say to someone" do
     test "to a player", %{state: state} do
-      player = %{id: 1, name: "Player"}
-      start_room(%{players: [player]})
+      player = %{base_character(base_user()) | id: 1, name: "Player"}
+      start_room(%{players: [Character.to_simple(player)]})
 
       :ok = Say.run({">player hi"}, state)
 
@@ -44,7 +45,7 @@ defmodule Game.Command.SayTest do
 
     test "to an npc", %{state: state} do
       guard = create_npc(%{name: "Guard"})
-      start_room(%{npcs: [guard]})
+      start_room(%{npcs: [Character.to_simple(guard)]})
 
       :ok = Say.run({">guard hi"}, state)
 

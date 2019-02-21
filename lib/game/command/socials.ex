@@ -133,7 +133,7 @@ defmodule Game.Command.Socials do
             message = gettext("\"%{name}\" could not be found.", name: character_name)
             state |> Socket.echo(message)
 
-          character ->
+          {:ok, character} ->
             emote = FormatSocials.social_with_target(social, state.character, character)
 
             message = Message.social(state.character, emote)

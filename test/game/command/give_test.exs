@@ -1,6 +1,7 @@
 defmodule Game.Command.GiveTest do
   use ExVenture.CommandCase
 
+  alias Game.Character
   alias Game.Command.Give
 
   doctest Give
@@ -14,8 +15,8 @@ defmodule Game.Command.GiveTest do
   describe "giving items away" do
     setup %{state: state} do
       start_room(%{
-        npcs: [npc_attributes(%{id: 1, name: "Guard"})],
-        players: [user_attributes(%{id: 1, name: "Player"})],
+        npcs: [Character.to_simple(%{base_npc() | id: 1, name: "Guard"})],
+        players: [Character.to_simple(%{base_character(base_user()) | id: 1, name: "Player"})],
       })
 
       start_and_clear_items()

@@ -81,8 +81,8 @@ defmodule Game.NPC.EventsTest do
   describe "room/left" do
     test "clears the target when player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
-      state = %State{room_id: 1, npc: npc, target: {:player, 2}, combat: true}
-      event = %RoomLeft{character: {:player, %{id: 2, name: "Player"}}, reason: {:leave, "north"}}
+      state = %State{room_id: 1, npc: npc, target: %Character.Simple{type: "player", id: 2}, combat: true}
+      event = %RoomLeft{character: {:player, %{type: "player", id: 2, name: "Player"}}, reason: {:leave, "north"}}
 
       {:update, state} = Events.act_on(state, event)
 
@@ -92,8 +92,8 @@ defmodule Game.NPC.EventsTest do
 
     test "does not touch the target if another player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
-      state = %State{room_id: 1, npc: npc, target: {:player, 2}}
-      event = %RoomLeft{character: {:player, %{id: 3, name: "Player"}}, reason: {:leave, "north"}}
+      state = %State{room_id: 1, npc: npc, target: %Character.Simple{type: "player", id: 2}}
+      event = %RoomLeft{character: {:player, %{type: "player", id: 3, name: "Player"}}, reason: {:leave, "north"}}
 
       :ok = Events.act_on(state, event)
     end

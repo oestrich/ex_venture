@@ -1,6 +1,7 @@
 defmodule Game.Command.WhisperTest do
   use ExVenture.CommandCase
 
+  alias Game.Character
   alias Game.Command.Whisper
 
   doctest Whisper
@@ -13,8 +14,8 @@ defmodule Game.Command.WhisperTest do
 
   describe "whisper to someone" do
     test "to a player", %{state: state} do
-      player = %{id: 1, name: "Player"}
-      start_room(%{players: [player]})
+      player = %{base_character(base_user()) | id: 1, name: "Player"}
+      start_room(%{players: [Character.to_simple(player)]})
 
       :ok = Whisper.run({:whisper, "player hi"}, state)
 
@@ -23,7 +24,7 @@ defmodule Game.Command.WhisperTest do
 
     test "to an npc", %{state: state} do
       guard = create_npc(%{name: "Guard"})
-      start_room(%{npcs: [guard]})
+      start_room(%{npcs: [Character.to_simple(guard)]})
 
       :ok = Whisper.run({:whisper, "guard hi"}, state)
 

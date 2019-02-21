@@ -4,6 +4,7 @@ defmodule Game.Command.SocialsTest do
   import Test.SocialsHelper
 
   alias Data.Social
+  alias Game.Character
   alias Game.Command.Socials
 
   doctest Socials
@@ -68,7 +69,7 @@ defmodule Game.Command.SocialsTest do
   describe "using a social" do
     test "with a target", %{state: state} do
       guard = create_npc(%{name: "Guard"})
-      start_room(%{npcs: [guard]})
+      start_room(%{npcs: [Character.to_simple(guard)]})
 
       :ok = Socials.run({"smile", "guard"}, state)
 
