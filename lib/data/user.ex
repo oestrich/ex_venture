@@ -59,21 +59,32 @@ defmodule Data.User do
     "builder" in user.flags
   end
 
-  def changeset(struct, params) do
+  def create_changeset(struct, params) do
     struct
     |> cast(params, [
       :name,
       :email,
       :password,
       :password_confirmation,
-      :flags,
-      :notes
     ])
     |> validate_required([:name])
     |> validate_name()
     |> validate_format(:email, ~r/.+@.+\..+/)
     |> ensure(:flags, [])
     |> ensure(:token, UUID.uuid4())
+    |> hash_password()
+    |> validate_required([:password, :password_hash])
+    |> validate_confirmation(:password)
+    |> unique_constraint(:name, name: :users_lower_name_index)
+    |> unique_constraint(:email)
+  end
+
+  def update_changeset(struct, params) do
+    struct
+    |> cast(params, [:name, :email, :password, :password_confirmation, :flags, :notes])
+    |> validate_required([:name])
+    |> validate_name()
+    |> validate_format(:email, ~r/.+@.+\..+/)
     |> hash_password()
     |> validate_required([:password_hash])
     |> validate_confirmation(:password)

@@ -105,13 +105,28 @@ defmodule TestHelpers do
     Map.merge(%{
       name: "user",
       password: "password",
+      password_confirmation: "password",
     }, attributes)
   end
 
   def create_user(attributes \\ %{name: "player", password: "password"}) do
     %User{}
-    |> User.changeset(user_attributes(attributes))
+    |> User.create_changeset(user_attributes(attributes))
     |> Repo.insert!()
+  end
+
+  def create_admin_user(attributes \\ %{}) do
+    %User{}
+    |> User.create_changeset(user_attributes(attributes))
+    |> Repo.insert!()
+    |> Ecto.Changeset.change(%{flags: ["admin"]})
+    |> Repo.update!()
+  end
+
+  def set_user_flags(user, flags) do
+    user
+    |> Ecto.Changeset.change(%{flags: flags})
+    |> Repo.update!()
   end
 
   def character_attributes(attributes) do

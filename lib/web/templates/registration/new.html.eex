@@ -55,7 +55,7 @@
       <div class="form-group has-feedback mt-3">
         <%= label f, :password %>
         <%= text_input f, :password, type: "password", class: "form-control", placeholder: "Password" %>
-        <%= error_tag f, :password_hash %>
+        <%= error_tag f, :password %>
       </div>
 
       <div class="form-group has-feedback">

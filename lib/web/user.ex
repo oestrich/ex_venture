@@ -97,13 +97,13 @@ defmodule Web.User do
   Get a changeset for a new page
   """
   @spec new() :: changeset :: map
-  def new(), do: %User{} |> User.changeset(%{})
+  def new(), do: %User{} |> User.create_changeset(%{})
 
   @doc """
   Get a changeset for an edit page
   """
   @spec edit(User.t()) :: changeset :: map
-  def edit(user), do: user |> User.changeset(%{})
+  def edit(user), do: user |> User.update_changeset(%{})
 
   @doc """
   Get a changeset for an edit page
@@ -157,7 +157,7 @@ defmodule Web.User do
 
   defp create_user(params) do
     %User{}
-    |> User.changeset(params)
+    |> User.create_changeset(params)
     |> Repo.insert()
   end
 
@@ -166,11 +166,12 @@ defmodule Web.User do
   """
   @spec update(integer(), map()) :: {:ok, User.t()} | {:error, changeset :: map}
   def update(id, params) do
-    user = id |> get()
+    user = get(id)
+
     case is_nil(user.provider) do
       true ->
         user
-        |> User.changeset(cast_params(params))
+        |> User.update_changeset(cast_params(params))
         |> Repo.update()
 
       false ->
