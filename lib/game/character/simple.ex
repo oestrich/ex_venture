@@ -18,7 +18,7 @@ defmodule Game.Character.Simple do
   """
   def from_player(player) do
     %__MODULE__{
-      type: :player,
+      type: player.type,
       id: player.id,
       name: player.name,
       extra: %{
@@ -35,20 +35,22 @@ defmodule Game.Character.Simple do
   Convert an NPC to the simple version
   """
   def from_npc(npc) do
+    extra =
+      Map.take(npc, [
+        :original_id,
+        :status_line,
+        :status_listen,
+        :description,
+        :is_quest_giver,
+        :is_trainer,
+        :trainable_skills
+      ])
+
     %__MODULE__{
-      type: :npc,
+      type: npc.type,
       id: npc.id,
       name: npc.name,
-      extra:
-        Map.take(npc, [
-          :original_id,
-          :status_line,
-          :status_listen,
-          :description,
-          :is_quest_giver,
-          :is_trainer,
-          :trainable_skills
-        ])
+      extra: extra
     }
   end
 end

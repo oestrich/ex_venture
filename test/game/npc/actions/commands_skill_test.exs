@@ -60,7 +60,7 @@ defmodule Game.NPC.Actions.CommandsSkillTest do
 
     player = %Character.Simple{
       id: 1,
-      type: :player,
+      type: "player",
       name: "Player",
     }
 

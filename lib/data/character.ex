@@ -14,6 +14,8 @@ defmodule Data.Character do
   alias Data.User
 
   schema "characters" do
+    field(:type, :string, virtual: true, default: "player")
+
     field(:name, :string)
     field(:save, Save)
     field(:flags, {:array, :string})

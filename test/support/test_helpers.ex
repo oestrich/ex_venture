@@ -352,6 +352,7 @@ defmodule TestHelpers do
 
   def npc_attributes(attributes) do
     Map.merge(%{
+      type: "npc",
       original_id: 1,
       name: "Bandit",
       level: 1,
