@@ -6,7 +6,7 @@ defmodule Game.Command.CrashTest do
   doctest Crash
 
   setup do
-    user = create_user(%{name: "user", password: "password", flags: ["admin"]})
+    user = create_admin_user(%{name: "user", password: "password"})
     %{state: %{socket: :socket, user: user, save: %{room_id: 10}}}
   end
 

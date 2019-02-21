@@ -7,7 +7,7 @@ defmodule Web.Admin.DashboardControllerTest do
   end
 
   test "user token and an admin allows in", %{conn: conn} do
-    user = create_user(%{name: "user", password: "password", flags: ["admin"]})
+    user = create_admin_user(%{name: "user", password: "password"})
     character = create_character(user, %{name: "user"})
     user = %{user | characters: [character]}
     conn = conn |> assign(:current_user, user)
@@ -17,7 +17,7 @@ defmodule Web.Admin.DashboardControllerTest do
   end
 
   test "user token and a builder allows in", %{conn: conn} do
-    user = create_user(%{name: "user", password: "password", flags: ["builder"]})
+    user = create_admin_user(%{name: "user", password: "password"})
     character = create_character(user, %{name: "user"})
     user = %{user | characters: [character]}
     conn = conn |> assign(:current_user, user)

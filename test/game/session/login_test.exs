@@ -45,6 +45,7 @@ defmodule Game.Session.LoginTest do
 
   test "user has been disabled", %{state: state} do
     user = create_user(%{name: "user", password: "password", flags: ["disabled"]})
+    user = set_user_flags(user, ["disabled"])
     character = create_character(user, %{name: "user"})
 
     state = Login.sign_in(character.id, %{state | login: %{name: "user"}})

@@ -67,7 +67,7 @@ defmodule Game.Account do
 
   defp create_account(attributes) do
     %User{}
-    |> User.changeset(attributes)
+    |> User.create_changeset(attributes)
     |> Repo.insert()
   end
 
