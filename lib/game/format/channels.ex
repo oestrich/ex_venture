@@ -12,7 +12,7 @@ defmodule Game.Format.Channels do
 
   Example:
 
-      iex> Channels.channel_say(%{name: "global", color: "red"}, {:npc, %{name: "NPC"}}, %{message: "Hello"})
+      iex> Channels.channel_say(%{name: "global", color: "red"}, %{type: "npc", name: "NPC"}, %{message: "Hello"})
       ~s(\\\\[{red}global{/red}\\\\] {npc}NPC{/npc} says, {say}"Hello"{/say})
   """
   @spec channel_say(String.t(), Character.t(), map()) :: String.t()
@@ -39,13 +39,13 @@ defmodule Game.Format.Channels do
       iex> Channels.say(:you, %{message: "Hello"})
       ~s[You say, {say}"Hello"{/say}]
 
-      iex> Channels.say({:npc, %{name: "NPC"}}, %{message: "Hello"})
+      iex> Channels.say(%{type: "npc", name: "NPC"}, %{message: "Hello"})
       ~s[{npc}NPC{/npc} says, {say}"Hello"{/say}]
 
-      iex> Channels.say({:player, %{name: "Player"}}, %{message: "Hello"})
+      iex> Channels.say(%{type: "player", name: "Player"}, %{message: "Hello"})
       ~s[{player}Player{/player} says, {say}"Hello"{/say}]
 
-      iex> Channels.say({:player, %{name: "Player"}}, %{adverb_phrase: "softly", message: "Hello"})
+      iex> Channels.say(%{type: "player", name: "Player"}, %{adverb_phrase: "softly", message: "Hello"})
       ~s[{player}Player{/player} says softly, {say}"Hello"{/say}]
   """
   @spec say(Character.t(), map()) :: String.t()
@@ -69,19 +69,19 @@ defmodule Game.Format.Channels do
 
   Example:
 
-      iex> Channels.say_to(:you, {:player, %{name: "Player"}}, %{message: "Hello"})
+      iex> Channels.say_to(:you, %{type: "player", name: "Player"}, %{message: "Hello"})
       ~s[You say to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Channels.say_to(:you, {:player, %{name: "Player"}}, %{message: "Hello", adverb_phrase: "softly"})
+      iex> Channels.say_to(:you, %{type: "player", name: "Player"}, %{message: "Hello", adverb_phrase: "softly"})
       ~s[You say softly to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Channels.say_to({:npc, %{name: "NPC"}}, {:player, %{name: "Player"}}, %{message: "Hello"})
+      iex> Channels.say_to(%{type: "npc", name: "NPC"}, %{type: "player", name: "Player"}, %{message: "Hello"})
       ~s[{npc}NPC{/npc} says to {player}Player{/player}, {say}"Hello"{/say}]
 
-      iex> Channels.say_to({:player, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello"})
+      iex> Channels.say_to(%{type: "player", name: "Player"}, %{type: "npc", name: "Guard"}, %{message: "Hello"})
       ~s[{player}Player{/player} says to {npc}Guard{/npc}, {say}"Hello"{/say}]
 
-      iex> Channels.say_to({:player, %{name: "Player"}}, {:npc, %{name: "Guard"}}, %{message: "Hello", adverb_phrase: "softly"})
+      iex> Channels.say_to(%{type: "player", name: "Player"}, %{type: "npc", name: "Guard"}, %{message: "Hello", adverb_phrase: "softly"})
       ~s[{player}Player{/player} says softly to {npc}Guard{/npc}, {say}"Hello"{/say}]
   """
   @spec say_to(Character.t(), Character.t(), map()) :: String.t()
@@ -107,10 +107,10 @@ defmodule Game.Format.Channels do
 
   Example:
 
-      iex> Channels.emote({:npc, %{name: "NPC"}}, "does something")
+      iex> Channels.emote(%{type: "npc", name: "NPC"}, "does something")
       ~s[{npc}NPC{/npc} {say}does something{/say}]
 
-      iex> Channels.emote({:player, %{name: "Player"}}, "does something")
+      iex> Channels.emote(%{type: "player", name: "Player"}, "does something")
       ~s[{player}Player{/player} {say}does something{/say}]
   """
   @spec emote(Character.t(), String.t()) :: String.t()
@@ -121,7 +121,7 @@ defmodule Game.Format.Channels do
   @doc """
   Format a whisper message
 
-      iex> Channels.whisper({:player, %{name: "Player"}}, "secret message")
+      iex> Channels.whisper(%{type: "player", name: "Player"}, "secret message")
       ~s[{player}Player{/player} whispers to you, {say}"secret message"{/say}]
   """
   @spec whisper(Character.t(), String.t()) :: String.t()
@@ -135,7 +135,7 @@ defmodule Game.Format.Channels do
   @doc """
   Format a whisper message from the player
 
-      iex> Channels.send_whisper({:player, %{name: "Player"}}, "secret message")
+      iex> Channels.send_whisper(%{type: "player", name: "Player"}, "secret message")
       ~s[You whisper to {player}Player{/player}, {say}"secret message"{/say}]
   """
   @spec send_whisper(Character.t(), String.t()) :: String.t()
@@ -149,7 +149,7 @@ defmodule Game.Format.Channels do
   @doc """
   Format a whisper overheard message for others in the room
 
-      iex> Channels.whisper_overheard({:player, %{name: "Player"}}, {:npc, %{name: "Guard"}})
+      iex> Channels.whisper_overheard(%{type: "player", name: "Player"}, %{type: "npc", name: "Guard"})
       ~s[You overhear {player}Player{/player} whispering to {npc}Guard{/npc}.]
   """
   @spec whisper_overheard(Character.t(), String.t()) :: String.t()
@@ -163,7 +163,7 @@ defmodule Game.Format.Channels do
   @doc """
   Format a tell message
 
-      iex> Channels.tell({:player, %{name: "Player"}}, "secret message")
+      iex> Channels.tell(%{type: "player", name: "Player"}, "secret message")
       ~s[{player}Player{/player} tells you, {say}"secret message"{/say}]
   """
   @spec tell(Character.t(), String.t()) :: String.t()
@@ -177,7 +177,7 @@ defmodule Game.Format.Channels do
   @doc """
   Format a tell message, for display of the sender
 
-      iex> Channels.send_tell({:player, %{name: "Player"}}, "secret message")
+      iex> Channels.send_tell(%{type: "player", name: "Player"}, "secret message")
       ~s[You tell {player}Player{/player}, {say}"secret message"{/say}]
   """
   @spec send_tell(Character.t(), String.t()) :: String.t()
