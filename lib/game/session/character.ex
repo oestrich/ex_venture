@@ -136,13 +136,13 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state = %{save: save}, %ItemReceived{character: character, instance: instance}) do
+  def notify(state, %ItemReceived{character: character, instance: instance}) do
     item = Items.item(instance)
 
     state
     |> Socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}.")
 
-    save = %{save | items: [instance | save.items]}
+    save = %{state.save | items: [instance | state.save.items]}
     Player.update_save(state, save)
   end
 
