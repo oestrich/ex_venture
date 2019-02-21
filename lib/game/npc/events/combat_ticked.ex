@@ -4,6 +4,7 @@ defmodule Game.NPC.Events.CombatTicked do
   """
 
   alias Data.Events.CombatTicked
+  alias Game.Events.CombatTicked, as: GameCombatTicked
   alias Game.NPC.Actions
   alias Game.NPC.Events
 
@@ -22,7 +23,7 @@ defmodule Game.NPC.Events.CombatTicked do
     |> Actions.delay()
 
     delay = Events.calculate_total_delay(event)
-    Events.notify_delayed({"combat/ticked"}, delay)
+    Events.notify_delayed(%GameCombatTicked{}, delay)
   end
 
   def process_event(_event, _state), do: :ok

@@ -64,7 +64,7 @@ export class NPCSocket {
       this.append(`${this.formatName(msg)} entered`)
     });
 
-    this.channel.on("room/leave", msg => {
+    this.channel.on("room/left", msg => {
       this.append(`${this.formatName(msg)} left`)
     });
 

@@ -11,6 +11,7 @@ defmodule Game.Quest do
   alias Data.QuestStep
   alias Data.Repo
   alias Data.User
+  alias Game.Events.QuestReceived
   alias Game.Item
   alias Game.Session
 
@@ -100,7 +101,7 @@ defmodule Game.Quest do
     case changeset |> Repo.insert() do
       {:ok, _} ->
         player = Character.from_user(player)
-        Session.notify(player, {"quest/new", quest})
+        Session.notify(player, %QuestReceived{quest: quest})
         :ok
 
       {:error, _} ->

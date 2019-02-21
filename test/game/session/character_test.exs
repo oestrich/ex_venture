@@ -1,6 +1,8 @@
 defmodule Game.Session.CharacterTest do
   use ExVenture.SessionCase
 
+  alias Game.Events.PlayerSignedIn
+  alias Game.Events.PlayerSignedOut
   alias Game.Session.Character
   alias Game.Session.State
 
@@ -18,13 +20,13 @@ defmodule Game.Session.CharacterTest do
 
   describe "player online/offline" do
     test "player going online echos", %{state: state} do
-      _state = Character.notify(state, {"player/online", %{name: "Player"}})
+      Character.notify(state, %PlayerSignedIn{character: {:player, %{name: "Player"}}})
 
       assert_socket_echo "player"
     end
 
     test "player going offline echos", %{state: state} do
-      _state = Character.notify(state, {"player/offline", %{name: "Player"}})
+      Character.notify(state, %PlayerSignedOut{character: {:player, %{name: "Player"}}})
 
       assert_socket_echo "player"
     end

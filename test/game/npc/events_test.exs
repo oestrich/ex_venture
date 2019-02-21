@@ -7,6 +7,9 @@ defmodule Game.NPC.EventsTest do
   alias Data.Events.RoomHeard
   alias Data.Events.StateTicked
   alias Game.Channel
+  alias Game.Events.CharacterDied
+  alias Game.Events.QuestCompleted
+  alias Game.Events.RoomLeft
   alias Game.Message
   alias Game.NPC.Events
   alias Game.NPC.State
@@ -58,7 +61,7 @@ defmodule Game.NPC.EventsTest do
 
       start_room(%{npcs: [npc], players: [%{id: 1, name: "Player"}]})
 
-      event = {"character/died", {:player, character}, :character, {:npc, npc}}
+      event = %CharacterDied{character: {:player, character}, killer: {:npc, npc}}
 
       %{state: state, event: event}
     end
@@ -74,12 +77,13 @@ defmodule Game.NPC.EventsTest do
     end
   end
 
-  describe "room/leave" do
+  describe "room/left" do
     test "clears the target when player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
       state = %State{room_id: 1, npc: npc, target: {:player, 2}, combat: true}
+      event = %RoomLeft{character: {:player, %{id: 2, name: "Player"}}, reason: {:leave, "north"}}
 
-      {:update, state} = Events.act_on(state, {"room/leave", {{:player, %{id: 2, name: "Player"}}, :leave}})
+      {:update, state} = Events.act_on(state, event)
 
       assert is_nil(state.target)
       assert state.combat
@@ -88,8 +92,9 @@ defmodule Game.NPC.EventsTest do
     test "does not touch the target if another player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
       state = %State{room_id: 1, npc: npc, target: {:player, 2}}
+      event = %RoomLeft{character: {:player, %{id: 3, name: "Player"}}, reason: {:leave, "north"}}
 
-      :ok = Events.act_on(state, {"room/leave", {{:player, %{id: 3, name: "Player"}}, :leave}})
+      :ok = Events.act_on(state, event)
     end
   end
 
@@ -100,7 +105,7 @@ defmodule Game.NPC.EventsTest do
       quest = %{id: 1, completed_message: "Hello"}
       npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
-      event = {"quest/completed", user, quest}
+      event = %QuestCompleted{player: user, quest: quest}
 
       Channel.join_tell({:player, character})
 

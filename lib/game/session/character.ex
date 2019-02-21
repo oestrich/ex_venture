@@ -5,6 +5,20 @@ defmodule Game.Session.Character do
 
   alias Game.Account
   alias Game.Character
+  alias Game.Events.CharacterDied
+  alias Game.Events.CurrencyDropped
+  alias Game.Events.CurrencyReceived
+  alias Game.Events.ItemDropped
+  alias Game.Events.ItemReceived
+  alias Game.Events.MailReceived
+  alias Game.Events.PlayerSignedIn
+  alias Game.Events.PlayerSignedOut
+  alias Game.Events.RoomEntered
+  alias Game.Events.RoomHeard
+  alias Game.Events.RoomLeft
+  alias Game.Events.RoomOverheard
+  alias Game.Events.RoomWhispered
+  alias Game.Events.QuestReceived
   alias Game.Experience
   alias Game.Format
   alias Game.Format.Effects, as: FormatEffects
@@ -61,7 +75,7 @@ defmodule Game.Session.Character do
   """
   def notify(state, event)
 
-  def notify(state, {"character/died", character, :character, who}) do
+  def notify(state, %CharacterDied{character: character, killer: who}) do
     state |> Socket.echo("#{Format.name(character)} has died.")
     state |> GMCP.character_leave(character)
 
@@ -89,51 +103,51 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state, {"currency/dropped", character, currency}) do
+  def notify(state, %CurrencyDropped{character: character, amount: amount}) do
     case Character.who(character) == {:player, state.character.id} do
       true ->
         state
 
       false ->
-        state
-        |> Socket.echo("#{Format.name(character)} dropped #{Format.currency(currency)}.")
+        message = "#{Format.name(character)} dropped #{Format.currency(amount)}."
+        Socket.echo(state, message)
 
         state
     end
   end
 
-  def notify(state = %{save: save}, {"currency/receive", character, currency}) do
-    state
-    |> Socket.echo("You received #{Format.currency(currency)} from #{Format.name(character)}.")
+  def notify(state, %CurrencyReceived{character: character, amount: amount}) do
+    message = "You received #{Format.currency(amount)} from #{Format.name(character)}."
+    Socket.echo(state, message)
 
-    save = %{save | currency: save.currency + currency}
+    save = %{state.save | currency: state.save.currency + amount}
     Player.update_save(state, save)
   end
 
-  def notify(state, {"item/dropped", character, item}) do
+  def notify(state, %ItemDropped{character: character, instance: item}) do
     case Character.who(character) == {:player, state.character.id} do
       true ->
         state
 
       false ->
-        state
-        |> Socket.echo("#{Format.name(character)} dropped #{Format.item_name(item)}.")
+        message = "#{Format.name(character)} dropped #{Format.item_name(item)}."
+        Socket.echo(state, message)
 
         state
     end
   end
 
-  def notify(state = %{save: save}, {"item/receive", character, instance}) do
+  def notify(state, %ItemReceived{character: character, instance: instance}) do
     item = Items.item(instance)
 
     state
     |> Socket.echo("You received #{Format.item_name(item)} from #{Format.name(character)}.")
 
-    save = %{save | items: [instance | save.items]}
+    save = %{state.save | items: [instance | state.save.items]}
     Player.update_save(state, save)
   end
 
-  def notify(state, {"mail/new", mail}) do
+  def notify(state, %MailReceived{mail: mail}) do
     state
     |> Socket.echo("You have new mail. {command}mail read #{mail.id}{/command} to read it.")
 
@@ -141,33 +155,17 @@ defmodule Game.Session.Character do
     state
   end
 
-  def notify(state, {"player/offline", player}) do
-    state |> Socket.echo("#{Format.player_name(player)} went offline.")
+  def notify(state, %PlayerSignedOut{character: character}) do
+    state |> Socket.echo("#{Format.name(character)} went offline.")
     state
   end
 
-  def notify(state, {"player/online", player}) do
-    state |> Socket.echo("#{Format.player_name(player)} is now online.")
+  def notify(state, %PlayerSignedIn{character: character}) do
+    state |> Socket.echo("#{Format.name(character)} is now online.")
     state
   end
 
-  def notify(state, {"gossip/player-offline", game_name, player_name}) do
-    name = "#{player_name}@#{game_name}"
-    player = %{name: name}
-    state |> Socket.echo("#{Format.player_name(player)} went offline.")
-
-    state
-  end
-
-  def notify(state, {"gossip/player-online", game_name, player_name}) do
-    name = "#{player_name}@#{game_name}"
-    player = %{name: name}
-    state |> Socket.echo("#{Format.player_name(player)} is now online.")
-
-    state
-  end
-
-  def notify(state, {"room/entered", {character, reason}}) do
+  def notify(state, %RoomEntered{character: character, reason: reason}) do
     case reason do
       {:enter, direction} ->
         state
@@ -189,7 +187,7 @@ defmodule Game.Session.Character do
     state
   end
 
-  def notify(state, {"room/leave", {character, reason}}) do
+  def notify(state, %RoomLeft{character: character, reason: reason}) do
     case reason do
       {:leave, direction} ->
         state
@@ -217,16 +215,16 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state, {"room/heard", message}) do
+  def notify(state, %RoomHeard{message: message}) do
     state |> GMCP.room_heard(message)
     state |> Socket.echo(message.formatted)
     state
   end
 
-  def notify(state, {"room/overheard", characters, message}) do
+  def notify(state, %RoomOverheard{characters: characters, message: message}) do
     skip_echo? =
       Enum.any?(characters, fn character ->
-        character == {:player, state.character}
+        Character.who(character) == Character.who({:player, state.character})
       end)
 
     case skip_echo? do
@@ -239,18 +237,16 @@ defmodule Game.Session.Character do
     end
   end
 
-  def notify(state, {"room/whisper", message}) do
+  def notify(state, %RoomWhispered{message: message}) do
     state |> GMCP.room_whisper(message)
     state |> Socket.echo(message.formatted)
     state
   end
 
-  def notify(state, {"quest/new", quest}) do
-    state
-    |> Socket.echo("You received a new quest, #{Format.Quests.quest_name(quest)} (#{quest.id}).")
-
+  def notify(state, %QuestReceived{quest: quest}) do
+    message = "You received a new quest, #{Format.Quests.quest_name(quest)} (#{quest.id})."
+    Socket.echo(state, message)
     Hint.gate(state, "quests.new", id: quest.id)
-
     Quest.track_quest(state.character, quest.id)
 
     state

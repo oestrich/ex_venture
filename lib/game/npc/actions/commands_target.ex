@@ -4,6 +4,7 @@ defmodule Game.NPC.Actions.CommandsTarget do
   """
 
   alias Game.Character
+  alias Game.Events.CombatTicked
   alias Game.NPC.Events
 
   @doc """
@@ -40,7 +41,7 @@ defmodule Game.NPC.Actions.CommandsTarget do
         |> Map.put(:combat, true)
         |> Map.put(:target, Character.who(options.character))
 
-      Events.notify_delayed({"combat/ticked"}, 1500)
+      Events.notify_delayed(%CombatTicked{}, 1500)
 
       {:ok, state}
     else

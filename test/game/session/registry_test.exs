@@ -1,6 +1,8 @@
 defmodule Game.Session.RegistryTest do
   use Data.ModelCase
 
+  alias Game.Events.PlayerSignedIn
+  alias Game.Events.PlayerSignedOut
   alias Game.Session.Registry
 
   describe "online/offline" do
@@ -10,7 +12,7 @@ defmodule Game.Session.RegistryTest do
 
       Registry.player_offline(%{id: 2, name: "Player 2"})
 
-      assert_receive {:"$gen_cast", {:notify, {"player/offline", %{name: "Player 2"}}}}
+      assert_receive {:"$gen_cast", {:notify, %PlayerSignedOut{character: {:player, %{name: "Player 2"}}}}}
     after
       Registry.unregister()
     end
@@ -21,7 +23,7 @@ defmodule Game.Session.RegistryTest do
 
       Registry.player_online(%{id: 2, name: "Player 2"})
 
-      assert_receive {:"$gen_cast", {:notify, {"player/online", %{name: "Player 2"}}}}
+      assert_receive {:"$gen_cast", {:notify, %PlayerSignedIn{character: {:player, %{name: "Player 2"}}}}}
     after
       Registry.unregister()
     end

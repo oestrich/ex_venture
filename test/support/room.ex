@@ -139,6 +139,7 @@ defmodule Test.Game.Room do
     Helpers for dealing with rooms
     """
 
+    alias Game.Events.RoomHeard
     alias Test.Game.Room
 
     def mark_room_offline() do
@@ -193,7 +194,7 @@ defmodule Test.Game.Room do
 
     defmacro assert_emote(emote) do
       quote do
-        assert_received {:notify, {_, _, {"room/heard", message}}}
+        assert_received {:notify, {_, _, %RoomHeard{message: message}}}
         assert Regex.match?(~r(#{unquote(emote)})i, message.message)
       end
     end
@@ -230,14 +231,14 @@ defmodule Test.Game.Room do
 
     defmacro assert_say(say) do
       quote do
-        assert_received {:notify, {_, _, {"room/heard", message}}}
+        assert_received {:notify, {_, _, %RoomHeard{message: message}}}
         assert Regex.match?(~r(#{unquote(say)})i, message.message)
       end
     end
 
     defmacro refute_say() do
       quote do
-        refute_receive {:notify, {_, _, {"room/heard", _}}}, 50
+        refute_receive {:notify, {_, _, %RoomHeard{}}}, 50
       end
     end
   end

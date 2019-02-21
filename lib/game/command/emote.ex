@@ -5,6 +5,7 @@ defmodule Game.Command.Emote do
 
   use Game.Command
 
+  alias Game.Events.RoomHeard
   alias Game.Format.Channels, as: FormatChannels
 
   commands(["emote"], parse: false)
@@ -60,7 +61,8 @@ defmodule Game.Command.Emote do
     state |> Socket.echo(FormatChannels.emote({:player, character}, emote))
 
     message = Message.emote(character, emote)
-    Environment.notify(save.room_id, {:player, character}, {"room/heard", message})
+    event = %RoomHeard{character: {:player, character}, message: message}
+    Environment.notify(save.room_id, event.character, event)
 
     :ok
   end

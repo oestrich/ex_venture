@@ -3,6 +3,7 @@ defmodule Game.Command.SayTest do
 
   alias Game.Command.Say
   alias Game.Command.Say.ParsedMessage
+  alias Game.Events.RoomHeard
 
   doctest Say
 
@@ -17,6 +18,7 @@ defmodule Game.Command.SayTest do
       :ok = Say.run({"hi"}, state)
 
       assert_socket_echo ~s("hi.")
+      assert_notify %RoomHeard{}
     end
   end
 
@@ -25,6 +27,7 @@ defmodule Game.Command.SayTest do
       :ok = Say.run({"[softly] hi"}, state)
 
       assert_socket_echo "say softly,"
+      assert_notify %RoomHeard{}
     end
   end
 
@@ -36,6 +39,7 @@ defmodule Game.Command.SayTest do
       :ok = Say.run({">player hi"}, state)
 
       assert_socket_echo ~s("hi.")
+      assert_notify %RoomHeard{}
     end
 
     test "to an npc", %{state: state} do
@@ -45,6 +49,7 @@ defmodule Game.Command.SayTest do
       :ok = Say.run({">guard hi"}, state)
 
       assert_socket_echo ~s("hi.")
+      assert_notify %RoomHeard{}
     end
 
     test "target not found", %{state: state} do

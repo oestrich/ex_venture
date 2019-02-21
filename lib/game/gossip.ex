@@ -8,6 +8,8 @@ defmodule Game.Gossip do
   alias Game.Channel
   alias Game.Channels
   alias Game.Character
+  alias Game.Events.PlayerSignedIn
+  alias Game.Events.PlayerSignedOut
   alias Game.Message
   alias Game.Session
 
@@ -57,9 +59,12 @@ defmodule Game.Gossip do
 
     case Squabble.node_is_leader?() do
       true ->
+        gossip_player = %{name: "#{player_name}@#{game_name}"}
+        event = %PlayerSignedIn{character: {:player, gossip_player}}
+
         Session.Registry.connected_players()
         |> Enum.each(fn %{player: player} ->
-          Character.notify({:player, player}, {"gossip/player-online", game_name, player_name})
+          Character.notify({:player, player}, event)
         end)
 
       false ->
@@ -75,9 +80,12 @@ defmodule Game.Gossip do
 
     case Squabble.node_is_leader?() do
       true ->
+        gossip_player = %{name: "#{player_name}@#{game_name}"}
+        event = %PlayerSignedOut{character: {:player, gossip_player}}
+
         Session.Registry.connected_players()
         |> Enum.each(fn %{player: player} ->
-          Character.notify({:player, player}, {"gossip/player-offline", game_name, player_name})
+          Character.notify({:player, player}, event)
         end)
 
       false ->

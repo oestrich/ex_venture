@@ -10,6 +10,7 @@ defmodule Game.Session.Effects do
   alias Game.Character
   alias Game.Effect
   alias Game.Environment
+  alias Game.Events.CharacterDied
   alias Game.Format.Effects, as: FormatEffects
   alias Game.Player
   alias Game.Session.Process
@@ -58,11 +59,8 @@ defmodule Game.Session.Effects do
       when health_points < 1 do
     player |> maybe_transport_to_graveyard()
 
-    state.save.room_id
-    |> Environment.notify(
-      {:player, player},
-      {"character/died", {:player, player}, :character, from}
-    )
+    event = %CharacterDied{character: {:player, player}, killer: from}
+    Environment.notify(state.save.room_id, {:player, player}, event)
 
     :ok
   end

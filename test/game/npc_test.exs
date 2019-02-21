@@ -5,6 +5,7 @@ defmodule Game.NPCTest do
 
   alias Game.NPC
   alias Game.NPC.State
+  alias Game.Events.CharacterDied
   alias Game.Session.Registry
 
   setup do
@@ -58,7 +59,7 @@ defmodule Game.NPCTest do
     assert state.npc.stats.health_points == 0
 
     assert_leave {1, {:npc, _}, :death}
-    assert_notify {"character/died", _, _, _}
+    assert_notify %CharacterDied{}
 
     Registry.unregister()
   end

@@ -1,6 +1,6 @@
 defmodule Game.NPC.Events.RoomHeard do
   @moduledoc """
-  Processes the `room/heard` event
+  Processes the `Game.Events.RoomHeard` event
   """
 
   alias Data.Events.RoomHeard
@@ -15,9 +15,7 @@ defmodule Game.NPC.Events.RoomHeard do
     {:ok, state}
   end
 
-  def process_event(event, sent_event) do
-    {"room/heard", message} = sent_event
-
+  def process_event(event, %{message: message}) do
     with {:ok, :matches} <- check_optional_regex(event, message) do
       Actions.delay(event.actions)
     end

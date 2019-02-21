@@ -6,6 +6,13 @@ defmodule Game.NPC.Events do
   alias Data.Events.StateTicked
   alias Game.Channel
   alias Game.Character
+  alias Game.Events.CharacterDied
+  alias Game.Events.CombatTicked
+  alias Game.Events.ItemReceived
+  alias Game.Events.QuestCompleted
+  alias Game.Events.RoomEntered
+  alias Game.Events.RoomHeard
+  alias Game.Events.RoomLeft
   alias Game.Format
   alias Game.Message
   alias Game.NPC
@@ -102,19 +109,19 @@ defmodule Game.NPC.Events do
   @spec act_on(NPC.State.t(), {String.t(), any()}) :: :ok | {:update, NPC.State.t()}
   def act_on(state, action)
 
-  def act_on(state = %{npc: npc}, {"character/died", character, :character, from}) do
+  def act_on(state = %{npc: npc}, %CharacterDied{character: character, killer: from}) do
     broadcast(npc, "character/died", who(character))
     state |> act_on_character_died(character, from)
   end
 
-  def act_on(state, {"combat/ticked"}) do
+  def act_on(state, %CombatTicked{}) do
     broadcast(state.npc, "combat/ticked")
     Events.CombatTicked.process(state)
     :ok
   end
 
-  def act_on(state = %{npc: npc}, {"item/receive", character, instance}) do
-    broadcast(npc, "item/receive", %{
+  def act_on(state = %{npc: npc}, %ItemReceived{character: character, instance: instance}) do
+    broadcast(npc, "item/received", %{
       from: who(character),
       item: instance.id
     })
@@ -122,14 +129,14 @@ defmodule Game.NPC.Events do
     state |> act_on_item_receive(character, instance)
   end
 
-  def act_on(state, sent_event = {"room/entered", {character, _reason}}) do
+  def act_on(state, sent_event = %RoomEntered{character: character}) do
     broadcast(state.npc, "room/entered", who(character))
     Events.RoomEntered.process(state, sent_event)
     :ok
   end
 
-  def act_on(state = %{npc: npc}, {"room/leave", {character, _reason}}) do
-    broadcast(npc, "room/leave", who(character))
+  def act_on(state = %{npc: npc}, %RoomLeft{character: character}) do
+    broadcast(npc, "room/left", who(character))
 
     target = Map.get(state, :target, nil)
 
@@ -142,7 +149,7 @@ defmodule Game.NPC.Events do
     end
   end
 
-  def act_on(state, sent_event = {"room/heard", message}) do
+  def act_on(state, sent_event = %RoomHeard{message: message}) do
     broadcast(state.npc, "room/heard", %{
       type: message.type,
       name: message.sender.name,
@@ -155,7 +162,7 @@ defmodule Game.NPC.Events do
     :ok
   end
 
-  def act_on(state = %{npc: npc}, {"quest/completed", player, quest}) do
+  def act_on(state = %{npc: npc}, %QuestCompleted{player: player, quest: quest}) do
     broadcast(npc, "quest/completed", %{
       player: %{id: player.id, name: player.name},
       quest: %{id: quest.id}
@@ -187,7 +194,7 @@ defmodule Game.NPC.Events do
   end
 
   @doc """
-  Act on the `item/receive` event
+  Act on the `ItemReceived` event
   """
   def act_on_item_receive(state, character, item_instance)
 

@@ -4,6 +4,14 @@ defmodule Game.SessionTest do
   alias Data.Exit
   alias Data.Mail
   alias Game.Command
+  alias Game.Events.CharacterDied
+  alias Game.Events.CurrencyReceived
+  alias Game.Events.ItemReceived
+  alias Game.Events.MailReceived
+  alias Game.Events.RoomEntered
+  alias Game.Events.RoomHeard
+  alias Game.Events.RoomLeft
+  alias Game.Events.RoomOverheard
   alias Game.Message
   alias Game.Session
   alias Game.Session.Process
@@ -301,7 +309,7 @@ defmodule Game.SessionTest do
 
     assert state.save.stats.health_points == -5
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
-    assert_notify {"character/died", _, _, _}
+    assert_notify %CharacterDied{}
   after
     Session.Registry.unregister()
   end
@@ -470,56 +478,74 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:player, %{id: 1, name: "Player"}}, {:enter, "south"}}}}, state)
+      event = %RoomEntered{character: {:player, %{id: 1, name: "Player"}}, reason: {:enter, "south"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "enters from the"
     end
 
     test "npc enters the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/entered", {{:npc, %{id: 1, name: "Bandit"}}, {:enter, "south"}}}}, state)
+      event = %RoomEntered{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:enter, "south"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "enters from the"
     end
 
     test "player leaves the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:player, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "leaves heading"
     end
 
     test "npc leaves the room", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "leaves heading"
     end
 
     test "player leaves the room and they were the target", %{state: state} do
       state = %{state | target: {:player, 1}}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:player, %{id: 1, name: "Player"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
+
       assert is_nil(state.target)
     end
 
     test "npc leaves the room and they were the target", %{state: state} do
       state = %{state | target: {:npc, 1}}
-      {:noreply, state} = Process.handle_cast({:notify, {"room/leave", {{:npc, %{id: 1, name: "Bandit"}}, {:leave, "north"}}}}, state)
+      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
+
       assert is_nil(state.target)
     end
 
     test "room heard", %{state: state} do
       message = Message.say(%{id: 1, name: "Player"}, %{message: "hi"})
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/heard", message}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, %RoomHeard{message: message}}, state)
 
       assert_socket_echo "hi"
     end
 
     test "room overheard - echos if user is not in the list of characters", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [], "hi"}}, state)
+      event = %RoomOverheard{characters: [], message: "hi"}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       assert_socket_echo "hi"
     end
 
     test "room overheard - does not echo if user is in the list of characters", %{state: state} do
-      {:noreply, ^state} = Process.handle_cast({:notify, {"room/overheard", [{:player, state.character}], "hi"}}, state)
+      event = %RoomOverheard{characters: [{:player, state.character}], message: "hi"}
+
+      {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
       refute_socket_echo()
     end
@@ -527,17 +553,9 @@ defmodule Game.SessionTest do
     test "new mail received", %{state: state} do
       mail = %Mail{id: 1, sender: %{id: 10, name: "Player"}}
 
-      {:noreply, ^state} = Process.handle_cast({:notify, {"mail/new", mail}}, state)
+      {:noreply, ^state} = Process.handle_cast({:notify, %MailReceived{mail: mail}}, state)
 
       assert_socket_echo "new mail"
-    end
-
-    test "character died", %{state: state} do
-      npc = {:npc, %{id: 1, name: "bandit"}}
-
-      {:noreply, ^state} = Process.handle_cast({:notify, {"character/died", npc, :character, npc}}, state)
-
-      assert_socket_echo "has died"
     end
 
     test "new item received", %{state: state} do
@@ -546,8 +564,9 @@ defmodule Game.SessionTest do
       instance = item_instance(1)
 
       state = %{state | user: %{save: nil}, save: %{items: []}}
+      event = %ItemReceived{character: {:npc, %{name: "Guard"}}, instance: instance}
 
-      {:noreply, state} = Process.handle_cast({:notify, {"item/receive", {:npc, %{name: "Guard"}}, instance}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert state.save.items == [instance]
 
@@ -556,8 +575,9 @@ defmodule Game.SessionTest do
 
     test "new currency received", %{state: state} do
       state = %{state | user: %{save: nil}, save: %{currency: 10}}
+      event = %CurrencyReceived{character: {:npc, %{name: "Guard"}}, amount: 50}
 
-      {:noreply, state} = Process.handle_cast({:notify, {"currency/receive", {:npc, %{name: "Guard"}}, 50}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert state.save.currency == 60
 
@@ -581,7 +601,9 @@ defmodule Game.SessionTest do
     end
 
     test "clears your target", %{state: state, target: target} do
-      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
+      event = %CharacterDied{character: target, killer: {:player, state.user}}
+
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert is_nil(state.target)
     end
@@ -589,8 +611,9 @@ defmodule Game.SessionTest do
     test "npc - a died message is sent and experience is applied", %{state: state} do
       target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 200}}
       state = %{state | target: {:npc, 10}}
+      event = %CharacterDied{character: target, killer: {:player, state.user}}
 
-      {:noreply, state} = Process.handle_cast({:notify, {"character/died", target, :character, {:player, state.user}}}, state)
+      {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
       assert is_nil(state.target)
       assert state.save.experience_points == 200
