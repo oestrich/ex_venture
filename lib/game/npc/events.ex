@@ -7,6 +7,7 @@ defmodule Game.NPC.Events do
   alias Game.Channel
   alias Game.Character
   alias Game.Events.CharacterDied
+  alias Game.Events.CombatTicked
   alias Game.Events.ItemReceived
   alias Game.Events.QuestCompleted
   alias Game.Events.RoomEntered
@@ -113,7 +114,7 @@ defmodule Game.NPC.Events do
     state |> act_on_character_died(character, from)
   end
 
-  def act_on(state, {"combat/ticked"}) do
+  def act_on(state, %CombatTicked{}) do
     broadcast(state.npc, "combat/ticked")
     Events.CombatTicked.process(state)
     :ok
