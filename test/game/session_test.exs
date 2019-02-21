@@ -3,6 +3,7 @@ defmodule Game.SessionTest do
 
   alias Data.Exit
   alias Data.Mail
+  alias Game.Character
   alias Game.Command
   alias Game.Events.CharacterDied
   alias Game.Events.CurrencyReceived
@@ -259,9 +260,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = %{base_character(user) | class: class_attributes(%{})}
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
     assert state.save.stats.health_points == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
@@ -276,7 +278,7 @@ defmodule Game.SessionTest do
     character = %{base_character(user) | id: 2, class: class_attributes(%{}), save: save}
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new()}
 
-    from = {:npc, %{id: 1, name: "Bandit"}}
+    from = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], from, "description"}, state)
 
@@ -303,9 +305,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = base_character(user)
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
 
     assert state.save.stats.health_points == -5
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
@@ -326,9 +329,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = base_character(user)
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new()}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
 
     assert state.save.stats.health_points == -5
 
@@ -349,9 +353,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = %{base_character(user) | class: class_attributes(%{})}
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new()}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
 
     assert state.save.stats.health_points == -5
 

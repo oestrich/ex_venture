@@ -111,25 +111,25 @@ defmodule Game.Command.Use do
 
     usee_text =
       FormatItems.usee_item(item,
-        target: {:player, state.character},
-        user: {:player, state.character}
+        target: Character.to_simple(state.character),
+        user: Character.to_simple(state.character)
       )
 
     Character.apply_effects(
-      {:player, state.character},
+      Character.to_simple(state.character),
       effects,
-      {:player, state.character},
+      Character.to_simple(state.character),
       usee_text
     )
 
     description =
       FormatItems.user_item(item,
-        target: {:player, state.character},
-        user: {:player, state.character}
+        target: Character.to_simple(state.character),
+        user: Character.to_simple(state.character)
       )
 
     effects_message =
-      Enum.join([description | FormatEffects.effects(effects, {:player, state.character})], "\n")
+      Enum.join([description | FormatEffects.effects(effects, Character.to_simple(state.character))], "\n")
 
     state |> Socket.echo(effects_message)
 

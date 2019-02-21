@@ -140,11 +140,11 @@ defmodule Game.NPC.Events do
 
     target = Map.get(state, :target, nil)
 
-    case Character.who(character) do
-      ^target ->
+    case Character.equal?(target, character) do
+      true ->
         {:update, %{state | target: nil}}
 
-      _ ->
+      false ->
         :ok
     end
   end

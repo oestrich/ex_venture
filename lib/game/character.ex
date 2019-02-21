@@ -80,6 +80,12 @@ defmodule Game.Character do
 
   def equal?(_character, nil), do: false
 
+  def equal?({_, character}, {_, target}), do: equal?(character, target)
+
+  def equal?({_, character}, target), do: equal?(character, target)
+
+  def equal?(character, {_, target}), do: equal?(character, target)
+
   def equal?(character, target) do
     character.type == target.type && character.id == target.id
   end

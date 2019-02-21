@@ -38,6 +38,14 @@ defmodule Game.Room.EventBus do
     end
   end
 
+  def handle_cast({:notify, sender = %{type: "player"}, event, players, npcs}, state) do
+    handle_cast({:notify, {:player, sender}, event, players, npcs}, state)
+  end
+
+  def handle_cast({:notify, sender = %{type: "npcs"}, event, players, npcs}, state) do
+    handle_cast({:notify, {:npc, sender}, event, players, npcs}, state)
+  end
+
   def handle_cast({:notify, {:player, sender}, event, players, npcs}, state) do
     # don't send to the sender
     players

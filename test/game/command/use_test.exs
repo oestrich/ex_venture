@@ -60,7 +60,7 @@ defmodule Game.Command.UseTest do
       assert [] = state.save.items
 
       assert_socket_echo "used a potion"
-      assert_receive {:"$gen_cast", {:apply_effects, [], {:player, %{id: 10}}, _}}
+      assert_receive {:"$gen_cast", {:apply_effects, [], %{id: 10}, _}}
     end
 
     test "use an item with an amount - decrements amount", %{state: state} do
