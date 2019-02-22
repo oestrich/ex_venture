@@ -252,8 +252,8 @@ defmodule Game.NPC do
 
   def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
     state = Events.start_tick_events(state)
-    Channel.join_tell({:npc, npc})
-    Environment.enter(room_id, {:npc, npc}, :respawn)
+    Channel.join_tell(npc)
+    Environment.enter(room_id, npc, :respawn)
     Environment.link(room_id)
     {:noreply, state}
   end
@@ -289,7 +289,7 @@ defmodule Game.NPC do
       |> Map.put(:events, npc.events)
       |> Events.start_tick_events()
 
-    Environment.update_character(room_id, {:npc, state.npc})
+    Environment.update_character(room_id, state.npc)
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
     {:noreply, state}
   end
@@ -336,7 +336,7 @@ defmodule Game.NPC do
   end
 
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc}) do
-    room_id |> Environment.leave({:npc, npc}, :leave)
+    Environment.leave(room_id, npc, :leave)
     {:stop, :normal, state}
   end
 

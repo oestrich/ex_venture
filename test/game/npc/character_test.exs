@@ -50,7 +50,7 @@ defmodule Game.NPC.CharacterTest do
 
       assert state.npc.stats.health_points == 15
       assert state.room_id == 1
-      assert_enter {_, {:npc, _}, :respawn}
+      assert_enter {_, %{type: "npc"}, :respawn}
     end
   end
 
@@ -167,7 +167,7 @@ defmodule Game.NPC.CharacterTest do
 
       state = Character.handle_continuous_effect(state, :id)
 
-      assert_leave {1, {:npc, _}, :death}
+      assert_leave {1, %{type: "npc"}, :death}
       assert state.continuous_effects == []
     end
 

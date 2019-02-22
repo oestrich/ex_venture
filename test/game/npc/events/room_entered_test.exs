@@ -13,7 +13,7 @@ defmodule Game.NPC.Events.RoomEnteredTest do
 
   describe "processing the events" do
     test "with no options", %{state: state} do
-      sent_event = %GameRoomEntered{character: {:player, %{}}}
+      sent_event = %GameRoomEntered{character: %{}}
 
       {:ok, ^state} = RoomEntered.process(state, sent_event)
 

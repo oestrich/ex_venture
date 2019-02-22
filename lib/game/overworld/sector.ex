@@ -114,12 +114,12 @@ defmodule Game.Overworld.Sector do
       state.players |> inform_players(cell, %RoomEntered{character: character, reason: reason})
       state.npcs |> inform_npcs(cell, %RoomEntered{character: character, reason: reason})
 
-      case character do
-        {:player, player} ->
-          Map.put(state, :players, [{cell, player} | state.players])
+      case character.type do
+        "player" ->
+          Map.put(state, :players, [{cell, character} | state.players])
 
-        {:npc, npc} ->
-          Map.put(state, :npcs, [{cell, npc} | state.npcs])
+        "npc" ->
+          Map.put(state, :npcs, [{cell, character} | state.npcs])
       end
     end
 
@@ -149,12 +149,12 @@ defmodule Game.Overworld.Sector do
 
       state = filter_character(state, cell, character)
 
-      case character do
-        {:player, player} ->
-          Map.put(state, :players, [{cell, player} | state.players])
+      case character.type do
+        "player" ->
+          Map.put(state, :players, [{cell, character} | state.players])
 
-        {:npc, npc} ->
-          Map.put(state, :npcs, [{cell, npc} | state.npcs])
+        "npc" ->
+          Map.put(state, :npcs, [{cell, character} | state.npcs])
       end
     end
 
@@ -177,21 +177,21 @@ defmodule Game.Overworld.Sector do
     end
 
     defp filter_character(state, cell, character) do
-      case character do
-        {:player, player} ->
+      case character.type do
+        "player" ->
           players =
             state.players
             |> Enum.reject(fn {existing_cell, existing_player} ->
-              existing_cell == cell && existing_player.id == player.id
+              existing_cell == cell && existing_player.id == character.id
             end)
 
           Map.put(state, :players, players)
 
-        {:npc, npc} ->
+        "npc" ->
           npcs =
             state.npcs
             |> Enum.reject(fn {existing_cell, existing_npc} ->
-              existing_cell == cell && existing_npc.id == npc.id
+              existing_cell == cell && existing_npc.id == character.id
             end)
 
           Map.put(state, :npcs, npcs)

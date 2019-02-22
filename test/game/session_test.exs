@@ -450,7 +450,7 @@ defmodule Game.SessionTest do
     test "sets health_points to 1 if < 0", %{state: state} do
       start_room(%{id: 2})
 
-      save = %{stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 2}
+      save = %{state.save | stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 2}
       state = %{state | save: save}
 
       {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
@@ -462,13 +462,13 @@ defmodule Game.SessionTest do
     test "leaves old room, enters new room", %{state: state} do
       start_room(%{id: 2})
 
-      save = %{stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 1}
+      save = %{state.save | stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 1}
       state = %{state | save: save}
 
       {:noreply, _state} = Process.handle_info({:resurrect, 2}, state)
 
-      assert_leave {1, {:player, _}, :death}
-      assert_enter {2, {:player, _}, :respawn}
+      assert_leave {1, %{type: "player"}, :death}
+      assert_enter {2, %{type: "player"}, :respawn}
     end
 
     test "does not touch health_points if > 0", %{state: state} do
@@ -483,7 +483,7 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", %{state: state} do
-      event = %RoomEntered{character: {:player, %{id: 1, name: "Player"}}, reason: {:enter, "south"}}
+      event = %RoomEntered{character: %{type: "player", id: 1, name: "Player"}, reason: {:enter, "south"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -491,7 +491,7 @@ defmodule Game.SessionTest do
     end
 
     test "npc enters the room", %{state: state} do
-      event = %RoomEntered{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:enter, "south"}}
+      event = %RoomEntered{character: %{type: "npc", id: 1, name: "Bandit"}, reason: {:enter, "south"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -499,7 +499,7 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room", %{state: state} do
-      event = %RoomLeft{character: {:player, %{type: "player", id: 1, name: "Player"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: %{type: "player", id: 1, name: "Player"}, reason: {:leave, "north"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -507,7 +507,7 @@ defmodule Game.SessionTest do
     end
 
     test "npc leaves the room", %{state: state} do
-      event = %RoomLeft{character: {:npc, %{type: "npc", id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: %{type: "npc", id: 1, name: "Bandit"}, reason: {:leave, "north"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -516,7 +516,7 @@ defmodule Game.SessionTest do
 
     test "player leaves the room and they were the target", %{state: state} do
       state = %{state | target: %{type: "player", id: 1}}
-      event = %RoomLeft{character: {:player, %{type: "player", id: 1, name: "Player"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: %{type: "player", id: 1, name: "Player"}, reason: {:leave, "north"}}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -525,7 +525,7 @@ defmodule Game.SessionTest do
 
     test "npc leaves the room and they were the target", %{state: state} do
       state = %{state | target: %{type: "npc", id: 1}}
-      event = %RoomLeft{character: {:npc, %{type: "npc", id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: %{type: "npc", id: 1, name: "Bandit"}, reason: {:leave, "north"}}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 

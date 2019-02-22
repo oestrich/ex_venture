@@ -123,13 +123,15 @@ defmodule Game.NPC.Actions.CommandsMove do
   """
   def move_room(state, old_room, new_room, direction) do
     CharacterInstrumenter.movement(:npc, fn ->
+      {:npc, npc} = Events.npc(state)
+
       Environment.unlink(old_room.id)
-      Environment.leave(old_room.id, Events.npc(state), {:leave, direction})
-      Environment.enter(new_room.id, Events.npc(state), {:enter, Exit.opposite(direction)})
+      Environment.leave(old_room.id, npc, {:leave, direction})
+      Environment.enter(new_room.id, npc, {:enter, Exit.opposite(direction)})
       Environment.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
-        event = %RoomEntered{character: {:player, player}}
+        event = %RoomEntered{character: player}
         NPC.delay_notify(event, milliseconds: @npc_reaction_time_ms)
       end)
     end)

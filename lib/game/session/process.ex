@@ -103,7 +103,7 @@ defmodule Game.Session.Process do
     Session.Registry.unregister()
     Session.Registry.player_offline(state.character)
 
-    Environment.leave(save.room_id, {:player, state.character}, :signout)
+    Environment.leave(save.room_id, state.character, :signout)
     Environment.unlink(save.room_id)
 
     Account.save_session(

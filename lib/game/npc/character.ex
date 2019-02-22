@@ -39,13 +39,13 @@ defmodule Game.NPC.Character do
     npc = %{npc | stats: %{npc.stats | health_points: npc.stats.max_health_points}}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
 
-    npc_spawner.room_id |> Environment.enter({:npc, npc}, :respawn)
-    npc_spawner.room_id |> Environment.link()
+    Environment.enter(npc_spawner.room_id, npc, :respawn)
+    Environment.link(npc_spawner.room_id)
 
     {:ok, room} = Environment.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
-      event = %RoomEntered{character: {:player, player}}
+      event = %RoomEntered{character: player}
       GenServer.cast(self(), {:notify, event})
     end)
 
@@ -73,10 +73,9 @@ defmodule Game.NPC.Character do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
     event = %CharacterDied{character: Character.to_simple(npc), killer: who}
-    room_id |> Environment.notify({:npc, npc}, event)
-
-    room_id |> Environment.leave({:npc, npc}, :death)
-    room_id |> Environment.unlink()
+    Environment.notify(room_id, npc, event)
+    Environment.leave(room_id, npc, :death)
+    Environment.unlink(room_id)
 
     Events.broadcast(npc, "character/died")
 

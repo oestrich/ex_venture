@@ -61,7 +61,7 @@ defmodule Game.NPCTest do
     {:noreply, state} = NPC.handle_cast({:apply_effects, [effect], {:player, player}, "description"}, state)
     assert state.npc.stats.health_points == 0
 
-    assert_leave {1, {:npc, _}, :death}
+    assert_leave {1, %{type: "npc"}, :death}
     assert_notify %CharacterDied{}
 
     Registry.unregister()
