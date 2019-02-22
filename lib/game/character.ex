@@ -30,6 +30,13 @@ defmodule Game.Character do
 
   def to_simple(character), do: Simple.from_character(character)
 
+  def simple_gossip(player_name) do
+    %Simple{
+      type: "gossip",
+      name: player_name
+    }
+  end
+
   @doc """
   Let the target know they are being targeted
   """

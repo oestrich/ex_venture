@@ -116,7 +116,7 @@ defmodule Game.NPC.Conversation do
 
       unknown ->
         message = Message.npc_tell(npc, Format.resources(unknown))
-        Channel.tell({:player, player}, {:npc, npc}, message)
+        Channel.tell(player, npc, message)
     end
   end
 
@@ -131,7 +131,7 @@ defmodule Game.NPC.Conversation do
 
       line ->
         message = Message.npc_tell(npc, Format.resources(line.message))
-        Channel.tell({:player, player}, {:npc, npc}, message)
+        Channel.tell(player, npc, message)
         handle_trigger(line, player, metadata)
     end
   end

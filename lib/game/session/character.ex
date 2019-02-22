@@ -207,11 +207,12 @@ defmodule Game.Session.Character do
 
     state |> GMCP.character_leave(character)
 
-    target = Map.get(state, :target, nil)
+    case Character.equal?(state.target, character) do
+      true ->
+        %{state | target: nil}
 
-    case Character.who(character) do
-      ^target -> %{state | target: nil}
-      _ -> state
+      false ->
+        state
     end
   end
 

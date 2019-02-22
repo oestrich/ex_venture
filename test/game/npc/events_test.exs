@@ -104,11 +104,11 @@ defmodule Game.NPC.EventsTest do
       user = create_user()
       character = Data.Character.from_user(user)
       quest = %{id: 1, completed_message: "Hello"}
-      npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
+      npc = %{base_npc() | id: 1, name: "Mayor", events: [], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
-      event = %QuestCompleted{player: user, quest: quest}
+      event = %QuestCompleted{player: character, quest: quest}
 
-      Channel.join_tell({:player, character})
+      Channel.join_tell(character)
 
       %{state: state, event: event}
     end
@@ -116,7 +116,7 @@ defmodule Game.NPC.EventsTest do
     test "sends a tell to the user with the after message", %{state: state, event: event} do
       :ok = Events.act_on(state, event)
 
-      assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "Hello"}}}
+      assert_receive {:channel, {:tell, _, %Message{message: "Hello"}}}
     end
   end
 end

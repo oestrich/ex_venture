@@ -386,16 +386,16 @@ defmodule Game.SessionTest do
 
   describe "channels" do
     setup do
-      %{from: %{id: 10, name: "Player"}}
+      %{from: %{type: "player", id: 10, name: "Player"}}
     end
 
     test "receiving a tell", %{state: state, from: from} do
       message = Message.tell(from, "Howdy")
 
-      {:noreply, state} = Process.handle_info({:channel, {:tell, {:player, from}, message}}, state)
+      {:noreply, state} = Process.handle_info({:channel, {:tell, from, message}}, state)
 
       assert_socket_echo "howdy"
-      assert state.reply_to == {:player, from}
+      assert state.reply_to == from
     end
 
     test "receiving a join", %{state: state} do
@@ -499,7 +499,7 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room", %{state: state} do
-      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: {:player, %{type: "player", id: 1, name: "Player"}}, reason: {:leave, "north"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -507,7 +507,7 @@ defmodule Game.SessionTest do
     end
 
     test "npc leaves the room", %{state: state} do
-      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: {:npc, %{type: "npc", id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -515,8 +515,8 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room and they were the target", %{state: state} do
-      state = %{state | target: {:player, 1}}
-      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+      state = %{state | target: %{type: "player", id: 1}}
+      event = %RoomLeft{character: {:player, %{type: "player", id: 1, name: "Player"}}, reason: {:leave, "north"}}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -524,8 +524,8 @@ defmodule Game.SessionTest do
     end
 
     test "npc leaves the room and they were the target", %{state: state} do
-      state = %{state | target: {:npc, 1}}
-      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+      state = %{state | target: %{type: "npc", id: 1}}
+      event = %RoomLeft{character: {:npc, %{type: "npc", id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -533,7 +533,7 @@ defmodule Game.SessionTest do
     end
 
     test "room heard", %{state: state} do
-      message = Message.say(%{id: 1, name: "Player"}, %{message: "hi"})
+      message = Message.say(%{type: "player", id: 1, name: "Player"}, %{message: "hi"})
       {:noreply, ^state} = Process.handle_cast({:notify, %RoomHeard{message: message}}, state)
 
       assert_socket_echo "hi"

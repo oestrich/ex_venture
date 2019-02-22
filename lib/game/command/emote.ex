@@ -58,7 +58,7 @@ defmodule Game.Command.Emote do
   def run(command, state)
 
   def run({emote}, state = %{character: character, save: save}) do
-    state |> Socket.echo(FormatChannels.emote({:player, character}, emote))
+    state |> Socket.echo(FormatChannels.emote(character, emote))
 
     message = Message.emote(character, emote)
     event = %RoomHeard{character: {:player, character}, message: message}

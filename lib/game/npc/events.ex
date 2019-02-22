@@ -169,7 +169,9 @@ defmodule Game.NPC.Events do
     })
 
     message = Message.npc_tell(npc, Format.resources(quest.completed_message))
-    Channel.tell({:player, player}, npc(state), message)
+    {:npc, npc} = npc(state)
+    from = Character.to_simple(npc)
+    Channel.tell(player, from, message)
 
     :ok
   end

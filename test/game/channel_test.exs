@@ -71,18 +71,18 @@ defmodule Game.ChannelTest do
   end
 
   test "join the tell channel" do
-    {:noreply, state} = Channel.handle_cast({:join_tell, self(), {:player, %{id: 10}}}, %{tells: %{}})
+    {:noreply, state} = Channel.handle_cast({:join_tell, self(), %{type: "player", id: 10}}, %{tells: %{}})
     assert state.tells["tells:player:10"] == self()
   end
 
   test "receive a tell" do
-    player = %{id: 10}
+    player = %{type: "player", id: 10}
     from = %{id: 11}
 
-    :ok = Channel.join_tell({:player, player})
+    :ok = Channel.join_tell(player)
 
-    Channel.tell({:player, player}, {:player, from}, "hi")
+    Channel.tell(player, from, "hi")
 
-    assert_receive {:channel, {:tell, {:player, ^from}, "hi"}}
+    assert_receive {:channel, {:tell, ^from, "hi"}}
   end
 end

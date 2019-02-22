@@ -6,6 +6,7 @@ defmodule Game.Command.Tell do
   use Game.Command
 
   alias Game.Channel
+  alias Game.Character
   alias Game.Format.Channels, as: FormatChannels
   alias Game.Session
   alias Game.Utility
@@ -68,13 +69,13 @@ defmodule Game.Command.Tell do
       nil ->
         state |> Socket.echo(gettext("There is no one to reply to."))
 
-      {:player, player} ->
+      player = %{type: "player"} ->
         message |> reply_to_player(player, state)
 
       {:gossip, player_name} ->
         message |> reply_to_gossip(player_name, state)
 
-      {:npc, npc} ->
+      npc = %{type: "npc"} ->
         message |> reply_to_npc(npc, state)
     end
 
@@ -91,9 +92,9 @@ defmodule Game.Command.Tell do
 
       %{player: player} ->
         message = Message.format(message)
-        state |> Socket.echo(FormatChannels.send_tell({:player, player}, message))
-        Channel.tell({:player, player}, {:player, from}, Message.tell(from, message))
-        {:update, %{state | reply_to: {:player, player}}}
+        state |> Socket.echo(FormatChannels.send_tell(Character.to_simple(player), message))
+        Channel.tell(player, Character.to_simple(from), Message.tell(from, message))
+        {:update, %{state | reply_to: player}}
     end
   end
 
@@ -110,16 +111,16 @@ defmodule Game.Command.Tell do
         Utility.name_matches?(npc, message)
       end)
 
-    case npc do
-      nil ->
-        state
-
-      _ ->
+    case is_nil(npc) do
+      false ->
         message = Utility.strip_name(npc, message)
         message = Message.format(message)
-        state |> Socket.echo(FormatChannels.send_tell({:npc, npc}, message))
-        Channel.tell({:npc, npc}, {:player, from}, Message.tell(from, message))
-        {:update, %{state | reply_to: {:npc, npc}}}
+        state |> Socket.echo(FormatChannels.send_tell(Character.to_simple(npc), message))
+        Channel.tell(Character.to_simple(npc), Character.to_simple(from), Message.tell(from, message))
+        {:update, %{state | reply_to: npc}}
+
+      true ->
+        state
     end
   end
 
@@ -156,7 +157,7 @@ defmodule Game.Command.Tell do
     case Gossip.send_tell(state.character.name, game, name, message) do
       :ok ->
         state
-        |> Socket.echo(FormatChannels.send_tell({:player, %{name: player_name}}, message))
+        |> Socket.echo(FormatChannels.send_tell(Character.simple_gossip(%{name: player_name}), message))
 
         {:update, %{state | reply_to: {:gossip, player_name}}}
 
@@ -179,6 +180,8 @@ defmodule Game.Command.Tell do
   end
 
   defp reply_to_player(message, reply_to, state = %{character: from}) do
+    from = Character.to_simple(from)
+
     case Session.Registry.find_connected_player(reply_to.id) do
       nil ->
         message = gettext(~s("%{name}" is not online.), name: reply_to.name)
@@ -186,8 +189,8 @@ defmodule Game.Command.Tell do
 
       _ ->
         message = Message.format(message)
-        state |> Socket.echo(FormatChannels.send_tell({:player, reply_to}, message))
-        Channel.tell({:player, reply_to}, {:player, from}, Message.tell(from, message))
+        state |> Socket.echo(FormatChannels.send_tell(reply_to, message))
+        Channel.tell(reply_to, from, Message.tell(from, message))
     end
   end
 
@@ -196,6 +199,7 @@ defmodule Game.Command.Tell do
   end
 
   defp reply_to_npc(message, reply_to, state = %{character: from, save: %{room_id: room_id}}) do
+    from = Character.to_simple(from)
     {:ok, room} = Environment.look(room_id)
     npc = room.npcs |> Enum.find(&Utility.matches?(&1, reply_to.name))
 
@@ -206,8 +210,8 @@ defmodule Game.Command.Tell do
 
       _ ->
         message = Message.format(message)
-        state |> Socket.echo(FormatChannels.send_tell({:npc, reply_to}, message))
-        Channel.tell({:npc, reply_to}, {:player, from}, Message.tell(from, message))
+        state |> Socket.echo(FormatChannels.send_tell(reply_to, message))
+        Channel.tell(reply_to, from, Message.tell(from, message))
     end
   end
 end

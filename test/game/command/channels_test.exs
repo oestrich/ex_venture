@@ -13,8 +13,9 @@ defmodule Game.Command.ChannelsTest do
     %Data.Channel{id: 1, name: "global", color: "red"} |> insert_channel()
     %Data.Channel{id: 2, name: "newbie", color: "yellow"} |> insert_channel()
 
-    character = %{id: 10, name: "Player", save: %{channels: ["global"]}}
-    %{state: session_state(%{socket: :socket, user: %{}, character: character, save: character.save})}
+    user = base_user()
+    character = %{base_character(user) | id: 10, name: "Player", save: %{channels: ["global"]}}
+    %{state: session_state(%{socket: :socket, user: user, character: character, save: character.save})}
   end
 
   test "parsing out channels that exist" do

@@ -18,13 +18,13 @@ defmodule Game.Command.TellTest do
 
   describe "send a tell - user" do
     test "send a tell", %{state: state} do
-      Channel.join_tell({:player, state.character})
+      Channel.join_tell(state.character)
       Session.Registry.register(state.character)
       Session.Registry.catch_up()
 
-      {:update, %{reply_to: {:player, _}}} = Tell.run({"tell", "player hello"}, state)
+      {:update, %{reply_to: %{type: "player"}}} = Tell.run({"tell", "player hello"}, state)
 
-      assert_receive {:channel, {:tell, {:player, _}, %Message{message: "Hello."}}}
+      assert_receive {:channel, {:tell, _, %Message{message: "Hello."}}}
     end
 
     test "send a tell - player not found", %{state: state} do
@@ -43,15 +43,15 @@ defmodule Game.Command.TellTest do
       room = %{id: 1, npcs: [npc]}
       start_room(room)
 
-      %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: {:npc, npc}}}
+      %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: npc}}
     end
 
     test "send a tell", %{state: state, npc: npc} do
-      Channel.join_tell({:npc, npc})
+      Channel.join_tell(npc)
 
-      {:update, %{reply_to: {:npc, _}}} = Tell.run({"tell", "guard howdy"}, state)
+      {:update, %{reply_to: %{type: "npc"}}} = Tell.run({"tell", "guard howdy"}, state)
 
-      assert_receive {:channel, {:tell, {:player, _}, %Message{message: "Howdy."}}}
+      assert_receive {:channel, {:tell, _, %Message{message: "Howdy."}}}
     end
 
     test "send a tell - npc not in the room", %{state: state} do
@@ -65,17 +65,17 @@ defmodule Game.Command.TellTest do
 
   describe "send a reply - user" do
     test "send a reply", %{state: state} do
-      Channel.join_tell({:player, state.character})
+      Channel.join_tell(state.character)
       Session.Registry.register(state.character)
       Session.Registry.catch_up()
 
-      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.character}})
+      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: state.character})
 
-      assert_receive {:channel, {:tell, {:player, _}, %Message{message: "Howdy."}}}
+      assert_receive {:channel, {:tell, _, %Message{message: "Howdy."}}}
     end
 
     test "send a reply - player not online", %{state: state} do
-      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: {:player, state.character}})
+      :ok = Tell.run({"reply", "howdy"}, %{state | reply_to: state.character})
 
       assert_socket_echo "not online"
     end
@@ -94,15 +94,15 @@ defmodule Game.Command.TellTest do
       room = %{id: 1, npcs: [npc]}
       start_room(room)
 
-      %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: {:npc, npc}}}
+      %{npc: npc, state: %{state | save: %{room_id: room.id}, reply_to: npc}}
     end
 
     test "send a reply", %{state: state, npc: npc} do
-      Channel.join_tell({:npc, npc})
+      Channel.join_tell(npc)
 
       :ok = Tell.run({"reply", "howdy"}, state)
 
-      assert_receive {:channel, {:tell, {:player, _}, %Message{message: "Howdy."}}}
+      assert_receive {:channel, {:tell, _, %Message{message: "Howdy."}}}
     end
 
     test "send a reply - npc not in the room", %{state: state} do
