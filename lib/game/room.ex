@@ -244,7 +244,7 @@ defmodule Game.Room do
         item = Items.item(instance)
 
         Logger.info(
-          "Character (#{elem(who, 0)}, #{elem(who, 1).id}) dropped item (#{item.id})",
+          "Character (#{who.type}, #{who.id}) dropped item (#{item.id})",
           type: :room
         )
 
@@ -260,7 +260,7 @@ defmodule Game.Room do
     case Actions.drop_currency(room, amount) do
       {:ok, room} ->
         Logger.info(
-          "Character (#{elem(who, 0)}, #{elem(who, 1).id}) dropped #{amount} currency",
+          "Character (#{who.type}, #{who.id}) dropped #{amount} currency",
           type: :room
         )
 

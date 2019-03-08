@@ -3,6 +3,7 @@ defmodule Game.NPC.ConversationTest do
 
   alias Data.Script.Line
   alias Game.Channel
+  alias Game.Character
   alias Game.Message
   alias Game.NPC.Conversation
   alias Game.NPC.State
@@ -11,7 +12,7 @@ defmodule Game.NPC.ConversationTest do
   describe "starting a new conversation" do
     setup do
       user = create_user()
-      character = create_character(user)
+      character = Character.to_simple(create_character(user))
 
       npc = create_npc(%{
         name: "Store Owner",
@@ -47,7 +48,7 @@ defmodule Game.NPC.ConversationTest do
   describe "continuing a conversation" do
     setup do
       user = create_user()
-      character = create_character(user)
+      character = Character.to_simple(create_character(user))
 
       npc = create_npc(%{
         script: [
@@ -126,7 +127,7 @@ defmodule Game.NPC.ConversationTest do
   describe "quest giving npcs" do
     setup do
       user = create_user()
-      character = create_character(user)
+      character = Character.to_simple(create_character(user))
       npc = create_npc(%{
         name: "Store Owner",
         is_quest_giver: true,
