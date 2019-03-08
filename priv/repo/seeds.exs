@@ -580,8 +580,12 @@ defmodule Seeds do
     user = create_user(%{
       name: "admin",
       password: "password",
-      flags: ["admin"],
     })
+
+    {:ok, user} =
+      user
+      |> Ecto.Changeset.change(%{flags: ["admin"]})
+      |> Repo.update()
 
     create_character(user, %{
       name: "admin",
