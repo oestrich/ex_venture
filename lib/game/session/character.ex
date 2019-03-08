@@ -41,7 +41,7 @@ defmodule Game.Session.Character do
 
     state
     |> maybe_target(character)
-    |> Map.put(:is_targeting, MapSet.put(state.is_targeting, Character.who(character)))
+    |> Map.put(:is_targeting, MapSet.put(state.is_targeting, Character.to_simple(character)))
   end
 
   @doc """
@@ -58,7 +58,7 @@ defmodule Game.Session.Character do
   Callback for after a player sent effects to another character
   """
   def effects_applied(state, effects, target) do
-    case Character.who(target) == {:player, state.character.id} do
+    case Character.equal?(state.character, target) do
       true ->
         state
 
@@ -80,14 +80,14 @@ defmodule Game.Session.Character do
     state |> GMCP.character_leave(character)
 
     # see if who is you
-    case Character.who(who) == Character.who({:player, state.character}) do
+    case Character.equal?(state.character, who) do
       true ->
         state =
           state
           |> apply_experience(character)
           |> track_quest_progress(character)
 
-        case Character.who(character) == Character.who(state.target) do
+        case Character.equal?(state.target, character) do
           true ->
             state
             |> Map.put(:target, nil)
@@ -104,7 +104,7 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, %CurrencyDropped{character: character, amount: amount}) do
-    case Character.who(character) == {:player, state.character.id} do
+    case Character.equal?(state.character, character) do
       true ->
         state
 
@@ -125,7 +125,7 @@ defmodule Game.Session.Character do
   end
 
   def notify(state, %ItemDropped{character: character, instance: item}) do
-    case Character.who(character) == {:player, state.character.id} do
+    case Character.equal?(state.character, character) do
       true ->
         state
 
@@ -225,7 +225,7 @@ defmodule Game.Session.Character do
   def notify(state, %RoomOverheard{characters: characters, message: message}) do
     skip_echo? =
       Enum.any?(characters, fn character ->
-        Character.who(character) == Character.who({:player, state.character})
+        Character.equal?(state.character, character)
       end)
 
     case skip_echo? do
@@ -260,10 +260,7 @@ defmodule Game.Session.Character do
   """
   @spec remove_from_targeting_list(State.t(), Character.t()) :: State.t()
   def remove_from_targeting_list(state, target) do
-    is_targeting =
-      state.is_targeting
-      |> MapSet.delete(Character.who(target))
-
+    is_targeting = MapSet.delete(state.is_targeting, target)
     %{state | is_targeting: is_targeting}
   end
 
@@ -289,12 +286,8 @@ defmodule Game.Session.Character do
 
   defp _target(state, player) do
     state |> Socket.echo("You are now targeting #{Format.name(player)}.")
-
     state |> GMCP.target(player)
-
-    player = Character.who(player)
-    Character.being_targeted(player, {:player, state.character})
-
+    Character.being_targeted(player, state.character)
     %{state | target: player}
   end
 
@@ -319,13 +312,13 @@ defmodule Game.Session.Character do
   @doc """
   Apply experience for killing an npc
   """
-  def apply_experience(state, {:player, _player}), do: state
+  def apply_experience(state, %{type: "player"}), do: state
+
+  def apply_experience(state, npc = %{type: "npc"}),
+    do: gain_experience(state, npc.level, npc.extra.experience_points)
 
   def apply_experience(state, {:quest, quest}),
     do: gain_experience(state, quest.level, quest.experience)
-
-  def apply_experience(state, {:npc, npc}),
-    do: gain_experience(state, npc.level, npc.experience_points)
 
   defp gain_experience(state, level, experience_points) do
     state =
@@ -365,10 +358,10 @@ defmodule Game.Session.Character do
   @doc """
   Track quest progress if an npc was killed
   """
-  def track_quest_progress(state, {:player, _player}), do: state
-
-  def track_quest_progress(state, {:npc, npc}) do
-    Quest.track_progress(state.character, {:npc, %{npc | id: npc.original_id}})
+  def track_quest_progress(state, npc = %{type: "npc"}) do
+    Quest.track_progress(state.character, {:npc, %{npc | id: npc.extra.original_id}})
     state
   end
+
+  def track_quest_progress(state, _target), do: state
 end

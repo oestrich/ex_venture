@@ -5,7 +5,7 @@ defmodule Game.Character.Simple do
   Minimal data for accessing the full character
   """
 
-  defstruct [:type, :id, :name, extra: %{}]
+  defstruct [:type, :id, :name, :level, extra: %{}]
 
   @doc """
   Convert a character into their simple version
@@ -26,6 +26,7 @@ defmodule Game.Character.Simple do
       type: player.type,
       id: player.id,
       name: player.name,
+      level: player.save.level,
       extra: %{
         room_id: player.save.room_id,
         flags: player.flags,
@@ -46,6 +47,7 @@ defmodule Game.Character.Simple do
         :status_line,
         :status_listen,
         :description,
+        :experience_points,
         :is_quest_giver,
         :is_trainer,
         :trainable_skills
@@ -55,6 +57,7 @@ defmodule Game.Character.Simple do
       type: npc.type,
       id: npc.id,
       name: npc.name,
+      level: npc.level,
       extra: extra
     }
   end

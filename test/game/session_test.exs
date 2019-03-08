@@ -367,20 +367,20 @@ defmodule Game.SessionTest do
 
   describe "targeted" do
     test "being targeted tracks the targeter", %{state: state} do
-      targeter = {:player, %{id: 10, name: "Player"}}
+      targeter = %Character.Simple{type: "player", id: 10, name: "Player"}
 
       {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{state | target: nil, is_targeting: MapSet.new})
 
       assert state.is_targeting |> MapSet.size() == 1
-      assert state.is_targeting |> MapSet.member?({:player, 10})
+      assert state.is_targeting |> MapSet.member?(targeter)
     end
 
     test "if your target is empty, set to the targeter", %{state: state} do
-      targeter = {:player, %{id: 10, name: "Player"}}
+      targeter = %Character.Simple{type: "player", id: 10, name: "Player"}
 
       {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{state | target: nil, is_targeting: MapSet.new})
 
-      assert state.target == {:player, 10}
+      assert state.target == targeter
     end
   end
 
@@ -592,13 +592,13 @@ defmodule Game.SessionTest do
 
   describe "character dying" do
     setup %{state: state} do
-      target = {:player, %{id: 10, name: "Player"}}
-      user = %{id: 10, name: "Player", class: class_attributes(%{}), save: base_save()}
+      target = %{type: "player", id: 10, name: "Player"}
+      player = %{type: "player", id: 10, name: "Player", class: class_attributes(%{}), save: base_save()}
 
       state = Map.merge(state, %{
-        user: user,
-        save: user.save,
-        target: {:player, 10},
+        user: player,
+        save: player.save,
+        target: target,
         is_targeting: MapSet.new(),
       })
 
@@ -606,7 +606,7 @@ defmodule Game.SessionTest do
     end
 
     test "clears your target", %{state: state, target: target} do
-      event = %CharacterDied{character: target, killer: {:player, state.user}}
+      event = %CharacterDied{character: target, killer: state.user}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -614,9 +614,9 @@ defmodule Game.SessionTest do
     end
 
     test "npc - a died message is sent and experience is applied", %{state: state} do
-      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 200}}
-      state = %{state | target: {:npc, 10}}
-      event = %CharacterDied{character: target, killer: {:player, state.user}}
+      target = %Character.Simple{type: "npc", id: 10, name: "Bandit", level: 1, extra: %{original_id: 1, experience_points: 200}}
+      state = %{state | target: target}
+      event = %CharacterDied{character: target, killer: state.user}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
