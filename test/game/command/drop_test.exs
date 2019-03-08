@@ -8,7 +8,7 @@ defmodule Game.Command.DropTest do
     insert_item(%{id: 1, name: "Sword", keywords: []})
 
     user = base_user()
-    state = session_state(%{user: user})
+    state = session_state(%{user: user, character: base_character(user)})
 
     %{state: state}
   end
@@ -21,7 +21,7 @@ defmodule Game.Command.DropTest do
     assert state.save.items |> length == 0
 
     assert_socket_echo "you dropped"
-    assert_drop {_, {:player, _}, %{id: 1}}
+    assert_drop {_, %{type: "player"}, %{id: 1}}
   end
 
   test "drop currency in a room", %{state: state} do
@@ -31,7 +31,7 @@ defmodule Game.Command.DropTest do
     assert state.save.currency == 1
 
     assert_socket_echo "you dropped"
-    assert_drop {_, {:player, _}, {:currency, 100}}
+    assert_drop {_, %{type: "player"}, {:currency, 100}}
   end
 
   test "drop currency in a room - not enough to do so", %{state: state} do

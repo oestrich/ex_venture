@@ -6,6 +6,7 @@ defmodule Game.Command.Drop do
   use Game.Command
   use Game.Currency
 
+  alias Game.Character
   alias Game.Environment
   alias Game.Item
   alias Game.Items
@@ -94,7 +95,7 @@ defmodule Game.Command.Drop do
     message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency())
     state |> Socket.echo(message)
 
-    Environment.drop_currency(save.room_id, {:player, state.character}, amount)
+    Environment.drop_currency(save.room_id, Character.to_simple(state.character), amount)
 
     {:update, state}
   end
@@ -116,7 +117,7 @@ defmodule Game.Command.Drop do
     {instance, items} = Item.remove(save.items, item)
     state = Player.update_save(state, %{save | items: items})
 
-    Environment.drop(save.room_id, {:player, state.character}, instance)
+    Environment.drop(save.room_id, Character.to_simple(state.character), instance)
 
     message = gettext("You dropped %{name}.", name: Format.item_name(item))
     state |> Socket.echo(message)
