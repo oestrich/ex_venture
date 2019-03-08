@@ -52,10 +52,14 @@ defmodule Game.Format.Skills do
   @doc """
   Format a skill, from perspective of the player
 
-      iex> Skills.skill_user(%{user_text: "Slash away"}, {:player, %{name: "Player"}}, {:npc, %{name: "Bandit"}})
+      iex> user = %{type: "player", name: "Player"}
+      iex> usee = %{type: "npc", name: "Bandit"}
+      iex> Skills.skill_user(%{user_text: "Slash away"}, user, usee)
       "Slash away"
 
-      iex> Skills.skill_user(%{user_text: "You slash away at [target]"}, {:player, %{name: "Player"}}, {:npc, %{name: "Bandit"}})
+      iex> user = %{type: "player", name: "Player"}
+      iex> usee = %{type: "npc", name: "Bandit"}
+      iex> Skills.skill_user(%{user_text: "You slash away at [target]"}, user, usee)
       "You slash away at {npc}Bandit{/npc}"
   """
   def skill_user(skill, player, target)
@@ -70,10 +74,14 @@ defmodule Game.Format.Skills do
   @doc """
   Format a skill, from the perspective of a usee
 
-      iex> Skills.skill_usee(%{usee_text: "Slash away"}, user: {:npc, %{name: "Bandit"}}, target: {:npc, %{name: "Bandit"}})
+      iex> user = %{type: "npc", name: "Bandit"}
+      iex> usee = %{type: "npc", name: "Bandit"}
+      iex> Skills.skill_usee(%{usee_text: "Slash away"}, user: user, target: usee)
       "Slash away"
 
-      iex> Skills.skill_usee(%{usee_text: "You were slashed at by [user]"}, user: {:npc, %{name: "Bandit"}}, target: {:player, %{name: "Player"}})
+      iex> user = %{type: "npc", name: "Bandit"}
+      iex> usee = %{type: "npc", name: "Bandit"}
+      iex> Skills.skill_usee(%{usee_text: "You were slashed at by [user]"}, user: user, target: usee)
       "You were slashed at by {npc}Bandit{/npc}"
   """
   def skill_usee(skill, opts \\ [])
