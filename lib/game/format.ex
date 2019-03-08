@@ -34,10 +34,6 @@ defmodule Game.Format do
 
   def target_name(player = %{type: "player"}), do: player_name(player)
 
-  def target_name({:npc, npc}), do: npc_name(npc)
-
-  def target_name({:player, player}), do: player_name(player)
-
   def room_name(room), do: Rooms.room_name(room)
 
   def zone_name(zone), do: Rooms.zone_name(zone)

@@ -20,13 +20,13 @@ defmodule Game.Session.CharacterTest do
 
   describe "player online/offline" do
     test "player going online echos", %{state: state} do
-      Character.notify(state, %PlayerSignedIn{character: {:player, %{name: "Player"}}})
+      Character.notify(state, %PlayerSignedIn{character: %{type: "player", name: "Player"}})
 
       assert_socket_echo "player"
     end
 
     test "player going offline echos", %{state: state} do
-      Character.notify(state, %PlayerSignedOut{character: {:player, %{name: "Player"}}})
+      Character.notify(state, %PlayerSignedOut{character: %{type: "player", name: "Player"}})
 
       assert_socket_echo "player"
     end

@@ -167,7 +167,7 @@ defmodule Game.Session.GMCP do
   """
   def room_heard(state, message) do
     data = %{
-      from: character_info({message.type, message.sender}),
+      from: character_info(message.sender),
       message: message.message
     }
 
@@ -311,12 +311,6 @@ defmodule Game.Session.GMCP do
   def character_info(npc = %{type: "npc"}), do: npc_info(npc)
 
   def character_info(%{type: "gossip", name: player_name}), do: gossip_info(player_name)
-
-  def character_info({:player, player}), do: player_info(player)
-
-  def character_info({:npc, npc}), do: npc_info(npc)
-
-  def character_info({:gossip, player_name}), do: gossip_info(player_name)
 
   @doc """
   Gather information for a player

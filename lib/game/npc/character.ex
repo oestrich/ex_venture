@@ -100,7 +100,7 @@ defmodule Game.NPC.Character do
 
     case currency do
       currency when currency > 0 ->
-        room_id |> Environment.drop_currency({:npc, npc}, currency)
+        room_id |> Environment.drop_currency(Character.to_simple(npc), currency)
 
       _ ->
         nil
@@ -127,7 +127,7 @@ defmodule Game.NPC.Character do
     |> Enum.filter(&drop_item?/1)
     |> Enum.map(fn npc_item ->
       item = Items.item(npc_item.item_id)
-      room_id |> Environment.drop({:npc, npc}, Item.instantiate(item))
+      room_id |> Environment.drop(Character.to_simple(npc), Item.instantiate(item))
     end)
   end
 

@@ -182,7 +182,7 @@ defmodule Game.Command.SkillsTest do
     end
 
     test "target not found", %{state: state, save: save, slash: slash} do
-      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 2}}
+      state = %{state | save: Map.merge(save, %{room_id: 1}), target: %{type: "npc", id: 2}}
       :ok = Skills.run({slash, "slash"}, state)
 
       assert_socket_echo "your target could not"

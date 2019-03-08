@@ -240,7 +240,7 @@ defmodule Game.Session.Process do
   end
 
   def handle_call(:info, _from, state) do
-    {:reply, {:player, state.character}, state}
+    {:reply, Character.to_simple(state.character), state}
   end
 
   #

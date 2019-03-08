@@ -298,7 +298,7 @@ defmodule Game.Session.Character do
   def possible_new_target(state) do
     state.is_targeting
     |> MapSet.to_list()
-    |> Enum.reject(&(&1 == {:player, state.character.id}))
+    |> Enum.reject(&Character.equal?(state.character, &1))
     |> List.first()
     |> character_info()
   end

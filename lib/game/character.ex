@@ -9,19 +9,13 @@ defmodule Game.Character do
   - `{:apply_effects, effects, player}`
   """
 
-  alias Data.NPC
-  alias Data.User
   alias Game.Character.Simple
   alias Game.Character.Via
 
   @typedoc """
-  Tagged tuple of a player or npc struct
-
-  Valid options:
-  - `{:player, player}`
-  - `{:npc, npc}`
+  A simple character struct
   """
-  @type t :: tuple()
+  @type t :: %Simple{}
 
   @doc """
   Convert a character into a stripped down version
@@ -100,17 +94,5 @@ defmodule Game.Character do
   @doc """
   Converts a tuple with a struct to a tuple with an id
   """
-  @spec who({:npc, integer()} | {:npc, NPC.t()}) :: {:npc, integer()}
-  @spec who({:player, integer()} | {:player, User.t()}) :: {:player, integer()}
-  def who(target)
-
   def who(character = %Simple{}), do: character
-
-  def who({:npc, id}) when is_integer(id), do: {:npc, id}
-
-  def who({:npc, npc}), do: {:npc, npc.id}
-
-  def who({:player, id}) when is_integer(id), do: {:player, id}
-
-  def who({:player, player}), do: {:player, player.id}
 end

@@ -13,7 +13,7 @@ defmodule Game.NPC.Events.CharacterTargetedTest do
   describe "processing the events" do
     test "inserts the character into any commands/target actions", %{state: state} do
       player = %Character.Simple{type: "player"}
-      sent_event = {"character/targeted", {:from, {:player, player}}}
+      sent_event = {"character/targeted", {:from, player}}
 
       {:ok, ^state} = CharacterTargeted.process(state, sent_event)
 

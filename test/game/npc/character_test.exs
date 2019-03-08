@@ -102,16 +102,16 @@ defmodule Game.NPC.CharacterTest do
     end
 
     test "drops currency in the room", state do
-      _state = Character.died(state, {:npc, state.npc})
+      _state = Character.died(state, GameCharacter.to_simple(state.npc))
 
-      assert_drop {_, {:npc, _}, {:currency, 51}}
+      assert_drop {_, %{type: "npc"}, {:currency, 51}}
     end
 
     test "does not drop 0 currency", state do
       npc = %{state.npc | currency: 0}
       _state = Character.died(%{state | npc: npc}, GameCharacter.to_simple(state.npc))
 
-      refute_drop {_, {:npc, _}, {:currency, _}}
+      refute_drop {_, %{type: "npc"}, {:currency, _}}
     end
 
     test "will drop an amount 50-100% of the total currency" do
@@ -121,8 +121,8 @@ defmodule Game.NPC.CharacterTest do
     test "drops items in the room", state do
       _state = Character.died(state, GameCharacter.to_simple(state.npc))
 
-      assert_drop {_, {:npc, _}, %{id: 1}}
-      assert_drop {_, {:npc, _}, %{id: 2}}
+      assert_drop {_, %{type: "npc"}, %{id: 1}}
+      assert_drop {_, %{type: "npc"}, %{id: 2}}
     end
 
     test "will drop an item if the chance is below the item's drop rate" do

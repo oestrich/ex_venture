@@ -548,7 +548,7 @@ defmodule Game.SessionTest do
     end
 
     test "room overheard - does not echo if user is in the list of characters", %{state: state} do
-      event = %RoomOverheard{characters: [{:player, state.character}], message: "hi"}
+      event = %RoomOverheard{characters: [Character.to_simple(state.character)], message: "hi"}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -580,7 +580,7 @@ defmodule Game.SessionTest do
 
     test "new currency received", %{state: state} do
       state = %{state | user: %{save: nil}, save: %{currency: 10}}
-      event = %CurrencyReceived{character: {:npc, %{name: "Guard"}}, amount: 50}
+      event = %CurrencyReceived{character: %Character.Simple{type: "npc", name: "Guard"}, amount: 50}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 

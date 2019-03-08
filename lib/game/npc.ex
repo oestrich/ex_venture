@@ -12,6 +12,7 @@ defmodule Game.NPC do
   alias Data.NPCSpawner
   alias Data.Stats
   alias Game.Channel
+  alias Game.Character, as: GameCharacter
   alias Game.Character.Effects
   alias Game.Environment
   alias Game.NPC.Actions
@@ -243,7 +244,7 @@ defmodule Game.NPC do
   end
 
   def handle_call(:info, _from, state) do
-    {:reply, {:npc, state.npc}, state}
+    {:reply, GameCharacter.to_simple(state.npc), state}
   end
 
   def handle_cast(:release, state) do
