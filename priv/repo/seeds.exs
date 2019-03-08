@@ -100,7 +100,7 @@ defmodule Helpers do
 
   def create_user(attributes) do
     %User{}
-    |> User.changeset(attributes)
+    |> User.create_changeset(attributes)
     |> Repo.insert!()
   end
 
