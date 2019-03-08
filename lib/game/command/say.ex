@@ -7,6 +7,7 @@ defmodule Game.Command.Say do
 
   import Game.Room.Helpers, only: [find_character: 3]
 
+  alias Game.Character
   alias Game.Events.RoomHeard
   alias Game.Format.Channels, as: FormatChannels
   alias Game.Hint
@@ -145,7 +146,7 @@ defmodule Game.Command.Say do
     state |> Socket.echo(FormatChannels.say(:you, parsed_message))
 
     message = Message.new(character, parsed_message)
-    event = %RoomHeard{character: {:player, character}, message: message}
+    event = %RoomHeard{character: Character.to_simple(character), message: message}
     Environment.notify(save.room_id, event.character, event)
   end
 
@@ -168,11 +169,12 @@ defmodule Game.Command.Say do
         state |> Socket.echo(message)
 
         message = Message.say_to(character, directed_character, parsed_message)
-        event = %RoomHeard{character: {:player, character}, message: message}
+        event = %RoomHeard{character: Character.to_simple(character), message: message}
         Environment.notify(room.id, event.character, event)
     end
   end
 
   defp maybe_hint_on_quotes(state, %{is_quoted: true}), do: Hint.gate(state, "say.quoted")
+
   defp maybe_hint_on_quotes(_state, _message), do: :ok
 end

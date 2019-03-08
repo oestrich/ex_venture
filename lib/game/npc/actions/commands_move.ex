@@ -4,6 +4,7 @@ defmodule Game.NPC.Actions.CommandsMove do
   """
 
   alias Data.Exit
+  alias Game.Character
   alias Game.Door
   alias Game.Environment
   alias Game.Events.RoomEntered
@@ -57,7 +58,7 @@ defmodule Game.NPC.Actions.CommandsMove do
       iex> CommandsMove.check_no_target(%{target: nil})
       {:ok, :no_target}
 
-      iex> CommandsMove.check_no_target(%{target: {:player, %{}}})
+      iex> CommandsMove.check_no_target(%{target: %{type: "player"}})
       {:error, :target}
   """
   def check_no_target(state) do
@@ -123,7 +124,7 @@ defmodule Game.NPC.Actions.CommandsMove do
   """
   def move_room(state, old_room, new_room, direction) do
     CharacterInstrumenter.movement(:npc, fn ->
-      {:npc, npc} = Events.npc(state)
+      npc = Character.to_simple(Events.npc(state))
 
       Environment.unlink(old_room.id)
       Environment.leave(old_room.id, npc, {:leave, direction})

@@ -169,8 +169,7 @@ defmodule Game.NPC.Events do
     })
 
     message = Message.npc_tell(npc, Format.resources(quest.completed_message))
-    {:npc, npc} = npc(state)
-    from = Character.to_simple(npc)
+    from = Character.to_simple(npc(state))
     Channel.tell(player, from, message)
 
     :ok
@@ -234,10 +233,10 @@ defmodule Game.NPC.Events do
   def who(character), do: Map.take(character, [:type, :name])
 
   def npc(%{npc: npc, status: status}) when status != nil do
-    {:npc, %{npc | status_line: status.line, status_listen: status.listen}}
+    Character.to_simple(%{npc | status_line: status.line, status_listen: status.listen})
   end
 
-  def npc(%{npc: npc}), do: {:npc, npc}
+  def npc(%{npc: npc}), do: Character.to_simple(npc)
 
   def notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})
