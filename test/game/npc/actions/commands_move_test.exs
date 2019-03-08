@@ -37,7 +37,7 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
     end
 
     test "does not move when a target is present", %{state: state, action: action} do
-      state = %{state | target: {:player, %{}}}
+      state = %{state | target: %{type: "player"}}
 
       {:ok, state} = CommandsMove.act(state, action)
 

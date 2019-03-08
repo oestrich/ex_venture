@@ -143,8 +143,8 @@ defmodule Game.Command.Target do
     state |> Socket.echo(gettext("You don't have a target."))
   end
 
-  def display_target(state, {:npc, npc_id}, room) do
-    case Enum.find(room.npcs, &(&1.id == npc_id)) do
+  def display_target(state, npc = %{type: "npc"}, room) do
+    case Enum.find(room.npcs, &Character.equal?(npc, &1)) do
       nil ->
         state |> Socket.echo(gettext("Your target could not be found."))
 
@@ -154,8 +154,8 @@ defmodule Game.Command.Target do
     end
   end
 
-  def display_target(state, {:player, player_id}, room) do
-    case Enum.find(room.players, &(&1.id == player_id)) do
+  def display_target(state, player = %{type: "player"}, room) do
+    case Enum.find(room.players, &Character.equal?(player, &1)) do
       nil ->
         state |> Socket.echo(gettext("Your target could not be found."))
 

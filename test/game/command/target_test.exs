@@ -55,28 +55,28 @@ defmodule Game.Command.TargetTest do
   end
 
   test "viewing your target - npc", %{state: state} do
-    state = %{state | target: {:npc, 1}}
+    state = %{state | target: %{type: "npc", id: 1}}
     :ok = Game.Command.Target.run({}, state)
 
     assert_socket_echo "your target is"
   end
 
   test "viewing your target - npc no longer there", %{state: state} do
-    state = %{state | target: {:npc, 2}}
+    state = %{state | target: %{type: "npc", id: 2}}
     :ok = Game.Command.Target.run({}, state)
 
     assert_socket_echo "could not"
   end
 
   test "viewing your target - player", %{state: state} do
-    state = %{state | target: {:player, 2}}
+    state = %{state | target: %{type: "player", id: 2, name: "Player"}}
     :ok = Game.Command.Target.run({}, state)
 
     assert_socket_echo "your target is"
   end
 
   test "viewing your target - user no longer there", %{state: state} do
-    state = %{state | target: {:player, 3}}
+    state = %{state | target: %{type: "player", id: 3}}
     :ok = Game.Command.Target.run({}, state)
 
     assert_socket_echo "could not"

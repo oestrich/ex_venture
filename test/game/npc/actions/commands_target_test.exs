@@ -81,7 +81,7 @@ defmodule Game.NPC.Actions.CommandsTargetTest do
         options: %{player: true, character: player}
       }
 
-      state = %{state | target: {:player, player}}
+      state = %{state | target: player}
 
       {:ok, state} = CommandsTarget.act(state, action)
 
