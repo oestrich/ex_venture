@@ -24,7 +24,7 @@ defmodule Game.Message do
       type: :player,
       sender: player,
       message: parsed_message.message,
-      formatted: FormatChannels.say({:player, player}, parsed_message)
+      formatted: FormatChannels.say(player, parsed_message)
     }
   end
 
@@ -35,7 +35,7 @@ defmodule Game.Message do
       type: :player,
       sender: player,
       message: parsed_message.message,
-      formatted: FormatChannels.say_to({:player, player}, character, parsed_message)
+      formatted: FormatChannels.say_to(player, character, parsed_message)
     }
   end
 
@@ -44,7 +44,7 @@ defmodule Game.Message do
       type: :player,
       sender: player,
       message: message,
-      formatted: FormatChannels.emote({:player, player}, message)
+      formatted: FormatChannels.emote(player, message)
     }
   end
 
@@ -67,7 +67,7 @@ defmodule Game.Message do
       type: :player,
       sender: player,
       message: parsed_message.message,
-      formatted: FormatChannels.channel_say(channel, {:player, player}, parsed_message)
+      formatted: FormatChannels.channel_say(channel, player, parsed_message)
     }
   end
 
@@ -76,7 +76,7 @@ defmodule Game.Message do
       type: :player,
       sender: player,
       message: message,
-      formatted: FormatChannels.tell({:player, player}, message)
+      formatted: FormatChannels.tell(player, message)
     }
   end
 
@@ -87,7 +87,7 @@ defmodule Game.Message do
       type: :player,
       sender: player,
       message: message,
-      formatted: FormatChannels.whisper({:player, player}, message)
+      formatted: FormatChannels.whisper(player, message)
     }
   end
 
@@ -99,7 +99,7 @@ defmodule Game.Message do
       type: :player,
       sender: player,
       message: message.message,
-      formatted: FormatChannels.channel_say(channel, {:player, player}, message),
+      formatted: FormatChannels.channel_say(channel, player, message),
       from_gossip: true
     }
   end
@@ -111,7 +111,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: FormatChannels.say({:npc, npc}, %{message: message})
+      formatted: FormatChannels.say(npc, %{message: message})
     }
   end
 
@@ -120,7 +120,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: FormatChannels.emote({:npc, npc}, message)
+      formatted: FormatChannels.emote(npc, message)
     }
   end
 
@@ -129,7 +129,7 @@ defmodule Game.Message do
       type: :npc,
       sender: npc,
       message: message,
-      formatted: FormatChannels.tell({:npc, npc}, message)
+      formatted: FormatChannels.tell(npc, message)
     }
   end
 

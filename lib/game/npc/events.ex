@@ -140,11 +140,11 @@ defmodule Game.NPC.Events do
 
     target = Map.get(state, :target, nil)
 
-    case Character.who(character) do
-      ^target ->
+    case Character.equal?(target, character) do
+      true ->
         {:update, %{state | target: nil}}
 
-      _ ->
+      false ->
         :ok
     end
   end
@@ -169,7 +169,8 @@ defmodule Game.NPC.Events do
     })
 
     message = Message.npc_tell(npc, Format.resources(quest.completed_message))
-    Channel.tell({:player, player}, npc(state), message)
+    from = Character.to_simple(npc(state))
+    Channel.tell(player, from, message)
 
     :ok
   end
@@ -184,7 +185,7 @@ defmodule Game.NPC.Events do
   def act_on_character_died(%{target: nil}, _character, _from), do: :ok
 
   def act_on_character_died(state, character, _from) do
-    case Character.who(character) == Character.who(state.target) do
+    case Character.equal?(state.target, character) do
       true ->
         {:update, Map.put(state, :target, nil)}
 
@@ -198,7 +199,7 @@ defmodule Game.NPC.Events do
   """
   def act_on_item_receive(state, character, item_instance)
 
-  def act_on_item_receive(state, {:player, player}, item_instance) do
+  def act_on_item_receive(state, player = %{type: "player"}, item_instance) do
     npc = %{state.npc | id: state.npc.original_id}
     Quest.track_progress(player, {:item, item_instance, npc})
     :ok
@@ -225,14 +226,13 @@ defmodule Game.NPC.Events do
     Web.Endpoint.broadcast("npc:#{id}", event, message)
   end
 
-  def who({:npc, npc}), do: %{type: :npc, name: npc.name}
-  def who({:player, player}), do: %{type: :player, name: player.name}
+  def who(character), do: Map.take(character, [:type, :name])
 
   def npc(%{npc: npc, status: status}) when status != nil do
-    {:npc, %{npc | status_line: status.line, status_listen: status.listen}}
+    Character.to_simple(%{npc | status_line: status.line, status_listen: status.listen})
   end
 
-  def npc(%{npc: npc}), do: {:npc, npc}
+  def npc(%{npc: npc}), do: Character.to_simple(npc)
 
   def notify_delayed(action, delayed) do
     :erlang.send_after(delayed, self(), {:"$gen_cast", {:notify, action}})

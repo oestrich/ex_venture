@@ -33,7 +33,7 @@ defmodule Game.NPC.ActionsTest do
       emote = %CommandsEmote{options: %{message: "[name] waves"}}
 
       state = %State{
-        npc: %{id: 1, name: "Guard"}
+        npc: %{base_npc() | id: 1, name: "Guard"}
       }
 
       {:ok, ^state} = Actions.process(state, [say, emote])

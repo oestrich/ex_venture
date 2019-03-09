@@ -39,13 +39,13 @@ defmodule Game.NPC.Character do
     npc = %{npc | stats: %{npc.stats | health_points: npc.stats.max_health_points}}
     status = %Status{key: "start", line: npc.status_line, listen: npc.status_listen}
 
-    npc_spawner.room_id |> Environment.enter({:npc, npc}, :respawn)
-    npc_spawner.room_id |> Environment.link()
+    Environment.enter(npc_spawner.room_id, npc, :respawn)
+    Environment.link(npc_spawner.room_id)
 
     {:ok, room} = Environment.look(npc_spawner.room_id)
 
     Enum.each(room.players, fn player ->
-      event = %RoomEntered{character: {:player, player}}
+      event = %RoomEntered{character: player}
       GenServer.cast(self(), {:notify, event})
     end)
 
@@ -72,11 +72,10 @@ defmodule Game.NPC.Character do
   def died(state = %{room_id: room_id, npc: npc, npc_spawner: npc_spawner}, who) do
     Logger.info("NPC (#{npc.id}) died", type: :npc)
 
-    event = %CharacterDied{character: {:npc, npc}, killer: who}
-    room_id |> Environment.notify({:npc, npc}, event)
-
-    room_id |> Environment.leave({:npc, npc}, :death)
-    room_id |> Environment.unlink()
+    event = %CharacterDied{character: Character.to_simple(npc), killer: who}
+    Environment.notify(room_id, npc, event)
+    Environment.leave(room_id, npc, :death)
+    Environment.unlink(room_id)
 
     Events.broadcast(npc, "character/died")
 
@@ -101,7 +100,7 @@ defmodule Game.NPC.Character do
 
     case currency do
       currency when currency > 0 ->
-        room_id |> Environment.drop_currency({:npc, npc}, currency)
+        room_id |> Environment.drop_currency(Character.to_simple(npc), currency)
 
       _ ->
         nil
@@ -128,7 +127,7 @@ defmodule Game.NPC.Character do
     |> Enum.filter(&drop_item?/1)
     |> Enum.map(fn npc_item ->
       item = Items.item(npc_item.item_id)
-      room_id |> Environment.drop({:npc, npc}, Item.instantiate(item))
+      room_id |> Environment.drop(Character.to_simple(npc), Item.instantiate(item))
     end)
   end
 
@@ -150,7 +149,7 @@ defmodule Game.NPC.Character do
   @spec apply_effects(State.t(), [Effect.t()], tuple()) :: State.t()
   def apply_effects(state = %{npc: npc}, effects, from) do
     {stats, _effects, continuous_effects} =
-      Effects.apply_effects({:npc, npc}, npc.stats, state, effects, from)
+      Effects.apply_effects(Character.to_simple(npc), npc.stats, state, effects, from)
 
     npc = Map.put(npc, :stats, stats)
     state = %{state | npc: npc}

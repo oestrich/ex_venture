@@ -189,13 +189,15 @@ defmodule Game.Session.Registry do
   def player_offline(disconnecting_player) do
     Gossip.player_sign_out(disconnecting_player.name)
 
+    disconnecting_player = Character.to_simple(disconnecting_player)
+
     connected_players()
     |> Enum.reject(fn %{player: player} ->
       player.id == disconnecting_player.id
     end)
     |> Enum.each(fn %{player: player} ->
-      event = %PlayerSignedOut{character: {:player, disconnecting_player}}
-      Character.notify({:player, player}, event)
+      event = %PlayerSignedOut{character: disconnecting_player}
+      Character.notify(Character.to_simple(player), event)
     end)
   end
 
@@ -206,13 +208,15 @@ defmodule Game.Session.Registry do
   def player_online(connecting_player) do
     Gossip.player_sign_in(connecting_player.name)
 
+    connecting_player = Character.to_simple(connecting_player)
+
     connected_players()
     |> Enum.reject(fn %{player: player} ->
       player.id == connecting_player.id
     end)
     |> Enum.each(fn %{player: player} ->
-      event = %PlayerSignedIn{character: {:player, connecting_player}}
-      Character.notify({:player, player}, event)
+      event = %PlayerSignedIn{character: connecting_player}
+      Character.notify(Character.to_simple(player), event)
     end)
   end
 

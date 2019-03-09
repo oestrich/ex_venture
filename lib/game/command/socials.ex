@@ -7,6 +7,7 @@ defmodule Game.Command.Socials do
 
   import Game.Room.Helpers, only: [find_character: 2]
 
+  alias Game.Character
   alias Game.Events.RoomHeard
   alias Game.Format.Socials, as: FormatSocials
   alias Game.Socials
@@ -111,7 +112,7 @@ defmodule Game.Command.Socials do
         emote = FormatSocials.social_without_target(social, state.character)
 
         message = Message.social(state.character, emote)
-        event = %RoomHeard{character: {:player, state.character}, message: message}
+        event = %RoomHeard{character: Character.to_simple(state.character), message: message}
         Environment.notify(save.room_id, event.character, event)
 
         state |> Socket.echo(emote)
@@ -133,11 +134,11 @@ defmodule Game.Command.Socials do
             message = gettext("\"%{name}\" could not be found.", name: character_name)
             state |> Socket.echo(message)
 
-          character ->
+          {:ok, character} ->
             emote = FormatSocials.social_with_target(social, state.character, character)
 
             message = Message.social(state.character, emote)
-            event = %RoomHeard{character: {:player, state.character}, message: message}
+            event = %RoomHeard{character: Character.to_simple(state.character), message: message}
             Environment.notify(save.room_id, event.character, event)
 
             state |> Socket.echo(emote)

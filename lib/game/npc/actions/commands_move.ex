@@ -4,6 +4,7 @@ defmodule Game.NPC.Actions.CommandsMove do
   """
 
   alias Data.Exit
+  alias Game.Character
   alias Game.Door
   alias Game.Environment
   alias Game.Events.RoomEntered
@@ -57,7 +58,7 @@ defmodule Game.NPC.Actions.CommandsMove do
       iex> CommandsMove.check_no_target(%{target: nil})
       {:ok, :no_target}
 
-      iex> CommandsMove.check_no_target(%{target: {:player, %{}}})
+      iex> CommandsMove.check_no_target(%{target: %{type: "player"}})
       {:error, :target}
   """
   def check_no_target(state) do
@@ -123,13 +124,15 @@ defmodule Game.NPC.Actions.CommandsMove do
   """
   def move_room(state, old_room, new_room, direction) do
     CharacterInstrumenter.movement(:npc, fn ->
+      npc = Character.to_simple(Events.npc(state))
+
       Environment.unlink(old_room.id)
-      Environment.leave(old_room.id, Events.npc(state), {:leave, direction})
-      Environment.enter(new_room.id, Events.npc(state), {:enter, Exit.opposite(direction)})
+      Environment.leave(old_room.id, npc, {:leave, direction})
+      Environment.enter(new_room.id, npc, {:enter, Exit.opposite(direction)})
       Environment.link(old_room.id)
 
       Enum.each(new_room.players, fn player ->
-        event = %RoomEntered{character: {:player, player}}
+        event = %RoomEntered{character: player}
         NPC.delay_notify(event, milliseconds: @npc_reaction_time_ms)
       end)
     end)

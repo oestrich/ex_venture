@@ -3,6 +3,7 @@ defmodule Game.SessionTest do
 
   alias Data.Exit
   alias Data.Mail
+  alias Game.Character
   alias Game.Command
   alias Game.Events.CharacterDied
   alias Game.Events.CurrencyReceived
@@ -259,9 +260,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = %{base_character(user) | class: class_attributes(%{})}
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
     assert state.save.stats.health_points == 15
 
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
@@ -276,7 +278,7 @@ defmodule Game.SessionTest do
     character = %{base_character(user) | id: 2, class: class_attributes(%{}), save: save}
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new()}
 
-    from = {:npc, %{id: 1, name: "Bandit"}}
+    from = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     {:noreply, state} = Process.handle_cast({:apply_effects, [effect], from, "description"}, state)
 
@@ -303,9 +305,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = base_character(user)
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
 
     assert state.save.stats.health_points == -5
     assert_received {:"$gen_cast", {:echo, ~s(description\n10 slashing damage is dealt) <> _}}
@@ -326,9 +329,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = base_character(user)
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new()}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
 
     assert state.save.stats.health_points == -5
 
@@ -349,9 +353,10 @@ defmodule Game.SessionTest do
     user = %{base_user() | id: 2, name: "user"}
     character = %{base_character(user) | class: class_attributes(%{})}
     save = %{base_save() | room_id: 1, experience_points: 10, stats: stats}
+    npc = Character.to_simple(%{base_npc() | id: 1, name: "Bandit"})
 
     state = %{state | user: user, character: character, save: save, is_targeting: MapSet.new()}
-    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], {:npc, %{id: 1, name: "Bandit"}}, "description"}, state)
+    {:noreply, state} = Process.handle_cast({:apply_effects, [effect], npc, "description"}, state)
 
     assert state.save.stats.health_points == -5
 
@@ -362,35 +367,35 @@ defmodule Game.SessionTest do
 
   describe "targeted" do
     test "being targeted tracks the targeter", %{state: state} do
-      targeter = {:player, %{id: 10, name: "Player"}}
+      targeter = %Character.Simple{type: "player", id: 10, name: "Player"}
 
       {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{state | target: nil, is_targeting: MapSet.new})
 
       assert state.is_targeting |> MapSet.size() == 1
-      assert state.is_targeting |> MapSet.member?({:player, 10})
+      assert state.is_targeting |> MapSet.member?(targeter)
     end
 
     test "if your target is empty, set to the targeter", %{state: state} do
-      targeter = {:player, %{id: 10, name: "Player"}}
+      targeter = %Character.Simple{type: "player", id: 10, name: "Player"}
 
       {:noreply, state} = Process.handle_cast({:targeted, targeter}, %{state | target: nil, is_targeting: MapSet.new})
 
-      assert state.target == {:player, 10}
+      assert state.target == targeter
     end
   end
 
   describe "channels" do
     setup do
-      %{from: %{id: 10, name: "Player"}}
+      %{from: %{type: "player", id: 10, name: "Player"}}
     end
 
     test "receiving a tell", %{state: state, from: from} do
       message = Message.tell(from, "Howdy")
 
-      {:noreply, state} = Process.handle_info({:channel, {:tell, {:player, from}, message}}, state)
+      {:noreply, state} = Process.handle_info({:channel, {:tell, from, message}}, state)
 
       assert_socket_echo "howdy"
-      assert state.reply_to == {:player, from}
+      assert state.reply_to == from
     end
 
     test "receiving a join", %{state: state} do
@@ -445,7 +450,7 @@ defmodule Game.SessionTest do
     test "sets health_points to 1 if < 0", %{state: state} do
       start_room(%{id: 2})
 
-      save = %{stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 2}
+      save = %{state.save | stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 2}
       state = %{state | save: save}
 
       {:noreply, state} = Process.handle_info({:resurrect, 2}, state)
@@ -457,13 +462,13 @@ defmodule Game.SessionTest do
     test "leaves old room, enters new room", %{state: state} do
       start_room(%{id: 2})
 
-      save = %{stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 1}
+      save = %{state.save | stats: %{base_stats() | health_points: -1}, experience_points: 10, room_id: 1}
       state = %{state | save: save}
 
       {:noreply, _state} = Process.handle_info({:resurrect, 2}, state)
 
-      assert_leave {1, {:player, _}, :death}
-      assert_enter {2, {:player, _}, :respawn}
+      assert_leave {1, %{type: "player"}, :death}
+      assert_enter {2, %{type: "player"}, :respawn}
     end
 
     test "does not touch health_points if > 0", %{state: state} do
@@ -478,7 +483,7 @@ defmodule Game.SessionTest do
 
   describe "event notification" do
     test "player enters the room", %{state: state} do
-      event = %RoomEntered{character: {:player, %{id: 1, name: "Player"}}, reason: {:enter, "south"}}
+      event = %RoomEntered{character: %{type: "player", id: 1, name: "Player"}, reason: {:enter, "south"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -486,7 +491,7 @@ defmodule Game.SessionTest do
     end
 
     test "npc enters the room", %{state: state} do
-      event = %RoomEntered{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:enter, "south"}}
+      event = %RoomEntered{character: %{type: "npc", id: 1, name: "Bandit"}, reason: {:enter, "south"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -494,7 +499,7 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room", %{state: state} do
-      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: %{type: "player", id: 1, name: "Player"}, reason: {:leave, "north"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -502,7 +507,7 @@ defmodule Game.SessionTest do
     end
 
     test "npc leaves the room", %{state: state} do
-      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+      event = %RoomLeft{character: %{type: "npc", id: 1, name: "Bandit"}, reason: {:leave, "north"}}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -510,8 +515,8 @@ defmodule Game.SessionTest do
     end
 
     test "player leaves the room and they were the target", %{state: state} do
-      state = %{state | target: {:player, 1}}
-      event = %RoomLeft{character: {:player, %{id: 1, name: "Player"}}, reason: {:leave, "north"}}
+      state = %{state | target: %{type: "player", id: 1}}
+      event = %RoomLeft{character: %{type: "player", id: 1, name: "Player"}, reason: {:leave, "north"}}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -519,8 +524,8 @@ defmodule Game.SessionTest do
     end
 
     test "npc leaves the room and they were the target", %{state: state} do
-      state = %{state | target: {:npc, 1}}
-      event = %RoomLeft{character: {:npc, %{id: 1, name: "Bandit"}}, reason: {:leave, "north"}}
+      state = %{state | target: %{type: "npc", id: 1}}
+      event = %RoomLeft{character: %{type: "npc", id: 1, name: "Bandit"}, reason: {:leave, "north"}}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -528,7 +533,7 @@ defmodule Game.SessionTest do
     end
 
     test "room heard", %{state: state} do
-      message = Message.say(%{id: 1, name: "Player"}, %{message: "hi"})
+      message = Message.say(%{type: "player", id: 1, name: "Player"}, %{message: "hi"})
       {:noreply, ^state} = Process.handle_cast({:notify, %RoomHeard{message: message}}, state)
 
       assert_socket_echo "hi"
@@ -543,7 +548,7 @@ defmodule Game.SessionTest do
     end
 
     test "room overheard - does not echo if user is in the list of characters", %{state: state} do
-      event = %RoomOverheard{characters: [{:player, state.character}], message: "hi"}
+      event = %RoomOverheard{characters: [Character.to_simple(state.character)], message: "hi"}
 
       {:noreply, ^state} = Process.handle_cast({:notify, event}, state)
 
@@ -564,7 +569,7 @@ defmodule Game.SessionTest do
       instance = item_instance(1)
 
       state = %{state | user: %{save: nil}, save: %{items: []}}
-      event = %ItemReceived{character: {:npc, %{name: "Guard"}}, instance: instance}
+      event = %ItemReceived{character: %{type: "npc", name: "Guard"}, instance: instance}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -575,7 +580,7 @@ defmodule Game.SessionTest do
 
     test "new currency received", %{state: state} do
       state = %{state | user: %{save: nil}, save: %{currency: 10}}
-      event = %CurrencyReceived{character: {:npc, %{name: "Guard"}}, amount: 50}
+      event = %CurrencyReceived{character: %Character.Simple{type: "npc", name: "Guard"}, amount: 50}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -587,13 +592,13 @@ defmodule Game.SessionTest do
 
   describe "character dying" do
     setup %{state: state} do
-      target = {:player, %{id: 10, name: "Player"}}
-      user = %{id: 10, name: "Player", class: class_attributes(%{}), save: base_save()}
+      target = %{type: "player", id: 10, name: "Player"}
+      player = %{type: "player", id: 10, name: "Player", class: class_attributes(%{}), save: base_save()}
 
       state = Map.merge(state, %{
-        user: user,
-        save: user.save,
-        target: {:player, 10},
+        user: player,
+        save: player.save,
+        target: target,
         is_targeting: MapSet.new(),
       })
 
@@ -601,7 +606,7 @@ defmodule Game.SessionTest do
     end
 
     test "clears your target", %{state: state, target: target} do
-      event = %CharacterDied{character: target, killer: {:player, state.user}}
+      event = %CharacterDied{character: target, killer: state.user}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 
@@ -609,9 +614,9 @@ defmodule Game.SessionTest do
     end
 
     test "npc - a died message is sent and experience is applied", %{state: state} do
-      target = {:npc, %{id: 10, original_id: 1, name: "Bandit", level: 1, experience_points: 200}}
-      state = %{state | target: {:npc, 10}}
-      event = %CharacterDied{character: target, killer: {:player, state.user}}
+      target = %Character.Simple{type: "npc", id: 10, name: "Bandit", level: 1, extra: %{original_id: 1, experience_points: 200}}
+      state = %{state | target: target}
+      event = %CharacterDied{character: target, killer: state.user}
 
       {:noreply, state} = Process.handle_cast({:notify, event}, state)
 

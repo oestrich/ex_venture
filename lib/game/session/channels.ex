@@ -54,12 +54,12 @@ defmodule Game.Session.Channels do
     |> Map.put(:reply_to, from)
   end
 
-  def maybe_hint_tell(state = %{reply_to: nil}, {:npc, _}) do
+  def maybe_hint_tell(state = %{reply_to: nil}, %{type: "npc"}) do
     Hint.gate(state, "tells.new_npc")
     state
   end
 
-  def maybe_hint_tell(state = %{reply_to: nil}, {:player, _}) do
+  def maybe_hint_tell(state = %{reply_to: nil}, %{type: "player"}) do
     Hint.gate(state, "tells.new")
     state
   end

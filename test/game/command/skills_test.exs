@@ -1,6 +1,7 @@
 defmodule Game.Command.SkillsTest do
   use ExVenture.CommandCase
 
+  alias Game.Character
   alias Game.Command.ParseContext
   alias Game.Command.Skills
   alias Game.Session
@@ -22,13 +23,13 @@ defmodule Game.Command.SkillsTest do
     })
     insert_skill(slash)
 
-    npc = %{id: 1, name: "Bandit"}
+    npc = %Character.Simple{id: 1, type: "npc", name: "Bandit"}
 
     user = base_user()
     save = %{base_save() | level: 1, stats: %{health_points: 20, strength: 10, skill_points: 10}, wearing: %{}, skill_ids: [slash.id]}
     character = %{base_character(user) | save: save}
 
-    start_room(%{npcs: [npc], players: [user]})
+    start_room(%{npcs: [npc], players: [Character.to_simple(character)]})
 
     state = session_state(%{
       skills: %{},
@@ -112,9 +113,10 @@ defmodule Game.Command.SkillsTest do
 
   describe "using a skill" do
     test "with a target", %{state: state, save: save, slash: slash} do
-      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
+      state = %{state | save: Map.merge(save, %{room_id: 1}), target: %Character.Simple{type: "npc", id: 1}}
 
       {:skip, :prompt, state} = Skills.run({slash, "slash"}, state)
+
       assert state.save.stats.skill_points == 8
       assert state.skills[slash.id]
 
@@ -124,14 +126,14 @@ defmodule Game.Command.SkillsTest do
     test "required target - targets self", %{state: state, save: save, slash: slash} do
       Session.Registry.register(state.character)
 
-      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
+      state = %{state | save: Map.merge(save, %{room_id: 1}), target: %Character.Simple{type: "npc", id: 1}}
       slash = %{slash | require_target: true}
 
       {:skip, :prompt, state} = Skills.run({slash, "slash"}, state)
 
       assert state.save.stats.skill_points == 8
       assert state.skills[slash.id]
-      assert state.target == {:npc, 1}
+      assert %{type: "npc", id: 1} = state.target
 
       assert_socket_echo "slash"
 
@@ -141,14 +143,14 @@ defmodule Game.Command.SkillsTest do
     test "required target - target added", %{state: state, save: save, slash: slash} do
       Session.Registry.register(state.character)
 
-      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
+      state = %{state | save: Map.merge(save, %{room_id: 1}), target: %Character.Simple{type: "npc", id: 1}}
       slash = %{slash | require_target: true}
 
       {:skip, :prompt, state} = Skills.run({slash, "slash bandit"}, state)
 
       assert state.save.stats.skill_points == 8
       assert state.skills[slash.id]
-      assert state.target == {:npc, 1}
+      assert %{type: "npc", id: 1} = state.target
 
       assert_socket_echo "slash"
 
@@ -159,26 +161,28 @@ defmodule Game.Command.SkillsTest do
       state = %{state | save: Map.merge(save, %{room_id: 1}), target: nil}
 
       {:skip, :prompt, state} = Skills.run({slash, "slash bandit"}, state)
+
       assert state.save.stats.skill_points == 8
-      assert state.target == {:npc, 1}
+      assert %{type: "npc", id: 1} = state.target
 
       assert_socket_echo ""
       assert_socket_echo "slash"
     end
 
     test "change your target", %{state: state, save: save, slash: slash} do
-      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:player, 3}}
+      state = %{state | save: Map.merge(save, %{room_id: 1}), target: %Character.Simple{type: "player", id: 3}}
 
       {:skip, :prompt, state} = Skills.run({slash, "slash bandit"}, state)
+
       assert state.save.stats.skill_points == 8
-      assert state.target == {:npc, 1}
+      assert state.target == %Character.Simple{id: 1, type: "npc", name: "Bandit"}
 
       assert_socket_echo ""
       assert_socket_echo "slash"
     end
 
     test "target not found", %{state: state, save: save, slash: slash} do
-      state = %{state | save: Map.merge(save, %{room_id: 1}), target: {:npc, 2}}
+      state = %{state | save: Map.merge(save, %{room_id: 1}), target: %{type: "npc", id: 2}}
       :ok = Skills.run({slash, "slash"}, state)
 
       assert_socket_echo "your target could not"
@@ -192,7 +196,7 @@ defmodule Game.Command.SkillsTest do
 
     test "not enough skill points", %{state: state, save: save, slash: slash} do
       stats = %{save.stats | skill_points: 1}
-      state = %{state | save: Map.merge(save, %{room_id: 1, stats: stats}), target: {:npc, 1}}
+      state = %{state | save: Map.merge(save, %{room_id: 1, stats: stats}), target: %Character.Simple{type: "npc", id: 1}}
 
       {:update, ^state} = Skills.run({slash, "slash"}, state)
 
@@ -204,7 +208,7 @@ defmodule Game.Command.SkillsTest do
         state
         |> Map.put(:skills, %{slash.id => Timex.now()})
         |> Map.put(:save, Map.merge(save, %{room_id: 1}))
-        |> Map.put(:target, {:npc, 1})
+        |> Map.put(:target, %Character.Simple{type: "npc", id: 1})
 
       :ok = Skills.run({slash, "slash"}, state)
 
@@ -212,7 +216,7 @@ defmodule Game.Command.SkillsTest do
     end
 
     test "not high enough level", %{state: state, save: save, slash: slash} do
-      state = %{state |save: Map.merge(save, %{room_id: 1}), target: {:npc, 1}}
+      state = %{state |save: Map.merge(save, %{room_id: 1}), target: %Character.Simple{type: "npc", id: 1}}
       slash = %{slash | level: 2}
 
       :ok = Skills.run({slash, "slash"}, state)

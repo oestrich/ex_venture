@@ -9,24 +9,27 @@ defmodule Game.Character do
   - `{:apply_effects, effects, player}`
   """
 
-  alias Data.NPC
-  alias Data.User
   alias Game.Character.Simple
   alias Game.Character.Via
 
   @typedoc """
-  Tagged tuple of a player or npc struct
-
-  Valid options:
-  - `{:player, player}`
-  - `{:npc, npc}`
+  A simple character struct
   """
-  @type t :: tuple()
+  @type t :: %Simple{}
 
   @doc """
   Convert a character into a stripped down version
   """
+  def to_simple(character = %Simple{}), do: character
+
   def to_simple(character), do: Simple.from_character(character)
+
+  def simple_gossip(player_name) do
+    %Simple{
+      type: "gossip",
+      name: player_name
+    }
+  end
 
   @doc """
   Let the target know they are being targeted
@@ -72,13 +75,24 @@ defmodule Game.Character do
   end
 
   @doc """
+  Check if a character equals another character, generaly the simple version
+  """
+  def equal?(nil, _target), do: false
+
+  def equal?(_character, nil), do: false
+
+  def equal?({_, character}, {_, target}), do: equal?(character, target)
+
+  def equal?({_, character}, target), do: equal?(character, target)
+
+  def equal?(character, {_, target}), do: equal?(character, target)
+
+  def equal?(character, target) do
+    character.type == target.type && character.id == target.id
+  end
+
+  @doc """
   Converts a tuple with a struct to a tuple with an id
   """
-  @spec who({:npc, integer()} | {:npc, NPC.t()}) :: {:npc, integer()}
-  @spec who({:player, integer()} | {:player, User.t()}) :: {:player, integer()}
-  def who(target)
-  def who({:npc, id}) when is_integer(id), do: {:npc, id}
-  def who({:npc, npc}), do: {:npc, npc.id}
-  def who({:player, id}) when is_integer(id), do: {:player, id}
-  def who({:player, player}), do: {:player, player.id}
+  def who(character = %Simple{}), do: character
 end

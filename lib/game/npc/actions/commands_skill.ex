@@ -16,7 +16,7 @@ defmodule Game.NPC.Actions.CommandsSkill do
          {:ok, target} <- get_target(state, room),
          {:ok, skill} <- get_skill(action.options),
          {:ok, effects} <- calculate_effects(state, skill) do
-      npc = {:npc, state.npc}
+      npc = Character.to_simple(state.npc)
       skill_text = FormatSkills.skill_usee(skill, user: npc, target: target)
       Character.apply_effects(target, effects, npc, skill_text)
 
@@ -40,12 +40,12 @@ defmodule Game.NPC.Actions.CommandsSkill do
         {:error, :no_target}
 
       target ->
-        find_target(room, Character.who(target))
+        find_target(room, target)
     end
   end
 
   defp find_target(room, target) do
-    case CommandSkills.find_target(room, Character.who(target)) do
+    case CommandSkills.find_target(room, target) do
       {:ok, target} ->
         {:ok, target}
 

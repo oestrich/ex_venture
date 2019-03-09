@@ -87,7 +87,7 @@ defmodule Game.EffectTest do
 
       state = %{
         continuous_effects: [
-          {{:player, %{id: 10}}, %{kind: "stats/boost", field: :strength, mode: "add", amount: 10, duration: 1000}},
+          {%{id: 10}, %{kind: "stats/boost", field: :strength, mode: "add", amount: 10, duration: 1000}},
         ]
       }
 

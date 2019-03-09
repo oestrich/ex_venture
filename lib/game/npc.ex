@@ -12,6 +12,7 @@ defmodule Game.NPC do
   alias Data.NPCSpawner
   alias Data.Stats
   alias Game.Channel
+  alias Game.Character, as: GameCharacter
   alias Game.Character.Effects
   alias Game.Environment
   alias Game.NPC.Actions
@@ -243,7 +244,7 @@ defmodule Game.NPC do
   end
 
   def handle_call(:info, _from, state) do
-    {:reply, {:npc, state.npc}, state}
+    {:reply, GameCharacter.to_simple(state.npc), state}
   end
 
   def handle_cast(:release, state) do
@@ -252,8 +253,8 @@ defmodule Game.NPC do
 
   def handle_cast(:enter, state = %{room_id: room_id, npc: npc}) do
     state = Events.start_tick_events(state)
-    Channel.join_tell({:npc, npc})
-    Environment.enter(room_id, {:npc, npc}, :respawn)
+    Channel.join_tell(npc)
+    Environment.enter(room_id, npc, :respawn)
     Environment.link(room_id)
     {:noreply, state}
   end
@@ -289,7 +290,7 @@ defmodule Game.NPC do
       |> Map.put(:events, npc.events)
       |> Events.start_tick_events()
 
-    Environment.update_character(room_id, {:npc, state.npc})
+    Environment.update_character(room_id, state.npc)
     Logger.info("Updating NPC (#{npc_spawner.id})", type: :npc)
     {:noreply, state}
   end
@@ -317,7 +318,7 @@ defmodule Game.NPC do
 
   def handle_cast({:apply_effects, effects, from, description}, state = %{npc: npc}) do
     Logger.info(
-      "Applying effects to NPC (#{npc.id}) from (#{elem(from, 0)}, #{elem(from, 1).id})",
+      "Applying effects to NPC (#{npc.id}) from (#{from.type}, #{from.id})",
       type: :npc
     )
 
@@ -336,7 +337,7 @@ defmodule Game.NPC do
   end
 
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc}) do
-    room_id |> Environment.leave({:npc, npc}, :leave)
+    Environment.leave(room_id, npc, :leave)
     {:stop, :normal, state}
   end
 
@@ -388,7 +389,7 @@ defmodule Game.NPC do
     {:noreply, state}
   end
 
-  def handle_info({:channel, {:tell, {:player, player}, message}}, state) do
+  def handle_info({:channel, {:tell, player = %{type: "player"}, message}}, state) do
     state = Conversation.recv(state, player, message.message)
     schedule_cleaning_conversations()
     {:noreply, state}

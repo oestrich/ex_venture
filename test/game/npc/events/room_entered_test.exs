@@ -2,6 +2,7 @@ defmodule Game.NPC.Events.RoomEnteredTest do
   use Data.ModelCase
 
   alias Data.Events
+  alias Game.Character
   alias Game.Events.RoomEntered, as: GameRoomEntered
   alias Game.NPC.Events.RoomEntered
   alias Game.NPC.State
@@ -12,7 +13,7 @@ defmodule Game.NPC.Events.RoomEnteredTest do
 
   describe "processing the events" do
     test "with no options", %{state: state} do
-      sent_event = %GameRoomEntered{character: {:player, %{}}}
+      sent_event = %GameRoomEntered{character: %{}}
 
       {:ok, ^state} = RoomEntered.process(state, sent_event)
 
@@ -20,7 +21,7 @@ defmodule Game.NPC.Events.RoomEnteredTest do
     end
 
     test "inserts the character into any commands/target actions", %{state: state, event: event} do
-      player = {:player, %{}}
+      player = %Character.Simple{}
       sent_event = %GameRoomEntered{character: player}
 
       event = %{event | actions: [%Events.Actions.CommandsTarget{}]}

@@ -7,6 +7,7 @@ defmodule Game.NPC.EventsTest do
   alias Data.Events.RoomHeard
   alias Data.Events.StateTicked
   alias Game.Channel
+  alias Game.Character
   alias Game.Events.CharacterDied
   alias Game.Events.QuestCompleted
   alias Game.Events.RoomLeft
@@ -53,7 +54,7 @@ defmodule Game.NPC.EventsTest do
 
   describe "character/died" do
     setup do
-      npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
+      npc = %{base_npc() | id: 1, name: "Mayor", events: [], stats: base_stats()}
       user = %{base_user() | id: 2}
       character = %{base_character(user) | id: 2}
 
@@ -61,13 +62,13 @@ defmodule Game.NPC.EventsTest do
 
       start_room(%{npcs: [npc], players: [%{id: 1, name: "Player"}]})
 
-      event = %CharacterDied{character: {:player, character}, killer: {:npc, npc}}
+      event = %CharacterDied{character: Character.to_simple(character), killer: Character.to_simple(npc)}
 
       %{state: state, event: event}
     end
 
     test "clears the target if they were targetting the character", %{state: state, event: event} do
-      state = %{state | target: {:player, 2}}
+      state = %{state | target: %Character.Simple{type: "player", id: 2}}
       {:update, state} = Events.act_on(state, event)
       assert is_nil(state.target)
     end
@@ -80,8 +81,8 @@ defmodule Game.NPC.EventsTest do
   describe "room/left" do
     test "clears the target when player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
-      state = %State{room_id: 1, npc: npc, target: {:player, 2}, combat: true}
-      event = %RoomLeft{character: {:player, %{id: 2, name: "Player"}}, reason: {:leave, "north"}}
+      state = %State{room_id: 1, npc: npc, target: %Character.Simple{type: "player", id: 2}, combat: true}
+      event = %RoomLeft{character: %{type: "player", id: 2, name: "Player"}, reason: {:leave, "north"}}
 
       {:update, state} = Events.act_on(state, event)
 
@@ -91,8 +92,8 @@ defmodule Game.NPC.EventsTest do
 
     test "does not touch the target if another player leaves" do
       npc = %{id: 1, name: "Mayor", events: []}
-      state = %State{room_id: 1, npc: npc, target: {:player, 2}}
-      event = %RoomLeft{character: {:player, %{id: 3, name: "Player"}}, reason: {:leave, "north"}}
+      state = %State{room_id: 1, npc: npc, target: %Character.Simple{type: "player", id: 2}}
+      event = %RoomLeft{character: %{type: "player", id: 3, name: "Player"}, reason: {:leave, "north"}}
 
       :ok = Events.act_on(state, event)
     end
@@ -103,11 +104,11 @@ defmodule Game.NPC.EventsTest do
       user = create_user()
       character = Data.Character.from_user(user)
       quest = %{id: 1, completed_message: "Hello"}
-      npc = %{id: 1, name: "Mayor", events: [], stats: base_stats()}
+      npc = %{base_npc() | id: 1, name: "Mayor", events: [], stats: base_stats()}
       state = %State{room_id: 1, npc: npc, npc_spawner: %{room_id: 1}}
-      event = %QuestCompleted{player: user, quest: quest}
+      event = %QuestCompleted{player: character, quest: quest}
 
-      Channel.join_tell({:player, character})
+      Channel.join_tell(character)
 
       %{state: state, event: event}
     end
@@ -115,7 +116,7 @@ defmodule Game.NPC.EventsTest do
     test "sends a tell to the user with the after message", %{state: state, event: event} do
       :ok = Events.act_on(state, event)
 
-      assert_receive {:channel, {:tell, {:npc, _}, %Message{message: "Hello"}}}
+      assert_receive {:channel, {:tell, _, %Message{message: "Hello"}}}
     end
   end
 end

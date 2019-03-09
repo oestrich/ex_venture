@@ -159,7 +159,9 @@ defmodule Game.Format.Items do
   @doc """
   Message for users of items
 
-      iex> Items.user_item(%{name: "Potion", user_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:player, %{name: "Player"}})
+      iex> target = %{type: "npc", name: "Bandit"}
+      iex> user = %{type: "player", name: "Player"}
+      iex> Items.user_item(%{name: "Potion", user_text: "You used [name] on [target]."}, target: target, user: user)
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def user_item(item, opts \\ []) do
@@ -173,7 +175,9 @@ defmodule Game.Format.Items do
   @doc """
   Message for usees of items
 
-      iex> Items.usee_item(%{name: "Potion", usee_text: "You used [name] on [target]."}, target: {:npc, %{name: "Bandit"}}, user: {:player, %{name: "Player"}})
+      iex> target = %{type: "npc", name: "Bandit"}
+      iex> user = %{type: "player", name: "Player"}
+      iex> Items.usee_item(%{name: "Potion", usee_text: "You used [name] on [target]."}, target: target, user: user)
       "You used {item}Potion{/item} on {npc}Bandit{/npc}."
   """
   def usee_item(item, opts \\ []) do
@@ -187,13 +191,13 @@ defmodule Game.Format.Items do
   @doc """
   An item was dropped message
 
-      iex> Items.dropped({:npc, %{name: "NPC"}}, %{name: "Sword"})
+      iex> Items.dropped(%{type: "npc", name: "NPC"}, %{name: "Sword"})
       "{npc}NPC{/npc} dropped {item}Sword{/item}."
 
-      iex> Items.dropped({:player, %{name: "Player"}}, %{name: "Sword"})
+      iex> Items.dropped(%{type: "player", name: "Player"}, %{name: "Sword"})
       "{player}Player{/player} dropped {item}Sword{/item}."
 
-      iex> Items.dropped({:player, %{name: "Player"}}, {:currency, 100})
+      iex> Items.dropped(%{type: "player", name: "Player"}, {:currency, 100})
       "{player}Player{/player} dropped {item}100 gold{/item}."
   """
   @spec dropped(Character.t(), Item.t()) :: String.t()

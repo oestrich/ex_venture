@@ -16,8 +16,8 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
 
       assert state.room_id == 2
 
-      assert_enter {2, {:npc, _}, _}
-      assert_leave {1, {:npc, _}, _}
+      assert_enter {2, %{type: "npc"}, _}
+      assert_leave {1, %{type: "npc"}, _}
     end
 
     test "does not move if a door is closed", %{state: state, action: action} do
@@ -37,7 +37,7 @@ defmodule Game.NPC.Actions.CommandsMoveTest do
     end
 
     test "does not move when a target is present", %{state: state, action: action} do
-      state = %{state | target: {:player, %{}}}
+      state = %{state | target: %{type: "player"}}
 
       {:ok, state} = CommandsMove.act(state, action)
 

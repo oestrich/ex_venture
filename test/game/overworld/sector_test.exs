@@ -2,6 +2,7 @@ defmodule Game.Overworld.SectorTest do
   use Data.ModelCase
 
   alias Data.Character
+  alias Game.Character, as: GameCharacter
   alias Game.Events.RoomEntered
   alias Game.Events.RoomLeft
   alias Game.Overworld.Sector
@@ -16,8 +17,8 @@ defmodule Game.Overworld.SectorTest do
     }
 
     user = base_user()
-    character = base_character(user)
-    npc = %{id: 11, name: "Bandit"}
+    character = GameCharacter.to_simple(base_character(user))
+    npc = GameCharacter.to_simple(%{base_npc() | id: 11, name: "Bandit"})
 
     %{state: state, user: user, character: character, npc: npc, overworld_id: "1:1,1"}
   end
@@ -36,13 +37,13 @@ defmodule Game.Overworld.SectorTest do
 
   describe "entering an overworld id" do
     test "player entering", %{state: state, character: character, overworld_id: overworld_id} do
-      {:noreply, state} = Sector.handle_cast({:enter, overworld_id, {:player, character}, :enter}, state)
+      {:noreply, state} = Sector.handle_cast({:enter, overworld_id, character, :enter}, state)
 
       assert state.players == [{%{x: 1, y: 1}, character}]
     end
 
     test "npc entering", %{state: state, npc: npc, overworld_id: overworld_id} do
-      {:noreply, state} = Sector.handle_cast({:enter, overworld_id, {:npc, npc}, :enter}, state)
+      {:noreply, state} = Sector.handle_cast({:enter, overworld_id, npc, :enter}, state)
 
       assert state.npcs == [{%{x: 1, y: 1}, npc}]
     end
@@ -55,9 +56,9 @@ defmodule Game.Overworld.SectorTest do
 
       state = %{state | players: [{%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, {:player, character}, :enter}, state)
+      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, character, :enter}, state)
 
-      assert_receive {:"$gen_cast", {:notify, %RoomEntered{character: {:player, ^character}}}}
+      assert_receive {:"$gen_cast", {:notify, %RoomEntered{character: ^character}}}
     end
 
     test "does not send notifications to users in different cells", %{state: state, character: character, overworld_id: overworld_id} do
@@ -68,9 +69,9 @@ defmodule Game.Overworld.SectorTest do
 
       state = %{state | players: [{%{x: 1, y: 2}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, {:player, character}, :enter}, state)
+      {:noreply, _state} = Sector.handle_cast({:enter, overworld_id, character, :enter}, state)
 
-      refute_receive {:"$gen_cast", {:notify, %RoomEntered{character: {:player, ^character}}}}, 50
+      refute_receive {:"$gen_cast", {:notify, %RoomEntered{character: ^character}}}, 50
     end
   end
 
@@ -78,7 +79,7 @@ defmodule Game.Overworld.SectorTest do
     test "player entering", %{state: state, character: character, overworld_id: overworld_id} do
       state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, %Character{id: 2, name: "Guard"}}]}
 
-      {:noreply, state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
+      {:noreply, state} = Sector.handle_cast({:leave, overworld_id, character, :leave}, state)
 
       assert state.players == [{%{x: 1, y: 1}, %Character{id: 2, name: "Guard"}}]
     end
@@ -86,7 +87,7 @@ defmodule Game.Overworld.SectorTest do
     test "npc entering", %{state: state, npc: npc, overworld_id: overworld_id} do
       state = %{state | npcs: [{%{x: 1, y: 1}, npc}, {%{x: 1, y: 1}, %{id: 2, name: "Guard"}}]}
 
-      {:noreply, state} = Sector.handle_cast({:leave, overworld_id, {:npc, npc}, :leave}, state)
+      {:noreply, state} = Sector.handle_cast({:leave, overworld_id, npc, :leave}, state)
 
       assert state.npcs == [{%{x: 1, y: 1}, %{id: 2, name: "Guard"}}]
     end
@@ -99,9 +100,9 @@ defmodule Game.Overworld.SectorTest do
 
       state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
+      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, character, :leave}, state)
 
-      assert_receive {:"$gen_cast", {:notify, %RoomLeft{character: {:player, ^character}}}}
+      assert_receive {:"$gen_cast", {:notify, %RoomLeft{character: ^character}}}
     end
 
     test "does not send notifications to users in different cells", %{state: state, character: character, overworld_id: overworld_id} do
@@ -112,9 +113,9 @@ defmodule Game.Overworld.SectorTest do
 
       state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 2}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, {:player, character}, :leave}, state)
+      {:noreply, _state} = Sector.handle_cast({:leave, overworld_id, character, :leave}, state)
 
-      refute_receive {:"$gen_cast", {:notify, %RoomLeft{character: {:player, ^character}}}}, 50
+      refute_receive {:"$gen_cast", {:notify, %RoomLeft{character: ^character}}}, 50
     end
   end
 
@@ -127,7 +128,7 @@ defmodule Game.Overworld.SectorTest do
 
       state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 1}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, {:player, character}, {:hi}}, state)
+      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, character, {:hi}}, state)
 
       assert_receive {:"$gen_cast", {:notify, {:hi}}}
     end
@@ -140,7 +141,7 @@ defmodule Game.Overworld.SectorTest do
 
       state = %{state | players: [{%{x: 1, y: 1}, character}, {%{x: 1, y: 2}, notify_character}]}
 
-      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, {:player, character}, {:hi}}, state)
+      {:noreply, _state} = Sector.handle_cast({:notify, overworld_id, character, {:hi}}, state)
 
       refute_receive {:"$gen_cast", {:notify, {:hi}}}, 50
     end
@@ -150,7 +151,7 @@ defmodule Game.Overworld.SectorTest do
     test "stores the new information", %{state: state, character: character, overworld_id: overworld_id} do
       character = %{character | name: "Player2"}
 
-      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, {:player, character}}, state)
+      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, character}, state)
 
       assert [{_cell, %{name: "Player2"}}] = state.players
     end
@@ -158,7 +159,7 @@ defmodule Game.Overworld.SectorTest do
     test "stores the new information - npc", %{state: state, npc: npc, overworld_id: overworld_id} do
       npc = %{npc | name: "Bandito"}
 
-      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, {:npc, npc}}, state)
+      {:noreply, state} = Sector.handle_cast({:update_character, overworld_id, npc}, state)
 
       assert [{_cell, %{name: "Bandito"}}] = state.npcs
     end

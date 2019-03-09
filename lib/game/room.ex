@@ -170,42 +170,42 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:enter, {:player, player}, reason}, state) do
+  def handle_cast({:enter, player = %{type: "player"}, reason}, state) do
     %{room: room, players: players} = state
     Logger.debug(fn -> "Player (#{player.id}) entered room (#{room.id})" end, type: :room)
     state = %{state | players: [player | players]}
 
-    event = %RoomEntered{character: {:player, player}, reason: reason}
-    handle_cast({:notify, {:player, player}, event}, state)
+    event = %RoomEntered{character: player, reason: reason}
+    handle_cast({:notify, player, event}, state)
   end
 
-  def handle_cast({:enter, {:npc, npc}, reason}, state) do
+  def handle_cast({:enter, npc = %{type: "npc"}, reason}, state) do
     %{room: room, npcs: npcs} = state
     Logger.debug(fn -> "NPC (#{npc.id}) entered room (#{room.id})" end, type: :room)
     state = %{state | npcs: [npc | npcs]}
 
-    event = %RoomEntered{character: {:npc, npc}, reason: reason}
-    handle_cast({:notify, {:npc, npc}, event}, state)
+    event = %RoomEntered{character: npc, reason: reason}
+    handle_cast({:notify, npc, event}, state)
   end
 
-  def handle_cast({:leave, {:player, player}, reason}, state) do
+  def handle_cast({:leave, player = %{type: "player"}, reason}, state) do
     %{room: room, players: players} = state
     Logger.debug(fn -> "Player (#{player.id}) left room (#{room.id})" end, type: :room)
     players = Enum.reject(players, &(&1.id == player.id))
     state = %{state | players: players}
 
-    event = %RoomLeft{character: {:player, player}, reason: reason}
-    handle_cast({:notify, {:player, player}, event}, state)
+    event = %RoomLeft{character: player, reason: reason}
+    handle_cast({:notify, player, event}, state)
   end
 
-  def handle_cast({:leave, {:npc, npc}, reason}, state) do
+  def handle_cast({:leave, npc = %{type: "npc"}, reason}, state) do
     %{room: room, npcs: npcs} = state
     Logger.debug(fn -> "NPC (#{npc.id}) left room (#{room.id})" end, type: :room)
     npcs = Enum.reject(npcs, &(&1.id == npc.id))
     state = %{state | npcs: npcs}
 
-    event = %RoomLeft{character: {:npc, npc}, reason: reason}
-    handle_cast({:notify, {:npc, npc}, event}, state)
+    event = %RoomLeft{character: npc, reason: reason}
+    handle_cast({:notify, npc, event}, state)
   end
 
   def handle_cast({:notify, actor, event}, state) do
@@ -214,7 +214,7 @@ defmodule Game.Room do
     {:noreply, state}
   end
 
-  def handle_cast({:update_character, {:player, player}}, state = %{players: players}) do
+  def handle_cast({:update_character, player = %{type: "player"}}, state = %{players: players}) do
     case Enum.member?(Enum.map(players, & &1.id), player.id) do
       true ->
         players = players |> Enum.reject(&(&1.id == player.id))
@@ -226,7 +226,7 @@ defmodule Game.Room do
     end
   end
 
-  def handle_cast({:update_character, {:npc, npc}}, state = %{npcs: npcs}) do
+  def handle_cast({:update_character, npc = %{type: "npc"}}, state = %{npcs: npcs}) do
     case Enum.find(npcs, &(&1.id == npc.id)) do
       nil ->
         {:noreply, state}
@@ -244,7 +244,7 @@ defmodule Game.Room do
         item = Items.item(instance)
 
         Logger.info(
-          "Character (#{elem(who, 0)}, #{elem(who, 1).id}) dropped item (#{item.id})",
+          "Character (#{who.type}, #{who.id}) dropped item (#{item.id})",
           type: :room
         )
 
@@ -260,7 +260,7 @@ defmodule Game.Room do
     case Actions.drop_currency(room, amount) do
       {:ok, room} ->
         Logger.info(
-          "Character (#{elem(who, 0)}, #{elem(who, 1).id}) dropped #{amount} currency",
+          "Character (#{who.type}, #{who.id}) dropped #{amount} currency",
           type: :room
         )
 

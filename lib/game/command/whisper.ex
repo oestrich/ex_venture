@@ -65,10 +65,10 @@ defmodule Game.Command.Whisper do
         message = gettext("No character could be found matching your text.")
         state |> Socket.echo(message)
 
-      character ->
-        player = {:player, state.character}
+      {:ok, character} ->
+        player = Character.to_simple(state.character)
 
-        message = Utility.strip_name(elem(character, 1), who_and_message)
+        message = Utility.strip_name(character, who_and_message)
         state |> Socket.echo(FormatChannels.send_whisper(character, message))
 
         message = Message.whisper(state.character, message)

@@ -2,6 +2,7 @@ defmodule Game.NPC.Events.CharacterTargetedTest do
   use Data.ModelCase
 
   alias Data.Events
+  alias Game.Character
   alias Game.NPC.Events.CharacterTargeted
   alias Game.NPC.State
 
@@ -11,7 +12,7 @@ defmodule Game.NPC.Events.CharacterTargetedTest do
 
   describe "processing the events" do
     test "inserts the character into any commands/target actions", %{state: state} do
-      player = {:player, %{}}
+      player = %Character.Simple{type: "player"}
       sent_event = {"character/targeted", {:from, player}}
 
       {:ok, ^state} = CharacterTargeted.process(state, sent_event)

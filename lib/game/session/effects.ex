@@ -28,7 +28,7 @@ defmodule Game.Session.Effects do
   def apply(effects, from, description, state = %{save: save}) do
     {stats, effects, continuous_effects} =
       Character.Effects.apply_effects(
-        {:player, state.character},
+        Character.to_simple(state.character),
         save.stats,
         state,
         effects,
@@ -59,8 +59,8 @@ defmodule Game.Session.Effects do
       when health_points < 1 do
     player |> maybe_transport_to_graveyard()
 
-    event = %CharacterDied{character: {:player, player}, killer: from}
-    Environment.notify(state.save.room_id, {:player, player}, event)
+    event = %CharacterDied{character: Character.to_simple(player), killer: from}
+    Environment.notify(state.save.room_id, Character.to_simple(player), event)
 
     :ok
   end
@@ -89,12 +89,14 @@ defmodule Game.Session.Effects do
   Echo effects to the player's session
   """
   def echo_effects(player, from, description, effects) do
-    case Character.who(from) == {:player, player.id} do
+    player = Character.to_simple(player)
+
+    case Character.equal?(player, from) do
       true ->
         :ok
 
       false ->
-        description = [description | FormatEffects.effects(effects, {:player, player})]
+        description = [description | FormatEffects.effects(effects, player)]
         echo(self(), description |> Enum.join("\n"))
     end
   end
@@ -124,7 +126,7 @@ defmodule Game.Session.Effects do
 
     effects_message =
       effects
-      |> FormatEffects.effects({:player, state.character})
+      |> FormatEffects.effects(Character.to_simple(state.character))
       |> Enum.join("\n")
 
     state |> Socket.echo(effects_message)

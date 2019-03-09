@@ -13,8 +13,9 @@ defmodule Game.Session.Login do
   alias Data.Repo
   alias Data.Room
   alias Game.Authentication
-  alias Game.Command.Config, as: CommandConfig
   alias Game.Channel
+  alias Game.Character
+  alias Game.Command.Config, as: CommandConfig
   alias Game.Environment
   alias Game.Mail
   alias Game.MOTD
@@ -106,14 +107,15 @@ defmodule Game.Session.Login do
     Session.Registry.player_online(character)
 
     Environment.link(character.save.room_id)
-    Environment.enter(character.save.room_id, {:player, character}, :login)
+    Environment.enter(character.save.room_id, character, :login)
+
     session |> Session.recv("look")
     state |> GMCP.character()
     state |> GMCP.character_skills()
     state |> GMCP.discord_status()
 
     Enum.each(character.save.channels, &Channel.join/1)
-    Channel.join_tell({:player, character})
+    Channel.join_tell(Character.to_simple(character))
 
     state
     |> Regen.maybe_trigger_regen()

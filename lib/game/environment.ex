@@ -5,6 +5,8 @@ defmodule Game.Environment do
 
   @environment Application.get_env(:ex_venture, :game)[:environment]
 
+  alias Game.Character
+
   @doc """
   Get the type of room based on its id
   """
@@ -23,11 +25,11 @@ defmodule Game.Environment do
   end
 
   def enter(room_id, character, reason) do
-    @environment.enter(room_id, character, reason)
+    @environment.enter(room_id, Character.to_simple(character), reason)
   end
 
   def leave(room_id, character, reason) do
-    @environment.leave(room_id, character, reason)
+    @environment.leave(room_id, Character.to_simple(character), reason)
   end
 
   def notify(room_id, character, event) do
@@ -51,7 +53,7 @@ defmodule Game.Environment do
   end
 
   def update_character(room_id, character) do
-    @environment.update_character(room_id, character)
+    @environment.update_character(room_id, Character.to_simple(character))
   end
 
   def link(room_id) do

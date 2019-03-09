@@ -360,7 +360,7 @@ defmodule Game.Quest do
   defp find_available_quests(npc, player) do
     Quest
     |> where([q], q.giver_id == ^npc.id)
-    |> where([q], q.level <= ^player.save.level)
+    |> where([q], q.level <= ^player.level)
     |> order_by([q], [q.level, q.id])
     |> preload([:parent_relations])
     |> Repo.all()

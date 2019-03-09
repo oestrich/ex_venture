@@ -248,7 +248,7 @@ defmodule Game.Command.Move do
 
     CharacterInstrumenter.movement(:player, fn ->
       Environment.unlink(save.room_id)
-      Environment.leave(save.room_id, {:player, character}, leave_reason)
+      Environment.leave(save.room_id, character, leave_reason)
 
       clear_target(state)
 
@@ -263,7 +263,7 @@ defmodule Game.Command.Move do
         |> Map.put(:is_targeting, MapSet.new())
         |> Map.put(:is_afk, false)
 
-      Environment.enter(room_id, {:player, character}, enter_reason)
+      Environment.enter(room_id, character, enter_reason)
       Environment.link(room_id)
 
       Quest.track_progress(state.character, {:room, room_id})

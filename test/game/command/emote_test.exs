@@ -6,7 +6,10 @@ defmodule Game.Command.EmoteTest do
   doctest Emote
 
   setup do
-    %{state: session_state(%{user: base_user()})}
+    user = base_user()
+    character = base_character(user)
+
+    %{state: session_state(%{user: user, character: character})}
   end
 
   test "send an emote to the room", %{state: state} do

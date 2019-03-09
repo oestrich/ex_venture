@@ -28,6 +28,8 @@ defmodule Data.NPC do
   ]
 
   schema "npcs" do
+    field(:type, :string, virtual: true, default: "npc")
+
     field(:original_id, :integer, virtual: true)
     field(:name, :string)
     field(:level, :integer, default: 1)

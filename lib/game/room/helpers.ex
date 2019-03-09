@@ -4,6 +4,7 @@ defmodule Game.Room.Helpers do
   """
 
   alias Data.Exit
+  alias Game.Character
   alias Game.Environment
   alias Game.Utility
 
@@ -12,8 +13,7 @@ defmodule Game.Room.Helpers do
   """
   @spec find_character(Room.t(), String.t()) ::
           {:error, :not_found}
-          | {:npc, NPC.t()}
-          | {:player, User.t()}
+          | {:ok, Character.simple()}
   def find_character(room, character_name) do
     case room.players |> Enum.find(&Utility.matches?(&1, character_name)) do
       nil ->
@@ -22,11 +22,11 @@ defmodule Game.Room.Helpers do
             {:error, :not_found}
 
           npc ->
-            {:npc, npc}
+            {:ok, npc}
         end
 
       player ->
-        {:player, player}
+        {:ok, player}
     end
   end
 
@@ -35,9 +35,7 @@ defmodule Game.Room.Helpers do
   """
   @spec find_character(Room.t(), String.t(), Keyword.t()) ::
           {:error, :not_found}
-          | {:npc, NPC.t()}
-          | {:player, User.t()}
-
+          | {:ok, Character.simple()}
   def find_character(room, who_and_message, message: true) do
     case room.players |> Enum.find(&Utility.name_matches?(&1, who_and_message)) do
       nil ->
@@ -46,11 +44,11 @@ defmodule Game.Room.Helpers do
             {:error, :not_found}
 
           npc ->
-            {:npc, npc}
+            {:ok, npc}
         end
 
       player ->
-        {:player, player}
+        {:ok, player}
     end
   end
 

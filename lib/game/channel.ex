@@ -119,8 +119,8 @@ defmodule Game.Channel do
     {:noreply, state}
   end
 
-  def handle_cast({:join_tell, pid, {type, who}}, state = %{tells: tells}) do
-    tells = Map.put(tells, "tells:#{type}:#{who.id}", pid)
+  def handle_cast({:join_tell, pid, %{type: type, id: id}}, state = %{tells: tells}) do
+    tells = Map.put(tells, "tells:#{type}:#{id}", pid)
     {:noreply, Map.put(state, :tells, tells)}
   end
 

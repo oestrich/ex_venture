@@ -79,7 +79,7 @@ defmodule Game.Session do
     end
   end
 
-  def echo(player = %SimpleCharacter{type: :player}, message) do
+  def echo(player = %SimpleCharacter{type: "player"}, message) do
     case find_connected_player(player) do
       nil ->
         :ok
@@ -115,7 +115,7 @@ defmodule Game.Session do
     end
   end
 
-  def notify(player = %SimpleCharacter{type: :player}, action) do
+  def notify(player = %SimpleCharacter{type: "player"}, action) do
     case find_connected_player(player) do
       nil ->
         :ok

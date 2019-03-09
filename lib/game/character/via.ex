@@ -13,12 +13,12 @@ defmodule Game.Character.Via do
   @spec whereis_name(any) :: pid
   def whereis_name(who)
 
-  def whereis_name({:npc, id}) do
+  def whereis_name(%{type: "npc", id: id}) do
     :global.whereis_name({Game.NPC, id})
   end
 
-  def whereis_name({:player, player_id}) do
-    case Session.Registry.find_connected_player(player_id) do
+  def whereis_name(%{type: "player", id: id}) do
+    case Session.Registry.find_connected_player(id) do
       %{pid: pid} ->
         pid
 
@@ -33,14 +33,14 @@ defmodule Game.Character.Via do
   @spec send(any, any) :: :ok
   def send(who, message)
 
-  def send({:npc, id}, message) do
+  def send(%{type: "npc", id: id}, message) do
     :global.send({Game.NPC, id}, message)
   end
 
-  def send({:player, id}, message) do
-    case whereis_name({:player, id}) do
+  def send(character = %{type: "player"}, message) do
+    case whereis_name(character) do
       :undefined ->
-        {:badarg, {{:player, id}, message}}
+        {:badarg, {character, message}}
 
       pid ->
         Kernel.send(pid, message)

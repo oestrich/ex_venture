@@ -3,6 +3,7 @@ defmodule Game.QuestTest do
 
   alias Data.QuestProgress
   alias Data.QuestStep
+  alias Game.Character
   alias Game.Quest
 
   describe "start a quest" do
@@ -351,7 +352,7 @@ defmodule Game.QuestTest do
       create_quest_relation(quest5, quest3)
 
       user = create_user()
-      character = create_character(user)
+      character = Character.to_simple(create_character(user))
 
       {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest1.id
@@ -386,7 +387,7 @@ defmodule Game.QuestTest do
       create_quest_relation(quest3, quest2)
 
       user = create_user()
-      character = create_character(user)
+      character = Character.to_simple(create_character(user))
 
       {:ok, next_quest} = Quest.next_available_quest_from(guard, character)
       assert next_quest.id == quest1.id
@@ -409,7 +410,7 @@ defmodule Game.QuestTest do
       create_quest_relation(quest3, quest1)
 
       user = create_user()
-      character = create_character(user)
+      character = Character.to_simple(create_character(user))
 
       create_quest_progress(character, quest1, %{status: "complete"})
       create_quest_progress(character, quest2, %{status: "complete"})
@@ -426,7 +427,7 @@ defmodule Game.QuestTest do
       create_quest(guard, %{level: 2})
 
       user = create_user()
-      character = create_character(user)
+      character = Character.to_simple(create_character(user))
 
       {:error, :no_quests} = Quest.next_available_quest_from(guard, character)
     end

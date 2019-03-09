@@ -2,6 +2,7 @@ defmodule Game.NPC.Events.CombatTickedTest do
   use Data.ModelCase
 
   alias Data.Events
+  alias Game.Character
   alias Game.NPC.Events.CombatTicked
   alias Game.NPC.State
 
@@ -51,7 +52,7 @@ defmodule Game.NPC.Events.CombatTickedTest do
       ]
     }
     state = %State{
-      target: {:player, %{}},
+      target: %Character.Simple{type: "player"},
       combat: true,
       events: [event]
     }

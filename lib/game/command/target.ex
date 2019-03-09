@@ -95,10 +95,10 @@ defmodule Game.Command.Target do
         message = gettext(~s(Could not find target "%{name}".), name: target)
         state |> Socket.echo(message)
 
-      {:npc, npc} ->
+      npc = %{type: "npc"} ->
         npc |> target_npc(state, state)
 
-      {:player, player} ->
+      player = %{type: "player"} ->
         player |> target_player(state, state)
     end
   end
@@ -109,38 +109,28 @@ defmodule Game.Command.Target do
   @spec target_npc(NPC.t(), pid, map) :: {:update, map}
   def target_npc(npc, state, state)
 
-  def target_npc(npc = %{id: id}, state, state) do
-    Character.being_targeted({:npc, id}, {:player, state.character})
+  def target_npc(npc, state, state) do
+    Character.being_targeted(npc, Character.to_simple(state.character))
     message = gettext("You are now targeting %{name}.", name: Format.npc_name(npc))
     state |> Socket.echo(message)
-    state |> GMCP.target({:npc, npc})
+    state |> GMCP.target(npc)
 
-    {:update, Map.put(state, :target, {:npc, id})}
+    {:update, Map.put(state, :target, npc)}
   end
 
   @doc """
   Target a player
-
-  Does not target if the target is too low of health
   """
   @spec target_player(User.t(), pid, map) :: :ok | {:update, map}
   def target_player(player, state, state)
 
-  def target_player(player = %{save: %{stats: %{health_points: health_points}}}, state, _state)
-      when health_points < 1 do
-    message =
-      gettext("%{name} could not be targeted.", name: Format.target_name({:player, player}))
-
-    state |> Socket.echo(message)
-  end
-
-  def target_player(player = %{id: id}, state, state) do
-    Character.being_targeted({:player, id}, {:player, state.character})
+  def target_player(player, state, state) do
+    Character.being_targeted(player, Character.to_simple(state.character))
     message = gettext("You are now targeting %{name}.", name: Format.player_name(player))
     state |> Socket.echo(message)
-    state |> GMCP.target({:player, player})
+    state |> GMCP.target(player)
 
-    {:update, Map.put(state, :target, {:player, id})}
+    {:update, Map.put(state, :target, player)}
   end
 
   @doc """
@@ -153,8 +143,8 @@ defmodule Game.Command.Target do
     state |> Socket.echo(gettext("You don't have a target."))
   end
 
-  def display_target(state, {:npc, npc_id}, room) do
-    case Enum.find(room.npcs, &(&1.id == npc_id)) do
+  def display_target(state, npc = %{type: "npc"}, room) do
+    case Enum.find(room.npcs, &Character.equal?(npc, &1)) do
       nil ->
         state |> Socket.echo(gettext("Your target could not be found."))
 
@@ -164,8 +154,8 @@ defmodule Game.Command.Target do
     end
   end
 
-  def display_target(state, {:player, player_id}, room) do
-    case Enum.find(room.players, &(&1.id == player_id)) do
+  def display_target(state, player = %{type: "player"}, room) do
+    case Enum.find(room.players, &Character.equal?(player, &1)) do
       nil ->
         state |> Socket.echo(gettext("Your target could not be found."))
 
@@ -178,22 +168,26 @@ defmodule Game.Command.Target do
   @doc """
   Find a user/npc by name
 
-      iex> Game.Command.Target.find_target(%{}, "player", [%{name: "Player"}], [%{name: "Bandit"}])
-      {:player, %{name: "Player"}}
+      iex> state = %{character: %{type: "player", id: 1, name: "Player"}}
+      iex> Game.Command.Target.find_target(state, "guard", [%{type: "player", name: "Guard"}], [%{type: "npc", name: "Bandit"}])
+      %{type: "player", name: "Guard"}
 
-      iex> Game.Command.Target.find_target(%{}, "bandit", [%{name: "Player"}], [%{name: "Bandit"}])
-      {:npc, %{name: "Bandit"}}
+      iex> state = %{character: %{type: "player", id: 1, name: "Player"}}
+      iex> Game.Command.Target.find_target(state, "bandit", [%{type: "player", name: "Guard"}], [%{type: "npc", name: "Bandit"}])
+      %{type: "npc", name: "Bandit"}
 
-      iex> Game.Command.Target.find_target(%{}, "Bandit", [%{name: "Bandit"}], [%{name: "Bandit"}])
-      {:player, %{name: "Bandit"}}
+      iex> state = %{character: %{type: "player", id: 1, name: "Player"}}
+      iex> Game.Command.Target.find_target(state, "guard", [%{type: "player", name: "Guard"}], [%{type: "npc", name: "Guard"}])
+      %{type: "player", name: "Guard"}
 
-      iex> Game.Command.Target.find_target(%{character: %{name: "Player"}}, "self", [%{name: "Bandit"}], [%{name: "Bandit"}])
-      {:player, %{name: "Player"}}
+      iex> state = %{character: %Character.Simple{type: "player", name: "Player"}}
+      iex> Game.Command.Target.find_target(state, "self", [], [])
+      %Character.Simple{type: "player", name: "Player"}
   """
   def find_target(state, name, players, npcs) do
     case name do
       "self" ->
-        {:player, state.character}
+        Character.to_simple(state.character)
 
       _ ->
         _find_target(name, players, npcs)
@@ -203,12 +197,12 @@ defmodule Game.Command.Target do
   defp _find_target(name, players, npcs) do
     case find_target_in_list(players, name) do
       {:ok, player} ->
-        {:player, player}
+        player
 
       {:error, :not_found} ->
         case find_target_in_list(npcs, name) do
           {:ok, npc} ->
-            {:npc, npc}
+            npc
 
           {:error, :not_found} ->
             nil
