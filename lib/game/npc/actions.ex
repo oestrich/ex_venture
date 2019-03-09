@@ -16,6 +16,11 @@ defmodule Game.NPC.Actions do
     Process.send_after(self(), {:delayed_actions, [action | actions]}, calculate_delay(action))
   end
 
+  @doc """
+  Process the next action
+
+  Acts on the top action and delays the rest
+  """
   def process(state, []), do: {:ok, state}
 
   def process(state, [action | actions]) do
