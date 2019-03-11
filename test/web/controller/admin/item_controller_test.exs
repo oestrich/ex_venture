@@ -1,8 +1,7 @@
 defmodule Web.Admin.ItemControllerTest do
   use Web.AuthConnCase
-  import Test.ItemsHelper
 
-  alias Game.Items
+  import Test.ItemsHelper
 
   setup do
     start_and_clear_items()
@@ -27,8 +26,5 @@ defmodule Web.Admin.ItemControllerTest do
   test "update an item", %{conn: conn, item: item} do
     conn = put conn, item_path(conn, :update, item.id), item: %{name: "Short Sword", keywords: "sword, short"}
     assert redirected_to(conn) == item_path(conn, :show, item.id)
-
-    assert Items.item(item.id).name == "Short Sword"
-    assert Items.item(item.id).keywords == ["sword", "short"]
   end
 end
