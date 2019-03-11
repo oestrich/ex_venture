@@ -7,7 +7,9 @@ defmodule Game.PGNotifications do
 
   use GenServer
 
+  alias Data.Config
   alias Data.Item
+  alias Game.Config
   alias Game.Items
 
   def start_link(opts) do
@@ -47,6 +49,12 @@ defmodule Game.PGNotifications do
     item
     |> map_to_struct(Item)
     |> Items.reload()
+  end
+
+  defp update_local_cache(%{"table" => "config", "record" => config}) do
+    config
+    |> map_to_struct(Config)
+    |> GameConfig.reload()
   end
 
   defp update_local_cache(_unknown), do: :ok

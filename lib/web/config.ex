@@ -52,29 +52,15 @@ defmodule Web.Config do
   end
 
   defp _create(name, value) do
-    changeset = %Data.Config{} |> Config.changeset(%{name: name, value: value})
-
-    case changeset |> Repo.insert() do
-      {:ok, config} ->
-        GameConfig.reload(name)
-        {:ok, config}
-
-      anything ->
-        anything
-    end
+    %Data.Config{}
+    |> Config.changeset(%{name: name, value: value})
+    |> Repo.insert()
   end
 
   defp _update(config, name, value) do
-    changeset = config |> Config.changeset(%{value: value})
-
-    case changeset |> Repo.update() do
-      {:ok, config} ->
-        GameConfig.reload(name)
-        {:ok, config}
-
-      anything ->
-        anything
-    end
+    config
+    |> Config.changeset(%{value: value})
+    |> Repo.update()
   end
 
   @doc """

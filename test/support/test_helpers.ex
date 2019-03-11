@@ -162,9 +162,14 @@ defmodule TestHelpers do
   end
 
   def create_config(name, value) do
-    %Config{}
-    |> Config.changeset(%{name: name |> to_string, value: value})
-    |> Repo.insert!
+    config =
+      %Config{}
+      |> Config.changeset(%{name: to_string(name), value: value})
+      |> Repo.insert!
+
+    Game.Config.reload(name, value)
+
+    config
   end
 
   def create_room(zone, attributes \\ %{}) do

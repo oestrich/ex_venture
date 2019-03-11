@@ -3,6 +3,8 @@ defmodule Game.Config do
   Hold Config to not query as often
   """
 
+  use GenServer
+
   alias Data.Config
   alias Data.Repo
   alias Data.Save
@@ -65,40 +67,42 @@ defmodule Game.Config do
     willpower: 10
   }
 
-  def child_spec(opts) do
-    %{
-      id: __MODULE__,
-      start: {__MODULE__, :start_link, [opts]},
-      type: :worker,
-      restart: :permanent,
-      shutdown: 500
-    }
-  end
-
-  def start_link(opts) do
-    Agent.start_link(fn -> %{} end, opts)
-  end
-
+  @doc false
   def color_config(), do: @color_config
+
+  @doc false
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, %{}, opts)
+  end
 
   @doc """
   Reload a config from the database
   """
-  @spec reload(String.t()) :: any()
   def reload(name) do
-    value = Config.find_config(name)
-    Agent.update(__MODULE__, &Map.put(&1, name, value))
-    value
+    GenServer.call(__MODULE__, {:reload, name})
   end
 
-  def find_config(name) do
-    case Agent.get(__MODULE__, &Map.get(&1, name, nil)) do
-      nil ->
-        reload(name)
+  @doc false
+  def reload(name, value) do
+    GenServer.call(__MODULE__, {:reload, name, value})
+  end
 
-      value ->
+  @doc """
+  Load config from the ets table or refresh from the database
+  """
+  def find_config(name) do
+    case :ets.lookup(__MODULE__, name) do
+      [{_, value}] ->
         value
+
+      _ ->
+        reload(name)
     end
+  end
+
+  @doc false
+  def reset() do
+    GenServer.call(__MODULE__, :reset)
   end
 
   def host() do
@@ -339,4 +343,30 @@ defmodule Game.Config do
       end
     end
   end)
+
+  def init(_) do
+    create_table()
+    {:ok, %{}}
+  end
+
+  def handle_call({:reload, name}, _from, state) do
+    value = Config.find_config(name)
+    :ets.insert(__MODULE__, {name, value})
+    {:reply, value, state}
+  end
+
+  def handle_call({:reload, name, value}, _from, state) do
+    :ets.insert(__MODULE__, {name, value})
+    {:reply, value, state}
+  end
+
+  def handle_call(:reset, _from, state) do
+    :ets.delete(__MODULE__)
+    create_table()
+    {:reply, :ok, state}
+  end
+
+  defp create_table() do
+    :ets.new(__MODULE__, [:set, :protected, :named_table])
+  end
 end
