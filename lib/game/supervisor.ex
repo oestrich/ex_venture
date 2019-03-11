@@ -4,6 +4,7 @@ defmodule Game.Supervisor do
 
   Loads the main server and all other supervisors required
   """
+
   use Supervisor
 
   def start_link() do
@@ -12,17 +13,18 @@ defmodule Game.Supervisor do
 
   def init(_) do
     children = [
-      worker(Game.Session.Registry, []),
-      worker(Game.Config, []),
-      supervisor(Game.Caches, []),
-      worker(Game.Server, []),
-      supervisor(Game.Session.Supervisor, []),
-      worker(Game.Channel, []),
-      supervisor(Game.World, []),
-      worker(Game.Insight, []),
-      worker(Game.Help.Agent, [[name: Game.Help.Agent]])
+      {Game.PGNotifications, [name: Game.PGNotifications]},
+      {Game.Session.Registry, [name: Game.Session.Registry]},
+      {Game.Config, [name: Game.Config]},
+      {Game.Caches, [name: Game.Caches]},
+      {Game.Server, [name: Game.Server]},
+      {Game.Session.Supervisor, [name: Game.Session.Supervisor]},
+      {Game.Channel, [name: Game.Channel]},
+      {Game.World, [name: Game.World]},
+      {Game.Insight, [name: Game.Insight]},
+      {Game.Help.Agent, [name: Game.Help.Agent]}
     ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 end

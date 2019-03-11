@@ -27,9 +27,8 @@ defmodule Game.Channel do
   @doc """
   Start the GenServer process for managing channels
   """
-  @spec start_link() :: {:ok, pid()}
-  def start_link() do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, [], opts)
   end
 
   #

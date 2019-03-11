@@ -19,8 +19,8 @@ defmodule Game.Server do
   def tick_interval(), do: @tick_interval
 
   @doc false
-  def start_link() do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, [], opts)
   end
 
   def started_at() do

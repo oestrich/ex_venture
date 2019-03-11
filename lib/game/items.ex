@@ -69,11 +69,7 @@ defmodule Game.Items do
   """
   @spec insert(Item.t()) :: :ok
   def insert(item) do
-    members = :pg2.get_members(@key)
-
-    Enum.map(members, fn member ->
-      GenServer.call(member, {:insert, item})
-    end)
+    GenServer.call(__MODULE__, {:insert, item})
   end
 
   @doc """
@@ -94,15 +90,10 @@ defmodule Game.Items do
   #
 
   def init(_) do
-    :ok = :pg2.create(@key)
-    :ok = :pg2.join(@key, self())
-
-    GenServer.cast(self(), :load_items)
-
-    {:ok, %{}}
+    {:ok, %{}, {:continue, :load_items}}
   end
 
-  def handle_cast(:load_items, state) do
+  def handle_continue(:load_items, state) do
     items =
       Item
       |> preload([:item_aspects])
