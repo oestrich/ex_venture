@@ -27,7 +27,7 @@ defmodule Data.ModelCase do
       Ecto.Adapters.SQL.Sandbox.mode(Data.Repo, {:shared, self()})
     end
 
-    Agent.update(Game.Config, fn (_) -> %{} end)
+    Game.Config.reset()
 
     :ok
   end

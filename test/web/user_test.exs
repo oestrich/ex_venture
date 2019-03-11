@@ -32,7 +32,9 @@ defmodule Web.UserTest do
   end
 
   test "create a new player" do
-    create_config(:starting_save, base_save() |> Poison.encode!)
+    create_config("starting_room_ids", Jason.encode!([]))
+    create_config("character_names", "Player")
+    create_config("starting_save", base_save() |> Poison.encode!)
     class = create_class()
     race = create_race()
 
