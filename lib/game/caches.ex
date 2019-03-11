@@ -6,8 +6,8 @@ defmodule Game.Caches do
   """
   use Supervisor
 
-  def start_link() do
-    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(opts) do
+    Supervisor.start_link(__MODULE__, [], opts)
   end
 
   def init(_) do

@@ -8,8 +8,8 @@ defmodule Game.Session.Supervisor do
   alias Game.Session
 
   @doc false
-  def start_link do
-    DynamicSupervisor.start_link(__MODULE__, nil, name: __MODULE__)
+  def start_link(opts) do
+    DynamicSupervisor.start_link(__MODULE__, nil, opts)
   end
 
   @doc """

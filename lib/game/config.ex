@@ -65,9 +65,18 @@ defmodule Game.Config do
     willpower: 10
   }
 
-  @doc false
-  def start_link() do
-    Agent.start_link(fn -> %{} end, name: __MODULE__)
+  def child_spec(opts) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [opts]},
+      type: :worker,
+      restart: :permanent,
+      shutdown: 500
+    }
+  end
+
+  def start_link(opts) do
+    Agent.start_link(fn -> %{} end, opts)
   end
 
   def color_config(), do: @color_config

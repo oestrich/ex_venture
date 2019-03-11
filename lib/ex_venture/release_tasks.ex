@@ -32,7 +32,7 @@ defmodule ExVenture.ReleaseTasks do
   def seed do
     startup()
 
-    Game.Config.start_link()
+    Game.Config.start_link([name: Game.Config])
 
     # Run the seed script if it exists
     seed_script = Path.join([priv_dir(:ex_venture), "repo", "seeds.exs"])
