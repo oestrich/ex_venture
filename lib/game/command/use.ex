@@ -103,6 +103,8 @@ defmodule Game.Command.Use do
   defp use_item(state = %{save: save}, {instance, item}) do
     player_effects = save |> Item.effects_on_player()
 
+    target = get_target(state)
+
     effects =
       (player_effects ++ item.effects)
       |> Item.filter_effects(item)
@@ -111,12 +113,12 @@ defmodule Game.Command.Use do
 
     usee_text =
       FormatItems.usee_item(item,
-        target: Character.to_simple(state.character),
+        target: Character.to_simple(target),
         user: Character.to_simple(state.character)
       )
 
     Character.apply_effects(
-      Character.to_simple(state.character),
+      Character.to_simple(target),
       effects,
       Character.to_simple(state.character),
       usee_text
@@ -124,7 +126,7 @@ defmodule Game.Command.Use do
 
     description =
       FormatItems.user_item(item,
-        target: Character.to_simple(state.character),
+        target: Character.to_simple(target),
         user: Character.to_simple(state.character)
       )
 
@@ -155,4 +157,7 @@ defmodule Game.Command.Use do
     state = %{state | save: %{state.save | items: items}}
     {:skip, :prompt, state}
   end
+
+  def get_target(state = %{target: nil}), do: state.character
+  def get_target(%{target: target}), do: target
 end
