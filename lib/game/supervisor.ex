@@ -12,6 +12,7 @@ defmodule Game.Supervisor do
 
   def init(_) do
     children = [
+      worker(Game.PGNotifications, [[name: Game.PGNotifications]]),
       worker(Game.Session.Registry, []),
       worker(Game.Config, []),
       supervisor(Game.Caches, []),

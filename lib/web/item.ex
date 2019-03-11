@@ -10,7 +10,6 @@ defmodule Web.Item do
   alias Data.Item
   alias Data.Stats
   alias Data.Repo
-  alias Game.Items
   alias Web.Filter
   alias Web.Pagination
 
@@ -116,16 +115,9 @@ defmodule Web.Item do
   """
   @spec create(params :: map) :: {:ok, Item.t()} | {:error, changeset :: map}
   def create(params) do
-    changeset = %Item{} |> Item.changeset(cast_params(params))
-
-    case changeset |> Repo.insert() do
-      {:ok, item} ->
-        Items.insert(item)
-        {:ok, item}
-
-      anything ->
-        anything
-    end
+    %Item{}
+    |> Item.changeset(cast_params(params))
+    |> Repo.insert()
   end
 
   @doc """
@@ -133,17 +125,10 @@ defmodule Web.Item do
   """
   @spec update(id :: integer, params :: map) :: {:ok, Item.t()} | {:error, changeset :: map}
   def update(id, params) do
-    item = id |> get()
-    changeset = item |> Item.changeset(cast_params(params))
-
-    case changeset |> Repo.update() do
-      {:ok, item} ->
-        Items.reload(item)
-        {:ok, item}
-
-      anything ->
-        anything
-    end
+    id
+    |> get()
+    |> Item.changeset(cast_params(params))
+    |> Repo.update()
   end
 
   @doc """
