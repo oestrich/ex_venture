@@ -9,7 +9,7 @@ defmodule Game.PGNotifications do
 
   alias Data.Config
   alias Data.Item
-  alias Game.Config
+  alias Game.Config, as: GameConfig
   alias Game.Items
 
   def start_link(opts) do
