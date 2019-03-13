@@ -72,11 +72,7 @@ defmodule Game.Help.Agent do
   """
   @spec insert(Skill.t()) :: :ok
   def insert(topic) do
-    members = :pg2.get_members(@key)
-
-    Enum.map(members, fn member ->
-      GenServer.call(member, {:insert, topic})
-    end)
+    GenServer.call(__MODULE__, {:insert, topic})
   end
 
   @doc """
@@ -97,9 +93,6 @@ defmodule Game.Help.Agent do
   #
 
   def init(_) do
-    :ok = :pg2.create(@key)
-    :ok = :pg2.join(@key, self())
-
     {:ok, %{}, {:continue, {:load_help}}}
   end
 

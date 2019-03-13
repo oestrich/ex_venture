@@ -8,8 +8,10 @@ defmodule Game.PGNotifications do
   use GenServer
 
   alias Data.Config
+  alias Data.HelpTopic
   alias Data.Item
   alias Game.Config, as: GameConfig
+  alias Game.Help.Agent, as: HelpAgent
   alias Game.Items
 
   def start_link(opts) do
@@ -55,6 +57,12 @@ defmodule Game.PGNotifications do
     config
     |> map_to_struct(Config)
     |> GameConfig.reload()
+  end
+
+  defp update_local_cache(%{"table" => "help_topics", "record" => help_topic}) do
+    help_topic
+    |> map_to_struct(HelpTopic)
+    |> HelpAgent.reload()
   end
 
   defp update_local_cache(_unknown), do: :ok
