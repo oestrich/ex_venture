@@ -158,6 +158,6 @@ defmodule Game.Command.Use do
     {:skip, :prompt, state}
   end
 
-  def get_target(state = %{target: nil}), do: state.character
-  def get_target(%{target: target}), do: target
+  defp get_target(state = %{target: nil}), do: state.character
+  defp get_target(%{target: target}), do: target
 end

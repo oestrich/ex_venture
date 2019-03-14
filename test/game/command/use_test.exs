@@ -5,6 +5,7 @@ defmodule Game.Command.UseTest do
   alias Game.Command.ParseContext
   alias Game.Command.Use
   alias Game.Session.Registry
+  alias Game.Character
 
   doctest Use
 
@@ -30,7 +31,18 @@ defmodule Game.Command.UseTest do
       effects: [],
       is_usable: false,
     })
-
+    insert_item(%{
+      id: 3,
+      name: "Potion",
+      keywords: [],
+      stats: %{},
+      effects: [],
+      usage_command: "drink",
+      user_text: "You used [name] on [target].",
+      usee_text: "[user] uses [name] on you.",
+      is_usable: true,
+      amount: 1,
+    })
     user = base_user()
     character = base_character(user)
 
@@ -101,6 +113,36 @@ defmodule Game.Command.UseTest do
       :ok = Use.run({:use, "poton"}, state)
 
       assert_socket_echo "could not be found"
+    end
+
+     test "use command should have a npc target", %{state: state} do
+      Registry.register(state.character)
+      Registry.catch_up()
+
+      save =
+        base_save()
+        |> Map.put(:items, [%Item.Instance{id: 3, created_at: Timex.now(), amount: 2}])
+
+
+      npc = %{base_npc() | id: 5}
+      state = %{state | target: npc}
+      {:skip, :prompt, state} = Use.run({:use, "potion"}, %{state | save: save})
+
+      assert_socket_echo "You used {item}Potion{/item} on {npc}Bandit{/npc}."
+    end
+
+     test "use command should have the player as the target", %{state: state} do
+      Registry.register(state.character)
+      Registry.catch_up()
+
+      save =
+        base_save()
+        |> Map.put(:items, [%Item.Instance{id: 3, created_at: Timex.now(), amount: 2}])
+
+      state = %{state | target: nil}
+      {:skip, :prompt, state} = Use.run({:use, "potion"}, %{state | save: save})
+
+      assert_socket_echo "You used {item}Potion{/item} on {player}Player{/player}."
     end
   end
 end
