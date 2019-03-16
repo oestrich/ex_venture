@@ -408,7 +408,7 @@ defmodule Seeds do
     create_config("description", "A MUD built with ExVenture.")
     create_config("motd", "Welcome to the {white}MUD{/white}")
     create_config("after_sign_in_message", "Thanks for checking out the game!")
-    create_config("starting_save", save |> Poison.encode!)
+    create_config("starting_save", Poison.encode!(save))
     create_config("regen_tick_count", "7")
 
     create_race(%{

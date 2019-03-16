@@ -7,10 +7,9 @@ defmodule Game.PGNotifications do
 
   use GenServer
 
-  alias Data.Config
   alias Data.HelpTopic
   alias Data.Item
-  alias Game.Config, as: GameConfig
+  alias Game.Config, as: Config
   alias Game.Help.Agent, as: HelpAgent
   alias Game.Items
 
@@ -54,9 +53,7 @@ defmodule Game.PGNotifications do
   end
 
   defp update_local_cache(%{"table" => "config", "record" => config}) do
-    config
-    |> map_to_struct(Config)
-    |> GameConfig.reload()
+    Config.reload(config["name"])
   end
 
   defp update_local_cache(%{"table" => "help_topics", "record" => help_topic}) do
