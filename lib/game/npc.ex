@@ -337,7 +337,7 @@ defmodule Game.NPC do
   end
 
   def handle_cast(:terminate, state = %{room_id: room_id, npc: npc}) do
-    Environment.leave(room_id, npc, :leave)
+    Environment.leave(room_id, npc, :death)
     {:stop, :normal, state}
   end
 

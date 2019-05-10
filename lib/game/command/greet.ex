@@ -6,6 +6,7 @@ defmodule Game.Command.Greet do
   use Game.Command
   use Game.NPC
 
+  alias Game.Character
   alias Game.Utility
 
   commands(["greet", "talk to"], parse: false)
@@ -80,7 +81,7 @@ defmodule Game.Command.Greet do
         room
 
       npc ->
-        @npc.greet(npc.id, state.character)
+        @npc.greet(npc.id, Character.to_simple(state.character))
         state |> Socket.echo(gettext("You greet %{name}.", name: Format.npc_name(npc)))
     end
   end
