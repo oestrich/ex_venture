@@ -57,7 +57,7 @@ defmodule Web.Config do
     |> Repo.insert()
   end
 
-  defp _update(config, name, value) do
+  defp _update(config, _name, value) do
     config
     |> Config.changeset(%{value: value})
     |> Repo.update()
