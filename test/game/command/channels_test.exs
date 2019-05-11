@@ -14,7 +14,8 @@ defmodule Game.Command.ChannelsTest do
     %Data.Channel{id: 2, name: "newbie", color: "yellow"} |> insert_channel()
 
     user = base_user()
-    character = %{base_character(user) | id: 10, name: "Player", save: %{channels: ["global"]}}
+    character = %{base_character(user) | id: 10, name: "Player"}
+    character = %{character | save: %{character.save | channels: ["global"]}}
     %{state: session_state(%{socket: :socket, user: user, character: character, save: character.save})}
   end
 
