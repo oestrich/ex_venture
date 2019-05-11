@@ -59,8 +59,8 @@ defmodule Game.Gossip do
 
     case Squabble.node_is_leader?() do
       true ->
-        gossip_player = %{name: "#{player_name}@#{game_name}"}
-        event = %PlayerSignedIn{character: Character.simple_gossip(gossip_player)}
+        name = "#{player_name}@#{game_name}"
+        event = %PlayerSignedIn{character: Character.simple_gossip(name)}
 
         Session.Registry.connected_players()
         |> Enum.each(fn %{player: player} ->
@@ -80,8 +80,8 @@ defmodule Game.Gossip do
 
     case Squabble.node_is_leader?() do
       true ->
-        gossip_player = %{name: "#{player_name}@#{game_name}"}
-        event = %PlayerSignedOut{character: Character.simple_gossip(gossip_player)}
+        name = "#{player_name}@#{game_name}"
+        event = %PlayerSignedOut{character: Character.simple_gossip(name)}
 
         Session.Registry.connected_players()
         |> Enum.each(fn %{player: player} ->
@@ -113,7 +113,7 @@ defmodule Game.Gossip do
       Channel.tell(
         Character.to_simple(player),
         Character.simple_gossip(player_name),
-        Message.tell(%{name: player_name}, message)
+        Message.tell(Character.simple_gossip(player_name), message)
       )
 
       :ok

@@ -156,8 +156,8 @@ defmodule Game.Command.Tell do
 
     case Gossip.send_tell(state.character.name, game, name, message) do
       :ok ->
-        state
-        |> Socket.echo(FormatChannels.send_tell(Character.simple_gossip(%{name: player_name}), message))
+        player = Character.simple_gossip(player_name)
+        Socket.echo(state, FormatChannels.send_tell(player, message))
 
         {:update, %{state | reply_to: {:gossip, player_name}}}
 
