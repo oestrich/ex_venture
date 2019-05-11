@@ -15,13 +15,17 @@ defmodule Web.AccountController do
     |> render("show.html")
   end
 
-  def update(conn, %{"current_password" => current_password, "user" => params}) do
+  def update(conn, %{"user" => params = %{"current_password" => current_password}}) do
     case User.change_password(conn.assigns.current_user, current_password, params) do
       {:ok, _user} ->
-        conn |> redirect(to: public_page_path(conn, :index))
+        conn
+        |> put_flash(:info, "Password updated")
+        |> redirect(to: public_account_path(conn, :show))
 
       _ ->
-        conn |> redirect(to: public_account_path(conn, :show))
+        conn
+        |> put_flash(:error, "Could not update your password")
+        |> redirect(to: public_account_path(conn, :show))
     end
   end
 

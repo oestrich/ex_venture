@@ -16,6 +16,7 @@
         <% end %>
       </div>
     </div>
+
     <%= if !provider_login?(@current_user) do %>
       <div class="row mt-3">
         <div class="col-md-12">
