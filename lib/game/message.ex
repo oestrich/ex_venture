@@ -6,6 +6,7 @@ defmodule Game.Message do
   defstruct [:type, :sender, :message, :formatted, from_gossip: false]
 
   alias Data.User
+  alias Game.Character
   alias Game.Format.Channels, as: FormatChannels
 
   @type t :: %{
@@ -93,7 +94,7 @@ defmodule Game.Message do
 
   def gossip_broadcast(channel, message) do
     name = "#{message.name}@#{message.game}"
-    player = %{name: name}
+    player = Character.simple_gossip(name)
 
     %__MODULE__{
       type: :player,

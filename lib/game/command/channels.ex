@@ -6,6 +6,7 @@ defmodule Game.Command.Channels do
   use Game.Command
 
   alias Game.Channel
+  alias Game.Character
   alias Game.Command.Say
   alias Game.Message
 
@@ -135,7 +136,8 @@ defmodule Game.Command.Channels do
   def run({channel, message}, state) do
     with {:ok, channel} <- get_joined_channel(channel, state) do
       parsed_message = Say.parse_message(message)
-      Channel.broadcast(channel.name, Message.broadcast(state.character, channel, parsed_message))
+      character = Character.to_simple(state.character)
+      Channel.broadcast(channel.name, Message.broadcast(character, channel, parsed_message))
       :ok
     else
       {:error, :not_found} ->

@@ -142,7 +142,7 @@ defmodule Game.Session.GMCP do
   def channel_broadcast(state, channel, message) do
     data = %{
       channel: channel,
-      from: character_info({message.type, message.sender}),
+      from: character_info(message.sender),
       message: message.message,
       formatted: message.formatted
     }
@@ -179,7 +179,7 @@ defmodule Game.Session.GMCP do
   """
   def room_whisper(state, message) do
     data = %{
-      from: character_info({message.type, message.sender}),
+      from: character_info(message.sender),
       message: message.message
     }
 
