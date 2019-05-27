@@ -131,7 +131,7 @@ defmodule Game.Command.Socials do
 
         case find_character(room, character_name) do
           {:error, :not_found} ->
-            message = gettext("\"%{name}\" could not be found.", name: character_name)
+            message = "\"#{character_name}\" could not be found."
             state |> Socket.echo(message)
 
           {:ok, character} ->
@@ -150,10 +150,8 @@ defmodule Game.Command.Socials do
 
   defp social_not_found(state, social) do
     lines = [
-      gettext("\"%{name}\" could not be found.", name: social),
-      gettext(
-        "Please make sure to enter the social command. See {command}socials{/command} for the list."
-      )
+      "\"#{social}\" could not be found.",
+      "Please make sure to enter the social command. See {command}socials{/command} for the list."
     ]
 
     state |> Socket.echo(Enum.join(lines, " "))

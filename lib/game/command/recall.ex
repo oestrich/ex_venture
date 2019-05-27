@@ -61,13 +61,7 @@ defmodule Game.Command.Recall do
 
       _ ->
         min = round(stats.max_endurance_points * 0.9)
-
-        message =
-          gettext(
-            "You do not have enough endurance points to recall. You must have at least %{points}ep first.",
-            points: min
-          )
-
+        message = "You do not have enough endurance points to recall. You must have at least #{min}ep first."
         state |> Socket.echo(message)
     end
   end
@@ -84,12 +78,12 @@ defmodule Game.Command.Recall do
 
         Session.teleport(self(), graveyard_id)
 
-        state |> Socket.echo(gettext("Recalling to the zone's graveyard..."))
+        state |> Socket.echo("Recalling to the zone's graveyard...")
 
         {:update, state}
 
       {:error, :no_graveyard} ->
-        state |> Socket.echo(gettext("You cannot recall here."))
+        state |> Socket.echo("You cannot recall here.")
     end
   end
 end

@@ -75,7 +75,7 @@ defmodule Game.Command.Mail do
   def run({:unread}, state) do
     case Mail.unread_mail_for(state.character) do
       [] ->
-        state |> Socket.echo(gettext("You have no unread mail."))
+        state |> Socket.echo("You have no unread mail.")
 
       mail ->
         {:paginate, FormatMail.list_mail(mail), state}
@@ -85,9 +85,7 @@ defmodule Game.Command.Mail do
   def run({:read, id}, state) do
     case Mail.get(state.character, id) do
       nil ->
-        message =
-          gettext("The mail requested could not be found. Please try again.")
-
+        message = "The mail requested could not be found. Please try again."
         state |> Socket.echo(message)
 
       mail ->
@@ -110,7 +108,7 @@ defmodule Game.Command.Mail do
         {:editor, __MODULE__, state}
 
       {:error, :not_found} ->
-        state |> Socket.echo(gettext("Could not find \"%{player}\".", player: player))
+        state |> Socket.echo("Could not find \"#{player}\".")
     end
   end
 
@@ -121,7 +119,7 @@ defmodule Game.Command.Mail do
     state = %{state | commands: %{state.commands | mail: mail}}
 
     state |> Hint.gate("mail.body")
-    state |> Socket.echo(gettext("Mail:"))
+    state |> Socket.echo("Mail:")
 
     {:update, state}
   end

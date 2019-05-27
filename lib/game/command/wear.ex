@@ -65,19 +65,17 @@ defmodule Game.Command.Wear do
       state |> item_found(item)
     else
       {:error, :level_too_low, item} ->
-        message =
-          gettext("You cannot wear \"%{name}\", you are not high enough level.",
-            name: Format.item_name(item)
-          )
-
+        name = Format.item_name(item)
+        message = "You cannot wear \"#{name}\", you are not high enough level."
         state |> Socket.echo(message)
 
       {:error, :cannot_wear, item} ->
-        message = gettext(~s(You cannot wear %{name}.), name: Format.item_name(item))
+        name = Format.item_name(item)
+        message = ~s(You cannot wear #{name}.)
         state |> Socket.echo(message)
 
       {:error, :not_found} ->
-        message = gettext(~s("%{name}" could not be found."), name: item_name)
+        message = ~s("#{item_name}" could not be found.")
         state |> Socket.echo(message)
     end
   end
@@ -90,7 +88,7 @@ defmodule Game.Command.Wear do
         slot |> String.to_atom() |> run_remove(state)
 
       false ->
-        state |> Socket.echo(gettext("Unknown armor slot."))
+        state |> Socket.echo("Unknown armor slot.")
     end
   end
 
@@ -104,7 +102,8 @@ defmodule Game.Command.Wear do
 
     save = %{save | items: items, wearing: wearing}
 
-    message = gettext(~s(You are now wearing %{name}), name: Format.item_name(item))
+    name = Format.item_name(item)
+    message = ~s(You are now wearing #{name})
     state |> Socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
@@ -119,18 +118,14 @@ defmodule Game.Command.Wear do
         {wearing, items} = remove(slot, wearing, items)
         save = %{save | wearing: wearing, items: items}
 
-        message =
-          gettext("You removed %{name} from your %{slot}",
-            name: Format.item_name(item),
-            slot: slot
-          )
-
+        name = Format.item_name(item)
+        message = "You removed #{name} from your #{slot}"
         state |> Socket.echo(message)
 
         {:update, Map.put(state, :save, save)}
 
       false ->
-        state |> Socket.echo(gettext("Nothing was on your %{slot}.", slot: slot))
+        state |> Socket.echo("Nothing was on your #{slot}.")
     end
   end
 

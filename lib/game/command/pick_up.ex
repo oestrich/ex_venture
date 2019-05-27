@@ -82,22 +82,17 @@ defmodule Game.Command.PickUp do
 
   def run({@currency}, state) do
     case pick_up_currency(state) do
-      {:ok, currency, state} ->
-        message =
-          gettext("You picked up {item}%{amount} %{currency}{/item}.",
-            amount: currency,
-            currency: @currency
-          )
-
+      {:ok, amount, state} ->
+        message = "You picked up {item}#{amount} #{currency()}{/item}."
         state |> Socket.echo(message)
         {:update, state}
 
       {:error, :no_currency, _state} ->
-        message = gettext(~s(There was no %{currency} to be found.), currency: @currency)
+        message = ~s(There was no #{currency()} to be found.)
         state |> Socket.echo(message)
 
       {:error, :could_not_pickup} ->
-        message = gettext(~s("%{currency}" could not be found.), currency: @currency)
+        message = ~s("#{currency()}" could not be found.)
         state |> Socket.echo(message)
     end
   end
@@ -107,15 +102,9 @@ defmodule Game.Command.PickUp do
     {:ok, room} = Environment.look(save.room_id)
 
     with {:ok, state} <- pick_up_all_items(state, room),
-         {:ok, currency, state} <- pick_up_currency(state) do
-      message =
-        gettext("You picked up {item}%{amount} %{currency}{/item}.",
-          amount: currency,
-          currency: @currency
-        )
-
+         {:ok, amount, state} <- pick_up_currency(state) do
+      message = "You picked up {item}#{amount} #{currency()}{/item}."
       state |> Socket.echo(message)
-
       {:update, state}
     else
       {:error, :no_currency, state} ->
@@ -125,7 +114,7 @@ defmodule Game.Command.PickUp do
         {:update, state}
 
       {:error, :overworld} ->
-        state |> Socket.echo(gettext("There was nothing to pick up."))
+        state |> Socket.echo("There was nothing to pick up.")
     end
   end
 
@@ -134,28 +123,24 @@ defmodule Game.Command.PickUp do
 
     with {:ok, instance} <- find_item(room, item_name),
          {:ok, item, state} <- pick_up(instance, room, state) do
-      message = gettext("You picked up the %{name}.", name: Format.item_name(item))
+      name = Format.item_name(item)
+      message = "You picked up the #{name}."
       state |> Socket.echo(message)
 
       {:update, state}
     else
       {:error, :not_found} ->
-        message = gettext(~s("%{name}" could not be found.), name: item_name)
+        message = ~s("#{item_name}" could not be found.)
         state |> Socket.echo(message)
 
       {:error, :could_not_pickup, item} ->
-        message = gettext(~s("%{name}" could not be found.), name: item.name)
+        message = ~s("#{item.name}" could not be found.)
         state |> Socket.echo(message)
     end
   end
 
   def run({verb, :help}, state) do
-    message =
-      gettext(
-        "You don't know what to %{verb}. See {command}help get{/command} for more information.",
-        verb: verb
-      )
-
+    message = "You don't know what to #{verb}. See {command}help get{/command} for more information."
     state |> Socket.echo(message)
   end
 
@@ -166,7 +151,8 @@ defmodule Game.Command.PickUp do
       Enum.reduce(room.items, state, fn item, state ->
         case pick_up(item, room, state) do
           {:ok, item, state} ->
-            message = gettext("You picked up the %{name}.", name: Format.item_name(item))
+            name = Format.item_name(item)
+            message = "You picked up the #{name}."
             state |> Socket.echo(message)
 
             state

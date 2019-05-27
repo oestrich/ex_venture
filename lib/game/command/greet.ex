@@ -60,7 +60,7 @@ defmodule Game.Command.Greet do
   def run(command, state)
 
   def run({:greet, :help}, state) do
-    state |> Socket.echo(gettext("You are not sure who to greet."))
+    state |> Socket.echo("You are not sure who to greet.")
   end
 
   def run({:greet, name}, state = %{save: %{room_id: room_id}}) do
@@ -82,7 +82,8 @@ defmodule Game.Command.Greet do
 
       npc ->
         @npc.greet(npc.id, Character.to_simple(state.character))
-        state |> Socket.echo(gettext("You greet %{name}.", name: Format.npc_name(npc)))
+        name = Format.npc_name(npc)
+        state |> Socket.echo("You greet #{name}.")
     end
   end
 
@@ -96,7 +97,8 @@ defmodule Game.Command.Greet do
         room
 
       player ->
-        state |> Socket.echo(gettext("You greet %{name}.", name: Format.player_name(player)))
+        name = Format.player_name(player)
+        state |> Socket.echo("You greet #{name}.")
     end
   end
 end

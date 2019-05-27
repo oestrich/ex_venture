@@ -102,16 +102,16 @@ defmodule Game.Command.Train do
         skill_table = FormatSkills.trainable_skills(trainer, skills)
         spent_experience_points = save.experience_points - save.spent_experience_points
 
-        message = gettext("You have %{xp} XP to spend.", xp: spent_experience_points)
+        message = "You have #{spent_experience_points} XP to spend."
         message = "#{message}\n#{skill_table}"
         state |> Socket.echo(message)
 
       {:error, :more_than_one_trainer} ->
-        message = gettext("There are more than one trainer in this room. Please refer by name.")
+        message = "There are more than one trainer in this room. Please refer by name."
         state |> Socket.echo(message)
 
       {:error, :not_found} ->
-        message = gettext("There are no trainers in this room. Go find some!")
+        message = "There are no trainers in this room. Go find some!"
         state |> Socket.echo(message)
     end
   end
@@ -125,7 +125,7 @@ defmodule Game.Command.Train do
         state |> Socket.echo(FormatSkills.trainable_skills(trainer, skills))
 
       {:error, :not_found} ->
-        message = gettext("There are no trainers by that name in this room. Go find them!")
+        message = "There are no trainers by that name in this room. Go find them!"
         state |> Socket.echo(message)
     end
   end
@@ -138,11 +138,11 @@ defmodule Game.Command.Train do
         trainer |> maybe_train_skill(skill_name, state)
 
       {:error, :more_than_one_trainer} ->
-        message = gettext("There are more than one trainer in this room. Please refer by name.")
+        message = "There are more than one trainer in this room. Please refer by name."
         state |> Socket.echo(message)
 
       {:error, :not_found} ->
-        message = gettext("There are no trainers in this room. Go find some!")
+        message = "There are no trainers in this room. Go find some!"
         state |> Socket.echo(message)
     end
   end
@@ -155,7 +155,7 @@ defmodule Game.Command.Train do
         trainer |> maybe_train_skill(skill_name, state)
 
       {:error, :not_found} ->
-        message = gettext("There are no trainers by that name in this room. Go find them!")
+        message = "There are no trainers by that name in this room. Go find them!"
         state |> Socket.echo(message)
     end
   end
@@ -177,7 +177,7 @@ defmodule Game.Command.Train do
 
     case skill do
       nil ->
-        message = gettext("Could not find skill \"%{name}\".", name: skill_name)
+        message = "Could not find skill \"#{skill_name}\"."
         state |> Socket.echo(message)
 
       skill ->
@@ -190,7 +190,7 @@ defmodule Game.Command.Train do
   defp check_if_skill_known(skill, state = %{save: save}) do
     case Enum.member?(save.skill_ids, skill.id) do
       true ->
-        message = gettext("%{name} is already known.", name: skill.name)
+        message = "#{skill.name} is already known."
         state |> Socket.echo(message)
 
       false ->
@@ -203,11 +203,7 @@ defmodule Game.Command.Train do
   defp check_if_right_level(skill, state = %{save: save}) do
     case skill.level > save.level do
       true ->
-        message =
-          gettext("You are not ready to learn %{name}. Go experience the world more.",
-            name: skill.name
-          )
-
+        message = "You are not ready to learn #{skill.name}. Go experience the world more."
         state |> Socket.echo(message)
 
       false ->
@@ -226,9 +222,7 @@ defmodule Game.Command.Train do
         skill
 
       false ->
-        message =
-          gettext("You do not have enough experience to spend to train %{name}.", name: skill.name)
-
+        message = "You do not have enough experience to spend to train #{skill.name}."
         state |> Socket.echo(message)
     end
   end
@@ -238,12 +232,7 @@ defmodule Game.Command.Train do
   defp train_skill(skill, state = %{save: save}) do
     skill_cost = Skill.skill_train_cost(skill, save)
 
-    message =
-      gettext("%{name} trained successfully! %{cost} XP spent.",
-        name: skill.name,
-        cost: skill_cost
-      )
-
+    message = "#{skill.name} trained successfully! #{skill_cost} XP spent."
     state |> Socket.echo(message)
 
     skill_ids = Enum.uniq([skill.id | save.skill_ids])

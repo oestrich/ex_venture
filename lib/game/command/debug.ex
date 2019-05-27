@@ -51,7 +51,7 @@ defmodule Game.Command.Debug do
         state |> Socket.echo(String.trim(debug_info()))
 
       false ->
-        state |> Socket.echo(gettext("You must be an admin to use this command."))
+        state |> Socket.echo("You must be an admin to use this command.")
     end
   end
 
@@ -61,7 +61,7 @@ defmodule Game.Command.Debug do
         state |> Socket.echo(String.trim(players()))
 
       false ->
-        state |> Socket.echo(gettext("You must be an admin to use this command."))
+        state |> Socket.echo("You must be an admin to use this command.")
     end
   end
 

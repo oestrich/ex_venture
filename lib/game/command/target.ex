@@ -92,7 +92,7 @@ defmodule Game.Command.Target do
   def target_character(state, target, room, state) do
     case find_target(state, target, room.players, room.npcs) do
       nil ->
-        message = gettext(~s(Could not find target "%{name}".), name: target)
+        message = ~s(Could not find target "#{target}".)
         state |> Socket.echo(message)
 
       npc = %{type: "npc"} ->
@@ -111,7 +111,8 @@ defmodule Game.Command.Target do
 
   def target_npc(npc, state, state) do
     Character.being_targeted(npc, Character.to_simple(state.character))
-    message = gettext("You are now targeting %{name}.", name: Format.npc_name(npc))
+    name = Format.npc_name(npc)
+    message = "You are now targeting #{name}."
     state |> Socket.echo(message)
     state |> GMCP.target(npc)
 
@@ -126,7 +127,8 @@ defmodule Game.Command.Target do
 
   def target_player(player, state, state) do
     Character.being_targeted(player, Character.to_simple(state.character))
-    message = gettext("You are now targeting %{name}.", name: Format.player_name(player))
+    name = Format.player_name(player)
+    message = "You are now targeting #{name}."
     state |> Socket.echo(message)
     state |> GMCP.target(player)
 
@@ -140,16 +142,17 @@ defmodule Game.Command.Target do
   def display_target(state, target, room)
 
   def display_target(state, nil, _room) do
-    state |> Socket.echo(gettext("You don't have a target."))
+    state |> Socket.echo("You don't have a target.")
   end
 
   def display_target(state, npc = %{type: "npc"}, room) do
     case Enum.find(room.npcs, &Character.equal?(npc, &1)) do
       nil ->
-        state |> Socket.echo(gettext("Your target could not be found."))
+        state |> Socket.echo("Your target could not be found.")
 
       npc ->
-        message = gettext("Your target is %{name}.", name: Format.npc_name(npc))
+        name = Format.npc_name(npc)
+        message = "Your target is #{name}."
         state |> Socket.echo(message)
     end
   end
@@ -157,10 +160,11 @@ defmodule Game.Command.Target do
   def display_target(state, player = %{type: "player"}, room) do
     case Enum.find(room.players, &Character.equal?(player, &1)) do
       nil ->
-        state |> Socket.echo(gettext("Your target could not be found."))
+        state |> Socket.echo("Your target could not be found.")
 
       player ->
-        message = gettext("Your target is %{name}.", name: Format.player_name(player))
+        name = Format.player_name(player)
+        message = "Your target is #{name}."
         state |> Socket.echo(message)
     end
   end

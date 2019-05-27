@@ -79,7 +79,7 @@ defmodule Game.Command.Give do
 
     case find_item_or_currency(state.save, item_name) do
       {:error, :not_found} ->
-        message = gettext("\"%{name}\" could not be found.", name: item_name)
+        message = "\"#{item_name}\" could not be found."
         state |> Socket.echo(message)
 
       {:ok, instance, item} ->
@@ -118,7 +118,7 @@ defmodule Game.Command.Give do
   defp maybe_give_to_character(state, room, instance, item, character_name) do
     case find_character(room, character_name) do
       {:error, :not_found} ->
-        message = gettext("\"%{name}\" could not be found.", name: character_name)
+        message = "\"#{character_name}\" could not be found."
         state |> Socket.echo(message)
 
       {:ok, character} ->
@@ -129,20 +129,13 @@ defmodule Game.Command.Give do
   defp send_item_to_character(state = %{save: save}, currency, :currency, character) do
     case save.currency >= currency do
       false ->
-        message =
-          gettext("You do not have enough %{currency} to give to %{name}.",
-            currency: currency(),
-            name: Format.name(character)
-          )
-
+        name = Format.name(character)
+        message = "You do not have enough #{currency()} to give to #{name}."
         state |> Socket.echo(message)
 
       true ->
-        message =
-          gettext("Gave %{currency} to %{name}.",
-            currency: Format.currency(currency),
-            name: Format.name(character)
-          )
+        name = Format.name(character)
+        message = "Gave #{Format.currency(currency)} to #{name}."
 
         Socket.echo(state, message)
 
@@ -156,11 +149,9 @@ defmodule Game.Command.Give do
   end
 
   defp send_item_to_character(state = %{save: save}, instance, item, character) do
-    message =
-      gettext("Gave %{item} to %{name}.",
-        item: Format.item_name(item),
-        name: Format.name(character)
-      )
+    item = Format.item_name(item)
+    name = Format.name(character)
+    message = "Gave #{item} to #{name}."
 
     state |> Socket.echo(message)
 

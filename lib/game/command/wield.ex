@@ -63,19 +63,17 @@ defmodule Game.Command.Wield do
       state |> item_found(hand, item)
     else
       {:error, :level_too_low, item} ->
-        message =
-          gettext("You cannot wield %{name}, you are not high enough level.",
-            name: Format.item_name(item)
-          )
-
+        name = Format.item_name(item)
+        message = "You cannot wield #{name}, you are not high enough level."
         state |> Socket.echo(message)
 
       {:error, :cannot_wield, item} ->
-        message = gettext("%{name} cannot be wielded.", name: Format.item_name(item))
+        name = Format.item_name(item)
+        message = "#{name} cannot be wielded."
         state |> Socket.echo(message)
 
       {:error, :not_found} ->
-        message = gettext(~s("%{name}" could not be found."), name: item_name)
+        message = ~s("#{item_name}" could not be found.")
         state |> Socket.echo(message)
     end
   end
@@ -89,7 +87,7 @@ defmodule Game.Command.Wield do
         run_unwield(:left, state)
 
       _ ->
-        state |> Socket.echo(gettext("Unknown hand"))
+        state |> Socket.echo("Unknown hand")
     end
   end
 
@@ -105,9 +103,8 @@ defmodule Game.Command.Wield do
     wielding = Map.put(wielding, hand, instance)
     save = %{save | items: items, wielding: wielding}
 
-    message =
-      gettext("%{name} is now in your %{hand} hand.", name: Format.item_name(item), hand: hand)
-
+    name = Format.item_name(item)
+    message = "#{name} is now in your #{hand} hand."
     state |> Socket.echo(message)
 
     {:update, Map.put(state, :save, save)}
@@ -118,7 +115,7 @@ defmodule Game.Command.Wield do
 
     {wielding, items} = unwield(hand, save.wielding, save.items)
     save = %{save | items: items, wielding: wielding}
-    message = gettext("Your %{hand} hand is now empty.", hand: hand)
+    message = "Your #{hand} hand is now empty."
     state |> Socket.echo(message)
 
     {:update, Map.put(state, :save, save)}

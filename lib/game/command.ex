@@ -3,8 +3,6 @@ defmodule Game.Command do
   Parses and runs commands from players
   """
 
-  import Game.Gettext, only: [dgettext: 2]
-
   alias Game.Socket
 
   defstruct text: "",
@@ -201,9 +199,7 @@ defmodule Game.Command do
       type: :command
     )
 
-    message =
-      dgettext("commands", "Unknown command, type {command}help{/command} for assistance.")
-
+    message = "Unknown command, type {command}help{/command} for assistance."
     state |> Socket.echo(message)
   end
 
@@ -214,7 +210,7 @@ defmodule Game.Command do
       true ->
         case state do
           %{save: %{stats: %{health_points: health_points}}} when health_points <= 0 ->
-            message = dgettext("commands", "You are passed out and cannot perform this action.")
+            message = "You are passed out and cannot perform this action."
             state |> Socket.echo(message)
 
           _ ->

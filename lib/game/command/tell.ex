@@ -67,7 +67,7 @@ defmodule Game.Command.Tell do
   def run({"reply", message}, state = %{reply_to: reply_to}) do
     case reply_to do
       nil ->
-        state |> Socket.echo(gettext("There is no one to reply to."))
+        state |> Socket.echo("There is no one to reply to.")
 
       player = %{type: "player"} ->
         message |> reply_to_player(player, state)
@@ -147,7 +147,7 @@ defmodule Game.Command.Tell do
 
   defp maybe_fail_tell(state, message) do
     [name | _] = String.split(message, " ")
-    message = gettext(~s("%{name}" is not online.), name: name)
+    message = ~s("#{name}" is not online.)
     state |> Socket.echo(message)
   end
 
@@ -162,19 +162,19 @@ defmodule Game.Command.Tell do
         {:update, %{state | reply_to: {:gossip, player_name}}}
 
       {:error, :offline} ->
-        state |> Socket.echo(gettext("Error: Gossip is offline."))
+        state |> Socket.echo("Error: Gossip is offline.")
 
       {:error, "game offline"} ->
-        state |> Socket.echo(gettext("The remote game is offline."))
+        state |> Socket.echo("The remote game is offline.")
 
       {:error, "player offline"} ->
-        state |> Socket.echo(gettext("The remote player is offline."))
+        state |> Socket.echo("The remote player is offline.")
 
       {:error, "not supported"} ->
-        state |> Socket.echo(gettext("The remote game does not support tells."))
+        state |> Socket.echo("The remote game does not support tells.")
 
       {:error, message} ->
-        message = gettext(~s(Error: Gossip responded with "%{message}".), message: message)
+        message = ~s(Error: Gossip responded with "#{message}".)
         state |> Socket.echo(message)
     end
   end
@@ -184,7 +184,7 @@ defmodule Game.Command.Tell do
 
     case Session.Registry.find_connected_player(reply_to.id) do
       nil ->
-        message = gettext(~s("%{name}" is not online.), name: reply_to.name)
+        message = ~s("#{reply_to.name}" is not online.)
         state |> Socket.echo(message)
 
       _ ->
@@ -205,7 +205,8 @@ defmodule Game.Command.Tell do
 
     case npc do
       nil ->
-        message = gettext("Could not find %{name}.", name: Format.npc_name(reply_to))
+        name = Format.npc_name(reply_to)
+        message = "Could not find #{name}."
         state |> Socket.echo(message)
 
       _ ->

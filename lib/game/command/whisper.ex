@@ -62,7 +62,7 @@ defmodule Game.Command.Whisper do
 
     case find_character(room, who_and_message, message: true) do
       {:error, :not_found} ->
-        message = gettext("No character could be found matching your text.")
+        message = "No character could be found matching your text."
         state |> Socket.echo(message)
 
       {:ok, character} ->

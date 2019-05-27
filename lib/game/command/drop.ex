@@ -43,16 +43,12 @@ defmodule Game.Command.Drop do
         drop(state, item_name)
 
       :overworld ->
-        state |> Socket.echo(gettext("You cannot drop items in the overworld."))
+        state |> Socket.echo("You cannot drop items in the overworld.")
     end
   end
 
   def run({}, state) do
-    message =
-      gettext(
-        "Please provide an item to drop. See {command}help drop{/command} for more information."
-      )
-
+    message = "Please provide an item to drop. See {command}help drop{/command} for more information."
     state |> Socket.echo(message)
   end
 
@@ -78,12 +74,7 @@ defmodule Game.Command.Drop do
         _drop_currency(amount, state)
 
       false ->
-        message =
-          gettext("You do not have enough %{currency} to drop %{amount}.",
-            currency: currency(),
-            amount: amount
-          )
-
+        message = "You do not have enough #{currency()} to drop #{amount}."
         state |> Socket.echo(message)
     end
   end
@@ -92,7 +83,7 @@ defmodule Game.Command.Drop do
     save = %{state.save | currency: currency - amount}
     state = Player.update_save(state, save)
 
-    message = gettext("You dropped %{amount} %{currency}.", amount: amount, currency: currency())
+    message = "You dropped #{amount} #{currency()}."
     state |> Socket.echo(message)
 
     Environment.drop_currency(save.room_id, Character.to_simple(state.character), amount)
@@ -105,7 +96,7 @@ defmodule Game.Command.Drop do
 
     case Enum.find(items, &Item.matches_lookup?(&1, item_name)) do
       nil ->
-        message = gettext(~s(Could not find "%{name}".), name: item_name)
+        message = ~s(Could not find "#{item_name}".)
         state |> Socket.echo(message)
 
       item ->
@@ -119,7 +110,8 @@ defmodule Game.Command.Drop do
 
     Environment.drop(save.room_id, Character.to_simple(state.character), instance)
 
-    message = gettext("You dropped %{name}.", name: Format.item_name(item))
+    name = Format.item_name(item)
+    message = "You dropped #{name}."
     state |> Socket.echo(message)
 
     {:update, state}

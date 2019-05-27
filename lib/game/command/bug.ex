@@ -62,7 +62,7 @@ defmodule Game.Command.Bug do
   def run({:read, id}, state) do
     case Bugs.get(state.character, id) do
       {:error, :not_found} ->
-        state |> Socket.echo(gettext("Bug #%{id} not found.", id: id))
+        state |> Socket.echo("Bug ##{id} not found.")
 
       {:ok, bug} ->
         state |> Socket.echo(Format.show_bug(bug))
@@ -71,9 +71,7 @@ defmodule Game.Command.Bug do
 
   def run({:new, bug_title}, state) do
     message =
-      gettext(
-        "Please enter in any more information you have (an empty new line will finish entering text): "
-      )
+      "Please enter in any more information you have (an empty new line will finish entering text): "
 
     state |> Socket.echo(message)
 
@@ -87,7 +85,7 @@ defmodule Game.Command.Bug do
 
   def run({:unknown}, state) do
     message =
-      gettext("Please provide a bug title. See {command}help bug{/command} for more information.")
+      "Please provide a bug title. See {command}help bug{/command} for more information."
 
     state |> Socket.echo(message)
   end
@@ -126,7 +124,7 @@ defmodule Game.Command.Bug do
 
     case changeset |> Repo.insert() do
       {:ok, _bug} ->
-        state |> Socket.echo(gettext("Your bug has been submitted. Thanks!"))
+        state |> Socket.echo("Your bug has been submitted. Thanks!")
 
       {:error, changeset} ->
         error =
@@ -135,7 +133,7 @@ defmodule Game.Command.Bug do
             "#{field} #{human_error}"
           end)
 
-        message = gettext("There was an issue creating the bug.")
+        message = "There was an issue creating the bug."
         state |> Socket.echo("#{message}\n#{error}")
     end
   end

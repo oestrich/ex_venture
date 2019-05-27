@@ -46,7 +46,7 @@ defmodule Game.Command.Quit do
   def run(command, state)
 
   def run({}, state) do
-    state |> Socket.echo(gettext("Good bye."))
+    state |> Socket.echo("Good bye.")
     state |> Socket.disconnect()
 
     :ok

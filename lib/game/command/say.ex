@@ -155,7 +155,7 @@ defmodule Game.Command.Say do
 
     case find_character(room, parsed_message.message, message: true) do
       {:error, :not_found} ->
-        state |> Socket.echo(gettext("No character could be found matching your text."))
+        state |> Socket.echo("No character could be found matching your text.")
 
       {:ok, directed_character} ->
         message = Utility.strip_name(directed_character, parsed_message.message)

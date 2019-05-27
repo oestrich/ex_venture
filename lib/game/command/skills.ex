@@ -178,18 +178,18 @@ defmodule Game.Command.Skills do
 
   def run({%{command: command}, command}, state = %{target: target})
       when is_nil(target) do
-    state |> Socket.echo(gettext("You don't have a target."))
+    state |> Socket.echo("You don't have a target.")
   end
 
   def run({skill, :level_too_low}, state) do
-    message =
-      gettext("You are too low of a level to use %{skill}.", skill: FormatSkills.skill_name(skill))
-
+    skill = FormatSkills.skill_name(skill)
+    message = "You are too low of a level to use #{skill}."
     state |> Socket.echo(message)
   end
 
   def run({skill, :not_known}, state) do
-    message = gettext("You do not know %{skill}.", skill: FormatSkills.skill_name(skill))
+    skill = FormatSkills.skill_name(skill)
+    message = "You do not know #{skill}."
     state |> Socket.echo(message)
   end
 
@@ -208,13 +208,14 @@ defmodule Game.Command.Skills do
       use_skill(skill, target, state)
     else
       {:error, :not_found} ->
-        state |> Socket.echo(gettext("Your target could not be found."))
+        state |> Socket.echo("Your target could not be found.")
 
       {:error, :skill, :level_too_low} ->
-        state |> Socket.echo(gettext("You are not high enough level to use this skill."))
+        state |> Socket.echo("You are not high enough level to use this skill.")
 
       {:error, :skill_not_ready, remaining_seconds} ->
-        message = gettext("%{skill} is not ready yet.", skill: FormatSkills.skill_name(skill))
+        skill = FormatSkills.skill_name(skill)
+        message = "#{skill} is not ready yet."
         state |> Socket.echo(message)
         Hint.gate(state, "skills.cooldown_time", %{remaining_seconds: remaining_seconds})
         :ok
@@ -297,9 +298,7 @@ defmodule Game.Command.Skills do
         {:skip, :prompt, state}
 
       {:error, _} ->
-        message =
-          gettext(~s(You don't have enough skill points to use "%{skill}".), skill: skill.command)
-
+        message = ~s(You don't have enough skill points to use "#{skill.command}".)
         state |> Socket.echo(message)
         {:update, state}
     end

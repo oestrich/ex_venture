@@ -74,7 +74,7 @@ defmodule Game.Command.Listen do
         state |> Socket.echo(FormatListen.to_room(room))
 
       false ->
-        state |> Socket.echo(gettext("Nothing can be heard."))
+        state |> Socket.echo("Nothing can be heard.")
     end
   end
 
@@ -86,10 +86,10 @@ defmodule Game.Command.Listen do
       state |> Socket.echo(FormatListen.to_room(room))
     else
       {:error, :not_found} ->
-        state |> Socket.echo(gettext("There is no exit that direction to listen to."))
+        state |> Socket.echo("There is no exit that direction to listen to.")
 
       _ ->
-        state |> Socket.echo(gettext("Nothing can be heard."))
+        state |> Socket.echo("Nothing can be heard.")
     end
   end
 

@@ -82,21 +82,18 @@ defmodule Game.Command.Use do
   end
 
   def run({}, state) do
-    message =
-      gettext(
-        "You are not sure what to use. See {command}help use{/command} for more information."
-      )
-
+    message = "You are not sure what to use. See {command}help use{/command} for more information."
     state |> Socket.echo(message)
   end
 
   defp item_not_found(state, item_name) do
-    message = gettext(~s("%{name}" could not be found.), name: item_name)
+    message = ~s("#{item_name}" could not be found.)
     state |> Socket.echo(message)
   end
 
   defp use_item(state, {_, item = %{is_usable: false}}) do
-    message = gettext("%{name} could not be used", name: FormatItems.item_name(item))
+    name = FormatItems.item_name(item)
+    message = "#{name} could not be used"
     state |> Socket.echo(message)
   end
 

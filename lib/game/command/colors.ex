@@ -96,7 +96,7 @@ defmodule Game.Command.Colors do
     state = Player.update_save(state, %{save | config: config})
 
     state |> CommandConfig.push_config(config)
-    state |> Socket.echo(gettext("Your colors have been reset."))
+    state |> Socket.echo("Your colors have been reset.")
 
     {:update, state}
   end

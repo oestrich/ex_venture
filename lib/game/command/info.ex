@@ -72,7 +72,7 @@ defmodule Game.Command.Info do
         state |> Socket.echo(FormatPlayers.short_info(player))
 
       {:error, :not_found} ->
-        message = gettext("Could not find a player with the name \"%{name}\".", name: name)
+        message = "Could not find a player with the name \"#{name}\"."
         state |> Socket.echo(message)
     end
   end

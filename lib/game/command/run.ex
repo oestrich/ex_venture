@@ -64,7 +64,7 @@ defmodule Game.Command.Run do
 
   # run without directions
   def run({}, state) do
-    state |> Socket.echo(gettext("You run in place."))
+    state |> Socket.echo("You run in place.")
   end
 
   @doc """

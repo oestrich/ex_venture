@@ -5,9 +5,8 @@ defmodule Game.Command.Macro do
 
   defmacro __using__(_opts) do
     quote do
-      import Game.Command.Macro, only: [commands: 1, commands: 2, gettext: 1, gettext: 2]
+      import Game.Command.Macro, only: [commands: 1, commands: 2]
 
-      require Game.Gettext
       require Logger
 
       alias Game.Environment
@@ -131,21 +130,6 @@ defmodule Game.Command.Macro do
 
       def parse(unquote(String.capitalize(command_alias))), do: {}
       def parse(unquote(String.capitalize(command_alias)) <> " " <> str), do: {str}
-    end
-  end
-
-  @doc """
-  Short cut for commands to hit the `commands` domain for gettext
-  """
-  defmacro gettext(message) do
-    quote do
-      Game.Gettext.dgettext("commands", unquote(message))
-    end
-  end
-
-  defmacro gettext(message, binding) do
-    quote do
-      Game.Gettext.dgettext("commands", unquote(message), unquote(binding))
     end
   end
 end

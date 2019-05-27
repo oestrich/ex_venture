@@ -89,7 +89,7 @@ defmodule Game.Command.Hone do
   def run({:hone, stat}, state) do
     case parse_stat(stat) do
       {:error, :bad_stat} ->
-        message = gettext("\"%{stat}\" is not a stat you can hone.", stat: stat)
+        message = "\"#{stat}\" is not a stat you can hone."
         state |> Socket.echo(message)
 
       {:ok, :stat, stat} ->
@@ -267,10 +267,8 @@ defmodule Game.Command.Hone do
           Hone.send_not_enough_experience(state, proficiency.name)
 
         {:error, :unknown} ->
-          message =
-            gettext("You do not know %{stat}.", stat: proficiency.name)
-
-            state |> Socket.echo(message)
+          message = "You do not know #{proficiency.name}."
+          state |> Socket.echo(message)
       end
     end
 
@@ -304,16 +302,12 @@ defmodule Game.Command.Hone do
   end
 
   def send_stat_raised(state, name, value) do
-    message =
-      gettext("You honed your %{name}. It is now at %{value}!", name: name, value: value)
-
+    message = "You honed your #{name}. It is now at #{value}!"
     state |> Socket.echo(message)
   end
 
   def send_not_enough_experience(state, name) do
-    message =
-      gettext("You do not have enough experience to spend to hone %{name}.", name: name)
-
+    message = "You do not have enough experience to spend to hone #{name}."
     state |> Socket.echo(message)
   end
 end
