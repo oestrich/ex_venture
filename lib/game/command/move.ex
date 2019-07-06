@@ -224,33 +224,7 @@ defmodule Game.Command.Move do
             state |> Socket.echo(message)
 
           "closed" ->
-            case door_info do
-              %{has_lock: true} ->
-                if DoorLock.locked?(door_id) do
-                  message = "The #{direction} door is already locked."
-                  state |> Socket.echo(message)
-                else
-                  case door_info do
-                    %{lock_key_id: key_id} when not is_nil(key_id) ->
-                      if has_lock_key?(state, key_id) do
-                        state |> lock_door(door_id)
-                        message = "You locked the #{direction} door."
-                        state |> Socket.echo(message)
-                      else
-                        message = "You don't have the right key to lock the #{direction} door."
-                        state |> Socket.echo(message)
-                      end
-
-                    _ ->
-                      message = "You don't have the right key to lock the #{direction} door."
-                      state |> Socket.echo(message)
-                  end
-                end
-
-              _ ->
-                message = "There is no lock on the #{direction} door."
-                state |> Socket.echo(message)
-            end
+            lock_closed_door(state, direction, door_info)
         end
 
       %{id: _exit_id} ->
@@ -276,33 +250,7 @@ defmodule Game.Command.Move do
             state |> Socket.echo(message)
 
           "closed" ->
-            case door_info do
-              %{has_lock: true} ->
-                if DoorLock.unlocked?(door_id) do
-                  message = "The #{direction} door is already unlocked."
-                  state |> Socket.echo(message)
-                else
-                  case door_info do
-                    %{lock_key_id: key_id} when not is_nil(key_id) ->
-                      if has_lock_key?(state, key_id) do
-                        state |> unlock_door(door_id)
-                        message = "You unlocked the #{direction} door."
-                        state |> Socket.echo(message)
-                      else
-                        message = "You don't have the right key to unlock the #{direction} door."
-                        state |> Socket.echo(message)
-                      end
-
-                    _ ->
-                      message = "You don't have the right key to unlock the #{direction} door."
-                      state |> Socket.echo(message)
-                  end
-                end
-
-              _ ->
-                message = "There is no lock on the #{direction} door."
-                state |> Socket.echo(message)
-            end
+            unlock_closed_door(state, direction, door_info)
         end
 
       %{id: _exit_id} ->
@@ -315,6 +263,72 @@ defmodule Game.Command.Move do
     end
 
     :ok
+  end
+
+  @doc """
+  Lock a closed door. This assumes that the door is closed. Checks for key.
+  """
+  def lock_closed_door(state, direction, door_info) do
+    case door_info do
+      %{has_lock: true} ->
+        if DoorLock.locked?(door_info.door_id) do
+          message = "The #{direction} door is already locked."
+          state |> Socket.echo(message)
+        else
+          case door_info do
+            %{lock_key_id: key_id} when not is_nil(key_id) ->
+              if has_lock_key?(state, key_id) do
+                state |> lock_door(door_info.door_id)
+                message = "You locked the #{direction} door."
+                state |> Socket.echo(message)
+              else
+                message = "You don't have the right key to lock the #{direction} door."
+                state |> Socket.echo(message)
+              end
+
+            _ ->
+              message = "You don't have the right key to lock the #{direction} door."
+              state |> Socket.echo(message)
+          end
+        end
+
+      _ ->
+        message = "There is no lock on the #{direction} door."
+        state |> Socket.echo(message)
+    end
+  end
+
+  @doc """
+  Unlock a closed door. This assumes that the door is closed. Checks for key.
+  """
+  def unlock_closed_door(state, direction, door_info) do
+    case door_info do
+      %{has_lock: true} ->
+        if DoorLock.unlocked?(door_info.door_id) do
+          message = "The #{direction} door is already unlocked."
+          state |> Socket.echo(message)
+        else
+          case door_info do
+            %{lock_key_id: key_id} when not is_nil(key_id) ->
+              if has_lock_key?(state, key_id) do
+                state |> unlock_door(door_info.door_id)
+                message = "You unlocked the #{direction} door."
+                state |> Socket.echo(message)
+              else
+                message = "You don't have the right key to unlock the #{direction} door."
+                state |> Socket.echo(message)
+              end
+
+            _ ->
+              message = "You don't have the right key to unlock the #{direction} door."
+              state |> Socket.echo(message)
+          end
+        end
+
+      _ ->
+        message = "There is no lock on the #{direction} door."
+        state |> Socket.echo(message)
+    end
   end
 
   @doc """
@@ -343,42 +357,26 @@ defmodule Game.Command.Move do
   end
 
   defp maybe_unlock_door_before_move(state, room_exit = %{has_door: true, has_lock: true, lock_key_id: lock_key_id}) when not is_nil(lock_key_id) and lock_key_id != "" do
-    case Door.get(room_exit.door_id) do
-      "open" ->
+    if Door.closed?(room_exit.door_id) && DoorLock.locked?(room_exit.door_id) do
+      if has_lock_key?(state, lock_key_id) do
+        state |> unlock_door(room_exit.door_id)
+        state |> Socket.echo("You unlocked the door.")
         {:ok, state}
-
-      "closed" ->
-        case DoorLock.get(room_exit.door_id) do
-          "locked" ->
-            if has_lock_key?(state, lock_key_id) do
-              state |> unlock_door(room_exit.door_id)
-              state |> Socket.echo("You unlocked the door.")
-              {:ok, state}
-            else
-              state |> Socket.echo("The door is locked.")
-              {:error, :door_locked}
-            end
-
-          "unlocked" ->
-            {:ok, state}
-        end
+      else
+        state |> Socket.echo("The door is locked.")
+        {:error, :door_locked}
+      end
+    else
+      {:ok, state}
     end
   end
 
   defp maybe_unlock_door_before_move(state, room_exit = %{has_door: true, has_lock: true}) do
-    case Door.get(room_exit.door_id) do
-      "open" ->
-        {:ok, state}
-
-      "closed" ->
-        case DoorLock.get(room_exit.door_id) do
-          "locked" ->
-            state |> Socket.echo("The door is locked.")
-            {:error, :door_locked}
-
-          "unlocked" ->
-            {:ok, state}
-        end
+    if Door.closed?(room_exit.door_id) && DoorLock.locked?(room_exit.door_id) do
+      state |> Socket.echo("The door is locked.")
+      {:error, :door_locked}
+    else
+      {:ok, state}
     end
   end
 
@@ -462,41 +460,26 @@ defmodule Game.Command.Move do
   Unlock a door, if the door is locked
   """
   def maybe_unlock_door(state, _door_info = %{door_id: door_id, has_door: true, has_lock: true, lock_key_id: lock_key_id}) when not is_nil(lock_key_id) do
-    case Door.get(door_id) do
-      "open" ->
+    if Door.closed?(door_id) && DoorLock.locked?(door_id) do
+      if has_lock_key?(state, lock_key_id) do
+        DoorLock.set(door_id, "unlocked")
+        state |> Socket.echo("You unlocked the door.")
         {:ok, state}
-
-      "closed" ->
-        case DoorLock.get(door_id) do
-          "locked" ->
-            if has_lock_key?(state, lock_key_id) do
-              DoorLock.set(door_id, "unlocked")
-              state |> Socket.echo("You unlocked the door.")
-              {:ok, state}
-            else
-              state |> Socket.echo("The door is locked.")
-              {:error, :door_locked}
-            end
-          "unlocked" ->
-            {:ok, state}
-        end
+      else
+        state |> Socket.echo("The door is locked.")
+        {:error, :door_locked}
+      end
+    else
+      {:ok, state}
     end
   end
 
   def maybe_unlock_door(state, _door_info = %{door_id: door_id, has_door: true, has_lock: true}) do
-    case Door.get(door_id) do
-      "open" ->
-        {:ok, state}
-
-      "closed" ->
-        case DoorLock.get(door_id) do
-          "locked" ->
-            state |> Socket.echo("The door is locked.")
-            {:error, :door_locked}
-
-          "unlocked" ->
-            {:ok, state}
-        end
+    if Door.closed?(door_id) && DoorLock.locked?(door_id) do
+      state |> Socket.echo("The door is locked.")
+      {:error, :door_locked}
+    else
+      {:ok, state}
     end
   end
 
