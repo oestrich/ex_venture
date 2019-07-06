@@ -1,4 +1,4 @@
-defmodule Game.Door do
+defmodule Game.DoorLock do
   @moduledoc """
   Door tracker, know if the door is open or closed
   """
@@ -8,13 +8,13 @@ defmodule Game.Door do
   alias Data.Exit
 
   @typedoc """
-  Door status is `open` or `closed`
+  Door lock status is `locked` or `unlocked`
   """
   @type status :: String.t()
 
-  @key :doors
-  @closed "closed"
-  @open "open"
+  @key :door_locks
+  @locked "locked"
+  @unlocked "unlocked"
 
   @doc false
   def start_link() do
@@ -26,17 +26,18 @@ defmodule Game.Door do
   #
 
   @doc """
-  Maybe load a door, only if the exit has a door
+  Maybe load a door lock, only if the exit has a door lock
   """
   @spec maybe_load(Exit.t()) :: :ok
   def maybe_load(room_exit)
-  def maybe_load(%{door_id: door_id, has_door: true}), do: load(door_id)
+  def maybe_load(%{door_id: door_id, has_door: true, has_lock: true}), do: load(door_id)
   def maybe_load(_), do: :ok
 
   @doc """
   Load a new door into the ETS table
   """
   @spec load(String.t()) :: :ok
+
   def load(%{door_id: id}), do: load(id)
 
   def load(door_id) do
@@ -46,7 +47,7 @@ defmodule Game.Door do
       GenServer.call(member, {:load, door_id})
     end)
 
-    @closed
+    @locked
   end
 
   @doc """
@@ -66,13 +67,13 @@ defmodule Game.Door do
   end
 
   @doc """
-  Set the state of a door, state must be `#{@open}` or `#{@closed}`
+  Set the state of a door lock, state must be `#{@locked}` or `#{@unlocked}`
   """
   @spec set(Exit.t(), status()) :: :ok
-  def set(%{door_id: door_id}, state) when state in [@open, @closed], do: set(door_id, state)
+  def set(%{door_id: door_id}, state) when state in [@locked, @unlocked], do: set(door_id, state)
 
   @spec set(String.t(), status()) :: :ok
-  def set(door_id, state) when state in [@open, @closed] do
+  def set(door_id, state) when state in [@locked, @unlocked] do
     members = :pg2.get_members(@key)
 
     Enum.each(members, fn member ->
@@ -83,30 +84,30 @@ defmodule Game.Door do
   end
 
   @doc """
-  Check if a door is closed
+  Check if a door is locked
   """
-  @spec closed?(String.t()) :: boolean
-  def closed?(door_id) do
+  @spec locked?(String.t()) :: boolean
+  def locked?(door_id) do
     case get(door_id) do
       nil ->
         nil
 
       state ->
-        state == @closed
+        state == @locked
     end
   end
 
   @doc """
-  Check if a door is open
+  Check if a door is unlocked
   """
-  @spec open?(String.t()) :: boolean
-  def open?(door_id) do
+  @spec unlocked?(String.t()) :: boolean
+  def unlocked?(door_id) do
     case get(door_id) do
       nil ->
         nil
 
       state ->
-        state == @open
+        state == @unlocked
     end
   end
 
@@ -143,8 +144,8 @@ defmodule Game.Door do
   end
 
   def handle_call({:load, door_id}, _from, state) do
-    Cachex.put(@key, door_id, @closed)
-    {:reply, @closed, state}
+    Cachex.put(@key, door_id, @locked)
+    {:reply, @locked, state}
   end
 
   def handle_call({:set, door_id, door_state}, _from, state) do

@@ -44,6 +44,16 @@
             </div>
 
             <%= FormView.checkbox_field(f, :has_door, label: "Has Door?") %>
+            <%= FormView.checkbox_field(f, :has_lock, label: "Has Lock?") %>
+
+            <%= if assigns[:items] do %>
+              <div class="form-group">
+                <%= label f, :lock_key_id, "ID", class: "col-md-4" %>
+                <div class="col-md-8">
+                  <%= select f, :lock_key_id, @items |> Enum.map(&item_option/1), class: "form-control" %>
+                </div>
+              </div>
+            <% end %>
 
             <div class="form-group">
               <%= label f, :requirements, class: "col-md-4" %>

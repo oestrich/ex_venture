@@ -15,6 +15,7 @@ defmodule Web.Room do
   alias Data.Zone
   alias Game.Config
   alias Game.Door
+  alias Game.DoorLock
   alias Game.Items
   alias Game.Room.Repo, as: RoomRepo
   alias Web.NPC

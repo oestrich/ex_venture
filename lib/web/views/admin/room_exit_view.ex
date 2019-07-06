@@ -21,4 +21,8 @@ defmodule Web.Admin.RoomExitView do
       Elixir.Map.take(proficiency, [:id, :name])
     end)
   end
+
+  def item_option(item) do
+    {item.name, item.id}
+  end
 end

@@ -1,6 +1,7 @@
 defmodule Web.Admin.RoomExitController do
   use Web.AdminController
 
+  alias Web.Item
   alias Web.Proficiency
   alias Web.Room
   alias Web.Zone
@@ -16,6 +17,7 @@ defmodule Web.Admin.RoomExitController do
     |> assign(:room, room)
     |> assign(:direction, direction)
     |> assign(:proficiencies, Proficiency.all())
+    |> assign(:items, Item.all())
     |> render("new.html")
   end
 
@@ -36,6 +38,7 @@ defmodule Web.Admin.RoomExitController do
         |> assign(:zone, zone)
         |> assign(:room, room)
         |> assign(:direction, direction)
+        |> assign(:items, Item.all())
         |> render("new.html")
     end
   end

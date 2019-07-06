@@ -6,6 +6,7 @@ defmodule Game.Command.MoveTest do
   alias Game.Command
   alias Game.Command.Move
   alias Game.Door
+  alias Game.DoorLock
   alias Game.Session.Registry
 
   setup do
@@ -217,6 +218,83 @@ defmodule Game.Command.MoveTest do
     end
   end
 
+  describe "a locked door" do
+    setup do
+      start_and_clear_items()
+      insert_item(%{id: 1, name: "Key", keywords: []})
+      room_exit = %Exit{id: 10, has_door: true, has_lock: true, lock_key_id: 1, door_id: 10, direction: "north", start_id: 1, finish_id: 2}
+      start_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+
+      Door.load(room_exit)
+      Door.set(room_exit, "closed")
+
+      DoorLock.load(room_exit)
+      DoorLock.set(room_exit, "locked")
+
+      %{room_exit: room_exit}
+    end
+
+    test "locking doesn't do anything", %{state: state, room_exit: room_exit} do
+      command = %Command{module: Command.Move, args: {:lock, "north"}}
+      :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
+
+      assert_socket_echo "the north door is already locked"
+      assert DoorLock.locked?(room_exit)
+    end
+
+    test "can't be unlocked without a key", %{state: state, room_exit: room_exit} do
+      command = %Command{module: Command.Move, args: {:unlock, "north"}}
+      :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
+
+      assert DoorLock.locked?(room_exit)
+      assert Door.closed?(room_exit)
+      assert_socket_echo "don't have the right key to unlock"
+    end
+
+    test "can't be opened if locked and no key", %{state: state, room_exit: room_exit} do
+      command = %Command{module: Command.Move, args: {:open, "north"}}
+      :ok = Command.run(command, Map.merge(state, %{save: %{room_id: 1}}))
+
+      assert Door.closed?(room_exit)
+      assert_socket_echo "door is locked"
+    end
+
+    test "can be locked with the key", %{state: state, room_exit: room_exit} do
+      state = %{state | save: %{state.save | room_id: 1, items: [item_instance(1)], wielding: %{}}}
+      DoorLock.set(room_exit, "unlocked")
+
+      command = %Command{module: Command.Move, args: {:lock, "north"}}
+      :ok = Command.run(command, state)
+
+      assert DoorLock.locked?(room_exit)
+      assert Door.closed?(room_exit)
+
+      assert_socket_echo "you locked the north door"
+    end
+
+    test "can be unlocked with the key", %{state: state, room_exit: room_exit} do
+      state = %{state | save: %{state.save | room_id: 1, items: [item_instance(1)], wielding: %{}}}
+      command = %Command{module: Command.Move, args: {:unlock, "north"}}
+      :ok = Command.run(command, state)
+
+      assert Door.closed?(room_exit)
+      refute DoorLock.locked?(room_exit)
+
+      assert_socket_echo "you unlocked the north door"
+    end
+
+    test "can be opened with the key", %{state: state, room_exit: room_exit} do
+      state = %{state | save: %{state.save | room_id: 1, items: [item_instance(1)], wielding: %{}}}
+      command = %Command{module: Command.Move, args: {:open, "north"}}
+      :ok = Command.run(command, state)
+
+      refute Door.closed?(room_exit)
+      refute DoorLock.locked?(room_exit)
+
+      assert_socket_echo "you unlocked the door"
+    end
+  end
+
   describe "cannot leave with a cooldown active" do
     test "you're stuck", %{state: state} do
       room_exit = %Exit{id: 10, direction: "north", start_id: 1, finish_id: 2, has_door: false}
@@ -230,6 +308,27 @@ defmodule Game.Command.MoveTest do
       :ok = Move.run({:move, "north"}, state)
 
       assert_socket_echo "cannot move"
+    end
+  end
+
+  describe "maybe_unlock_door" do
+    test "can unlock locked door", %{state: state} do
+      start_and_clear_items()
+      insert_item(%{id: 1, name: "Key", keywords: []})
+      room_exit = %Exit{id: 10, has_door: true, has_lock: true, lock_key_id: 1, door_id: 10, direction: "north", start_id: 1, finish_id: 2}
+      start_room(%Game.Environment.State.Room{id: 1, name: "", description: "", exits: [room_exit], players: [], shops: []})
+
+      Door.load(room_exit)
+      Door.set(room_exit, "closed")
+
+      DoorLock.load(room_exit)
+      DoorLock.set(room_exit, "locked")
+
+      state = %{state | save: %{state.save | room_id: 1, items: [item_instance(1)], wielding: %{}}}
+
+      {:ok, _} = Move.maybe_unlock_door(state, room_exit)
+
+      assert DoorLock.unlocked?(room_exit)
     end
   end
 end

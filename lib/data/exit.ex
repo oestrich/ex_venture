@@ -6,6 +6,7 @@ defmodule Data.Exit do
   use Data.Schema
 
   alias Data.Proficiency
+  alias Data.Item
   alias Data.Room
   alias Data.Zone
 
@@ -28,6 +29,7 @@ defmodule Data.Exit do
     field(:direction, :string)
     field(:has_door, :boolean, default: false)
     field(:door_id, Ecto.UUID)
+    field(:has_lock, :boolean, default: false)
 
     field(:start_id, :string, virtual: true)
     field(:finish_id, :string, virtual: true)
@@ -42,6 +44,8 @@ defmodule Data.Exit do
 
     belongs_to(:finish_room, Room)
     belongs_to(:finish_zone, Zone)
+
+    belongs_to(:lock_key, Item)
 
     timestamps()
   end
@@ -58,6 +62,8 @@ defmodule Data.Exit do
       :direction,
       :has_door,
       :door_id,
+      :has_lock,
+      :lock_key_id,
       :start_room_id,
       :finish_room_id,
       :start_overworld_id,

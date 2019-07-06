@@ -8,6 +8,7 @@ defmodule Game.Format.Rooms do
   alias Data.Exit
   alias Data.Room
   alias Game.Door
+  alias Game.DoorLock
   alias Game.Format
   alias Game.Format.NPCs, as: FormatNPCs
   alias Game.Format.Proficiencies, as: FormatProficiencies
@@ -168,8 +169,18 @@ defmodule Game.Format.Rooms do
   defp door_state(room_exit) do
     case room_exit.has_door do
       true ->
+        door_state = if Door.closed?(room_exit.door_id) do
+          if room_exit.has_lock && DoorLock.locked?(room_exit.door_id) do
+            "locked"
+          else
+            "closed"
+          end
+        else
+          "open"
+        end
+
         context()
-        |> assign(:door_state, Door.get(room_exit.door_id))
+        |> assign(:door_state, door_state)
         |> Format.template("([door_state])")
 
       false ->

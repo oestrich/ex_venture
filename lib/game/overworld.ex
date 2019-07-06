@@ -82,6 +82,7 @@ defmodule Game.Overworld do
 
           %Exit{
             has_door: false,
+            has_lock: false,
             requirements: [],
             id: direction.start_id,
             direction: direction.direction,

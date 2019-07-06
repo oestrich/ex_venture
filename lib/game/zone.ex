@@ -10,6 +10,7 @@ defmodule Game.Zone do
   use GenServer
 
   alias Game.Door
+  alias Game.DoorLock
   alias Game.Map, as: GameMap
   alias Game.NPC
   alias Game.Overworld
@@ -266,6 +267,7 @@ defmodule Game.Zone do
   def handle_cast({:room_online, room, room_pid}, state) do
     Process.link(room_pid)
     Enum.each(room.exits, &Door.maybe_load/1)
+    Enum.each(room.exits, &DoorLock.maybe_load/1)
 
     state =
       state
