@@ -1,11 +1,8 @@
 # Admin Panel
 
-The admin panel is available at `/admin`, you must be flagged as an admin to view anything in it. You can sign in via the regular sign in form or the admin specific form. You can make your user an admin by doing the following in an IEx console:
+The admin panel is available at `/admin`, you must be flagged as an admin to view anything in it. After the initial setup, you have a default admin user. Login with `admin` as the username and `password` as the password.
 
-```elixir
-user = Data.Repo.get_by(Data.User, name: "yourname")
-user |> Data.User.changeset(%{flags: ["admin"]}) |> Data.Repo.update()
-```
+You can then flag other users as an admin after creating them through the browser.
 
 ## Dashboard
 
