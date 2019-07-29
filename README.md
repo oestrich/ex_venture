@@ -68,7 +68,7 @@ If you are running an ExVenture MUD and want to get on this list, let us know on
 ## Requirements
 
 - PostgreSQL 10
-- Elixir 1.7.2
+- Elixir 1.8.0
 - Erlang 21.0.5
 - node.js 8.6
 
