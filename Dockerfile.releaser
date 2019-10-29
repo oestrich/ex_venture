@@ -1,4 +1,4 @@
-FROM elixir:1.7 as builder
+FROM elixir:1.9 as builder
 
 RUN mix local.rebar --force && \
     mix local.hex --force
@@ -30,4 +30,6 @@ COPY --from=frontend /priv/static /app/priv/static
 COPY . /app/
 RUN mix deps.clean mime --build && mix deps.compile mime && \
   mix phx.digest
-RUN mix release --env=prod
+RUN mix release && \
+  cd _build/prod/rel/ex_venture/ && \
+  tar czf /opt/ex_venture.tar.gz .

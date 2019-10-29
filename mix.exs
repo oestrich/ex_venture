@@ -12,6 +12,7 @@ defmodule ExVenture.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       deps: deps(),
       aliases: aliases(),
+      releases: releases(),
       source_url: "https://github.com/oestrich/ex_venture",
       docs: [
         main: "readme",
@@ -91,6 +92,18 @@ defmodule ExVenture.Mixfile do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.migrate.reset": ["ecto.drop", "ecto.create", "ecto.migrate"]
+    ]
+  end
+
+  defp releases() do
+    [
+      ex_venture: [
+        include_executables_for: [:unix],
+        applications: [
+          runtime_tools: :permanent
+        ],
+        config_providers: [{ExVenture.ConfigProvider, "/etc/exventure.config.exs"}]
+      ]
     ]
   end
 end
