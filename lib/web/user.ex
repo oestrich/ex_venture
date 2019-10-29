@@ -307,17 +307,17 @@ defmodule Web.User do
   end
 
   defp _find_and_validate(nil, _password) do
-    Comeonin.Bcrypt.dummy_checkpw()
+    Bcrypt.no_user_verify()
     {:error, :invalid}
   end
 
   defp _find_and_validate(%{password_hash: nil}, _password) do
-    Comeonin.Bcrypt.dummy_checkpw()
+    Bcrypt.no_user_verify()
     {:error, :invalid}
   end
 
   defp _find_and_validate(user, password) do
-    case Comeonin.Bcrypt.checkpw(password, user.password_hash) do
+    case Bcrypt.verify_pass(password, user.password_hash) do
       true ->
         user
 
