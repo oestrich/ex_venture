@@ -129,6 +129,12 @@ defmodule Data.Effect do
   def dump(stats) when is_map(stats), do: {:ok, Map.delete(stats, :__struct__)}
   def dump(_), do: :error
 
+  @impl true
+  def embed_as(_), do: :self
+
+  @impl true
+  def equal?(term1, term2), do: term1 == term2
+
   @doc """
   Get a starting effect, to fill out in the web interface. Just the structure,
   the values won't mean anyhting.

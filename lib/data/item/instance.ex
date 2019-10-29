@@ -36,4 +36,10 @@ defmodule Data.Item.Instance do
   @impl Ecto.Type
   def dump(instance) when is_map(instance), do: {:ok, Map.delete(instance, :__struct__)}
   def dump(_), do: :error
+
+  @impl true
+  def embed_as(_), do: :self
+
+  @impl true
+  def equal?(term1, term2), do: term1 == term2
 end

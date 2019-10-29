@@ -43,6 +43,12 @@ defmodule Data.Room.Feature do
   def dump(feature) when is_map(feature), do: {:ok, Map.delete(feature, :__struct__)}
   def dump(_), do: :error
 
+  @impl true
+  def embed_as(_), do: :self
+
+  @impl true
+  def equal?(term1, term2), do: term1 == term2
+
   def validate_features(changeset) do
     case get_field(changeset, :features) do
       nil ->

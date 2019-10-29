@@ -68,6 +68,12 @@ defmodule Data.Script.Line do
 
   def dump(_), do: :error
 
+  @impl true
+  def embed_as(_), do: :self
+
+  @impl true
+  def equal?(term1, term2), do: term1 == term2
+
   @doc """
   Validate a line
 

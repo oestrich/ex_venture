@@ -87,7 +87,7 @@ defmodule Web.NPCChannel do
     case NPC.control(id) do
       :ok ->
         Monitor.monitor(self(), id)
-        :telemetry.execute([:exventure, :admin, :npc, :control], 1)
+        :telemetry.execute([:exventure, :admin, :npc, :control], %{count: 1})
 
         {:ok, socket}
 
@@ -97,13 +97,13 @@ defmodule Web.NPCChannel do
   end
 
   def handle_in("say", %{"message" => message}, socket) do
-    :telemetry.execute([:exventure, :admin, :npc, :control, :action], 1, %{action: "say"})
+    :telemetry.execute([:exventure, :admin, :npc, :control, :action], %{count: 1}, %{action: "say"})
     NPC.say(socket.assigns.npc_id, message)
     {:noreply, socket}
   end
 
   def handle_in("emote", %{"message" => message}, socket) do
-    :telemetry.execute([:exventure, :admin, :npc, :control, :action], 1, %{action: "emote"})
+    :telemetry.execute([:exventure, :admin, :npc, :control, :action], %{count: 1}, %{action: "emote"})
     NPC.emote(socket.assigns.npc_id, message)
     {:noreply, socket}
   end

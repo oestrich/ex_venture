@@ -16,7 +16,7 @@ defmodule Web.CharacterChannel do
       |> assign(:character_id, id)
 
     Logger.info("Admin (#{user.id}) is watching character (#{id})")
-    :telemetry.execute([:exventure, :admin, :user, :watch], 1)
+    :telemetry.execute([:exventure, :admin, :user, :watch], %{count: 1})
 
     {:ok, socket}
   end
