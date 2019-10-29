@@ -27,8 +27,6 @@ config :ex_venture, Web.Endpoint,
   render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]
 
-config :distillery, no_warn_missing: [:elixir_make]
-
 config :prometheus, Metrics.PipelineInstrumenter,
   labels: [:status_class, :method, :host, :scheme],
   duration_buckets: [
