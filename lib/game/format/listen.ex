@@ -24,9 +24,11 @@ defmodule Game.Format.Listen do
     String.replace(feature.listen, feature.key, "{white}#{feature.key}{/white}")
   end
 
-  def npc_listen(npc) do
+  def npc_listen(npc = %{extra: %{status_listen: listen}}) when listen != nil do
     context()
     |> assign(:name, Format.npc_name(npc))
     |> Format.template(npc.extra.status_listen)
   end
+
+  def npc_listen(_), do: ""
 end
