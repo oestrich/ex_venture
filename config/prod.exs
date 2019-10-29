@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 version = System.get_env("SHA") || "no sha"
 config :ex_venture, version: String.trim(version)

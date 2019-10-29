@@ -48,7 +48,7 @@ sudo -u postgres createuser -P --superuser `whoami`
 Set up a `config/dev.local.exs` file. This does not exist so you will need to make it. Place the following inside of it, change the username and password to match what you picked above. The username will be your local username, type `whoami` to see it.
 
 ```elixir
-use Mix.Config
+import Config
 
 config :ex_venture, Data.Repo,
   database: "ex_venture_dev",

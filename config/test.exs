@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 #
 # Don't forget to update .travis/test.exs!

@@ -5,7 +5,7 @@
 Before you generate a production release, you need to set up your `config/prod.secret.exs` file
 
 ```elixir
-use Mix.Config
+import Config
 
 config :ex_venture, Data.Repo,
   adapter: Ecto.Adapters.Postgres,

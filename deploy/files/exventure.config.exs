@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :ex_venture, Data.Repo,
   adapter: Ecto.Adapters.Postgres,

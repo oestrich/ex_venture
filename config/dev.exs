@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :ex_venture, Data.Repo,
   database: "ex_venture_dev",
