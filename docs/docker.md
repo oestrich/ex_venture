@@ -55,8 +55,8 @@ docker-compose up -d postgres
 Now run two of ExVenture's distillery tasks to perform Database Migrations and seed the database with game content:
 
 ```bash
-docker-compose run --rm ex_venture migrate
-docker-compose run --rm ex_venture seed
+docker-compose run --rm ex_venture eval "ExVenture.ReleaseTasks.migrate()"
+docker-compose run --rm ex_venture eval "ExVenture.ReleaseTasks.seed()"
 ```
 
 ### Start The Game

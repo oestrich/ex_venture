@@ -1,4 +1,4 @@
-FROM elixir:1.8.0-alpine as builder
+FROM grapevinehaus/elixir:1.9.4-alpine-1 as builder
 
 # The nuclear approach:
 # RUN apk add --no-cache alpine-sdk
@@ -33,22 +33,21 @@ RUN npm run deploy
 FROM builder as releaser
 COPY --from=frontend /priv/static /app/priv/static
 COPY . /app/
-RUN mix phx.digest
-ARG APP_VERSION=0.24.0
-RUN mix deps.clean mime --build && mix deps.compile mime && \
-  mix release --env=prod --no-tar
+RUN mix deps.clean mime --build && \
+  mix deps.compile mime && \
+  mix deps.get && \
+  mix phx.digest && \
+  mix release
 
-FROM alpine:3.8
-RUN apk add -U bash libssl1.0
+FROM alpine:3.11
+RUN apk add -U bash libssl1.1
 WORKDIR /app
 COPY --from=releaser /app/_build/prod/rel/ex_venture /app/
 COPY config/prod.docker.exs /etc/exventure.config.exs
-
-ENV MIX_ENV=prod
 
 EXPOSE 4000 5555 5556
 
 VOLUME /var/log/ex_venture/
 
 ENTRYPOINT ["bin/ex_venture"]
-CMD ["foreground"]
+CMD ["start"]
