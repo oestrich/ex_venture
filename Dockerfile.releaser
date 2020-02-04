@@ -1,4 +1,4 @@
-FROM elixir:1.9 as builder
+FROM grapevinehaus/elixir:1.9.4-1 as builder
 
 RUN mix local.rebar --force && \
     mix local.hex --force
