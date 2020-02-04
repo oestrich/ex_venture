@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "admin-lte": "^2.4.8",
-    "bootstrap-sass": "^3.3.7",
+    "bootstrap-sass": "^3.4.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.4.0",
     "phoenix": "file:../deps/phoenix",
