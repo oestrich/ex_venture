@@ -49,15 +49,20 @@ defmodule Game.Socials do
         |> Enum.map(&_fetch_from_cache(cache, &1))
         |> Enum.reject(&is_nil/1)
 
-      {:ok, socials}
+      socials
     end)
   end
 
   defp _fetch_from_cache(cache, key) do
     case Cachex.get(cache, key) do
-      {:ok, nil} -> nil
-      {:ok, social} -> social
-      _ -> nil
+      {:ok, nil} ->
+        nil
+
+      {:ok, social} ->
+        social
+
+      _ ->
+        nil
     end
   end
 

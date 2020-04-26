@@ -75,8 +75,11 @@ defmodule Game.Command.Socials do
       |> String.trim()
 
     case command do
-      "" -> {social.command}
-      command -> {social.command, command}
+      "" ->
+        {social.command}
+
+      command ->
+        {social.command, command}
     end
   end
 

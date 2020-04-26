@@ -51,7 +51,7 @@ defmodule Game.Channels do
         |> Enum.map(&_fetch_from_cache(cache, &1))
         |> Enum.reject(&is_nil/1)
 
-      {:ok, channels}
+      channels
     end)
   end
 
