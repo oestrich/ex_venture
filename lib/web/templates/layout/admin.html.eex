@@ -254,7 +254,7 @@
           </section>
         <% end %>
 
-        <%= render @view_module, @view_template, assigns %>
+        <%= @inner_content %>
       </div>
 
       <footer class="main-footer">

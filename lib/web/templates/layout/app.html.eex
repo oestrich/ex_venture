@@ -61,7 +61,7 @@ window.gameConfig = <%= raw(Poison.encode!(game_config(@current_character))) %>
           </div>
         <% end %>
 
-        <%= render @view_module, @view_template, assigns %>
+        <%= @inner_content %>
       </div>
     </main>
 

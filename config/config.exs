@@ -25,7 +25,7 @@ config :ex_venture, Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "7mps3fp2M1dk3Cnd8Wu/91TdGWhzrh3PC3naZcn/umPyZabQQL2Zq8yysm9WMkc3",
   render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: Web.PubSub
 
 config :prometheus, Metrics.PipelineInstrumenter,
   labels: [:status_class, :method, :host, :scheme],
@@ -68,6 +68,8 @@ config :phoenix, :format_encoders,
   mason: Poison,
   siren: Poison,
   jsonapi: Poison
+
+config :phoenix, :json_library, Jason
 
 config :ueberauth, Ueberauth,
   providers: [

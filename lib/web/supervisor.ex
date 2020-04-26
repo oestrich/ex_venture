@@ -12,12 +12,13 @@ defmodule Web.Supervisor do
 
   def init(_) do
     children = [
-      supervisor(Web.Endpoint, []),
-      worker(Web.NPCChannel.Monitor, []),
-      worker(Web.TelnetChannel.Monitor, []),
+      {Phoenix.PubSub, [name: Web.PubSub, adapter: Phoenix.PubSub.PG2]},
+      {Web.Endpoint, []},
+      {Web.NPCChannel.Monitor, []},
+      {Web.TelnetChannel.Monitor, []},
       worker(Cachex, [:web, []], id: :web_cache)
     ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 end

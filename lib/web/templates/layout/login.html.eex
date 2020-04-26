@@ -17,7 +17,8 @@
         <%= link(Config.game_name(), to: dashboard_path(@conn, :index)) %>
       </div>
 
-      <%= render @view_module, @view_template, assigns %>
+      <%= @inner_content %>
+
       <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
     </div>
   </body>

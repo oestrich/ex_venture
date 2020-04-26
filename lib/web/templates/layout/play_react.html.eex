@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="<%= color_css_path(@conn, client: true) %>">
   </head>
   <body id="body" data-character-token="<%= @conn |> character_token() %>">
-    <%= render @view_module, @view_template, assigns %>
+    <%= @inner_content %>
     <script src="<%= static_path(@conn, "/js/play_react.js") %>"></script>
   </body>
 </html>
