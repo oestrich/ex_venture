@@ -1,0 +1,92 @@
+<div class="bg-gray-200 p-8 rounded">
+  <div class="flex flex-row">
+    <div class="w-1/2 m-4">
+      <h1 class="text-xl text-gray-900 mb-4">Update Your Profile</h1>
+
+      <%= form_for(@changeset, Routes.profile_path(@conn, :update), [method: :put, multipart: true, class: "form"], fn f -> %>
+        <div class="md:flex md:items-center mb-6">
+          <div class="md:w-1/3">
+            <%= label(f, :email, class: "label") %>
+          </div>
+          <div class="md:w-2/3">
+            <%= text_input(f, :email, class: "input") %>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center mb-6">
+          <div class="md:w-1/3">
+            <%= label(f, :first_name, class: "label") %>
+          </div>
+          <div class="md:w-2/3">
+            <%= text_input(f, :first_name, class: "input") %>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center mb-6">
+          <div class="md:w-1/3">
+            <%= label(f, :last_name, class: "label") %>
+          </div>
+          <div class="md:w-2/3">
+            <%= text_input(f, :last_name, class: "input") %>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center mb-6">
+          <div class="md:w-1/3">
+            <%= label(f, :avatar, class: "label") %>
+          </div>
+          <div class="md:w-2/3">
+            <%= file_input(f, :avatar, class: "input") %>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center">
+          <div class="md:w-1/3"></div>
+          <div class="md:w-2/3">
+            <%= submit("Update", class: "btn-primary") %>
+          </div>
+        </div>
+      <% end) %>
+    </div>
+
+    <div class="w-1/2 m-4">
+      <h1 class="text-xl text-gray-900 mb-4">Change your password</h1>
+
+      <%= form_for(@changeset, Routes.profile_path(@conn, :update), [method: :put, class: "form"], fn f -> %>
+        <div class="md:flex md:items-center mb-6">
+          <div class="md:w-1/3">
+            <%= label(f, :current_password, "Current", class: "label") %>
+          </div>
+          <div class="md:w-2/3">
+            <%= text_input(f, :current_password, type: "password", class: "input") %>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center mb-6">
+          <div class="md:w-1/3">
+            <%= label(f, :password, class: "label") %>
+          </div>
+          <div class="md:w-2/3">
+            <%= text_input(f, :password, type: "password", class: "input") %>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center mb-6">
+          <div class="md:w-1/3">
+            <%= label(f, :password_confirmation, "Confirmation", class: "label") %>
+          </div>
+          <div class="md:w-2/3">
+            <%= text_input(f, :password_confirmation, type: "password", class: "input") %>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center">
+          <div class="md:w-1/3"></div>
+          <div class="md:w-2/3">
+            <%= submit("Update", class: "btn-primary") %>
+          </div>
+        </div>
+      <% end) %>
+    </div>
+  </div>
+</div>

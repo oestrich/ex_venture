@@ -1,0 +1,7 @@
+{
+  "priv/repo/migrations": { "type": "migration" },
+  "lib/*.ex": { "alternate": "test/{}_test.exs" },
+  "test/*_test.exs": { "alternate": "lib/{}.ex" },
+  "assets/js/*.js": { "alternate": "assets/js/{}.test.js" },
+  "assets/js/*.test.js": { "alternate": "assets/js/{}.js" }
+}

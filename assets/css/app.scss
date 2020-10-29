@@ -1,0 +1,35 @@
+/* This file is for your main application css. */
+
+@tailwind base;
+
+@tailwind components;
+
+.btn-primary {
+  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+}
+
+.btn-primary:focus {
+  @apply outline-none shadow-outline;
+}
+
+.btn-primary:hover {
+  @apply bg-blue-700;
+}
+
+.form {
+  @apply bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4;
+}
+
+.label {
+  @apply block text-gray-700 text-sm font-bold mb-2;
+}
+
+.input {
+  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+}
+
+.input:focus {
+  @apply outline-none shadow-outline;
+}
+
+@tailwind utilities;

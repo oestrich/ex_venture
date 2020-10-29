@@ -1,0 +1,62 @@
+---
+kind: pipeline
+name: elixir
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
+  image: elixir:1.9
+  environment:
+    MIX_ENV: test
+  volumes:
+  - name: mix
+    path: /root/.mix
+  commands:
+  - mix local.rebar --force
+  - mix local.hex --force
+  - mix deps.get
+  - mix compile --force --warnings-as-errors
+
+- name: lint
+  image: elixir:1.9
+  environment:
+    MIX_ENV: test
+  volumes:
+  - name: mix
+    path: /root/.mix
+  commands:
+  - mix format --check-formatted
+  - mix credo --all --format=oneline
+
+- name: test
+  image: elixir:1.9
+  environment:
+    MIX_ENV: test
+  volumes:
+  - name: mix
+    path: /root/.mix
+  commands:
+  - mv config/test.drone.exs config/test.extra.exs
+  - mix ecto.migrate
+  - mix test
+
+trigger:
+  event:
+  - pull_request
+
+services:
+- name: database
+  image: postgres:12
+  environment:
+    POSTGRES_DB: stein_example_test
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+  ports:
+  - 5432
+
+volumes:
+- name: mix
+  temp: {}

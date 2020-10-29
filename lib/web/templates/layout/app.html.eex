@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><%= gettext("ExVenture") %></title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+
+    <meta property="og:site_name" content="<%= gettext("ExVenture") %>" />
+
+    <%= if Map.has_key?(assigns, :open_graph_title) do %>
+      <meta property="og:title" content="<%= @open_graph_title %>" />
+    <% end %>
+
+    <%= if Map.has_key?(assigns, :open_graph_description) do %>
+      <meta property="og:description" content="<%= @open_graph_description %>" />
+    <% end %>
+
+    <%= if Map.has_key?(assigns, :open_graph_url) do %>
+      <meta property="og:url" content="<%= @open_graph_url %>" />
+    <% end %>
+
+    <meta name="twitter:card" content="summary" />
+  </head>
+  <body class="bg-gray-300 font-sans leading-normal tracking-normal">
+    <nav class="bg-blue-600 p-2 mt-0 fixed w-full z-10 top-0">
+      <div class="container mx-auto flex flex-wrap items-center">
+        <div class="flex w-full md:w-1/2 justify-center md:justify-start text-white font-extrabold">
+          <%= link(to: Routes.page_path(@conn, :index), class: "text-white no-underline hover:text-white hover:no-underline") do %>
+            <span class="text-2xl pl-2"><%= gettext("ExVenture") %></span>
+          <% end %>
+        </div>
+
+        <div class="flex w-full content-center justify-between md:w-1/2 md:justify-end">
+          <ul class="list-reset flex justify-between flex-1 md:flex-none items-center">
+            <%= if Map.has_key?(assigns, :current_user) do %>
+              <li class="mr-3">
+                <%= link("Profile", to: Routes.profile_path(@conn, :show), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+              </li>
+              <li class="mr-3">
+                <%= link("Sign Out", to: Routes.session_path(@conn, :delete), method: :delete, class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+              </li>
+            <% else %>
+              <li class="mr-3">
+                <%= link("Register", to: Routes.registration_path(@conn, :new), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+              </li>
+              <li class="mr-3">
+                <%= link("Sign In", to: Routes.session_path(@conn, :new), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mx-auto mt-24 md:mt-16 h-screen">
+      <%= if get_flash(@conn, :info) do %>
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <strong class="block sm:inline"><%= get_flash(@conn, :info) %></strong>
+        </div>
+      <% end %>
+
+      <%= if get_flash(@conn, :error) do %>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <strong class="block sm:inline"><%= get_flash(@conn, :error) %></strong>
+        </div>
+      <% end %>
+
+      <%= @inner_content %>
+    </div>
+
+    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

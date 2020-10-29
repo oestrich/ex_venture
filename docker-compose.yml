@@ -1,0 +1,26 @@
+# https://docs.docker.com/compose/compose-file/
+version: '3.6'
+services:
+  app:
+    build: .
+    environment:
+      DATABASE_URL: "postgesql://stein:password@postgres/ex_venture"
+      HOST: "example.com"
+      PORT: 4000
+      POOL_SIZE: 5
+    depends_on:
+      - postgres
+    ports:
+      - 4000:4000
+
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: ex_venture
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: stein
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data: {}

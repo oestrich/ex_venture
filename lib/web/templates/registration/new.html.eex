@@ -1,0 +1,59 @@
+<h1 class="w-full text-center text-white text-2xl pb-8">Register for <%= gettext("ExVenture") %></h1>
+
+<div class="flex justify-center w-full flex-wrap">
+  <div class="md:w-1/2">
+    <%= form_for(@changeset, Routes.registration_path(@conn, :create), [multipart: true, class: "form"], fn f -> %>
+      <div class="md:flex md:items-center mb-6">
+        <div class="md:w-1/3">
+          <%= label(f, :email, class: "label") %>
+        </div>
+        <div class="md:w-2/3">
+          <%= text_input(f, :email, type: :email, class: "input") %>
+        </div>
+      </div>
+
+      <div class="md:flex md:items-center mb-6">
+        <div class="md:w-1/3">
+          <%= label(f, :first_name, class: "label") %>
+        </div>
+        <div class="md:w-2/3">
+          <%= text_input(f, :first_name, class: "input") %>
+        </div>
+      </div>
+
+      <div class="md:flex md:items-center mb-6">
+        <div class="md:w-1/3">
+          <%= label(f, :last_name, class: "label") %>
+        </div>
+        <div class="md:w-2/3">
+          <%= text_input(f, :last_name, class: "input") %>
+        </div>
+      </div>
+
+      <div class="md:flex md:items-center mb-6">
+        <div class="md:w-1/3">
+          <%= label(f, :password, class: "label") %>
+        </div>
+        <div class="md:w-2/3">
+          <%= text_input(f, :password, type: "password", class: "input") %>
+        </div>
+      </div>
+
+      <div class="md:flex md:items-center mb-6">
+        <div class="md:w-1/3">
+          <%= label(f, :password_confirmation, class: "label") %>
+        </div>
+        <div class="md:w-2/3">
+          <%= text_input(f, :password_confirmation, type: "password", class: "input") %>
+        </div>
+      </div>
+
+      <div class="md:flex md:items-center">
+        <div class="md:w-1/3"></div>
+        <div class="md:w-2/3">
+          <%= submit("Register", class: "btn-primary") %>
+        </div>
+      </div>
+    <% end) %>
+  </div>
+</div>

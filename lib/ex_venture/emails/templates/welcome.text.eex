@@ -1,0 +1,5 @@
+Welcome to <%= gettext("ExVenture") %>!
+
+Please verify your email, copy the link below.
+
+<%= @confirm_url %>

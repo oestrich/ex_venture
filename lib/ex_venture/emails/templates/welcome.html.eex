@@ -1,0 +1,5 @@
+<h3>Welcome to <%= gettext("ExVenture") %></h3>
+
+<p>Please verify your email, head on over to <%= link(gettext("ExVenture"), to: @confirm_url) %> or copy the link below.</p>
+
+<code><%= @confirm_url %></code>
