@@ -32,4 +32,18 @@
   @apply outline-none shadow-outline;
 }
 
+.admin {
+  nav a {
+    @apply block px-2 py-3 text-white bg-gray-700 border-l-4 border-gray-700;
+  }
+
+  nav a:hover {
+    @apply bg-gray-800 border-gray-800;
+  }
+
+  nav a.active {
+    @apply bg-gray-800 border-blue-300;
+  }
+}
+
 @tailwind utilities;

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><%= gettext("ExVenture") %></title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+
+    <meta property="og:site_name" content="<%= gettext("ExVenture") %>" />
+
+    <%= if Map.has_key?(assigns, :open_graph_title) do %>
+      <meta property="og:title" content="<%= @open_graph_title %>" />
+    <% end %>
+
+    <%= if Map.has_key?(assigns, :open_graph_description) do %>
+      <meta property="og:description" content="<%= @open_graph_description %>" />
+    <% end %>
+
+    <%= if Map.has_key?(assigns, :open_graph_url) do %>
+      <meta property="og:url" content="<%= @open_graph_url %>" />
+    <% end %>
+
+    <meta name="twitter:card" content="summary" />
+  </head>
+  <body class="bg-gray-100 admin">
+    <div class="md:w-full md:z-20 flex flex-row flex-wrap items-center bg-white p-5 border-b border-blue-300">
+      <div class="w-56 flex flex-row items-center">
+        <%= link("ExVenture", to: Routes.admin_dashboard_path(@conn, :index), class: "ml-1 flex-1 font-bold") %>
+      </div>
+
+      <div class="flex-grow flex justify-end">
+        <p><%= @current_user.email %></p>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row md:min-h-screen w-full">
+      <div class="flex flex-col w-full md:w-64 text-gray-700 bg-gray-800 border-r border-blue-300 flex-shrink-0">
+        <nav class="flex-grow md:block md:overflow-y-auto">
+          <%= link(to: Routes.admin_dashboard_path(@conn, :index), class: "active") do %>
+            <i class="fas fa-tachometer-alt mr-4"></i> Dashboard
+          <% end %>
+        </nav>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

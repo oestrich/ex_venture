@@ -14,6 +14,11 @@ defmodule Web.Router do
     plug Web.Plugs.EnsureUser
   end
 
+  pipeline :admin do
+    plug :put_layout, {Web.LayoutView, "admin.html"}
+    plug Web.Plugs.EnsureAdmin
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -48,6 +53,12 @@ defmodule Web.Router do
     pipe_through([:browser, :logged_in])
 
     resources("/profile", ProfileController, singleton: true, only: [:show, :edit, :update])
+  end
+
+  scope "/admin", Web.Admin, as: :admin do
+    pipe_through([:browser, :logged_in, :admin])
+
+    get("/", DashboardController, :index)
   end
 
   if Mix.env() == :dev do

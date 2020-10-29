@@ -38,6 +38,11 @@
               <li class="mr-3">
                 <%= link("Profile", to: Routes.profile_path(@conn, :show), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
               </li>
+              <%= if admin?(@current_user) do %>
+                <li class="mr-3">
+                  <%= link("Admin", to: Routes.admin_dashboard_path(@conn, :index), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+                </li>
+              <% end %>
               <li class="mr-3">
                 <%= link("Sign Out", to: Routes.session_path(@conn, :delete), method: :delete, class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
               </li>

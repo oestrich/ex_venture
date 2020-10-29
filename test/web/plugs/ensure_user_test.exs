@@ -5,7 +5,7 @@ defmodule Web.Plugs.EnsureUserTest do
 
   describe "verifies the user is signed in" do
     test "user is present", %{conn: conn} do
-      user = TestHelpers.create_user()
+      {:ok, user} = TestHelpers.create_user()
 
       conn =
         conn

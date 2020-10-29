@@ -21,6 +21,11 @@ defmodule ExVenture.Users do
   def edit(user), do: Ecto.Changeset.change(user, %{})
 
   @doc """
+  Check if the user is an admin
+  """
+  def admin?(user), do: user.role == "admin"
+
+  @doc """
   Get a user by id
   """
   def get(id) do

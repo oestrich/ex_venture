@@ -12,6 +12,8 @@ defmodule ExVenture.Users.User do
   schema "users" do
     field(:token, Ecto.UUID)
 
+    field(:role, :string)
+
     field(:email, :string)
     field(:first_name, :string)
     field(:last_name, :string)
