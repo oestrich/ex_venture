@@ -4,10 +4,13 @@ services:
   app:
     build: .
     environment:
-      DATABASE_URL: "postgesql://stein:password@postgres/ex_venture"
+      DATABASE_URL: "postgesql://elixir:password@postgres/ex_venture"
       HOST: "example.com"
       PORT: 4000
       POOL_SIZE: 5
+      SECRET_KEY_BASE: "nSUzQ0L9DLDjAacQZKnG11NAZf+26wU75zVGKq4FxUgRRMeorJA7Os2giqvBINiN"
+      URL_PORT: 4000
+      URL_SCHEME: http
     depends_on:
       - postgres
     ports:
@@ -18,7 +21,7 @@ services:
     environment:
       POSTGRES_DB: ex_venture
       POSTGRES_PASSWORD: password
-      POSTGRES_USER: stein
+      POSTGRES_USER: elixir
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
