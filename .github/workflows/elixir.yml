@@ -1,0 +1,44 @@
+name: Elixir CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      # Label used to access the service container
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: ex_venture_test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-elixir@v1.0.0
+      with:
+        otp-version: "23.0.3"
+        elixir-version: "1.10.4"
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git build-essential
+    - name: Setup elixir
+      run: |
+        mix deps.get
+        mix compile
+      env:
+        MIX_ENV: test
+    - name: Verify application
+      run: |
+        mix format --check-formatted
+        mix compile --force --warnings-as-errors
+        mix credo
+        mix test
+      env:
+        MIX_ENV: test
