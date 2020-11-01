@@ -3,7 +3,7 @@ set -e
 
 rm -rf tmp/build
 mkdir -p tmp/build
-git archive --format=tar master | tar x -C tmp/build/
+git archive --format=tar kalevala | tar x -C tmp/build/
 cd tmp/build
 
 docker build -f Dockerfile.releaser -t ex_venture:releaser .
