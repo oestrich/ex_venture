@@ -1,0 +1,33 @@
+<div class="flex flex-row items-center h-12">
+  <h1 class="text-xl font-bold">Zones</h1>
+
+  <div class="flex-grow flex justify-end">
+    <%= link("New Zone", to: Routes.admin_zone_path(@conn, :new), class: "bg-purple-500 text-sm text-white font-bold rounded px-4 py-2") %>
+  </div>
+</div>
+
+<div class="border-t-2 border-purple-600 rounded mt-2">
+  <div class="border border-gray-200 p-2 bg-white">
+    <table class="table-auto w-full">
+      <thead>
+        <tr>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <%= Enum.map(@zones, fn zone -> %>
+          <tr>
+            <td class="border-t px-4 py-2">
+              <%= link(zone.name, to: Routes.admin_zone_path(@conn, :show, zone.id), class: "text-blue-400") %>
+            </td>
+            <td class="border-t px-4 py-2 flex justify-end">
+              <%= link("View", to: Routes.admin_zone_path(@conn, :show, zone.id), class: "text-xs bg-gray-200 border rounded px-3 py-1") %>
+            </td>
+          </tr>
+        <% end) %>
+      </tbody>
+    </table>
+  </div>
+</div>

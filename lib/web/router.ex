@@ -59,6 +59,8 @@ defmodule Web.Router do
     pipe_through([:browser, :logged_in, :admin])
 
     get("/", DashboardController, :index)
+
+    resources("/zones", ZoneController, except: [:delete])
   end
 
   if Mix.env() == :dev do

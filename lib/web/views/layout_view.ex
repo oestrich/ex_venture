@@ -6,4 +6,8 @@ defmodule Web.LayoutView do
   alias ExVenture.Users
 
   def admin?(user), do: Users.admin?(user)
+
+  def tab_active?(tab, tab), do: "active"
+
+  def tab_active?(_current_tab, _tab), do: ""
 end

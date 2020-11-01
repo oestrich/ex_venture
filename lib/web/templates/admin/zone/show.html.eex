@@ -1,0 +1,29 @@
+<div class="flex flex-row items-center h-12">
+  <h1 class="text-xl font-bold">
+    <%= link("Zones", to: Routes.admin_zone_path(@conn, :index), class: "text-blue-700") %> &raquo;
+    <%= @zone.name %>
+  </h1>
+
+  <div class="flex-grow flex justify-end">
+    <%= link("Edit Zone", to: Routes.admin_zone_path(@conn, :edit, @zone.id), class: "bg-purple-500 text-sm text-white font-bold rounded px-4 py-2") %>
+  </div>
+</div>
+
+<div class="border-t-2 border-purple-600 rounded mt-2">
+  <div class="border border-gray-200 p-2 bg-white">
+    <h2 class="text-lg">Attributes</h2>
+
+    <table class="table-auto w-full border-t mt-2">
+      <tbody>
+        <tr>
+          <th class="px-4 py-2">Name</th>
+          <td class="px-4 py-2"><%= @zone.name %></td>
+        </tr>
+        <tr>
+          <th class="border-t px-4 py-2">Description</th>
+          <td class="border-t px-4 py-2"><%= @zone.description %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

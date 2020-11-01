@@ -37,10 +37,17 @@
     <div class="flex flex-col md:flex-row md:min-h-screen w-full">
       <div class="flex flex-col w-full md:w-64 text-gray-700 bg-gray-800 border-r border-purple-400 flex-shrink-0">
         <nav class="flex-grow md:block md:overflow-y-auto">
-          <%= link(to: Routes.admin_dashboard_path(@conn, :index), class: "active") do %>
+          <%= link(to: Routes.admin_dashboard_path(@conn, :index), class: tab_active?(@active_tab, :dashboard)) do %>
             <i class="fas fa-tachometer-alt mr-4"></i> Dashboard
           <% end %>
+          <%= link(to: Routes.admin_zone_path(@conn, :index), class: tab_active?(@active_tab, :zones)) do %>
+            <i class="fas fa-flag mr-4"></i> Zones
+          <% end %>
         </nav>
+      </div>
+
+      <div class="w-full xl:w-1/2 xl:mx-auto m-4">
+        <%= @inner_content %>
       </div>
     </div>
 

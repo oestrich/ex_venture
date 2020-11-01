@@ -20,3 +20,24 @@
   admin
   |> Ecto.Changeset.change(%{role: "admin"})
   |> ExVenture.Repo.update()
+
+#
+# The World
+#
+
+{:ok, sammatti} =
+  ExVenture.Zones.create(%{
+    name: "Sammatti",
+    description: "The starter town."
+  })
+
+{:ok, _town_square} =
+  ExVenture.Rooms.create(sammatti, %{
+    name: "Town Square",
+    description: "A small town square.",
+    listen: "The town crier is telling the latest news.",
+    map_icon: "wooden-sign",
+    x: 0,
+    y: 0,
+    z: 0
+  })
