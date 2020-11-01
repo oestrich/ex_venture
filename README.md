@@ -3,6 +3,8 @@
 [![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)][discord]
 [![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/ericoestrich)
 
+<img src="https://raw.githubusercontent.com/oestrich/ex_venture/master/docs/images/exventure.png" alt="ExVenture Logo" width="200" />
+
 A text based MMO server written in Elixir.
 
 - [Support ExVenture on Patreon](https://www.patreon.com/ericoestrich)
