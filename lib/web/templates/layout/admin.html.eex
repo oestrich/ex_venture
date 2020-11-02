@@ -46,7 +46,7 @@
         </nav>
       </div>
 
-      <div class="w-full xxl:w-1/2 xxl:mx-auto xl:w-3/4 xl:mx-auto m-4">
+      <div class="w-full xxl:w-1/2 xxl:mx-auto xl:w-3/4 xl:mx-auto md:m-4 p-4">
         <%= @inner_content %>
       </div>
     </div>
