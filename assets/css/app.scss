@@ -103,13 +103,27 @@
 
   @screen md {
     .input-group {
-      @apply flex items-center;
+      @apply flex;
 
-      *:first-child {
+      &.error {
+        .label {
+          @apply text-red-700;
+        }
+
+        .input {
+          @apply border-red-700;
+        }
+
+        .help-block {
+          @apply text-red-700;
+        }
+      }
+
+      > *:first-child {
         @apply w-1/3;
       }
 
-      *:nth-child(2) {
+      > *:nth-child(2) {
         @apply w-2/3;
       }
     }

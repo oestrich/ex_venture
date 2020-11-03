@@ -7,6 +7,6 @@
 
 <div class="panel">
   <div class="panel-container">
-    <%= render("_form.html", changeset: @changeset, url: Routes.admin_zone_path(@conn, :new), submit: "Create") %>
+    <%= render("_form.html", changeset: @changeset, url: Routes.admin_zone_path(@conn, :create), submit: "Create") %>
   </div>
 </div>
