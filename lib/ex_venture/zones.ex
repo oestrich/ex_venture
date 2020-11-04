@@ -8,6 +8,7 @@ defmodule ExVenture.Zones.Zone do
   import Ecto.Changeset
 
   alias ExVenture.Rooms.Room
+  alias ExVenture.StagedChanges.StagedChange
 
   schema "zones" do
     field(:name, :string)
@@ -15,6 +16,8 @@ defmodule ExVenture.Zones.Zone do
 
     belongs_to(:graveyard, Room)
     has_many(:rooms, Room)
+
+    has_many(:staged_changes, {"zone_staged_changes", StagedChange}, foreign_key: :record_id)
 
     timestamps()
   end
@@ -39,7 +42,11 @@ defmodule ExVenture.Zones do
   CRUD Zones
   """
 
+  import Ecto.Query
+
   alias ExVenture.Repo
+  alias ExVenture.StagedChanges
+  alias ExVenture.StagedChanges.StagedChange
   alias ExVenture.Zones.Zone
 
   def new(), do: Ecto.Changeset.change(%Zone{}, %{})
@@ -52,7 +59,19 @@ defmodule ExVenture.Zones do
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
 
-    Repo.paginate(Zone, opts[:page], opts[:per])
+    Zone
+    |> preload(:staged_changes)
+    |> Repo.paginate(opts[:page], opts[:per])
+    |> staged_changes()
+  end
+
+  def staged_changes(%{page: zones, pagination: pagination}) do
+    zones = Enum.map(zones, &StagedChanges.apply/1)
+    %{page: zones, pagination: pagination}
+  end
+
+  def staged_changes(zones) do
+    Enum.map(zones, &StagedChanges.apply/1)
   end
 
   @doc """
@@ -64,6 +83,11 @@ defmodule ExVenture.Zones do
         {:error, :not_found}
 
       zone ->
+        zone =
+          zone
+          |> Repo.preload(:staged_changes)
+          |> StagedChanges.apply()
+
         {:ok, zone}
     end
   end
@@ -81,8 +105,37 @@ defmodule ExVenture.Zones do
   Update a zone
   """
   def update(zone, params) do
-    zone
-    |> Zone.update_changeset(params)
-    |> Repo.update()
+    result =
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:changeset, fn _repo, _changes ->
+        zone
+        |> Zone.update_changeset(params)
+        |> StagedChanges.apply_action(:update)
+      end)
+      |> Ecto.Multi.merge(fn %{changeset: changeset} ->
+        Enum.reduce(changeset.changes, Ecto.Multi.new(), fn {attribute, value}, multi ->
+          staged_change = Ecto.build_assoc(zone, :staged_changes)
+          changeset = StagedChange.create_changeset(staged_change, zone.id, attribute, value)
+
+          Ecto.Multi.insert(multi, {:staged_change, attribute}, changeset,
+            on_conflict: {:replace, [:value]},
+            conflict_target: [:record_id, :attribute]
+          )
+        end)
+      end)
+      |> Ecto.Multi.run(:zone, fn repo, %{changeset: changeset} ->
+        zone = repo.preload(changeset.data, :staged_changes, force: true)
+        zone = StagedChanges.apply(zone)
+        {:ok, zone}
+      end)
+      |> Repo.transaction()
+
+    case result do
+      {:ok, %{zone: zone}} ->
+        {:ok, zone}
+
+      {:error, :changeset, changeset, _changes} ->
+        {:error, changeset}
+    end
   end
 end
