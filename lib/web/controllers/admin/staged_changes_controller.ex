@@ -6,7 +6,7 @@ defmodule Web.Admin.StagedChangesController do
   def index(conn, _params) do
     conn
     |> assign(:active_tab, :staged_changes)
-    |> assign(:zone_changes, StagedChanges.zone_changes())
+    |> assign(:staged_changes, StagedChanges.changes())
     |> render("index.html")
   end
 

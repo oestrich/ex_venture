@@ -159,20 +159,17 @@ defmodule ExVenture.StagedChanges do
   Commit all of the staged changes to the structs
   """
   def commit() do
+    staged_change_schemas = [
+      ExVenture.Zones.Zone
+    ]
+
     result =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:zones, fn repo, _changes ->
-        zones =
-          ExVenture.Zones.Zone
-          |> join(:inner, [z], zsc in assoc(z, :staged_changes))
-          |> group_by([z, zsc], z.id)
-          |> preload(:staged_changes)
-          |> repo.all()
-
-        {:ok, zones}
-      end)
-      |> Ecto.Multi.merge(fn %{zones: zones} ->
-        commit_zones(zones)
+      |> fetch_structs(staged_change_schemas)
+      |> Ecto.Multi.merge(fn changes ->
+        Enum.reduce(changes, Ecto.Multi.new(), fn {_table, structs}, multi ->
+          commit_structs(multi, structs)
+        end)
       end)
       |> Repo.transaction()
 
@@ -185,35 +182,61 @@ defmodule ExVenture.StagedChanges do
     end
   end
 
-  defp commit_zones(zones) do
-    Enum.reduce(zones, Ecto.Multi.new(), fn zone, multi ->
-      changeset = Ecto.Changeset.change(zone)
+  defp fetch_structs(multi, schemas) do
+    Enum.reduce(schemas, multi, fn schema, multi ->
+      Ecto.Multi.run(multi, schema, fn repo, _changes ->
+        structs =
+          schema
+          |> join(:inner, [s], sc in assoc(s, :staged_changes))
+          |> group_by([s, sc], s.id)
+          |> preload(:staged_changes)
+          |> repo.all()
+
+        {:ok, structs}
+      end)
+    end)
+  end
+
+  defp commit_structs(multi, structs) do
+    Enum.reduce(structs, multi, fn struct, multi ->
+      changeset = Ecto.Changeset.change(struct)
 
       changeset =
-        Enum.reduce(zone.staged_changes, changeset, fn staged_change, changeset ->
+        Enum.reduce(struct.staged_changes, changeset, fn staged_change, changeset ->
           Ecto.Changeset.put_change(changeset, staged_change.attribute, staged_change.value)
         end)
 
+      tag = struct.__meta__.source
+
       multi
-      |> Ecto.Multi.update({:zone, zone.id}, changeset)
-      |> Ecto.Multi.delete_all({:staged_changes, zone.id}, Ecto.assoc(zone, :staged_changes))
+      |> Ecto.Multi.update({tag, struct.id}, changeset)
+      |> Ecto.Multi.delete_all({:delete, tag, struct.id}, Ecto.assoc(struct, :staged_changes))
     end)
   end
 
   @doc """
   Get all changes for all zones
   """
-  def zone_changes() do
-    zone_preloader = fn zone_ids ->
-      ExVenture.Zones.Zone
-      |> where([z], z.id in ^zone_ids)
-      |> Repo.all()
-    end
+  def changes() do
+    schemas = %{
+      "zone_staged_changes" => ExVenture.Zones.Zone
+    }
 
-    {"zone_staged_changes", StagedChange}
-    |> order_by([sc], asc: sc.struct_id, asc: sc.attribute)
-    |> preload(struct: ^zone_preloader)
-    |> Repo.all()
+    Enum.into(schemas, %{}, fn {table, schema} ->
+      preloader = fn struct_ids ->
+        schema
+        |> where([s], s.id in ^struct_ids)
+        |> Repo.all()
+      end
+
+      staged_changes =
+        {table, StagedChange}
+        |> order_by([sc], asc: sc.struct_id, asc: sc.attribute)
+        |> preload(struct: ^preloader)
+        |> Repo.all()
+
+      {schema, staged_changes}
+    end)
   end
 
   @doc """
