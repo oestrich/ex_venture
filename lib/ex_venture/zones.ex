@@ -59,17 +59,18 @@ defmodule ExVenture.Zones do
     opts = Enum.into(opts, %{})
 
     Zone
+    |> order_by([z], asc: z.name)
     |> preload(:staged_changes)
     |> Repo.paginate(opts[:page], opts[:per])
     |> staged_changes()
   end
 
-  def staged_changes(%{page: zones, pagination: pagination}) do
+  defp staged_changes(%{page: zones, pagination: pagination}) do
     zones = Enum.map(zones, &StagedChanges.apply/1)
     %{page: zones, pagination: pagination}
   end
 
-  def staged_changes(zones) do
+  defp staged_changes(zones) do
     Enum.map(zones, &StagedChanges.apply/1)
   end
 
@@ -103,30 +104,17 @@ defmodule ExVenture.Zones do
   @doc """
   Update a zone
   """
+  def update(%{live_at: nil} = zone, params) do
+    zone
+    |> Zone.update_changeset(params)
+    |> Repo.update()
+  end
+
   def update(zone, params) do
-    result =
-      Ecto.Multi.new()
-      |> Ecto.Multi.run(:changeset, fn _repo, _changes ->
-        zone
-        |> Zone.update_changeset(params)
-        |> StagedChanges.apply_action(:update)
-      end)
-      |> Ecto.Multi.merge(fn %{changeset: changeset} ->
-        StagedChanges.record_changeset(changeset)
-      end)
-      |> Ecto.Multi.run(:struct, fn repo, %{changeset: changeset} ->
-        struct = repo.preload(changeset.data, :staged_changes, force: true)
-        struct = StagedChanges.apply(struct)
-        {:ok, struct}
-      end)
-      |> Repo.transaction()
+    zone
+    |> Zone.update_changeset(params)
+    |> StagedChanges.record_changes()
+  end
 
-    case result do
-      {:ok, %{struct: zone}} ->
-        {:ok, zone}
-
-      {:error, :changeset, changeset, _changes} ->
-        {:error, changeset}
-    end
   end
 end

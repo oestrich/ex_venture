@@ -115,18 +115,38 @@ defmodule ExVenture.StagedChanges do
   @doc """
   Record changes to a struct in staged changes
   """
-  def record_changeset(changeset) do
-    struct = changeset.data
+  def record_changes(changeset) do
+    result =
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:changeset, fn _repo, _changes ->
+        apply_action(changeset, :update)
+      end)
+      |> Ecto.Multi.merge(fn %{changeset: changeset} ->
+        struct = changeset.data
 
-    Enum.reduce(changeset.changes, Ecto.Multi.new(), fn {attribute, value}, multi ->
-      staged_change = Ecto.build_assoc(struct, :staged_changes)
-      changeset = StagedChange.create_changeset(staged_change, struct.id, attribute, value)
+        Enum.reduce(changeset.changes, Ecto.Multi.new(), fn {attribute, value}, multi ->
+          staged_change = Ecto.build_assoc(struct, :staged_changes)
+          changeset = StagedChange.create_changeset(staged_change, struct.id, attribute, value)
 
-      Ecto.Multi.insert(multi, {:staged_change, attribute}, changeset,
-        on_conflict: {:replace, [:value]},
-        conflict_target: [:struct_id, :attribute]
-      )
-    end)
+          Ecto.Multi.insert(multi, {:staged_change, attribute}, changeset,
+            on_conflict: {:replace, [:value]},
+            conflict_target: [:struct_id, :attribute]
+          )
+        end)
+      end)
+      |> Ecto.Multi.run(:struct, fn repo, %{changeset: changeset} ->
+        struct = repo.preload(changeset.data, :staged_changes, force: true)
+        {:ok, struct}
+      end)
+      |> Repo.transaction()
+
+    case result do
+      {:ok, %{struct: struct}} ->
+        {:ok, struct}
+
+      {:error, :changeset, changeset, _changes} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
