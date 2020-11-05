@@ -72,7 +72,18 @@ defmodule Web.Admin.ZoneController do
     end
   end
 
-  def delete_changes(conn, %{"zone_id" => id}) do
+  def publish(conn, %{"id" => id}) do
+    {:ok, zone} = Zones.get(id)
+
+    case Zones.publish(zone) do
+      {:ok, zone} ->
+        conn
+        |> put_flash(:info, "Zone Published!")
+        |> redirect(to: Routes.admin_zone_path(conn, :show, zone.id))
+    end
+  end
+
+  def delete_changes(conn, %{"id" => id}) do
     {:ok, zone} = Zones.get(id)
 
     case StagedChanges.clear(zone) do

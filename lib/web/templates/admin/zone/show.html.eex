@@ -2,9 +2,15 @@
   <h1 class="text-xl font-bold">
     <%= link("Zones", to: Routes.admin_zone_path(@conn, :index)) %> &raquo;
     <%= @zone.name %>
+    <%= if is_nil(@zone.live_at) do %>
+      <span class="text-gray-600 italic">(Not Live)</span>
+    <% end %>
   </h1>
 
   <div class="actions">
+    <%= if is_nil(@zone.live_at) do %>
+      <%= link("Publish", to: Routes.admin_zone_path(@conn, :publish, @zone.id), method: :post, class: "text-sm btn-secondary") %>
+    <% end %>
     <%= if !Enum.empty?(@zone.staged_changes) do %>
       <%= link("Discard Changes", to: Routes.admin_zone_changes_path(@conn, :delete_changes, @zone.id), method: :delete, class: "text-sm btn-secondary") %>
     <% end %>

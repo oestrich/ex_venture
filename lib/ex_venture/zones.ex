@@ -11,6 +11,8 @@ defmodule ExVenture.Zones.Zone do
   alias ExVenture.StagedChanges.StagedChange
 
   schema "zones" do
+    field(:live_at, :utc_datetime)
+
     field(:name, :string)
     field(:description, :string)
 
@@ -34,6 +36,12 @@ defmodule ExVenture.Zones.Zone do
     |> cast(params, [:name, :description, :graveyard_id])
     |> validate_required([:name, :description])
     |> foreign_key_constraint(:graveyard_id)
+  end
+
+  def publish_changeset(struct) do
+    struct
+    |> change()
+    |> put_change(:live_at, DateTime.truncate(DateTime.utc_now(), :second))
   end
 end
 
@@ -116,5 +124,14 @@ defmodule ExVenture.Zones do
     |> StagedChanges.record_changes()
   end
 
+  @doc """
+  Publish the zone
+
+  When a zone is published, it will startup inside the game.
+  """
+  def publish(zone) do
+    zone
+    |> Zone.publish_changeset()
+    |> Repo.update()
   end
 end

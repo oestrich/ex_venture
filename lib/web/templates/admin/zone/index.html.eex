@@ -22,6 +22,9 @@
           <tr class="border-t">
             <td>
               <%= link(zone.name, to: Routes.admin_zone_path(@conn, :show, zone.id), class: "font-bold") %>
+              <%= if is_nil(zone.live_at) do %>
+                <span class="text-sm text-gray-600 italic">(Not Live)</span>
+              <% end %>
             </td>
             <td class="w-48 text-center">
               <%= if !Enum.empty?(zone.staged_changes) do %>
