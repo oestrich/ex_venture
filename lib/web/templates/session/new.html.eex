@@ -19,10 +19,10 @@
           <%= password_input(f, :password, class: "input") %>
         </div>
       </div>
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col md:flex-row items-center md:justify-between">
         <%= submit("Login", class: "btn-primary") %>
-        <%= link("Register", to: Routes.registration_path(@conn, :new), class: "inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800") %>
-        <%= link("Forgot Password?", to: Routes.registration_reset_path(@conn, :new), class: "inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800") %>
+        <%= link("Register", to: Routes.registration_path(@conn, :new), class: "text-sm btn-secondary mt-1 md:mt-0") %>
+        <%= link("Forgot Password?", to: Routes.registration_reset_path(@conn, :new), class: "text-sm btn-secondary mt-1 md:mt-0") %>
       </div>
     <% end) %>
   </div>

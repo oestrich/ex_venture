@@ -6,14 +6,26 @@
 
 .btn-primary {
   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+
+  &:focus {
+    @apply outline-none shadow-outline;
+  }
+
+  &:hover {
+    @apply bg-blue-700;
+  }
 }
 
-.btn-primary:focus {
-  @apply outline-none shadow-outline;
-}
+.btn-secondary {
+  @apply bg-gray-200 font-bold py-2 px-2 rounded text-center;
 
-.btn-primary:hover {
-  @apply bg-blue-700;
+  &:focus {
+    @apply outline-none shadow-outline;
+  }
+
+  &:hover {
+    @apply bg-gray-400;
+  }
 }
 
 .form {
@@ -34,7 +46,7 @@
 
 .admin {
   .btn-primary {
-    @apply bg-purple-600 text-white font-bold py-2 px-4 rounded;
+    @apply bg-purple-600 text-white font-bold py-2 px-2 rounded text-center ml-1;
 
     &:focus {
       @apply outline-none shadow-outline;
@@ -45,8 +57,18 @@
     }
   }
 
+  @screen md {
+    .btn-primary {
+      @apply px-4;
+    }
+
+    .btn-secondary {
+      @apply px-4;
+    }
+  }
+
   .btn-secondary {
-    @apply bg-gray-200 font-bold py-2 px-4 rounded;
+    @apply bg-gray-200 font-bold py-2 px-2 rounded text-center ml-1;
 
     &:focus {
       @apply outline-none shadow-outline;
@@ -78,7 +100,7 @@
   }
 
   .actions {
-    @apply flex-grow flex justify-end gap-1;
+    @apply flex-grow flex justify-end;
   }
 
   .panel {
