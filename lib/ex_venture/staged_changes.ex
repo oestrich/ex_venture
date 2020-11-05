@@ -222,7 +222,8 @@ defmodule ExVenture.StagedChanges do
       "zone_staged_changes" => ExVenture.Zones.Zone
     }
 
-    Enum.into(schemas, %{}, fn {table, schema} ->
+    schemas
+    |> Enum.map(fn {table, schema} ->
       preloader = fn struct_ids ->
         schema
         |> where([s], s.id in ^struct_ids)
@@ -237,6 +238,10 @@ defmodule ExVenture.StagedChanges do
 
       {schema, staged_changes}
     end)
+    |> Enum.reject(fn {_schema, staged_changes} ->
+      Enum.empty?(staged_changes)
+    end)
+    |> Enum.into(%{})
   end
 
   @doc """
