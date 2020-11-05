@@ -8,7 +8,13 @@
 
 <div class="panel">
   <div class="panel-container">
-    <h2 class="text-lg">Edit</h2>
+    <h2 class="text-lg">
+      Edit
+
+      <%= if !Enum.empty?(@zone.staged_changes) do %>
+        <span class="text-sm text-purple-700 italic">This includes staged changes</span>
+      <% end %>
+    </h2>
 
     <%= render("_form.html", changeset: @changeset, url: Routes.admin_zone_path(@conn, :update, @zone.id), submit: "Update") %>
   </div>

@@ -1,0 +1,43 @@
+<div class="page-header">
+  <h1 class="text-xl font-bold">Staged Changes</h1>
+
+  <div class="actions">
+    <%= link("Commit Changes", to: Routes.admin_staged_changes_path(@conn, :commit), method: :post, class: "btn-primary") %>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-container">
+    <h2 class="text-lg">Zones</h2>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="w-32">Zone</th>
+          <th class="w-32 text-center">Attribute</th>
+          <th>Change</th>
+          <th class="w-32">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <%= Enum.map(@zone_changes, fn zone_change -> %>
+          <tr class="border-t" id="zone-<%= zone_change.struct_id %>">
+            <td class="text-center">
+              <%= link(zone_change.struct.name, to: Routes.admin_zone_path(@conn, :show, zone_change.struct_id)) %>
+            </td>
+            <td class="text-center"><span class="font-mono"><%= zone_change.attribute %></span></td>
+            <td>
+              <div class="bg-gray-200 font-mono p-2"><%= Map.get(zone_change.struct, zone_change.attribute) %></div>
+              <div class="p-2">changes to</div>
+              <div class="bg-gray-200 font-mono p-2"><%= zone_change.value %></div>
+            </td>
+            <td>
+              <%= link("Delete", to: Routes.admin_staged_changes_path(@conn, :delete, zone_change.id, type: "zone"), method: :delete, class: "text-xs btn-secondary") %>
+            </td>
+          </tr>
+        <% end) %>
+      </tbody>
+    </table>
+  </div>
+</div>

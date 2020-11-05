@@ -6,6 +6,8 @@ defmodule ExVenture.Repo.Migrations.CreateZones do
       add(:name, :string, null: false)
       add(:description, :text, default: "", null: false)
 
+      add(:live_at, :utc_datetime)
+
       timestamps()
     end
 
@@ -25,6 +27,8 @@ defmodule ExVenture.Repo.Migrations.CreateZones do
       add(:z, :integer, null: false)
 
       add(:notes, :text)
+
+      add(:live_at, :utc_datetime)
 
       timestamps()
     end

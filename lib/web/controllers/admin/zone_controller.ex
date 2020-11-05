@@ -1,6 +1,7 @@
 defmodule Web.Admin.ZoneController do
   use Web, :controller
 
+  alias ExVenture.StagedChanges
   alias ExVenture.Zones
 
   plug(Web.Plugs.ActiveTab, tab: :zones)
@@ -68,6 +69,15 @@ defmodule Web.Admin.ZoneController do
         |> assign(:changeset, changeset)
         |> put_status(422)
         |> render("edit.html")
+    end
+  end
+
+  def delete_changes(conn, %{"zone_id" => id}) do
+    {:ok, zone} = Zones.get(id)
+
+    case StagedChanges.clear(zone) do
+      {:ok, zone} ->
+        redirect(conn, to: Routes.admin_zone_path(conn, :show, zone.id))
     end
   end
 end

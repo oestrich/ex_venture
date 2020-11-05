@@ -34,7 +34,7 @@
 
 .admin {
   .btn-primary {
-    @apply bg-purple-500 text-white font-bold py-2 px-4 rounded;
+    @apply bg-purple-600 text-white font-bold py-2 px-4 rounded;
 
     &:focus {
       @apply outline-none shadow-outline;
@@ -55,6 +55,10 @@
     &:hover {
       @apply bg-gray-400;
     }
+  }
+
+  a {
+    @apply text-blue-700;
   }
 
   nav a {
@@ -86,7 +90,7 @@
   }
 
   .table {
-    @apply table-auto w-full mt-2;
+    @apply table-fixed w-full mt-2;
 
     th {
       @apply px-4 py-2;
@@ -94,6 +98,12 @@
 
     td {
       @apply px-4 py-2;
+    }
+  }
+
+  .attributes {
+    th {
+      @apply w-64;
     }
   }
 

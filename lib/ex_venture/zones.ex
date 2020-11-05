@@ -17,7 +17,7 @@ defmodule ExVenture.Zones.Zone do
     belongs_to(:graveyard, Room)
     has_many(:rooms, Room)
 
-    has_many(:staged_changes, {"zone_staged_changes", StagedChange}, foreign_key: :record_id)
+    has_many(:staged_changes, {"zone_staged_changes", StagedChange}, foreign_key: :struct_id)
 
     timestamps()
   end
@@ -46,7 +46,6 @@ defmodule ExVenture.Zones do
 
   alias ExVenture.Repo
   alias ExVenture.StagedChanges
-  alias ExVenture.StagedChanges.StagedChange
   alias ExVenture.Zones.Zone
 
   def new(), do: Ecto.Changeset.change(%Zone{}, %{})
@@ -113,25 +112,17 @@ defmodule ExVenture.Zones do
         |> StagedChanges.apply_action(:update)
       end)
       |> Ecto.Multi.merge(fn %{changeset: changeset} ->
-        Enum.reduce(changeset.changes, Ecto.Multi.new(), fn {attribute, value}, multi ->
-          staged_change = Ecto.build_assoc(zone, :staged_changes)
-          changeset = StagedChange.create_changeset(staged_change, zone.id, attribute, value)
-
-          Ecto.Multi.insert(multi, {:staged_change, attribute}, changeset,
-            on_conflict: {:replace, [:value]},
-            conflict_target: [:record_id, :attribute]
-          )
-        end)
+        StagedChanges.record_changeset(changeset)
       end)
-      |> Ecto.Multi.run(:zone, fn repo, %{changeset: changeset} ->
-        zone = repo.preload(changeset.data, :staged_changes, force: true)
-        zone = StagedChanges.apply(zone)
-        {:ok, zone}
+      |> Ecto.Multi.run(:struct, fn repo, %{changeset: changeset} ->
+        struct = repo.preload(changeset.data, :staged_changes, force: true)
+        struct = StagedChanges.apply(struct)
+        {:ok, struct}
       end)
       |> Repo.transaction()
 
     case result do
-      {:ok, %{zone: zone}} ->
+      {:ok, %{struct: zone}} ->
         {:ok, zone}
 
       {:error, :changeset, changeset, _changes} ->

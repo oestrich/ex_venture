@@ -60,7 +60,13 @@ defmodule Web.Router do
 
     get("/", DashboardController, :index)
 
-    resources("/zones", ZoneController, except: [:delete])
+    post("/staged-changes/commit", StagedChangesController, :commit)
+
+    resources("/staged-changes", StagedChangesController, only: [:index, :delete])
+
+    resources("/zones", ZoneController, except: [:delete]) do
+      delete("/changes", ZoneController, :delete_changes, as: :changes)
+    end
   end
 
   if Mix.env() == :dev do

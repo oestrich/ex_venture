@@ -5,7 +5,7 @@ defmodule ExVenture.Repo.Migrations.CreateStagedChanges do
     create table(:zone_staged_changes, primary_key: false) do
       add(:id, :uuid, primary_key: true)
 
-      add(:record_id, references(:zones), null: false)
+      add(:struct_id, references(:zones), null: false)
 
       add(:attribute, :string, null: false)
       add(:value, :binary, null: false)
@@ -13,6 +13,6 @@ defmodule ExVenture.Repo.Migrations.CreateStagedChanges do
       timestamps()
     end
 
-    create index(:zone_staged_changes, [:record_id, :attribute], unique: true)
+    create index(:zone_staged_changes, [:struct_id, :attribute], unique: true)
   end
 end

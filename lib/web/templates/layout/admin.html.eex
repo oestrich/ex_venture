@@ -40,15 +40,18 @@
           <%= link(to: Routes.admin_dashboard_path(@conn, :index), class: tab_active?(@active_tab, :dashboard)) do %>
             <i class="fas fa-tachometer-alt mr-4"></i> Dashboard
           <% end %>
+          <%= link(to: Routes.admin_staged_changes_path(@conn, :index), class: tab_active?(@active_tab, :staged_changes)) do %>
+            <i class="fas fa-exchange-alt mr-4"></i> Staged Changes
+          <% end %>
           <%= link(to: Routes.admin_zone_path(@conn, :index), class: tab_active?(@active_tab, :zones)) do %>
             <i class="fas fa-flag mr-4"></i> Zones
           <% end %>
         </nav>
       </div>
 
-      <div class="w-full xxl:w-1/2 xxl:mx-auto xl:w-3/4 xl:mx-auto md:m-4 p-4">
+      <main class="w-full xxl:w-1/2 xxl:mx-auto xl:w-3/4 xl:mx-auto md:m-4 p-4">
         <%= @inner_content %>
-      </div>
+      </main>
     </div>
 
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
