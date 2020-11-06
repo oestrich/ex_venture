@@ -24,9 +24,12 @@
     <meta name="twitter:card" content="summary" />
   </head>
   <body class="bg-gray-100 admin">
-    <div class="md:w-full md:z-20 flex flex-row flex-wrap items-center bg-white p-5 border-b border-purple-400">
+    <div class="md:w-full md:z-20 flex flex-row flex-wrap items-center bg-white px-5 py-2 border-b border-purple-400">
       <div class="w-56 flex flex-row items-center">
-        <%= link("ExVenture", to: Routes.admin_dashboard_path(@conn, :index), class: "ml-1 flex-1 font-bold") %>
+        <%= link(to: Routes.admin_dashboard_path(@conn, :index), class: "flex-1 font-bold") do %>
+          <%= img_tag(Routes.static_path(@conn, "/images/exventure.png"), class: "h-8 inline-block") %>
+          <span class="ml-1 inline-block text-purple-900">ExVenture</span>
+        <% end %>
       </div>
 
       <div class="flex-grow flex justify-end">
@@ -40,9 +43,14 @@
           <%= link(to: Routes.admin_dashboard_path(@conn, :index), class: tab_active?(@active_tab, :dashboard)) do %>
             <i class="fas fa-tachometer-alt mr-4"></i> Dashboard
           <% end %>
+          <%= link(to: Routes.page_path(@conn, :index), target: "_blank") do %>
+            <i class="fas fa-home mr-4"></i> Home Page &raquo;
+          <% end %>
+          <span class="block px-2 py-1 text-gray-200 text-sm border-t border-gray-500">System</span>
           <%= link(to: Routes.admin_staged_changes_path(@conn, :index), class: tab_active?(@active_tab, :staged_changes)) do %>
             <i class="fas fa-exchange-alt mr-4"></i> Staged Changes
           <% end %>
+          <span class="block px-2 py-1 text-gray-200 text-sm border-t border-gray-500">The World</span>
           <%= link(to: Routes.admin_zone_path(@conn, :index), class: tab_active?(@active_tab, :zones)) do %>
             <i class="fas fa-flag mr-4"></i> Zones
           <% end %>
