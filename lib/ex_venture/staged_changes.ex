@@ -149,12 +149,9 @@ defmodule ExVenture.StagedChanges do
     end
   end
 
-  @doc """
-  Wrap the changeset in a tagged tuple with `:ok` or `:error`
-
-  Depending on if the changeset is valid or not
-  """
-  def apply_action(changeset, :update) do
+  # Wrap the changeset in a tagged tuple with `:ok` or `:error`
+  # Depending on if the changeset is valid or not
+  defp apply_action(changeset, :update) do
     case changeset.valid? do
       true ->
         {:ok, changeset}
