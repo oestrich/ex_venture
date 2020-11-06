@@ -43,4 +43,10 @@ defmodule ExVenture.TestHelpers do
 
     Zones.create(params)
   end
+
+  def publish_zone(zone) do
+    zone
+    |> Zones.Zone.publish_changeset()
+    |> Repo.update()
+  end
 end

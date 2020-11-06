@@ -26,7 +26,7 @@ defmodule ExVenture.ZonesTest do
     end
   end
 
-  describe "updating zones" do
+  describe "updating zones - not live" do
     test "successfully" do
       {:ok, zone} = TestHelpers.create_zone(%{name: "Zone"})
 
@@ -40,6 +40,33 @@ defmodule ExVenture.ZonesTest do
 
     test "unsuccessful" do
       {:ok, zone} = TestHelpers.create_zone(%{name: "Zone"})
+
+      {:error, changeset} =
+        Zones.update(zone, %{
+          name: nil
+        })
+
+      assert changeset.errors[:name]
+    end
+  end
+
+  describe "updating zones - live" do
+    test "successfully" do
+      {:ok, zone} = TestHelpers.create_zone(%{name: "Zone"})
+      {:ok, zone} = TestHelpers.publish_zone(zone)
+
+      {:ok, zone} =
+        Zones.update(zone, %{
+          name: "New Zone"
+        })
+
+      assert zone.name == "Zone"
+      assert Enum.count(zone.staged_changes)
+    end
+
+    test "unsuccessful" do
+      {:ok, zone} = TestHelpers.create_zone(%{name: "Zone"})
+      {:ok, zone} = TestHelpers.publish_zone(zone)
 
       {:error, changeset} =
         Zones.update(zone, %{

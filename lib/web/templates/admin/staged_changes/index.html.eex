@@ -1,0 +1,52 @@
+<div class="page-header">
+  <h1 class="text-xl font-bold">Staged Changes</h1>
+
+  <%= if !Enum.empty?(@staged_changes) do %>
+    <div class="actions">
+      <%= link("Commit Changes", to: Routes.admin_staged_changes_path(@conn, :commit), method: :post, class: "btn-primary") %>
+    </div>
+  <% end %>
+</div>
+
+<div class="panel">
+  <div class="panel-container">
+    <%= if Enum.empty?(@staged_changes) do %>
+      <p class="text-xl text-center p-4">There are no staged changes currently. Go make some!</p>
+    <% else %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="w-32">Record</th>
+            <th class="w-32 text-center">Attribute</th>
+            <th>Change</th>
+            <th class="w-32">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <%= Enum.map(@staged_changes, fn {schema, staged_changes} -> %>
+            <tr class="border-t">
+              <td colspan="4"><%= schema_header(schema) %></td>
+            </tr>
+            <%= Enum.map(staged_changes, fn staged_change -> %>
+              <tr class="border-t" id="zone-<%= staged_change.struct_id %>">
+                <td class="text-center">
+                  <%= struct_link(@conn, staged_change.struct) %>
+                </td>
+                <td class="text-center"><span class="font-mono"><%= staged_change.attribute %></span></td>
+                <td>
+                  <div class="bg-gray-200 font-mono p-2"><%= Map.get(staged_change.struct, staged_change.attribute) %></div>
+                  <div class="p-2">changes to</div>
+                  <div class="bg-gray-200 font-mono p-2"><%= staged_change.value %></div>
+                </td>
+                <td>
+                  <%= delete_staged_change_link(@conn, staged_change) %>
+                </td>
+              </tr>
+            <% end) %>
+          <% end) %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+</div>

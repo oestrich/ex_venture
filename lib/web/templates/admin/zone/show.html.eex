@@ -1,19 +1,38 @@
 <div class="page-header">
   <h1 class="text-xl font-bold">
-    <%= link("Zones", to: Routes.admin_zone_path(@conn, :index), class: "text-blue-700") %> &raquo;
+    <%= link("Zones", to: Routes.admin_zone_path(@conn, :index)) %> &raquo;
     <%= @zone.name %>
+    <%= if is_nil(@zone.live_at) do %>
+      <span class="text-gray-600 italic">(Not Live)</span>
+    <% end %>
   </h1>
 
   <div class="actions">
-    <%= link("Edit Zone", to: Routes.admin_zone_path(@conn, :edit, @zone.id), class: "bg-purple-500 text-sm text-white font-bold rounded px-4 py-2") %>
+    <%= if is_nil(@zone.live_at) do %>
+      <%= link("Publish", to: Routes.admin_zone_path(@conn, :publish, @zone.id), method: :post, class: "text-sm btn-secondary") %>
+    <% end %>
+    <%= if !Enum.empty?(@zone.staged_changes) do %>
+      <%= link("Discard Changes", to: Routes.admin_zone_changes_path(@conn, :delete_changes, @zone.id), method: :delete, class: "text-sm btn-secondary") %>
+    <% end %>
+    <%= link("Edit Zone", to: Routes.admin_zone_path(@conn, :edit, @zone.id), class: "text-sm btn-primary") %>
   </div>
 </div>
 
 <div class="panel">
   <div class="panel-container">
-    <h2 class="text-lg">Attributes</h2>
+    <h2 class="text-lg">
+      Attributes
 
-    <table class="table">
+      <%= if !Enum.empty?(@zone.staged_changes) do %>
+        <%= link(to: Routes.admin_staged_changes_path(@conn, :index) <> "#zone-#{@zone.id}") do %>
+          <span class="text-sm text-purple-700 italic">
+            This includes staged changes
+          </span>
+        <% end %>
+      <% end %>
+    </h2>
+
+    <table class="table attributes">
       <tbody>
         <tr>
           <th>Name</th>

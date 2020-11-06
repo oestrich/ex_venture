@@ -8,13 +8,18 @@ defmodule ExVenture.Zones.Zone do
   import Ecto.Changeset
 
   alias ExVenture.Rooms.Room
+  alias ExVenture.StagedChanges.StagedChange
 
   schema "zones" do
+    field(:live_at, :utc_datetime)
+
     field(:name, :string)
     field(:description, :string)
 
     belongs_to(:graveyard, Room)
     has_many(:rooms, Room)
+
+    has_many(:staged_changes, {"zone_staged_changes", StagedChange}, foreign_key: :struct_id)
 
     timestamps()
   end
@@ -32,6 +37,12 @@ defmodule ExVenture.Zones.Zone do
     |> validate_required([:name, :description])
     |> foreign_key_constraint(:graveyard_id)
   end
+
+  def publish_changeset(struct) do
+    struct
+    |> change()
+    |> put_change(:live_at, DateTime.truncate(DateTime.utc_now(), :second))
+  end
 end
 
 defmodule ExVenture.Zones do
@@ -39,7 +50,10 @@ defmodule ExVenture.Zones do
   CRUD Zones
   """
 
+  import Ecto.Query
+
   alias ExVenture.Repo
+  alias ExVenture.StagedChanges
   alias ExVenture.Zones.Zone
 
   def new(), do: Ecto.Changeset.change(%Zone{}, %{})
@@ -52,7 +66,20 @@ defmodule ExVenture.Zones do
   def all(opts \\ []) do
     opts = Enum.into(opts, %{})
 
-    Repo.paginate(Zone, opts[:page], opts[:per])
+    Zone
+    |> order_by([z], asc: z.name)
+    |> preload(:staged_changes)
+    |> Repo.paginate(opts[:page], opts[:per])
+    |> staged_changes()
+  end
+
+  defp staged_changes(%{page: zones, pagination: pagination}) do
+    zones = Enum.map(zones, &StagedChanges.apply/1)
+    %{page: zones, pagination: pagination}
+  end
+
+  defp staged_changes(zones) do
+    Enum.map(zones, &StagedChanges.apply/1)
   end
 
   @doc """
@@ -64,6 +91,11 @@ defmodule ExVenture.Zones do
         {:error, :not_found}
 
       zone ->
+        zone =
+          zone
+          |> Repo.preload(:staged_changes)
+          |> StagedChanges.apply()
+
         {:ok, zone}
     end
   end
@@ -80,9 +112,26 @@ defmodule ExVenture.Zones do
   @doc """
   Update a zone
   """
+  def update(%{live_at: nil} = zone, params) do
+    zone
+    |> Zone.update_changeset(params)
+    |> Repo.update()
+  end
+
   def update(zone, params) do
     zone
     |> Zone.update_changeset(params)
+    |> StagedChanges.record_changes()
+  end
+
+  @doc """
+  Publish the zone
+
+  When a zone is published, it will startup inside the game.
+  """
+  def publish(zone) do
+    zone
+    |> Zone.publish_changeset()
     |> Repo.update()
   end
 end
