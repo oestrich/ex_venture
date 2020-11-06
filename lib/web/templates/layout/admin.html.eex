@@ -50,6 +50,9 @@
           <%= link(to: Routes.admin_staged_changes_path(@conn, :index), class: tab_active?(@active_tab, :staged_changes)) do %>
             <i class="fas fa-exchange-alt mr-4"></i> Staged Changes
           <% end %>
+          <%= link(to: Routes.admin_user_path(@conn, :index), class: tab_active?(@active_tab, :users)) do %>
+            <i class="fas fa-users mr-4"></i> Users
+          <% end %>
           <span class="block px-2 py-1 text-gray-200 text-sm border-t border-gray-500">The World</span>
           <%= link(to: Routes.admin_zone_path(@conn, :index), class: tab_active?(@active_tab, :zones)) do %>
             <i class="fas fa-flag mr-4"></i> Zones

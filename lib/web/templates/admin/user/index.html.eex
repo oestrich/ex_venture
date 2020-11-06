@@ -1,0 +1,29 @@
+<div class="page-header">
+  <h1 class="text-xl font-bold">Users</h1>
+</div>
+
+<div class="panel">
+  <div class="panel-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th class="w-32">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <%= Enum.map(@users, fn user -> %>
+          <tr class="border-t">
+            <td>
+              <%= link(user.email, to: Routes.admin_user_path(@conn, :show, user.id), class: "font-bold") %>
+            </td>
+            <td class="actions w-32">
+              <%= link("View", to: Routes.admin_user_path(@conn, :show, user.id), class: "text-xs btn-secondary") %>
+            </td>
+          </tr>
+        <% end) %>
+      </tbody>
+    </table>
+  </div>
+</div>

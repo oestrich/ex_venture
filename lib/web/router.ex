@@ -64,6 +64,8 @@ defmodule Web.Router do
 
     resources("/staged-changes", StagedChangesController, only: [:index, :delete])
 
+    resources("/users", UserController, only: [:index, :show])
+
     resources("/zones", ZoneController, except: [:delete])
 
     post("/zones/:id/publish", ZoneController, :publish, as: :zone)

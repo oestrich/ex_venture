@@ -3,6 +3,8 @@ defmodule ExVenture.Users do
   Users context
   """
 
+  import Ecto.Query
+
   alias ExVenture.Emails
   alias ExVenture.Mailer
   alias ExVenture.Repo
@@ -24,6 +26,14 @@ defmodule ExVenture.Users do
   Check if the user is an admin
   """
   def admin?(user), do: user.role == "admin"
+
+  def all(opts \\ []) do
+    opts = Enum.into(opts, %{})
+
+    User
+    |> order_by([u], desc: u.id)
+    |> Repo.paginate(opts[:page], opts[:per])
+  end
 
   @doc """
   Get a user by id
