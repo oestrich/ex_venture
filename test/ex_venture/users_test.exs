@@ -8,24 +8,21 @@ defmodule ExVenture.UsersTest do
     test "registers them" do
       {:ok, user} =
         Users.create(%{
+          username: "user",
           email: "user@example.com",
-          first_name: "John",
-          last_name: "User",
           password: "password",
           password_confirmation: "password"
         })
 
+      assert user.username == "user"
       assert user.email == "user@example.com"
-      assert user.first_name == "John"
-      assert user.last_name == "User"
     end
 
     test "uploading an avatar" do
       {:ok, user} =
         Users.create(%{
+          username: "user",
           email: "user@example.com",
-          first_name: "John",
-          last_name: "User",
           password: "password",
           password_confirmation: "password",
           avatar: %{path: "test/fixtures/avatar.png", filename: "avatar.png"}
@@ -37,19 +34,6 @@ defmodule ExVenture.UsersTest do
   end
 
   describe "updating users" do
-    test "change basic info" do
-      {:ok, user} = TestHelpers.create_user()
-
-      {:ok, user} =
-        Users.update(user, %{
-          first_name: "Updated",
-          last_name: "LastName"
-        })
-
-      assert user.first_name == "Updated"
-      assert user.last_name == "LastName"
-    end
-
     test "changing email triggers verification" do
       {:ok, user} = TestHelpers.create_user()
       {:ok, user} = Users.verify_email(user.email_verification_token)

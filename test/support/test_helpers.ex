@@ -11,9 +11,8 @@ defmodule ExVenture.TestHelpers do
     params =
       Map.merge(
         %{
+          username: "user",
           email: "user@example.com",
-          first_name: "John",
-          last_name: "Smith",
           password: "password",
           password_confirmation: "password"
         },

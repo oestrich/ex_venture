@@ -4,9 +4,8 @@ defmodule Web.RegistrationControllerTest do
   describe "registering a new user" do
     test "successful", %{conn: conn} do
       params = %{
+        username: "user",
         email: "user@example.com",
-        first_name: "John",
-        last_name: "Smith",
         password: "password",
         password_confirmation: "password"
       }
@@ -18,9 +17,8 @@ defmodule Web.RegistrationControllerTest do
 
     test "failure", %{conn: conn} do
       params = %{
+        username: "user",
         email: "user@example.com",
-        first_name: "John",
-        last_name: "Smith",
         password: "password",
         password_confirmation: "passw0rd"
       }

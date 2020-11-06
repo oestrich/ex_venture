@@ -7,6 +7,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th>Username</th>
           <th>Email</th>
           <th class="w-32">Actions</th>
         </tr>
@@ -16,7 +17,10 @@
         <%= Enum.map(@users, fn user -> %>
           <tr class="border-t">
             <td>
-              <%= link(user.email, to: Routes.admin_user_path(@conn, :show, user.id), class: "font-bold") %>
+              <%= link(user.username, to: Routes.admin_user_path(@conn, :show, user.id), class: "font-bold") %>
+            </td>
+            <td>
+              <%= user.email %>
             </td>
             <td class="actions w-32">
               <%= link("View", to: Routes.admin_user_path(@conn, :show, user.id), class: "text-xs btn-secondary") %>

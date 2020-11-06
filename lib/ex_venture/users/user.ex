@@ -14,9 +14,8 @@ defmodule ExVenture.Users.User do
 
     field(:role, :string)
 
+    field(:username, :string)
     field(:email, :string)
-    field(:first_name, :string)
-    field(:last_name, :string)
 
     field(:password, :string, virtual: true)
     field(:password_confirmation, :string, virtual: true)
@@ -36,19 +35,22 @@ defmodule ExVenture.Users.User do
 
   def create_changeset(struct, params) do
     struct
-    |> cast(params, [:email, :first_name, :last_name, :password, :password_confirmation])
+    |> cast(params, [:email, :username, :password, :password_confirmation])
     |> put_change(:token, UUID.uuid4())
     |> validate_confirmation(:password)
+    |> Stein.Accounts.trim_field(:email)
+    |> Stein.Accounts.trim_field(:username)
     |> Stein.Accounts.hash_password()
     |> Stein.Accounts.start_email_verification_changeset()
-    |> validate_required([:email, :first_name, :last_name, :password_hash])
+    |> validate_required([:email, :username, :password_hash])
+    |> unique_constraint(:username, name: :users_lower_username_index)
     |> unique_constraint(:email, name: :users_lower_email_index)
   end
 
   def update_changeset(struct, params) do
     struct
-    |> cast(params, [:email, :first_name, :last_name])
-    |> validate_required([:email, :first_name, :last_name])
+    |> cast(params, [:email])
+    |> validate_required([:email])
     |> unique_constraint(:email, name: :users_lower_email_index)
     |> maybe_restart_email_verification()
   end

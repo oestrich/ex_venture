@@ -1,14 +1,12 @@
 defmodule Web.ProfileControllerTest do
   use Web.ConnCase
 
-  describe "registering a new user" do
+  describe "updating your profile" do
     test "successful", %{conn: conn} do
       {:ok, user} = TestHelpers.create_user()
 
       params = %{
-        email: "user@example.com",
-        first_name: "John",
-        last_name: "Smith"
+        email: "user@example.com"
       }
 
       conn =
@@ -22,7 +20,7 @@ defmodule Web.ProfileControllerTest do
     test "failure", %{conn: conn} do
       {:ok, user} = TestHelpers.create_user()
 
-      params = %{first_name: nil}
+      params = %{email: nil}
 
       conn =
         conn

@@ -1,6 +1,6 @@
 <div class="bg-gray-200 p-8 rounded">
   <div class="flex flex-row items-center">
-    <h1 class="text-4xl text-gray-900 flex-grow"><%= full_name(@user) %>'s Profile</h1>
+    <h1 class="text-4xl text-gray-900 flex-grow"><%= @user.username %>'s Profile</h1>
     <%= link(to: Routes.profile_path(@conn, :edit), class: "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline") do %>
       <i class="fas fa-edit"></i>
       Edit

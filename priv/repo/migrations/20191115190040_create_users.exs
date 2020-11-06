@@ -3,9 +3,10 @@ defmodule ExVenture.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
+      add(:role, :string, default: "player", null: false)
+
+      add(:username, :string, null: false)
       add(:email, :string, null: false)
-      add(:first_name, :string, null: false)
-      add(:last_name, :string, null: false)
       add(:password_hash, :string, null: false)
       add(:token, :uuid, null: false)
 
@@ -21,6 +22,7 @@ defmodule ExVenture.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
+    create index(:users, ["lower(username)"], unique: true)
     create index(:users, ["lower(email)"], unique: true)
   end
 end

@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="text-xl font-bold">
-    <%= link("Zones", to: Routes.admin_user_path(@conn, :index)) %> &raquo;
-    <%= @user.first_name %> <%= @user.last_name %>
+    <%= link("Users", to: Routes.admin_user_path(@conn, :index)) %> &raquo;
+    <%= @user.username %>
   </h1>
 </div>
 
@@ -14,8 +14,8 @@
     <table class="table attributes">
       <tbody>
         <tr>
-          <th>Name</th>
-          <td><%= @user.first_name %> <%= @user.last_name %></td>
+          <th>Username</th>
+          <td><%= @user.username %></td>
         </tr>
         <tr>
           <th>Email</th>

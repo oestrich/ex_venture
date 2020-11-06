@@ -3,8 +3,6 @@ defmodule Web.ProfileView do
 
   alias ExVenture.Users.Avatar
 
-  def full_name(user), do: "#{user.first_name} #{user.last_name}"
-
   def avatar?(user), do: user.avatar_key != nil
 
   def avatar_img(user) do

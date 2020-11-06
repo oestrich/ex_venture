@@ -15,24 +15,6 @@
 
         <div class="md:flex md:items-center mb-6">
           <div class="md:w-1/3">
-            <%= label(f, :first_name, class: "label") %>
-          </div>
-          <div class="md:w-2/3">
-            <%= text_input(f, :first_name, class: "input") %>
-          </div>
-        </div>
-
-        <div class="md:flex md:items-center mb-6">
-          <div class="md:w-1/3">
-            <%= label(f, :last_name, class: "label") %>
-          </div>
-          <div class="md:w-2/3">
-            <%= text_input(f, :last_name, class: "input") %>
-          </div>
-        </div>
-
-        <div class="md:flex md:items-center mb-6">
-          <div class="md:w-1/3">
             <%= label(f, :avatar, class: "label") %>
           </div>
           <div class="md:w-2/3">
