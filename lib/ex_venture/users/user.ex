@@ -42,7 +42,7 @@ defmodule ExVenture.Users.User do
     |> Stein.Accounts.trim_field(:username)
     |> Stein.Accounts.hash_password()
     |> Stein.Accounts.start_email_verification_changeset()
-    |> validate_required([:email, :username, :password_hash])
+    |> validate_required([:email, :username, :password, :password_hash])
     |> unique_constraint(:username, name: :users_lower_username_index)
     |> unique_constraint(:email, name: :users_lower_email_index)
   end

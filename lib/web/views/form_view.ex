@@ -1,4 +1,4 @@
-defmodule Web.Admin.FormView do
+defmodule Web.FormView do
   use Web, :view
 
   @doc """
