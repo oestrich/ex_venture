@@ -46,3 +46,36 @@
     </table>
   </div>
 </div>
+
+<div class="panel">
+  <div class="panel-container">
+    <h2 class="text-lg">Map</h2>
+
+    <div class="flex flex-row">
+      <%= Enum.map((@mini_map.max_z + 1)..(@mini_map.min_z - 1), fn z -> %>
+        <div class="flex flex-col border-2 m-2 p-2">
+          <h2 class="text-lg text-center">Z: <%= z %></h2>
+          <%= Enum.map((@mini_map.max_y + 1)..(@mini_map.min_y - 1), fn y -> %>
+            <div class="flex flex-row">
+              <%= Enum.map((@mini_map.min_x - 1)..(@mini_map.max_x + 1), fn x -> %>
+                <%= if cell = Map.get(@mini_map.cells, {x, y, z}) do %>
+                  <%= link(to: Routes.admin_room_path(@conn, :show, cell.id)) do %>
+                    <div class="w-16 h-16 border border-gray-600 rounded flex items-center justify-center m-2 bg-gray-400">
+                      <%= img_tag(Routes.static_path(@conn, "/images/map-icons/#{cell.map_icon}.svg"), alt: cell.name, class: "p-1") %>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <%= link(to: Routes.admin_zone_room_path(@conn, :new, @zone.id)) do %>
+                    <div class="w-16 h-16 border border-gray-600 rounded flex items-center justify-center m-2 bg-gray-200">
+                      <i alt="New Room" class="fas fa-plus"></i>
+                    </div>
+                  <% end %>
+                <% end %>
+              <% end) %>
+            </div>
+          <% end) %>
+        </div>
+      <% end) %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="page-header">
+  <h1 class="text-xl font-bold">Rooms</h1>
+</div>
+
+<div class="panel">
+  <div class="panel-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Zone</th>
+          <th>Name</th>
+          <th class="w-32">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <%= Enum.map(@rooms, fn room -> %>
+          <tr class="border-t">
+            <td>
+              <%= link(room.zone.name, to: Routes.admin_zone_path(@conn, :show, room.zone_id)) %>
+            </td>
+            <td>
+              <%= link(room.name, to: Routes.admin_room_path(@conn, :show, room.id), class: "font-bold") %>
+              <%= if is_nil(room.live_at) do %>
+                <span class="text-sm text-gray-600 italic">(Not Live)</span>
+              <% end %>
+            </td>
+            <td class="actions w-32">
+              <%= link("View", to: Routes.admin_room_path(@conn, :show, room.id), class: "text-xs btn-secondary") %>
+            </td>
+          </tr>
+        <% end) %>
+      </tbody>
+    </table>
+  </div>
+</div>

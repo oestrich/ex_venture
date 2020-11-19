@@ -57,6 +57,9 @@
           <%= link(to: Routes.admin_zone_path(@conn, :index), class: tab_active?(@active_tab, :zones)) do %>
             <i class="fas fa-flag mr-4"></i> Zones
           <% end %>
+          <%= link(to: Routes.admin_room_path(@conn, :index), class: tab_active?(@active_tab, :rooms)) do %>
+            <i class="fas fa-building mr-4"></i> Rooms
+          <% end %>
         </nav>
       </div>
 

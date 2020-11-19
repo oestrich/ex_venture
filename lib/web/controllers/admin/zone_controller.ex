@@ -23,6 +23,7 @@ defmodule Web.Admin.ZoneController do
       {:ok, zone} ->
         conn
         |> assign(:zone, zone)
+        |> assign(:mini_map, Zones.make_mini_map(zone))
         |> render("show.html")
     end
   end

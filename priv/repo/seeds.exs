@@ -29,7 +29,9 @@
     description: "The starter town."
   })
 
-{:ok, _town_square} =
+{:ok, sammatti} = ExVenture.Zones.publish(sammatti)
+
+{:ok, town_square} =
   ExVenture.Rooms.create(sammatti, %{
     name: "Town Square",
     description: "A small town square.",
@@ -39,3 +41,18 @@
     y: 0,
     z: 0
   })
+
+{:ok, _market} = ExVenture.Rooms.publish(town_square)
+
+{:ok, market} =
+  ExVenture.Rooms.create(sammatti, %{
+    name: "Market",
+    description: "A small market.",
+    listen: "Shop keeps are selling their wares.",
+    map_icon: "shop",
+    x: 0,
+    y: 1,
+    z: 0
+  })
+
+{:ok, _market} = ExVenture.Rooms.publish(market)

@@ -52,6 +52,7 @@ defmodule ExVenture.Zones do
 
   import Ecto.Query
 
+  alias ExVenture.MiniMap
   alias ExVenture.Repo
   alias ExVenture.StagedChanges
   alias ExVenture.Zones.Zone
@@ -93,7 +94,7 @@ defmodule ExVenture.Zones do
       zone ->
         zone =
           zone
-          |> Repo.preload(:staged_changes)
+          |> Repo.preload([:rooms, :staged_changes])
           |> StagedChanges.apply()
 
         {:ok, zone}
@@ -133,5 +134,38 @@ defmodule ExVenture.Zones do
     zone
     |> Zone.publish_changeset()
     |> Repo.update()
+  end
+
+  def make_mini_map(zone) do
+    zone = Repo.preload(zone, :rooms)
+
+    mini_map = %MiniMap{id: zone.id}
+
+    cells =
+      Enum.into(zone.rooms, %{}, fn room ->
+        cell = %MiniMap.Cell{
+          id: room.id,
+          map_color: room.map_color,
+          map_icon: room.map_icon,
+          name: room.name,
+          x: room.x,
+          y: room.y,
+          z: room.z
+        }
+
+        {{room.x, room.y, room.z}, cell}
+      end)
+
+    mini_map = %{mini_map | cells: cells}
+
+    {{min_x, max_x}, {min_y, max_y}, {min_z, max_z}} = MiniMap.size_of_map(mini_map)
+
+    mini_map
+    |> Map.put(:min_x, min_x)
+    |> Map.put(:max_x, max_x)
+    |> Map.put(:min_y, min_y)
+    |> Map.put(:max_y, max_y)
+    |> Map.put(:min_z, min_z)
+    |> Map.put(:max_z, max_z)
   end
 end

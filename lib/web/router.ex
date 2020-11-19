@@ -62,11 +62,15 @@ defmodule Web.Router do
 
     post("/staged-changes/commit", StagedChangesController, :commit)
 
+    resources("/rooms", RoomController, only: [:index, :show])
+
     resources("/staged-changes", StagedChangesController, only: [:index, :delete])
 
     resources("/users", UserController, only: [:index, :show])
 
-    resources("/zones", ZoneController, except: [:delete])
+    resources("/zones", ZoneController, except: [:delete]) do
+      resources("/rooms", RoomController, only: [:new])
+    end
 
     post("/zones/:id/publish", ZoneController, :publish, as: :zone)
 

@@ -1,0 +1,24 @@
+<div class="page-header">
+  <h1 class="text-xl font-bold">
+    <%= link("Zones", to: Routes.admin_zone_path(@conn, :index)) %> &raquo;
+    <%= link(@zone.name, to: Routes.admin_zone_path(@conn, :show, @zone.id)) %> &raquo;
+    <%= @room.name %>
+  </h1>
+</div>
+
+<div class="panel">
+  <div class="panel-container">
+    <h2 class="text-lg">
+      Attributes
+    </h2>
+
+    <table class="table attributes">
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td><%= @room.name %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
