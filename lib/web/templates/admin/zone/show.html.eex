@@ -65,7 +65,7 @@
                     </div>
                   <% end %>
                 <% else %>
-                  <%= link(to: Routes.admin_zone_room_path(@conn, :new, @zone.id)) do %>
+                  <%= link(to: Routes.admin_zone_room_path(@conn, :new, @zone.id, x: x, y: y, z: z)) do %>
                     <div class="w-16 h-16 border border-gray-600 rounded flex items-center justify-center m-2 bg-gray-200">
                       <i alt="New Room" class="fas fa-plus"></i>
                     </div>

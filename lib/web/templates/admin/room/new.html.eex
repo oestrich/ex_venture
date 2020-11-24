@@ -1,0 +1,13 @@
+<div class="page-header">
+  <h1 class="text-xl font-bold">
+    <%= link("Zones", to: Routes.admin_zone_path(@conn, :index), class: "text-blue-700") %> &raquo;
+    <%= link(@zone.name, to: Routes.admin_zone_path(@conn, :show, @zone.id), class: "text-blue-700") %> &raquo;
+    New Room
+  </h1>
+</div>
+
+<div class="panel">
+  <div class="panel-container">
+    <%= render("_form.html", changeset: @changeset, url: Routes.admin_zone_room_path(@conn, :create, @zone.id), submit: "Create", x: @conn.params["x"], y: @conn.params["y"], z: @conn.params["z"]) %>
+  </div>
+</div>

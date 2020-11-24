@@ -4,6 +4,7 @@ defmodule ExVenture.TestHelpers do
   """
 
   alias ExVenture.Repo
+  alias ExVenture.Rooms
   alias ExVenture.Users
   alias ExVenture.Zones
 
@@ -27,6 +28,29 @@ defmodule ExVenture.TestHelpers do
 
     user
     |> Ecto.Changeset.change(%{role: "admin"})
+    |> Repo.update()
+  end
+
+  def create_room(zone, params \\ %{}) do
+    params =
+      Map.merge(
+        %{
+          name: "Room",
+          description: "A description",
+          listen: "Listen text",
+          x: 0,
+          y: 0,
+          z: 0
+        },
+        params
+      )
+
+    Rooms.create(zone, params)
+  end
+
+  def publish_room(room) do
+    room
+    |> Rooms.Room.publish_changeset()
     |> Repo.update()
   end
 

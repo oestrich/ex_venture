@@ -1,0 +1,22 @@
+<div class="page-header">
+  <h1 class="text-xl font-bold">
+    <%= link("Zones", to: Routes.admin_zone_path(@conn, :index)) %> &raquo;
+    <%= link(@zone.name, to: Routes.admin_zone_path(@conn, :show, @zone.id)) %> &raquo;
+    <%= link(@room.name, to: Routes.admin_room_path(@conn, :show, @room.id), class: "text-blue-700") %> &raquo;
+    Editing
+  </h1>
+</div>
+
+<div class="panel">
+  <div class="panel-container">
+    <h2 class="text-lg">
+      Edit
+
+      <%= if !Enum.empty?(@room.staged_changes) do %>
+        <span class="text-sm text-purple-700 italic">This includes staged changes</span>
+      <% end %>
+    </h2>
+
+    <%= render("_form.html", changeset: @changeset, url: Routes.admin_room_path(@conn, :update, @room.id), submit: "Update") %>
+  </div>
+</div>

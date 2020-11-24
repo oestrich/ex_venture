@@ -9,6 +9,7 @@
         <tr>
           <th>Zone</th>
           <th>Name</th>
+          <th class="w-48">Staged Changes?</th>
           <th class="w-32">Actions</th>
         </tr>
       </thead>
@@ -25,8 +26,16 @@
                 <span class="text-sm text-gray-600 italic">(Not Live)</span>
               <% end %>
             </td>
+            <td class="w-48 text-center">
+              <%= if !Enum.empty?(room.staged_changes) do %>
+                <span class="bg-purple-600 text-white rounded px-4 py-2 w-16 inline-block text-center">Yes</span>
+              <% else %>
+                <span class="bg-gray-700 text-white rounded px-4 py-2 w-16 inline-block text-center">No</span>
+              <% end %>
+            </td>
             <td class="actions w-32">
               <%= link("View", to: Routes.admin_room_path(@conn, :show, room.id), class: "text-xs btn-secondary") %>
+              <%= link("Edit", to: Routes.admin_room_path(@conn, :edit, room.id), class: "text-xs btn-secondary") %>
             </td>
           </tr>
         <% end) %>

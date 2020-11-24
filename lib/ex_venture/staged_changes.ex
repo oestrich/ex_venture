@@ -112,6 +112,11 @@ defmodule ExVenture.StagedChanges do
   alias ExVenture.StagedChanges.StagedChange
   alias ExVenture.Repo
 
+  @schemas %{
+    "room_staged_changes" => ExVenture.Rooms.Room,
+    "zone_staged_changes" => ExVenture.Zones.Zone
+  }
+
   @doc """
   Record changes to a struct in staged changes
   """
@@ -172,13 +177,22 @@ defmodule ExVenture.StagedChanges do
     end)
   end
 
+  def apply(struct, field) do
+    case Map.get(struct, field) do
+      association when is_list(association) ->
+        association = Enum.map(association, &apply/1)
+        Map.put(struct, field, association)
+
+      association ->
+        Map.put(struct, field, apply(association))
+    end
+  end
+
   @doc """
   Commit all of the staged changes to the structs
   """
   def commit() do
-    staged_change_schemas = [
-      ExVenture.Zones.Zone
-    ]
+    staged_change_schemas = Map.values(@schemas)
 
     result =
       Ecto.Multi.new()
@@ -235,11 +249,7 @@ defmodule ExVenture.StagedChanges do
   Get all changes for all zones
   """
   def changes() do
-    schemas = %{
-      "zone_staged_changes" => ExVenture.Zones.Zone
-    }
-
-    schemas
+    @schemas
     |> Enum.map(fn {table, schema} ->
       preloader = fn struct_ids ->
         schema
@@ -302,6 +312,8 @@ defmodule ExVenture.StagedChanges do
         {:ok, struct}
     end
   end
+
+  defp table_from_type("room"), do: "room_staged_changes"
 
   defp table_from_type("zone"), do: "zone_staged_changes"
 end

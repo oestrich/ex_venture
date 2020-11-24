@@ -94,8 +94,9 @@ defmodule ExVenture.Zones do
       zone ->
         zone =
           zone
-          |> Repo.preload([:rooms, :staged_changes])
+          |> Repo.preload([:staged_changes, rooms: [:staged_changes]])
           |> StagedChanges.apply()
+          |> StagedChanges.apply(:rooms)
 
         {:ok, zone}
     end

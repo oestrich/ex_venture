@@ -3,13 +3,34 @@
     <%= link("Zones", to: Routes.admin_zone_path(@conn, :index)) %> &raquo;
     <%= link(@zone.name, to: Routes.admin_zone_path(@conn, :show, @zone.id)) %> &raquo;
     <%= @room.name %>
+    <%= if is_nil(@room.live_at) do %>
+      <span class="text-gray-600 italic">(Not Live)</span>
+    <% end %>
   </h1>
+
+  <div class="actions">
+    <%= if is_nil(@room.live_at) do %>
+      <%= link("Publish", to: Routes.admin_room_path(@conn, :publish, @room.id), method: :post, class: "text-sm btn-secondary") %>
+    <% end %>
+    <%= if !Enum.empty?(@room.staged_changes) do %>
+      <%= link("Discard Changes", to: Routes.admin_room_changes_path(@conn, :delete_changes, @room.id), method: :delete, class: "text-sm btn-secondary") %>
+    <% end %>
+    <%= link("Edit Room", to: Routes.admin_room_path(@conn, :edit, @room.id), class: "text-sm btn-primary") %>
+  </div>
 </div>
 
 <div class="panel">
   <div class="panel-container">
     <h2 class="text-lg">
       Attributes
+
+      <%= if !Enum.empty?(@room.staged_changes) do %>
+        <%= link(to: Routes.admin_staged_changes_path(@conn, :index) <> "#room-#{@room.id}") do %>
+          <span class="text-sm text-purple-700 italic">
+            This includes staged changes
+          </span>
+        <% end %>
+      <% end %>
     </h2>
 
     <table class="table attributes">
@@ -17,6 +38,14 @@
         <tr>
           <th>Name</th>
           <td><%= @room.name %></td>
+        </tr>
+        <tr>
+          <th>Description</th>
+          <td><%= @room.description %></td>
+        </tr>
+        <tr>
+          <th>Listen Text</th>
+          <td><%= @room.listen %></td>
         </tr>
       </tbody>
     </table>
