@@ -15,7 +15,8 @@ defmodule Web.Endpoint do
     at: "/",
     from: :ex_venture,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only_matching: ["apple", "favicon"],
+    only: ~w(css fonts images js favicon.ico robots.txt manifest.json)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
