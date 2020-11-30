@@ -1,0 +1,14 @@
+emotes "smile" {
+  command = "smile"
+  text = "smiles at everyone."
+}
+
+emotes "frown" {
+  command = "frown"
+  text = "frowns at everyone."
+}
+
+emotes "wave" {
+  command = "wave"
+  text = "waves to everyone."
+}

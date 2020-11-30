@@ -1,4 +1,6 @@
 defmodule Web.UserSocket do
+  @moduledoc false
+
   use Phoenix.Socket
 
   ## Channels

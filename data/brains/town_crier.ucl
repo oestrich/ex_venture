@@ -1,0 +1,284 @@
+brains "generic_hello" {
+  type = "conditional"
+  nodes = [
+    {
+      type = "conditions/message-match"
+      data = {
+        self_trigger = false
+        text = "\bhi\b"
+      }
+    },
+    {
+      type = "sequence"
+      nodes = [
+        {
+          type = "actions/say"
+          delay = 500
+          data = {
+            channel_name = "${channel_name}"
+            text = "Hello, ${character.name}!"
+          }
+        },
+        {
+          type = "actions/say"
+          delay = 750
+          data = {
+            channel_name = "${channel_name}"
+            text = "How are you?"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+brains "town_crier_conversation" {
+  type = "conditional"
+  nodes = [
+    {
+      type = "conditions/tell-match"
+      data = {
+        self_trigger = false
+        text = ".*"
+      }
+    },
+    {
+      type = "first"
+      nodes = [
+        {
+          type = "conditional"
+          nodes = [
+            {
+              type = "conditions/state-match"
+              data = {
+                match = "nil"
+                key = "conversation-${character.id}"
+              }
+            },
+            {
+              type = "actions/say"
+              data = {
+                channel_name = "characters:${character.id}"
+                text = "Hello, are you here to find out about our {color foreground=\"white\"}bandit{/color} problem?"
+              }
+            },
+            {
+              type = "actions/state-set"
+              data = {
+                key = "conversation-${character.id}"
+                value = "started"
+                ttl = 60
+              }
+            }
+          ]
+        },
+        {
+          type = "conditional"
+          nodes = [
+            {
+              type = "conditions/state-match"
+              data = {
+                match = "equality"
+                key = "conversation-${character.id}"
+                value = "started"
+              }
+            },
+            {
+              type = "conditions/tell-match"
+              data = {
+                self_trigger = false
+                text = "\b(yes|bandit)\b"
+              }
+            },
+            {
+              type = "actions/say"
+              data = {
+                channel_name = "characters:${character.id}"
+                text = "Great. Before you head off and face the bandits. I would like you to prove your worth as an adventurer."
+              }
+            },
+            {
+              type = "actions/state-set"
+              data = {
+                key = "conversation-${character.id}"
+                value = "given"
+                ttl = 60
+              }
+            }
+          ]
+        },
+        {
+          type = "conditional"
+          nodes = [
+            {
+              type = "conditions/state-match"
+              data = {
+                match = "equality"
+                key = "conversation-${character.id}"
+                value = "started"
+              }
+            },
+            {
+              type = "actions/say"
+              data = {
+                channel_name = "characters:${character.id}"
+                text = "I don't know about that, but I can help you with bandits"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+brains "town_crier" {
+  type = "sequence"
+  nodes = [
+    {
+      ref = brains.generic_hello
+    },
+    {
+      ref = brains.town_crier_conversation
+    },
+    {
+      type = "first"
+      nodes = [
+        {
+          type = "conditional"
+          nodes = [
+            {
+              type = "conditions/message-match"
+              data = {
+                self_trigger = false
+                text = "\bgoblin\b"
+              }
+            },
+            {
+              type = "actions/say"
+              data = {
+                channel_name = "${channel_name}"
+                text = "I have a quest for you."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      type = "conditional"
+      nodes = [
+        {
+          type = "conditions/state-match"
+          data = {
+            match = "equality"
+            key = "condition-${character.id}"
+            value = "cowering"
+          }
+        },
+        {
+          type = "conditions/message-match"
+          data = {
+            self_trigger = false
+            text = "\bboo\b"
+          }
+        },
+        {
+          type = "actions/emote"
+          data = {
+            channel_name = "${channel_name}"
+            text = "*again*"
+          }
+        }
+      ]
+    },
+    {
+      type = "conditional"
+      nodes = [
+        {
+          type = "conditions/state-match"
+          data = {
+            match = "inequality"
+            key = "condition-${character.id}"
+            value = "cowering"
+          }
+        },
+        {
+          type = "conditions/message-match"
+          data = {
+            self_trigger = false
+            text = "\bboo\b"
+          }
+        },
+        {
+          type = "actions/emote"
+          data = {
+            channel_name = "${channel_name}"
+            text = "hides behind a desk"
+          }
+        },
+        {
+          type = "actions/state-set"
+          data = {
+            key = "condition-${character.id}"
+            value = "cowering"
+            ttl = 60
+          }
+        }
+      ]
+    },
+    {
+      type = "conditional"
+      nodes = [
+        {
+          type = "conditions/room-enter"
+          data = {
+            self_trigger = false
+          }
+        },
+        {
+          type = "actions/say"
+          data = {
+            channel_name = "rooms:${room_id}"
+            delay = 500
+            text = "Welcome, ${character.name}!"
+          }
+        }
+      ]
+    },
+    {
+      type = "conditional"
+      nodes = [
+        {
+          type = "conditions/event-match"
+          data = {
+            topic = "characters/emote"
+            self_trigger = true
+            data = {
+              id = "looking"
+            }
+          }
+        },
+        {
+          type = "actions/emote"
+          data = {
+            channel_name = "rooms:${room_id}"
+            text = "${message}"
+          }
+        },
+        {
+          type = "actions/delay-event"
+          data = {
+            minimum_delay = 90000
+            random_delay = 180000
+            topic = "characters/emote"
+            data = {
+              id = "${id}"
+              message = "${message}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

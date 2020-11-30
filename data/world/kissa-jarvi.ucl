@@ -1,0 +1,322 @@
+zones "kissa-jarvi" {
+  name = "Kissa Järvi"
+}
+
+rooms "gates" {
+  name = "The Gates to Sammatti"
+  description = "You are in front of the gates to Sammatti."
+
+  x = 1
+  y = 3
+  z = 0
+
+  features = [
+    {
+      keyword = "lake edge"
+      short = "The lake edge creeps close to the entrance."
+      long = "The lake edge creeps close to the entrance."
+    }
+  ]
+}
+
+room_exits "gates" {
+  room_id = rooms.gates.id
+
+  north = sammatti.rooms.town_square.id
+  south = rooms.path-1.id
+}
+
+rooms "path-1" {
+  name = "Kissa Path"
+  description = "A dirt road leading away from Sammatti."
+
+  map_color = "brown"
+
+  x = 1
+  y = 2
+  z = 0
+
+  features = [
+    {
+      ref = features.stones
+    }
+  ]
+}
+
+room_exits "path-1" {
+  room_id = rooms.path-1.id
+
+  north = rooms.gates.id
+  south = rooms.path-2.id
+  west = rooms.lake-1.id
+}
+
+rooms "path-2" {
+  name = "Kissa Path"
+  description = "A dirt road leading away from Sammatti."
+
+  map_color = "brown"
+
+  x = 1
+  y = 1
+  z = 0
+
+  features = [
+    {
+      ref = features.stones
+    }
+  ]
+}
+
+room_exits "path-2" {
+  room_id = rooms.path-2.id
+
+  north = rooms.path-1.id
+  east = rooms.path-3.id
+  west = rooms.lake-2.id
+  south = rooms.lake-4.id
+}
+
+room_characters "path-2" {
+  room_id = rooms.path-2.id
+
+  characters = [
+    {
+      id = characters.wolf.id
+    }
+  ]
+}
+
+rooms "path-3" {
+  name = "Kissa Path"
+  description = "A dirt road leading away from Sammatti."
+
+  map_color = "brown"
+
+  x = 2
+  y = 1
+  z = 0
+
+  features = [
+    {
+      ref = features.stones
+    }
+  ]
+}
+
+room_exits "path-3" {
+  room_id = rooms.path-3.id
+
+  west = rooms.path-2.id
+  east = rooms.path-4.id
+  south = rooms.lake-5.id
+}
+
+room_characters "path-3" {
+  room_id = rooms.path-3.id
+
+  characters = [
+    {
+      id = characters.wolf.id
+    }
+  ]
+}
+
+rooms "path-4" {
+  name = "Kissa Path"
+  description = "A dirt road leading away from Sammatti."
+
+  map_color = "brown"
+
+  x = 3
+  y = 1
+  z = 0
+
+  features = [
+    {
+      ref = features.stones
+    }
+  ]
+}
+
+room_exits "path-4" {
+  room_id = rooms.path-4.id
+
+  west = rooms.path-3.id
+  south = rooms.lake-6.id
+}
+
+rooms "lake-1" {
+  name = "Kissa Järvi"
+  description = "A long shallow lake."
+  map_color = "blue"
+  map_icon = "drop"
+
+  x = 0
+  y = 2
+  z = 0
+
+  features = [
+    {
+      ref = features.water
+    }
+  ]
+}
+
+room_exits "lake-1" {
+  room_id = rooms.lake-1.id
+
+  east = rooms.path-1.id
+  south = rooms.lake-2.id
+}
+
+rooms "lake-2" {
+  name = "Kissa Järvi"
+  description = "A long shallow lake."
+  map_color = "blue"
+  map_icon = "drop"
+
+  x = 0
+  y = 1
+  z = 0
+
+  features = [
+    {
+      ref = features.water
+    }
+  ]
+}
+
+room_exits "lake-2" {
+  room_id = rooms.lake-2.id
+
+  north = rooms.lake-1.id
+  east = rooms.path-2.id
+  south = rooms.lake-3.id
+}
+
+rooms "lake-3" {
+  name = "Kissa Järvi"
+  description = "A long shallow lake."
+  map_color = "blue"
+  map_icon = "drop"
+
+  x = 0
+  y = 0
+  z = 0
+
+  features = [
+    {
+      ref = features.water
+    }
+  ]
+}
+
+room_exits "lake-3" {
+  room_id = rooms.lake-3.id
+
+  north = rooms.lake-2.id
+  east = rooms.lake-4.id
+}
+
+rooms "lake-4" {
+  name = "Kissa Järvi"
+  description = "A long shallow lake."
+  map_color = "blue"
+  map_icon = "drop"
+
+  x = 1
+  y = 0
+  z = 0
+
+  features = [
+    {
+      ref = features.water
+    }
+  ]
+}
+
+room_exits "lake-4" {
+  room_id = rooms.lake-4.id
+
+  north = rooms.path-2.id
+  east = rooms.lake-5.id
+  west = rooms.lake-3.id
+  south = lepakko-luola.rooms.cave-outside.id
+}
+
+rooms "lake-5" {
+  name = "Kissa Järvi"
+  description = "A long shallow lake."
+  map_color = "blue"
+  map_icon = "drop"
+
+  x = 2
+  y = 0
+  z = 0
+
+  features = [
+    {
+      ref = features.water
+    }
+  ]
+}
+
+room_exits "lake-5" {
+  room_id = rooms.lake-5.id
+
+  north = rooms.path-3.id
+  west = rooms.lake-4.id
+  east = rooms.lake-6.id
+}
+
+rooms "lake-6" {
+  name = "Kissa Järvi"
+  description = "A long shallow lake."
+  map_color = "blue"
+  map_icon = "drop"
+
+  x = 3
+  y = 0
+  z = 0
+
+  features = [
+    {
+      ref = features.water
+    }
+  ]
+}
+
+room_exits "lake-6" {
+  room_id = rooms.lake-6.id
+
+  north = rooms.path-4.id
+  west = rooms.lake-5.id
+}
+
+features "water" {
+  keyword = "water"
+  short = "The water shimmers in the sunlight."
+  long = "The water shimmers in the sunlight."
+}
+
+features "stones" {
+  keyword = "stones"
+  short = "Small stones liter the pathway."
+  long = "Small stones liter the pathway."
+}
+
+characters "wolf" {
+  name = "Wolf"
+  description = "A grey wolf."
+}
+
+characters "bobcat" {
+  name = "Bobcat"
+  description = "A large grey cat with a stubby tail."
+}
+
+characters "pike" {
+  name = "Pike"
+  description = "A long slender slivery fish."
+}

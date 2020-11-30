@@ -7,10 +7,10 @@ defmodule ExVenture.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the PubSub system
       {Phoenix.PubSub, name: ExVenture.PubSub},
       ExVenture.Config.Cache,
       ExVenture.Repo,
+      Kantele.Application,
       Web.Endpoint
     ]
 

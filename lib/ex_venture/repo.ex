@@ -1,4 +1,6 @@
 defmodule ExVenture.Repo do
+  @moduledoc false
+
   use Ecto.Repo,
     otp_app: :ex_venture,
     adapter: Ecto.Adapters.Postgres

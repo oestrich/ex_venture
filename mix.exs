@@ -20,7 +20,7 @@ defmodule ExVenture.MixProject do
   def application do
     [
       mod: {ExVenture.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:iex, :logger, :runtime_tools]
     ]
   end
 
@@ -36,8 +36,10 @@ defmodule ExVenture.MixProject do
       {:bamboo, "~> 1.3"},
       {:credo, "~> 1.1", only: [:dev, :test]},
       {:ecto_sql, "~> 3.1"},
+      {:elias, "~> 0.2"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
+      {:kalevala, "~> 0.1"},
       {:logster, "~> 1.0"},
       {:phoenix, "~> 1.5"},
       {:phoenix_ecto, "~> 4.0"},
@@ -49,6 +51,9 @@ defmodule ExVenture.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:stein, "~> 0.5"},
       {:stein_storage, git: "https://github.com/smartlogic/stein_storage.git", branch: "main"},
+      {:telemetry_metrics, "~> 0.4.0"},
+      {:telemetry_metrics_prometheus, "~> 0.3.1"},
+      {:telemetry_poller, "~> 0.4.1"},
       {:vapor, "~> 0.10.0"}
     ]
   end

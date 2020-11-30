@@ -1,4 +1,6 @@
 defmodule Web.Router do
+  @moduledoc false
+
   use Web, :router
 
   pipeline :browser do

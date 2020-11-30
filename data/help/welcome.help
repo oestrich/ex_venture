@@ -1,0 +1,5 @@
+key = "welcome"
+title = "Welcome to Kantele"
+see_also = ["newbie"]
+---
+Welcome to {color foreground="256:39"}Kantele{/color}. This is an example game for {color foreground="cyan"}Kalevala{/color}.

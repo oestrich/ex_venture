@@ -1,0 +1,34 @@
+zones "lepakko-luola" {
+  name = "Lepakko Luola"
+}
+
+rooms "cave-outside" {
+  name = "Cave Entrance"
+  description = "A rock juts up out of the ground and an entrance to a cave can be seen."
+
+  x = 0
+  y = 0
+  z = 0
+}
+
+room_exits "cave-outside" {
+  room_id = rooms.cave-outside.id
+
+  north = kissa-jarvi.rooms.lake-4.id
+  down = rooms.cave-entrance.id
+}
+
+rooms "cave-entrance" {
+  name = "Cave Entrance"
+  description = "The walls of the cave are slightly damp."
+
+  x = 0
+  y = 0
+  z = -1
+}
+
+room_exits "cave-entrance" {
+  room_id = rooms.cave-entrance.id
+
+  up = rooms.cave-outside.id
+}

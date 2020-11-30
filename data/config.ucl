@@ -1,0 +1,3 @@
+player {
+  starting_room_id = sammatti.rooms.town_square.id
+}
