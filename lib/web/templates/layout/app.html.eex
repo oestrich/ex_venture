@@ -54,6 +54,9 @@
           <ul class="list-reset flex justify-between flex-1 md:flex-none items-center">
             <%= if Map.has_key?(assigns, :current_user) do %>
               <li class="mr-3">
+                <%= link("Play", to: Routes.page_path(@conn, :client), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+              </li>
+              <li class="mr-3">
                 <%= link("Profile", to: Routes.profile_path(@conn, :show), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
               </li>
               <%= if admin?(@current_user) do %>

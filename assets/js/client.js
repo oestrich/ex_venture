@@ -5,18 +5,7 @@ import { BrowserRouter as Router, Route, Redirect, Switch, withRouter } from "re
 
 import { CustomTagsContext, Keys, makeReduxSocket, Prompt, Terminal } from "./kalevala";
 
-import {
-  Channels,
-  CharacterSelect,
-  Home,
-  Inventory,
-  Login,
-  Map,
-  Room,
-  Sidebar,
-  SidebarSplit,
-  Vitals,
-} from "./components";
+import { Channels, CharacterSelect, Inventory, Map, Room, Sidebar, SidebarSplit, Vitals } from "./components";
 import { customTags } from "./customTags";
 import { Creators, getLoginStatus } from "./redux";
 import { makeStore } from "./store";
@@ -104,7 +93,7 @@ const Client = () => {
       <ValidateLoggedIn />
       <div className="flex flex-row h-full">
         <Sidebar side="left" width="w-1/4 max-w-xs">
-          <h3 className="text-white text-3xl text-center pt-2">Kantele</h3>
+          <h3 className="text-white text-3xl text-center pt-2">ExVenture</h3>
           <Vitals />
           <SidebarSplit />
           <Inventory />
@@ -135,17 +124,11 @@ export class App extends React.Component {
         <Router basename="/client">
           <SocketProvider>
             <Switch>
-              <Route path="/login/character">
-                <CharacterSelect />
-              </Route>
-              <Route path="/login">
-                <Login />
-              </Route>
               <Route path="/play">
                 <Client />
               </Route>
               <Route>
-                <Home />
+                <CharacterSelect />
               </Route>
             </Switch>
           </SocketProvider>
