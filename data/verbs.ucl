@@ -1,0 +1,80 @@
+verbs "drop" {
+  icon = "drop"
+  text = "Drop"
+  send = "drop ${id}"
+
+  conditions = {
+    location = [
+      "inventory/self"
+    ]
+  }
+}
+
+verbs "get" {
+  icon = "grab"
+  text = "Get"
+  send = "get ${id}"
+
+  conditions = {
+    location = [
+      "room"
+    ]
+  }
+}
+
+verbs "look" {
+  icon = "magnifying-glass"
+  text = "Look"
+  send = "look ${object}"
+
+  conditions = {}
+}
+
+# Leaving these below for inspiration
+
+# verbs "equip" {
+#   text = "Equip"
+#   send = "equip ${item}"
+# 
+#   conditions = {
+#     location = [
+#       "inventory/mine"
+#     ]
+#   }
+# }
+
+# verbs "remove" {
+#   text = "Remove"
+#   send = "remove ${item}"
+# 
+#   conditions = {
+#     location = [
+#       "character/mine"
+#     ]
+#   }
+# }
+
+
+# verbs "remove-cursed" {
+#   text = "Remove"
+#   send = "remove ${item}"
+# 
+#   conditions = {
+#     location = [
+#       "character/mine"
+#     ]
+#   }
+# }
+
+# verbs "steal" {
+#   location = [
+#     "inventory/other",
+#     "character/other"
+#   ]
+# }
+
+# verbs "quaff" {
+#   location = [
+#     "inventory/mine"
+#   ]
+# }

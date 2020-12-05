@@ -1,0 +1,77 @@
+zones "global" {
+  name = "Global Resources"
+  description = "Resources that are used across multiple zones"
+}
+
+# Weapons
+
+items "axe" {
+  name = "Axe"
+  description = "A single bladed axe with a long metal handle."
+
+  verbs = [
+    "drop",
+    # "equip",
+    "get"
+    # "look",
+    # "steal",
+    # "remove"
+  ]
+}
+
+items "club" {
+  name = "Club"
+  description = "A large piece of wood, maybe a branch."
+
+  verbs = [
+    "drop",
+    # "equip",
+    "get"
+    # "look",
+    # "steal",
+    # "remove"
+  ]
+}
+
+items "dagger" {
+  name = "Dagger"
+  description = "A small curved dagger."
+
+  verbs = [
+    "drop",
+    # "equip",
+    "get"
+    # "look",
+    # "steal",
+    # "remove"
+  ]
+}
+
+items "longsword" {
+  name = "Longsword"
+  description = "A dual edged sword, with a silver hilt."
+
+  verbs = [
+    "drop",
+    # "equip",
+    "get"
+    # "look",
+    # "steal",
+    # "remove"
+  ]
+}
+
+# Healing
+
+items "potion" {
+  name = "Healing Potion"
+  description = "A potion to heal what ails you."
+
+  verbs = [
+    "drop",
+    "get"
+    # "look",
+    # "quaff",
+    # "steal"
+  ]
+}

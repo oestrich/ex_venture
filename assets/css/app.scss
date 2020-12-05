@@ -1,5 +1,3 @@
-/* This file is for your main application css. */
-
 @tailwind base;
 
 @tailwind components;
@@ -8,7 +6,7 @@
   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
 
   &:focus {
-    @apply outline-none shadow-outline;
+    @apply outline-none ring;
   }
 
   &:hover {
@@ -20,12 +18,24 @@
   @apply bg-gray-200 font-bold py-2 px-2 rounded text-center;
 
   &:focus {
-    @apply outline-none shadow-outline;
+    @apply outline-none ring;
   }
 
   &:hover {
     @apply bg-gray-400;
   }
+}
+
+.btn-inactive {
+  @apply bg-gray-500 text-white font-bold py-2 px-4 rounded;
+}
+
+.btn-inactive:focus {
+  @apply outline-none ring;
+}
+
+.btn-inactive:hover {
+  @apply bg-gray-700;
 }
 
 .form {
@@ -41,7 +51,7 @@
 }
 
 .input:focus {
-  @apply outline-none shadow-outline;
+  @apply outline-none ring;
 }
 
 .input-group {
@@ -76,12 +86,26 @@
   }
 }
 
+.tooltip {
+  @apply absolute hidden mt-1 z-50 bg-black text-white text-sm rounded py-1 px-4 opacity-75 border-solid border border-gray-600;
+}
+
+.tooltip-hover {
+  &.right .tooltip {
+    @apply right-0;
+  }
+
+  &:hover .tooltip {
+    @apply block;
+  }
+}
+
 .admin {
   .btn-primary {
     @apply bg-purple-600 text-white font-bold py-2 px-2 rounded text-center ml-1;
 
     &:focus {
-      @apply outline-none shadow-outline;
+      @apply outline-none ring;
     }
 
     &:hover {
@@ -103,7 +127,7 @@
     @apply bg-gray-200 font-bold py-2 px-2 rounded text-center ml-1;
 
     &:focus {
-      @apply outline-none shadow-outline;
+      @apply outline-none ring;
     }
 
     &:hover {
@@ -163,3 +187,132 @@
 }
 
 @tailwind utilities;
+
+.blink {
+  animation: 2s linear infinite blink_effect;
+}
+
+@keyframes blink_effect {
+  0% {
+    visibility: hidden;
+  }
+
+  50% {
+    visibility: hidden;
+  }
+
+  100% {
+    visibility: visible;
+  }
+}
+
+div::-webkit-scrollbar {
+  display: none;
+}
+
+div {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@import "colors";
+
+.map {
+  background: #1a202c;
+  border-radius: 10px;
+  display: inline-block;
+  height: 310px;
+  width: 310px;
+}
+
+@mixin map-color($fill, $stroke, $strokeActive) {
+  fill: $fill;
+  stroke: $stroke;
+
+  &:hover {
+    stroke: $strokeActive;
+  }
+
+  &.active {
+    stroke: $strokeActive;
+  }
+}
+
+@mixin map-exit($fill, $stroke) {
+  rect {
+    fill: $fill;
+  }
+
+  polyline {
+    stroke: $stroke;
+  }
+}
+
+.cell {
+  stroke-width: 2;
+
+  @include map-color($gray-500, $gray-600, $gray-100);
+
+  .icon {
+    fill: $gray-900;
+  }
+
+  &.blue {
+    @include map-color($blue-500, $blue-600, $blue-100);
+
+    .icon {
+      fill: $gray-100;
+    }
+  }
+
+  &.brown {
+    @include map-color($yellow-800, $yellow-900, $yellow-600);
+
+    .icon {
+      fill: $gray-100;
+    }
+  }
+
+  &.green {
+    @include map-color($green-500, $green-600, $green-100);
+
+    .icon {
+      fill: $gray-800;
+    }
+  }
+
+  &.yellow {
+    @include map-color($yellow-500, $yellow-600, $yellow-100);
+
+    .icon {
+      fill: $gray-800;
+    }
+  }
+}
+
+.cell-exit {
+  rect {
+    fill: $gray-500;
+  }
+
+  polyline {
+    stroke: $gray-600;
+    stroke-width: 2;
+  }
+
+  &.blue {
+    @include map-exit($blue-500, $blue-600);
+  }
+
+  &.brown {
+    @include map-exit($yellow-800, $yellow-900);
+  }
+
+  &.green {
+    @include map-exit($green-500, $green-600);
+  }
+
+  &.yellow {
+    @include map-exit($yellow-500, $yellow-600);
+  }
+}

@@ -1,0 +1,9 @@
+key = "say"
+title = "Say"
+---
+Syntax: {color foreground="white"}say message{/color}
+        {color foreground="white"}say @character message{/color}
+        {color foreground="white"}say @"character name" message{/color}
+        {color foreground="white"}say >adverb message{/color}
+
+To communicate with other characters in the same room as you, use the {color foreground="white"}say{/color} command.

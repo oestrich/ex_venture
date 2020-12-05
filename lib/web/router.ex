@@ -1,4 +1,6 @@
 defmodule Web.Router do
+  @moduledoc false
+
   use Web, :router
 
   pipeline :browser do
@@ -27,6 +29,10 @@ defmodule Web.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    get("/client", PageController, :client)
+
+    get("/client*page", PageController, :client)
 
     get("/sign-in", SessionController, :new)
 

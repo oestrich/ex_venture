@@ -1,0 +1,85 @@
+brains "villager" {
+  type = "first"
+  nodes = [
+    {
+      ref = brains.generic_hello
+    },
+    {
+      type = "conditional"
+      nodes = [
+        {
+          type = "conditions/room-enter"
+          data = {
+            self_trigger = false
+          }
+        },
+        {
+          type = "actions/say"
+          data = {
+            channel_name = "rooms:${room_id}"
+            delay = 500
+            text = "Welcome, ${character.name}!"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+brains "wandering_villager" {
+  type = "first"
+  nodes = [
+    {
+      type = "conditional"
+      nodes = [
+        {
+          type = "conditions/message-match"
+          data = {
+            self_trigger = false
+            text = "\bhi\b"
+          }
+        },
+        {
+          type = "sequence"
+          nodes = [
+            {
+              type = "actions/say"
+              data = {
+                channel_name = "${channel_name}"
+                text = "Hello!"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      type = "conditional"
+      nodes = [
+        {
+          type = "conditions/event-match"
+          data = {
+            topic = "characters/move"
+            data = {
+              id = "wander"
+            }
+          }
+        },
+        {
+          type = "actions/wander"
+        },
+        {
+          type = "actions/delay-event"
+          data = {
+            minimum_delay = 18000
+            random_delay = 18000
+            topic = "characters/move"
+            data = {
+              id = "${id}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

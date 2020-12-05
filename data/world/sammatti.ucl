@@ -1,0 +1,416 @@
+zones "sammatti" {
+  name = "Sammatti"
+}
+
+rooms "town_square" {
+  name = "Town Square"
+  description = "You are in the town square."
+
+  map_icon = "wooden-sign"
+
+  x = 0
+  y = 0
+  z = 0
+
+  features = [
+    {
+      keyword = "Lohikäärme"
+      short = "To the east is Lohikäärme, a small inn."
+      long = "To the east is Lohikäärme, a small inn."
+    },
+    {
+      keyword = "Seppä"
+      short = "To the west is Seppä, the local blacksmith."
+      long = "To the west is Seppä, the local blacksmith."
+    }
+  ]
+}
+
+room_exits "town_square" {
+  room_id = rooms.town_square.id
+
+  north = rooms.marketplace.id
+  east = rooms.inn.id
+  west = rooms.blacksmith.id
+
+  south = "kissa-jarvi.rooms.gates.id"
+}
+
+room_characters "town_square" {
+  room_id = rooms.town_square.id
+
+  characters = [
+    {
+      id = characters.town_crier.id
+    },
+    {
+      id = characters.wandering_villager.id
+    }
+  ]
+}
+
+room_items "town_square" {
+  room_id = rooms.town_square.id
+
+  items = [
+    {
+      id = global.items.longsword.id
+    },
+    {
+      id = global.items.potion.id
+    }
+  ]
+}
+
+rooms "marketplace" {
+  name = "Marketplace"
+  description = "There are sellers hawking their wares all around you."
+
+  map_icon = "shop"
+
+  x = 0
+  y = 1
+  z = 0
+}
+
+room_exits "marketplace" {
+  room_id = rooms.marketplace.id
+
+  east = rooms.well.id
+  north = rooms.guild_hall.id
+  south = rooms.town_square.id
+  west = rooms.main-street-1.id
+}
+
+rooms "inn" {
+  name = "Lohikäärme"
+  description = "The interior of the small inn. There are several chairs sitting around a table. A small staircase leads upstairs."
+
+  map_color = "yellow"
+  map_icon = "stein"
+
+  x = 1
+  y = 0
+  z = 0
+}
+
+room_exits "inn" {
+  room_id = rooms.inn.id
+
+  west = rooms.town_square.id
+  up = rooms.inn_upstairs.id
+}
+
+room_characters "inn" {
+  room_id = rooms.inn.id
+
+  characters = [
+    {
+      id = characters.villager.id
+      name = "Tapio"
+    }
+  ]
+}
+
+rooms "inn_upstairs" {
+  name = "Lohikäärme Upstairs"
+  description = "The upstairs of the small inn. A small staircase leads downstairs."
+
+  x = 1
+  y = 0
+  z = 1
+}
+
+room_exits "inn_upstairs" {
+  room_id = rooms.inn_upstairs.id
+
+  down = rooms.inn.id
+}
+
+rooms "well" {
+  name = "Town Well"
+  description = ""
+
+  map_color = "green"
+  map_icon = "well"
+
+  x = 1
+  y = 1
+  z = 0
+
+  features = [
+    {
+      keyword = "well"
+      short = "A well with a bucket dangling is off to the side of the road in this part of town."
+      long = "A well with a bucket dangling is off to the side of the road in this part of town."
+    }
+  ]
+}
+
+room_exits "well" {
+  room_id = rooms.well.id
+
+  north = rooms.park-3.id
+  east = rooms.park-1.id
+  west = rooms.marketplace.id
+}
+
+rooms "guild_hall" {
+  name = "Trader's Guild Hall"
+  description = "The local trader guild's guildhall."
+
+  map_color = "yellow"
+  map_icon = "coins"
+
+  x = 0
+  y = 2
+  z = 0
+}
+
+room_exits "guild_hall" {
+  room_id = rooms.guild_hall.id
+
+  south = rooms.marketplace.id
+  west = rooms.main-street-2.id
+}
+
+rooms "blacksmith" {
+  name = "Seppä"
+  description = "The local blacksmith."
+
+  map_color = "yellow"
+  map_icon = "hammer"
+
+  x = -1
+  y = 0
+  z = 0
+}
+
+room_exits "blacksmith" {
+  room_id = rooms.blacksmith.id
+
+  east = rooms.town_square.id
+}
+
+room_characters "blacksmith" {
+  room_id = rooms.blacksmith.id
+
+  characters = [
+    {
+      id = characters.villager.id
+      name = "Anni"
+    }
+  ]
+}
+
+rooms "main-street-1" {
+  name = "Main Street"
+  description = "A cobblestone road."
+
+  x = -1
+  y = 1
+  z = 0
+}
+
+room_exits "main-street-1" {
+  room_id = rooms.main-street-1.id
+
+  east = rooms.marketplace.id
+  north = rooms.main-street-2.id
+}
+
+rooms "main-street-2" {
+  name = "Main Street"
+  description = "A cobblestone road."
+
+  x = -1
+  y = 2
+  z = 0
+}
+
+room_exits "main-street-2" {
+  room_id = rooms.main-street-2.id
+
+  south = rooms.main-street-1.id
+  east = rooms.guild_hall.id
+  west = rooms.main-street-3.id
+}
+
+rooms "main-street-3" {
+  name = "Main Street"
+  description = "A cobblestone road."
+
+  x = -2
+  y = 2
+  z = 0
+}
+
+room_exits "main-street-3" {
+  room_id = rooms.main-street-3.id
+
+  north = rooms.town-hall.id
+  south = rooms.residence-1.id
+  east = rooms.main-street-2.id
+  west = rooms.residence-2.id
+}
+
+rooms "park-1" {
+  name = "Pysäköidä"
+  description = "A small park"
+
+  map_color = "green"
+  map_icon = "pine-tree"
+
+  x = 2
+  y = 1
+  z = 0
+}
+
+room_exits "park-1" {
+  room_id = rooms.park-1.id
+
+  north = rooms.park-2.id
+  west = rooms.well.id
+}
+
+rooms "park-2" {
+  name = "Pysäköidä"
+  description = "A small pond sits tranquil."
+
+  map_color = "blue"
+  map_icon = "drop"
+
+  x = 2
+  y = 2
+  z = 0
+
+  features = [
+    {
+      keyword = "spring"
+      short = "A small spring bubbles up out of some rocks."
+      long = "A small spring bubbles up out of some rocks."
+    }
+  ]
+}
+
+room_exits "park-2" {
+  room_id = rooms.park-2.id
+
+  south = rooms.park-1.id
+  west = rooms.park-3.id
+}
+
+rooms "park-3" {
+  name = "Pysäköidä"
+  description = "A small park"
+
+  map_color = "green"
+  map_icon = "pine-tree"
+
+  x = 1
+  y = 2
+  z = 0
+}
+
+room_exits "park-3" {
+  room_id = rooms.park-3.id
+
+  south = rooms.well.id
+  east = rooms.park-2.id
+}
+
+rooms "residence-1" {
+  name = "Town Residence"
+  description = "A small house"
+
+  map_icon = "family-house"
+  map_color = "yellow"
+
+  x = -2
+  y = 1
+  z = 0
+}
+
+room_exits "residence-1" {
+  room_id = rooms.residence-1.id
+
+  north = rooms.main-street-3.id
+}
+
+rooms "residence-2" {
+  name = "Town Residence"
+  description = "A small house"
+
+  map_icon = "family-house"
+  map_color = "yellow"
+
+  x = -3
+  y = 2
+  z = 0
+}
+
+room_exits "residence-2" {
+  room_id = rooms.residence-2.id
+
+  east = rooms.main-street-3.id
+}
+
+rooms "town-hall" {
+  name = "Town Hall"
+  description = "The town hall"
+
+  map_icon = "triple-gate"
+  map_color = "yellow"
+
+  x = -2
+  y = 3
+  z = 0
+}
+
+room_exits "town-hall" {
+  room_id = rooms.town-hall.id
+
+  south = rooms.main-street-3.id
+}
+
+characters "town_crier" {
+  name = "Town Crier"
+  description = "A small man with a loud voice."
+
+  initial_events = [
+    {
+      topic = "characters/emote"
+      delay = 3000
+      data = {
+        id = "looking"
+        message = "looks around for someone to talk to."
+      }
+    }
+  ]
+
+  brain = brains.town_crier
+}
+
+characters "villager" {
+  name = "Villager"
+  description = "A villager of Sammatti."
+
+  brain = brains.villager
+}
+
+characters "wandering_villager" {
+  name = "Villager"
+  description = "A villager of Sammatti."
+
+  initial_events = [
+    {
+      topic = "characters/move"
+      delay = 5000
+      data = {
+        id = "wander"
+      }
+    }
+  ]
+
+  brain = brains.wandering_villager
+}

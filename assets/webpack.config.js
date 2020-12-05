@@ -30,13 +30,16 @@ module.exports = (env, options) => ({
         }
       },
       {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },
+      {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: /\.scss$/,
         use: [
-          'style-loader', // creates style nodes from JS strings
           MiniCssExtractPlugin.loader,
           'css-loader', // translates CSS into CommonJS
           'sass-loader', // compiles Sass to CSS, using Node Sass by default
@@ -44,7 +47,7 @@ module.exports = (env, options) => ({
         ]
       },
       {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
         use: [
           {
             loader: 'file-loader',
@@ -59,10 +62,10 @@ module.exports = (env, options) => ({
   },
   plugins: [
     new MiniCssExtractPlugin({ filename: '../css/app.css' }),
-    new CopyWebpackPlugin([{ from: 'static/', to: '../' }]),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery'
-    })
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'static/', to: '../' },
+      ]
+    }),
   ]
 });

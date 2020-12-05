@@ -1,0 +1,7 @@
+key = "whisper"
+title = "Whisper"
+---
+Syntax: {color foreground="white"}whisper character message{/color}
+        {color foreground="white"}whisper "character name" message{/color}
+
+Whisper sends a semi private message to another character. Other characters in the room will still see that the communication is happening, but just that the two of you are talking in hushed tones.

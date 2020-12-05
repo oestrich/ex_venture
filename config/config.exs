@@ -11,6 +11,8 @@ config :ex_venture,
   namespace: Web,
   ecto_repos: [ExVenture.Repo]
 
+config :ex_venture, :listener, start: true
+
 # Configures the endpoint
 config :ex_venture, Web.Endpoint,
   render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
