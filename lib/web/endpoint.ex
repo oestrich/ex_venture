@@ -3,6 +3,7 @@ defmodule Web.Endpoint do
 
   use Phoenix.Endpoint, otp_app: :ex_venture
 
+  alias ExVenture.Application.KalevalaSupervisor
   alias ExVenture.Config
 
   socket "/socket", Web.UserSocket,
@@ -57,9 +58,33 @@ defmodule Web.Endpoint do
   def init(_type, config) do
     vapor_config = Config.endpoint()
 
+    websocket_config = %{
+      handler: [
+        output_processors: [
+          Kalevala.Output.Tags,
+          Kantele.Output.AdminTags,
+          Kantele.Output.SemanticColors,
+          Kantele.Output.Tooltips,
+          Kantele.Output.Commands,
+          Kalevala.Output.Tables,
+          Kalevala.Output.Websocket
+        ]
+      ],
+      foreman: KalevalaSupervisor.foreman_options()
+    }
+
     config =
       Keyword.merge(config,
-        http: [port: vapor_config.http_port],
+        http: [
+          port: vapor_config.http_port,
+          dispatch: [
+            {:_,
+             [
+               {"/socket", Kalevala.Websocket.Handler, websocket_config},
+               {:_, Phoenix.Endpoint.Cowboy2Handler, {Web.Endpoint, []}}
+             ]}
+          ]
+        ],
         secret_key_base: vapor_config.secret_key_base,
         url: [
           host: vapor_config.url_host,
