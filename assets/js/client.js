@@ -132,7 +132,7 @@ export class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <Router>
+        <Router basename="/client">
           <SocketProvider>
             <Switch>
               <Route path="/login/character">
@@ -141,7 +141,7 @@ export class App extends React.Component {
               <Route path="/login">
                 <Login />
               </Route>
-              <Route path="/client">
+              <Route path="/play">
                 <Client />
               </Route>
               <Route>

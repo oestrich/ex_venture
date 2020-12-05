@@ -65,7 +65,7 @@ const eventTextHandlers = {
     dispatch(KalevalaCreators.socketReceivedEvent({ topic: "system/display", data: text }, { history }));
     dispatch(Creators.loggedIn(data.character));
 
-    history.push("/client");
+    history.push("/play");
   },
   "Room.CharacterEnter": (dispatch, getState, event, { history }) => {
     const { data, text } = event;

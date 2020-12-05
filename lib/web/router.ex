@@ -30,7 +30,7 @@ defmodule Web.Router do
 
     get "/", PageController, :index
 
-    get("/client", PageController, :client)
+    get("/client*page", PageController, :client)
 
     get("/sign-in", SessionController, :new)
 
