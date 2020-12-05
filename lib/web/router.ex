@@ -30,6 +30,8 @@ defmodule Web.Router do
 
     get "/", PageController, :index
 
+    get("/client", PageController, :client)
+
     get("/sign-in", SessionController, :new)
 
     post("/sign-in", SessionController, :create)
