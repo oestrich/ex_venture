@@ -1,5 +1,3 @@
-/* This file is for your main application css. */
-
 @tailwind base;
 
 @tailwind components;
@@ -8,7 +6,7 @@
   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
 
   &:focus {
-    @apply outline-none shadow-outline;
+    @apply outline-none ring;
   }
 
   &:hover {
@@ -20,7 +18,7 @@
   @apply bg-gray-200 font-bold py-2 px-2 rounded text-center;
 
   &:focus {
-    @apply outline-none shadow-outline;
+    @apply outline-none ring;
   }
 
   &:hover {
@@ -33,7 +31,7 @@
 }
 
 .btn-inactive:focus {
-  @apply outline-none shadow-outline;
+  @apply outline-none ring;
 }
 
 .btn-inactive:hover {
@@ -53,7 +51,7 @@
 }
 
 .input:focus {
-  @apply outline-none shadow-outline;
+  @apply outline-none ring;
 }
 
 .input-group {
@@ -107,7 +105,7 @@
     @apply bg-purple-600 text-white font-bold py-2 px-2 rounded text-center ml-1;
 
     &:focus {
-      @apply outline-none shadow-outline;
+      @apply outline-none ring;
     }
 
     &:hover {
@@ -129,7 +127,7 @@
     @apply bg-gray-200 font-bold py-2 px-2 rounded text-center ml-1;
 
     &:focus {
-      @apply outline-none shadow-outline;
+      @apply outline-none ring;
     }
 
     &:hover {

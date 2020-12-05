@@ -72,7 +72,7 @@ class Prompt extends React.Component {
 
   render() {
     const promptClasses =
-      "mr-4 ml-4 shadow appearance-none border focus:border-0 border-teal-800 rounded w-full py-2 px-3 bg-gray-800 text-gray-200 leading-tight focus:outline-none focus:shadow-outline";
+      "mr-4 ml-4 shadow appearance-none border focus:border-0 border-teal-800 rounded w-full py-2 px-3 bg-gray-800 text-gray-200 leading-tight focus:outline-none focus:ring";
 
     return (
       <div className="flex p-4 bg-gray-900 border-t-2 border-teal-800">
