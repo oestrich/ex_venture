@@ -18,7 +18,7 @@ defmodule Web.Endpoint do
     at: "/",
     from: :ex_venture,
     gzip: false,
-    only_matching: ["apple", "favicon"],
+    only_matching: ["apple", "favicon", "android"],
     only: ~w(css fonts images js favicon.ico robots.txt manifest.json)
 
   # Code reloading can be explicitly enabled under the
