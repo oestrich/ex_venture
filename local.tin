@@ -1,0 +1,36 @@
+#format IAC  %a 255
+#format DONT %a 254
+#format DO   %a 253
+#format WONT %a 252
+#format WILL %a 251
+#format SB   %a 250
+#format SE   %a 240
+
+#format GMCP %a 201
+
+#nop Turn telnet debug off once everything works as it's spammy.
+
+#nop config {debug telnet} {on}
+
+#var CLIENT_NAME TinTin++
+#var CLIENT_VERSION 2.01
+
+#event {PROGRAM START}
+{
+        #var CLIENT_NAME %0;
+        #var CLIENT_VERSION %1
+}
+
+#event {IAC WILL GMCP}
+{
+        #send {$IAC$DO$GMCP\};
+        #send {$IAC$SB$GMCP Core.Hello { "client": "$CLIENT_NAME", "version": "$CLIENT_VERSION" } $IAC$SE\};
+        #send {$IAC$SB$GMCP Core.Supports.Set [ "Character 1" ] $IAC$SE\}
+}
+
+#event {IAC SB GMCP Character IAC SE}
+{
+        #var CHARACTER_INFO {%0};
+}
+
+#alias {connect} {#split; #session sampo 127.0.0.1 4646}
