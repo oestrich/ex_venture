@@ -7,7 +7,7 @@ defmodule Web.PageController do
 
   def client(conn, _params) do
     conn
-    |> put_layout(false)
+    |> put_layout("simple.html")
     |> render("client.html")
   end
 end

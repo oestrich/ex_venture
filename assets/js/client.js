@@ -89,7 +89,7 @@ ValidateLoggedIn = connect(mapStateToProps)(ValidateLoggedIn);
 
 const Client = () => {
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <ValidateLoggedIn />
       <div className="flex flex-row h-full">
         <Sidebar side="left" width="w-1/4 max-w-xs">

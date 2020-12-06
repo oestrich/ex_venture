@@ -1,0 +1,15 @@
+<meta property="og:site_name" content="<%= gettext("ExVenture") %>" />
+
+<%= if Map.has_key?(assigns, :open_graph_title) do %>
+  <meta property="og:title" content="<%= @open_graph_title %>" />
+<% end %>
+
+<%= if Map.has_key?(assigns, :open_graph_description) do %>
+  <meta property="og:description" content="<%= @open_graph_description %>" />
+<% end %>
+
+<%= if Map.has_key?(assigns, :open_graph_url) do %>
+  <meta property="og:url" content="<%= @open_graph_url %>" />
+<% end %>
+
+<meta name="twitter:card" content="summary" />
