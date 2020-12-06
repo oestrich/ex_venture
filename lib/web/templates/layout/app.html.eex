@@ -25,25 +25,25 @@
           <ul class="list-reset flex justify-between flex-1 md:flex-none items-center">
             <%= if Map.has_key?(assigns, :current_user) do %>
               <li class="mr-3">
-                <%= link("Play", to: Routes.page_path(@conn, :client), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+                <%= link("Play", to: Routes.page_path(@conn, :client), class: "inline-block text-white no-underline px-4 py-2 leading-none border rounded border-white hover:border-transparent hover:text-blue-600 hover:bg-white") %>
               </li>
               <li class="mr-3">
-                <%= link("Profile", to: Routes.profile_path(@conn, :show), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+                <%= link("Profile", to: Routes.profile_path(@conn, :show), class: "link") %>
               </li>
               <%= if admin?(@current_user) do %>
                 <li class="mr-3">
-                  <%= link("Admin", to: Routes.admin_dashboard_path(@conn, :index), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+                  <%= link("Admin", to: Routes.admin_dashboard_path(@conn, :index), class: "link") %>
                 </li>
               <% end %>
               <li class="mr-3">
-                <%= link("Sign Out", to: Routes.session_path(@conn, :delete), method: :delete, class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+                <%= link("Sign Out", to: Routes.session_path(@conn, :delete), method: :delete, class: "link") %>
               </li>
             <% else %>
               <li class="mr-3">
-                <%= link("Register", to: Routes.registration_path(@conn, :new), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+                <%= link("Register", to: Routes.registration_path(@conn, :new), class: "link") %>
               </li>
               <li class="mr-3">
-                <%= link("Sign In", to: Routes.session_path(@conn, :new), class: "inline-block text-white no-underline hover:text-gray-200 hover:text-underline py-2 px-4") %>
+                <%= link("Sign In", to: Routes.session_path(@conn, :new), class: "link") %>
               </li>
             <% end %>
           </ul>
