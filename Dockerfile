@@ -1,6 +1,6 @@
-FROM hexpm/elixir:1.11.1-erlang-23.1.1-ubuntu-groovy-20201022.1 as builder
+FROM hexpm/elixir:1.11.1-erlang-23.0.2-alpine-3.12.1 as builder
 
-RUN apt-get install -y git build-essential
+RUN apk add --no-cache gcc git make musl-dev
 RUN mix local.rebar --force && mix local.hex --force
 WORKDIR /app
 ENV MIX_ENV=prod
@@ -11,11 +11,9 @@ RUN mix deps.compile
 FROM node:12.18 as frontend
 WORKDIR /app
 COPY assets/package.json assets/yarn.lock /app/
-COPY --from=builder /app/deps/phoenix /deps/phoenix
-COPY --from=builder /app/deps/phoenix_html /deps/phoenix_html
 RUN yarn install
 COPY assets /app
-RUN npm run deploy
+RUN yarn deploy
 
 FROM builder as releaser
 COPY --from=frontend /priv/static /app/priv/static
@@ -23,9 +21,11 @@ COPY . /app/
 RUN mix phx.digest
 RUN mix release
 
-FROM ubuntu:groovy
+FROM alpine:3.12
+RUN apk add --no-cache bash openssl
 WORKDIR /app
 COPY --from=releaser /app/_build/prod/rel/ex_venture /app/
+COPY --from=releaser /app/data /app/data/
 ENV MIX_ENV=prod
 EXPOSE 4000
 ENTRYPOINT ["bin/ex_venture"]
