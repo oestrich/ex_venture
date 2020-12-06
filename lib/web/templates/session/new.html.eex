@@ -8,7 +8,7 @@
           <%= label(f, :email, class: "label") %>
         </div>
         <div class="md:w-2/3">
-          <%= text_input(f, :email, type: :email, class: "input") %>
+          <%= text_input(f, :email, type: :email, class: "input", autofocus: "autofocus") %>
         </div>
       </div>
       <div class="md:flex md:items-center mb-6">
