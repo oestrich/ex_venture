@@ -30,10 +30,6 @@ defmodule Web.Router do
 
     get "/", PageController, :index
 
-    get("/client", PageController, :client)
-
-    get("/client*page", PageController, :client)
-
     get("/sign-in", SessionController, :new)
 
     post("/sign-in", SessionController, :create)
@@ -57,6 +53,10 @@ defmodule Web.Router do
 
   scope "/", Web do
     pipe_through([:browser, :logged_in])
+
+    get("/client", PageController, :client)
+
+    get("/client*page", PageController, :client)
 
     resources("/profile", ProfileController, singleton: true, only: [:show, :edit, :update])
   end
