@@ -42,7 +42,7 @@
     z: 0
   })
 
-{:ok, _market} = ExVenture.Rooms.publish(town_square)
+{:ok, _town_square} = ExVenture.Rooms.publish(town_square)
 
 {:ok, market} =
   ExVenture.Rooms.create(sammatti, %{
