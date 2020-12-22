@@ -3,10 +3,13 @@ defmodule ExVenture.TestHelpers do
   Test Helpers for creating database records
   """
 
+  alias ExVenture.APIKeys
   alias ExVenture.Repo
   alias ExVenture.Rooms
   alias ExVenture.Users
   alias ExVenture.Zones
+
+  def create_api_key(params \\ %{}), do: APIKeys.create(params)
 
   def create_user(params \\ %{}) do
     params =

@@ -23,6 +23,7 @@ defmodule Web.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Web.Plugs.ValidateAPIKey
   end
 
   scope "/", Web do
@@ -85,6 +86,12 @@ defmodule Web.Router do
     post("/zones/:id/publish", ZoneController, :publish, as: :zone)
 
     delete("/zones/:id/changes", ZoneController, :delete_changes, as: :zone_changes)
+  end
+
+  scope "/api", Web.API, as: :api do
+    pipe_through([:api])
+
+    resources("/zones", ZoneController, only: [:index, :show])
   end
 
   if Mix.env() == :dev do
