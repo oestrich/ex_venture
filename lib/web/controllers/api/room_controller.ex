@@ -26,6 +26,12 @@ defmodule Web.API.RoomController do
         conn
         |> assign(:room, room)
         |> render("show.json")
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(404)
+        |> put_view(Web.ErrorView)
+        |> render("404.json")
     end
   end
 end

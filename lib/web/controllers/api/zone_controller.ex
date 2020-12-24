@@ -21,8 +21,13 @@ defmodule Web.API.ZoneController do
       {:ok, zone} ->
         conn
         |> assign(:zone, zone)
-        |> assign(:mini_map, Zones.make_mini_map(zone))
         |> render("show.json")
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(404)
+        |> put_view(Web.ErrorView)
+        |> render("404.json")
     end
   end
 end
