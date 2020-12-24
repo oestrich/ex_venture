@@ -19,11 +19,15 @@ defmodule Web.API.ZoneView do
   def render("show.json", %{zone: zone}) do
     %{
       name: zone.name,
-      published?: not is_nil(zone.live_at),
+      live?: not is_nil(zone.live_at),
       links: [
         %Link{
           rel: :self,
           href: Routes.api_zone_path(Endpoint, :show, zone.id)
+        },
+        %Link{
+          rel: :rooms,
+          href: Routes.api_zone_room_path(Endpoint, :index, zone.id)
         }
       ]
     }

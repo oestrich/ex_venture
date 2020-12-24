@@ -74,11 +74,25 @@ defmodule ExVenture.Rooms do
   @doc """
   Get all rooms, paginated
   """
-  def all(opts \\ []) do
+  def all(opts) do
     opts = Enum.into(opts, %{})
 
     Room
     |> order_by([r], asc: r.zone_id, asc: r.name)
+    |> preload([:staged_changes, :zone])
+    |> Repo.paginate(opts[:page], opts[:per])
+    |> staged_changes()
+  end
+
+  @doc """
+  Get all rooms for a zone, paginated
+  """
+  def all(zone, opts) do
+    opts = Enum.into(opts, %{})
+
+    Room
+    |> where([r], r.zone_id == ^zone.id)
+    |> order_by([r], asc: r.name)
     |> preload([:staged_changes, :zone])
     |> Repo.paginate(opts[:page], opts[:per])
     |> staged_changes()
