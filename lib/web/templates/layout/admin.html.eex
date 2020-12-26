@@ -47,7 +47,7 @@
             <i class="fas fa-home mr-4"></i> Home Page &raquo;
           <% end %>
           <span class="block px-2 py-1 text-gray-200 text-sm border-t border-gray-500">System</span>
-          <%= link(to: Routes.admin_staged_changes_path(@conn, :index), class: tab_active?(@active_tab, :staged_changes)) do %>
+          <%= link(to: Routes.admin_staged_change_path(@conn, :index), class: tab_active?(@active_tab, :staged_changes)) do %>
             <i class="fas fa-exchange-alt mr-4"></i> Staged Changes
           <% end %>
           <%= link(to: Routes.admin_user_path(@conn, :index), class: tab_active?(@active_tab, :users)) do %>

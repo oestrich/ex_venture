@@ -1,4 +1,4 @@
-defmodule Web.Admin.StagedChangesView do
+defmodule Web.Admin.StagedChangeView do
   use Web, :view
 
   alias ExVenture.Rooms.Room
@@ -22,7 +22,7 @@ defmodule Web.Admin.StagedChangesView do
 
   def delete_staged_change_link(conn, %{struct: %Room{}} = staged_change) do
     link("Delete",
-      to: Routes.admin_staged_changes_path(conn, :delete, staged_change.id, type: "room"),
+      to: Routes.admin_staged_change_path(conn, :delete, staged_change.id, type: "room"),
       method: :delete,
       class: "text-xs btn-secondary"
     )
@@ -30,7 +30,7 @@ defmodule Web.Admin.StagedChangesView do
 
   def delete_staged_change_link(conn, %{struct: %Zone{}} = staged_change) do
     link("Delete",
-      to: Routes.admin_staged_changes_path(conn, :delete, staged_change.id, type: "zone"),
+      to: Routes.admin_staged_change_path(conn, :delete, staged_change.id, type: "zone"),
       method: :delete,
       class: "text-xs btn-secondary"
     )

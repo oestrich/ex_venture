@@ -67,7 +67,7 @@ defmodule Web.Router do
 
     get("/", DashboardController, :index)
 
-    post("/staged-changes/commit", StagedChangesController, :commit)
+    post("/staged-changes/commit", StagedChangeController, :commit)
 
     resources("/rooms", RoomController, only: [:index, :show, :edit, :update])
 
@@ -75,7 +75,7 @@ defmodule Web.Router do
 
     delete("/rooms/:id/changes", RoomController, :delete_changes, as: :room_changes)
 
-    resources("/staged-changes", StagedChangesController, only: [:index, :delete])
+    resources("/staged-changes", StagedChangeController, only: [:index, :delete])
 
     resources("/users", UserController, only: [:index, :show])
 

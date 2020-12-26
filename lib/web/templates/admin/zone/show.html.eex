@@ -24,7 +24,7 @@
       Attributes
 
       <%= if !Enum.empty?(@zone.staged_changes) do %>
-        <%= link(to: Routes.admin_staged_changes_path(@conn, :index) <> "#zone-#{@zone.id}") do %>
+        <%= link(to: Routes.admin_staged_change_path(@conn, :index) <> "#zone-#{@zone.id}") do %>
           <span class="text-sm text-purple-700 italic">
             This includes staged changes
           </span>

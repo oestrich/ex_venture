@@ -1,4 +1,4 @@
-defmodule Web.Admin.StagedChangesController do
+defmodule Web.Admin.StagedChangeController do
   use Web, :controller
 
   alias ExVenture.StagedChanges
@@ -17,7 +17,7 @@ defmodule Web.Admin.StagedChangesController do
       {:ok, _staged_changes} ->
         conn
         |> put_flash(:info, "Change deleted")
-        |> redirect(to: Routes.admin_staged_changes_path(conn, :index))
+        |> redirect(to: Routes.admin_staged_change_path(conn, :index))
     end
   end
 
@@ -26,7 +26,7 @@ defmodule Web.Admin.StagedChangesController do
       :ok ->
         conn
         |> put_flash(:info, "Changes committed!")
-        |> redirect(to: Routes.admin_staged_changes_path(conn, :index))
+        |> redirect(to: Routes.admin_staged_change_path(conn, :index))
     end
   end
 end

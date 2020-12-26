@@ -3,7 +3,7 @@
 
   <%= if !Enum.empty?(@staged_changes) do %>
     <div class="actions">
-      <%= link("Commit Changes", to: Routes.admin_staged_changes_path(@conn, :commit), method: :post, class: "btn-primary") %>
+      <%= link("Commit Changes", to: Routes.admin_staged_change_path(@conn, :commit), method: :post, class: "btn-primary") %>
     </div>
   <% end %>
 </div>
