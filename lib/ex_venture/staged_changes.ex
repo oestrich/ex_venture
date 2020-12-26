@@ -250,26 +250,30 @@ defmodule ExVenture.StagedChanges do
   """
   def changes() do
     @schemas
-    |> Enum.map(fn {table, schema} ->
-      preloader = fn struct_ids ->
-        schema
-        |> where([s], s.id in ^struct_ids)
-        |> Repo.all()
-      end
-
-      staged_changes =
-        {table, StagedChange}
-        |> order_by([sc], asc: sc.struct_id, asc: sc.attribute)
-        |> preload(struct: ^preloader)
-        |> Repo.all()
-
-      {schema, staged_changes}
+    |> Map.values()
+    |> Enum.map(fn schema ->
+      {schema, changes(schema)}
     end)
     |> Enum.reject(fn {_schema, staged_changes} ->
       Enum.empty?(staged_changes)
     end)
     |> Enum.into(%{})
   end
+
+  Enum.map(@schemas, fn {table, schema} ->
+    def changes(unquote(schema)) do
+      preloader = fn struct_ids ->
+        unquote(schema)
+        |> where([s], s.id in ^struct_ids)
+        |> Repo.all()
+      end
+
+      {unquote(table), StagedChange}
+      |> order_by([sc], asc: sc.struct_id, asc: sc.attribute)
+      |> preload(struct: ^preloader)
+      |> Repo.all()
+    end
+  end)
 
   @doc """
   Get a staged change by id

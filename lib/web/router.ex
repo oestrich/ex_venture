@@ -91,11 +91,17 @@ defmodule Web.Router do
   scope "/api", Web.API, as: :api do
     pipe_through([:api])
 
-    resources("/rooms", RoomController, only: [:show])
+    resources("/rooms", RoomController, only: [:show]) do
+      resources("/staged-changes", StagedChangeController, only: [:index])
+    end
 
     resources("/zones", ZoneController, only: [:index, :show]) do
       resources("/rooms", RoomController, only: [:index])
+
+      resources("/staged-changes", StagedChangeController, only: [:index])
     end
+
+    resources("/staged-changes/:type", StagedChangeController, only: [:index])
   end
 
   if Mix.env() == :dev do
