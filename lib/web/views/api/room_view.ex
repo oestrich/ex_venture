@@ -19,6 +19,7 @@ defmodule Web.API.RoomView do
   def render("show.json", %{room: room}) do
     %{
       name: room.name,
+      description: room.description,
       live?: not is_nil(room.live_at),
       links: [
         %Link{
