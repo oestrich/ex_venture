@@ -56,11 +56,11 @@ jobs:
     - name: Setup node
       run: |
         npm install -g yarn
-        cd example/assets
+        cd assets
         yarn install
     - name: Verify application
       run: |
-        cd example/assets
+        cd assets
         yarn lint-ci
         yarn jest
 
