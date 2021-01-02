@@ -33,6 +33,13 @@ jobs:
         mix compile
       env:
         MIX_ENV: test
+    - name: Cache build
+      uses: actions/cache@v2
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+        restore-keys: |
+          ${{ runner.os }}-mix-
     - name: Verify application
       run: |
         mix format --check-formatted
@@ -58,6 +65,12 @@ jobs:
         npm install -g yarn
         cd assets
         yarn install
+    - uses: actions/cache@v2
+      with:
+        path: .npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
     - name: Verify application
       run: |
         cd assets
