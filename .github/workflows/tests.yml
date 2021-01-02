@@ -61,7 +61,7 @@ jobs:
     - name: Verify application
       run: |
         cd assets
-        yarn lint-ci
+        yarn lint:ci
         yarn jest
 
   dispatch:
