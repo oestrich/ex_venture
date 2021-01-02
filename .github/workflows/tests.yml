@@ -27,12 +27,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y git build-essential
-    - name: Setup elixir
-      run: |
-        mix deps.get
-        mix compile
-      env:
-        MIX_ENV: test
     - name: Cache build
       uses: actions/cache@v2
       with:
@@ -40,6 +34,12 @@ jobs:
         key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
         restore-keys: |
           ${{ runner.os }}-mix-
+    - name: Setup elixir
+      run: |
+        mix deps.get
+        mix compile
+      env:
+        MIX_ENV: test
     - name: Verify application
       run: |
         mix format --check-formatted
@@ -56,6 +56,12 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
+    - uses: actions/cache@v2
+      with:
+        path: node-modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -65,12 +71,6 @@ jobs:
         npm install -g yarn
         cd assets
         yarn install
-    - uses: actions/cache@v2
-      with:
-        path: .npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
     - name: Verify application
       run: |
         cd assets
