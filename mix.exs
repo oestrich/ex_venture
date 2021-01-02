@@ -10,7 +10,17 @@ defmodule ExVenture.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+
+      # Docs
+      name: "ExVenture",
+      source_url: "https://github.com/oestrich/ex_venture",
+      homepage_url: "https://exventure.org",
+      docs: [
+        main: "readme",
+        logo: "assets/static/images/exventure.png",
+        extras: ["README.md"]
+      ]
     ]
   end
 
@@ -37,6 +47,7 @@ defmodule ExVenture.MixProject do
       {:credo, "~> 1.1", only: [:dev, :test]},
       {:ecto_sql, "~> 3.1"},
       {:elias, "~> 0.2"},
+      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:kalevala, "~> 0.1"},
