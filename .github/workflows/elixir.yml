@@ -4,7 +4,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     services:
-      # Label used to access the service container
       postgres:
         image: postgres
         env:
@@ -42,3 +41,11 @@ jobs:
         mix test
       env:
         MIX_ENV: test
+
+    - name: Repository Dispatch
+      if: github.ref == 'refs/heads/kalevala'
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        event-type: main-branch-passed
+        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
