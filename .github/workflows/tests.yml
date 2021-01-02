@@ -81,15 +81,21 @@ jobs:
         yarn lint:ci
         yarn jest
 
-  dispatch:
+  docs:
     runs-on: ubuntu-latest
     needs: [elixir, javascript]
+    if: github.ref == 'refs/heads/kalevala'
     steps:
     - uses: actions/checkout@v1
-    - name: Repository Dispatch
-      if: github.ref == 'refs/heads/kalevala'
-      uses: peter-evans/repository-dispatch@v1
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
       with:
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        event-type: main-branch-passed
-        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: ./
+        file: ./Dockerfile.site
+        push: true
+        tags: oestrich/exventure.org:${{ github.sha }}
