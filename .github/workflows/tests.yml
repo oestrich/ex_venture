@@ -65,9 +65,9 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-node-v2-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-node-
+          ${{ runner.os }}-node-v2-
     - name: Install Dependencies
       run: |
         sudo apt-get update
