@@ -3,7 +3,7 @@ image:
   # tag:
   pullPolicy: IfNotPresent
 
-web:
+# web:
   # host:
 
 resources: {}
