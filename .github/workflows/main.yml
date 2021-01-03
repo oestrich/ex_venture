@@ -19,7 +19,7 @@ jobs:
           - 5432:5432
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-elixir@v1
+    - uses: actions/setup-elixir@v1.5.0
       with:
         otp-version: "23.1.2"
         elixir-version: "1.11.2"
