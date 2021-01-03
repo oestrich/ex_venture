@@ -19,10 +19,10 @@ jobs:
           - 5432:5432
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-elixir@v1.0.0
+    - uses: actions/setup-elixir@v1
       with:
-        otp-version: "23.0.3"
-        elixir-version: "1.10.4"
+        otp-version: "23.1.2"
+        elixir-version: "1.11.2"
     - name: Install Dependencies
       run: |
         sudo apt-get update
