@@ -2,7 +2,7 @@ name: Main
 on: push
 jobs:
   elixir:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     services:
       postgres:
         image: postgres
@@ -52,7 +52,7 @@ jobs:
         MIX_ENV: test
 
   javascript:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash
@@ -82,7 +82,7 @@ jobs:
         yarn jest
 
   docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [elixir, javascript]
     if: github.ref == 'refs/heads/kalevala'
     steps:
@@ -112,7 +112,7 @@ jobs:
         cache-to: type=local,dest=/tmp/.buildx-cache
 
   docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [elixir, javascript]
     if: github.ref == 'refs/heads/kalevala'
     steps:
