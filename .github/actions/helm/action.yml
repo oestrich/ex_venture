@@ -1,0 +1,44 @@
+name: Deliverybot Helm Action
+description: Deploys a helm chart
+author: deliverybot
+icon: box
+color: gray-dark
+inputs:
+  release:
+    description: Helm release name. Will be combined with track if set. (required)
+    required: true
+  namespace:
+    description: Kubernetes namespace name. (required)
+    required: true
+  chart:
+    description: Helm chart path. If set to "app" this will use the built in helm
+      chart found in this repository. (required)
+    required: true
+  values:
+    description: Helm chart values, expected to be a YAML or JSON string.
+    required: false
+  dry-run:
+    description: Task name. If the task is "remove" it will remove the configured
+      helm release.
+    required: false
+  helm:
+    description: Helm binary to execute, one of [helm, helm3].
+    required: false
+  token:
+    description: Github repository token. If included and the event is a deployment
+      the deployment_status event will be fired.
+    required: false
+  value-files:
+    description: Additional value files to apply to the helm chart. Expects JSON encoded
+      array or a string.
+    required: false
+  secrets:
+    description: Secret variables to include in value file interpolation. Expects
+      JSON encoded map.
+    required: false
+  version:
+    description: Version of the app, usually commit sha works here.
+    required: false
+runs:
+  using: docker
+  image: Dockerfile

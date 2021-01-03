@@ -111,7 +111,7 @@ jobs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
     - name: Deploy
-      uses: deliverybot/helm@v1
+      uses: './.github/actions/helm'
       with:
         helm: helm3
         release: exventure
