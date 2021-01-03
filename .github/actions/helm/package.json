@@ -9,7 +9,7 @@
     "url": "https://github.com/deliverybot"
   },
   "dependencies": {
-    "@actions/core": "^1.0.0",
+    "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.0",
     "@actions/github": "^1.0.0",
     "mustache": "^3.0.3"
