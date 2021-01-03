@@ -1,6 +1,6 @@
 # ExVenture
 
-![Tests](https://github.com/oestrich/ex_venture/workflows/Tests/badge.svg)
+![Main](https://github.com/oestrich/ex_venture/workflows/Main/badge.svg)
 [![Discord](https://img.shields.io/badge/chat-discord-7289da.svg)][discord]
 [![Patreon](https://img.shields.io/badge/support-patreon-F96854.svg)](https://www.patreon.com/ericoestrich)
 
