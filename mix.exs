@@ -62,9 +62,9 @@ defmodule ExVenture.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:stein, "~> 0.5"},
       {:stein_storage, git: "https://github.com/smartlogic/stein_storage.git", branch: "main"},
-      {:telemetry_metrics, "~> 0.4.0"},
-      {:telemetry_metrics_prometheus, "~> 0.3.1"},
-      {:telemetry_poller, "~> 0.4.1"},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_metrics_prometheus, "~> 0.3"},
+      {:telemetry_poller, "~> 0.4"},
       {:vapor, "~> 0.10.0"}
     ]
   end
