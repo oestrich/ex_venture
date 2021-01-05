@@ -1,6 +1,7 @@
 defmodule Web.Admin.RoomView do
   use Web, :view
 
+  alias ExVenture.Rooms
   alias Web.FormView
 
   def override_value(assigns, field) do

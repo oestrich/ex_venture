@@ -7,7 +7,17 @@
 
   <%= FormView.text_field(f, :map_color) %>
 
-  <%= FormView.text_field(f, :map_icon) %>
+  <div class="input-group">
+    <div class="label">Map Icon</div>
+    <div class="flex">
+      <%= Enum.map(Rooms.available_map_icons(), fn map_icon -> %>
+        <label>
+          <%= radio_button(f, :map_icon, map_icon) %>
+          <%= img_tag(Routes.static_path(Web.Endpoint, "/images/map-icons/#{map_icon}.svg"), class: "w-16") %>
+        </label>
+      <% end) %>
+    </div>
+  </div>
 
   <%= FormView.text_field(f, :x, type: :number, value: override_value(assigns, :x)) %>
 

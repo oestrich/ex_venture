@@ -161,4 +161,16 @@ defmodule ExVenture.Rooms do
     |> Room.publish_changeset()
     |> Repo.update()
   end
+
+  @doc """
+  Get a list of all available icons
+  """
+  def available_map_icons() do
+    :code.priv_dir(:ex_venture)
+    |> Path.join("static/images/map-icons/*")
+    |> Path.wildcard()
+    |> Enum.map(fn file ->
+      Path.basename(file, Path.extname(file))
+    end)
+  end
 end

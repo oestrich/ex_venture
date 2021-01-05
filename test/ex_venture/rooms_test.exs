@@ -92,4 +92,10 @@ defmodule ExVenture.RoomsTest do
       assert changeset.errors[:name]
     end
   end
+
+  describe "available rooms" do
+    test "pulls in the available SVGs names" do
+      assert Enum.member?(Rooms.available_map_icons(), "shop")
+    end
+  end
 end
