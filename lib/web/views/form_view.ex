@@ -99,6 +99,27 @@ defmodule Web.FormView do
   end
 
   @doc """
+  Generate a select field, styled properly
+  """
+  def select_field(form, field, options, opts \\ [], dopts \\ []) do
+    opts = Keyword.merge(opts, dopts)
+    select_opts = Keyword.take(opts, [:prompt, :selected])
+
+    content_tag(:div, class: form_group_classes(form, field)) do
+      [
+        field_label(form, field, opts),
+        content_tag(:div, class: "flex flex-col w-full") do
+          [
+            select(form, field, options, Keyword.merge([class: "input"], select_opts)),
+            error_tag(form, field),
+            Keyword.get(opts, :do, "")
+          ]
+        end
+      ]
+    end
+  end
+
+  @doc """
   Generate a checkbox field, styled properly
   """
   def checkbox_field(form, field, opts \\ [], dopts \\ []) do

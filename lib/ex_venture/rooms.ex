@@ -7,8 +7,13 @@ defmodule ExVenture.Rooms.Room do
 
   import Ecto.Changeset
 
+  alias ExVenture.Rooms
   alias ExVenture.StagedChanges.StagedChange
   alias ExVenture.Zones.Zone
+
+  @map_colors ["blue", "brown", "green", "yellow"]
+
+  def map_colors(), do: @map_colors
 
   schema "rooms" do
     field(:live_at, :utc_datetime)
@@ -39,6 +44,8 @@ defmodule ExVenture.Rooms.Room do
     struct
     |> cast(params, [:name, :description, :listen, :map_color, :map_icon, :notes, :x, :y, :z])
     |> validate_required([:name, :description, :listen, :x, :y, :z, :zone_id])
+    |> validate_inclusion(:map_color, @map_colors)
+    |> validate_inclusion(:map_icon, Rooms.available_map_icons())
     |> foreign_key_constraint(:zone_id)
   end
 
@@ -46,6 +53,8 @@ defmodule ExVenture.Rooms.Room do
     struct
     |> cast(params, [:name, :description, :listen, :map_color, :map_icon, :notes, :x, :y, :z])
     |> validate_required([:name, :description, :listen, :x, :y, :z, :zone_id])
+    |> validate_inclusion(:map_color, @map_colors)
+    |> validate_inclusion(:map_icon, Rooms.available_map_icons())
     |> foreign_key_constraint(:zone_id)
   end
 
@@ -66,6 +75,8 @@ defmodule ExVenture.Rooms do
   alias ExVenture.Repo
   alias ExVenture.Rooms.Room
   alias ExVenture.StagedChanges
+
+  defdelegate map_colors(), to: Room
 
   def new(zone), do: zone |> Ecto.build_assoc(:rooms) |> Ecto.Changeset.change(%{})
 

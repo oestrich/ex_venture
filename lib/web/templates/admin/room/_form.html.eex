@@ -5,15 +5,15 @@
 
   <%= FormView.textarea_field(f, :listen, rows: 5) %>
 
-  <%= FormView.text_field(f, :map_color) %>
+  <%= FormView.select_field(f, :map_color, Rooms.map_colors(), prompt: "Select a color") %>
 
   <div class="input-group">
     <div class="label">Map Icon</div>
     <div class="flex">
       <%= Enum.map(Rooms.available_map_icons(), fn map_icon -> %>
-        <label>
-          <%= radio_button(f, :map_icon, map_icon) %>
-          <%= img_tag(Routes.static_path(Web.Endpoint, "/images/map-icons/#{map_icon}.svg"), class: "w-16") %>
+        <label class="m-1 flex flex-col items-center">
+          <%= radio_button(f, :map_icon, map_icon, class: "mb-1") %>
+          <%= img_tag(Routes.static_path(Web.Endpoint, "/images/map-icons/#{map_icon}.svg"), class: "w-16", alt: map_icon, title: map_icon) %>
         </label>
       <% end) %>
     </div>

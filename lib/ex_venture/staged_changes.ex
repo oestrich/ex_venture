@@ -162,7 +162,7 @@ defmodule ExVenture.StagedChanges do
         {:ok, changeset}
 
       false ->
-        {:error, changeset}
+        {:error, %{changeset | action: :update}}
     end
   end
 

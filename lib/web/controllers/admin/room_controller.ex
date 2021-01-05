@@ -76,6 +76,7 @@ defmodule Web.Admin.RoomController do
         conn
         |> assign(:room, room)
         |> assign(:changeset, changeset)
+        |> assign(:zone, room.zone)
         |> put_status(422)
         |> render("edit.html")
     end

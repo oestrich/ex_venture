@@ -8,7 +8,7 @@ defmodule ExVenture.Repo.Migrations.CreateStagedChanges do
       add(:struct_id, references(:rooms), null: false)
 
       add(:attribute, :string, null: false)
-      add(:value, :binary, null: false)
+      add(:value, :binary, null: true)
 
       timestamps()
     end
@@ -21,7 +21,7 @@ defmodule ExVenture.Repo.Migrations.CreateStagedChanges do
       add(:struct_id, references(:zones), null: false)
 
       add(:attribute, :string, null: false)
-      add(:value, :binary, null: false)
+      add(:value, :binary, null: true)
 
       timestamps()
     end

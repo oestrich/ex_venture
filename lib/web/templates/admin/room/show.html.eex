@@ -47,6 +47,18 @@
           <th>Listen Text</th>
           <td><%= @room.listen %></td>
         </tr>
+        <%= if @room.map_color do %>
+          <tr>
+            <th>Map Color</th>
+            <td><%= @room.map_color %></td>
+          </tr>
+        <% end %>
+        <%= if @room.map_icon do %>
+          <tr>
+            <th>Map Icon</th>
+            <td><%= img_tag(Routes.static_path(@conn, "/images/map-icons/#{@room.map_icon}.svg"), class: "w-16", alt: @room.map_icon, title: @room.map_icon) %></td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
   </div>
