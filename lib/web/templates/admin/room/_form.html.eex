@@ -1,4 +1,32 @@
 <%= form_for(@changeset, @url, fn f -> %>
+  <div class="input-group">
+    <div class="label">Coordinates</div>
+
+    <div class="flex">
+      <div class="flex flex-col md:flex-row items-center w-1/3">
+        <%= label(f, :x, value: override_value(assigns, :x), type: :number, class: "label md:text-right pr-3 md:w-1/3") %>
+        <div class="flex flex-col w-full px-2">
+          <%= text_input(f, :x, class: "input w-full md:w-32", value: override_value(assigns, :x)) %>
+          <%= error_tag(f, :x) %>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row items-center w-1/3">
+        <%= label(f, :y, value: override_value(assigns, :y), type: :number, class: "label md:text-right pr-3 md:w-1/3") %>
+        <div class="flex flex-col w-full px-2">
+          <%= text_input(f, :y, class: "input w-full md:w-32", value: override_value(assigns, :y)) %>
+          <%= error_tag(f, :y) %>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row items-center w-1/3">
+        <%= label(f, :z, value: override_value(assigns, :z), type: :number, class: "label md:text-right pr-3 md:w-1/3") %>
+        <div class="flex flex-col w-full px-2">
+          <%= text_input(f, :z, class: "input w-full md:w-32", value: override_value(assigns, :z)) %>
+          <%= error_tag(f, :z) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <%= FormView.text_field(f, :name) %>
 
   <%= FormView.textarea_field(f, :description, rows: 5) %>
@@ -18,12 +46,6 @@
       <% end) %>
     </div>
   </div>
-
-  <%= FormView.text_field(f, :x, type: :number, value: override_value(assigns, :x)) %>
-
-  <%= FormView.text_field(f, :y, type: :number, value: override_value(assigns, :y)) %>
-
-  <%= FormView.text_field(f, :z, type: :number, value: override_value(assigns, :z)) %>
 
   <%= FormView.textarea_field(f, :notes, rows: 5) %>
 
