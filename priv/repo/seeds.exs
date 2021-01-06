@@ -1,3 +1,9 @@
+{:ok, _api_token} =
+  ExVenture.APIKeys.create(%{
+    token: "6e8d83d9-a028-4eb7-bc7b-9b32bac697b6",
+    is_active: true
+  })
+
 {:ok, _user} =
   ExVenture.Users.create(%{
     username: "user",

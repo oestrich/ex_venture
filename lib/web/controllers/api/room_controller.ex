@@ -20,6 +20,17 @@ defmodule Web.API.RoomController do
     end
   end
 
+  def index(conn, _params) do
+    %{page: page, per: per} = conn.assigns
+
+    %{page: rooms, pagination: pagination} = Rooms.all(page: page, per: per)
+
+    conn
+    |> assign(:rooms, rooms)
+    |> assign(:pagination, pagination)
+    |> render("index.json")
+  end
+
   def show(conn, %{"id" => id}) do
     case Rooms.get(id) do
       {:ok, room} ->

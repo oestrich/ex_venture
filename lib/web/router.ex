@@ -91,7 +91,7 @@ defmodule Web.Router do
   scope "/api", Web.API, as: :api do
     pipe_through([:api])
 
-    resources("/rooms", RoomController, only: [:show]) do
+    resources("/rooms", RoomController, only: [:index, :show]) do
       resources("/staged-changes", StagedChangeController, only: [:index])
     end
 

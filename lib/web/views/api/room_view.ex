@@ -16,6 +16,18 @@ defmodule Web.API.RoomView do
     }
   end
 
+  def render("index.json", %{pagination: pagination, rooms: rooms}) do
+    %{
+      items: render_many(rooms, __MODULE__, "show.json"),
+      links: [
+        %Link{
+          rel: :self,
+          href: Routes.api_room_path(Endpoint, :index, page: pagination.current)
+        }
+      ]
+    }
+  end
+
   def render("show.json", %{room: room}) do
     %{
       name: room.name,
