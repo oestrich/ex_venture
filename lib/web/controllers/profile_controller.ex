@@ -1,6 +1,7 @@
 defmodule Web.ProfileController do
   use Web, :controller
 
+  alias ExVenture.Characters
   alias ExVenture.Users
 
   def show(conn, _params) do
@@ -8,6 +9,7 @@ defmodule Web.ProfileController do
 
     conn
     |> assign(:user, user)
+    |> assign(:characters, Characters.all_for(user))
     |> render("show.html")
   end
 

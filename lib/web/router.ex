@@ -59,6 +59,8 @@ defmodule Web.Router do
 
     get("/client*page", PageController, :client)
 
+    resources("/characters", CharacterController, only: [:create, :delete])
+
     resources("/profile", ProfileController, singleton: true, only: [:show, :edit, :update])
   end
 

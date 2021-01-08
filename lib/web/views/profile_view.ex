@@ -2,6 +2,7 @@ defmodule Web.ProfileView do
   use Web, :view
 
   alias ExVenture.Users.Avatar
+  alias Web.FormView
 
   def avatar?(user), do: user.avatar_key != nil
 

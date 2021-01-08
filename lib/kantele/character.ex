@@ -1,9 +1,3 @@
-defmodule Kantele.Character do
-  @moduledoc """
-  Character callbacks for Kalevala
-  """
-end
-
 defmodule Kantele.Character.PlayerMeta do
   @moduledoc """
   Specific metadata for a character in Kantele
