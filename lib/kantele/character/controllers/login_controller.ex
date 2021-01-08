@@ -3,6 +3,7 @@ defmodule Kantele.Character.LoginController do
 
   require Logger
 
+  alias ExVenture.Characters
   alias Kalevala.Character
   alias Kantele.Character.ChannelEvent
   alias Kantele.Character.CharacterView
@@ -26,13 +27,8 @@ defmodule Kantele.Character.LoginController do
   @impl true
   def recv_event(conn, event) do
     case event.topic do
-      "Login" ->
-        conn
-        |> process_username(event.data["username"])
-        |> process_password(event.data["password"])
-
       "Login.Character" ->
-        process_character(conn, event.data["character"])
+        process_character_token(conn, event.data["token"])
 
       _ ->
         conn
@@ -111,6 +107,15 @@ defmodule Kantele.Character.LoginController do
     |> put_controller(CommandController)
     |> event("room/look", %{})
     |> event("inventory/list", %{})
+  end
+
+  defp process_character_token(conn, token) do
+    case Phoenix.Token.verify(Web.Endpoint, "character id", token, max_age: 3600) do
+      {:ok, character_id} ->
+        {:ok, character} = Characters.get(character_id)
+
+        process_character(conn, character.name)
+    end
   end
 
   defp build_character(name) do

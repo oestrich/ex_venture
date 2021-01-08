@@ -14,20 +14,21 @@ class CharacterSelect extends React.Component {
   }
 
   render() {
+    const { characters } = this.props;
+
     const submitCharacter = () => {
-      this.props.selectCharacter(this.state.character);
+      if (this.state.character != "") {
+        this.props.selectCharacter(this.state.character);
+      }
+    };
+
+    const selectCharacter = (e) => {
+      this.setState({ character: e.target.value });
     };
 
     const selectClick = (e) => {
       e.preventDefault();
       submitCharacter();
-    };
-
-    const onKeyDown = (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        submitCharacter();
-      }
     };
 
     return (
@@ -37,24 +38,28 @@ class CharacterSelect extends React.Component {
 
           <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <p className="text-center mb-4">
-              Enter in a character name to play as. This is how characters will refer to you.
+              Pick which character to play as. Create another from your{" "}
+              <a href="/profile" className="underline text-blue-500">
+                profile
+              </a>
+              .
             </p>
 
-            <p className="mb-4 text-sm text-center italic">Note: At the moment any character name will work.</p>
-
-            <div className="mb-4">
-              <input
-                autoFocus={true}
-                className="input"
-                id="character"
-                type="text"
-                placeholder="Character Name"
-                value={this.state.character}
-                onKeyDown={onKeyDown}
-                onChange={(e) => {
-                  this.setState({ character: e.target.value });
-                }}
-              />
+            <div className="mb-4 flex flex-col">
+              {characters.map((character) => {
+                return (
+                  <label key={character.name} className="text-xl">
+                    <input
+                      name="character"
+                      value={character.token}
+                      onChange={selectCharacter}
+                      type="radio"
+                      className="m-2"
+                    />
+                    {character.name}
+                  </label>
+                );
+              })}
             </div>
 
             <button className="btn-primary w-full" onClick={selectClick}>
@@ -68,6 +73,11 @@ class CharacterSelect extends React.Component {
 }
 
 CharacterSelect.propTypes = {
+  characters: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   selectCharacter: PropTypes.func.isRequired,
 };
 

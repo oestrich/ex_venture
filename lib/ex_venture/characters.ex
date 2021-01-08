@@ -54,6 +54,19 @@ defmodule ExVenture.Characters do
   @doc """
   Get a character scoped to the user accessing it
   """
+  def get(id) do
+    case Repo.get(Character, id) do
+      nil ->
+        {:error, :not_found}
+
+      character ->
+        {:ok, character}
+    end
+  end
+
+  @doc """
+  Get a character scoped to the user accessing it
+  """
   def get(user, id) do
     case Repo.get_by(Character, id: id, user_id: user.id) do
       nil ->

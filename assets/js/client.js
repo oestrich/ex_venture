@@ -119,6 +119,8 @@ const Client = () => {
 
 export class App extends React.Component {
   render() {
+    const { characters } = this.props;
+
     return (
       <Provider store={store}>
         <Router basename="/client">
@@ -128,7 +130,7 @@ export class App extends React.Component {
                 <Client />
               </Route>
               <Route>
-                <CharacterSelect />
+                <CharacterSelect characters={characters} />
               </Route>
             </Switch>
           </SocketProvider>
@@ -137,3 +139,11 @@ export class App extends React.Component {
     );
   }
 }
+
+App.propTypes = {
+  characters: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+};

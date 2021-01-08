@@ -1,1 +1,1 @@
-<div class="h-full" data-react-class="Components.App"></div>
+<%= ReactView.react_component("Components.App", %{characters: characters_for_client(@characters)}, class: "h-full") %>

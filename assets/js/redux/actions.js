@@ -94,11 +94,11 @@ export const Creators = {
   roomCharacterLeft: (character) => {
     return { type: Types.ROOM_CHARACTER_LEFT, data: { character: character } };
   },
-  selectCharacter: (character) => {
+  selectCharacter: (token) => {
     return (dispatch) => {
       const event = {
         topic: "Login.Character",
-        data: { character },
+        data: { token },
       };
 
       dispatch(KalevalaCreators.socketSendEvent(event));
