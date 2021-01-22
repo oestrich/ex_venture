@@ -1,3 +1,5 @@
+seed = false
+
 zones "global" {
   name = "Global Resources"
   description = "Resources that are used across multiple zones"

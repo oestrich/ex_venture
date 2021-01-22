@@ -19,8 +19,8 @@ defmodule ExVenture.Repo.Migrations.CreateZones do
       add(:listen, :text, null: false)
       add(:features, {:array, :jsonb}, default: fragment("'{}'::jsonb[]"), null: false)
 
-      add(:map_color, :string)
-      add(:map_icon, :string)
+      add(:map_color, :string, default: "gray", null: false)
+      add(:map_icon, :string, default: "default", null: false)
 
       add(:x, :integer, null: false)
       add(:y, :integer, null: false)

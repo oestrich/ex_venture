@@ -117,9 +117,10 @@ defmodule Kantele.World.Loader do
   """
   def parse_zone({key, zone_data}, context) do
     zone = %Zone{}
+    seed? = Map.get(zone_data, :seed, "true") == "true"
 
     name = get_in(zone_data.zones, [String.to_atom(key), :name])
-    zone = %{zone | id: key, name: name}
+    zone = %{zone | id: key, name: name, seed?: seed?}
 
     rooms = Map.get(zone_data, :rooms, [])
 

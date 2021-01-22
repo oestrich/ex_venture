@@ -129,7 +129,7 @@ room_exits "inn_upstairs" {
 
 rooms "well" {
   name = "Town Well"
-  description = ""
+  description = "A small well for the town"
 
   map_color = "green"
   map_icon = "well"

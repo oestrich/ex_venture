@@ -29,36 +29,44 @@
 # The World
 #
 
-{:ok, sammatti} =
-  ExVenture.Zones.create(%{
-    name: "Sammatti",
-    description: "The starter town."
-  })
+defmodule Seeds do
+  alias ExVenture.Rooms
+  alias ExVenture.Zones
 
-{:ok, sammatti} = ExVenture.Zones.publish(sammatti)
+  def create_zone(%{seed?: false}), do: :ok
 
-{:ok, town_square} =
-  ExVenture.Rooms.create(sammatti, %{
-    name: "Town Square",
-    description: "A small town square.",
-    listen: "The town crier is telling the latest news.",
-    map_icon: "wooden-sign",
-    x: 0,
-    y: 0,
-    z: 0
-  })
+  def create_zone(zone_data) do
+    {:ok, zone} =
+      Zones.create(%{
+        name: zone_data.name,
+        description: zone_data.name
+      })
 
-{:ok, _town_square} = ExVenture.Rooms.publish(town_square)
+    {:ok, zone} = Zones.publish(zone)
 
-{:ok, market} =
-  ExVenture.Rooms.create(sammatti, %{
-    name: "Market",
-    description: "A small market.",
-    listen: "Shop keeps are selling their wares.",
-    map_icon: "shop",
-    x: 0,
-    y: 1,
-    z: 0
-  })
+    Enum.each(zone_data.rooms, fn room ->
+      create_room(zone, room)
+    end)
+  end
 
-{:ok, _market} = ExVenture.Rooms.publish(market)
+  def create_room(zone, params) do
+    {:ok, room} =
+      Rooms.create(zone, %{
+        name: params.name,
+        description: params.description,
+        listen: params.description,
+        map_icon: params.map_icon,
+        x: params.x,
+        y: params.y,
+        z: params.z
+      })
+
+    {:ok, _room} = ExVenture.Rooms.publish(room)
+  end
+end
+
+world = Kantele.World.Loader.load()
+
+Enum.each(world.zones, fn zone ->
+  Seeds.create_zone(zone)
+end)
