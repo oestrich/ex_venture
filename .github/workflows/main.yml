@@ -119,7 +119,10 @@ jobs:
         chart: helm/static
         helm: helm3
         values: |
+          web:
+            host: exventure.org
           image:
+            repository: oestrich/exventure.org
             tag: '${{ github.sha }}'
       env:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
