@@ -30,6 +30,12 @@ mix ecto.reset
 mix phx.server
 ```
 
+## Kalevala
+
+<img src="https://kalevala.dev/kalevala.png" alt="Kalevala Logo" width="400" />
+
+Kalevala is a new underlying framework that ExVenture is using under the hood. Kalevala sets up a common framework for dealing with commands, characters, views, and is all around a lot better to deal with than the previous version of ExVenture.
+
 ## Running Tests
 
 ```bash
