@@ -139,6 +139,7 @@ jobs:
       with:
         token: "${{ github.token }}"
         target_url: https://exventure.org/
+        environment_url: https://exventure.org/
         state: "success"
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
     - name: Update deployment status (failure)
@@ -147,7 +148,6 @@ jobs:
       with:
         token: "${{ github.token }}"
         target_url: https://exventure.org/
-        environment_url: https://exventure.org/
         state: "failure"
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
 
