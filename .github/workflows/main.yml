@@ -111,7 +111,14 @@ jobs:
         tags: oestrich/exventure.org:${{ github.sha }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
-    - name: Deploy
+    - uses: chrnorm/deployment-action@releases/v1
+      name: Create GitHub deployment
+      id: deployment
+      with:
+        token: "${{ github.token }}"
+        target_url: https://exventure.org/
+        environment: documentation
+    - name: Deploy via helm
       uses: deliverybot/helm@v1
       with:
         release: exventure
@@ -126,6 +133,22 @@ jobs:
             tag: '${{ github.sha }}'
       env:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+    - name: Update deployment status (success)
+      if: success()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: "${{ github.token }}"
+        target_url: https://exventure.org/
+        state: "success"
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: "${{ github.token }}"
+        target_url: https://exventure.org/
+        state: "failure"
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
 
   docker:
     runs-on: ubuntu-20.04
