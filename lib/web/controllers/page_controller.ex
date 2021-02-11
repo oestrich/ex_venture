@@ -7,6 +7,10 @@ defmodule Web.PageController do
     render(conn, "index.html")
   end
 
+  def health(conn, _params) do
+    send_resp(conn, 200, "OK")
+  end
+
   def client(conn, _params) do
     %{current_user: user} = conn.assigns
 
