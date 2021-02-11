@@ -111,6 +111,18 @@ jobs:
         tags: oestrich/exventure.org:${{ github.sha }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
+    - name: Deploy
+      uses: deliverybot/helm@v1
+      with:
+        release: exventure
+        namespace: static-sites
+        chart: helm/static
+        helm: helm3
+        values: |
+          image:
+            tag: '${{ github.sha }}'
+      env:
+        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
 
   docker:
     runs-on: ubuntu-20.04
