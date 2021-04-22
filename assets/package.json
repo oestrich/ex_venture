@@ -10,6 +10,7 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@headlessui/react": "^1.0.0",
     "node-sass": "^5.0",
     "phoenix_html": "^2.14.2",
     "react": "^17.0",
