@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.0.0",
+    "@tailwindcss/forms": "^0.3.2",
     "node-sass": "^5.0",
     "phoenix_html": "^2.14.2",
     "react": "^17.0",
