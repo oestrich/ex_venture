@@ -63,7 +63,33 @@
         </nav>
       </div>
 
-      <main class="w-full xxl:w-1/2 xxl:mx-auto xl:w-3/4 xl:mx-auto md:m-4 p-4">
+      <main class="w-full xxl:w-3/5 xxl:mx-auto xl:w-3/4 xl:mx-auto md:m-4 p-4">
+        <%= if info = get_flash(@conn, :info) do %>
+          <div class="bg-blue-100 border-l-4 border-blue-400 p-4 mb-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-blue-400"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-blue-700"><%= info %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <%= if error = get_flash(@conn, :error) do %>
+          <div class="bg-red-100 border-l-4 border-red-400 p-4 mb-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-red-400"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700"><%= error %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
         <%= @inner_content %>
       </main>
     </div>

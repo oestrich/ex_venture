@@ -37,12 +37,15 @@ defmodule Web.Admin.ZoneController do
   def create(conn, %{"zone" => params}) do
     case Zones.create(params) do
       {:ok, zone} ->
-        redirect(conn, to: Routes.admin_zone_path(conn, :show, zone.id))
+        conn
+        |> put_flash(:info, "Zone created!")
+        |> redirect(to: Routes.admin_zone_path(conn, :show, zone.id))
 
       {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
         |> put_status(422)
+        |> put_flash(:error, "Could not save the zone")
         |> render("new.html")
     end
   end
@@ -62,13 +65,16 @@ defmodule Web.Admin.ZoneController do
 
     case Zones.update(zone, params) do
       {:ok, zone} ->
-        redirect(conn, to: Routes.admin_zone_path(conn, :show, zone.id))
+        conn
+        |> put_flash(:info, "Zone created!")
+        |> redirect(to: Routes.admin_zone_path(conn, :show, zone.id))
 
       {:error, changeset} ->
         conn
         |> assign(:zone, zone)
         |> assign(:changeset, changeset)
         |> put_status(422)
+        |> put_flash(:error, "Could not save the zone")
         |> render("edit.html")
     end
   end

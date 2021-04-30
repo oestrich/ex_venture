@@ -22,7 +22,7 @@ const CharacterSelect = ({ characters, selectedCharacter, setSelectedCharacter }
               return classNames(
                 characterIndex === 0 ? "rounded-tl-md rounded-tr-md" : "",
                 characterIndex === characters.length - 1 ? "rounded-bl-md rounded-br-md" : "",
-                checked ? "bg-indigo-50 border-indigo-200 z-10" : "border-gray-200",
+                checked ? "bg-blue-50 border-blue-200 z-10" : "border-gray-200",
                 "relative border p-4 flex flex-col cursor-pointer md:pl-4 md:pr-6 md:grid md:grid-cols-3 focus:outline-none",
               );
             }}
@@ -32,8 +32,8 @@ const CharacterSelect = ({ characters, selectedCharacter, setSelectedCharacter }
                 <div className="flex items-center text-sm">
                   <span
                     className={classNames(
-                      checked ? "bg-indigo-600 border-transparent" : "bg-white border-gray-300",
-                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                      checked ? "bg-blue-600 border-transparent" : "bg-white border-gray-300",
+                      active ? "ring-2 ring-offset-2 ring-blue-500" : "",
                       "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
@@ -54,7 +54,11 @@ const CharacterSelect = ({ characters, selectedCharacter, setSelectedCharacter }
 };
 
 CharacterSelect.propTypes = {
-  characters: PropTypes.object,
+  characters: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   selectedCharacter: PropTypes.string,
   setSelectedCharacter: PropTypes.func,
 };
@@ -91,7 +95,7 @@ const CharacterSelectPage = ({ characters, submitCharacter }) => {
           <input
             type="button"
             value="Play &raquo;"
-            className="btn btn-primary w-full cursor-pointer"
+            className="btn-primary cursor-pointer w-full flex justify-center"
             onClick={pickCharacter}
           />
         </div>

@@ -33,7 +33,7 @@
                 <span class="bg-gray-700 text-white rounded px-4 py-2 w-16 inline-block text-center">No</span>
               <% end %>
             </td>
-            <td class="actions w-32">
+            <td class="actions">
               <%= link("View", to: Routes.admin_room_path(@conn, :show, room.id), class: "text-xs btn-secondary") %>
               <%= link("Edit", to: Routes.admin_room_path(@conn, :edit, room.id), class: "text-xs btn-secondary") %>
             </td>

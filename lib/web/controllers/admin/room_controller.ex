@@ -43,13 +43,16 @@ defmodule Web.Admin.RoomController do
 
     case Rooms.create(zone, params) do
       {:ok, room} ->
-        redirect(conn, to: Routes.admin_room_path(conn, :show, room.id))
+        conn
+        |> put_flash(:info, "Room created!")
+        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
 
       {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
         |> assign(:zone, zone)
         |> put_status(422)
+        |> put_flash(:error, "Could not save the room")
         |> render("new.html")
     end
   end
@@ -70,7 +73,9 @@ defmodule Web.Admin.RoomController do
 
     case Rooms.update(room, params) do
       {:ok, room} ->
-        redirect(conn, to: Routes.admin_room_path(conn, :show, room.id))
+        conn
+        |> put_flash(:info, "Room created!")
+        |> redirect(to: Routes.admin_room_path(conn, :show, room.id))
 
       {:error, changeset} ->
         conn
@@ -78,6 +83,7 @@ defmodule Web.Admin.RoomController do
         |> assign(:changeset, changeset)
         |> assign(:zone, room.zone)
         |> put_status(422)
+        |> put_flash(:error, "Could not save the room")
         |> render("edit.html")
     end
   end

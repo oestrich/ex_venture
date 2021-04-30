@@ -11,7 +11,7 @@ iframe {
 }
 
 .btn-primary {
-  @apply inline-flex items-center px-2.5 py-1.5 border border-transparent font-medium rounded shadow-sm text-white bg-blue-600;
+  @apply inline-flex items-center px-2.5 py-1.5 border border-transparent font-medium rounded-md shadow-sm text-white bg-blue-600;
 
   &:focus {
     @apply outline-none ring-2 ring-offset-2 ring-blue-500;
@@ -23,7 +23,7 @@ iframe {
 }
 
 .btn-secondary {
-  @apply inline-flex items-center px-2.5 py-1.5 border border-transparent font-medium rounded text-blue-700 bg-blue-100 ;
+  @apply inline-flex items-center px-2.5 py-1.5 border border-transparent font-medium rounded-md text-blue-700 bg-blue-100 ;
 
   &:focus {
     @apply outline-none ring-2 ring-offset-2 ring-indigo-500;
@@ -42,7 +42,7 @@ iframe {
   }
 
   &:hover {
-  @apply bg-gray-700;
+    @apply bg-gray-700;
   }
 }
 
@@ -63,7 +63,15 @@ nav .link {
 }
 
 .input {
-  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+  @apply appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400;
+
+  &:focus {
+    @apply outline-none ring-blue-500 border-blue-500;
+  }
+
+  @screen sm {
+    @apply text-sm;
+  }
 }
 
 .input:focus {
@@ -118,10 +126,10 @@ nav .link {
 
 .admin {
   .btn-primary {
-    @apply bg-purple-600 text-white font-bold py-2 px-2 rounded text-center ml-1;
+    @apply bg-purple-600 text-white flex justify-center;
 
     &:focus {
-      @apply outline-none ring;
+      @apply ring-purple-500;
     }
 
     &:hover {
@@ -140,19 +148,34 @@ nav .link {
   }
 
   .btn-secondary {
-    @apply bg-gray-200 font-bold py-2 px-2 rounded text-center ml-1;
+    @apply bg-purple-200;
 
     &:focus {
-      @apply outline-none ring;
+      @apply ring-purple-500;
     }
 
     &:hover {
-      @apply bg-gray-400;
+      @apply bg-purple-400;
+    }
+  }
+
+  .input {
+    &:focus {
+      @apply ring-purple-500 border-purple-500;
+    }
+
+  }
+
+  [type="radio"] {
+    @apply text-purple-500;
+
+    &:focus {
+      @apply ring-purple-500 border-purple-500;
     }
   }
 
   a {
-    @apply text-blue-700;
+    @apply text-purple-700;
   }
 
   nav a {
@@ -172,7 +195,7 @@ nav .link {
   }
 
   .actions {
-    @apply flex-grow flex justify-end;
+    @apply flex-grow flex justify-end space-x-2;
   }
 
   .panel {
