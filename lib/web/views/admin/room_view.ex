@@ -3,6 +3,7 @@ defmodule Web.Admin.RoomView do
 
   alias ExVenture.Rooms
   alias Web.FormView
+  alias Web.PaginationView
 
   def override_value(assigns, field) do
     changeset = Map.get(assigns, :changeset)

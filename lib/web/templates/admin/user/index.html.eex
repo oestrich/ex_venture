@@ -29,5 +29,7 @@
         <% end) %>
       </tbody>
     </table>
+
+    <%= PaginationView.paginate(@path, @pagination) %>
   </div>
 </div>

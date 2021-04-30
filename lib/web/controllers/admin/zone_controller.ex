@@ -15,6 +15,7 @@ defmodule Web.Admin.ZoneController do
     conn
     |> assign(:zones, zones)
     |> assign(:pagination, pagination)
+    |> assign(:path, Routes.admin_zone_path(conn, :index))
     |> render("index.html")
   end
 

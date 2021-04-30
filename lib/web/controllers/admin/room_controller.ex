@@ -16,6 +16,7 @@ defmodule Web.Admin.RoomController do
     conn
     |> assign(:rooms, rooms)
     |> assign(:pagination, pagination)
+    |> assign(:path, Routes.admin_room_path(conn, :index))
     |> render("index.html")
   end
 

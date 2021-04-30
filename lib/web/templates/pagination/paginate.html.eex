@@ -1,0 +1,49 @@
+<%= if !@pagination.empty? do %>
+  <div class="pagination">
+    <div class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+      <%= if @pagination.current == 1 do %>
+        <span class="page-link rounded-l-md disabled">
+          <span class="sr-only">First</span>
+          <i class="fas fa-angle-double-left"></i>
+        </span>
+      <% else %>
+        <%= link(to: page_path(@path, 1), class: "page-link rounded-l-md") do %>
+          <span class="sr-only">First</span>
+          <i class="fas fa-angle-double-left"></i>
+        <% end %>
+      <% end %>
+
+      <%= if more_previous?(@pagination) do %>
+        <span class="page-link">&hellip;</span>
+      <% end %>
+
+      <%= Enum.map(previous_pagination(@pagination), fn (page) -> %>
+        <%= link(page, to: page_path(@path, page), class: "page-link") %>
+      <% end) %>
+
+      <span class="page-link active">
+        <%= @pagination.current %>
+      </span>
+
+      <%= Enum.map(next_pagination(@pagination), fn (page) -> %>
+        <%= link(page, to: page_path(@path, page), class: "page-link") %>
+      <% end) %>
+
+      <%= if more_next?(@pagination) do %>
+        <span class="page-link">&hellip;</span>
+      <% end %>
+
+      <%= if @pagination.current == @pagination.total do %>
+        <span class="page-link rounded-r-md disabled">
+          <span class="sr-only">Last</span>
+          <i class="fas fa-angle-double-right"></i>
+        </span>
+      <% else %>
+        <%= link(to: page_path(@path, @pagination.total), class: "page-link rounded-r-md") do %>
+          <span class="sr-only">Last</span>
+          <i class="fas fa-angle-double-right"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

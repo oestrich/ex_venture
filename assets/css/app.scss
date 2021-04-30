@@ -223,6 +223,26 @@ nav .link {
       @apply w-64;
     }
   }
+
+  .pagination {
+    @apply bg-white px-4 py-3 flex justify-end border-t border-gray-200;
+
+    @screen sm {
+      @apply px-6;
+    }
+  }
+
+  .page-link {
+    @apply relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700;
+
+    &.active {
+      @apply text-purple-400;
+    }
+
+    &.disabled {
+      @apply text-gray-300;
+    }
+  }
 }
 
 @tailwind utilities;

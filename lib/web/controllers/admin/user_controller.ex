@@ -13,6 +13,7 @@ defmodule Web.Admin.UserController do
     conn
     |> assign(:users, users)
     |> assign(:pagination, pagination)
+    |> assign(:path, Routes.admin_user_path(conn, :index))
     |> render("index.html")
   end
 
