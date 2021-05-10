@@ -43,7 +43,8 @@ defmodule ExVenture.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bamboo, "~> 1.3"},
+      {:bamboo, "~> 2.0"},
+      {:bamboo_phoenix, "~> 1.0.0"},
       {:credo, "~> 1.1", only: [:dev, :test]},
       {:ecto_sql, "~> 3.1"},
       {:elias, "~> 0.2"},
@@ -63,7 +64,6 @@ defmodule ExVenture.MixProject do
       {:stein, "~> 0.5"},
       {:stein_storage, git: "https://github.com/smartlogic/stein_storage.git", branch: "main"},
       {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_metrics_prometheus, "~> 0.3"},
       {:telemetry_poller, "~> 0.4"},
       {:vapor, "~> 0.10.0"}
     ]
