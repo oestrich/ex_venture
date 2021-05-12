@@ -46,7 +46,7 @@
     "jest-cli": "^26.0",
     "mini-css-extract-plugin": "^1.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
-    "postcss": "^8.1.4",
+    "postcss": "^8.2.10",
     "postcss-import": "^13.0",
     "postcss-loader": "^4.0",
     "prettier": "^2.1.2",
