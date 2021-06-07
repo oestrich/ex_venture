@@ -22,10 +22,21 @@ config :ex_venture, Web.Endpoint,
   check_origin: false,
   watchers: [
     node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch",
+      "./node_modules/.bin/yarn",
+      "run",
+      "build:js:watch",
+      cd: Path.expand("../assets", __DIR__)
+    ],
+    node: [
+      "./node_modules/.bin/yarn",
+      "run",
+      "build:css:watch",
+      cd: Path.expand("../assets", __DIR__)
+    ],
+    node: [
+      "./node_modules/.bin/yarn",
+      "run",
+      "build:static:watch",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]

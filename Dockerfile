@@ -13,7 +13,9 @@ WORKDIR /app
 COPY assets/package.json assets/yarn.lock /app/
 RUN yarn install
 COPY assets /app
-RUN yarn deploy
+RUN yarn run deploy:js && \
+  yarn run deploy:css && \
+  yarn run deploy:static
 
 FROM builder as releaser
 COPY --from=frontend /priv/static /app/priv/static

@@ -15,7 +15,9 @@ COPY --from=builder /app/deps/phoenix /deps/phoenix
 COPY --from=builder /app/deps/phoenix_html /deps/phoenix_html
 RUN yarn install
 COPY assets /app
-RUN npm run deploy
+RUN yarn run deploy:js && \
+  yarn run deploy:css && \
+  yarn run deploy:static
 
 FROM builder as releaser
 COPY --from=frontend /priv/static /app/priv/static

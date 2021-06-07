@@ -1,9 +1,9 @@
 module.exports = {
-  future: {
-    // removeDeprecatedGapUtilities: true,
-    // purgeLayersByDefault: true,
-  },
-  purge: [],
+  // mode: 'jit',
+  purge: [
+     '../lib/web/templates/**/*.html.eex',
+     './js/**/*.{js,jsx}',
+   ],
   theme: {
     colors: {
       transparent: 'transparent',

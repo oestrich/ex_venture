@@ -1,5 +1,3 @@
-import "../css/app.scss";
-
 import "@fortawesome/fontawesome-free/js/fontawesome";
 import "@fortawesome/fontawesome-free/js/solid";
 import "@fortawesome/fontawesome-free/js/regular";
@@ -28,7 +26,7 @@ class ReactPhoenix {
       const targetId = document.getElementById(e.dataset.reactTargetId);
       const targetDiv = targetId ? targetId : e;
       const reactProps = e.dataset.reactProps ? e.dataset.reactProps : "{}";
-      const reactElement = React.createElement(eval(e.dataset.reactClass), JSON.parse(reactProps));
+      const reactElement = React.createElement(window.eval(e.dataset.reactClass), JSON.parse(reactProps));
       ReactDOM.render(reactElement, targetDiv);
     });
   }

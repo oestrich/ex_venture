@@ -63,14 +63,10 @@ nav .link {
 }
 
 .input {
-  @apply appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400;
+  @apply appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm;
 
   &:focus {
     @apply outline-none ring-blue-500 border-blue-500;
-  }
-
-  @screen sm {
-    @apply text-sm;
   }
 }
 
@@ -225,11 +221,7 @@ nav .link {
   }
 
   .pagination {
-    @apply bg-white px-4 py-3 flex justify-end border-t border-gray-200;
-
-    @screen sm {
-      @apply px-6;
-    }
+    @apply bg-white px-4 py-3 flex justify-end border-t border-gray-200 sm:px-6;
   }
 
   .page-link {
