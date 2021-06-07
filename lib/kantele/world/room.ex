@@ -13,6 +13,7 @@ defmodule Kantele.World.Room do
 
   defstruct [
     :id,
+    :key,
     :zone_id,
     :name,
     :description,

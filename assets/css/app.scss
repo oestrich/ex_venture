@@ -243,6 +243,10 @@ nav .link {
       @apply text-gray-300;
     }
   }
+
+  .terminal {
+    @apply bg-gray-900 text-gray-500 p-4 my-2 font-mono;
+  }
 }
 
 @tailwind utilities;
@@ -275,6 +279,48 @@ div {
 }
 
 @import "colors";
+
+.admin {
+  .icon {
+    @apply bg-gray-500 border-2 border-gray-600;
+
+    .map-icon {
+      @apply text-gray-900;
+    }
+
+    &.blue {
+      @apply bg-blue-500 border-blue-600;
+
+      .map-icon {
+        @apply text-gray-100;
+      }
+    }
+
+    &.brown {
+      @apply bg-yellow-800 border-yellow-900;
+
+      .map-icon {
+        @apply text-gray-100;
+      }
+    }
+
+    &.green {
+      @apply bg-green-500 border-green-600;
+
+      .map-icon {
+        @apply text-gray-800;
+      }
+    }
+
+    &.yellow {
+      @apply bg-yellow-500 border-yellow-600;
+
+      .map-icon {
+        @apply text-gray-800;
+      }
+    }
+  }
+}
 
 .map {
   background: #1a202c;

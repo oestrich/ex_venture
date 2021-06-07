@@ -9,4 +9,8 @@ defmodule Web.Admin.RoomView do
     changeset = Map.get(assigns, :changeset)
     Map.get(assigns, field) || Ecto.Changeset.get_field(changeset, field)
   end
+
+  def icon?(room) do
+    not is_nil(room.map_icon)
+  end
 end

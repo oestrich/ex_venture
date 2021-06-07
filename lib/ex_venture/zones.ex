@@ -11,6 +11,8 @@ defmodule ExVenture.Zones.Zone do
   alias ExVenture.StagedChanges.StagedChange
 
   schema "zones" do
+    field(:key, :string)
+
     field(:live_at, :utc_datetime)
 
     field(:name, :string)
@@ -26,16 +28,18 @@ defmodule ExVenture.Zones.Zone do
 
   def create_changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :graveyard_id])
-    |> validate_required([:name, :description])
+    |> cast(params, [:key, :name, :description, :graveyard_id])
+    |> validate_required([:key, :name, :description])
     |> foreign_key_constraint(:graveyard_id)
+    |> unique_constraint(:key)
   end
 
   def update_changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :graveyard_id])
-    |> validate_required([:name, :description])
+    |> cast(params, [:key, :name, :description, :graveyard_id])
+    |> validate_required([:key, :name, :description])
     |> foreign_key_constraint(:graveyard_id)
+    |> unique_constraint(:key)
   end
 
   def publish_changeset(struct) do

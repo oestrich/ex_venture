@@ -3,6 +3,7 @@ defmodule ExVenture.Repo.Migrations.CreateZones do
 
   def change do
     create table(:zones) do
+      add(:key, :string, null: false)
       add(:name, :string, null: false)
       add(:description, :text, default: "", null: false)
 
@@ -13,6 +14,7 @@ defmodule ExVenture.Repo.Migrations.CreateZones do
 
     create table(:rooms) do
       add(:zone_id, references(:zones), null: false)
+      add(:key, :string, null: false)
 
       add(:name, :string, null: false)
       add(:description, :text, null: false)
@@ -36,5 +38,8 @@ defmodule ExVenture.Repo.Migrations.CreateZones do
     alter table(:zones) do
       add(:graveyard_id, references(:rooms))
     end
+
+    create index(:zones, :key, unique: true)
+    create index(:rooms, :key, unique: true)
   end
 end

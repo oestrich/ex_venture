@@ -16,6 +16,8 @@ defmodule ExVenture.Rooms.Room do
   def map_colors(), do: @map_colors
 
   schema "rooms" do
+    field(:key, :string)
+
     field(:live_at, :utc_datetime)
 
     field(:name, :string)
@@ -42,20 +44,44 @@ defmodule ExVenture.Rooms.Room do
 
   def create_changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :listen, :map_color, :map_icon, :notes, :x, :y, :z])
-    |> validate_required([:name, :description, :listen, :x, :y, :z, :zone_id])
+    |> cast(params, [
+      :key,
+      :name,
+      :description,
+      :listen,
+      :map_color,
+      :map_icon,
+      :notes,
+      :x,
+      :y,
+      :z
+    ])
+    |> validate_required([:key, :name, :description, :listen, :x, :y, :z, :zone_id])
     |> validate_inclusion(:map_color, @map_colors)
     |> validate_inclusion(:map_icon, Rooms.available_map_icons())
     |> foreign_key_constraint(:zone_id)
+    |> unique_constraint(:key)
   end
 
   def update_changeset(struct, params) do
     struct
-    |> cast(params, [:name, :description, :listen, :map_color, :map_icon, :notes, :x, :y, :z])
-    |> validate_required([:name, :description, :listen, :x, :y, :z, :zone_id])
+    |> cast(params, [
+      :key,
+      :name,
+      :description,
+      :listen,
+      :map_color,
+      :map_icon,
+      :notes,
+      :x,
+      :y,
+      :z
+    ])
+    |> validate_required([:key, :name, :description, :listen, :x, :y, :z, :zone_id])
     |> validate_inclusion(:map_color, @map_colors)
     |> validate_inclusion(:map_icon, Rooms.available_map_icons())
     |> foreign_key_constraint(:zone_id)
+    |> unique_constraint(:key)
   end
 
   def publish_changeset(struct) do

@@ -9,6 +9,7 @@ defmodule ExVenture.RoomsTest do
 
       {:ok, room} =
         Rooms.create(zone, %{
+          key: "room",
           name: "Room",
           description: "Description",
           listen: "Listen text",
@@ -26,6 +27,7 @@ defmodule ExVenture.RoomsTest do
 
       {:error, changeset} =
         Rooms.create(zone, %{
+          key: "room",
           name: nil,
           description: "Description",
           listen: "Listen text",

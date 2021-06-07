@@ -38,6 +38,7 @@ defmodule Seeds do
   def create_zone(zone_data) do
     {:ok, zone} =
       Zones.create(%{
+        key: zone_data.id,
         name: zone_data.name,
         description: zone_data.name
       })
@@ -52,6 +53,7 @@ defmodule Seeds do
   def create_room(zone, params) do
     {:ok, room} =
       Rooms.create(zone, %{
+        key: params.key,
         name: params.name,
         description: params.description,
         listen: params.description,

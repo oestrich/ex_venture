@@ -6,6 +6,14 @@
     <%= if is_nil(@room.live_at) do %>
       <span class="text-gray-600 italic">(Not Live)</span>
     <% end %>
+
+    <%= if !Enum.empty?(@room.staged_changes) do %>
+      <%= link(to: Routes.admin_staged_change_path(@conn, :index) <> "#room-#{@room.id}") do %>
+        <span class="text-sm text-purple-700 italic">
+          This includes staged changes
+        </span>
+      <% end %>
+    <% end %>
   </h1>
 
   <div class="actions">
@@ -19,47 +27,25 @@
   </div>
 </div>
 
-<div class="panel">
-  <div class="panel-container">
-    <h2 class="text-lg">
-      Attributes
+<div class="terminal rounded">
+  <div class="flex">
+    <div class="flex-grow">
+      <p>
+        <span class="underline text-blue-500"><%= @room.name %></span>
+        <span class="text-gray-600"><%= @zone.key %>:<%= @room.key %> [<%= @room.x %>,<%= @room.y %>,<%= @room.z %>]</span>
+      </p>
 
-      <%= if !Enum.empty?(@room.staged_changes) do %>
-        <%= link(to: Routes.admin_staged_change_path(@conn, :index) <> "#room-#{@room.id}") do %>
-          <span class="text-sm text-purple-700 italic">
-            This includes staged changes
-          </span>
-        <% end %>
-      <% end %>
-    </h2>
+      <p><%= @room.description %></p>
+    </div>
 
-    <table class="table attributes">
-      <tbody>
-        <tr>
-          <th>Name</th>
-          <td><%= @room.name %></td>
-        </tr>
-        <tr>
-          <th>Description</th>
-          <td><%= @room.description %></td>
-        </tr>
-        <tr>
-          <th>Listen Text</th>
-          <td><%= @room.listen %></td>
-        </tr>
-        <%= if @room.map_color do %>
-          <tr>
-            <th>Map Color</th>
-            <td><%= @room.map_color %></td>
-          </tr>
-        <% end %>
-        <%= if @room.map_icon do %>
-          <tr>
-            <th>Map Icon</th>
-            <td><%= img_tag(Routes.static_path(@conn, "/images/map-icons/#{@room.map_icon}.svg"), class: "w-16", alt: @room.map_icon, title: @room.map_icon) %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <%= if icon?(@room) do %>
+      <div class="inline-block icon rounded <%= @room.map_color %>">
+        <svg class="w-16 h-16 p-1 map-icon">
+          <use href="<%= Routes.static_path(@conn, "/images/map-icons/#{@room.map_icon}.svg") %>#icon"></use>
+        </svg>
+      </div>
+    <% end %>
   </div>
+
+  <p class="mt-4"><span class="text-white">Listen:</span> <%= @room.listen %></p>
 </div>

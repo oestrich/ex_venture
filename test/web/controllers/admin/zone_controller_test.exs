@@ -10,6 +10,7 @@ defmodule Web.Admin.ZoneControllerTest do
         |> assign(:current_user, user)
         |> post(Routes.admin_zone_path(conn, :create),
           zone: %{
+            key: "name",
             name: "Name",
             description: "Description"
           }

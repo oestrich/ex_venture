@@ -38,6 +38,7 @@ defmodule ExVenture.TestHelpers do
     params =
       Map.merge(
         %{
+          key: "room",
           name: "Room",
           description: "A description",
           listen: "Listen text",
@@ -61,6 +62,7 @@ defmodule ExVenture.TestHelpers do
     params =
       Map.merge(
         %{
+          key: "zone",
           name: "Zone",
           description: "A description"
         },

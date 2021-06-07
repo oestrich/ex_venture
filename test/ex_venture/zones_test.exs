@@ -7,6 +7,7 @@ defmodule ExVenture.ZonesTest do
     test "successfully" do
       {:ok, zone} =
         Zones.create(%{
+          key: "zone",
           name: "Zone",
           description: "Description"
         })
@@ -18,6 +19,7 @@ defmodule ExVenture.ZonesTest do
     test "unsuccessful" do
       {:error, changeset} =
         Zones.create(%{
+          key: "zone",
           name: nil,
           description: "Description"
         })
