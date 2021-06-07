@@ -7,7 +7,7 @@ defmodule ExVenture.Users.User do
 
   import Ecto.Changeset
 
-  alias ExVenture.Characters.Character
+  alias ExVenture.Characters.PlayableCharacter
 
   @type t :: %__MODULE__{}
 
@@ -32,7 +32,8 @@ defmodule ExVenture.Users.User do
     field(:avatar_key, Ecto.UUID)
     field(:avatar_extension, :string)
 
-    has_many(:characters, Character)
+    has_many(:playable_characters, PlayableCharacter)
+    has_many(:characters, through: [:playable_characters, :character])
 
     timestamps()
   end

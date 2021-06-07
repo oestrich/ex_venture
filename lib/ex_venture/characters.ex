@@ -7,12 +7,12 @@ defmodule ExVenture.Characters.Character do
 
   import Ecto.Changeset
 
-  alias ExVenture.Users.User
+  alias ExVenture.Characters.PlayableCharacter
 
   schema "characters" do
     field(:name, :string)
 
-    belongs_to(:user, User)
+    has_many(:playable, PlayableCharacter)
 
     timestamps()
   end
@@ -20,15 +20,13 @@ defmodule ExVenture.Characters.Character do
   def create_changeset(struct, params) do
     struct
     |> cast(params, [:name])
-    |> validate_required([:name, :user_id])
-    |> foreign_key_constraint(:user_id)
+    |> validate_required([:name])
   end
 
   def update_changeset(struct, params) do
     struct
     |> cast(params, [:name])
-    |> validate_required([:name, :user_id])
-    |> foreign_key_constraint(:user_id)
+    |> validate_required([:name])
   end
 end
 
@@ -40,6 +38,7 @@ defmodule ExVenture.Characters do
   import Ecto.Query
 
   alias ExVenture.Characters.Character
+  alias ExVenture.Characters.PlayableCharacter
   alias ExVenture.Repo
 
   @doc """
@@ -47,7 +46,8 @@ defmodule ExVenture.Characters do
   """
   def all_for(user) do
     Character
-    |> where([c], c.user_id == ^user.id)
+    |> join(:left, [c], pc in assoc(c, :playable))
+    |> where([c, pc], pc.user_id == ^user.id)
     |> Repo.all()
   end
 
@@ -68,7 +68,13 @@ defmodule ExVenture.Characters do
   Get a character scoped to the user accessing it
   """
   def get(user, id) do
-    case Repo.get_by(Character, id: id, user_id: user.id) do
+    query =
+      Character
+      |> join(:left, [c], pc in assoc(c, :playable))
+      |> where([c, pc], c.id == ^id and pc.user_id == ^user.id)
+      |> limit(1)
+
+    case Repo.one(query) do
       nil ->
         {:error, :not_found}
 
@@ -81,10 +87,25 @@ defmodule ExVenture.Characters do
   Create a new character for a user
   """
   def create(user, params) do
-    user
-    |> Ecto.build_assoc(:characters)
-    |> Character.create_changeset(params)
-    |> Repo.insert()
+    changeset = Character.create_changeset(%Character{}, params)
+
+    result =
+      Ecto.Multi.new()
+      |> Ecto.Multi.insert(:character, changeset)
+      |> Ecto.Multi.insert(:playable_character, fn %{character: character} ->
+        user
+        |> Ecto.build_assoc(:playable_characters)
+        |> PlayableCharacter.create_changeset(character)
+      end)
+      |> Repo.transaction()
+
+    case result do
+      {:ok, %{character: character}} ->
+        {:ok, character}
+
+      {:error, :character, changeset, _changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -100,6 +121,13 @@ defmodule ExVenture.Characters do
   Delete a character for a user
   """
   def delete(character) do
-    Repo.delete(character)
+    query =
+      PlayableCharacter
+      |> where([pc], pc.character_id == ^character.id)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete_all(:playable_characters, query)
+    |> Ecto.Multi.delete(:character, character)
+    |> Repo.transaction()
   end
 end
