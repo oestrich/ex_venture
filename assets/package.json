@@ -13,7 +13,7 @@
     "deploy:static": "cpx 'static/**/*' ../priv/static/",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "lint:ci": "eslint '*/**/*.{js,ts,tsx}'",
-    "test": "jest",
+    "test": "jest"
   },
   "dependencies": {
     "@headlessui/react": "^1.0.0",
