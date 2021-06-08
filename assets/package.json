@@ -5,7 +5,7 @@
     "build:js": "node build.js",
     "build:js:watch": "WATCH=true node build.js",
     "build:css": "postcss ./css/app.scss --output ../priv/static/css/app.css",
-    "build:css:watch": "postcss ./css/app.scss --output ../priv/static/css/app.css --watch",
+    "build:css:watch": "WATCH=true postcss ./css/app.scss --output ../priv/static/css/app.css --watch",
     "build:static": "cpx 'static/**/*' ../priv/static/",
     "build:static:watch": "cpx 'static/**/*' ../priv/static/ --watch",
     "deploy:js": "node build.js",

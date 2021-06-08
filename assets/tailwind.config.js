@@ -1,5 +1,11 @@
+let mode = undefined;
+
+if (process.env.WATCH == "true") {
+  mode = "jit";
+}
+
 module.exports = {
-  // mode: 'jit',
+  mode,
   purge: [
      '../lib/web/templates/**/*.html.eex',
      './js/**/*.{js,jsx}',
