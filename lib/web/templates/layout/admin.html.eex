@@ -32,8 +32,11 @@
         <% end %>
       </div>
 
-      <div class="flex-grow flex justify-end">
-        <p><%= @current_user.email %></p>
+      <div class="flex-grow flex justify-end items-center">
+        <span class="inline-block mx-2"><%= @current_user.email %></span>
+        <%= link(to: Routes.session_path(@conn, :delete), class: "btn-secondary text-sm", method: :delete) do %>
+          Sign Out
+        <% end %>
       </div>
     </div>
 

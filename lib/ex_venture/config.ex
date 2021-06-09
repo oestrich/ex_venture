@@ -6,8 +6,11 @@ defmodule ExVenture.Config do
   and phoenix endpoint config.
   """
 
+  alias ExVenture.Config.Cache
   alias Vapor.Provider.Dotenv
   alias Vapor.Provider.Env
+
+  defdelegate deploy_env(), to: Cache
 
   @doc """
   Load and parse application configuration
@@ -18,7 +21,14 @@ defmodule ExVenture.Config do
 
   # Fill this in:
   defp application_providers() do
-    []
+    [
+      %Dotenv{},
+      %Env{
+        bindings: [
+          {:deploy_env, "DEPLOY_ENV"}
+        ]
+      }
+    ]
   end
 
   @doc """
@@ -72,8 +82,7 @@ defmodule ExVenture.Config.Cache do
 
   alias ExVenture.Config
 
-  # Create accessors via
-  # def secret_key(), do: :persistent_term.get({__MODULE__, :secret_key})
+  def deploy_env(), do: :persistent_term.get({__MODULE__, :deploy_env})
 
   @doc false
   def start_link(opts) do
