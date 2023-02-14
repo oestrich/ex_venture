@@ -1,9 +1,0 @@
-image:
-  # repository:
-  # tag:
-  pullPolicy: IfNotPresent
-
-# web:
-  # host:
-
-resources: {}
