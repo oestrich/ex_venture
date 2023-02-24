@@ -4356,10 +4356,10 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-phoenix_html@^2.14.2:
-  version "2.14.3"
-  resolved "https://registry.yarnpkg.com/phoenix_html/-/phoenix_html-2.14.3.tgz#efdbb7554b70a4e04830bb6ca294e15bcfe09de7"
-  integrity sha512-ANd2C2dlqlmTsyudYZlAuwoYs1AUVlrn9Htwz4RqGY+dTAYOvBrfAlodLR2BlK6c+M4Jcaj/LvSbqT5BV+UBYQ==
+phoenix_html@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/phoenix_html/-/phoenix_html-3.0.4.tgz#96d498aa3e4889289d7035d5ed1c893ad5344048"
+  integrity sha512-P+FHH9eyp87Fjcrje/tOmGfdc3boPUhwAHeQytoNeM6rhacLefG3H2mo+cj85K5pTgyngc6FK1z2igqLviSGEg==
 
 picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.3:
   version "2.3.0"
